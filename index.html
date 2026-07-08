@@ -383,6 +383,8 @@ const Audio = (() => {
       tone(165, 0.16, 'sawtooth', 0.42, 58); tone(90, 0.22, 'triangle', 0.32, 42); noise(0.16, 0.4, 300);
     },
     boss(){ tone(70,0.6,'sawtooth',0.5,40); noise(0.5,0.4,120); },
+    scythe(){ noise(0.09, 0.4, 500); tone(160,0.1,'sawtooth',0.22,80); },
+    howl(){ tone(200,0.3,'sawtooth',0.3,90); noise(0.3,0.3,600); tone(340,0.25,'sine',0.18,260); },
     win(){ [523,659,784,1046,1318,1568].forEach((f,i)=>setTimeout(()=>tone(f,0.3,'triangle',0.34),i*110)); },
     lose(){ [400,330,262,180].forEach((f,i)=>setTimeout(()=>tone(f,0.35,'sawtooth',0.34,f*0.6),i*160)); },
     deploy(){ tone(300,0.1,'square',0.25,500); },
@@ -495,6 +497,9 @@ const WEAPONS = {
   sentry:{ name:'센트리건', icon:'🛡️', aim:'deploy', pair:'speed', evo:'minigun',
     desc:'발밑에 고정 포탑을 설치, 자동 점사.',
     stats:l=>({ dmg:5+(l-1)*2.2, cd:Math.max(120,180-(l-1)*8), fireCd:Math.max(8,20-(l-1)), life:360+(l-1)*30, rng:200 }) },
+  scythe:{ name:'피의 낫', icon:'🩸', aim:'move', pair:'regen', evo:'soulreaper',
+    desc:'이동 방향 부채꼴을 베어 피해를 주고, 준 피해의 일부만큼 체력을 회복.',
+    stats:l=>({ dmg:12+(l-1)*4.2, cd:Math.max(30,60-(l-1)*3.5), range:78+(l-1)*5, arc:0.72, lifesteal:0.10+(l-1)*0.01 }) },
 };
 /* 진화 무기 — 설계서 5장 */
 const EVOS = {
@@ -514,9 +519,11 @@ const EVOS = {
     stats:()=>({ dmg:60, cd:52, spd:7, reach:300, spin:0.5 }) },
   minigun:{ name:'미니건 터렛', icon:'🏗️', base:'sentry', desc:'폭풍 사격을 퍼붓는 화력 거점.',
     stats:()=>({ dmg:9, cd:120, fireCd:3, life:480, rng:240 }) },
+  soulreaper:{ name:'영혼 수확자', icon:'🌑', base:'scythe', desc:'광역 베기와 강화된 흡혈로 전장을 정화.',
+    stats:()=>({ dmg:36, cd:38, range:132, arc:1.05, lifesteal:0.24 }) },
 };
 
-/* 패시브 8종 — 설계서 4장 (레벨 1~5) */
+/* 패시브 9종 — 설계서 4장 (레벨 1~5) */
 const PASSIVES = {
   dmg:{ name:'공격력', icon:'🗡️', desc:'모든 무기 피해 +10%' },
   speed:{ name:'공격속도', icon:'⏱️', desc:'재장전 대기 -10%' },
@@ -526,15 +533,17 @@ const PASSIVES = {
   maxhp:{ name:'최대 체력', icon:'❤️', desc:'최대 생명력 +20%' },
   regen:{ name:'체력 재생', icon:'✚', desc:'초당 체력 +0.5' },
   magnet:{ name:'자석', icon:'🧲', desc:'흡입 범위 +30%' },
+  crit:{ name:'치명타', icon:'🎯', desc:'치명타 확률 +8% (2배 피해)' },
 };
 
-/* 적 5종 + 보스 — 설계서 6장 */
+/* 적 6종 + 보스 — 설계서 6장 */
 const ENEMIES = {
   walker:{ name:'워커', hp:20, spd:0.72, r:13, dmg:8, xp:1, col:'#6fae57', coin:0.05, dark:'#3f6b32' },
   runner:{ name:'러너', hp:15, spd:1.7, r:11, dmg:6, xp:1, col:'#c7d24a', coin:0.05, dark:'#7d8523' },
   brute:{ name:'브루트', hp:60, spd:0.5, r:22, dmg:18, xp:5, col:'#8a6f4a', coin:0.18, dark:'#524024', elite:true, tier:'high' },
   bomber:{ name:'봄버', hp:25, spd:1.05, r:14, dmg:30, xp:2, col:'#d76a3a', coin:0.1, dark:'#7a3313', bomb:true, radius:70, elite:true, tier:'mid' },
   spitter:{ name:'스피터', hp:20, spd:0.6, r:13, dmg:10, xp:2, col:'#63c39a', coin:0.1, dark:'#2f6b50', spit:true, elite:true, tier:'mid' },
+  howler:{ name:'하울러', hp:34, spd:0.62, r:15, dmg:12, xp:3, col:'#b23a9e', coin:0.09, dark:'#5c1d52', howl:true, elite:true, tier:'mid' },
 };
 
 /* 메타 아머리 — 설계서 9장 */
@@ -545,6 +554,7 @@ const METAS = {
   mobility:{ name:'기동 기어', icon:'👟', desc:'이동속도 +5%', max:6, cost:l=>70+l*60, val:l=>l*5 },
   bonus:{ name:'지급 보너스', icon:'🎁', desc:'시작 시 경험치 +1레벨분', max:5, cost:l=>120+l*90, val:l=>l },
   revive:{ name:'자동 심폐 소생', icon:'💉', desc:'1회 부활 (체력 50%)', max:1, cost:()=>400, val:l=>l },
+  precision:{ name:'정밀 조준', icon:'🎯', desc:'시작 치명타 확률 +2%', max:5, cost:l=>100+l*85, val:l=>l*2 },
 };
 
 /* ============================================================================
@@ -575,9 +585,10 @@ const pDmgMult = () => (1 + 0.1 * (P().passives.dmg || 0)) * (1 + metaVal('firep
 const pCdMult = () => clamp(1 - 0.1 * (P().passives.speed || 0), 0.3, 1);
 const pRangeMult = () => 1 + 0.15 * (P().passives.range || 0);
 const pProjBonus = () => (P().passives.proj || 0);
-const pMoveSpd = () => P().baseSpd * (1 + 0.08 * (P().passives.movespeed || 0)) * (1 + metaVal('mobility') / 100);
+const pMoveSpd = () => P().baseSpd * (1 + 0.08 * (P().passives.movespeed || 0)) * (1 + metaVal('mobility') / 100) * (P().slowT > 0 ? 0.55 : 1);
 const pMagnet = () => 82 * (1 + 0.3 * (P().passives.magnet || 0));
 const pRegen = () => 0.5 * (P().passives.regen || 0);
+const pCritChance = () => clamp(0.08 * (P().passives.crit || 0) + metaVal('precision') / 100, 0, 0.75);
 const hpMul = () => 1 + G.time * 0.004;
 const xpForLevel = lv => Math.floor(4 + lv * 3 + lv * lv * 0.4);
 
@@ -627,7 +638,7 @@ function makePlayer(){
   const maxhp = (100 + metaVal('vitality'));
   return { x:0, y:0, hp:maxhp, maxhp, baseSpd:2.7, level:1, xp:0, xpNext:xpForLevel(1),
     weapons:[], passives:{}, lastAngle:-Math.PI/2, iframe:0, revived:false, hurtFlash:0,
-    pendingLevels:0, regenAcc:0, shield:0 };
+    pendingLevels:0, regenAcc:0, shield:0, slowT:0 };
 }
 
 const isTouch = () => ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
@@ -732,6 +743,30 @@ function fireWeapon(w) {
     }
     Audio.S.flame(); return;
   }
+  if (key === 'scythe') {
+    const ang = aimAngle(w) ?? p.lastAngle, range = s.range * pRangeMult(), arc = s.arc;
+    let healSum = 0;
+    for (const e of G.enemies) {
+      if (e.dead) continue;
+      const d = Math.hypot(e.x - p.x, e.y - p.y);
+      if (d > range + e.r) continue;
+      let da = Math.atan2(e.y - p.y, e.x - p.x) - ang;
+      da = Math.atan2(Math.sin(da), Math.cos(da));
+      if (Math.abs(da) < arc) { damageEnemy(e, s.dmg); healSum += s.dmg; spark(e.x, e.y, '#ff2d4d', 3, 2.6, 14); }
+    }
+    for (let i = 0; i < 6; i++) {
+      const a = ang + lerp(-arc, arc, i / 5), r = range * rand(0.5, 1);
+      const sp = takePart(); sp.type = 'spark'; sp.x = p.x + Math.cos(a) * r; sp.y = p.y + Math.sin(a) * r;
+      sp.vx = Math.cos(a) * 0.6; sp.vy = Math.sin(a) * 0.6; sp.life = 10; sp.max = 10; sp.r = 2; sp.col = '#ff8a90';
+      G.particles.push(sp);
+    }
+    if (healSum > 0 && p.hp < p.maxhp) {
+      const heal = healSum * (s.lifesteal || 0.1);
+      p.hp = Math.min(p.maxhp, p.hp + heal);
+      floatText(p.x, p.y - 26, '+' + Math.round(heal), '#ff6b70');
+    }
+    Audio.S.scythe(); return;
+  }
   if (key === 'taser') {
     let fx = p.x, fy = p.y, chain = s.chain + pProjBonus(), hit = [];
     let target = nearestEnemy(p.x, p.y, s.jump);
@@ -798,9 +833,12 @@ function rebuildBlades(){
    ========================================================================== */
 function damageEnemy(e, amt) {
   if (e.dead) return;
+  const crit = Math.random() < pCritChance();
+  if (crit) amt *= 2;
   e.hp -= amt;
   if (Math.random() < 0.12) Audio.S.hit();
-  if (Math.random() < 0.5) spark(e.x, e.y, '#ffffff', 1, 2, 8);
+  if (crit) { spark(e.x, e.y, '#ffcf4d', 3, 3, 12); if (Math.random() < 0.5) floatText(e.x, e.y - e.r - 6, Math.round(amt), '#ffcf4d'); }
+  else if (Math.random() < 0.5) spark(e.x, e.y, '#ffffff', 1, 2, 8);
   if (e.hp <= 0) killEnemy(e);
 }
 function killEnemy(e) {
@@ -815,9 +853,9 @@ function killEnemy(e) {
   if (Math.random() < 0.02) spawnHeart(e.x, e.y);
   // 특수 드롭
   if (e.def.elite) {
-    if (Math.random() < 0.008) spawnOrb(e.x, e.y, 'magnet');      // 슈퍼자석: 매우 낮은 확률
-    else {                                                        // 방어막: 등급별 확률
-      const shieldChance = e.def.tier === 'high' ? 0.10 : 0.03;   // 상몹 조금 낮은 / 중몹 매우 낮은
+    if (Math.random() < 0.008) spawnOrb(e.x, e.y, 'magnet');       // 슈퍼자석: 매우 낮은 확률
+    else {                                                         // 방어막: 등급별 확률 (아주 희귀)
+      const shieldChance = e.def.tier === 'high' ? 0.035 : 0.01;   // 상몹 희귀 / 중몹 매우 희귀
       if (Math.random() < shieldChance) spawnOrb(e.x, e.y, 'shield');
     }
   }
@@ -889,7 +927,8 @@ function spawnEnemy(typeKey, ox, oy) {
   e.def = def; e.key = typeKey;
   e.maxhp = def.hp * hpMul(); e.hp = e.maxhp;
   e.r = def.r; e.spd = def.spd; e.dead = false; e.boss = false; e.mini = false;
-  e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140); e.id = G.uid++;
+  e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140);
+  e.howlT = randInt(140, 220); e.hasteT = 0; e.id = G.uid++;
   G.enemies.push(e); return e;
 }
 
@@ -916,8 +955,8 @@ function rollEnemyType(t) {
   if (t < 20) return r < 0.85 ? 'walker' : 'runner';
   if (t < 40) return r < 0.55 ? 'walker' : r < 0.85 ? 'runner' : 'brute';
   if (t < 70) return r < 0.4 ? 'walker' : r < 0.68 ? 'runner' : r < 0.85 ? 'bomber' : 'brute';
-  if (t < 120) return r < 0.3 ? 'walker' : r < 0.55 ? 'runner' : r < 0.72 ? 'bomber' : r < 0.86 ? 'spitter' : 'brute';
-  return r < 0.24 ? 'walker' : r < 0.48 ? 'runner' : r < 0.66 ? 'bomber' : r < 0.82 ? 'spitter' : 'brute';
+  if (t < 120) return r < 0.28 ? 'walker' : r < 0.52 ? 'runner' : r < 0.68 ? 'bomber' : r < 0.8 ? 'spitter' : r < 0.9 ? 'howler' : 'brute';
+  return r < 0.22 ? 'walker' : r < 0.44 ? 'runner' : r < 0.6 ? 'bomber' : r < 0.74 ? 'spitter' : r < 0.87 ? 'howler' : 'brute';
 }
 
 function spawnBoss(kind) {
@@ -966,6 +1005,7 @@ function update() {
   if (p.iframe > 0) p.iframe--;
   if (p.hurtFlash > 0) p.hurtFlash--;
   if (p.shield > 0) p.shield--;
+  if (p.slowT > 0) p.slowT--;
 
   for (const w of p.weapons) {
     if (w.key === 'machete') continue;
@@ -993,15 +1033,22 @@ function updateEnemies() {
   for (let i = 0; i < list.length; i++) {
     const e = list[i]; if (e.dead) continue;
     if (e.bladeCd > 0) e.bladeCd--; if (e.axeCd > 0) e.axeCd--;
+    if (e.hasteT > 0) e.hasteT--;
     const dx = p.x - e.x, dy = p.y - e.y, d = Math.hypot(dx, dy) || 1;
+    const spd = e.spd * (e.hasteT > 0 ? 1.4 : 1);
 
     if (e.key === 'boss') bossAI(e, dx, dy, d);
     else if (e.def.spit) {
-      if (d > 220) { e.x += dx/d*e.spd; e.y += dy/d*e.spd; }
-      else if (d < 170) { e.x -= dx/d*e.spd*0.6; e.y -= dy/d*e.spd*0.6; }
+      if (d > 220) { e.x += dx/d*spd; e.y += dy/d*spd; }
+      else if (d < 170) { e.x -= dx/d*spd*0.6; e.y -= dy/d*spd*0.6; }
       e.spitT--; if (e.spitT <= 0) { spitAcid(e, p); e.spitT = randInt(90,160); }
     }
-    else { e.x += dx/d*e.spd; e.y += dy/d*e.spd; }
+    else if (e.def.howl) {
+      if (d > 200) { e.x += dx/d*spd; e.y += dy/d*spd; }
+      else if (d < 150) { e.x -= dx/d*spd*0.5; e.y -= dy/d*spd*0.5; }
+      e.howlT--; if (e.howlT <= 0) { howl(e); e.howlT = randInt(220, 320); }
+    }
+    else { e.x += dx/d*spd; e.y += dy/d*spd; }
 
     e.wob += 0.15;
     const rr = e.r + 15;
@@ -1045,6 +1092,15 @@ function spitAcid(e, p) {
   const a = Math.atan2(p.y - e.y, p.x - e.x);
   const ac = takeAcid(); ac.x=e.x; ac.y=e.y; ac.vx=Math.cos(a)*3.2; ac.vy=Math.sin(a)*3.2; ac.life=130; ac.dmg=e.def.dmg; ac.r=7; ac.dead=false;
   G.acids.push(ac);
+}
+function howl(e) {
+  ring(e.x, e.y, 150, '#b23a9e', 32); Audio.S.howl();
+  for (const o of G.enemies) if (!o.dead && o !== e && !o.boss && !o.mini && dist2(e.x,e.y,o.x,o.y) < 150*150) o.hasteT = 180;
+  const p = P();
+  if (dist2(e.x, e.y, p.x, p.y) < 150 * 150) {
+    p.slowT = Math.max(p.slowT, 90);
+    floatText(p.x, p.y - 30, '둔화!', '#b23a9e');
+  }
 }
 
 function hurtPlayer(amt) {
@@ -1219,7 +1275,7 @@ function buildChoices() {
   if (chosen.length === 0) chosen.push({ type:'heal' }, { type:'coins' });
   return chosen;
 }
-const PASSIVE_STEP = { dmg:'모든 피해 +10%', speed:'재장전 시간 -10%', proj:'투사체 +1개', range:'폭발·화염·도끼 범위 +15%', movespeed:'이동속도 +8%', maxhp:'최대 체력 +20%', regen:'초당 체력 +0.5', magnet:'흡입 범위 +30%' };
+const PASSIVE_STEP = { dmg:'모든 피해 +10%', speed:'재장전 시간 -10%', proj:'투사체 +1개', range:'폭발·화염·도끼 범위 +15%', movespeed:'이동속도 +8%', maxhp:'최대 체력 +20%', regen:'초당 체력 +0.5', magnet:'흡입 범위 +30%', crit:'치명타 확률 +8%' };
 function statDeltaDesc(key, lvl) {
   const a = WEAPONS[key].stats(lvl), b = WEAPONS[key].stats(lvl + 1), parts = [];
   if (a.dmg != null && b.dmg > a.dmg) parts.push('피해 +' + (Math.round((b.dmg - a.dmg) * 10) / 10));
@@ -1231,13 +1287,14 @@ function statDeltaDesc(key, lvl) {
   if (a.range != null && b.range > a.range) parts.push('사거리 +' + Math.round(b.range - a.range));
   if (a.reach != null && b.reach > a.reach) parts.push('관통 거리 +' + Math.round(b.reach - a.reach));
   if (a.life != null && b.life > a.life) parts.push('설치 지속 +' + (Math.round((b.life - a.life) / 60 * 10) / 10) + 's');
+  if (a.lifesteal != null && b.lifesteal > a.lifesteal) parts.push('흡혈 +' + Math.round((b.lifesteal - a.lifesteal) * 100) + '%');
   if (a.cd != null && b.cd < a.cd) parts.push('공격 속도 ↑');
   if (a.fireCd != null && b.fireCd < a.fireCd) parts.push('점사 속도 ↑');
   return parts.length ? parts.join(' · ') : WEAPONS[key].desc;
 }
 function passiveDeltaDesc(id, lvl) {
   const n = lvl + 1;
-  const total = { dmg:'+'+10*n+'%', speed:'-'+10*n+'%', proj:'+'+n+'개', range:'+'+15*n+'%', movespeed:'+'+8*n+'%', maxhp:'+'+20*n+'%', regen:'+'+(0.5*n)+'/s', magnet:'+'+30*n+'%' };
+  const total = { dmg:'+'+10*n+'%', speed:'-'+10*n+'%', proj:'+'+n+'개', range:'+'+15*n+'%', movespeed:'+'+8*n+'%', maxhp:'+'+20*n+'%', regen:'+'+(0.5*n)+'/s', magnet:'+'+30*n+'%', crit:'+'+8*n+'%' };
   return PASSIVE_STEP[id] + ' → 누적 ' + total[id];
 }
 function choiceInfo(o) {
@@ -1388,6 +1445,10 @@ function drawEnemies() {
       ctx.fillStyle = '#ff3b3b';
       ctx.beginPath(); ctx.arc(e.x - ex, e.y - e.r*0.15 + wob, e.r*0.07, 0, TAU); ctx.fill();
       ctx.beginPath(); ctx.arc(e.x + ex, e.y - e.r*0.15 + wob, e.r*0.07, 0, TAU); ctx.fill();
+    }
+    if (e.hasteT > 0) {
+      ctx.strokeStyle = 'rgba(178,58,158,.55)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(e.x, e.y + wob, e.r + 5, 0, TAU); ctx.stroke();
     }
     if (e.hp < e.maxhp && !e.boss) {
       const w = e.r * 2, hp = clamp(e.hp / e.maxhp, 0, 1);
