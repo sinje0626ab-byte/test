@@ -931,7 +931,7 @@ function killEnemy(e) {
   if (e.def.elite) {
     if (Math.random() < 0.008) spawnOrb(e.x, e.y, 'magnet');       // 슈퍼자석: 매우 낮은 확률
     else {                                                         // 방어막: 등급별 확률 (아주 희귀)
-      const shieldChance = e.def.tier === 'high' ? 0.035 : 0.01;   // 상몹 희귀 / 중몹 매우 희귀
+      const shieldChance = e.def.tier === 'high' ? 0.00875 : 0.0025;   // 상몹 희귀 / 중몹 매우 희귀 (4분의 1로 하향)
       if (Math.random() < shieldChance) spawnOrb(e.x, e.y, 'shield');
     }
   }
