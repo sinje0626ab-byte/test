@@ -31,7 +31,7 @@
 
   /* ---------- language bar ---------- */
   .langbar{position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;display:flex;gap:7px;z-index:6;}
-  .flagbtn{width:38px;height:27px;border-radius:6px;border:2px solid transparent;overflow:hidden;
+  .flagbtn{width:39px;height:26px;border-radius:6px;border:2px solid transparent;overflow:hidden;
     cursor:pointer;padding:0;background:none;opacity:.5;transition:opacity .15s, transform .1s, border-color .15s;
     box-shadow:0 2px 6px rgba(0,0,0,.4);line-height:0;}
   .flagbtn svg{width:100%;height:100%;display:block;}
@@ -387,11 +387,15 @@
 
   /* ---------------- flags (inline SVG for cross-platform) ---------------- */
   const FLAGS = {
-    ko:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><rect width="30" height="20" fill="none" stroke="#ddd" stroke-width="1"/>
-      <g transform="translate(15,10)"><circle r="5.2" fill="#c60c30"/>
-      <path d="M0 -5.2 A2.6 2.6 0 0 1 0 0 A2.6 2.6 0 0 0 0 5.2 A5.2 5.2 0 0 1 0 -5.2Z" fill="#003478"/></g>
-      <g stroke="#111" stroke-width="0.7"><line x1="4" y1="4" x2="7" y2="6.2"/><line x1="4" y1="16" x2="7" y2="13.8"/>
-      <line x1="26" y1="4" x2="23" y2="6.2"/><line x1="26" y1="16" x2="23" y2="13.8"/></g></svg>`,
+    ko:`<svg viewBox="0 0 36 24"><rect width="36" height="24" fill="#fff"/><rect x="0.4" y="0.4" width="35.2" height="23.2" fill="none" stroke="#ddd" stroke-width="0.6"/>
+      <g transform="rotate(-33.69 18 12)"><circle cx="18" cy="12" r="6" fill="#003478"/>
+      <path d="M12,12 A6,6 0 0 1 24,12 A3,3 0 0 0 18,12 A3,3 0 0 1 12,12 Z" fill="#cd2e3a"/></g>
+      <g fill="#000">
+      <g transform="translate(7,6) rotate(33.69)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
+      <g transform="translate(29,18) rotate(33.69)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
+      <g transform="translate(29,6) rotate(-33.69)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
+      <g transform="translate(7,18) rotate(-33.69)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
+      </g></svg>`,
     en:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#b22234"/>
       <g fill="#fff"><rect y="1.54" width="30" height="1.54"/><rect y="4.62" width="30" height="1.54"/><rect y="7.7" width="30" height="1.54"/>
       <rect y="10.77" width="30" height="1.54"/><rect y="13.85" width="30" height="1.54"/><rect y="16.92" width="30" height="1.54"/></g>
