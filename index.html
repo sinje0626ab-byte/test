@@ -794,11 +794,33 @@
 
   /* ---------------- input ---------------- */
   document.addEventListener("keydown",(e)=>{
-    if(!gameScreen.classList.contains("show"))return;
-    const m={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",w:"up",s:"down",a:"left",d:"right",W:"up",S:"down",A:"left",D:"right"};
-    if(m[e.key]){e.preventDefault();tryMove(m[e.key]);}
-    else if(e.key==="z"||e.key==="Z")undo();
-    else if(e.key==="h"||e.key==="H")useHint();
+    const k=e.key;
+    const confirm = k==="Enter"||k===" "||k==="Spacebar";
+    const escape  = k==="Escape"||k==="Esc";
+    // popups take priority (work on any screen)
+    if($("#howtoOverlay").classList.contains("show")){
+      if(confirm||escape){e.preventDefault();$("#howtoOverlay").classList.remove("show");}
+      return;
+    }
+    if($("#winOverlay").classList.contains("show")){
+      if(confirm){e.preventDefault();$("#winNext").click();}
+      else if(escape){e.preventDefault();hideOverlays();showScreen("select");}
+      return;
+    }
+    if($("#stuckOverlay").classList.contains("show")){
+      if(confirm){e.preventDefault();$("#stuckRetry").click();}
+      else if(escape){e.preventDefault();hideOverlays();showScreen("select");}
+      return;
+    }
+    // in-game controls
+    if(gameScreen.classList.contains("show")){
+      if(escape){e.preventDefault();showScreen("select");return;}
+      const m={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",w:"up",s:"down",a:"left",d:"right",W:"up",S:"down",A:"left",D:"right"};
+      if(m[k]){e.preventDefault();tryMove(m[k]);}
+      else if(k==="z"||k==="Z")undo();
+      else if(k==="h"||k==="H")useHint();
+      return;
+    }
   });
   document.querySelectorAll(".dbtn").forEach(b=>b.addEventListener("click",()=>tryMove(b.dataset.dir)));
   let touchStart=null;
