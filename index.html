@@ -34,8 +34,9 @@
     background:var(--panel);border:1px solid var(--line);border-radius:18px;
     box-shadow:0 0 0 1px rgba(0,0,0,.5),0 30px 80px rgba(0,0,0,.7),0 0 60px rgba(229,35,43,.08) inset;
     padding:26px 24px;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
-  .cta{position:sticky;bottom:-26px;margin:0 -24px -26px;padding:12px 24px 22px;
-    background:linear-gradient(180deg,rgba(12,17,16,0),var(--panel) 42%);}
+  .cta{position:sticky;bottom:-26px;margin:0 -24px -26px;padding:14px 24px 22px;
+    background:linear-gradient(180deg,rgba(12,17,16,0),var(--panel) 20px);
+    box-shadow:0 -12px 24px 8px var(--panel);}
   .brand{font-weight:900;letter-spacing:.14em;font-size:13px;color:var(--toxic);
     text-transform:uppercase;display:flex;align-items:center;gap:8px;}
   .brand::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blood);
@@ -184,6 +185,26 @@
   .small{font-size:11px;color:var(--ink-dim);text-align:center;margin-top:14px;letter-spacing:.02em;}
   .help{font-size:12.5px;color:var(--ink-dim);line-height:1.65;}
   .help b{color:var(--ink);}
+
+  /* ---------- 모바일(좁은 화면) 대응 ---------- */
+  @media (max-width:560px){
+    /* 상단 HUD: 칩이 빽빽해 HP % 텍스트가 잘리지 않도록 여백·폰트 축소 + HP바 최소폭 확보 */
+    .toprow{gap:5px;font-size:11px;}
+    .chip{padding:3px 6px;font-size:11px;gap:3px;}
+    .hpwrap{height:18px;min-width:52px;}
+    .hptext{font-size:11px;}
+    #soundBtn,#pauseBtn{width:32px;height:32px;font-size:14px;}
+    /* 로비: 하단 고정 버튼이 캐릭터 카드를 덜 가리도록 카드/타이틀 컴팩트화 */
+    .card{padding:20px 18px;}
+    h1.title{font-size:clamp(30px,10vw,44px);}
+    .metabar .v{font-size:17px;}
+    .pill{padding:8px 10px;min-width:96px;}
+    .char{padding:9px 5px 8px;}
+    .char .cvpx{width:42px;height:47px;}
+    .char .cnm{font-size:12px;}
+    .char .ctt{font-size:9px;}
+    .char .cds{font-size:9.5px;line-height:1.3;min-height:0;margin-top:4px;}
+  }
 </style>
 </head>
 <body>
@@ -195,7 +216,7 @@
     <div class="xpwrap"><div class="xpfill" id="xpfill"></div></div>
     <div class="toprow">
       <span class="chip" id="lvChip">Lv 1</span>
-      <div class="hpwrap"><div class="hpfill" id="hpfill"></div><div class="hptext" id="hptext">100 / 100</div></div>
+      <div class="hpwrap"><div class="hpfill" id="hpfill"></div><div class="hptext" id="hptext">100%</div></div>
       <span class="chip time" id="timeChip">00:00</span>
       <span class="chip kill" id="killChip">☠ 0</span>
       <span class="chip coin" id="coinChip">◈ 0</span>
@@ -1797,7 +1818,7 @@ function updateHUD() {
   hudSet(el.xpfill, 'xp', (clamp(p.xp / p.xpNext, 0, 1) * 100).toFixed(1) + '%', 'w');
   hudSet(el.lvChip, 'lv', 'Lv ' + p.level);
   hudSet(el.hpfill, 'hpw', (clamp(p.hp / p.maxhp, 0, 1) * 100).toFixed(1) + '%', 'w');
-  hudSet(el.hptext, 'hpt', `${Math.max(0,Math.ceil(p.hp))} / ${Math.round(p.maxhp)}`);
+  hudSet(el.hptext, 'hpt', Math.max(0, Math.round(clamp(p.hp / p.maxhp, 0, 1) * 100)) + '%');
   hudSet(el.timeChip, 'time', fmtTime(G.time));
   hudSet(el.killChip, 'kill', '☠ ' + G.kills);
   hudSet(el.coinChip, 'coin', '◈ ' + G.runCoins);
