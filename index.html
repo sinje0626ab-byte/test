@@ -412,9 +412,10 @@
 
   /* ---------------- stage config & generator ---------------- */
   const BANDS = {
-    beginner:    {sizes:[4,5,6], obs:[0.06,0.16], hints:5},
-    intermediate:{sizes:[5,6,7], obs:[0.10,0.24], hints:3},
-    advanced:    {sizes:[6,7,8], obs:[0.14,0.30], hints:2}
+    beginner:    {sizes:[4,5,6], obs:[0.06,0.16], minCov:0.55, hints:5},
+    intermediate:{sizes:[5,6,7], obs:[0.10,0.22], minCov:0.72, hints:3},
+    // advanced: bigger boards + high coverage => long, demanding paths
+    advanced:    {sizes:[7,8,9], obs:[0.10,0.20], minCov:0.90, hints:3}
   };
   function stageConfig(tier,n){
     const b=BANDS[tier];
@@ -422,39 +423,53 @@
     const tt=(n-1)/(STAGES_PER_TIER-1);
     const obstacleRatio=b.obs[0]+(b.obs[1]-b.obs[0])*tt;
     const ti=TIERS.indexOf(tier);
-    return {size, obstacleRatio, hints:b.hints, seed:(((ti*97+n)>>>0)*2654435761)>>>0};
+    return {size, obstacleRatio, minCov:b.minCov, hints:b.hints, seed:(((ti*97+n)>>>0)*2654435761)>>>0};
   }
   function generateStage(tier,n){
-    const {size,obstacleRatio,hints,seed}=stageConfig(tier,n);
-    const rng=mulberry32(seed);
+    const {size,obstacleRatio,minCov,hints,seed}=stageConfig(tier,n);
     const N=size*size, idx=(x,y)=>y*size+x, inb=(x,y)=>x>=0&&y>=0&&x<size&&y<size;
-    const blocked=new Array(N).fill(false);
-    let want=Math.round(N*obstacleRatio), guard=0;
-    while(want>0&&guard++<500){const p=(rng()*N)|0;if(!blocked[p]){blocked[p]=true;want--;}}
     const neighbors=(x,y)=>{const o=[];if(inb(x,y-1))o.push([x,y-1]);if(inb(x+1,y))o.push([x+1,y]);if(inb(x,y+1))o.push([x,y+1]);if(inb(x-1,y))o.push([x-1,y]);return o;};
-    function walkFrom(sx,sy){
-      const visited=new Array(N).fill(false);
-      for(let i=0;i<N;i++) if(blocked[i]) visited[i]=true;
-      if(visited[idx(sx,sy)]) return null;
-      visited[idx(sx,sy)]=true; const path=[[sx,sy]]; let cx=sx,cy=sy;
-      while(true){
-        const opts=neighbors(cx,cy).filter(([nx,ny])=>!visited[idx(nx,ny)]);
-        if(!opts.length) break;
-        let pick;
-        if(rng()<0.82){
-          let best=Infinity,bl=[];
-          for(const [nx,ny] of opts){let deg=0;for(const [ax,ay] of neighbors(nx,ny)) if(!visited[idx(ax,ay)]) deg++;
-            if(deg<best){best=deg;bl=[[nx,ny]];}else if(deg===best){bl.push([nx,ny]);}}
-          pick=bl[(rng()*bl.length)|0];
-        } else pick=opts[(rng()*opts.length)|0];
-        visited[idx(pick[0],pick[1])]=true; path.push(pick); cx=pick[0]; cy=pick[1];
+    // one attempt at a layout for a given rng; returns {best, freeCount}
+    function buildOnce(rng){
+      const blocked=new Array(N).fill(false);
+      let want=Math.round(N*obstacleRatio), guard=0;
+      while(want>0&&guard++<500){const p=(rng()*N)|0;if(!blocked[p]){blocked[p]=true;want--;}}
+      function walkFrom(sx,sy){
+        const visited=new Array(N).fill(false);
+        for(let i=0;i<N;i++) if(blocked[i]) visited[i]=true;
+        if(visited[idx(sx,sy)]) return null;
+        visited[idx(sx,sy)]=true; const path=[[sx,sy]]; let cx=sx,cy=sy;
+        while(true){
+          const opts=neighbors(cx,cy).filter(([nx,ny])=>!visited[idx(nx,ny)]);
+          if(!opts.length) break;
+          let pick;
+          if(rng()<0.82){
+            let bb=Infinity,bl=[];
+            for(const [nx,ny] of opts){let deg=0;for(const [ax,ay] of neighbors(nx,ny)) if(!visited[idx(ax,ay)]) deg++;
+              if(deg<bb){bb=deg;bl=[[nx,ny]];}else if(deg===bb){bl.push([nx,ny]);}}
+            pick=bl[(rng()*bl.length)|0];
+          } else pick=opts[(rng()*opts.length)|0];
+          visited[idx(pick[0],pick[1])]=true; path.push(pick); cx=pick[0]; cy=pick[1];
+        }
+        return path;
       }
-      return path;
+      let best=[]; const starts=[];
+      for(let i=0;i<N;i++) if(!blocked[i]) starts.push(i);
+      const attempts=Math.min(70,Math.max(24,starts.length*2));
+      for(let a=0;a<attempts;a++){const s=starts[(rng()*starts.length)|0];const w=walkFrom(s%size,(s/size)|0);if(w&&w.length>best.length)best=w;}
+      return {best, freeCount:starts.length, blocked};
     }
-    let best=[]; const starts=[];
-    for(let i=0;i<N;i++) if(!blocked[i]) starts.push(i);
-    const attempts=Math.min(90,Math.max(30,starts.length*2));
-    for(let a=0;a<attempts;a++){const s=starts[(rng()*starts.length)|0];const w=walkFrom(s%size,(s/size)|0);if(w&&w.length>best.length)best=w;}
+    // retry different obstacle layouts until the path covers enough of the
+    // free space (keeps every stage long enough to require real planning)
+    let chosen=null;
+    for(let salt=0; salt<60; salt++){
+      const rng=mulberry32((seed ^ ((salt*0x9E3779B1)>>>0))>>>0);
+      const r=buildOnce(rng);
+      if(!chosen || r.best.length>chosen.best.length) chosen=r;
+      const target=Math.ceil(r.freeCount*minCov);
+      if(r.best.length>=target && r.best.length>=2){ chosen=r; break; }
+    }
+    const best=chosen.best;
     const grid=new Array(N).fill("crate");
     for(const [x,y] of best) grid[idx(x,y)]="floor";
     return {size,grid,start:{x:best[0][0],y:best[0][1]},goal:{x:best[best.length-1][0],y:best[best.length-1][1]},
@@ -767,9 +782,20 @@
     if(cur.stage>=tp.unlocked&&cur.stage<STAGES_PER_TIER) tp.unlocked=cur.stage+1;
     saveProgress(); buildStageGrid();
     const isLast=cur.stage>=STAGES_PER_TIER;
-    $("#winTitle").textContent=t("winTitle");
-    $("#winStars").textContent="★ ".repeat(stars).trim();
-    $("#winMsg").textContent=isLast?t("winLast"):t("winMsg");
+    const bigEl=$("#winOverlay .big");
+    // special message: Vietnamese language + Beginner stage 30 cleared
+    const special = lang==="vi" && cur.tier==="beginner" && cur.stage===STAGES_PER_TIER;
+    if(special){
+      bigEl.textContent="💛";
+      $("#winTitle").innerHTML='Tuni ơi, anh yêu em thật lòng <span style="color:#ffd400">♥</span>';
+      $("#winStars").textContent="";
+      $("#winMsg").textContent="";
+    }else{
+      bigEl.textContent="✨🧹✨";
+      $("#winTitle").textContent=t("winTitle");
+      $("#winStars").textContent="★ ".repeat(stars).trim();
+      $("#winMsg").textContent=isLast?t("winLast"):t("winMsg");
+    }
     $("#winRetry").textContent=t("retry");
     $("#winNext").textContent=isLast?t("toStart"):t("next");
     setTimeout(()=>{$("#winOverlay").classList.add("show");animating=false;},380);
@@ -827,14 +853,19 @@
     }
   });
   document.querySelectorAll(".dbtn").forEach(b=>b.addEventListener("click",()=>tryMove(b.dataset.dir)));
+  // swipe anywhere on the game screen (empty space too) to move.
+  // touches that start on the D-pad are left to the buttons.
   let touchStart=null;
-  board.addEventListener("touchstart",(e)=>{const tt=e.changedTouches[0];touchStart={x:tt.clientX,y:tt.clientY};},{passive:true});
-  board.addEventListener("touchend",(e)=>{
+  gameScreen.addEventListener("touchstart",(e)=>{
+    if(e.target.closest(".dpad")){ touchStart=null; return; }
+    const tt=e.changedTouches[0]; touchStart={x:tt.clientX,y:tt.clientY};
+  },{passive:true});
+  gameScreen.addEventListener("touchend",(e)=>{
     if(!touchStart)return; const tt=e.changedTouches[0];
     const dx=tt.clientX-touchStart.x, dy=tt.clientY-touchStart.y, ax=Math.abs(dx), ay=Math.abs(dy);
-    if(Math.max(ax,ay)<24){touchStart=null;return;}
-    if(ax>ay)tryMove(dx>0?"right":"left"); else tryMove(dy>0?"down":"up");
     touchStart=null;
+    if(Math.max(ax,ay)<20)return;               // ignore taps
+    if(ax>ay)tryMove(dx>0?"right":"left"); else tryMove(dy>0?"down":"up");
   },{passive:true});
 
   /* ---------------- buttons ---------------- */
