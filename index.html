@@ -3,29 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>창고 청소부 · Warehouse Cleaner</title>
+<title>미화부장 김용준 · Chief Janitor Kim</title>
 <style>
   :root{
-    --bg0:#161311;
-    --bg1:#211c18;
-    --wall:#2b2320;
-    --line:#3a2f28;
-    --dirt:#6b5540;
-    --dirt2:#5a4634;
-    --clean:#cfe6ee;
-    --clean2:#a9d3e0;
-    --wet:#7fc4dd;
-    --crate:#a9773e;
-    --crate-d:#7d5325;
-    --crate-l:#c99552;
-    --gold:#ffcf4d;
-    --accent:#33c6a6;
-    --accent-d:#1c8f78;
-    --start:#f2a93b;
-    --goal:#39c66a;
-    --ink:#f4ece2;
-    --ink-dim:#b3a496;
-    --panel:#241e1a;
+    --bg0:#161311; --bg1:#211c18; --wall:#2b2320; --line:#3a2f28;
+    --dirt:#6b5540; --dirt2:#5a4634;
+    --crate:#a9773e; --crate-d:#7d5325; --crate-l:#c99552;
+    --gold:#ffcf4d; --accent:#33c6a6; --accent-d:#1c8f78;
+    --start:#f2a93b; --goal:#39c66a; --hint:#ffe14d;
+    --ink:#f4ece2; --ink-dim:#b3a496; --panel:#241e1a;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;overflow:hidden;background:var(--bg0);
@@ -33,7 +19,6 @@
     color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:manipulation;}
   #app{position:fixed;inset:0;display:flex;flex-direction:column;}
 
-  /* ---------- background ---------- */
   .bgtex{position:fixed;inset:0;z-index:-1;
     background:
       radial-gradient(1200px 600px at 50% -10%, #2c2420, transparent 70%),
@@ -41,26 +26,43 @@
       repeating-linear-gradient(90deg, transparent 0 38px, rgba(0,0,0,.18) 38px 40px),
       linear-gradient(180deg,var(--bg1),var(--bg0));}
 
-  /* ---------- screens ---------- */
   .screen{position:absolute;inset:0;display:none;flex-direction:column;}
   .screen.show{display:flex;}
 
-  /* ---------- title / stage select ---------- */
+  /* ---------- language bar ---------- */
+  .langbar{position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;display:flex;gap:7px;z-index:6;}
+  .flagbtn{width:38px;height:27px;border-radius:6px;border:2px solid transparent;overflow:hidden;
+    cursor:pointer;padding:0;background:none;opacity:.5;transition:opacity .15s, transform .1s, border-color .15s;
+    box-shadow:0 2px 6px rgba(0,0,0,.4);line-height:0;}
+  .flagbtn svg{width:100%;height:100%;display:block;}
+  .flagbtn.active{opacity:1;border-color:var(--accent);}
+  .flagbtn:active{transform:scale(.9);}
+
+  /* ---------- stage select ---------- */
   #select{overflow-y:auto;padding:20px 16px 40px;-webkit-overflow-scrolling:touch;}
-  .title-wrap{text-align:center;padding:14px 0 8px;}
-  .kicker{font-size:12px;letter-spacing:.32em;color:var(--accent);font-weight:800;text-transform:uppercase;}
-  .title{font-size:clamp(28px,7vw,46px);font-weight:900;letter-spacing:-.01em;margin:4px 0 2px;
+  .title-wrap{text-align:center;padding:30px 0 4px;}
+  .kicker{font-size:12px;letter-spacing:.3em;color:var(--accent);font-weight:800;text-transform:uppercase;}
+  .title{font-size:clamp(26px,7vw,44px);font-weight:900;letter-spacing:-.01em;margin:4px 0 2px;
     text-shadow:0 2px 0 #000, 0 0 26px rgba(51,198,166,.25);}
   .title .mop{filter:drop-shadow(0 3px 3px rgba(0,0,0,.5));}
-  .subtitle{color:var(--ink-dim);font-size:14px;margin-top:2px;}
-  .howto{max-width:520px;margin:16px auto 6px;background:var(--panel);border:1px solid var(--line);
-    border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:var(--ink-dim);}
-  .howto b{color:var(--ink);}
-  .howto .row{display:flex;gap:9px;align-items:flex-start;}
-  .howto .ic{font-size:16px;line-height:1.5;}
+  .subtitle{color:var(--ink-dim);font-size:14px;margin-top:2px;padding:0 10px;}
+  .howto-btn{display:inline-flex;align-items:center;gap:7px;margin:16px auto 4px;
+    background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    padding:10px 20px;border-radius:24px;font-size:14px;font-weight:800;cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .1s,border-color .2s;}
+  .howto-btn:hover{border-color:var(--accent);}
+  .howto-btn:active{transform:scale(.96);}
 
-  .stages{max-width:560px;margin:18px auto 0;display:grid;
-    grid-template-columns:repeat(5,1fr);gap:10px;}
+  /* tier tabs */
+  .tiers{max-width:520px;margin:20px auto 0;display:flex;gap:8px;
+    background:#1c1713;border:1px solid var(--line);border-radius:16px;padding:6px;}
+  .tier-tab{flex:1;padding:11px 4px;border:none;border-radius:11px;background:none;color:var(--ink-dim);
+    font-size:15px;font-weight:800;cursor:pointer;transition:background .18s,color .18s;display:flex;
+    flex-direction:column;align-items:center;gap:2px;line-height:1.2;}
+  .tier-tab .tsub{font-size:9.5px;letter-spacing:.12em;opacity:.75;font-weight:700;}
+  .tier-tab.active{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#04211b;}
+
+  .stages{max-width:560px;margin:16px auto 0;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
   @media(max-width:400px){.stages{grid-template-columns:repeat(4,1fr);}}
   .stage-btn{position:relative;aspect-ratio:1;border:1px solid var(--line);border-radius:14px;
     background:linear-gradient(180deg,#2c2420,#211b17);color:var(--ink);
@@ -68,7 +70,7 @@
     font-weight:800;cursor:pointer;transition:transform .1s, box-shadow .2s, border-color .2s;
     box-shadow:0 4px 10px rgba(0,0,0,.3);}
   .stage-btn .num{font-size:20px;}
-  .stage-btn .lab{font-size:9px;letter-spacing:.18em;color:var(--ink-dim);text-transform:uppercase;}
+  .stage-btn .lab{font-size:8.5px;letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;}
   .stage-btn:not(.locked):active{transform:scale(.94);}
   .stage-btn:not(.locked):hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 6px 16px rgba(0,0,0,.4);}
   .stage-btn.locked{opacity:.5;cursor:not-allowed;color:var(--ink-dim);}
@@ -76,31 +78,35 @@
   .stage-btn.cleared .num{color:#8ee9a9;}
   .stage-btn .stars{position:absolute;top:6px;right:8px;font-size:10px;color:var(--gold);}
   .stage-btn .lockic{font-size:18px;}
-  .reset-prog{display:block;margin:22px auto 0;background:none;border:1px solid var(--line);
+  .reset-prog{display:block;margin:24px auto 0;background:none;border:1px solid var(--line);
     color:var(--ink-dim);font-size:12px;padding:8px 16px;border-radius:20px;cursor:pointer;}
   .reset-prog:active{transform:scale(.96);}
 
   /* ---------- game screen ---------- */
-  #game{padding:0;}
-  .hud{display:flex;align-items:center;gap:8px;padding:12px 14px calc(8px + env(safe-area-inset-top));
-    padding-top:calc(12px + env(safe-area-inset-top));}
+  .hud{display:flex;align-items:center;gap:7px;padding:calc(12px + env(safe-area-inset-top)) 12px 6px;}
   .hud .iconbtn{width:40px;height:40px;flex:0 0 auto;border-radius:12px;border:1px solid var(--line);
     background:var(--panel);color:var(--ink);font-size:18px;display:flex;align-items:center;justify-content:center;
-    cursor:pointer;transition:transform .1s,border-color .2s;}
+    cursor:pointer;transition:transform .1s,border-color .2s;position:relative;}
   .hud .iconbtn:active{transform:scale(.9);}
   .hud .iconbtn:disabled{opacity:.35;cursor:default;}
-  .hud .center{flex:1;text-align:center;}
-  .hud .stg{font-size:11px;letter-spacing:.24em;color:var(--accent);font-weight:800;}
+  .hud .iconbtn svg{width:20px;height:20px;}
+  .hud .center{flex:1;text-align:center;min-width:0;}
+  .hud .stg{font-size:11px;letter-spacing:.16em;color:var(--accent);font-weight:800;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;}
   .hud .prog{font-size:15px;font-weight:800;margin-top:1px;}
   .hud .prog .done{color:var(--goal);}
+  .hintbtn{background:linear-gradient(180deg,#4a3f1e,#2e2711)!important;border-color:#6b5a22!important;}
+  .hintbtn .cnt{position:absolute;top:-5px;right:-5px;background:var(--gold);color:#3a2a00;font-size:10px;
+    font-weight:900;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    padding:0 3px;box-shadow:0 1px 3px rgba(0,0,0,.5);}
+  .hintbtn:disabled{filter:grayscale(.7);}
 
   .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 14px;min-height:0;}
-  .board{position:relative;width:min(94vw, 62vh);max-width:520px;aspect-ratio:1;
+  .board{position:relative;width:min(94vw, 60vh);max-width:520px;aspect-ratio:1;
     background:var(--wall);border:3px solid #17110d;border-radius:12px;
     box-shadow:0 18px 40px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.03);
     display:grid;gap:0;overflow:hidden;padding:4px;}
   .cell{position:relative;border:1px solid rgba(0,0,0,.28);overflow:hidden;}
-  /* dirty floor */
   .cell.floor{
     background:
       radial-gradient(6px 5px at 30% 40%, rgba(30,20,10,.55), transparent 60%),
@@ -120,24 +126,22 @@
   .cell.clean::after{content:"";position:absolute;inset:0;
     background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.55) 50%,transparent 62%);
     opacity:0;animation:sweep .55s ease-out;}
+  .cell.clean::before{content:"";position:absolute;left:12%;right:12%;bottom:14%;height:26%;
+    border-radius:50%;background:radial-gradient(closest-side, rgba(255,255,255,.55), transparent 75%);
+    opacity:0;animation:streak .5s ease-out;}
+  @keyframes streak{0%{opacity:.8;transform:scaleX(.4);}100%{opacity:0;transform:scaleX(1.1);}}
   @keyframes sweep{0%{transform:translateX(-120%);opacity:.9;}100%{transform:translateX(120%);opacity:0;}}
   @keyframes shine{0%{filter:brightness(1.6);}100%{filter:brightness(1);}}
-  /* crate obstacle */
   .cell.crate{background:linear-gradient(180deg,var(--crate-l),var(--crate));}
   .cell.crate::before{content:"";position:absolute;inset:9%;border-radius:4px;
-    background:
-      linear-gradient(180deg,var(--crate-l),var(--crate) 60%,var(--crate-d));
-    border:2px solid var(--crate-d);
-    box-shadow:inset 0 0 0 2px rgba(255,255,255,.12), 0 3px 6px rgba(0,0,0,.4);}
+    background:linear-gradient(180deg,var(--crate-l),var(--crate) 60%,var(--crate-d));
+    border:2px solid var(--crate-d);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12), 0 3px 6px rgba(0,0,0,.4);}
   .cell.crate::after{content:"";position:absolute;inset:9%;border-radius:4px;
-    background:
-      linear-gradient(45deg,transparent 46%,var(--crate-d) 46% 54%,transparent 54%),
-      linear-gradient(-45deg,transparent 46%,var(--crate-d) 46% 54%,transparent 54%);
-    opacity:.55;}
-  /* start & goal markers */
+    background:linear-gradient(45deg,transparent 46%,var(--crate-d) 46% 54%,transparent 54%),
+      linear-gradient(-45deg,transparent 46%,var(--crate-d) 46% 54%,transparent 54%);opacity:.55;}
   .cell .mark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     flex-direction:column;font-weight:900;pointer-events:none;z-index:2;}
-  .cell .mark .tag{font-size:min(2.4vw,13px);letter-spacing:.1em;padding:1px 5px;border-radius:6px;line-height:1.3;}
+  .cell .mark .tag{font-size:min(2.4vw,13px);letter-spacing:.06em;padding:1px 5px;border-radius:6px;line-height:1.3;}
   .cell.start .tag{color:#3a2410;background:var(--start);box-shadow:0 1px 4px rgba(0,0,0,.4);}
   .cell.goal .mark{justify-content:flex-end;}
   .cell.goal .door{position:absolute;top:2%;left:7%;width:86%;height:84%;display:block;z-index:2;}
@@ -146,12 +150,12 @@
     color:#0d3b1e;background:var(--goal);box-shadow:0 1px 4px rgba(0,0,0,.4);}
   .cell.goal.ready{animation:goalpulse 1s ease-in-out infinite;}
   @keyframes goalpulse{0%,100%{box-shadow:inset 0 0 0 3px rgba(57,198,106,.4);}50%{box-shadow:inset 0 0 14px 4px rgba(57,198,106,.85);}}
+  .cell.hint{animation:hintpulse .9s ease-in-out infinite;}
+  @keyframes hintpulse{0%,100%{box-shadow:inset 0 0 0 3px rgba(255,225,77,.5);}50%{box-shadow:inset 0 0 16px 5px rgba(255,225,77,.95);}}
   .cell.bump{animation:bump .28s;}
   @keyframes bump{0%,100%{filter:none;}50%{filter:brightness(1.4) saturate(1.4);}}
 
-  /* player */
-  .player{position:absolute;z-index:5;pointer-events:none;
-    transition:left .13s ease, top .13s ease;
+  .player{position:absolute;z-index:5;pointer-events:none;transition:left .13s ease, top .13s ease;
     transform:translate(-50%,-62%);}
   .player svg{display:block;width:100%;height:100%;filter:drop-shadow(0 4px 3px rgba(0,0,0,.45));}
   .player.hop{animation:hop .13s ease;}
@@ -159,56 +163,52 @@
   .player.flip{transform:translate(-50%,-62%) scaleX(-1);}
   .player.flip.hop{animation:hopf .13s ease;}
   @keyframes hopf{0%,100%{transform:translate(-50%,-62%) scaleX(-1) scaleY(1);}45%{transform:translate(-50%,-70%) scaleX(-1) scaleY(1.05);}}
-  /* mop pushing motion on each step */
   .player svg .mopgroup{transform-box:fill-box;transform-origin:60% 6%;}
   .player.mopping svg .mopgroup{animation:mopwipe .24s ease;}
-  @keyframes mopwipe{0%{transform:rotate(0) translateY(0);}
-    32%{transform:rotate(-16deg) translateY(1px);}
+  @keyframes mopwipe{0%{transform:rotate(0) translateY(0);}32%{transform:rotate(-16deg) translateY(1px);}
     64%{transform:rotate(7deg);}100%{transform:rotate(0);}}
-  /* wet mop streak left on a freshly cleaned tile */
-  .cell.clean::before{content:"";position:absolute;left:12%;right:12%;bottom:14%;height:26%;
-    border-radius:50%;background:radial-gradient(closest-side, rgba(255,255,255,.55), transparent 75%);
-    opacity:0;animation:streak .5s ease-out;}
-  @keyframes streak{0%{opacity:.8;transform:scaleX(.4);}100%{opacity:0;transform:scaleX(1.1);}}
 
-  /* ---------- controls: jog d-pad ---------- */
-  .pad-wrap{display:flex;justify-content:center;padding:6px 0 calc(18px + env(safe-area-inset-bottom));}
-  .dpad{position:relative;width:170px;height:170px;}
-  .dbtn{position:absolute;width:58px;height:58px;border:none;cursor:pointer;
+  /* d-pad */
+  .pad-wrap{display:flex;justify-content:center;padding:6px 0 calc(16px + env(safe-area-inset-bottom));}
+  .dpad{position:relative;width:168px;height:168px;}
+  .dbtn{position:absolute;width:57px;height:57px;border:none;cursor:pointer;
     background:linear-gradient(180deg,#3a302a,#241d18);color:var(--ink);font-size:24px;
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 4px 0 #140f0b, 0 6px 12px rgba(0,0,0,.4);transition:transform .06s, box-shadow .06s;}
   .dbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #140f0b,0 2px 6px rgba(0,0,0,.4);}
-  .dbtn.up{top:0;left:56px;border-radius:14px 14px 4px 4px;}
-  .dbtn.down{bottom:0;left:56px;border-radius:4px 4px 14px 14px;}
-  .dbtn.left{left:0;top:56px;border-radius:14px 4px 4px 14px;}
-  .dbtn.right{right:0;top:56px;border-radius:4px 14px 14px 4px;}
-  .dpad .hub{position:absolute;left:56px;top:56px;width:58px;height:58px;border-radius:50%;
+  .dbtn.up{top:0;left:55px;border-radius:14px 14px 4px 4px;}
+  .dbtn.down{bottom:0;left:55px;border-radius:4px 4px 14px 14px;}
+  .dbtn.left{left:0;top:55px;border-radius:14px 4px 4px 14px;}
+  .dbtn.right{right:0;top:55px;border-radius:4px 14px 14px 4px;}
+  .dpad .hub{position:absolute;left:55px;top:55px;width:57px;height:57px;border-radius:50%;
     background:radial-gradient(circle at 40% 35%,#4a3f38,#211a15);box-shadow:inset 0 2px 4px rgba(255,255,255,.12),0 3px 6px rgba(0,0,0,.4);
     display:flex;align-items:center;justify-content:center;font-size:20px;}
 
-  /* ---------- overlay popups ---------- */
+  /* overlays */
   .overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:20px;}
   .overlay.show{display:flex;}
   .veil{position:absolute;inset:0;background:rgba(6,4,3,.72);backdrop-filter:blur(3px);}
-  .card{position:relative;width:min(400px,92vw);background:var(--panel);border:1px solid var(--line);
-    border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.6);}
-  .card h2{margin:6px 0 4px;font-size:26px;}
+  .card{position:relative;width:min(420px,92vw);max-height:90vh;overflow-y:auto;background:var(--panel);
+    border:1px solid var(--line);border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.6);}
+  .card h2{margin:6px 0 4px;font-size:25px;}
   .card p{color:var(--ink-dim);font-size:14px;margin:0 0 6px;}
   .card .big{font-size:52px;line-height:1;margin-bottom:6px;}
-  .card .stars-big{font-size:30px;letter-spacing:6px;color:var(--gold);margin:8px 0 4px;
-    filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
+  .card .stars-big{font-size:30px;letter-spacing:6px;color:var(--gold);margin:8px 0 4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
   .btns{display:flex;gap:10px;margin-top:18px;}
-  .btn{flex:1;padding:13px 10px;border-radius:13px;border:none;font-weight:800;font-size:15px;cursor:pointer;
-    transition:transform .1s, filter .15s;}
+  .btn{flex:1;padding:13px 10px;border-radius:13px;border:none;font-weight:800;font-size:15px;cursor:pointer;transition:transform .1s;}
   .btn:active{transform:scale(.96);}
   .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#04211b;}
   .btn.ghost{background:#2f2721;color:var(--ink);border:1px solid var(--line);}
+  /* how-to modal list */
+  .howlist{text-align:left;margin:14px 0 4px;font-size:14px;line-height:1.65;color:var(--ink-dim);}
+  .howlist .row{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px;}
+  .howlist .ic{font-size:19px;line-height:1.4;flex:0 0 auto;}
+  .howlist b{color:var(--ink);}
 
-  .toast{position:fixed;left:50%;bottom:calc(210px + env(safe-area-inset-bottom));transform:translateX(-50%);
+  .toast{position:fixed;left:50%;bottom:calc(206px + env(safe-area-inset-bottom));transform:translateX(-50%);
     background:rgba(20,15,11,.94);border:1px solid var(--line);color:var(--ink);
-    padding:9px 16px;border-radius:20px;font-size:13.5px;font-weight:700;z-index:25;
-    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;white-space:nowrap;}
+    padding:9px 16px;border-radius:20px;font-size:13.5px;font-weight:700;z-index:25;max-width:90vw;text-align:center;
+    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
 </style>
 </head>
@@ -218,36 +218,31 @@
 
   <!-- ===== STAGE SELECT ===== -->
   <section id="select" class="screen show">
+    <div class="langbar" id="langbar"></div>
     <div class="title-wrap">
-      <div class="kicker">Warehouse Cleaner</div>
-      <h1 class="title"><span class="mop">🧹</span> 창고 청소부</h1>
-      <div class="subtitle">지저분한 창고 바닥을 남김없이 닦아라!</div>
+      <div class="kicker" id="uiKicker"></div>
+      <h1 class="title"><span class="mop">🧹</span> <span id="uiTitle"></span></h1>
+      <div class="subtitle" id="uiSubtitle"></div>
+      <button class="howto-btn" id="howtoBtn"><span>❓</span><span id="uiHowto"></span></button>
     </div>
-    <div class="howto">
-      <div class="row"><span class="ic">🎯</span><div><b>목표</b> — 장애물(상자 📦)을 피해 <b>모든 바닥 칸</b>을 닦고 <b>도착</b> 칸에서 마무리!</div></div>
-      <div class="row"><span class="ic">🚫</span><div><b>규칙</b> — 이미 닦은 칸은 다시 밟을 수 없어요. 한 번에 이어서 청소!</div></div>
-      <div class="row"><span class="ic">🕹️</span><div><b>조작</b> — 방향키 / 화면 D-패드 / 화면 쓸어넘기기</div></div>
-    </div>
+    <div class="tiers" id="tierTabs"></div>
     <div class="stages" id="stageGrid"></div>
-    <button class="reset-prog" id="resetProg">진행 기록 초기화</button>
+    <button class="reset-prog" id="resetProg"></button>
   </section>
 
   <!-- ===== GAME ===== -->
   <section id="game" class="screen">
     <div class="hud">
-      <button class="iconbtn" id="backBtn" title="스테이지 선택">←</button>
+      <button class="iconbtn" id="backBtn">←</button>
       <div class="center">
-        <div class="stg" id="hudStage">STAGE 01</div>
-        <div class="prog" id="hudProg"><span class="done">0</span> / 0 칸</div>
+        <div class="stg" id="hudStage"></div>
+        <div class="prog" id="hudProg"></div>
       </div>
-      <button class="iconbtn" id="undoBtn" title="한 칸 되돌리기"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 V11 a5 5 0 0 1 10 0 V20"/><path d="M13 16 l4 4 4 -4"/></svg></button>
-      <button class="iconbtn" id="restartBtn" title="다시 시작">⟳</button>
+      <button class="iconbtn hintbtn" id="hintBtn">💡<span class="cnt" id="hintCount">0</span></button>
+      <button class="iconbtn" id="undoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 V11 a5 5 0 0 1 10 0 V20"/><path d="M13 16 l4 4 4 -4"/></svg></button>
+      <button class="iconbtn" id="restartBtn">⟳</button>
     </div>
-
-    <div class="board-wrap">
-      <div class="board" id="board"></div>
-    </div>
-
+    <div class="board-wrap"><div class="board" id="board"></div></div>
     <div class="pad-wrap">
       <div class="dpad">
         <button class="dbtn up"    data-dir="up">▲</button>
@@ -261,16 +256,25 @@
 </div>
 
 <!-- ===== popups ===== -->
+<div class="overlay" id="howtoOverlay">
+  <div class="veil"></div>
+  <div class="card">
+    <h2 id="howtoTitle"></h2>
+    <div class="howlist" id="howtoList"></div>
+    <div class="btns"><button class="btn primary" id="howtoClose"></button></div>
+  </div>
+</div>
+
 <div class="overlay" id="winOverlay">
   <div class="veil"></div>
   <div class="card">
     <div class="big">✨🧹✨</div>
-    <h2>청소 완료!</h2>
+    <h2 id="winTitle"></h2>
     <div class="stars-big" id="winStars">★ ★ ★</div>
-    <p id="winMsg">반짝반짝 깨끗해졌어요!</p>
+    <p id="winMsg"></p>
     <div class="btns">
-      <button class="btn ghost" id="winRetry">다시</button>
-      <button class="btn primary" id="winNext">다음 스테이지 →</button>
+      <button class="btn ghost" id="winRetry"></button>
+      <button class="btn primary" id="winNext"></button>
     </div>
   </div>
 </div>
@@ -279,11 +283,11 @@
   <div class="veil"></div>
   <div class="card">
     <div class="big">😵</div>
-    <h2>막혔어요!</h2>
-    <p>더 이상 갈 수 있는 칸이 없어요.<br>경로를 바꿔서 다시 도전해 보세요.</p>
+    <h2 id="stuckTitle"></h2>
+    <p id="stuckBody"></p>
     <div class="btns">
-      <button class="btn ghost" id="stuckSelect">스테이지 선택</button>
-      <button class="btn primary" id="stuckRetry">다시 시작</button>
+      <button class="btn ghost" id="stuckSelect"></button>
+      <button class="btn primary" id="stuckRetry"></button>
     </div>
   </div>
 </div>
@@ -293,158 +297,228 @@
 <script>
 "use strict";
 (function(){
-  const TOTAL_STAGES = 30;
-  const PROG_KEY = "warehouseCleaner.progress.v1";
+  const TIERS = ["beginner","intermediate","advanced"];
+  const STAGES_PER_TIER = 30;
+  const PROG_KEY = "chiefJanitorKim.progress.v1";
 
-  /* ---------------- seeded RNG ---------------- */
-  function mulberry32(a){
-    return function(){
-      a |= 0; a = a + 0x6D2B79F5 | 0;
-      let t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-
-  /* ---------------- stage config ---------------- */
-  function stageConfig(n){
-    let size;
-    if(n<=6) size=4;
-    else if(n<=12) size=5;
-    else if(n<=18) size=6;
-    else if(n<=24) size=7;
-    else size=8;
-    // obstacle ratio: rises with difficulty for variety
-    const posInBand = ((n-1)%6)/5;           // 0..1 within each size band
-    const obstacleRatio = 0.10 + 0.16*posInBand; // 10% -> 26%
-    return { size, obstacleRatio, seed: (n*2654435761) >>> 0 };
-  }
-
-  /* ---------------- stage generator ----------------
-     Guarantees solvability: we build a self-avoiding walk (Warnsdorff
-     heuristic) over the non-obstacle cells; those walk cells become the
-     floor, start = first, goal = last. Any cell not on the walk is a crate.
-     The walk itself is a valid full solution, so a path always exists.   */
-  function generateStage(n){
-    const { size, obstacleRatio, seed } = stageConfig(n);
-    const rng = mulberry32(seed);
-    const N = size*size;
-    const idx = (x,y)=> y*size + x;
-    const inb = (x,y)=> x>=0 && y>=0 && x<size && y<size;
-
-    // pre-place obstacles
-    const blocked = new Array(N).fill(false);
-    let want = Math.round(N*obstacleRatio);
-    let guard = 0;
-    while(want>0 && guard++<500){
-      const p = (rng()*N)|0;
-      if(!blocked[p]){ blocked[p]=true; want--; }
+  /* ---------------- i18n ---------------- */
+  const I18N = {
+    ko:{
+      kicker:"창고 미화 작전", title:"미화부장 김용준",
+      subtitle:"지저분한 창고 바닥을 남김없이 닦아라!",
+      howto:"게임 방법", stageWord:"스테이지", tiles:"칸",
+      reset:"진행 기록 초기화",
+      tierBeginner:"초급", tierIntermediate:"중급", tierAdvanced:"고급",
+      tierSub:"1 – 30",
+      howtoTitle:"게임 방법",
+      how:[
+        ["🎯","<b>목표</b> — 장애물(상자 📦)을 피해 <b>모든 바닥 칸</b>을 닦고 <b>도착(문)</b> 칸에서 마무리하면 성공!"],
+        ["🚫","<b>규칙</b> — 이미 닦은 칸은 다시 밟을 수 없어요. 끊기지 않게 한 번에 이어서 청소하세요."],
+        ["🕹️","<b>조작</b> — 방향키 / 화면 D-패드 / 화면을 원하는 방향으로 쓸어넘기기"],
+        ["💡","<b>힌트</b> — 💡 버튼을 누르면 다음에 갈 칸을 알려줘요. 스테이지마다 횟수가 정해져 있어요."],
+        ["🏆","<b>난이도</b> — 초급·중급·고급 각 30스테이지. 뒤로 갈수록 판이 커지고 상자가 많아져요."]
+      ],
+      close:"닫기",
+      undoTitle:"한 칸 되돌리기", restartTitle:"다시 시작", backTitle:"스테이지 선택", hintTitle:"힌트",
+      winTitle:"청소 완료!", winMsg:"반짝반짝 깨끗해졌어요!", winLast:"모든 창고를 청소했어요! 최고예요! 🏆",
+      retry:"다시", next:"다음 스테이지 →", toStart:"처음으로",
+      stuckTitle:"막혔어요!", stuckBody:"더 이상 갈 수 있는 칸이 없어요.\n경로를 바꿔서 다시 도전해 보세요.",
+      selectBtn:"스테이지 선택", restartBtn:"다시 시작",
+      tCrate:"📦 상자는 못 지나가요", tCleaned:"이미 닦은 칸이에요", tGoal:"아직 청소가 안 끝났어요!",
+      tHint:"💡 표시된 칸으로 가보세요!", tHintNone:"이 경로로는 완료할 수 없어요 — 되돌려보세요!",
+      tHintEmpty:"힌트를 다 썼어요!",
+      confirmReset:"모든 진행 기록을 지울까요?"
+    },
+    en:{
+      kicker:"Warehouse Cleanup", title:"Chief Janitor Kim",
+      subtitle:"Mop every last dirty tile in the warehouse!",
+      howto:"How to Play", stageWord:"Stage", tiles:"tiles",
+      reset:"Reset progress",
+      tierBeginner:"Beginner", tierIntermediate:"Intermediate", tierAdvanced:"Advanced",
+      tierSub:"1 – 30",
+      howtoTitle:"How to Play",
+      how:[
+        ["🎯","<b>Goal</b> — Dodge the obstacles (crates 📦), mop <b>every floor tile</b>, and finish on the <b>EXIT door</b> to win!"],
+        ["🚫","<b>Rule</b> — You can't step on a tile you've already mopped. Clean it all in one continuous path."],
+        ["🕹️","<b>Controls</b> — Arrow keys / on-screen D-pad / swipe in any direction"],
+        ["💡","<b>Hint</b> — Tap the 💡 button to reveal the next tile to step on. Each stage has a limited number of hints."],
+        ["🏆","<b>Difficulty</b> — Beginner, Intermediate & Advanced, 30 stages each. Boards grow and crates multiply as you go."]
+      ],
+      close:"Close",
+      undoTitle:"Undo one step", restartTitle:"Restart", backTitle:"Stage select", hintTitle:"Hint",
+      winTitle:"All Clean!", winMsg:"Sparkling clean!", winLast:"You've cleaned every warehouse! Amazing! 🏆",
+      retry:"Retry", next:"Next stage →", toStart:"Back to start",
+      stuckTitle:"Stuck!", stuckBody:"There's nowhere left to move.\nTry taking a different route.",
+      selectBtn:"Stage select", restartBtn:"Restart",
+      tCrate:"📦 Can't pass through crates", tCleaned:"You already mopped this tile", tGoal:"You're not done cleaning yet!",
+      tHint:"💡 Head toward the highlighted tile!", tHintNone:"This route can't be finished — try undo!",
+      tHintEmpty:"No hints left!",
+      confirmReset:"Erase all progress?"
+    },
+    vi:{
+      kicker:"Dọn dẹp nhà kho", title:"Tổ trưởng vệ sinh Kim",
+      subtitle:"Lau sạch từng ô sàn bẩn trong nhà kho!",
+      howto:"Cách chơi", stageWord:"Màn", tiles:"ô",
+      reset:"Đặt lại tiến trình",
+      tierBeginner:"Sơ cấp", tierIntermediate:"Trung cấp", tierAdvanced:"Cao cấp",
+      tierSub:"1 – 30",
+      howtoTitle:"Cách chơi",
+      how:[
+        ["🎯","<b>Mục tiêu</b> — Tránh chướng ngại vật (thùng 📦), lau <b>tất cả các ô sàn</b> rồi kết thúc tại ô <b>CỬA RA</b> để thắng!"],
+        ["🚫","<b>Luật</b> — Không được bước lại ô đã lau. Hãy lau một mạch liền không ngắt quãng."],
+        ["🕹️","<b>Điều khiển</b> — Phím mũi tên / D-pad trên màn hình / Vuốt theo hướng bất kỳ"],
+        ["💡","<b>Gợi ý</b> — Nhấn nút 💡 để hiện ô nên đi tiếp. Mỗi màn có số lượt gợi ý giới hạn."],
+        ["🏆","<b>Độ khó</b> — Sơ cấp, Trung cấp & Cao cấp, mỗi mức 30 màn. Càng về sau bàn càng lớn và nhiều thùng hơn."]
+      ],
+      close:"Đóng",
+      undoTitle:"Hoàn tác một bước", restartTitle:"Chơi lại", backTitle:"Chọn màn", hintTitle:"Gợi ý",
+      winTitle:"Sạch bong!", winMsg:"Sàn nhà sáng bóng rồi!", winLast:"Bạn đã dọn sạch mọi nhà kho! Tuyệt vời! 🏆",
+      retry:"Chơi lại", next:"Màn tiếp theo →", toStart:"Về đầu",
+      stuckTitle:"Bí rồi!", stuckBody:"Không còn ô nào để đi.\nHãy thử đổi đường đi khác.",
+      selectBtn:"Chọn màn", restartBtn:"Chơi lại",
+      tCrate:"📦 Không thể đi qua thùng hàng", tCleaned:"Ô này đã được lau rồi", tGoal:"Chưa lau xong mà!",
+      tHint:"💡 Hãy đi tới ô được đánh dấu!", tHintNone:"Đường này không thể hoàn thành — hãy hoàn tác!",
+      tHintEmpty:"Hết lượt gợi ý rồi!",
+      confirmReset:"Xóa toàn bộ tiến trình?"
     }
+  };
+  let lang = "ko";
+  const t = k => (I18N[lang][k] !== undefined ? I18N[lang][k] : I18N.en[k]);
 
-    const neighbors = (x,y)=>{
-      const out=[];
-      if(inb(x,y-1)) out.push([x,y-1]);
-      if(inb(x+1,y)) out.push([x+1,y]);
-      if(inb(x,y+1)) out.push([x,y+1]);
-      if(inb(x-1,y)) out.push([x-1,y]);
-      return out;
-    };
+  /* ---------------- flags (inline SVG for cross-platform) ---------------- */
+  const FLAGS = {
+    ko:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><rect width="30" height="20" fill="none" stroke="#ddd" stroke-width="1"/>
+      <g transform="translate(15,10)"><circle r="5.2" fill="#c60c30"/>
+      <path d="M0 -5.2 A2.6 2.6 0 0 1 0 0 A2.6 2.6 0 0 0 0 5.2 A5.2 5.2 0 0 1 0 -5.2Z" fill="#003478"/></g>
+      <g stroke="#111" stroke-width="0.7"><line x1="4" y1="4" x2="7" y2="6.2"/><line x1="4" y1="16" x2="7" y2="13.8"/>
+      <line x1="26" y1="4" x2="23" y2="6.2"/><line x1="26" y1="16" x2="23" y2="13.8"/></g></svg>`,
+    en:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#b22234"/>
+      <g fill="#fff"><rect y="1.54" width="30" height="1.54"/><rect y="4.62" width="30" height="1.54"/><rect y="7.7" width="30" height="1.54"/>
+      <rect y="10.77" width="30" height="1.54"/><rect y="13.85" width="30" height="1.54"/><rect y="16.92" width="30" height="1.54"/></g>
+      <rect width="13" height="10.77" fill="#3c3b6e"/>
+      <g fill="#fff"><circle cx="2.6" cy="2" r="0.7"/><circle cx="6.5" cy="2" r="0.7"/><circle cx="10.4" cy="2" r="0.7"/>
+      <circle cx="4.5" cy="4.3" r="0.7"/><circle cx="8.4" cy="4.3" r="0.7"/><circle cx="2.6" cy="6.5" r="0.7"/>
+      <circle cx="6.5" cy="6.5" r="0.7"/><circle cx="10.4" cy="6.5" r="0.7"/><circle cx="4.5" cy="8.7" r="0.7"/><circle cx="8.4" cy="8.7" r="0.7"/></g></svg>`,
+    vi:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#da251d"/>
+      <polygon points="15,4.8 16.23,8.30 19.95,8.39 17.00,10.65 18.06,14.21 15,12.1 11.94,14.21 13.00,10.65 10.05,8.39 13.77,8.30" fill="#ff0"/></svg>`
+  };
 
+  /* ---------------- RNG ---------------- */
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  /* ---------------- stage config & generator ---------------- */
+  const BANDS = {
+    beginner:    {sizes:[4,5,6], obs:[0.06,0.16], hints:5},
+    intermediate:{sizes:[5,6,7], obs:[0.10,0.24], hints:3},
+    advanced:    {sizes:[6,7,8], obs:[0.14,0.30], hints:2}
+  };
+  function stageConfig(tier,n){
+    const b=BANDS[tier];
+    const size=b.sizes[Math.min(2,Math.floor((n-1)/10))];
+    const tt=(n-1)/(STAGES_PER_TIER-1);
+    const obstacleRatio=b.obs[0]+(b.obs[1]-b.obs[0])*tt;
+    const ti=TIERS.indexOf(tier);
+    return {size, obstacleRatio, hints:b.hints, seed:(((ti*97+n)>>>0)*2654435761)>>>0};
+  }
+  function generateStage(tier,n){
+    const {size,obstacleRatio,hints,seed}=stageConfig(tier,n);
+    const rng=mulberry32(seed);
+    const N=size*size, idx=(x,y)=>y*size+x, inb=(x,y)=>x>=0&&y>=0&&x<size&&y<size;
+    const blocked=new Array(N).fill(false);
+    let want=Math.round(N*obstacleRatio), guard=0;
+    while(want>0&&guard++<500){const p=(rng()*N)|0;if(!blocked[p]){blocked[p]=true;want--;}}
+    const neighbors=(x,y)=>{const o=[];if(inb(x,y-1))o.push([x,y-1]);if(inb(x+1,y))o.push([x+1,y]);if(inb(x,y+1))o.push([x,y+1]);if(inb(x-1,y))o.push([x-1,y]);return o;};
     function walkFrom(sx,sy){
-      const visited = new Array(N).fill(false);
-      // treat blocked as visited so walk avoids them
+      const visited=new Array(N).fill(false);
       for(let i=0;i<N;i++) if(blocked[i]) visited[i]=true;
       if(visited[idx(sx,sy)]) return null;
-      visited[idx(sx,sy)] = true;
-      const path = [[sx,sy]];
-      let cx=sx, cy=sy;
+      visited[idx(sx,sy)]=true; const path=[[sx,sy]]; let cx=sx,cy=sy;
       while(true){
-        const opts = neighbors(cx,cy).filter(([nx,ny])=>!visited[idx(nx,ny)]);
+        const opts=neighbors(cx,cy).filter(([nx,ny])=>!visited[idx(nx,ny)]);
         if(!opts.length) break;
-        // Warnsdorff: prefer neighbor with fewest onward options (mostly),
-        // occasional randomness for variety
         let pick;
-        if(rng() < 0.82){
-          let best=Infinity, bestList=[];
-          for(const [nx,ny] of opts){
-            let deg=0;
-            for(const [ax,ay] of neighbors(nx,ny)) if(!visited[idx(ax,ay)]) deg++;
-            if(deg<best){ best=deg; bestList=[[nx,ny]]; }
-            else if(deg===best){ bestList.push([nx,ny]); }
-          }
-          pick = bestList[(rng()*bestList.length)|0];
-        } else {
-          pick = opts[(rng()*opts.length)|0];
-        }
-        visited[idx(pick[0],pick[1])] = true;
-        path.push(pick);
-        cx=pick[0]; cy=pick[1];
+        if(rng()<0.82){
+          let best=Infinity,bl=[];
+          for(const [nx,ny] of opts){let deg=0;for(const [ax,ay] of neighbors(nx,ny)) if(!visited[idx(ax,ay)]) deg++;
+            if(deg<best){best=deg;bl=[[nx,ny]];}else if(deg===best){bl.push([nx,ny]);}}
+          pick=bl[(rng()*bl.length)|0];
+        } else pick=opts[(rng()*opts.length)|0];
+        visited[idx(pick[0],pick[1])]=true; path.push(pick); cx=pick[0]; cy=pick[1];
       }
       return path;
     }
-
-    // try many starts, keep the longest walk (max coverage)
-    let best = [];
-    const starts = [];
+    let best=[]; const starts=[];
     for(let i=0;i<N;i++) if(!blocked[i]) starts.push(i);
-    const attempts = Math.min(80, Math.max(24, starts.length*2));
-    for(let a=0;a<attempts;a++){
-      const s = starts[(rng()*starts.length)|0];
-      const w = walkFrom(s%size, (s/size)|0);
-      if(w && w.length>best.length) best=w;
-    }
-
-    // build the grid: walk cells = floor, rest = crate
-    const grid = new Array(N).fill("crate");
-    for(const [x,y] of best) grid[idx(x,y)] = "floor";
-    const start = best[0];
-    const goal  = best[best.length-1];
-
-    return {
-      size,
-      grid,                                   // "floor" | "crate"
-      start: {x:start[0], y:start[1]},
-      goal:  {x:goal[0],  y:goal[1]},
-      floorCount: best.length
-    };
+    const attempts=Math.min(90,Math.max(30,starts.length*2));
+    for(let a=0;a<attempts;a++){const s=starts[(rng()*starts.length)|0];const w=walkFrom(s%size,(s/size)|0);if(w&&w.length>best.length)best=w;}
+    const grid=new Array(N).fill("crate");
+    for(const [x,y] of best) grid[idx(x,y)]="floor";
+    return {size,grid,start:{x:best[0][0],y:best[0][1]},goal:{x:best[best.length-1][0],y:best[best.length-1][1]},
+      floorCount:best.length,hints};
   }
 
-  /* ---------------- janitor sprite ---------------- */
+  /* ---------------- solver (hint) ---------------- */
+  function solvePath(){
+    const {data,size}=cur, idx=(x,y)=>y*size+x;
+    const isFloor=i=>data.grid[i]!=="crate";
+    const total=data.floorCount, goal=data.goal;
+    const visited=new Array(size*size).fill(false);
+    cur.cleaned.forEach(k=>{const [x,y]=k.split(",").map(Number);visited[idx(x,y)]=true;});
+    let nodes=0; const CAP=400000;
+    const D=[[0,-1],[0,1],[-1,0],[1,0]];
+    function dfs(x,y,count){
+      if(nodes++>CAP) return null;
+      if(count===total) return (x===goal.x&&y===goal.y)?[]:null;
+      const opts=[];
+      for(const [dx,dy] of D){
+        const nx=x+dx,ny=y+dy;
+        if(nx<0||ny<0||nx>=size||ny>=size) continue;
+        const ni=idx(nx,ny);
+        if(!isFloor(ni)||visited[ni]) continue;
+        if(nx===goal.x&&ny===goal.y&&count!==total-1) continue;
+        let deg=0;
+        for(const [ex,ey] of D){const ax=nx+ex,ay=ny+ey;if(ax<0||ay<0||ax>=size||ay>=size)continue;const ai=idx(ax,ay);if(isFloor(ai)&&!visited[ai])deg++;}
+        opts.push([nx,ny,deg]);
+      }
+      opts.sort((a,b)=>a[2]-b[2]);
+      for(const [nx,ny] of opts){
+        const ni=idx(nx,ny); visited[ni]=true;
+        const r=dfs(nx,ny,count+1);
+        visited[ni]=false;
+        if(r){ r.unshift([nx,ny]); return r; }
+      }
+      return null;
+    }
+    return dfs(cur.pos.x,cur.pos.y,cur.cleaned.size);
+  }
+
+  /* ---------------- sprites ---------------- */
   const JANITOR_SVG = `
   <svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
-    <!-- mop -->
     <g class="mopgroup">
       <rect x="82" y="30" width="7" height="86" rx="3.5" fill="#b07a3a" transform="rotate(8 85 73)"/>
       <path d="M74 112 q18 -6 34 0 q3 24 -17 30 q-20 -6 -17 -30 z" fill="#dfe9ec"/>
       <path d="M74 112 q17 -5 34 0 l-3 10 q-14 -4 -28 0 z" fill="#b9ccd2"/>
       <g stroke="#c7d6da" stroke-width="2.4" stroke-linecap="round">
         <line x1="80" y1="120" x2="77" y2="147"/><line x1="86" y1="122" x2="84" y2="149"/>
-        <line x1="92" y1="122" x2="93" y2="149"/><line x1="98" y1="121" x2="101" y2="147"/>
-        <line x1="104" y1="119" x2="108" y2="144"/>
+        <line x1="92" y1="122" x2="93" y2="149"/><line x1="98" y1="121" x2="101" y2="147"/><line x1="104" y1="119" x2="108" y2="144"/>
       </g>
     </g>
-    <!-- legs -->
     <rect x="44" y="108" width="13" height="30" rx="5" fill="#274a6b"/>
     <rect x="63" y="108" width="13" height="30" rx="5" fill="#22405d"/>
     <rect x="42" y="134" width="18" height="9" rx="4" fill="#20140c"/>
     <rect x="61" y="134" width="18" height="9" rx="4" fill="#20140c"/>
-    <!-- body / overalls -->
     <path d="M40 70 q20 -10 40 0 l4 44 q-24 8 -48 0 z" fill="#2f6fa1"/>
     <path d="M40 70 q20 -10 40 0 l1.5 16 q-21 -8 -43 0 z" fill="#3a83bb"/>
     <rect x="52" y="80" width="16" height="18" rx="3" fill="#265a86"/>
-    <!-- arms -->
     <rect x="30" y="72" width="12" height="34" rx="6" fill="#3a83bb"/>
     <rect x="78" y="60" width="12" height="40" rx="6" fill="#3a83bb" transform="rotate(10 84 80)"/>
     <circle cx="35" cy="106" r="7" fill="#f0c9a0"/>
     <circle cx="90" cy="98" r="7" fill="#f0c9a0"/>
-    <!-- head -->
     <circle cx="60" cy="50" r="21" fill="#f4d1a8"/>
     <ellipse cx="60" cy="70" rx="10" ry="5" fill="#e9be93"/>
-    <!-- cap -->
     <path d="M37 47 q3 -26 23 -26 q20 0 23 26 q-23 -9 -46 0 z" fill="#e7563f"/>
     <path d="M35 47 q25 -9 50 0 l0 5 q-25 -8 -50 0 z" fill="#c8402d"/>
-    <rect x="54" y="26" width="12" height="6" rx="3" fill="#f0c9a0" opacity=".0"/>
-    <!-- face -->
     <circle cx="52" cy="50" r="2.6" fill="#3a2418"/>
     <circle cx="68" cy="50" r="2.6" fill="#3a2418"/>
     <path d="M54 59 q6 5 12 0" stroke="#a5603c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
@@ -452,7 +526,6 @@
     <circle cx="74" cy="56" r="3.2" fill="#f2a48c" opacity=".7"/>
   </svg>`;
 
-  /* ---------------- exit door sprite ---------------- */
   const DOOR_SVG = `
   <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
     <rect x="9" y="21" width="82" height="99" rx="5" fill="#3a2412"/>
@@ -461,358 +534,300 @@
     <g fill="#b07a3c" stroke="#6f471f" stroke-width="2">
       <rect x="22" y="34" width="56" height="25" rx="2"/>
       <rect x="22" y="63" width="56" height="25" rx="2"/>
-      <rect x="22" y="92" width="56" height="26" rx="2"/>
-    </g>
-    <circle cx="72" cy="78" r="3.8" fill="#ffd268"/>
-    <circle cx="72" cy="78" r="1.6" fill="#7a4d16"/>
+      <rect x="22" y="92" width="56" height="26" rx="2"/></g>
+    <circle cx="72" cy="78" r="3.8" fill="#ffd268"/><circle cx="72" cy="78" r="1.6" fill="#7a4d16"/>
     <rect x="24" y="4" width="52" height="16" rx="3" fill="#178a44" stroke="#0c5b2b" stroke-width="1.6"/>
-    <text x="50" y="16" font-size="10.5" fill="#eafff0" text-anchor="middle"
-      font-family="Arial,Helvetica,sans-serif" font-weight="bold" letter-spacing="1">EXIT</text>
+    <text x="50" y="16" font-size="10.5" fill="#eafff0" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" letter-spacing="1">EXIT</text>
   </svg>`;
 
-  /* ---------------- progress storage ---------------- */
+  /* ---------------- progress ---------------- */
+  function freshProgress(){
+    const p={lang:"ko"};
+    TIERS.forEach(tr=>p[tr]={unlocked:1,stars:{}});
+    return p;
+  }
   function loadProgress(){
-    try{
-      const raw = localStorage.getItem(PROG_KEY);
-      if(raw) return JSON.parse(raw);
-    }catch(e){}
-    return { unlocked:1, stars:{} };
+    try{const raw=localStorage.getItem(PROG_KEY);if(raw){const p=JSON.parse(raw);TIERS.forEach(tr=>{if(!p[tr])p[tr]={unlocked:1,stars:{}};});return p;}}catch(e){}
+    return freshProgress();
   }
-  function saveProgress(p){
-    try{ localStorage.setItem(PROG_KEY, JSON.stringify(p)); }catch(e){}
-  }
-  let progress = loadProgress();
+  function saveProgress(){try{localStorage.setItem(PROG_KEY,JSON.stringify(progress));}catch(e){}}
+  let progress=loadProgress();
+  lang = progress.lang && I18N[progress.lang] ? progress.lang : "ko";
 
-  /* ---------------- sound (tiny, muteable) ---------------- */
+  /* ---------------- sound ---------------- */
   let actx=null;
-  function beep(freq, dur, type, vol){
-    try{
-      if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
-      const o=actx.createOscillator(), g=actx.createGain();
-      o.type=type||"triangle"; o.frequency.value=freq;
-      g.gain.value=vol||0.05;
-      o.connect(g); g.connect(actx.destination);
-      const t=actx.currentTime; o.start(t);
-      g.gain.exponentialRampToValueAtTime(0.0001, t+ (dur||0.09));
-      o.stop(t+(dur||0.09));
-    }catch(e){}
+  function beep(freq,dur,type,vol){try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type||"triangle";o.frequency.value=freq;g.gain.value=vol||0.05;o.connect(g);g.connect(actx.destination);const tt=actx.currentTime;o.start(tt);g.gain.exponentialRampToValueAtTime(0.0001,tt+(dur||0.09));o.stop(tt+(dur||0.09));}catch(e){}}
+  const sfxClean=()=>beep(520+Math.random()*80,0.07,"sine",0.05);
+  const sfxBump =()=>beep(120,0.1,"square",0.05);
+  const sfxHint =()=>beep(880,0.12,"sine",0.05);
+  const sfxWin  =()=>[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,0.16,"triangle",0.06),i*110));
+
+  /* ---------------- DOM ---------------- */
+  const $=s=>document.querySelector(s);
+  const selectScreen=$("#select"), gameScreen=$("#game");
+  const stageGrid=$("#stageGrid"), board=$("#board");
+  const hudStage=$("#hudStage"), hudProg=$("#hudProg"), undoBtn=$("#undoBtn"), hintBtn=$("#hintBtn"), toastEl=$("#toast");
+
+  let curTier="beginner";
+  let cur=null, animating=false;
+  const key=(x,y)=>x+","+y;
+
+  function showScreen(w){selectScreen.classList.toggle("show",w==="select");gameScreen.classList.toggle("show",w==="game");}
+
+  /* ---------------- language UI ---------------- */
+  function buildLangBar(){
+    const bar=$("#langbar"); bar.innerHTML="";
+    [["ko"],["en"],["vi"]].forEach(([lc])=>{
+      const b=document.createElement("button");
+      b.className="flagbtn"+(lang===lc?" active":"");
+      b.innerHTML=FLAGS[lc];
+      b.title=lc.toUpperCase();
+      b.addEventListener("click",()=>setLang(lc));
+      bar.appendChild(b);
+    });
   }
-  function sfxClean(){ beep(520+Math.random()*80, 0.07, "sine", 0.05); }
-  function sfxBump(){ beep(120, 0.1, "square", 0.05); }
-  function sfxWin(){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,0.16,"triangle",0.06),i*110)); }
-
-  /* ---------------- DOM refs ---------------- */
-  const $ = s=>document.querySelector(s);
-  const selectScreen = $("#select");
-  const gameScreen = $("#game");
-  const stageGrid = $("#stageGrid");
-  const board = $("#board");
-  const hudStage = $("#hudStage");
-  const hudProg = $("#hudProg");
-  const undoBtn = $("#undoBtn");
-  const toastEl = $("#toast");
-
-  /* ---------------- game state ---------------- */
-  let cur = null;   // {stage, data, cleaned:Set, path:[], pos, playerEl, cellEls, size}
-  let animating = false;
-
-  function showScreen(which){
-    selectScreen.classList.toggle("show", which==="select");
-    gameScreen.classList.toggle("show", which==="game");
+  function setLang(lc){
+    lang=lc; progress.lang=lc; saveProgress();
+    document.documentElement.lang = lc;
+    buildLangBar(); renderStatic(); buildTierTabs(); buildStageGrid();
+    if(gameScreen.classList.contains("show")) updateHud();
+  }
+  function renderStatic(){
+    $("#uiKicker").textContent=t("kicker");
+    $("#uiTitle").textContent=t("title");
+    $("#uiSubtitle").textContent=t("subtitle");
+    $("#uiHowto").textContent=t("howto");
+    $("#resetProg").textContent=t("reset");
   }
 
-  /* ---------------- stage select build ---------------- */
+  /* ---------------- tier tabs ---------------- */
+  function buildTierTabs(){
+    const wrap=$("#tierTabs"); wrap.innerHTML="";
+    TIERS.forEach(tr=>{
+      const b=document.createElement("button");
+      b.className="tier-tab"+(curTier===tr?" active":"");
+      const label = tr==="beginner"?t("tierBeginner"):tr==="intermediate"?t("tierIntermediate"):t("tierAdvanced");
+      b.innerHTML=`<span>${label}</span><span class="tsub">${t("tierSub")}</span>`;
+      b.addEventListener("click",()=>{curTier=tr;buildTierTabs();buildStageGrid();});
+      wrap.appendChild(b);
+    });
+  }
+
+  /* ---------------- stage grid ---------------- */
   function buildStageGrid(){
     stageGrid.innerHTML="";
-    for(let n=1;n<=TOTAL_STAGES;n++){
-      const locked = n>progress.unlocked;
-      const stars = progress.stars[n]||0;
-      const btn = document.createElement("button");
-      btn.className = "stage-btn"+(locked?" locked":"")+(stars?" cleared":"");
-      btn.innerHTML = locked
-        ? `<span class="lockic">🔒</span><span class="lab">Stage ${String(n).padStart(2,"0")}</span>`
-        : `${stars?`<span class="stars">${"★".repeat(stars)}</span>`:""}
-           <span class="num">${String(n).padStart(2,"0")}</span>
-           <span class="lab">Stage</span>`;
-      if(!locked) btn.addEventListener("click", ()=>startStage(n));
+    const tp=progress[curTier];
+    for(let n=1;n<=STAGES_PER_TIER;n++){
+      const locked=n>tp.unlocked;
+      const stars=tp.stars[n]||0;
+      const btn=document.createElement("button");
+      btn.className="stage-btn"+(locked?" locked":"")+(stars?" cleared":"");
+      btn.innerHTML=locked
+        ? `<span class="lockic">🔒</span><span class="lab">${t("stageWord")} ${String(n).padStart(2,"0")}</span>`
+        : `${stars?`<span class="stars">${"★".repeat(stars)}</span>`:""}<span class="num">${String(n).padStart(2,"0")}</span><span class="lab">${t("stageWord")}</span>`;
+      if(!locked) btn.addEventListener("click",()=>startStage(curTier,n));
       stageGrid.appendChild(btn);
     }
   }
 
   /* ---------------- toast ---------------- */
   let toastTimer=null;
-  function toast(msg){
-    toastEl.textContent=msg;
-    toastEl.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1200);
-  }
+  function toast(msg){toastEl.textContent=msg;toastEl.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1400);}
 
-  /* ---------------- start a stage ---------------- */
-  function startStage(n){
-    const data = generateStage(n);
-    cur = {
-      stage:n, data,
-      size:data.size,
-      cleaned:new Set(),
-      path:[],                      // list of "x,y" in visit order
-      pos:{...data.start},
-      cellEls:{},
-      playerEl:null
-    };
+  /* ---------------- start stage ---------------- */
+  function startStage(tier,n){
+    const data=generateStage(tier,n);
+    cur={tier,stage:n,data,size:data.size,cleaned:new Set(),path:[],pos:{...data.start},cellEls:{},playerEl:null,hintsLeft:data.hints};
     renderBoard();
-    // clean the starting cell
-    markClean(data.start.x, data.start.y, false);
+    markClean(data.start.x,data.start.y,false);
     updateHud();
-    hudStage.textContent = "STAGE "+String(n).padStart(2,"0");
-    showScreen("game");
-    hideOverlays();
+    showScreen("game"); hideOverlays();
   }
-
-  const key=(x,y)=>x+","+y;
 
   function renderBoard(){
-    const {data,size} = cur;
-    board.style.gridTemplateColumns = `repeat(${size},1fr)`;
-    board.innerHTML="";
-    cur.cellEls={};
-    for(let y=0;y<size;y++){
-      for(let x=0;x<size;x++){
-        const t = data.grid[y*size+x];
-        const cell = document.createElement("div");
-        cell.className = "cell "+(t==="crate"?"crate":"floor");
-        const isStart = data.start.x===x && data.start.y===y;
-        const isGoal  = data.goal.x===x && data.goal.y===y;
-        if(t!=="crate" && isStart){
-          cell.classList.add("start");
-          cell.innerHTML=`<div class="mark"><span class="tag">출발</span></div>`;
-        }
-        if(t!=="crate" && isGoal){
-          cell.classList.add("goal");
-          cell.innerHTML=`<div class="mark"><span class="door">${DOOR_SVG}</span><span class="tag">도착</span></div>`;
-        }
-        board.appendChild(cell);
-        cur.cellEls[key(x,y)]=cell;
-      }
+    const {data,size}=cur;
+    board.style.gridTemplateColumns=`repeat(${size},1fr)`;
+    board.innerHTML=""; cur.cellEls={};
+    for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      const ty=data.grid[y*size+x];
+      const cell=document.createElement("div");
+      cell.className="cell "+(ty==="crate"?"crate":"floor");
+      const isStart=data.start.x===x&&data.start.y===y;
+      const isGoal=data.goal.x===x&&data.goal.y===y;
+      if(ty!=="crate"&&isStart){cell.classList.add("start");cell.innerHTML=`<div class="mark"><span class="tag" data-tag="start"></span></div>`;}
+      if(ty!=="crate"&&isGoal){cell.classList.add("goal");cell.innerHTML=`<div class="mark"><span class="door">${DOOR_SVG}</span><span class="tag" data-tag="goal"></span></div>`;}
+      board.appendChild(cell);
+      cur.cellEls[key(x,y)]=cell;
     }
-    // player element
-    const p = document.createElement("div");
-    p.className="player";
-    p.innerHTML=JANITOR_SVG;
-    const cellPct = 100/size;
-    p.style.width = (cellPct*0.92)+"%";
-    p.style.height = (cellPct*1.15)+"%";
-    board.appendChild(p);
-    cur.playerEl=p;
-    positionPlayer(false);
+    // localized tags (출발/도착)
+    const tags={start:{ko:"출발",en:"START",vi:"BẮT ĐẦU"},goal:{ko:"도착",en:"EXIT",vi:"CỬA RA"}};
+    board.querySelectorAll("[data-tag]").forEach(el=>{el.textContent=tags[el.dataset.tag][lang]||tags[el.dataset.tag].en;});
+    const p=document.createElement("div"); p.className="player"; p.innerHTML=JANITOR_SVG;
+    const cp=100/size; p.style.width=(cp*0.92)+"%"; p.style.height=(cp*1.15)+"%";
+    board.appendChild(p); cur.playerEl=p; positionPlayer(false);
   }
 
   function positionPlayer(hop){
-    const {pos,size,playerEl} = cur;
-    const cellPct = 100/size;
-    playerEl.style.left = (cellPct*(pos.x+0.5))+"%";
-    playerEl.style.top  = (cellPct*(pos.y+0.55))+"%";
-    if(hop){
-      playerEl.classList.remove("hop","hopf","mopping");
-      void playerEl.offsetWidth;
-      playerEl.classList.add("hop","mopping");
-    }
+    const {pos,size,playerEl}=cur, cp=100/size;
+    playerEl.style.left=(cp*(pos.x+0.5))+"%";
+    playerEl.style.top =(cp*(pos.y+0.55))+"%";
+    if(hop){playerEl.classList.remove("hop","hopf","mopping");void playerEl.offsetWidth;playerEl.classList.add("hop","mopping");}
   }
 
   function markClean(x,y,animate){
-    const k=key(x,y);
-    if(cur.cleaned.has(k)) return;
-    cur.cleaned.add(k);
-    cur.path.push(k);
-    const cell=cur.cellEls[k];
-    // keep start/goal tags but recolor
-    cell.classList.add("clean");
-    cell.classList.remove("floor");
+    const k=key(x,y); if(cur.cleaned.has(k))return;
+    cur.cleaned.add(k); cur.path.push(k);
+    const cell=cur.cellEls[k]; cell.classList.add("clean"); cell.classList.remove("floor");
     if(animate) sfxClean();
     refreshGoalGlow();
   }
-
   function refreshGoalGlow(){
-    const {data} = cur;
-    const goalCell = cur.cellEls[key(data.goal.x,data.goal.y)];
-    if(!goalCell) return;
-    const remaining = data.floorCount - cur.cleaned.size;
-    // goal becomes "ready" when it's the last remaining floor cell
-    const goalCleaned = cur.cleaned.has(key(data.goal.x,data.goal.y));
-    if(!goalCleaned && remaining===1) goalCell.classList.add("ready");
-    else goalCell.classList.remove("ready");
+    const {data}=cur, gc=cur.cellEls[key(data.goal.x,data.goal.y)]; if(!gc)return;
+    const remaining=data.floorCount-cur.cleaned.size;
+    const goalCleaned=cur.cleaned.has(key(data.goal.x,data.goal.y));
+    gc.classList.toggle("ready", !goalCleaned && remaining===1);
   }
+  function clearHint(){board.querySelectorAll(".cell.hint").forEach(c=>c.classList.remove("hint"));}
 
   function updateHud(){
-    const {data} = cur;
-    hudProg.innerHTML = `<span class="done">${cur.cleaned.size}</span> / ${data.floorCount} 칸`;
-    undoBtn.disabled = cur.path.length<=1;
+    const {data,tier,stage}=cur;
+    const tierName = tier==="beginner"?t("tierBeginner"):tier==="intermediate"?t("tierIntermediate"):t("tierAdvanced");
+    hudStage.textContent=`${tierName} · ${t("stageWord")} ${String(stage).padStart(2,"0")}`;
+    hudProg.innerHTML=`<span class="done">${cur.cleaned.size}</span> / ${data.floorCount} ${t("tiles")}`;
+    undoBtn.disabled=cur.path.length<=1;
+    $("#hintCount").textContent=cur.hintsLeft;
+    hintBtn.disabled=cur.hintsLeft<=0;
+    hintBtn.title=t("hintTitle");
+    undoBtn.title=t("undoTitle"); $("#restartBtn").title=t("restartTitle"); $("#backBtn").title=t("backTitle");
   }
 
   /* ---------------- movement ---------------- */
-  const DIRS = { up:[0,-1], down:[0,1], left:[-1,0], right:[1,0] };
-
+  const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
   function tryMove(dir){
-    if(!cur || animating) return;
-    if($("#winOverlay").classList.contains("show")) return;
-    const [dx,dy]=DIRS[dir];
-    const nx=cur.pos.x+dx, ny=cur.pos.y+dy;
-    const {data,size}=cur;
-
-    // face direction
-    if(dir==="left") cur.playerEl.classList.add("flip");
-    else if(dir==="right") cur.playerEl.classList.remove("flip");
-
-    // bounds
-    if(nx<0||ny<0||nx>=size||ny>=size){ sfxBump(); return; }
-    const t=data.grid[ny*size+nx];
-    const nk=key(nx,ny);
-    // crate
-    if(t==="crate"){ bumpCell(nx,ny); sfxBump(); toast("📦 상자는 못 지나가요"); return; }
-    // already cleaned
-    if(cur.cleaned.has(nk)){ bumpCell(nx,ny); sfxBump(); toast("이미 닦은 칸이에요"); return; }
-    // goal cell: only enter when it's the final remaining floor cell
-    const isGoal = data.goal.x===nx && data.goal.y===ny;
-    if(isGoal){
-      const remaining = data.floorCount - cur.cleaned.size; // includes goal
-      if(remaining>1){ bumpCell(nx,ny); sfxBump(); toast("아직 청소가 안 끝났어요!"); return; }
-    }
-
-    // do the move
-    cur.pos={x:nx,y:ny};
-    positionPlayer(true);
-    markClean(nx,ny,true);
-    updateHud();
-
-    if(isGoal){ onWin(); return; }
-    // stuck check
-    if(!hasAnyMove()) setTimeout(()=>{ if(!isWon()) showStuck(); }, 260);
+    if(!cur||animating)return;
+    if($("#winOverlay").classList.contains("show"))return;
+    const [dx,dy]=DIRS[dir], nx=cur.pos.x+dx, ny=cur.pos.y+dy, {data,size}=cur;
+    if(dir==="left")cur.playerEl.classList.add("flip");
+    else if(dir==="right")cur.playerEl.classList.remove("flip");
+    if(nx<0||ny<0||nx>=size||ny>=size){sfxBump();return;}
+    const ty=data.grid[ny*size+nx], nk=key(nx,ny);
+    if(ty==="crate"){bumpCell(nx,ny);sfxBump();toast(t("tCrate"));return;}
+    if(cur.cleaned.has(nk)){bumpCell(nx,ny);sfxBump();toast(t("tCleaned"));return;}
+    const isGoal=data.goal.x===nx&&data.goal.y===ny;
+    if(isGoal&&(data.floorCount-cur.cleaned.size)>1){bumpCell(nx,ny);sfxBump();toast(t("tGoal"));return;}
+    clearHint();
+    cur.pos={x:nx,y:ny}; positionPlayer(true); markClean(nx,ny,true); updateHud();
+    if(isGoal){onWin();return;}
+    if(!hasAnyMove()) setTimeout(()=>{if(!isWon())showStuck();},260);
   }
-
   function hasAnyMove(){
     const {data,size}=cur;
-    for(const d in DIRS){
-      const [dx,dy]=DIRS[d];
-      const nx=cur.pos.x+dx, ny=cur.pos.y+dy;
-      if(nx<0||ny<0||nx>=size||ny>=size) continue;
-      if(data.grid[ny*size+nx]==="crate") continue;
-      const nk=key(nx,ny);
-      if(cur.cleaned.has(nk)) continue;
-      const isGoal = data.goal.x===nx && data.goal.y===ny;
-      if(isGoal && (data.floorCount-cur.cleaned.size)>1) continue;
-      return true;
-    }
+    for(const d in DIRS){const [dx,dy]=DIRS[d];const nx=cur.pos.x+dx,ny=cur.pos.y+dy;
+      if(nx<0||ny<0||nx>=size||ny>=size)continue;
+      if(data.grid[ny*size+nx]==="crate")continue;
+      if(cur.cleaned.has(key(nx,ny)))continue;
+      const isGoal=data.goal.x===nx&&data.goal.y===ny;
+      if(isGoal&&(data.floorCount-cur.cleaned.size)>1)continue;
+      return true;}
     return false;
   }
+  const isWon=()=>cur&&cur.cleaned.size===cur.data.floorCount;
+  function bumpCell(x,y){const c=cur.cellEls[key(x,y)];if(!c)return;c.classList.remove("bump");void c.offsetWidth;c.classList.add("bump");}
 
-  function isWon(){ return cur && cur.cleaned.size===cur.data.floorCount; }
-
-  function bumpCell(x,y){
-    const cell=cur.cellEls[key(x,y)];
-    if(!cell) return;
-    cell.classList.remove("bump"); void cell.offsetWidth; cell.classList.add("bump");
+  /* ---------------- hint ---------------- */
+  function useHint(){
+    if(!cur||animating||cur.hintsLeft<=0)return;
+    const path=solvePath();
+    if(!path||!path.length){toast(t("tHintNone"));return;}
+    cur.hintsLeft--; updateHud();
+    clearHint();
+    const [hx,hy]=path[0];
+    const c=cur.cellEls[key(hx,hy)]; if(c)c.classList.add("hint");
+    sfxHint(); toast(t("tHint"));
   }
 
   /* ---------------- undo ---------------- */
   function undo(){
-    if(!cur || animating) return;
-    if(cur.path.length<=1) return;
-    const lastK = cur.path.pop();
-    cur.cleaned.delete(lastK);
-    const cell=cur.cellEls[lastK];
-    cell.classList.remove("clean");
-    cell.classList.add("floor");
-    const prevK = cur.path[cur.path.length-1];
-    const [px,py]=prevK.split(",").map(Number);
-    cur.pos={x:px,y:py};
-    positionPlayer(true);
-    refreshGoalGlow();
-    updateHud();
-    hideOverlays();
+    if(!cur||animating||cur.path.length<=1)return;
+    const lastK=cur.path.pop(); cur.cleaned.delete(lastK);
+    const cell=cur.cellEls[lastK]; cell.classList.remove("clean"); cell.classList.add("floor");
+    const [px,py]=cur.path[cur.path.length-1].split(",").map(Number);
+    cur.pos={x:px,y:py}; clearHint(); positionPlayer(true); refreshGoalGlow(); updateHud(); hideOverlays();
   }
 
   /* ---------------- win / stuck ---------------- */
-  function starsFor(){
-    // 3 stars if no undo used and solved; simplified: reward completion.
-    // give 3 stars for a clean solve (we don't heavily penalize)
-    return 3;
-  }
   function onWin(){
-    animating=true;
-    sfxWin();
-    const stars = starsFor();
-    // save progress
-    progress.stars[cur.stage] = Math.max(progress.stars[cur.stage]||0, stars);
-    if(cur.stage>=progress.unlocked && cur.stage<TOTAL_STAGES)
-      progress.unlocked = cur.stage+1;
-    saveProgress(progress);
-    buildStageGrid();
-    $("#winStars").textContent = "★ ".repeat(stars).trim();
-    const isLast = cur.stage>=TOTAL_STAGES;
-    $("#winMsg").textContent = isLast ? "모든 창고를 청소했어요! 최고예요! 🏆" : "반짝반짝 깨끗해졌어요!";
-    const nextBtn=$("#winNext");
-    nextBtn.textContent = isLast ? "처음으로" : "다음 스테이지 →";
-    setTimeout(()=>{ $("#winOverlay").classList.add("show"); animating=false; }, 380);
+    animating=true; sfxWin();
+    const stars=3, tp=progress[cur.tier];
+    tp.stars[cur.stage]=Math.max(tp.stars[cur.stage]||0,stars);
+    if(cur.stage>=tp.unlocked&&cur.stage<STAGES_PER_TIER) tp.unlocked=cur.stage+1;
+    saveProgress(); buildStageGrid();
+    const isLast=cur.stage>=STAGES_PER_TIER;
+    $("#winTitle").textContent=t("winTitle");
+    $("#winStars").textContent="★ ".repeat(stars).trim();
+    $("#winMsg").textContent=isLast?t("winLast"):t("winMsg");
+    $("#winRetry").textContent=t("retry");
+    $("#winNext").textContent=isLast?t("toStart"):t("next");
+    setTimeout(()=>{$("#winOverlay").classList.add("show");animating=false;},380);
   }
-  function showStuck(){ $("#stuckOverlay").classList.add("show"); }
-  function hideOverlays(){
-    $("#winOverlay").classList.remove("show");
-    $("#stuckOverlay").classList.remove("show");
+  function showStuck(){
+    $("#stuckTitle").textContent=t("stuckTitle");
+    $("#stuckBody").textContent=t("stuckBody");
+    $("#stuckSelect").textContent=t("selectBtn");
+    $("#stuckRetry").textContent=t("restartBtn");
+    $("#stuckOverlay").classList.add("show");
+  }
+  function hideOverlays(){$("#winOverlay").classList.remove("show");$("#stuckOverlay").classList.remove("show");}
+
+  /* ---------------- how-to modal ---------------- */
+  function openHowto(){
+    $("#howtoTitle").textContent=t("howtoTitle");
+    const list=$("#howtoList"); list.innerHTML="";
+    t("how").forEach(([ic,html])=>{
+      const row=document.createElement("div"); row.className="row";
+      row.innerHTML=`<span class="ic">${ic}</span><div>${html}</div>`;
+      list.appendChild(row);
+    });
+    $("#howtoClose").textContent=t("close");
+    $("#howtoOverlay").classList.add("show");
   }
 
-  /* ---------------- input wiring ---------------- */
+  /* ---------------- input ---------------- */
   document.addEventListener("keydown",(e)=>{
-    if(!gameScreen.classList.contains("show")) return;
-    const map={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",
-               w:"up",s:"down",a:"left",d:"right",W:"up",S:"down",A:"left",D:"right"};
-    if(map[e.key]){ e.preventDefault(); tryMove(map[e.key]); }
-    else if(e.key==="z"||e.key==="Z"){ undo(); }
+    if(!gameScreen.classList.contains("show"))return;
+    const m={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",w:"up",s:"down",a:"left",d:"right",W:"up",S:"down",A:"left",D:"right"};
+    if(m[e.key]){e.preventDefault();tryMove(m[e.key]);}
+    else if(e.key==="z"||e.key==="Z")undo();
+    else if(e.key==="h"||e.key==="H")useHint();
   });
-
-  document.querySelectorAll(".dbtn").forEach(b=>{
-    const dir=b.dataset.dir;
-    b.addEventListener("click",()=>tryMove(dir));
-  });
-
-  // swipe on board
+  document.querySelectorAll(".dbtn").forEach(b=>b.addEventListener("click",()=>tryMove(b.dataset.dir)));
   let touchStart=null;
-  board.addEventListener("touchstart",(e)=>{
-    const t=e.changedTouches[0]; touchStart={x:t.clientX,y:t.clientY};
-  },{passive:true});
+  board.addEventListener("touchstart",(e)=>{const tt=e.changedTouches[0];touchStart={x:tt.clientX,y:tt.clientY};},{passive:true});
   board.addEventListener("touchend",(e)=>{
-    if(!touchStart) return;
-    const t=e.changedTouches[0];
-    const dx=t.clientX-touchStart.x, dy=t.clientY-touchStart.y;
-    const ax=Math.abs(dx), ay=Math.abs(dy);
-    if(Math.max(ax,ay)<24){ touchStart=null; return; }
-    if(ax>ay) tryMove(dx>0?"right":"left");
-    else tryMove(dy>0?"down":"up");
+    if(!touchStart)return; const tt=e.changedTouches[0];
+    const dx=tt.clientX-touchStart.x, dy=tt.clientY-touchStart.y, ax=Math.abs(dx), ay=Math.abs(dy);
+    if(Math.max(ax,ay)<24){touchStart=null;return;}
+    if(ax>ay)tryMove(dx>0?"right":"left"); else tryMove(dy>0?"down":"up");
     touchStart=null;
   },{passive:true});
 
   /* ---------------- buttons ---------------- */
-  $("#backBtn").addEventListener("click",()=>{ hideOverlays(); showScreen("select"); });
-  $("#restartBtn").addEventListener("click",()=>{ if(cur) startStage(cur.stage); });
+  $("#backBtn").addEventListener("click",()=>{hideOverlays();showScreen("select");});
+  $("#restartBtn").addEventListener("click",()=>{if(cur)startStage(cur.tier,cur.stage);});
   undoBtn.addEventListener("click",undo);
-
-  $("#winNext").addEventListener("click",()=>{
-    if(cur.stage>=TOTAL_STAGES){ hideOverlays(); showScreen("select"); }
-    else startStage(cur.stage+1);
-  });
-  $("#winRetry").addEventListener("click",()=>{ startStage(cur.stage); });
-  $("#stuckRetry").addEventListener("click",()=>{ startStage(cur.stage); });
-  $("#stuckSelect").addEventListener("click",()=>{ hideOverlays(); showScreen("select"); });
-
-  $("#resetProg").addEventListener("click",()=>{
-    if(confirm("모든 진행 기록을 지울까요?")){
-      progress={unlocked:1,stars:{}};
-      saveProgress(progress);
-      buildStageGrid();
-    }
-  });
+  hintBtn.addEventListener("click",useHint);
+  $("#howtoBtn").addEventListener("click",openHowto);
+  $("#howtoClose").addEventListener("click",()=>$("#howtoOverlay").classList.remove("show"));
+  $("#howtoOverlay").addEventListener("click",(e)=>{if(e.target.classList.contains("veil"))$("#howtoOverlay").classList.remove("show");});
+  $("#winNext").addEventListener("click",()=>{if(cur.stage>=STAGES_PER_TIER){hideOverlays();showScreen("select");}else startStage(cur.tier,cur.stage+1);});
+  $("#winRetry").addEventListener("click",()=>startStage(cur.tier,cur.stage));
+  $("#stuckRetry").addEventListener("click",()=>startStage(cur.tier,cur.stage));
+  $("#stuckSelect").addEventListener("click",()=>{hideOverlays();showScreen("select");});
+  $("#resetProg").addEventListener("click",()=>{if(confirm(t("confirmReset"))){progress=freshProgress();progress.lang=lang;saveProgress();buildStageGrid();}});
 
   /* ---------------- boot ---------------- */
-  buildStageGrid();
+  document.documentElement.lang=lang;
+  buildLangBar(); renderStatic(); buildTierTabs(); buildStageGrid();
 })();
 </script>
 </body>
