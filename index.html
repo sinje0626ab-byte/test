@@ -224,19 +224,24 @@
 
   /* d-pad */
   .pad-wrap{display:flex;justify-content:center;padding:6px 0 calc(16px + env(safe-area-inset-bottom));}
-  .dpad{position:relative;width:168px;height:168px;}
-  .dbtn{position:absolute;width:57px;height:57px;border:none;cursor:pointer;
-    background:linear-gradient(180deg,#3a302a,#241d18);color:var(--ink);font-size:24px;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 4px 0 #140f0b, 0 6px 12px rgba(0,0,0,.4);transition:transform .06s, box-shadow .06s;}
-  .dbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #140f0b,0 2px 6px rgba(0,0,0,.4);}
-  .dbtn.up{top:0;left:55px;border-radius:14px 14px 4px 4px;}
-  .dbtn.down{bottom:0;left:55px;border-radius:4px 4px 14px 14px;}
-  .dbtn.left{left:0;top:55px;border-radius:14px 4px 4px 14px;}
-  .dbtn.right{right:0;top:55px;border-radius:4px 14px 14px 4px;}
-  .dpad .hub{position:absolute;left:55px;top:55px;width:57px;height:57px;border-radius:50%;
-    background:radial-gradient(circle at 40% 35%,#4a3f38,#211a15);box-shadow:inset 0 2px 4px rgba(255,255,255,.12),0 3px 6px rgba(0,0,0,.4);
-    display:flex;align-items:center;justify-content:center;font-size:20px;}
+  /* single-knob joystick: drag and hold to walk continuously */
+  .joystick{position:relative;width:156px;height:156px;border-radius:50%;touch-action:none;user-select:none;
+    background:radial-gradient(circle at 36% 30%,#2c231b,#15100b 74%);
+    border:1px solid rgba(255,255,255,.05);
+    box-shadow:inset 0 3px 10px rgba(0,0,0,.6), inset 0 -2px 6px rgba(255,255,255,.03), 0 6px 16px rgba(0,0,0,.4);}
+  .joy-ring{position:absolute;inset:9px;border-radius:50%;border:1.5px dashed rgba(255,255,255,.1);pointer-events:none;}
+  .joy-arrows{position:absolute;inset:0;pointer-events:none;color:rgba(255,255,255,.28);font-size:15px;font-weight:800;}
+  .joy-arrows span{position:absolute;}
+  .joy-arrows .u{top:9px;left:50%;transform:translateX(-50%);}
+  .joy-arrows .d{bottom:9px;left:50%;transform:translateX(-50%);}
+  .joy-arrows .l{left:11px;top:50%;transform:translateY(-50%);}
+  .joy-arrows .r{right:11px;top:50%;transform:translateY(-50%);}
+  .joy-knob{position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;
+    background:radial-gradient(circle at 38% 32%,#4a3f38,#211a15 78%);
+    box-shadow:0 6px 14px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.14);
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+    transition:transform .07s ease-out;will-change:transform;cursor:grab;}
+  .joy-knob.grabbed{transition:none;cursor:grabbing;}
 
   /* overlays */
   .overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:20px;}
@@ -351,12 +356,10 @@
     </div>
     <div class="board-wrap"><div class="board" id="board"></div></div>
     <div class="pad-wrap">
-      <div class="dpad">
-        <button class="dbtn up"    data-dir="up">▲</button>
-        <button class="dbtn left"  data-dir="left">◀</button>
-        <div class="hub">🧽</div>
-        <button class="dbtn right" data-dir="right">▶</button>
-        <button class="dbtn down"  data-dir="down">▼</button>
+      <div class="joystick" id="joyBase">
+        <div class="joy-ring"></div>
+        <div class="joy-arrows"><span class="u">▲</span><span class="d">▼</span><span class="l">◀</span><span class="r">▶</span></div>
+        <div class="joy-knob" id="joyKnob">🧽</div>
       </div>
     </div>
   </section>
@@ -1129,12 +1132,60 @@
       return;
     }
   });
-  document.querySelectorAll(".dbtn").forEach(b=>b.addEventListener("click",()=>tryMove(b.dataset.dir)));
+  // ---- single-knob joystick: hold + tilt to walk continuously in that direction ----
+  (function setupJoystick(){
+    const base=$("#joyBase"), knob=$("#joyKnob");
+    if(!base||!knob)return;
+    const MAXR=42, DEADZONE=14, STEP_MS=170;
+    let activeId=null, originX=0, originY=0, curDir=null, repeatTimer=null;
+
+    function angleToDir(dx,dy){
+      if(Math.hypot(dx,dy)<DEADZONE)return null;
+      return Math.abs(dx)>Math.abs(dy) ? (dx>0?"right":"left") : (dy>0?"down":"up");
+    }
+    function setKnob(dx,dy){
+      const d=Math.hypot(dx,dy), clamped=Math.min(d,MAXR)||0.0001, a=Math.atan2(dy,dx);
+      knob.style.transform=`translate(${(Math.cos(a)*clamped).toFixed(1)}px, ${(Math.sin(a)*clamped).toFixed(1)}px)`;
+    }
+    function resetKnob(){ knob.style.transform="translate(0,0)"; }
+    function step(dir){
+      const before=cur?JSON.stringify(cur.pos):null;
+      tryMove(dir);
+      const after=cur?JSON.stringify(cur.pos):null;
+      if(before===after && repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; } // stop hammering a wall
+    }
+    function setDir(dir){
+      if(curDir===dir)return;
+      curDir=dir;
+      if(repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; }
+      if(dir){ step(dir); repeatTimer=setInterval(()=>step(dir),STEP_MS); }
+    }
+    function stopAll(){
+      if(repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; }
+      curDir=null; activeId=null; knob.classList.remove("grabbed"); resetKnob();
+    }
+    base.addEventListener("pointerdown",(e)=>{
+      e.preventDefault();
+      activeId=e.pointerId; base.setPointerCapture(activeId);
+      knob.classList.add("grabbed");
+      const r=base.getBoundingClientRect(); originX=r.left+r.width/2; originY=r.top+r.height/2;
+      const dx=e.clientX-originX, dy=e.clientY-originY;
+      setKnob(dx,dy); setDir(angleToDir(dx,dy));
+    });
+    base.addEventListener("pointermove",(e)=>{
+      if(e.pointerId!==activeId)return;
+      const dx=e.clientX-originX, dy=e.clientY-originY;
+      setKnob(dx,dy); setDir(angleToDir(dx,dy));
+    });
+    const release=(e)=>{ if(e.pointerId!==activeId)return; stopAll(); };
+    base.addEventListener("pointerup",release);
+    base.addEventListener("pointercancel",release);
+  })();
   // swipe anywhere on the game screen (empty space too) to move.
-  // touches that start on the D-pad are left to the buttons.
+  // touches that start on the joystick are left to it.
   let touchStart=null;
   gameScreen.addEventListener("touchstart",(e)=>{
-    if(e.target.closest(".dpad")){ touchStart=null; return; }
+    if(e.target.closest(".joystick")){ touchStart=null; return; }
     const tt=e.changedTouches[0]; touchStart={x:tt.clientX,y:tt.clientY};
   },{passive:true});
   gameScreen.addEventListener("touchend",(e)=>{
