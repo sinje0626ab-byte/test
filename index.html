@@ -39,7 +39,9 @@
   .flagbtn:active{transform:scale(.9);}
 
   /* ---------- stage select ---------- */
-  #select{overflow-y:auto;padding:20px 16px 40px;-webkit-overflow-scrolling:touch;}
+  #select{overflow-y:auto;padding:0 16px 40px;-webkit-overflow-scrolling:touch;}
+  #select .hud{padding-left:0;padding-right:0;}
+  #select .tiers{margin-top:14px;}
   .title-wrap{text-align:center;padding:30px 0 4px;}
   .kicker{font-size:12px;letter-spacing:.3em;color:var(--accent);font-weight:800;text-transform:uppercase;}
   .title{font-size:clamp(26px,7vw,44px);font-weight:900;letter-spacing:-.01em;margin:4px 0 2px;
@@ -293,6 +295,70 @@
   .intro-word .games{color:#f4f8fb;text-shadow:0 2px 0 rgba(0,0,0,.5);}
   .intro-tag{margin-top:6px;font-size:11px;letter-spacing:.42em;color:#7fa0ac;text-transform:uppercase;
     opacity:0;animation:wordIn .5s ease forwards .55s;}
+
+  /* ---------------- game logo / title card ---------------- */
+  #gameLogo{align-items:center;justify-content:center;flex-direction:column;cursor:pointer;overflow:hidden;
+    background:radial-gradient(circle at 50% 20%,#1b2c48,#050810 75%);}
+  .gl-stars{position:absolute;inset:0;z-index:0;opacity:.85;background-repeat:no-repeat;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 65% 15%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 80% 40%, #fff, transparent),
+      radial-gradient(1px 1px at 35% 62%, #fff, transparent),
+      radial-gradient(1.4px 1.4px at 55% 78%, #fff, transparent),
+      radial-gradient(1px 1px at 90% 68%, #fff, transparent),
+      radial-gradient(1.2px 1.2px at 10% 82%, #fff, transparent),
+      radial-gradient(1px 1px at 45% 22%, #fff, transparent),
+      radial-gradient(1.3px 1.3px at 75% 52%, #fff, transparent),
+      radial-gradient(1px 1px at 25% 90%, #fff, transparent);}
+  .gl-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+    padding:0 24px;text-align:center;opacity:0;transform:scale(.9);
+    animation:glIn .55s cubic-bezier(.2,1.3,.4,1) forwards .1s;}
+  @keyframes glIn{to{opacity:1;transform:scale(1);}}
+  .gl-ribbon{display:inline-block;margin:0 auto 20px;padding:7px 22px;border-radius:20px;
+    background:linear-gradient(180deg,#3a6dff,#1c3fa8);color:#fff;font-weight:800;font-size:13px;
+    letter-spacing:.05em;box-shadow:0 4px 10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.3);
+    border:1px solid rgba(255,255,255,.25);white-space:nowrap;}
+  .gl-title{margin:0;font-size:clamp(28px,8.4vw,46px);font-weight:900;text-align:center;line-height:1.28;
+    color:#fff;
+    text-shadow:
+      -2px -2px 0 #0b2a52, 2px -2px 0 #0b2a52, -2px 2px 0 #0b2a52, 2px 2px 0 #0b2a52,
+      0 0 20px rgba(90,170,255,.6), 0 8px 16px rgba(0,0,0,.55);
+    letter-spacing:-.01em;max-width:320px;}
+  .gl-mascot{width:min(34vw,140px);margin:16px auto 0;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5));
+    animation:glBob 2.2s ease-in-out infinite;}
+  .gl-mascot svg{width:100%;height:100%;display:block;}
+  @keyframes glBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+  .gl-sparkle{position:absolute;font-size:20px;opacity:.85;z-index:0;
+    animation:glTwinkle 1.8s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,235,150,.6));}
+  .gl-sparkle.s1{top:16%;left:10%;animation-delay:0s;}
+  .gl-sparkle.s2{top:14%;right:9%;animation-delay:.5s;font-size:16px;}
+  .gl-sparkle.s3{bottom:14%;left:12%;animation-delay:1s;font-size:14px;}
+  @keyframes glTwinkle{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.15);}}
+  .gl-prompt{position:absolute;left:0;right:0;bottom:calc(46px + env(safe-area-inset-bottom));
+    text-align:center;color:#cfe3ff;font-weight:800;font-size:14px;letter-spacing:.03em;z-index:1;
+    animation:glPulse 1.3s ease-in-out infinite;}
+  @keyframes glPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  /* ---------------- main menu ---------------- */
+  #mainMenu{align-items:center;justify-content:center;overflow:hidden;}
+  .mm-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+    text-align:center;padding:0 22px;}
+  .mm-kicker{font-size:clamp(24px,7.2vw,40px);font-weight:900;letter-spacing:-.01em;line-height:1.3;
+    color:#ffd75e;
+    text-shadow:
+      -1.8px -1.8px 0 #7a3a12, 1.8px -1.8px 0 #7a3a12, -1.8px 1.8px 0 #7a3a12, 1.8px 1.8px 0 #7a3a12,
+      0 0 16px rgba(255,180,60,.45), 0 8px 16px rgba(0,0,0,.55);}
+  .mm-sub{margin-top:8px;font-size:clamp(15px,4vw,20px);font-weight:800;color:#eaf3ff;
+    text-shadow:0 2px 4px rgba(0,0,0,.6);}
+  .mm-tag{margin-top:9px;font-size:13px;color:#cfd8de;max-width:300px;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+  .mm-btns{display:flex;gap:10px;margin-top:24px;}
+  .start-btn{padding:13px 34px;border-radius:24px;border:none;font-weight:900;font-size:16px;
+    letter-spacing:.03em;background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#04211b;
+    cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.35);
+    transition:transform .1s;}
+  .start-btn:active{transform:scale(.95);}
+
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
 </style>
 </head>
@@ -327,14 +393,40 @@
     <div class="intro-tag">PRESENTS</div>
   </section>
 
+  <!-- ===== GAME LOGO / TITLE CARD ===== -->
+  <section id="gameLogo" class="screen">
+    <div class="gl-stars"></div>
+    <div class="gl-content">
+      <div class="gl-ribbon"><span id="glTag"></span></div>
+      <h1 class="gl-title"><span id="glTitle"></span></h1>
+      <div class="gl-mascot" id="glMascot"></div>
+      <div class="gl-sparkle s1">✨</div>
+      <div class="gl-sparkle s2">✨</div>
+      <div class="gl-sparkle s3">✨</div>
+    </div>
+    <div class="gl-prompt" id="glPrompt"></div>
+  </section>
+
+  <!-- ===== MAIN MENU ===== -->
+  <section id="mainMenu" class="screen">
+    <div class="langbar" id="langbar"></div>
+    <div class="scene" id="mmScene"></div>
+    <div class="mm-content">
+      <div class="mm-kicker" id="uiKicker"></div>
+      <div class="mm-sub" id="uiTitle"></div>
+      <div class="mm-tag" id="uiSubtitle"></div>
+      <div class="mm-btns">
+        <button class="howto-btn" id="howtoBtn"><span>❓</span><span id="uiHowto"></span></button>
+        <button class="start-btn" id="startBtn"><span id="uiStart"></span></button>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== STAGE SELECT ===== -->
   <section id="select" class="screen">
-    <div class="langbar" id="langbar"></div>
-    <div class="title-wrap">
-      <div class="kicker" id="uiKicker"></div>
-      <h1 class="title"><span class="mop">🧹</span> <span id="uiTitle"></span></h1>
-      <div class="subtitle" id="uiSubtitle"></div>
-      <button class="howto-btn" id="howtoBtn"><span>❓</span><span id="uiHowto"></span></button>
+    <div class="hud">
+      <button class="iconbtn" id="selBackBtn">←</button>
+      <div class="center"><div class="stg" id="selTitle"></div></div>
     </div>
     <div class="tiers" id="tierTabs"></div>
     <div class="stages" id="stageGrid"></div>
@@ -417,6 +509,8 @@
     ko:{
       kicker:"창고 미화 작전", title:"미화부장 김용준",
       subtitle:"지저분한 창고 바닥을 남김없이 닦아라!",
+      heroTag:"초강력 위생 액션!", pressStart:"아무 버튼이나 눌러주세요", startBtn:"START",
+      stageSelectTitle:"스테이지 선택", toMenuTitle:"메인 화면",
       howto:"게임 방법", stageWord:"스테이지", tiles:"칸",
       reset:"진행 기록 초기화",
       tierBeginner:"초급", tierIntermediate:"중급", tierAdvanced:"고급",
@@ -425,7 +519,7 @@
       how:[
         ["🎯","<b>목표</b> — 장애물(상자 📦)을 피해 <b>모든 바닥 칸</b>을 닦고 <b>도착(문)</b> 칸에서 마무리하면 성공!"],
         ["🚫","<b>규칙</b> — 이미 닦은 칸은 다시 밟을 수 없어요. 끊기지 않게 한 번에 이어서 청소하세요."],
-        ["🕹️","<b>조작</b> — 방향키 / 화면 D-패드 / 화면을 원하는 방향으로 쓸어넘기기"],
+        ["🕹️","<b>조작</b> — 방향키 / 화면 조이스틱 / 화면을 원하는 방향으로 쓸어넘기기"],
         ["💡","<b>힌트</b> — 💡 버튼을 누르면 다음에 갈 칸을 알려줘요. 스테이지마다 횟수가 정해져 있어요."],
         ["🏆","<b>난이도</b> — 초급·중급·고급 각 30스테이지. 뒤로 갈수록 판이 커지고 상자가 많아져요."]
       ],
@@ -443,6 +537,8 @@
     en:{
       kicker:"Warehouse Cleanup", title:"Chief Janitor Kim",
       subtitle:"Mop every last dirty tile in the warehouse!",
+      heroTag:"SUPER HYGIENE ACTION!", pressStart:"Tap or press any key to continue", startBtn:"START",
+      stageSelectTitle:"Stage Select", toMenuTitle:"Main menu",
       howto:"How to Play", stageWord:"Stage", tiles:"tiles",
       reset:"Reset progress",
       tierBeginner:"Beginner", tierIntermediate:"Intermediate", tierAdvanced:"Advanced",
@@ -451,7 +547,7 @@
       how:[
         ["🎯","<b>Goal</b> — Dodge the obstacles (crates 📦), mop <b>every floor tile</b>, and finish on the <b>EXIT door</b> to win!"],
         ["🚫","<b>Rule</b> — You can't step on a tile you've already mopped. Clean it all in one continuous path."],
-        ["🕹️","<b>Controls</b> — Arrow keys / on-screen D-pad / swipe in any direction"],
+        ["🕹️","<b>Controls</b> — Arrow keys / on-screen joystick / swipe in any direction"],
         ["💡","<b>Hint</b> — Tap the 💡 button to reveal the next tile to step on. Each stage has a limited number of hints."],
         ["🏆","<b>Difficulty</b> — Beginner, Intermediate & Advanced, 30 stages each. Boards grow and crates multiply as you go."]
       ],
@@ -469,6 +565,8 @@
     vi:{
       kicker:"Dọn dẹp nhà kho", title:"Tổ trưởng vệ sinh Kim",
       subtitle:"Lau sạch từng ô sàn bẩn trong nhà kho!",
+      heroTag:"HÀNH ĐỘNG VỆ SINH SIÊU MẠNH!", pressStart:"Chạm hoặc nhấn phím bất kỳ để tiếp tục", startBtn:"BẮT ĐẦU",
+      stageSelectTitle:"Chọn màn", toMenuTitle:"Màn hình chính",
       howto:"Cách chơi", stageWord:"Màn", tiles:"ô",
       reset:"Đặt lại tiến trình",
       tierBeginner:"Sơ cấp", tierIntermediate:"Trung cấp", tierAdvanced:"Cao cấp",
@@ -477,7 +575,7 @@
       how:[
         ["🎯","<b>Mục tiêu</b> — Tránh chướng ngại vật (thùng 📦), lau <b>tất cả các ô sàn</b> rồi kết thúc tại ô <b>CỬA RA</b> để thắng!"],
         ["🚫","<b>Luật</b> — Không được bước lại ô đã lau. Hãy lau một mạch liền không ngắt quãng."],
-        ["🕹️","<b>Điều khiển</b> — Phím mũi tên / D-pad trên màn hình / Vuốt theo hướng bất kỳ"],
+        ["🕹️","<b>Điều khiển</b> — Phím mũi tên / Cần điều khiển trên màn hình / Vuốt theo hướng bất kỳ"],
         ["💡","<b>Gợi ý</b> — Nhấn nút 💡 để hiện ô nên đi tiếp. Mỗi màn có số lượt gợi ý giới hạn."],
         ["🏆","<b>Độ khó</b> — Sơ cấp, Trung cấp & Cao cấp, mỗi mức 30 màn. Càng về sau bàn càng lớn và nhiều thùng hơn."]
       ],
@@ -676,7 +774,8 @@
   </svg>`;
 
   /* ---------------- room scene backdrop (distinct per board size) ---------------- */
-  function sceneSVG(size){
+  function sceneSVG(size,idPrefix){
+    const P=idPrefix||"sc";              // id prefix so multiple scene instances in one document never clash
     // dim interior palettes (dark room) - sky stays bright daylight for contrast
     const T={
       4:{wa:['#40301f','#241810'],fl:['#513c25','#2f2113'],sky:['#bfe3ff','#eef8ff'],extra:'cozy'},
@@ -689,17 +788,17 @@
     const W=100,H=180,hz=94,seam='#00000045';
     let winIdx=0;                       // unique id per window for clip/cloud defs
     const defs=`<defs>
-      <linearGradient id="scWg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.wa[0]}"/><stop offset="1" stop-color="${T.wa[1]}"/></linearGradient>
-      <linearGradient id="scFg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.fl[0]}"/><stop offset="1" stop-color="${T.fl[1]}"/></linearGradient>
-      <linearGradient id="scSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.sky[0]}"/><stop offset="1" stop-color="${T.sky[1]}"/></linearGradient>
-      <radialGradient id="scVig" cx="50%" cy="40%" r="75%"><stop offset="42%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".62"/></radialGradient>
-      <linearGradient id="scBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8dc" stop-opacity=".92"/><stop offset="1" stop-color="#fff8dc" stop-opacity="0"/></linearGradient>
+      <linearGradient id="${P}Wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.wa[0]}"/><stop offset="1" stop-color="${T.wa[1]}"/></linearGradient>
+      <linearGradient id="${P}Fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.fl[0]}"/><stop offset="1" stop-color="${T.fl[1]}"/></linearGradient>
+      <linearGradient id="${P}Sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.sky[0]}"/><stop offset="1" stop-color="${T.sky[1]}"/></linearGradient>
+      <radialGradient id="${P}Vig" cx="50%" cy="40%" r="75%"><stop offset="42%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".62"/></radialGradient>
+      <linearGradient id="${P}Beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8dc" stop-opacity=".92"/><stop offset="1" stop-color="#fff8dc" stop-opacity="0"/></linearGradient>
     </defs>`;
-    let wall=`<rect x="0" y="0" width="${W}" height="${hz}" fill="url(#scWg)"/>`;
+    let wall=`<rect x="0" y="0" width="${W}" height="${hz}" fill="url(#${P}Wg)"/>`;
     for(let x=12;x<W;x+=12) wall+=`<rect x="${x-0.35}" y="0" width="0.7" height="${hz}" fill="${seam}"/>`;
     for(let y=0;y<hz;y+=1.7) wall+=`<rect x="0" y="${y}" width="${W}" height="0.35" fill="#ffffff06"/>`;
     wall+=`<rect x="0" y="${hz-4}" width="${W}" height="4" fill="${T.wa[1]}"/><rect x="0" y="${hz-4}" width="${W}" height="0.8" fill="#ffffff15"/>`;
-    let floor=`<rect x="0" y="${hz}" width="${W}" height="${H-hz}" fill="url(#scFg)"/>`;
+    let floor=`<rect x="0" y="${hz}" width="${W}" height="${H-hz}" fill="url(#${P}Fg)"/>`;
     for(let x=-40;x<=140;x+=14) floor+=`<line x1="50" y1="${hz}" x2="${x}" y2="${H}" stroke="${seam}" stroke-width="0.5"/>`;
     for(let i=1;i<=4;i++){const y=hz+(H-hz)*(i*i/20);floor+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#00000022" stroke-width="0.5"/>`;}
     floor+=`<rect x="0" y="${hz}" width="${W}" height="3" fill="#000" opacity=".2"/>`;
@@ -713,7 +812,7 @@
           values="${(x-w*0.35).toFixed(1)} ${y}; ${(x+w*1.3).toFixed(1)} ${y}"
           dur="${dur}s" begin="${beginOffset}s" repeatCount="indefinite"/>${cloudPuff(sc)}</g>`;
     const winSquare=(x,y,w,h,arch)=>{
-      const id="wclip"+(winIdx++);
+      const id=P+"wclip"+(winIdx++);
       const skyShape = arch
         ? `M${x} ${y+h} V${y+h*0.4} A${w/2} ${w/2} 0 0 1 ${x+w} ${y+h*0.4} V${y+h} Z`
         : `M${x} ${y} H${x+w} V${y+h} H${x} Z`;
@@ -723,13 +822,13 @@
       s+=`<ellipse cx="${x+w/2}" cy="${y+h/2}" rx="${w*0.9}" ry="${h*0.9}" fill="#ffe9b0" opacity=".16"/>`;
       s+=`<clipPath id="${id}"><path d="${skyShape}"/></clipPath>`;
       s+=`<g clip-path="url(#${id})">`;
-      s+=`<path d="${skyShape}" fill="url(#scSky)"/>`;
+      s+=`<path d="${skyShape}" fill="url(#${P}Sky)"/>`;
       s+=driftCloud(x,y+h*0.32,w,1,dur,0);
       s+=driftCloud(x,y+h*0.58,w,0.7,dur,-(dur/2));
       s+=`</g>`;
       s+=`<rect x="${x+w/2-0.6}" y="${y}" width="1.2" height="${h}" fill="${T.wa[1]}"/><rect x="${x}" y="${y+h/2-0.6}" width="${w}" height="1.2" fill="${T.wa[1]}"/>`;
       s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${T.wa[1]}" stroke-width="1.4"/></g>`;
-      s+=`<path d="M${x} ${y+h} L${x+w} ${y+h} L${x+w+10} ${H} L${x-18} ${H} Z" fill="url(#scBeam)" opacity=".85"/>`;
+      s+=`<path d="M${x} ${y+h} L${x+w} ${y+h} L${x+w+10} ${H} L${x-18} ${H} Z" fill="url(#${P}Beam)" opacity=".85"/>`;
       return s;
     };
     const plant=(x,b,s)=>`<g transform="translate(${x},${b}) scale(${s})"><path d="M0 0 L2 8 L-2 8 Z" fill="#7a4a24"/><ellipse cx="0" cy="0" rx="5" ry="2" fill="#5a3418"/><path d="M0 0 Q-6 -10 -2 -14 Q0 -8 0 0" fill="#3f7d3a"/><path d="M0 0 Q6 -11 2 -15 Q0 -8 0 0" fill="#4f9147"/><path d="M0 0 Q0 -14 0 -18 Q3 -12 0 0" fill="#45883f"/></g>`;
@@ -747,19 +846,19 @@
     else if(T.extra==='sun') scene=winSquare(16,16,28,42,true)+winSquare(56,16,28,42,true)+plant(12,hz-2,1.2)+plant(90,hz-2,1.1);
     else if(T.extra==='loft') scene=`<line x1="0" y1="30" x2="100" y2="30" stroke="#5a3d22" stroke-width="2.4"/>`+winSquare(20,36,24,42,false)+winSquare(58,36,24,42,false)+ladder(82,hz-1)+box(14,hz-1,1.0);
     else{
-      const rid="wclip"+(winIdx++), dur=(15).toFixed(1);
+      const rid=P+"wclip"+(winIdx++), dur=(15).toFixed(1);
       scene=`<ellipse cx="50" cy="30" rx="20" ry="20" fill="#ffe9b0" opacity=".16"/>`
         +`<circle cx="50" cy="30" r="17" fill="${T.wa[1]}"/>`
         +`<clipPath id="${rid}"><circle cx="50" cy="30" r="14"/></clipPath>`
-        +`<g clip-path="url(#${rid})"><rect x="30" y="10" width="40" height="40" fill="url(#scSky)"/>`
+        +`<g clip-path="url(#${rid})"><rect x="30" y="10" width="40" height="40" fill="url(#${P}Sky)"/>`
         +driftCloud(36,26,28,1,dur,0)+driftCloud(36,34,28,0.7,dur,-(dur/2))
         +`</g>`
         +`<g stroke="${T.wa[1]}" stroke-width="1.2"><line x1="36" y1="30" x2="64" y2="30"/><line x1="50" y1="16" x2="50" y2="44"/><line x1="40" y1="20" x2="60" y2="40"/><line x1="60" y1="20" x2="40" y2="40"/></g>`
         +`<circle cx="50" cy="30" r="14" fill="none" stroke="${T.wa[1]}" stroke-width="1.4"/>`
-        +`<path d="M36 44 L64 44 L74 ${H} L26 ${H} Z" fill="url(#scBeam)" opacity=".85"/>`
+        +`<path d="M36 44 L64 44 L74 ${H} L26 ${H} Z" fill="url(#${P}Beam)" opacity=".85"/>`
         +chandelier()+plant(14,hz-2,1.2)+plant(88,hz-2,1.2);
     }
-    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${defs}${wall}${floor}${scene}<rect x="0" y="0" width="${W}" height="${H}" fill="url(#scVig)"/></svg>`;
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${defs}${wall}${floor}${scene}<rect x="0" y="0" width="${W}" height="${H}" fill="url(#${P}Vig)"/></svg>`;
   }
 
   /* ---------------- progress ---------------- */
@@ -796,7 +895,8 @@
 
   /* ---------------- DOM ---------------- */
   const $=s=>document.querySelector(s);
-  const selectScreen=$("#select"), gameScreen=$("#game");
+  const gameLogoScreen=$("#gameLogo"), mainMenuScreen=$("#mainMenu"), selectScreen=$("#select"), gameScreen=$("#game");
+  const SCREEN_ELS={gameLogo:gameLogoScreen, mainMenu:mainMenuScreen, select:selectScreen, game:gameScreen};
   const stageGrid=$("#stageGrid"), board=$("#board");
   const hudStage=$("#hudStage"), hudProg=$("#hudProg"), undoBtn=$("#undoBtn"), hintBtn=$("#hintBtn"), toastEl=$("#toast");
 
@@ -804,7 +904,9 @@
   let cur=null, animating=false;
   const key=(x,y)=>x+","+y;
 
-  function showScreen(w){selectScreen.classList.toggle("show",w==="select");gameScreen.classList.toggle("show",w==="game");}
+  function showScreen(w){
+    for(const name in SCREEN_ELS) SCREEN_ELS[name].classList.toggle("show",name===w);
+  }
 
   /* ---------------- language UI ---------------- */
   function buildLangBar(){
@@ -829,7 +931,13 @@
     $("#uiTitle").textContent=t("title");
     $("#uiSubtitle").textContent=t("subtitle");
     $("#uiHowto").textContent=t("howto");
+    $("#uiStart").textContent=t("startBtn");
     $("#resetProg").textContent=t("reset");
+    $("#glTag").textContent=t("heroTag");
+    $("#glTitle").textContent=t("title");
+    $("#glPrompt").textContent=t("pressStart");
+    $("#selTitle").textContent=t("stageSelectTitle");
+    $("#selBackBtn").title=t("toMenuTitle");
   }
 
   /* ---------------- tier tabs ---------------- */
@@ -1107,6 +1215,8 @@
     const k=e.key;
     const confirm = k==="Enter"||k===" "||k==="Spacebar";
     const escape  = k==="Escape"||k==="Esc";
+    // title card: any key advances to the main menu
+    if(gameLogoScreen.classList.contains("show")){ e.preventDefault(); showScreen("mainMenu"); return; }
     // popups take priority (work on any screen)
     if($("#howtoOverlay").classList.contains("show")){
       if(confirm||escape){e.preventDefault();$("#howtoOverlay").classList.remove("show");}
@@ -1204,11 +1314,14 @@
   $("#howtoBtn").addEventListener("click",openHowto);
   $("#howtoClose").addEventListener("click",()=>$("#howtoOverlay").classList.remove("show"));
   $("#howtoOverlay").addEventListener("click",(e)=>{if(e.target.classList.contains("veil"))$("#howtoOverlay").classList.remove("show");});
-  $("#winNext").addEventListener("click",()=>{if(cur.stage>=STAGES_PER_TIER){hideOverlays();showScreen("select");}else startStage(cur.tier,cur.stage+1);});
+  $("#winNext").addEventListener("click",()=>{if(cur.stage>=STAGES_PER_TIER){hideOverlays();showScreen("mainMenu");}else startStage(cur.tier,cur.stage+1);});
   $("#winRetry").addEventListener("click",()=>startStage(cur.tier,cur.stage));
   $("#stuckRetry").addEventListener("click",()=>startStage(cur.tier,cur.stage));
   $("#stuckSelect").addEventListener("click",()=>{hideOverlays();showScreen("select");});
   $("#resetProg").addEventListener("click",()=>{if(confirm(t("confirmReset"))){progress=freshProgress();progress.lang=lang;saveProgress();buildStageGrid();}});
+  $("#startBtn").addEventListener("click",()=>showScreen("select"));
+  $("#selBackBtn").addEventListener("click",()=>showScreen("mainMenu"));
+  $("#gameLogo").addEventListener("click",()=>showScreen("mainMenu"));
 
   /* ---------------- intro splash ---------------- */
   let introTimer=null, introDone=false;
@@ -1219,7 +1332,7 @@
     const introEl=$("#intro");
     if(!introEl)return;
     introEl.classList.add("leaving");
-    setTimeout(()=>{ introEl.classList.remove("show","leaving"); showScreen("select"); },450);
+    setTimeout(()=>{ introEl.classList.remove("show","leaving"); showScreen("gameLogo"); },450);
   }
   function playIntro(){
     const introEl=$("#intro");
@@ -1230,6 +1343,8 @@
   /* ---------------- boot ---------------- */
   document.documentElement.lang=lang;
   buildLangBar(); renderStatic(); buildTierTabs(); buildStageGrid();
+  $("#glMascot").innerHTML=JANITOR_SVG;
+  $("#mmScene").innerHTML=sceneSVG(6,"mm");
   playIntro();
 })();
 </script>
