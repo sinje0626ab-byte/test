@@ -1136,7 +1136,7 @@
   (function setupJoystick(){
     const base=$("#joyBase"), knob=$("#joyKnob");
     if(!base||!knob)return;
-    const MAXR=42, DEADZONE=14, STEP_MS=230; // ~130ms glide + ~100ms hold, so continuous walking feels stepped, not a smooth slide
+    const MAXR=42, DEADZONE=14, STEP_MS=330; // ~130ms glide + ~200ms hold, so continuous walking feels stepped, not a smooth slide
     let activeId=null, originX=0, originY=0, curDir=null, repeatTimer=null;
 
     function angleToDir(dx,dy){
