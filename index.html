@@ -206,14 +206,6 @@
   #game .hud,#game .board-wrap,#game .pad-wrap{position:relative;z-index:1;}
   .board{box-shadow:0 20px 46px rgba(0,0,0,.62), 0 0 0 1px rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.03);}
 
-  /* ---- screen punch: felt on the payoff (2nd stroke) of every clean ---- */
-  .board.punch{animation:boardPunch .22s ease-out;}
-  @keyframes boardPunch{
-    0%{transform:scale(1) translate(0,0);}
-    30%{transform:scale(1.012) translate(-1.4px,.6px);}
-    55%{transform:scale(1.004) translate(1.1px,-.5px);}
-    100%{transform:scale(1) translate(0,0);}}
-
   /* ---- clear cutscene: door swings open, player walks through ---- */
   .cell.goal{perspective:220px;}
   .cell.goal .door{transform-style:preserve-3d;transform-origin:8% 50%;}
@@ -271,6 +263,31 @@
     background:rgba(20,15,11,.94);border:1px solid var(--line);color:var(--ink);
     padding:9px 16px;border-radius:20px;font-size:13.5px;font-weight:700;z-index:25;max-width:90vw;text-align:center;
     opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;}
+
+  /* ---------------- intro / publisher splash ---------------- */
+  #intro{z-index:50;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;
+    background:radial-gradient(circle at 50% 38%,#101a22,#05080c 72%);}
+  #intro.leaving{animation:introOut .45s ease forwards;}
+  @keyframes introOut{0%{opacity:1;}100%{opacity:0;}}
+  .intro-badge{width:min(46vw,180px);opacity:0;transform:scale(.62);
+    animation:badgeIn .62s cubic-bezier(.2,1.4,.4,1) forwards .08s;
+    filter:drop-shadow(0 0 22px rgba(60,200,180,.35));}
+  @keyframes badgeIn{0%{opacity:0;transform:scale(.62) rotate(-6deg);}
+    62%{opacity:1;transform:scale(1.06) rotate(1deg);}
+    100%{opacity:1;transform:scale(1) rotate(0);}}
+  .intro-badge svg{width:100%;height:100%;display:block;
+    animation:badgeGlow 1.8s ease-in-out infinite 0.7s;}
+  @keyframes badgeGlow{0%,100%{filter:drop-shadow(0 0 6px rgba(90,220,190,.35));}
+    50%{filter:drop-shadow(0 0 16px rgba(90,220,190,.7));}}
+  .intro-word{margin-top:16px;opacity:0;transform:translateY(8px);
+    animation:wordIn .5s ease forwards .38s;
+    display:flex;align-items:baseline;gap:.32em;font-weight:900;letter-spacing:.04em;
+    font-size:clamp(26px,7vw,40px);}
+  @keyframes wordIn{to{opacity:1;transform:translateY(0);}}
+  .intro-word .yj{background:linear-gradient(120deg,#3fa9ff,#3ee08a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .intro-word .games{color:#f4f8fb;text-shadow:0 2px 0 rgba(0,0,0,.5);}
+  .intro-tag{margin-top:6px;font-size:11px;letter-spacing:.42em;color:#7fa0ac;text-transform:uppercase;
+    opacity:0;animation:wordIn .5s ease forwards .55s;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
 </style>
 </head>
@@ -278,8 +295,35 @@
 <div class="bgtex"></div>
 <div id="app">
 
+  <!-- ===== INTRO / PUBLISHER SPLASH ===== -->
+  <section id="intro" class="screen show">
+    <div class="intro-badge">
+      <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="introGrad" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#2e6fe0"/>
+            <stop offset=".5" stop-color="#22b8c4"/>
+            <stop offset="1" stop-color="#3ee08a"/>
+          </linearGradient>
+        </defs>
+        <path d="M112 34 Q120 14 140 8 Q131 24 137 36 Q146 27 154 30 Q147 46 131 50 Q117 47 112 34Z" fill="url(#introGrad)"/>
+        <path d="M100 16 L164 40 Q168 98 149 134 Q129 172 100 194 Q71 172 51 134 Q32 98 36 40 Z"
+          fill="#0d151c" stroke="url(#introGrad)" stroke-width="7" stroke-linejoin="round"/>
+        <path d="M66 52 L100 102 L134 52" fill="none" stroke="url(#introGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M100 102 L100 124" stroke="url(#introGrad)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M132 66 L132 138 Q132 156 114 160" fill="none" stroke="url(#introGrad)" stroke-width="8" stroke-linecap="round"/>
+        <g fill="#eafcff">
+          <rect x="92" y="122" width="15" height="36" rx="3.5"/>
+          <rect x="81" y="133" width="37" height="15" rx="3.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="intro-word"><span class="yj">YJ</span><span class="games">GAMES</span></div>
+    <div class="intro-tag">PRESENTS</div>
+  </section>
+
   <!-- ===== STAGE SELECT ===== -->
-  <section id="select" class="screen show">
+  <section id="select" class="screen">
     <div class="langbar" id="langbar"></div>
     <div class="title-wrap">
       <div class="kicker" id="uiKicker"></div>
@@ -879,11 +923,7 @@
       sfxScrub(2); sfxClean();
       spawnDustBurst(cell,dir,-1,5,true);
       cell.classList.add("clean"); cell.classList.remove("floor");
-      punchBoard();
     },335);
-  }
-  function punchBoard(){
-    board.classList.remove("punch"); void board.offsetWidth; board.classList.add("punch");
   }
   // dust flung sideways from a mop stroke; final=true adds the settling cloud + sparkles
   function spawnDustBurst(cell,dir,lateralSign,count,final){
@@ -1119,9 +1159,27 @@
   $("#stuckSelect").addEventListener("click",()=>{hideOverlays();showScreen("select");});
   $("#resetProg").addEventListener("click",()=>{if(confirm(t("confirmReset"))){progress=freshProgress();progress.lang=lang;saveProgress();buildStageGrid();}});
 
+  /* ---------------- intro splash ---------------- */
+  let introTimer=null, introDone=false;
+  function finishIntro(){
+    if(introDone)return;                 // guard: click-skip and the auto-timer can both fire otherwise
+    introDone=true;
+    if(introTimer)clearTimeout(introTimer);
+    const introEl=$("#intro");
+    if(!introEl)return;
+    introEl.classList.add("leaving");
+    setTimeout(()=>{ introEl.classList.remove("show","leaving"); showScreen("select"); },450);
+  }
+  function playIntro(){
+    const introEl=$("#intro");
+    introEl.addEventListener("click",finishIntro,{once:true});
+    introTimer=setTimeout(finishIntro,3000);
+  }
+
   /* ---------------- boot ---------------- */
   document.documentElement.lang=lang;
   buildLangBar(); renderStatic(); buildTierTabs(); buildStageGrid();
+  playIntro();
 })();
 </script>
 </body>
