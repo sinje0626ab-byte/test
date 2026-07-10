@@ -52,7 +52,6 @@
     background:var(--panel);border:1px solid var(--line);color:var(--ink);
     padding:10px 20px;border-radius:24px;font-size:14px;font-weight:800;cursor:pointer;
     box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .1s,border-color .2s;}
-  .howto-btn:hover{border-color:var(--accent);}
   .howto-btn:active{transform:scale(.96);}
   /* wood-plank sign styling shared by the main-menu buttons */
   .wood-btn{
@@ -101,6 +100,8 @@
   .hud .iconbtn:active{transform:scale(.9);}
   .hud .iconbtn:disabled{opacity:.35;cursor:default;}
   .hud .iconbtn svg{width:20px;height:20px;}
+  .hud .iconbtn.restart-btn{width:48px;height:48px;border-radius:14px;}
+  .hud .iconbtn.restart-btn svg{width:27px;height:27px;}
   .hud .center{flex:1;text-align:center;min-width:0;}
   .hud .stg{font-size:11px;letter-spacing:.16em;color:var(--accent);font-weight:800;white-space:nowrap;
     overflow:hidden;text-overflow:ellipsis;}
@@ -168,6 +169,12 @@
   @keyframes goalpulse{0%,100%{box-shadow:inset 0 0 0 3px rgba(57,198,106,.4);}50%{box-shadow:inset 0 0 14px 4px rgba(57,198,106,.85);}}
   .cell.hint{animation:hintpulse .9s ease-in-out infinite;}
   @keyframes hintpulse{0%,100%{box-shadow:inset 0 0 0 3px rgba(255,225,77,.5);}50%{box-shadow:inset 0 0 16px 5px rgba(255,225,77,.95);}}
+  /* master tier: tile only enterable while moving in the marked direction */
+  .cell.oneway{box-shadow:inset 0 0 0 2px rgba(255,90,90,.55);}
+  .cell.oneway .oneway-arrow{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:min(5.5vw,24px);color:rgba(255,120,110,.9);text-shadow:0 1px 3px rgba(0,0,0,.6);
+    z-index:2;pointer-events:none;}
+  .cell.oneway.clean .oneway-arrow{opacity:.55;}
   .cell.bump{animation:bump .28s;}
   @keyframes bump{0%,100%{filter:none;}50%{filter:brightness(1.4) saturate(1.4);}}
 
@@ -233,26 +240,18 @@
   @keyframes walkInF{0%{opacity:1;filter:brightness(1);}
     100%{opacity:0;transform:translate(-50%,-62%) scaleX(-1) scale(.55);filter:brightness(1.6);}}
 
-  /* d-pad */
+  /* d-pad: big, simple direction buttons - no decorative dead-center hub */
   .pad-wrap{display:flex;justify-content:center;padding:6px 0 calc(16px + env(safe-area-inset-bottom));}
-  /* single-knob joystick: drag and hold to walk continuously */
-  .joystick{position:relative;width:156px;height:156px;border-radius:50%;touch-action:none;user-select:none;
-    background:radial-gradient(circle at 36% 30%,#2c231b,#15100b 74%);
-    border:1px solid rgba(255,255,255,.05);
-    box-shadow:inset 0 3px 10px rgba(0,0,0,.6), inset 0 -2px 6px rgba(255,255,255,.03), 0 6px 16px rgba(0,0,0,.4);}
-  .joy-ring{position:absolute;inset:9px;border-radius:50%;border:1.5px dashed rgba(255,255,255,.1);pointer-events:none;}
-  .joy-arrows{position:absolute;inset:0;pointer-events:none;color:rgba(255,255,255,.28);font-size:15px;font-weight:800;}
-  .joy-arrows span{position:absolute;}
-  .joy-arrows .u{top:9px;left:50%;transform:translateX(-50%);}
-  .joy-arrows .d{bottom:9px;left:50%;transform:translateX(-50%);}
-  .joy-arrows .l{left:11px;top:50%;transform:translateY(-50%);}
-  .joy-arrows .r{right:11px;top:50%;transform:translateY(-50%);}
-  .joy-knob{position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;
-    background:radial-gradient(circle at 38% 32%,#4a3f38,#211a15 78%);
-    box-shadow:0 6px 14px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.14);
-    display:flex;align-items:center;justify-content:center;font-size:26px;
-    transition:transform .07s ease-out;will-change:transform;cursor:grab;}
-  .joy-knob.grabbed{transition:none;cursor:grabbing;}
+  .dpad{display:grid;grid-template-columns:74px 74px 74px;grid-template-rows:74px 74px 74px;gap:7px;}
+  .dbtn{border:none;cursor:pointer;border-radius:16px;touch-action:none;user-select:none;
+    background:linear-gradient(180deg,#41362e,#241d18);color:var(--ink);font-size:30px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 5px 0 #140f0b, 0 8px 14px rgba(0,0,0,.4);transition:transform .06s, box-shadow .06s;}
+  .dbtn:active{transform:translateY(4px);box-shadow:0 1px 0 #140f0b,0 3px 8px rgba(0,0,0,.4);}
+  .dbtn.up{grid-column:2;grid-row:1;}
+  .dbtn.left{grid-column:1;grid-row:2;}
+  .dbtn.right{grid-column:3;grid-row:2;}
+  .dbtn.down{grid-column:2;grid-row:3;}
 
   /* overlays */
   .overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:20px;}
@@ -485,14 +484,15 @@
       </div>
       <button class="iconbtn hintbtn" id="hintBtn">💡<span class="cnt" id="hintCount">0</span></button>
       <button class="iconbtn" id="undoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 V11 a5 5 0 0 1 10 0 V20"/><path d="M13 16 l4 4 4 -4"/></svg></button>
-      <button class="iconbtn" id="restartBtn">⟳</button>
+      <button class="iconbtn restart-btn" id="restartBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 2.64 6.36"/><path d="M3 21v-6h6"/></svg></button>
     </div>
     <div class="board-wrap"><div class="board" id="board"></div></div>
     <div class="pad-wrap">
-      <div class="joystick" id="joyBase">
-        <div class="joy-ring"></div>
-        <div class="joy-arrows"><span class="u">▲</span><span class="d">▼</span><span class="l">◀</span><span class="r">▶</span></div>
-        <div class="joy-knob" id="joyKnob">🧽</div>
+      <div class="dpad">
+        <button class="dbtn up"    data-dir="up">▲</button>
+        <button class="dbtn left"  data-dir="left">◀</button>
+        <button class="dbtn right" data-dir="right">▶</button>
+        <button class="dbtn down"  data-dir="down">▼</button>
       </div>
     </div>
   </section>
@@ -541,7 +541,7 @@
 <script>
 "use strict";
 (function(){
-  const TIERS = ["beginner","intermediate","advanced"];
+  const TIERS = ["beginner","intermediate","advanced","master"];
   const STAGES_PER_TIER = 30;
   const PROG_KEY = "chiefJanitorKim.progress.v1";
 
@@ -554,15 +554,16 @@
       stageSelectTitle:"스테이지 선택", toMenuTitle:"메인 화면",
       howto:"게임 방법", stageWord:"스테이지", tiles:"칸",
       reset:"진행 기록 초기화",
-      tierBeginner:"초급", tierIntermediate:"중급", tierAdvanced:"고급",
+      tierBeginner:"초급", tierIntermediate:"중급", tierAdvanced:"고급", tierMaster:"특급",
       tierSub:"1 – 30",
       howtoTitle:"게임 방법",
       how:[
         ["🎯","<b>목표</b> — 장애물(상자 📦)을 피해 <b>모든 바닥 칸</b>을 닦고 <b>도착(문)</b> 칸에서 마무리하면 성공!"],
         ["🚫","<b>규칙</b> — 이미 닦은 칸은 다시 밟을 수 없어요. 끊기지 않게 한 번에 이어서 청소하세요."],
-        ["🕹️","<b>조작</b> — 방향키 / 화면 조이스틱 / 화면을 원하는 방향으로 쓸어넘기기"],
+        ["🕹️","<b>조작</b> — 방향키 / 화면 방향 버튼 / 화면을 원하는 방향으로 쓸어넘기기"],
         ["💡","<b>힌트</b> — 💡 버튼을 누르면 다음에 갈 칸을 알려줘요. 스테이지마다 횟수가 정해져 있어요."],
-        ["🏆","<b>난이도</b> — 초급·중급·고급 각 30스테이지. 뒤로 갈수록 판이 커지고 상자가 많아져요."]
+        ["🏆","<b>난이도</b> — 초급·중급·고급·특급 각 30스테이지. 뒤로 갈수록 판이 커지고 상자가 많아져요."],
+        ["🔒","<b>특급 전용</b> — 힌트가 없고, 화살표 표시된 칸은 <b>그 방향으로 이동할 때만</b> 들어갈 수 있어요!"]
       ],
       close:"닫기",
       undoTitle:"한 칸 되돌리기", restartTitle:"다시 시작", backTitle:"스테이지 선택", hintTitle:"힌트",
@@ -571,6 +572,7 @@
       stuckTitle:"막혔어요!", stuckBody:"더 이상 갈 수 있는 칸이 없어요.\n경로를 바꿔서 다시 도전해 보세요.",
       selectBtn:"스테이지 선택", restartBtn:"다시 시작",
       tCrate:"📦 상자는 못 지나가요", tCleaned:"이미 닦은 칸이에요", tGoal:"아직 청소가 안 끝났어요!",
+      tOneway:"🔒 이 방향으로는 들어갈 수 없어요!",
       tHint:"💡 표시된 칸으로 가보세요!", tHintNone:"이 경로로는 완료할 수 없어요 — 되돌려보세요!",
       tHintEmpty:"힌트를 다 썼어요!",
       confirmReset:"모든 진행 기록을 지울까요?"
@@ -582,15 +584,16 @@
       stageSelectTitle:"Stage Select", toMenuTitle:"Main menu",
       howto:"How to Play", stageWord:"Stage", tiles:"tiles",
       reset:"Reset progress",
-      tierBeginner:"Beginner", tierIntermediate:"Intermediate", tierAdvanced:"Advanced",
+      tierBeginner:"Beginner", tierIntermediate:"Intermediate", tierAdvanced:"Advanced", tierMaster:"Master",
       tierSub:"1 – 30",
       howtoTitle:"How to Play",
       how:[
         ["🎯","<b>Goal</b> — Dodge the obstacles (crates 📦), mop <b>every floor tile</b>, and finish on the <b>EXIT door</b> to win!"],
         ["🚫","<b>Rule</b> — You can't step on a tile you've already mopped. Clean it all in one continuous path."],
-        ["🕹️","<b>Controls</b> — Arrow keys / on-screen joystick / swipe in any direction"],
+        ["🕹️","<b>Controls</b> — Arrow keys / on-screen direction buttons / swipe in any direction"],
         ["💡","<b>Hint</b> — Tap the 💡 button to reveal the next tile to step on. Each stage has a limited number of hints."],
-        ["🏆","<b>Difficulty</b> — Beginner, Intermediate & Advanced, 30 stages each. Boards grow and crates multiply as you go."]
+        ["🏆","<b>Difficulty</b> — Beginner, Intermediate, Advanced & Master, 30 stages each. Boards grow and crates multiply as you go."],
+        ["🔒","<b>Master only</b> — No hints, and arrow-marked tiles can only be entered while moving in that exact direction!"]
       ],
       close:"Close",
       undoTitle:"Undo one step", restartTitle:"Restart", backTitle:"Stage select", hintTitle:"Hint",
@@ -599,6 +602,7 @@
       stuckTitle:"Stuck!", stuckBody:"There's nowhere left to move.\nTry taking a different route.",
       selectBtn:"Stage select", restartBtn:"Restart",
       tCrate:"📦 Can't pass through crates", tCleaned:"You already mopped this tile", tGoal:"You're not done cleaning yet!",
+      tOneway:"🔒 Can't enter from this direction!",
       tHint:"💡 Head toward the highlighted tile!", tHintNone:"This route can't be finished — try undo!",
       tHintEmpty:"No hints left!",
       confirmReset:"Erase all progress?"
@@ -610,15 +614,16 @@
       stageSelectTitle:"Chọn màn", toMenuTitle:"Màn hình chính",
       howto:"Cách chơi", stageWord:"Màn", tiles:"ô",
       reset:"Đặt lại tiến trình",
-      tierBeginner:"Sơ cấp", tierIntermediate:"Trung cấp", tierAdvanced:"Cao cấp",
+      tierBeginner:"Sơ cấp", tierIntermediate:"Trung cấp", tierAdvanced:"Cao cấp", tierMaster:"Bậc thầy",
       tierSub:"1 – 30",
       howtoTitle:"Cách chơi",
       how:[
         ["🎯","<b>Mục tiêu</b> — Tránh chướng ngại vật (thùng 📦), lau <b>tất cả các ô sàn</b> rồi kết thúc tại ô <b>CỬA RA</b> để thắng!"],
         ["🚫","<b>Luật</b> — Không được bước lại ô đã lau. Hãy lau một mạch liền không ngắt quãng."],
-        ["🕹️","<b>Điều khiển</b> — Phím mũi tên / Cần điều khiển trên màn hình / Vuốt theo hướng bất kỳ"],
+        ["🕹️","<b>Điều khiển</b> — Phím mũi tên / Nút hướng trên màn hình / Vuốt theo hướng bất kỳ"],
         ["💡","<b>Gợi ý</b> — Nhấn nút 💡 để hiện ô nên đi tiếp. Mỗi màn có số lượt gợi ý giới hạn."],
-        ["🏆","<b>Độ khó</b> — Sơ cấp, Trung cấp & Cao cấp, mỗi mức 30 màn. Càng về sau bàn càng lớn và nhiều thùng hơn."]
+        ["🏆","<b>Độ khó</b> — Sơ cấp, Trung cấp, Cao cấp & Bậc thầy, mỗi mức 30 màn. Càng về sau bàn càng lớn và nhiều thùng hơn."],
+        ["🔒","<b>Chỉ ở Bậc thầy</b> — Không có gợi ý, và ô có mũi tên chỉ có thể vào <b>đúng theo hướng mũi tên</b>!"]
       ],
       close:"Đóng",
       undoTitle:"Hoàn tác một bước", restartTitle:"Chơi lại", backTitle:"Chọn màn", hintTitle:"Gợi ý",
@@ -627,6 +632,7 @@
       stuckTitle:"Bí rồi!", stuckBody:"Không còn ô nào để đi.\nHãy thử đổi đường đi khác.",
       selectBtn:"Chọn màn", restartBtn:"Chơi lại",
       tCrate:"📦 Không thể đi qua thùng hàng", tCleaned:"Ô này đã được lau rồi", tGoal:"Chưa lau xong mà!",
+      tOneway:"🔒 Không thể vào từ hướng này!",
       tHint:"💡 Hãy đi tới ô được đánh dấu!", tHintNone:"Đường này không thể hoàn thành — hãy hoàn tác!",
       tHintEmpty:"Hết lượt gợi ý rồi!",
       confirmReset:"Xóa toàn bộ tiến trình?"
@@ -670,18 +676,21 @@
     beginner:    {sizes:[4,5,6], obs:[0.06,0.16], minCov:0.55, hints:5},
     intermediate:{sizes:[5,6,7], obs:[0.10,0.22], minCov:0.72, hints:3},
     // advanced: bigger boards + high coverage => long, demanding paths
-    advanced:    {sizes:[7,8,9], obs:[0.10,0.20], minCov:0.90, hints:3}
+    advanced:    {sizes:[7,8,9], obs:[0.10,0.20], minCov:0.90, hints:3},
+    // master: even bigger boards, no hints, plus one-way "entry direction" tiles
+    master:      {sizes:[10,11,12], obs:[0.12,0.24], minCov:0.85, hints:0, oneway:[0.10,0.22]}
   };
   function stageConfig(tier,n){
     const b=BANDS[tier];
     const size=b.sizes[Math.min(2,Math.floor((n-1)/10))];
     const tt=(n-1)/(STAGES_PER_TIER-1);
     const obstacleRatio=b.obs[0]+(b.obs[1]-b.obs[0])*tt;
+    const onewayRatio=b.oneway ? (b.oneway[0]+(b.oneway[1]-b.oneway[0])*tt) : 0;
     const ti=TIERS.indexOf(tier);
-    return {size, obstacleRatio, minCov:b.minCov, hints:b.hints, seed:(((ti*97+n)>>>0)*2654435761)>>>0};
+    return {size, obstacleRatio, onewayRatio, minCov:b.minCov, hints:b.hints, seed:(((ti*97+n)>>>0)*2654435761)>>>0};
   }
   function generateStage(tier,n){
-    const {size,obstacleRatio,minCov,hints,seed}=stageConfig(tier,n);
+    const {size,obstacleRatio,onewayRatio,minCov,hints,seed}=stageConfig(tier,n);
     const N=size*size, idx=(x,y)=>y*size+x, inb=(x,y)=>x>=0&&y>=0&&x<size&&y<size;
     const neighbors=(x,y)=>{const o=[];if(inb(x,y-1))o.push([x,y-1]);if(inb(x+1,y))o.push([x+1,y]);if(inb(x,y+1))o.push([x,y+1]);if(inb(x-1,y))o.push([x-1,y]);return o;};
     // one attempt at a layout for a given rng; returns {best, freeCount}
@@ -727,8 +736,22 @@
     const best=chosen.best;
     const grid=new Array(N).fill("crate");
     for(const [x,y] of best) grid[idx(x,y)]="floor";
+    // one-way tiles: pick a subset of the canonical path (never start/goal) and lock
+    // their entry to the exact direction the generator itself approached them from,
+    // so the reference solution always stays valid no matter which tiles get picked
+    const oneway={};
+    if(onewayRatio>0 && best.length>2){
+      const rng2=mulberry32((seed^0x51ed270b)>>>0);
+      const dirName=(dx,dy)=> dx===1?"right":dx===-1?"left":dy===1?"down":"up";
+      for(let i=1;i<best.length-1;i++){
+        if(rng2()<onewayRatio){
+          const [px,py]=best[i-1], [cx,cy]=best[i];
+          oneway[cx+","+cy]=dirName(cx-px,cy-py);
+        }
+      }
+    }
     return {size,grid,start:{x:best[0][0],y:best[0][1]},goal:{x:best[best.length-1][0],y:best[best.length-1][1]},
-      floorCount:best.length,hints};
+      floorCount:best.length,hints,oneway};
   }
 
   /* ---------------- solver (hint) ---------------- */
@@ -739,17 +762,19 @@
     const visited=new Array(size*size).fill(false);
     cur.cleaned.forEach(k=>{const [x,y]=k.split(",").map(Number);visited[idx(x,y)]=true;});
     let nodes=0; const CAP=400000;
-    const D=[[0,-1],[0,1],[-1,0],[1,0]];
+    const D=[[0,-1,"up"],[0,1,"down"],[-1,0,"left"],[1,0,"right"]];
+    const oneway=data.oneway||{};
     function dfs(x,y,count){
       if(nodes++>CAP) return null;
       if(count===total) return (x===goal.x&&y===goal.y)?[]:null;
       const opts=[];
-      for(const [dx,dy] of D){
+      for(const [dx,dy,dname] of D){
         const nx=x+dx,ny=y+dy;
         if(nx<0||ny<0||nx>=size||ny>=size) continue;
         const ni=idx(nx,ny);
         if(!isFloor(ni)||visited[ni]) continue;
         if(nx===goal.x&&ny===goal.y&&count!==total-1) continue;
+        const ow=oneway[nx+","+ny]; if(ow&&ow!==dname) continue;
         let deg=0;
         for(const [ex,ey] of D){const ax=nx+ex,ay=ny+ey;if(ax<0||ay<0||ax>=size||ay>=size)continue;const ai=idx(ax,ay);if(isFloor(ai)&&!visited[ai])deg++;}
         opts.push([nx,ny,deg]);
@@ -1066,7 +1091,7 @@
     TIERS.forEach(tr=>{
       const b=document.createElement("button");
       b.className="tier-tab"+(curTier===tr?" active":"");
-      const label = tr==="beginner"?t("tierBeginner"):tr==="intermediate"?t("tierIntermediate"):t("tierAdvanced");
+      const label = tr==="beginner"?t("tierBeginner"):tr==="intermediate"?t("tierIntermediate"):tr==="advanced"?t("tierAdvanced"):t("tierMaster");
       b.innerHTML=`<span>${label}</span><span class="tsub">${t("tierSub")}</span>`;
       b.addEventListener("click",()=>{curTier=tr;buildTierTabs();buildStageGrid();});
       wrap.appendChild(b);
@@ -1117,6 +1142,12 @@
       const isGoal=data.goal.x===x&&data.goal.y===y;
       if(ty!=="crate"&&isStart){cell.classList.add("start");cell.innerHTML=`<div class="mark"><span class="tag" data-tag="start"></span></div>`;}
       if(ty!=="crate"&&isGoal){cell.classList.add("goal");cell.innerHTML=`<div class="mark"><span class="door">${DOOR_SVG}</span><span class="tag" data-tag="goal"></span></div>`;}
+      const owDir=data.oneway&&data.oneway[key(x,y)];
+      if(ty!=="crate"&&owDir){
+        cell.classList.add("oneway");
+        const glyph={up:"▲",down:"▼",left:"◀",right:"▶"}[owDir];
+        cell.insertAdjacentHTML("beforeend",`<span class="oneway-arrow">${glyph}</span>`);
+      }
       board.appendChild(cell);
       cur.cellEls[key(x,y)]=cell;
     }
@@ -1197,7 +1228,7 @@
 
   function updateHud(){
     const {data,tier,stage}=cur;
-    const tierName = tier==="beginner"?t("tierBeginner"):tier==="intermediate"?t("tierIntermediate"):t("tierAdvanced");
+    const tierName = tier==="beginner"?t("tierBeginner"):tier==="intermediate"?t("tierIntermediate"):tier==="advanced"?t("tierAdvanced"):t("tierMaster");
     hudStage.textContent=`${tierName} · ${t("stageWord")} ${String(stage).padStart(2,"0")}`;
     hudProg.innerHTML=`<span class="done">${cur.cleaned.size}</span> / ${data.floorCount} ${t("tiles")}`;
     undoBtn.disabled=cur.path.length<=1;
@@ -1218,6 +1249,8 @@
     if(nx<0||ny<0||nx>=size||ny>=size){sfxBump();return;}
     const ty=data.grid[ny*size+nx], nk=key(nx,ny);
     if(ty==="crate"){bumpCell(nx,ny);sfxBump();toast(t("tCrate"));return;}
+    const owDir=data.oneway&&data.oneway[nk];
+    if(owDir&&owDir!==dir){bumpCell(nx,ny);sfxBump();toast(t("tOneway"));return;}
     if(cur.cleaned.has(nk)){bumpCell(nx,ny);sfxBump();toast(t("tCleaned"));return;}
     const isGoal=data.goal.x===nx&&data.goal.y===ny;
     if(isGoal&&(data.floorCount-cur.cleaned.size)>1){bumpCell(nx,ny);sfxBump();toast(t("tGoal"));return;}
@@ -1247,6 +1280,7 @@
     for(const d in DIRS){const [dx,dy]=DIRS[d];const nx=cur.pos.x+dx,ny=cur.pos.y+dy;
       if(nx<0||ny<0||nx>=size||ny>=size)continue;
       if(data.grid[ny*size+nx]==="crate")continue;
+      const owDir=data.oneway&&data.oneway[key(nx,ny)]; if(owDir&&owDir!==d)continue;
       if(cur.cleaned.has(key(nx,ny)))continue;
       const isGoal=data.goal.x===nx&&data.goal.y===ny;
       if(isGoal&&(data.floorCount-cur.cleaned.size)>1)continue;
@@ -1362,60 +1396,40 @@
       return;
     }
   });
-  // ---- single-knob joystick: hold + tilt to walk continuously in that direction ----
-  (function setupJoystick(){
-    const base=$("#joyBase"), knob=$("#joyKnob");
-    if(!base||!knob)return;
-    const MAXR=42, DEADZONE=14, STEP_MS=330; // ~130ms glide + ~200ms hold, so continuous walking feels stepped, not a smooth slide
-    let activeId=null, originX=0, originY=0, curDir=null, repeatTimer=null;
-
-    function angleToDir(dx,dy){
-      if(Math.hypot(dx,dy)<DEADZONE)return null;
-      return Math.abs(dx)>Math.abs(dy) ? (dx>0?"right":"left") : (dy>0?"down":"up");
-    }
-    function setKnob(dx,dy){
-      const d=Math.hypot(dx,dy), clamped=Math.min(d,MAXR)||0.0001, a=Math.atan2(dy,dx);
-      knob.style.transform=`translate(${(Math.cos(a)*clamped).toFixed(1)}px, ${(Math.sin(a)*clamped).toFixed(1)}px)`;
-    }
-    function resetKnob(){ knob.style.transform="translate(0,0)"; }
+  // ---- d-pad: tap to step, press-and-hold to walk continuously ----
+  (function setupDpad(){
+    const STEP_MS=330; // matches the stepped walking cadence used elsewhere
+    let activeId=null, repeatTimer=null;
     function step(dir){
       const before=cur?JSON.stringify(cur.pos):null;
       tryMove(dir);
       const after=cur?JSON.stringify(cur.pos):null;
       if(before===after && repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; } // stop hammering a wall
     }
-    function setDir(dir){
-      if(curDir===dir)return;
-      curDir=dir;
-      if(repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; }
-      if(dir){ step(dir); repeatTimer=setInterval(()=>step(dir),STEP_MS); }
-    }
     function stopAll(){
       if(repeatTimer){ clearInterval(repeatTimer); repeatTimer=null; }
-      curDir=null; activeId=null; knob.classList.remove("grabbed"); resetKnob();
+      activeId=null;
     }
-    base.addEventListener("pointerdown",(e)=>{
-      e.preventDefault();
-      activeId=e.pointerId; base.setPointerCapture(activeId);
-      knob.classList.add("grabbed");
-      const r=base.getBoundingClientRect(); originX=r.left+r.width/2; originY=r.top+r.height/2;
-      const dx=e.clientX-originX, dy=e.clientY-originY;
-      setKnob(dx,dy); setDir(angleToDir(dx,dy));
+    document.querySelectorAll(".dbtn").forEach(btn=>{
+      const dir=btn.dataset.dir;
+      btn.addEventListener("pointerdown",(e)=>{
+        e.preventDefault();
+        activeId=e.pointerId; btn.setPointerCapture(activeId);
+        if(repeatTimer)clearInterval(repeatTimer);
+        step(dir);
+        repeatTimer=setInterval(()=>step(dir),STEP_MS);
+      });
+      const release=(e)=>{ if(e.pointerId!==activeId)return; stopAll(); };
+      btn.addEventListener("pointerup",release);
+      btn.addEventListener("pointercancel",release);
+      btn.addEventListener("pointerleave",release);
     });
-    base.addEventListener("pointermove",(e)=>{
-      if(e.pointerId!==activeId)return;
-      const dx=e.clientX-originX, dy=e.clientY-originY;
-      setKnob(dx,dy); setDir(angleToDir(dx,dy));
-    });
-    const release=(e)=>{ if(e.pointerId!==activeId)return; stopAll(); };
-    base.addEventListener("pointerup",release);
-    base.addEventListener("pointercancel",release);
   })();
   // swipe anywhere on the game screen (empty space too) to move.
-  // touches that start on the joystick are left to it.
+  // touches that start on the d-pad are left to it.
   let touchStart=null;
   gameScreen.addEventListener("touchstart",(e)=>{
-    if(e.target.closest(".joystick")){ touchStart=null; return; }
+    if(e.target.closest(".dpad")){ touchStart=null; return; }
     const tt=e.changedTouches[0]; touchStart={x:tt.clientX,y:tt.clientY};
   },{passive:true});
   gameScreen.addEventListener("touchend",(e)=>{
