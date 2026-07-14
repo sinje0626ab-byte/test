@@ -7,1032 +7,1196 @@
 <!-- Tailwind CSS (CDN) -->
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  /* 캔버스 위에서 텍스트 선택이 되지 않도록, 그리고 폰트 렌더링을 부드럽게 */
   html, body { user-select: none; -webkit-user-select: none; }
   canvas { image-rendering: auto; }
-  /* 토스트(안내 문구) 등장/사라짐 애니메이션 */
+  /* 토스트 등장/사라짐 */
   @keyframes toastIn {
-    0%   { opacity: 0; transform: translate(-50%, -8px); }
-    15%  { opacity: 1; transform: translate(-50%, 0); }
-    85%  { opacity: 1; transform: translate(-50%, 0); }
-    100% { opacity: 0; transform: translate(-50%, -8px); }
+    0%   { opacity: 0; transform: translate(-50%, -8px) scale(.96); }
+    12%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    82%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -8px) scale(.96); }
   }
+  /* 보스 경고 점멸 */
+  @keyframes bossFlash { 0%,100%{opacity:.15} 50%{opacity:.55} }
+  .shop-btn.active { outline: 3px solid #fbbf24; outline-offset: 1px; }
+  .shop-btn:disabled { opacity: .4; cursor: not-allowed; }
 </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center py-6 font-sans">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center py-4 font-sans">
 
-  <!-- ========================= 상단 헤더 ========================= -->
-  <header class="w-[1000px] max-w-full mb-3">
-    <h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
-      🌊 Tide &amp; Tower <span class="text-sm font-normal text-slate-400">타이드 &amp; 타워 · 프로토타입</span>
-    </h1>
-  </header>
+  <!-- ===================== 상단 대시보드 ===================== -->
+  <div class="w-[1000px] max-w-full mb-2 bg-slate-800/90 rounded-xl px-4 py-2.5 flex flex-wrap items-center gap-x-5 gap-y-2 shadow-lg border border-slate-700">
+    <h1 class="text-lg font-black tracking-tight flex items-center gap-1.5">🌊<span class="text-sky-300">Tide</span><span class="text-slate-500">&</span><span class="text-amber-300">Tower</span></h1>
 
-  <!-- ========================= 대시보드 (상태 + 컨트롤) ========================= -->
-  <div class="w-[1000px] max-w-full mb-2 bg-slate-800/80 rounded-xl px-4 py-3 flex flex-wrap items-center gap-4 shadow-lg border border-slate-700">
-    <!-- 상태 표시 영역 -->
-    <div class="flex items-center gap-5 text-sm">
-      <div class="flex flex-col leading-tight">
-        <span class="text-slate-400 text-xs">웨이브</span>
-        <span id="ui-wave" class="text-lg font-bold text-sky-300">1</span>
-      </div>
-      <div class="flex flex-col leading-tight">
-        <span class="text-slate-400 text-xs">골드</span>
-        <span id="ui-gold" class="text-lg font-bold text-amber-300">💰 300</span>
-      </div>
-      <div class="flex flex-col leading-tight min-w-[140px]">
-        <span class="text-slate-400 text-xs">본부 체력 (HQ HP)</span>
+    <div class="flex items-center gap-4 text-sm">
+      <div class="flex flex-col leading-tight"><span class="text-slate-400 text-[10px]">웨이브</span><span id="ui-wave" class="text-base font-bold text-sky-300">1</span></div>
+      <div class="flex flex-col leading-tight"><span class="text-slate-400 text-[10px]">골드</span><span id="ui-gold" class="text-base font-bold text-amber-300">300</span></div>
+      <div class="flex flex-col leading-tight"><span class="text-slate-400 text-[10px]">점수</span><span id="ui-score" class="text-base font-bold text-fuchsia-300">0</span></div>
+      <div class="flex flex-col leading-tight"><span class="text-slate-400 text-[10px]">최고 웨이브</span><span id="ui-best" class="text-base font-bold text-emerald-300">1</span></div>
+      <div class="flex flex-col leading-tight min-w-[130px]">
+        <span class="text-slate-400 text-[10px]">본부 체력</span>
         <div class="flex items-center gap-2">
-          <div class="w-28 h-2.5 bg-slate-600 rounded-full overflow-hidden">
-            <div id="ui-hp-bar" class="h-full bg-emerald-400 transition-all duration-300" style="width:100%"></div>
-          </div>
-          <span id="ui-hp" class="text-sm font-bold text-emerald-300">100</span>
+          <div class="w-24 h-2.5 bg-slate-600 rounded-full overflow-hidden"><div id="ui-hp-bar" class="h-full bg-emerald-400 transition-all duration-300" style="width:100%"></div></div>
+          <span id="ui-hp" class="text-xs font-bold text-emerald-300">100</span>
         </div>
       </div>
     </div>
 
-    <!-- 구분선 -->
     <div class="flex-1"></div>
 
-    <!-- 컨트롤 버튼 영역 -->
-    <div class="flex flex-wrap items-center gap-2">
-      <!-- 타워 건설 모드 토글 -->
-      <button id="btn-build"
-        class="px-3 py-2 rounded-lg text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition">
-        🏹 타워 건설 (100G)
-      </button>
-      <button id="btn-wave"
-        class="px-3 py-2 rounded-lg text-sm font-semibold bg-sky-600 hover:bg-sky-500 active:scale-95 transition">
-        ▶ 웨이브 시작
-      </button>
-      <button id="btn-save"
-        class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-600 hover:bg-slate-500 active:scale-95 transition">
-        💾 저장
-      </button>
-      <button id="btn-load"
-        class="px-3 py-2 rounded-lg text-sm font-semibold bg-slate-600 hover:bg-slate-500 active:scale-95 transition">
-        📂 불러오기
-      </button>
-      <button id="btn-reset"
-        class="px-3 py-2 rounded-lg text-sm font-semibold bg-rose-700 hover:bg-rose-600 active:scale-95 transition">
-        ♻ 초기화
-      </button>
+    <div class="flex items-center gap-1.5">
+      <!-- 배속 -->
+      <button id="btn-speed" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 transition" title="게임 배속">⏩ 1x</button>
+      <button id="btn-wave" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 hover:bg-sky-500 active:scale-95 transition">▶ 웨이브</button>
+      <button id="btn-save" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-600 hover:bg-slate-500 transition">💾</button>
+      <button id="btn-load" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-600 hover:bg-slate-500 transition">📂</button>
+      <button id="btn-mute" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-600 hover:bg-slate-500 transition" title="음소거">🔊</button>
+      <button id="btn-reset" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-700 hover:bg-rose-600 transition">♻</button>
     </div>
   </div>
 
-  <!-- ========================= 게임 캔버스 (토스트 오버레이 포함) ========================= -->
+  <!-- ===================== 게임 캔버스 ===================== -->
   <div class="relative">
-    <canvas id="game" width="1000" height="600"
-      class="rounded-xl border-2 border-slate-600 shadow-2xl cursor-crosshair bg-slate-950"></canvas>
+    <canvas id="game" width="1000" height="600" class="rounded-xl border-2 border-slate-600 shadow-2xl bg-slate-950"></canvas>
 
-    <!-- 화면 중앙 상단 토스트(안내 문구) -->
-    <div id="toast"
-      class="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 hidden
-             px-4 py-2 rounded-lg bg-black/70 text-white text-sm font-semibold shadow-lg backdrop-blur">
+    <!-- 콤보 카운터 -->
+    <div id="combo" class="pointer-events-none absolute right-4 top-4 hidden text-right">
+      <div class="text-3xl font-black text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,.8)]"><span id="combo-num">0</span><span class="text-lg">x</span></div>
+      <div class="text-[10px] font-bold text-amber-200/80 tracking-widest">COMBO</div>
     </div>
 
-    <!-- 게임오버 / 승리 오버레이 -->
-    <div id="overlay"
-      class="absolute inset-0 hidden flex-col items-center justify-center bg-black/70 rounded-xl backdrop-blur-sm">
-      <div id="overlay-title" class="text-4xl font-black mb-2">GAME OVER</div>
-      <div id="overlay-sub" class="text-slate-300 mb-5">본부가 함락되었습니다.</div>
-      <button id="btn-overlay-restart"
-        class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-bold transition">
-        다시 시작
-      </button>
+    <!-- 토스트 -->
+    <div id="toast" class="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 hidden px-4 py-2 rounded-lg bg-black/75 text-white text-sm font-semibold shadow-lg backdrop-blur"></div>
+
+    <!-- 게임오버 오버레이 -->
+    <div id="overlay" class="absolute inset-0 hidden flex-col items-center justify-center bg-black/75 rounded-xl backdrop-blur-sm">
+      <div id="overlay-title" class="text-5xl font-black mb-2 text-rose-400">GAME OVER</div>
+      <div id="overlay-sub" class="text-slate-300 mb-1">본부가 함락되었습니다.</div>
+      <div id="overlay-score" class="text-amber-300 font-bold mb-5"></div>
+      <button id="btn-overlay-restart" class="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-bold transition">다시 도전</button>
     </div>
   </div>
 
-  <!-- 조작 안내 -->
-  <p class="w-[1000px] max-w-full mt-2 text-xs text-slate-400 leading-relaxed">
-    🎮 <b>[타워 건설]</b> 버튼을 눌러 건설 모드를 켠 뒤, <b>모래사장(오른쪽)</b>을 클릭해 활잡이 초소를 세우세요 (100골드).
-    타워에 마우스를 올리면 사정거리가 원으로 표시됩니다. 배는 <b>해안(x=400)에 상륙하기 전까지 무적</b>이며,
-    상륙해 하선한 적만 공격할 수 있습니다. 웨이브를 클리어할 때마다 <b>자동 저장</b>됩니다.
+  <!-- ===================== 하단 상점/인스펙터 바 ===================== -->
+  <div class="w-[1000px] max-w-full mt-2 bg-slate-800/90 rounded-xl px-3 py-2.5 flex items-stretch gap-3 shadow-lg border border-slate-700">
+    <!-- 타워 상점 -->
+    <div class="flex items-center gap-2">
+      <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider [writing-mode:vertical-lr] rotate-180">타워</div>
+      <div id="shop-towers" class="flex gap-1.5"></div>
+    </div>
+    <div class="w-px bg-slate-600"></div>
+    <!-- 스킬 -->
+    <div class="flex items-center gap-2">
+      <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider [writing-mode:vertical-lr] rotate-180">스킬</div>
+      <div id="shop-abilities" class="flex gap-1.5"></div>
+    </div>
+    <div class="w-px bg-slate-600"></div>
+    <!-- 인스펙터 (타워 선택 시) -->
+    <div id="inspector" class="flex-1 flex items-center gap-3 text-sm text-slate-400">
+      <span class="text-xs">타워/스킬을 골라 <b class="text-slate-200">모래사장</b>에 설치하세요. 설치된 타워를 <b class="text-slate-200">클릭</b>하면 업그레이드·판매할 수 있어요.</span>
+    </div>
+  </div>
+
+  <p class="w-[1000px] max-w-full mt-1.5 text-[11px] text-slate-500 leading-relaxed">
+    단축키: <b>1~4</b> 타워선택 · <b>Q</b> 운석 · <b>W</b> 빙결 · <b>Space</b> 웨이브 · <b>ESC</b> 취소 &nbsp;|&nbsp;
+    배는 상륙(x=400) 전까지 <b>무적</b> · 상륙 후 하선한 적만 공격 가능 · 웨이브 클리어 시 <b>자동 저장</b>
   </p>
 
 <script>
 "use strict";
-
 /* =====================================================================================
- *  Tide & Tower — 2D 탑다운 타워 디펜스 프로토타입
- *  ------------------------------------------------------------------------------------
- *  단일 HTML 파일 / HTML5 Canvas / Vanilla JS(ES6 Class) / Tailwind(CDN)
- *
- *  [전장 좌표계]
- *    - Canvas: 1000 x 600
- *    - 바다   : x = 0   ~ 400   (적 배 이동 경로)
- *    - 상륙선 : x = 400         (파도 경계선, 배가 멈추는 지점)
- *    - 해변   : x = 400 ~ 950   (타워 건설 가능 영역)
- *    - 본부   : x = 950 ~ 1000  (등대/장벽, 방어 대상)
+ *  Tide & Tower — 중독성 강화판 (single-file HTML5 Canvas TD)
+ *  타워 4종 / 적 4종 + 보스 / 액티브 스킬 2종 / 콤보 / 파티클 / 사운드 / 배속 / 세이브
  * ===================================================================================== */
 
-// ----- 전역 상수 (게임 밸런스/좌표 설정) -------------------------------------------
+// ------------------------------- 전역 설정 -------------------------------
 const CONFIG = {
-  WIDTH: 1000,
-  HEIGHT: 600,
-  SEA_END: 400,        // 바다-해변 경계 (상륙선 x좌표)
-  BEACH_END: 950,      // 해변-본부 경계 (타워 건설 가능 최대 x)
-  HQ_X: 950,           // 본부 시작 x
-  TOWER_COST: 100,     // 타워 건설비
-  TOWER_RANGE: 130,    // 타워 사정거리
-  TOWER_FIRE_CD: 0.65, // 발사 쿨다운(초)
-  TOWER_DMG: 10,       // 화살 데미지
-  ARROW_SPEED: 460,    // 화살 속도(px/s)
-  BOAT_SPEED: 55,      // 배 이동 속도(px/s)
-  ENEMY_SPEED: 32,     // 적 도보 이동 속도(px/s)
-  ENEMY_HP: 30,        // 적 기본 체력
-  ENEMY_DMG: 10,       // 본부에 도달 시 입히는 피해
-  DISEMBARK_INTERVAL: 0.5, // 하선 간격(초)
-  START_GOLD: 300,
-  START_HP: 100,
-  KILL_REWARD: 15,     // 처치 보상 골드
-  WAVE_CLEAR_BONUS: 50,// 웨이브 클리어 보너스 골드
-  SAVE_KEY: "tideAndTower.save.v1",
+  WIDTH: 1000, HEIGHT: 600,
+  SEA_END: 400, BEACH_END: 950, HQ_X: 950,
+  START_GOLD: 300, START_HP: 100,
+  BOAT_SPEED: 58, DISEMBARK_INTERVAL: 0.45,
+  WAVE_CLEAR_BONUS: 60,
+  COMBO_WINDOW: 2.6,          // 콤보 유지 시간(초)
+  SAVE_KEY: "tideAndTower.save.v2",
+  BEST_KEY: "tideAndTower.best.v2",
 };
 
-// ----- 작은 유틸 함수들 --------------------------------------------------------------
+// ------------------------------- 타워 정의 -------------------------------
+// 각 타워는 레벨(0~2)에 따라 사거리/데미지/쿨다운이 강화된다.
+const TOWER_TYPES = {
+  archer: {
+    name: "활잡이", icon: "🏹", cost: 100, color: "#84cc16", proj: "arrow",
+    desc: "빠른 단일 사격",
+    base: { range: 130, dmg: 10, cd: 0.55 },
+    grow: { range: 18, dmg: 8, cd: -0.06 },
+  },
+  cannon: {
+    name: "대포", icon: "💣", cost: 180, color: "#f97316", proj: "shell",
+    desc: "착탄 지점 범위 폭발",
+    base: { range: 145, dmg: 22, cd: 1.35, splash: 46 },
+    grow: { range: 16, dmg: 16, cd: -0.1, splash: 10 },
+  },
+  frost: {
+    name: "서리탑", icon: "❄️", cost: 150, color: "#38bdf8", proj: "aura",
+    desc: "범위 내 적 감속 오라",
+    base: { range: 120, dmg: 3, cd: 0.5, slow: 0.5 },  // slow=이동속도 배율
+    grow: { range: 15, dmg: 3, cd: 0, slow: -0.08 },   // 레벨업 시 더 강하게 감속
+  },
+  tesla: {
+    name: "번개탑", icon: "⚡", cost: 260, color: "#a78bfa", proj: "chain",
+    desc: "여러 적에게 튀는 전격",
+    base: { range: 150, dmg: 16, cd: 0.9, chain: 3 },
+    grow: { range: 18, dmg: 10, cd: -0.08, chain: 1 },
+  },
+};
+const TOWER_ORDER = ["archer", "cannon", "frost", "tesla"];
+
+// ------------------------------- 적 정의 -------------------------------
+const ENEMY_TYPES = {
+  grunt:  { name: "졸병",  hp: 34,  speed: 34, r: 11, color: "#e23b3b", stroke:"#7d1414", reward: 12, dmg: 8,  score: 10 },
+  runner: { name: "질주자",hp: 20,  speed: 62, r: 9,  color: "#eab308", stroke:"#854d0e", reward: 10, dmg: 6,  score: 12 },
+  tank:   { name: "탱크",  hp: 120, speed: 20, r: 16, color: "#7c3aed", stroke:"#4c1d95", reward: 28, dmg: 16, score: 30, armor: 3 },
+  boss:   { name: "보스",  hp: 900, speed: 16, r: 26, color: "#be123c", stroke:"#4c0519", reward: 250,dmg: 40, score: 300, armor: 6, boss:true },
+};
+
+// ------------------------------- 스킬 정의 -------------------------------
+const ABILITIES = {
+  meteor: { name:"운석 강타", icon:"💥", key:"Q", cd: 12, radius: 90, dmg: 120, desc:"클릭 지점 대폭발" },
+  freeze: { name:"전체 빙결", icon:"🧊", key:"W", cd: 20, duration: 3.0, desc:"모든 적 정지" },
+};
+
+// ------------------------------- 유틸 -------------------------------
 const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by);
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = (arr) => arr[(Math.random() * arr.length) | 0];
 
-/* =====================================================================================
- *  Boat (적 탑승선)
- *  - 바다 왼쪽 끝에서 생성 → 상륙선(x=400)까지 이동
- *  - 상륙 전에는 배/탑승 적 모두 '무적' (타워가 조준/공격 불가)
- *  - 상륙 후 0.5초 간격으로 탑승 적을 하선시키고, 모두 내리면 Fade out
- * ===================================================================================== */
-class Boat {
-  constructor(game, y, cargoCount) {
-    this.game = game;
-    this.x = -60;                 // 화면 밖 왼쪽에서 등장
-    this.y = y;
-    this.w = 70;
-    this.h = 34;
-    this.cargo = cargoCount;      // 아직 배 안에 남은 적 수
-    this.totalCargo = cargoCount;
-    this.state = "sailing";       // sailing → landing → leaving → done
-    this.disembarkTimer = 0;      // 하선 타이머
-    this.alpha = 1;               // Fade out용 투명도
-    this.dead = false;            // 제거 플래그
+/* ============================ 사운드 매니저 ============================
+ * 외부 파일 없이 Web Audio API로 효과음을 즉석 생성한다. */
+class Audio2 {
+  constructor() {
+    this.ctx = null; this.muted = false; this.noiseBuf = null;
   }
-
-  update(dt) {
-    if (this.state === "sailing") {
-      // 상륙선을 향해 우측으로 항해
-      this.x += CONFIG.BOAT_SPEED * dt;
-      if (this.x + this.w >= CONFIG.SEA_END) {
-        // 상륙선에 정확히 접안
-        this.x = CONFIG.SEA_END - this.w;
-        this.state = "landing";
-        this.disembarkTimer = 0.3; // 살짝 뜸 들인 뒤 하선 시작
-      }
-    } else if (this.state === "landing") {
-      // 0.5초 간격으로 적을 한 마리씩 하선
-      this.disembarkTimer -= dt;
-      if (this.disembarkTimer <= 0 && this.cargo > 0) {
-        this.disembarkTimer = CONFIG.DISEMBARK_INTERVAL;
-        this.spawnEnemy();
-        this.cargo--;
-        if (this.cargo === 0) {
-          this.state = "leaving"; // 전원 하선 → 떠남
-        }
-      }
-    } else if (this.state === "leaving") {
-      // 서서히 투명해지며 사라짐
-      this.alpha -= dt * 0.8;
-      if (this.alpha <= 0) {
-        this.alpha = 0;
-        this.dead = true;
-      }
+  ensure() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ctx = new AC();
+      // 화이트노이즈 버퍼(폭발/타격용)
+      const n = this.ctx.sampleRate * 0.5;
+      const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      this.noiseBuf = buf;
     }
+    if (this.ctx.state === "suspended") this.ctx.resume();
   }
-
-  // 배에서 적 유닛 하나를 해변에 내려놓음
-  spawnEnemy() {
-    // 상륙선 바로 오른쪽(해변 시작점)에 배치 → 즉시 타격 가능 상태
-    const ex = CONFIG.SEA_END + 6;
-    const ey = clamp(this.y + (Math.random() * 20 - 10), 30, CONFIG.HEIGHT - 30);
-    this.game.enemies.push(new Enemy(this.game, ex, ey));
+  // 단순 톤
+  tone(freq, dur, type = "square", vol = 0.2, slideTo = null) {
+    if (this.muted || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(this.ctx.destination);
+    o.start(t); o.stop(t + dur);
   }
-
-  draw(ctx) {
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    const cx = this.x + this.w / 2;
-    const cy = this.y;
-
-    // 선체 (사다리꼴 느낌의 배)
-    ctx.fillStyle = "#6b4226";
-    ctx.strokeStyle = "#3d2414";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(this.x, cy);
-    ctx.lineTo(this.x + 10, cy + this.h / 2);
-    ctx.lineTo(this.x + this.w - 10, cy + this.h / 2);
-    ctx.lineTo(this.x + this.w, cy);
-    ctx.lineTo(this.x + this.w - 8, cy - this.h / 2);
-    ctx.lineTo(this.x + 8, cy - this.h / 2);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // 돛대 + 돛
-    ctx.strokeStyle = "#2d1a0e";
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - this.h / 2);
-    ctx.lineTo(cx, cy - this.h / 2 - 22);
-    ctx.stroke();
-    ctx.fillStyle = "#e8e2d0";
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - this.h / 2 - 20);
-    ctx.lineTo(cx + 22, cy - this.h / 2 - 8);
-    ctx.lineTo(cx, cy - this.h / 2 - 2);
-    ctx.closePath();
-    ctx.fill();
-
-    // 남은 탑승 인원 표시 (무적 상태 강조: 옅은 방패 아이콘 느낌)
-    if (this.state !== "leaving" && this.totalCargo > 0) {
-      ctx.globalAlpha = this.alpha * 0.9;
-      ctx.fillStyle = "#ffd9d9";
-      ctx.font = "bold 11px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("🛡 " + this.cargo, cx, cy + this.h / 2 + 12);
-    }
-    ctx.restore();
+  // 노이즈 버스트
+  noise(dur, vol = 0.3, freq = 1200) {
+    if (this.muted || !this.ctx || !this.noiseBuf) return;
+    const t = this.ctx.currentTime;
+    const s = this.ctx.createBufferSource(); s.buffer = this.noiseBuf;
+    const f = this.ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = freq;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(this.ctx.destination);
+    s.start(t); s.stop(t + dur);
   }
+  shoot()    { this.tone(720, 0.06, "square", 0.10, 480); }
+  cannon()   { this.noise(0.18, 0.25, 800); this.tone(140, 0.18, "sawtooth", 0.12, 60); }
+  zap()      { this.tone(1200, 0.08, "sawtooth", 0.10, 300); }
+  hit()      { this.tone(320, 0.04, "square", 0.06); }
+  explode()  { this.noise(0.35, 0.4, 900); this.tone(90, 0.35, "sawtooth", 0.18, 40); }
+  coin()     { this.tone(880, 0.05, "sine", 0.12); setTimeout(()=>this.tone(1320,0.06,"sine",0.12),45); }
+  place()    { this.tone(523, 0.08, "sine", 0.15); setTimeout(()=>this.tone(784,0.1,"sine",0.15),70); }
+  error()    { this.tone(160, 0.18, "square", 0.14, 110); }
+  freeze()   { this.tone(1400, 0.5, "sine", 0.16, 200); }
+  waveClear(){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>this.tone(f,0.14,"triangle",0.15),i*90)); }
+  bossWarn() { [0,1,2].forEach(i=>setTimeout(()=>{this.tone(196,0.16,"sawtooth",0.2);setTimeout(()=>this.tone(147,0.16,"sawtooth",0.2),120);},i*300)); }
+  hqHit()    { this.noise(0.2,0.3,400); this.tone(80,0.2,"sawtooth",0.2); }
+  lose()     { [440,392,349,262].forEach((f,i)=>setTimeout(()=>this.tone(f,0.3,"triangle",0.2),i*180)); }
 }
 
-/* =====================================================================================
- *  Enemy (하선한 적 유닛)
- *  - 해변에 내린 순간부터 타격 가능(Targetable)
- *  - 본부(오른쪽 끝)를 향해 도보 이동, 도달하면 본부에 피해를 주고 소멸
- * ===================================================================================== */
-class Enemy {
-  constructor(game, x, y) {
-    this.game = game;
-    this.x = x;
-    this.y = y;
-    this.r = 11;
-    this.maxHp = CONFIG.ENEMY_HP;
-    this.hp = CONFIG.ENEMY_HP;
+/* ============================ 파티클 ============================ */
+class Particle {
+  constructor(x, y, opt = {}) {
+    this.x = x; this.y = y;
+    const a = opt.angle ?? rand(0, Math.PI * 2);
+    const sp = opt.speed ?? rand(40, 160);
+    this.vx = Math.cos(a) * sp; this.vy = Math.sin(a) * sp;
+    this.life = opt.life ?? rand(0.3, 0.7); this.maxLife = this.life;
+    this.color = opt.color ?? "#fff";
+    this.size = opt.size ?? rand(2, 4);
+    this.grav = opt.grav ?? 0;
     this.dead = false;
-    this.reachedHQ = false; // 본부 도달 여부
   }
-
-  update(dt) {
-    // 본부를 향해 직진(단순 경로) — 프로토타입이므로 x축 전진 + 목표 y 정렬
-    const targetX = CONFIG.HQ_X;
-    const targetY = CONFIG.HEIGHT / 2;
-    const dx = targetX - this.x;
-    const dy = targetY - this.y;
-    const d = Math.hypot(dx, dy) || 1;
-    this.x += (dx / d) * CONFIG.ENEMY_SPEED * dt;
-    this.y += (dy / d) * CONFIG.ENEMY_SPEED * dt;
-
-    // 본부 도달 판정
-    if (this.x >= CONFIG.HQ_X - this.r) {
-      this.reachedHQ = true;
-      this.dead = true;
-    }
-  }
-
-  takeDamage(dmg) {
-    this.hp -= dmg;
-    if (this.hp <= 0) {
-      this.hp = 0;
-      this.dead = true;
-    }
-  }
-
-  draw(ctx) {
-    // 몸통 (빨간 원)
-    ctx.fillStyle = "#e23b3b";
-    ctx.strokeStyle = "#7d1414";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // 체력바
-    const bw = 24, bh = 4;
-    const bx = this.x - bw / 2, by = this.y - this.r - 9;
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.fillRect(bx, by, bw, bh);
-    ctx.fillStyle = "#4ade80";
-    ctx.fillRect(bx, by, bw * (this.hp / this.maxHp), bh);
-  }
-}
-
-/* =====================================================================================
- *  Arrow (타워 발사체)
- *  - 특정 적을 향해 날아가며, 명중 시 데미지를 주고 소멸
- *  - 목표가 이미 죽었으면 마지막 위치를 향해 계속 날아가다 사거리 밖에서 소멸
- * ===================================================================================== */
-class Arrow {
-  constructor(x, y, target, dmg) {
-    this.x = x;
-    this.y = y;
-    this.target = target;
-    this.dmg = dmg;
-    this.dead = false;
-    this.life = 1.2; // 최대 생존 시간(초)
-    // 초기 발사 방향(목표의 현재 위치 기준)
-    const dx = target.x - x, dy = target.y - y;
-    const d = Math.hypot(dx, dy) || 1;
-    this.vx = (dx / d) * CONFIG.ARROW_SPEED;
-    this.vy = (dy / d) * CONFIG.ARROW_SPEED;
-    this.angle = Math.atan2(dy, dx);
-  }
-
   update(dt) {
     this.life -= dt;
     if (this.life <= 0) { this.dead = true; return; }
+    this.vy += this.grav * dt;
+    this.x += this.vx * dt; this.y += this.vy * dt;
+    this.vx *= 0.96; this.vy *= 0.96;
+  }
+  draw(ctx) {
+    ctx.globalAlpha = clamp(this.life / this.maxLife, 0, 1);
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    ctx.globalAlpha = 1;
+  }
+}
 
-    // 목표가 살아있으면 유도(호밍)로 방향 갱신
-    if (this.target && !this.target.dead) {
-      const dx = this.target.x - this.x, dy = this.target.y - this.y;
-      const d = Math.hypot(dx, dy) || 1;
-      this.vx = (dx / d) * CONFIG.ARROW_SPEED;
-      this.vy = (dy / d) * CONFIG.ARROW_SPEED;
-      this.angle = Math.atan2(dy, dx);
+/* ============================ 떠오르는 텍스트 ============================ */
+class FloatText {
+  constructor(x, y, text, color = "#fff", size = 14) {
+    this.x = x; this.y = y; this.text = text; this.color = color; this.size = size;
+    this.life = 0.9; this.maxLife = 0.9; this.vy = -42; this.dead = false;
+  }
+  update(dt) { this.life -= dt; this.y += this.vy * dt; this.vy *= 0.94; if (this.life <= 0) this.dead = true; }
+  draw(ctx) {
+    ctx.globalAlpha = clamp(this.life / this.maxLife, 0, 1);
+    ctx.font = `bold ${this.size}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.lineWidth = 3; ctx.strokeStyle = "rgba(0,0,0,.6)";
+    ctx.strokeText(this.text, this.x, this.y);
+    ctx.fillStyle = this.color; ctx.fillText(this.text, this.x, this.y);
+    ctx.globalAlpha = 1;
+  }
+}
 
-      // 명중 판정
-      if (d <= this.target.r + 4) {
-        this.target.takeDamage(this.dmg);
-        this.dead = true;
-        return;
+/* ============================ 상륙선 ============================ */
+class Boat {
+  constructor(game, y, cargoTypes) {
+    this.game = game; this.x = -70; this.y = y; this.w = 74; this.h = 36;
+    this.cargo = cargoTypes.slice();      // 하선 대기 중인 적 타입 배열
+    this.total = cargoTypes.length;
+    this.state = "sailing"; this.timer = 0; this.alpha = 1; this.dead = false;
+    this.bob = rand(0, Math.PI * 2);
+  }
+  update(dt) {
+    this.bob += dt * 3;
+    if (this.state === "sailing") {
+      this.x += CONFIG.BOAT_SPEED * dt;
+      if (this.x + this.w >= CONFIG.SEA_END) {
+        this.x = CONFIG.SEA_END - this.w; this.state = "landing"; this.timer = 0.3;
       }
-    }
-
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
-
-    // 화면 밖으로 나가면 제거
-    if (this.x < -20 || this.x > CONFIG.WIDTH + 20 || this.y < -20 || this.y > CONFIG.HEIGHT + 20) {
-      this.dead = true;
+    } else if (this.state === "landing") {
+      this.timer -= dt;
+      if (this.timer <= 0 && this.cargo.length) {
+        this.timer = CONFIG.DISEMBARK_INTERVAL;
+        const type = this.cargo.shift();
+        const ex = CONFIG.SEA_END + 8, ey = clamp(this.y + rand(-12, 12), 30, CONFIG.HEIGHT - 30);
+        this.game.enemies.push(new Enemy(this.game, ex, ey, type));
+        this.game.splash(CONFIG.SEA_END, ey, "#cfefff", 6);
+        if (!this.cargo.length) this.state = "leaving";
+      }
+    } else if (this.state === "leaving") {
+      this.x -= CONFIG.BOAT_SPEED * 0.4 * dt;
+      this.alpha -= dt * 0.7;
+      if (this.alpha <= 0) { this.alpha = 0; this.dead = true; }
     }
   }
-
   draw(ctx) {
     ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.angle);
-    ctx.strokeStyle = "#fde68a";
-    ctx.lineWidth = 2;
+    ctx.globalAlpha = this.alpha;
+    const cx = this.x + this.w / 2, cy = this.y + Math.sin(this.bob) * 2;
+    // 선체
+    ctx.fillStyle = "#6b4226"; ctx.strokeStyle = "#3d2414"; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(-7, 0);
-    ctx.lineTo(7, 0);
-    ctx.stroke();
-    // 화살촉
-    ctx.fillStyle = "#fbbf24";
-    ctx.beginPath();
-    ctx.moveTo(7, 0);
-    ctx.lineTo(2, -3);
-    ctx.lineTo(2, 3);
-    ctx.closePath();
-    ctx.fill();
+    ctx.moveTo(this.x, cy); ctx.lineTo(this.x + 10, cy + this.h / 2);
+    ctx.lineTo(this.x + this.w - 10, cy + this.h / 2); ctx.lineTo(this.x + this.w, cy);
+    ctx.lineTo(this.x + this.w - 8, cy - this.h / 2); ctx.lineTo(this.x + 8, cy - this.h / 2);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // 돛
+    ctx.strokeStyle = "#2d1a0e"; ctx.beginPath();
+    ctx.moveTo(cx, cy - this.h/2); ctx.lineTo(cx, cy - this.h/2 - 24); ctx.stroke();
+    ctx.fillStyle = "#e8e2d0"; ctx.beginPath();
+    ctx.moveTo(cx, cy - this.h/2 - 22); ctx.lineTo(cx + 24, cy - this.h/2 - 8);
+    ctx.lineTo(cx, cy - this.h/2 - 2); ctx.closePath(); ctx.fill();
+    // 무적 표시
+    if (this.state !== "leaving" && this.total > 0) {
+      ctx.fillStyle = "#bfe9ff"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("🛡 " + this.cargo.length, cx, cy + this.h / 2 + 12);
+    }
     ctx.restore();
   }
 }
 
-/* =====================================================================================
- *  Tower (활잡이 초소 / Archer Tower)
- *  - 사정거리 내 '타격 가능한 적' 중 본부에 가장 가까운(가장 앞선) 적을 조준
- *  - 쿨다운마다 화살 발사
- * ===================================================================================== */
-class Tower {
-  constructor(game, x, y) {
-    this.game = game;
-    this.x = x;
-    this.y = y;
-    this.range = CONFIG.TOWER_RANGE;
-    this.fireCd = 0;       // 남은 쿨다운
-    this.targetAngle = -Math.PI / 2; // 포탑 회전(조준 방향)
+/* ============================ 적 유닛 ============================ */
+class Enemy {
+  constructor(game, x, y, typeKey) {
+    this.game = game; this.x = x; this.y = y; this.type = typeKey;
+    const t = ENEMY_TYPES[typeKey];
+    const mul = game.enemyHpMul();
+    this.def = t;
+    this.maxHp = Math.round(t.hp * mul); this.hp = this.maxHp;
+    this.baseSpeed = t.speed; this.r = t.r; this.armor = t.armor || 0;
+    this.dead = false; this.reachedHQ = false; this._rewarded = false;
+    this.slowMul = 1; this.slowTimer = 0; // 서리탑 감속
+    this.freezeTimer = 0;                 // 빙결 스킬
+    this.hitFlash = 0;
+    this.wobble = rand(0, Math.PI * 2);
   }
-
+  effSpeed() {
+    if (this.freezeTimer > 0) return 0;
+    return this.baseSpeed * this.slowMul;
+  }
+  applySlow(mul, dur) { this.slowMul = Math.min(this.slowMul, mul); this.slowTimer = Math.max(this.slowTimer, dur); }
+  freeze(dur) { this.freezeTimer = Math.max(this.freezeTimer, dur); }
   update(dt) {
-    if (this.fireCd > 0) this.fireCd -= dt;
+    if (this.slowTimer > 0) { this.slowTimer -= dt; if (this.slowTimer <= 0) this.slowMul = 1; }
+    if (this.freezeTimer > 0) this.freezeTimer -= dt;
+    if (this.hitFlash > 0) this.hitFlash -= dt;
+    this.wobble += dt * 6;
+    const sp = this.effSpeed();
+    const tx = CONFIG.HQ_X, ty = CONFIG.HEIGHT / 2;
+    const dx = tx - this.x, dy = ty - this.y, d = Math.hypot(dx, dy) || 1;
+    this.x += (dx / d) * sp * dt;
+    this.y += (dy / d) * sp * dt + Math.sin(this.wobble) * sp * dt * 0.15;
+    if (this.x >= CONFIG.HQ_X - this.r) { this.reachedHQ = true; this.dead = true; }
+  }
+  takeDamage(dmg, game) {
+    const real = Math.max(1, dmg - this.armor);
+    this.hp -= real; this.hitFlash = 0.08;
+    game.addFloat(this.x, this.y - this.r, Math.round(real), "#fde68a", 12);
+    if (this.hp <= 0 && !this.dead) { this.hp = 0; this.dead = true; }
+    return real;
+  }
+  draw(ctx) {
+    const d = this.def;
+    // 빙결/감속 시 얼음빛
+    if (this.freezeTimer > 0) { ctx.fillStyle = "#bae6fd"; ctx.strokeStyle = "#0369a1"; }
+    else if (this.slowMul < 1) { ctx.fillStyle = this.hitFlash>0?"#fff":d.color; ctx.strokeStyle = "#38bdf8"; }
+    else { ctx.fillStyle = this.hitFlash > 0 ? "#fff" : d.color; ctx.strokeStyle = d.stroke; }
+    ctx.lineWidth = d.boss ? 3 : 2;
+    ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 눈(귀여운 악당 느낌)
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.arc(this.x + this.r*0.3, this.y - this.r*0.2, this.r*0.22, 0, 7); ctx.fill();
+    ctx.fillStyle = "#111";
+    ctx.beginPath(); ctx.arc(this.x + this.r*0.38, this.y - this.r*0.2, this.r*0.11, 0, 7); ctx.fill();
+    // 보스 왕관
+    if (d.boss) { ctx.fillStyle = "#fbbf24"; ctx.font = `${this.r}px serif`; ctx.textAlign="center"; ctx.fillText("👑", this.x, this.y - this.r - 4); }
+    // 체력바
+    const bw = Math.max(22, this.r*2), bh = d.boss ? 6 : 4, bx = this.x - bw/2, by = this.y - this.r - (d.boss?14:9);
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(bx, by, bw, bh);
+    const hpPct = this.hp / this.maxHp;
+    ctx.fillStyle = hpPct > 0.5 ? "#4ade80" : hpPct > 0.25 ? "#facc15" : "#f87171";
+    ctx.fillRect(bx, by, bw * hpPct, bh);
+  }
+}
 
-    // --- 타겟팅: 사정거리 내에서 '본부에 가장 가까운' 적 선택 ---
-    let target = null;
-    let bestX = -Infinity;
+/* ============================ 발사체 ============================ */
+class Projectile {
+  constructor(game, x, y, target, tower) {
+    this.game = game; this.x = x; this.y = y; this.target = target; this.tower = tower;
+    this.kind = TOWER_TYPES[tower.type].proj; // arrow | shell
+    this.dmg = tower.stat("dmg"); this.dead = false; this.life = 1.4;
+    const speed = this.kind === "shell" ? 340 : 480;
+    // 대포는 착탄 지점 고정, 화살은 유도
+    this.tx = target.x; this.ty = target.y;
+    const dx = this.tx - x, dy = this.ty - y, d = Math.hypot(dx, dy) || 1;
+    this.vx = (dx / d) * speed; this.vy = (dy / d) * speed; this.angle = Math.atan2(dy, dx);
+    this.speed = speed;
+  }
+  update(dt) {
+    this.life -= dt; if (this.life <= 0) { this.dead = true; return; }
+    if (this.kind === "arrow") {
+      // 유도
+      if (this.target && !this.target.dead) {
+        const dx = this.target.x - this.x, dy = this.target.y - this.y, d = Math.hypot(dx, dy) || 1;
+        this.vx = (dx / d) * this.speed; this.vy = (dy / d) * this.speed; this.angle = Math.atan2(dy, dx);
+        if (d <= this.target.r + 4) { this.hitTarget(); return; }
+      }
+    } else if (this.kind === "shell") {
+      // 지정 좌표 도달 시 폭발
+      if (dist(this.x, this.y, this.tx, this.ty) <= 8) { this.explode(); return; }
+    }
+    this.x += this.vx * dt; this.y += this.vy * dt;
+    if (this.x < -20 || this.x > CONFIG.WIDTH + 20 || this.y < -20 || this.y > CONFIG.HEIGHT + 20) this.dead = true;
+  }
+  hitTarget() {
+    if (this.target && !this.target.dead) {
+      this.target.takeDamage(this.dmg, this.game);
+      this.game.onEnemyHit(this.target);
+      this.game.audio.hit();
+      this.game.splash(this.x, this.y, "#fde68a", 4);
+    }
+    this.dead = true;
+  }
+  explode() {
+    this.dead = true;
+    const R = this.tower.stat("splash");
+    this.game.audio.cannon();
+    this.game.boom(this.tx, this.ty, R, "#fb923c");
+    this.game.shake += 4;
     for (const e of this.game.enemies) {
       if (e.dead) continue;
-      if (dist(this.x, this.y, e.x, e.y) <= this.range) {
-        // 본부(오른쪽)에 가까울수록 x가 큼 → 가장 앞선 적 우선
-        if (e.x > bestX) {
-          bestX = e.x;
-          target = e;
-        }
-      }
-    }
-
-    if (target) {
-      this.targetAngle = Math.atan2(target.y - this.y, target.x - this.x);
-      if (this.fireCd <= 0) {
-        this.fire(target);
-        this.fireCd = CONFIG.TOWER_FIRE_CD;
+      if (dist(this.tx, this.ty, e.x, e.y) <= R + e.r) {
+        e.takeDamage(this.dmg, this.game);
+        this.game.onEnemyHit(e);
       }
     }
   }
-
-  fire(target) {
-    // 포탑 끝에서 화살 생성
-    const muzzleX = this.x + Math.cos(this.targetAngle) * 16;
-    const muzzleY = this.y + Math.sin(this.targetAngle) * 16;
-    this.game.arrows.push(new Arrow(muzzleX, muzzleY, target, CONFIG.TOWER_DMG));
-  }
-
-  // 사정거리 원 (마우스 오버 또는 건설 미리보기용)
-  drawRange(ctx) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.range, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
-    ctx.strokeStyle = "rgba(56, 189, 248, 0.6)";
-    ctx.lineWidth = 1.5;
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
-  }
-
   draw(ctx) {
-    // 기단(초소 바닥)
-    ctx.fillStyle = "#78716c";
-    ctx.strokeStyle = "#44403c";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 15, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // 나무 초소 몸통
-    ctx.fillStyle = "#8b5a2b";
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 포탑(활을 든 방향)
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.targetAngle);
-    ctx.strokeStyle = "#292524";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(16, 0);
-    ctx.stroke();
-    // 활 모양(작은 호)
-    ctx.strokeStyle = "#3f2d1a";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(14, 0, 6, -Math.PI / 2.2, Math.PI / 2.2);
-    ctx.stroke();
+    ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+    if (this.kind === "arrow") {
+      ctx.strokeStyle = "#fde68a"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-7,0); ctx.lineTo(7,0); ctx.stroke();
+      ctx.fillStyle = "#fbbf24"; ctx.beginPath();
+      ctx.moveTo(7,0); ctx.lineTo(2,-3); ctx.lineTo(2,3); ctx.closePath(); ctx.fill();
+    } else {
+      ctx.fillStyle = "#1f2937"; ctx.strokeStyle="#f97316"; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(0,0,5,0,7); ctx.fill(); ctx.stroke();
+    }
     ctx.restore();
   }
 }
 
-/* =====================================================================================
- *  Game — 전체 상태/루프/입력/저장 총괄 컨트롤러
- * ===================================================================================== */
-class Game {
-  constructor(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
+/* ============================ 타워 ============================ */
+class Tower {
+  constructor(game, x, y, type, level = 0, invested = null) {
+    this.game = game; this.x = x; this.y = y; this.type = type; this.level = level;
+    this.def = TOWER_TYPES[type];
+    this.cd = 0; this.angle = -Math.PI / 2; this.pulse = 0;
+    this.invested = invested ?? this.def.cost;
+  }
+  // 레벨 반영 스탯
+  stat(key) {
+    const b = this.def.base[key]; if (b === undefined) return 0;
+    const g = this.def.grow[key] || 0;
+    return b + g * this.level;
+  }
+  upgradeCost() { return Math.round(this.def.cost * (this.level + 1) * 0.9); }
+  sellValue() { return Math.round(this.invested * 0.7); }
+  maxLevel() { return this.level >= 2; }
 
-    // 게임 상태
-    this.gold = CONFIG.START_GOLD;
-    this.hp = CONFIG.START_HP;
-    this.wave = 1;
-    this.towers = [];
-    this.enemies = [];
-    this.boats = [];
-    this.arrows = [];
+  update(dt) {
+    if (this.cd > 0) this.cd -= dt;
+    this.pulse += dt;
+    const range = this.stat("range");
 
-    // 웨이브 진행 상태
-    this.waveActive = false;
-    this.boatsToSpawn = 0;       // 이번 웨이브에 남은 배 스폰 수
-    this.boatSpawnTimer = 0;     // 다음 배 스폰까지 타이머
-    this.gameOver = false;
-    this.victory = false;
-
-    // 입력/모드 상태
-    this.buildMode = false;      // 타워 건설 모드
-    this.mouse = { x: -100, y: -100, onCanvas: false };
-
-    // 시간 관리
-    this.lastTime = performance.now();
-    this.toastTimer = 0;
-
-    this.bindUI();
-    this.bindCanvas();
-
-    // 시작 시 저장 데이터가 있으면 자동 로드
-    if (this.hasSave()) {
-      this.load(true);
-      this.showToast("💾 저장된 게임을 불러왔습니다.");
+    if (this.def.proj === "aura") {
+      // 서리탑: 범위 내 모든 적 감속 + 약한 지속 피해
+      let touched = false;
+      for (const e of this.game.enemies) {
+        if (e.dead) continue;
+        if (dist(this.x, this.y, e.x, e.y) <= range) {
+          e.applySlow(this.stat("slow"), 0.4); touched = true;
+          if (this.cd <= 0) { e.takeDamage(this.stat("dmg"), this.game); this.game.onEnemyHit(e); }
+        }
+      }
+      if (this.cd <= 0) this.cd = this.stat("cd");
+      return;
     }
 
-    this.updateUI();
+    // 조준: 사거리 내 '본부에 가장 가까운(가장 앞선)' 적
+    let target = null, bestX = -Infinity;
+    for (const e of this.game.enemies) {
+      if (e.dead) continue;
+      if (dist(this.x, this.y, e.x, e.y) <= range && e.x > bestX) { bestX = e.x; target = e; }
+    }
+    if (!target) return;
+    this.angle = Math.atan2(target.y - this.y, target.x - this.x);
+    if (this.cd > 0) return;
+    this.cd = this.stat("cd");
 
-    // 메인 루프 시작
+    if (this.def.proj === "chain") this.fireChain(target, range);
+    else this.fireProjectile(target);
+  }
+
+  fireProjectile(target) {
+    const mx = this.x + Math.cos(this.angle) * 16, my = this.y + Math.sin(this.angle) * 16;
+    this.game.projectiles.push(new Projectile(this.game, mx, my, target, this));
+    this.game.audio.shoot();
+    this.game.splash(mx, my, "#fff7cc", 2);
+  }
+
+  // 번개탑: 가까운 적으로 연쇄
+  fireChain(first, range) {
+    this.game.audio.zap();
+    const chain = this.stat("chain"), dmg = this.stat("dmg");
+    const hitList = []; let cur = first; let fromX = this.x, fromY = this.y;
+    for (let i = 0; i < chain && cur; i++) {
+      cur.takeDamage(dmg, this.game); this.game.onEnemyHit(cur);
+      this.game.lightnings.push({ x1: fromX, y1: fromY, x2: cur.x, y2: cur.y, life: 0.12 });
+      this.game.splash(cur.x, cur.y, "#c4b5fd", 4);
+      hitList.push(cur);
+      fromX = cur.x; fromY = cur.y;
+      // 다음 대상: 아직 안 맞은, 200px 이내 가장 가까운 적
+      let next = null, nd = 200;
+      for (const e of this.game.enemies) {
+        if (e.dead || hitList.includes(e)) continue;
+        const dd = dist(fromX, fromY, e.x, e.y);
+        if (dd < nd) { nd = dd; next = e; }
+      }
+      cur = next;
+    }
+  }
+
+  drawRange(ctx) {
+    ctx.save();
+    ctx.beginPath(); ctx.arc(this.x, this.y, this.stat("range"), 0, 7);
+    ctx.fillStyle = "rgba(56,189,248,0.10)"; ctx.strokeStyle = "rgba(56,189,248,0.6)"; ctx.lineWidth = 1.5;
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+
+  draw(ctx) {
+    // 서리탑 오라 시각화
+    if (this.def.proj === "aura") {
+      ctx.save();
+      const rr = this.stat("range");
+      ctx.fillStyle = `rgba(56,189,248,${0.06 + Math.sin(this.pulse*2)*0.02})`;
+      ctx.beginPath(); ctx.arc(this.x, this.y, rr, 0, 7); ctx.fill();
+      ctx.restore();
+    }
+    // 기단
+    ctx.fillStyle = "#78716c"; ctx.strokeStyle = "#44403c"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x, this.y, 15, 0, 7); ctx.fill(); ctx.stroke();
+    // 몸통 색
+    ctx.fillStyle = this.def.color;
+    ctx.beginPath(); ctx.arc(this.x, this.y, 10, 0, 7); ctx.fill();
+    // 아이콘
+    ctx.font = "13px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(this.def.icon, this.x, this.y + 0.5);
+    ctx.textBaseline = "alphabetic";
+    // 레벨 별
+    if (this.level > 0) {
+      ctx.fillStyle = "#fbbf24"; ctx.font = "9px sans-serif";
+      ctx.fillText("★".repeat(this.level), this.x, this.y - 18);
+    }
+    // 포탑 방향(오라 제외)
+    if (this.def.proj !== "aura") {
+      ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle);
+      ctx.strokeStyle = "#292524"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(15,0); ctx.stroke(); ctx.restore();
+    }
+  }
+}
+
+/* ============================ 게임 컨트롤러 ============================ */
+class Game {
+  constructor(canvas) {
+    this.canvas = canvas; this.ctx = canvas.getContext("2d");
+    this.audio = new Audio2();
+    this.reset(true);
+
+    this.buildShop();
+    this.bindUI();
+    this.bindCanvas();
+    this.bindKeys();
+
+    this.best = parseInt(localStorage.getItem(CONFIG.BEST_KEY) || "1", 10);
+    if (this.hasSave()) { this.load(true); this.showToast("💾 저장된 게임을 불러왔습니다."); }
+
+    this.updateUI();
+    this.lastTime = performance.now();
     requestAnimationFrame((t) => this.loop(t));
   }
 
-  /* ---------------------------- UI 바인딩 ---------------------------- */
-  bindUI() {
-    document.getElementById("btn-build").addEventListener("click", () => this.toggleBuildMode());
-    document.getElementById("btn-wave").addEventListener("click", () => this.startWave());
-    document.getElementById("btn-save").addEventListener("click", () => {
-      this.save();
-      this.showToast("💾 게임을 저장했습니다.");
-    });
-    document.getElementById("btn-load").addEventListener("click", () => {
-      if (this.hasSave()) {
-        this.load(false);
-        this.showToast("📂 저장된 게임을 불러왔습니다.");
-      } else {
-        this.showToast("⚠ 저장된 데이터가 없습니다.");
-      }
-    });
-    document.getElementById("btn-reset").addEventListener("click", () => this.reset());
-    document.getElementById("btn-overlay-restart").addEventListener("click", () => this.reset());
+  // ------- 상태 초기화 -------
+  reset(fresh) {
+    this.gold = CONFIG.START_GOLD; this.hp = CONFIG.START_HP; this.wave = 1; this.score = 0;
+    this.towers = []; this.enemies = []; this.boats = []; this.projectiles = [];
+    this.particles = []; this.floats = []; this.lightnings = [];
+    this.waveActive = false; this.boatPlan = []; this.boatTimer = 0;
+    this.gameOver = false;
+    this.mode = "idle"; this.selectedType = null; this.selectedAbility = null; this.selectedTower = null;
+    this.mouse = { x: -100, y: -100, on: false };
+    this.speed = 1; this.shake = 0; this.flashHQ = 0; this.bossWarn = 0;
+    this.combo = 0; this.comboTimer = 0;
+    this.abilityCd = { meteor: 0, freeze: 0 };
+    this.toastTimer = 0;
+    if (!fresh) {
+      const ov = document.getElementById("overlay"); ov.classList.add("hidden"); ov.classList.remove("flex");
+      this.updateShop(); this.updateInspector(); this.updateUI();
+    }
   }
 
-  /* ---------------------------- 캔버스 입력 바인딩 ---------------------------- */
+  enemyHpMul() { return 1 + (this.wave - 1) * 0.14; }
+
+  /* ---------------- 상점/스킬 버튼 생성 ---------------- */
+  buildShop() {
+    const shop = document.getElementById("shop-towers");
+    shop.innerHTML = "";
+    TOWER_ORDER.forEach((key, i) => {
+      const t = TOWER_TYPES[key];
+      const b = document.createElement("button");
+      b.className = "shop-btn flex flex-col items-center justify-center w-[68px] px-1 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 transition text-center";
+      b.innerHTML = `<span class="text-lg leading-none">${t.icon}</span>
+        <span class="text-[10px] font-bold mt-0.5">${t.name}</span>
+        <span class="text-[10px] text-amber-300 font-bold">${t.cost}G</span>
+        <span class="text-[8px] text-slate-400 leading-tight">${i+1}</span>`;
+      b.title = t.desc;
+      b.addEventListener("click", () => this.selectTowerType(key));
+      shop.appendChild(b);
+    });
+    const ab = document.getElementById("shop-abilities");
+    ab.innerHTML = "";
+    Object.entries(ABILITIES).forEach(([key, a]) => {
+      const b = document.createElement("button");
+      b.className = "shop-btn ability-btn flex flex-col items-center justify-center w-[68px] px-1 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 transition text-center";
+      b.dataset.ability = key;
+      b.innerHTML = `<span class="text-lg leading-none">${a.icon}</span>
+        <span class="text-[10px] font-bold mt-0.5">${a.name}</span>
+        <span class="text-[9px] text-sky-300 font-bold cd-label">준비</span>
+        <span class="text-[8px] text-slate-400 leading-tight">${a.key}</span>`;
+      b.title = a.desc;
+      b.addEventListener("click", () => this.selectAbility(key));
+      ab.appendChild(b);
+    });
+  }
+
+  /* ---------------- UI/입력 바인딩 ---------------- */
+  bindUI() {
+    document.getElementById("btn-wave").addEventListener("click", () => this.startWave());
+    document.getElementById("btn-save").addEventListener("click", () => { this.save(); this.showToast("💾 저장 완료"); });
+    document.getElementById("btn-load").addEventListener("click", () => {
+      if (this.hasSave()) { this.load(false); this.showToast("📂 불러오기 완료"); }
+      else this.showToast("⚠ 저장 데이터가 없습니다");
+    });
+    document.getElementById("btn-reset").addEventListener("click", () => { this.reset(false); this.showToast("♻ 초기화"); localStorage.removeItem(CONFIG.SAVE_KEY); });
+    document.getElementById("btn-overlay-restart").addEventListener("click", () => { this.reset(false); localStorage.removeItem(CONFIG.SAVE_KEY); });
+    document.getElementById("btn-speed").addEventListener("click", () => this.cycleSpeed());
+    document.getElementById("btn-mute").addEventListener("click", (e) => {
+      this.audio.ensure(); this.audio.muted = !this.audio.muted;
+      e.target.textContent = this.audio.muted ? "🔇" : "🔊";
+    });
+  }
+
   bindCanvas() {
     const c = this.canvas;
-
-    // 마우스 좌표를 캔버스 내부 좌표계로 변환 (크기 스케일 보정)
-    const toCanvasXY = (e) => {
-      const rect = c.getBoundingClientRect();
-      const sx = c.width / rect.width;
-      const sy = c.height / rect.height;
-      return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
+    const xy = (e) => {
+      const r = c.getBoundingClientRect();
+      return { x: (e.clientX - r.left) * (c.width / r.width), y: (e.clientY - r.top) * (c.height / r.height) };
     };
+    c.addEventListener("mousemove", (e) => { const p = xy(e); this.mouse.x = p.x; this.mouse.y = p.y; this.mouse.on = true; });
+    c.addEventListener("mouseleave", () => { this.mouse.on = false; });
+    c.addEventListener("click", (e) => { this.audio.ensure(); const p = xy(e); this.handleClick(p.x, p.y); });
+    // 우클릭: 모드 취소
+    c.addEventListener("contextmenu", (e) => { e.preventDefault(); this.cancelMode(); });
+  }
 
-    c.addEventListener("mousemove", (e) => {
-      const p = toCanvasXY(e);
-      this.mouse.x = p.x;
-      this.mouse.y = p.y;
-      this.mouse.onCanvas = true;
-    });
-    c.addEventListener("mouseleave", () => { this.mouse.onCanvas = false; });
-
-    c.addEventListener("click", (e) => {
-      const p = toCanvasXY(e);
-      this.handleClick(p.x, p.y);
+  bindKeys() {
+    window.addEventListener("keydown", (e) => {
+      if (e.key >= "1" && e.key <= "4") this.selectTowerType(TOWER_ORDER[+e.key - 1]);
+      else if (e.key === "q" || e.key === "Q") this.selectAbility("meteor");
+      else if (e.key === "w" || e.key === "W") this.selectAbility("freeze");
+      else if (e.key === " ") { e.preventDefault(); this.startWave(); }
+      else if (e.key === "Escape") this.cancelMode();
     });
   }
 
-  /* ---------------------------- 클릭 처리 (타워 건설) ---------------------------- */
+  /* ---------------- 모드 선택 ---------------- */
+  selectTowerType(key) {
+    if (!key) return;
+    this.mode = "build"; this.selectedType = key; this.selectedAbility = null; this.selectedTower = null;
+    this.canvas.style.cursor = "copy";
+    this.updateShop(); this.updateInspector();
+  }
+  selectAbility(key) {
+    if (this.abilityCd[key] > 0) { this.showToast("⚠ 스킬 재사용 대기 중"); this.audio.error(); return; }
+    this.mode = "ability"; this.selectedAbility = key; this.selectedType = null; this.selectedTower = null;
+    this.canvas.style.cursor = "crosshair";
+    this.updateShop(); this.updateInspector();
+  }
+  cancelMode() {
+    this.mode = "idle"; this.selectedType = null; this.selectedAbility = null; this.selectedTower = null;
+    this.canvas.style.cursor = "default";
+    this.updateShop(); this.updateInspector();
+  }
+
+  cycleSpeed() {
+    this.speed = this.speed === 1 ? 2 : this.speed === 2 ? 3 : 1;
+    document.getElementById("btn-speed").textContent = "⏩ " + this.speed + "x";
+  }
+
+  /* ---------------- 캔버스 클릭 처리 ---------------- */
   handleClick(x, y) {
     if (this.gameOver) return;
-    if (!this.buildMode) return;
 
-    // [영역 체크] 해변 영역(400 ~ 950)에만 건설 가능
-    if (!this.isBuildable(x, y)) {
-      this.showToast("⚠ 타워는 모래사장(해변)에만 건설할 수 있습니다.");
+    // 스킬 시전
+    if (this.mode === "ability") { this.castAbility(x, y); return; }
+
+    // 타워 건설
+    if (this.mode === "build") {
+      const def = TOWER_TYPES[this.selectedType];
+      if (!this.isBuildable(x, y)) { this.showToast("⚠ 모래사장(해변)에만 건설 가능"); this.audio.error(); return; }
+      for (const t of this.towers) if (dist(t.x, t.y, x, y) < 32) { this.showToast("⚠ 다른 타워와 너무 가깝습니다"); this.audio.error(); return; }
+      if (this.gold < def.cost) { this.showToast("⚠ 골드가 부족합니다"); this.audio.error(); return; }
+      this.gold -= def.cost;
+      this.towers.push(new Tower(this, x, y, this.selectedType));
+      this.audio.place(); this.splash(x, y, def.color, 10);
+      this.addFloat(x, y - 20, "-" + def.cost + "G", "#fca5a5", 12);
+      this.updateUI();
+      // 연속 설치 편의: 골드 없으면 자동 취소
+      if (this.gold < def.cost) this.cancelMode();
       return;
     }
-    // 다른 타워와 너무 가까우면 불가
-    for (const t of this.towers) {
-      if (dist(t.x, t.y, x, y) < 32) {
-        this.showToast("⚠ 다른 타워와 너무 가깝습니다.");
-        return;
+
+    // 유휴 상태: 타워 선택
+    let clicked = null;
+    for (const t of this.towers) if (dist(t.x, t.y, x, y) <= 16) { clicked = t; break; }
+    this.selectedTower = clicked;
+    this.updateInspector();
+  }
+
+  castAbility(x, y) {
+    const key = this.selectedAbility, a = ABILITIES[key];
+    if (this.abilityCd[key] > 0) return;
+    if (key === "meteor") {
+      this.abilityCd.meteor = a.cd;
+      this.audio.explode(); this.shake += 12;
+      this.boom(x, y, a.radius, "#f59e0b");
+      for (let i=0;i<30;i++) this.particles.push(new Particle(x, y, {color: pick(["#f59e0b","#ef4444","#fbbf24"]), speed: rand(60,260), life: rand(0.4,0.9), size: rand(3,6)}));
+      for (const e of this.enemies) {
+        if (e.dead) continue;
+        if (dist(x, y, e.x, e.y) <= a.radius + e.r) { e.takeDamage(a.dmg, this); this.onEnemyHit(e); }
       }
+      this.addFloat(x, y, "💥 METEOR!", "#f59e0b", 18);
+    } else if (key === "freeze") {
+      this.abilityCd.freeze = a.cd;
+      this.audio.freeze();
+      for (const e of this.enemies) if (!e.dead) e.freeze(a.duration);
+      // 화면 전체 서리 파티클
+      for (let i=0;i<40;i++) this.particles.push(new Particle(rand(CONFIG.SEA_END, CONFIG.WIDTH), rand(0,CONFIG.HEIGHT), {color:"#bae6fd", speed: rand(10,40), life: rand(0.5,1), size: rand(2,5)}));
+      this.addFloat(CONFIG.WIDTH*0.65, CONFIG.HEIGHT/2, "🧊 FREEZE!", "#7dd3fc", 22);
     }
-    // 골드 체크
-    if (this.gold < CONFIG.TOWER_COST) {
-      this.showToast("⚠ 골드가 부족합니다! (필요: 100G)");
-      return;
-    }
-
-    // 건설 확정
-    this.gold -= CONFIG.TOWER_COST;
-    this.towers.push(new Tower(this, x, y));
-    this.updateUI();
-    this.showToast("🏹 활잡이 초소를 건설했습니다.");
+    this.cancelMode();
+    this.updateShop();
   }
 
-  // 해변(건설 가능) 영역 판정: 바다·본부·경계 여백 제외
   isBuildable(x, y) {
-    return x >= CONFIG.SEA_END + 12 &&
-           x <= CONFIG.BEACH_END - 12 &&
-           y >= 20 &&
-           y <= CONFIG.HEIGHT - 20;
+    return x >= CONFIG.SEA_END + 12 && x <= CONFIG.BEACH_END - 12 && y >= 20 && y <= CONFIG.HEIGHT - 20;
   }
 
-  /* ---------------------------- 건설 모드 토글 ---------------------------- */
-  toggleBuildMode() {
-    this.buildMode = !this.buildMode;
-    const btn = document.getElementById("btn-build");
-    if (this.buildMode) {
-      btn.classList.remove("bg-emerald-600", "hover:bg-emerald-500");
-      btn.classList.add("bg-amber-500", "hover:bg-amber-400", "ring-2", "ring-amber-300");
-      btn.textContent = "✖ 건설 취소";
-      this.canvas.style.cursor = "copy";
-    } else {
-      btn.classList.add("bg-emerald-600", "hover:bg-emerald-500");
-      btn.classList.remove("bg-amber-500", "hover:bg-amber-400", "ring-2", "ring-amber-300");
-      btn.textContent = "🏹 타워 건설 (100G)";
-      this.canvas.style.cursor = "crosshair";
-    }
+  /* ---------------- 타워 업그레이드/판매 ---------------- */
+  upgradeTower() {
+    const t = this.selectedTower; if (!t || t.maxLevel()) return;
+    const cost = t.upgradeCost();
+    if (this.gold < cost) { this.showToast("⚠ 골드가 부족합니다"); this.audio.error(); return; }
+    this.gold -= cost; t.invested += cost; t.level++;
+    this.audio.place(); this.splash(t.x, t.y, "#fbbf24", 12);
+    this.addFloat(t.x, t.y - 20, "LEVEL " + (t.level+1) + "!", "#fbbf24", 14);
+    this.updateUI(); this.updateInspector();
+  }
+  sellTower() {
+    const t = this.selectedTower; if (!t) return;
+    const val = t.sellValue();
+    this.gold += val; this.towers = this.towers.filter((x) => x !== t);
+    this.audio.coin(); this.addFloat(t.x, t.y, "+" + val + "G", "#fbbf24", 14);
+    this.selectedTower = null; this.updateUI(); this.updateInspector();
   }
 
-  /* ---------------------------- 웨이브 시작 ---------------------------- */
+  /* ---------------- 웨이브 ---------------- */
   startWave() {
-    if (this.gameOver) return;
-    if (this.waveActive) {
-      this.showToast("⚠ 이미 웨이브가 진행 중입니다.");
-      return;
-    }
+    if (this.gameOver || this.waveActive) { if (this.waveActive) this.showToast("⚠ 웨이브 진행 중"); return; }
+    this.audio.ensure();
     this.waveActive = true;
-    // 웨이브가 커질수록 배 수 증가 (2 + floor(wave/2))
-    this.boatsToSpawn = 2 + Math.floor(this.wave / 2);
-    this.boatSpawnTimer = 0;
-    this.showToast(`🌊 웨이브 ${this.wave} 시작! 적 상륙선 ${this.boatsToSpawn}척 접근 중...`);
+    this.boatPlan = this.buildWavePlan(this.wave);
+    this.boatTimer = 0;
+    const isBoss = this.wave % 5 === 0;
+    if (isBoss) { this.audio.bossWarn(); this.bossWarn = 3; this.showToast("⚠️ 보스 웨이브 " + this.wave + " 접근!"); }
+    else this.showToast("🌊 웨이브 " + this.wave + " 시작! 상륙선 " + this.boatPlan.length + "척");
   }
 
-  // 배 한 척 스폰
+  // 웨이브별 배 구성(각 배는 적 타입 배열을 실음)
+  buildWavePlan(wave) {
+    const plan = [];
+    const boatCount = 2 + Math.floor(wave / 2);
+    for (let i = 0; i < boatCount; i++) {
+      const n = 3 + ((Math.random() * 3) | 0); // 3~5
+      const cargo = [];
+      for (let j = 0; j < n; j++) {
+        let type = "grunt";
+        const r = Math.random();
+        if (wave >= 3 && r < 0.28) type = "runner";
+        if (wave >= 4 && r > 0.82) type = "tank";
+        cargo.push(type);
+      }
+      plan.push(cargo);
+    }
+    // 보스 웨이브: 보스 전용 배 추가
+    if (wave % 5 === 0) plan.push(["boss"]);
+    return plan;
+  }
+
   spawnBoat() {
-    // 바다 세로 범위 안에서 랜덤 y
+    const cargo = this.boatPlan.shift();
     const y = 60 + Math.random() * (CONFIG.HEIGHT - 120);
-    const cargo = 3 + Math.floor(Math.random() * 3); // 3~5마리
     this.boats.push(new Boat(this, y, cargo));
   }
 
-  /* ---------------------------- 웨이브 종료 판정 ---------------------------- */
   checkWaveEnd() {
     if (!this.waveActive) return;
-    // 남은 스폰 없음 + 배 없음 + 적 없음 → 클리어
-    const allClear = this.boatsToSpawn === 0 &&
-                     this.boats.length === 0 &&
-                     this.enemies.length === 0;
-    if (allClear) {
+    if (this.boatPlan.length === 0 && this.boats.length === 0 && this.enemies.length === 0) {
       this.waveActive = false;
-      this.gold += CONFIG.WAVE_CLEAR_BONUS;
-      this.showToast(`✅ 웨이브 ${this.wave} 클리어! (+${CONFIG.WAVE_CLEAR_BONUS}G) · 자동 저장 완료!`);
+      const bonus = CONFIG.WAVE_CLEAR_BONUS + this.wave * 5;
+      this.gold += bonus;
+      this.audio.waveClear();
+      this.addFloat(CONFIG.WIDTH/2, 80, "WAVE CLEAR +" + bonus + "G", "#4ade80", 20);
+      this.showToast("✅ 웨이브 " + this.wave + " 클리어! (+" + bonus + "G) · 자동 저장 완료!");
       this.wave++;
+      if (this.wave > this.best) { this.best = this.wave; localStorage.setItem(CONFIG.BEST_KEY, this.best); }
       this.updateUI();
-      // [요구사항] 웨이브 클리어 시 자동 저장
-      this.save();
+      this.save(); // 자동 저장
     }
   }
 
-  /* ---------------------------- 메인 루프 ---------------------------- */
-  loop(now) {
-    let dt = (now - this.lastTime) / 1000;
-    this.lastTime = now;
-    dt = Math.min(dt, 0.05); // 탭 전환 등으로 dt가 튀는 것 방지
+  /* ---------------- 콤보/처치 처리 ---------------- */
+  onEnemyHit() { /* 필요 시 확장 */ }
 
-    if (!this.gameOver) this.update(dt);
+  registerKill(e) {
+    // 콤보 증가
+    this.combo++; this.comboTimer = CONFIG.COMBO_WINDOW;
+    const mult = 1 + Math.floor(this.combo / 5) * 0.5; // 5콤보마다 +0.5배
+    const reward = Math.round(e.def.reward * mult);
+    this.gold += reward;
+    this.score += Math.round(e.def.score * mult);
+    this.audio.coin();
+    // 처치 연출
+    this.splash(e.x, e.y, e.def.color, e.def.boss ? 26 : 10);
+    if (e.def.boss) { this.shake += 14; this.audio.explode(); this.boom(e.x, e.y, 70, "#fb7185"); }
+    this.addFloat(e.x, e.y, "+" + reward + "G", "#fbbf24", e.def.boss ? 18 : 13);
+    if (this.combo >= 3) this.addFloat(e.x, e.y - 16, this.combo + " COMBO", "#f472b6", 12);
+    this.updateUI();
+  }
+
+  /* ---------------- 파티클 헬퍼 ---------------- */
+  splash(x, y, color, count) {
+    for (let i = 0; i < count; i++)
+      this.particles.push(new Particle(x, y, { color, speed: rand(30, 140), life: rand(0.25, 0.6), size: rand(2, 4), grav: 120 }));
+  }
+  boom(x, y, radius, color) {
+    // 충격파 링을 파티클로 근사
+    const n = Math.round(radius / 4);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      this.particles.push(new Particle(x, y, { color, angle: a, speed: radius * rand(2, 3.5), life: rand(0.25, 0.45), size: rand(3, 5) }));
+    }
+  }
+  addFloat(x, y, text, color, size) { this.floats.push(new FloatText(x, y, text, color, size)); }
+
+  /* ---------------- 메인 루프 ---------------- */
+  loop(now) {
+    let dt = (now - this.lastTime) / 1000; this.lastTime = now;
+    dt = Math.min(dt, 0.05);
+    if (!this.gameOver) for (let s = 0; s < this.speed; s++) this.update(dt);
     this.render();
     requestAnimationFrame((t) => this.loop(t));
   }
 
-  /* ---------------------------- 상태 갱신 ---------------------------- */
   update(dt) {
-    // 배 스폰 스케줄링
-    if (this.waveActive && this.boatsToSpawn > 0) {
-      this.boatSpawnTimer -= dt;
-      if (this.boatSpawnTimer <= 0) {
-        this.spawnBoat();
-        this.boatsToSpawn--;
-        this.boatSpawnTimer = 1.6 + Math.random() * 1.0; // 배 간 간격
-      }
+    // 배 스폰
+    if (this.waveActive && this.boatPlan.length > 0) {
+      this.boatTimer -= dt;
+      if (this.boatTimer <= 0) { this.spawnBoat(); this.boatTimer = rand(1.2, 2.2); }
     }
-
-    // 각 엔티티 업데이트
     for (const b of this.boats) b.update(dt);
     for (const t of this.towers) t.update(dt);
-    for (const a of this.arrows) a.update(dt);
+    for (const p of this.projectiles) p.update(dt);
     for (const e of this.enemies) {
       e.update(dt);
-      // 본부 도달 시 피해 처리
       if (e.reachedHQ) {
-        this.hp = clamp(this.hp - CONFIG.ENEMY_DMG, 0, CONFIG.START_HP);
+        this.hp = clamp(this.hp - e.def.dmg, 0, CONFIG.START_HP);
+        this.flashHQ = 0.3; this.shake += e.def.boss ? 10 : 4; this.audio.hqHit();
+        this.combo = 0; this.comboTimer = 0; // 본부 피격 시 콤보 리셋
         this.updateUI();
-        this.flashHQ = 0.25; // 본부 피격 플래시
         if (this.hp <= 0) this.triggerGameOver();
       }
     }
+    // 처치 정산
+    for (const e of this.enemies) if (e.dead && !e.reachedHQ && !e._rewarded) { e._rewarded = true; this.registerKill(e); }
 
-    // 처치 보상 정산 (죽은 적 중 본부 미도달 = 타워가 처치)
-    for (const e of this.enemies) {
-      if (e.dead && !e.reachedHQ && !e._rewarded) {
-        e._rewarded = true;
-        this.gold += CONFIG.KILL_REWARD;
-        this.updateUI();
-      }
-    }
+    for (const p of this.particles) p.update(dt);
+    for (const f of this.floats) f.update(dt);
+    for (const l of this.lightnings) l.life -= dt;
 
-    // 죽은 엔티티 정리
+    // 정리
     this.boats = this.boats.filter((b) => !b.dead);
     this.enemies = this.enemies.filter((e) => !e.dead);
-    this.arrows = this.arrows.filter((a) => !a.dead);
+    this.projectiles = this.projectiles.filter((p) => !p.dead);
+    this.particles = this.particles.filter((p) => !p.dead);
+    this.floats = this.floats.filter((f) => !f.dead);
+    this.lightnings = this.lightnings.filter((l) => l.life > 0);
 
-    // 본부 피격 플래시 감쇠
+    // 감쇠
     if (this.flashHQ > 0) this.flashHQ -= dt;
+    if (this.shake > 0) this.shake = Math.max(0, this.shake - dt * 30);
+    if (this.bossWarn > 0) this.bossWarn -= dt;
 
-    // 웨이브 종료 판정
+    // 콤보 타이머
+    if (this.comboTimer > 0) { this.comboTimer -= dt; if (this.comboTimer <= 0) this.combo = 0; }
+
+    // 스킬 쿨다운
+    for (const k of Object.keys(this.abilityCd)) if (this.abilityCd[k] > 0) this.abilityCd[k] -= dt;
+
+    // 토스트
+    if (this.toastTimer > 0) { this.toastTimer -= dt; if (this.toastTimer <= 0) document.getElementById("toast").classList.add("hidden"); }
+
     this.checkWaveEnd();
-
-    // 토스트 타이머
-    if (this.toastTimer > 0) {
-      this.toastTimer -= dt;
-      if (this.toastTimer <= 0) {
-        document.getElementById("toast").classList.add("hidden");
-      }
-    }
+    this.updateComboUI();
+    this.updateAbilityUI();
   }
 
-  /* ---------------------------- 렌더링 ---------------------------- */
+  /* ---------------- 렌더링 ---------------- */
   render() {
     const ctx = this.ctx;
-    ctx.clearRect(0, 0, CONFIG.WIDTH, CONFIG.HEIGHT);
-
+    ctx.save();
+    // 화면 흔들림
+    if (this.shake > 0) ctx.translate(rand(-this.shake, this.shake), rand(-this.shake, this.shake));
+    ctx.clearRect(-20, -20, CONFIG.WIDTH + 40, CONFIG.HEIGHT + 40);
     this.drawBackground(ctx);
-
-    // 엔티티 그리기 (배 → 타워 → 적 → 화살 순)
     for (const b of this.boats) b.draw(ctx);
     for (const t of this.towers) t.draw(ctx);
     for (const e of this.enemies) e.draw(ctx);
-    for (const a of this.arrows) a.draw(ctx);
+    for (const p of this.projectiles) p.draw(ctx);
+    // 번개
+    for (const l of this.lightnings) this.drawLightning(ctx, l);
+    for (const p of this.particles) p.draw(ctx);
+    for (const f of this.floats) f.draw(ctx);
 
-    // 마우스 오버된 타워의 사정거리 표시
-    if (!this.buildMode && this.mouse.onCanvas) {
-      for (const t of this.towers) {
-        if (dist(t.x, t.y, this.mouse.x, this.mouse.y) <= 16) {
-          t.drawRange(ctx);
-        }
-      }
+    // 선택된 타워 범위 + 인스펙터 링
+    if (this.mode === "idle" && this.selectedTower) {
+      this.selectedTower.drawRange(ctx);
+      ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(this.selectedTower.x, this.selectedTower.y, 19, 0, 7); ctx.stroke();
     }
+    // 마우스 오버 타워 범위
+    if (this.mode === "idle" && this.mouse.on) {
+      for (const t of this.towers) if (t !== this.selectedTower && dist(t.x, t.y, this.mouse.x, this.mouse.y) <= 16) t.drawRange(ctx);
+    }
+    // 건설/스킬 미리보기
+    if (this.mode === "build" && this.mouse.on) this.drawBuildPreview(ctx);
+    if (this.mode === "ability" && this.mouse.on) this.drawAbilityPreview(ctx);
 
-    // 건설 모드: 마우스 위치에 건설 미리보기 + 사정거리 가이드
-    if (this.buildMode && this.mouse.onCanvas) {
-      this.drawBuildPreview(ctx);
-    }
+    ctx.restore();
   }
 
-  /* ---------------------------- 배경(전장) 그리기 ---------------------------- */
-  drawBackground(ctx) {
-    // 1) 바다 영역 (짙은 파랑 그라데이션)
-    const seaGrad = ctx.createLinearGradient(0, 0, CONFIG.SEA_END, 0);
-    seaGrad.addColorStop(0, "#0b2545");
-    seaGrad.addColorStop(1, "#1d4e89");
-    ctx.fillStyle = seaGrad;
-    ctx.fillRect(0, 0, CONFIG.SEA_END, CONFIG.HEIGHT);
+  drawLightning(ctx, l) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(196,181,253," + clamp(l.life / 0.12, 0, 1) + ")";
+    ctx.lineWidth = 2.5; ctx.beginPath();
+    const seg = 5; ctx.moveTo(l.x1, l.y1);
+    for (let i = 1; i < seg; i++) {
+      const tt = i / seg;
+      ctx.lineTo(l.x1 + (l.x2 - l.x1) * tt + rand(-6, 6), l.y1 + (l.y2 - l.y1) * tt + rand(-6, 6));
+    }
+    ctx.lineTo(l.x2, l.y2); ctx.stroke(); ctx.restore();
+  }
 
-    // 바다 물결 무늬 (은은한 가로선)
-    ctx.strokeStyle = "rgba(255,255,255,0.06)";
-    ctx.lineWidth = 2;
+  drawBackground(ctx) {
     const t = performance.now() / 1000;
+    // 바다
+    const sea = ctx.createLinearGradient(0, 0, CONFIG.SEA_END, 0);
+    sea.addColorStop(0, "#0b2545"); sea.addColorStop(1, "#1d4e89");
+    ctx.fillStyle = sea; ctx.fillRect(0, 0, CONFIG.SEA_END, CONFIG.HEIGHT);
+    ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.lineWidth = 2;
     for (let yy = 20; yy < CONFIG.HEIGHT; yy += 34) {
       ctx.beginPath();
       for (let xx = 0; xx <= CONFIG.SEA_END; xx += 20) {
-        const wy = yy + Math.sin((xx / 40) + t + yy) * 3;
-        if (xx === 0) ctx.moveTo(xx, wy);
-        else ctx.lineTo(xx, wy);
+        const wy = yy + Math.sin(xx / 40 + t + yy) * 3;
+        xx === 0 ? ctx.moveTo(xx, wy) : ctx.lineTo(xx, wy);
       }
       ctx.stroke();
     }
-
-    // 2) 해변 영역 (연노란 모래사장)
-    const sandGrad = ctx.createLinearGradient(CONFIG.SEA_END, 0, CONFIG.BEACH_END, 0);
-    sandGrad.addColorStop(0, "#f4e4b8");
-    sandGrad.addColorStop(1, "#e8d59a");
-    ctx.fillStyle = sandGrad;
-    ctx.fillRect(CONFIG.SEA_END, 0, CONFIG.BEACH_END - CONFIG.SEA_END, CONFIG.HEIGHT);
-
-    // 모래 질감 점묘 (고정 시드 느낌)
+    // 해변
+    const sand = ctx.createLinearGradient(CONFIG.SEA_END, 0, CONFIG.BEACH_END, 0);
+    sand.addColorStop(0, "#f4e4b8"); sand.addColorStop(1, "#e8d59a");
+    ctx.fillStyle = sand; ctx.fillRect(CONFIG.SEA_END, 0, CONFIG.BEACH_END - CONFIG.SEA_END, CONFIG.HEIGHT);
     ctx.fillStyle = "rgba(180,150,90,0.15)";
-    for (let i = 0; i < 140; i++) {
-      const sx = CONFIG.SEA_END + ((i * 73) % (CONFIG.BEACH_END - CONFIG.SEA_END));
-      const sy = (i * 137) % CONFIG.HEIGHT;
-      ctx.fillRect(sx, sy, 2, 2);
-    }
-
-    // 3) 상륙선(파도 경계선) — 옅은 하늘색/하얀 파도
+    for (let i = 0; i < 140; i++) ctx.fillRect(CONFIG.SEA_END + (i * 73) % (CONFIG.BEACH_END - CONFIG.SEA_END), (i * 137) % CONFIG.HEIGHT, 2, 2);
+    // 파도 경계
     const surf = 14;
-    const surfGrad = ctx.createLinearGradient(CONFIG.SEA_END - surf, 0, CONFIG.SEA_END + surf, 0);
-    surfGrad.addColorStop(0, "rgba(200,235,255,0)");
-    surfGrad.addColorStop(0.5, "rgba(230,248,255,0.85)");
-    surfGrad.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = surfGrad;
-    ctx.fillRect(CONFIG.SEA_END - surf, 0, surf * 2, CONFIG.HEIGHT);
-    // 물거품 경계선
-    ctx.strokeStyle = "rgba(255,255,255,0.7)";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    const sg = ctx.createLinearGradient(CONFIG.SEA_END - surf, 0, CONFIG.SEA_END + surf, 0);
+    sg.addColorStop(0, "rgba(200,235,255,0)"); sg.addColorStop(0.5, "rgba(230,248,255,0.85)"); sg.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = sg; ctx.fillRect(CONFIG.SEA_END - surf, 0, surf * 2, CONFIG.HEIGHT);
+    ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 2; ctx.beginPath();
     for (let yy = 0; yy <= CONFIG.HEIGHT; yy += 8) {
       const fx = CONFIG.SEA_END + Math.sin(yy / 18 + t * 2) * 4;
-      if (yy === 0) ctx.moveTo(fx, yy);
-      else ctx.lineTo(fx, yy);
+      yy === 0 ? ctx.moveTo(fx, yy) : ctx.lineTo(fx, yy);
     }
     ctx.stroke();
-
-    // 4) 본부 영역 (등대/장벽)
+    // 본부
     ctx.fillStyle = this.flashHQ > 0 ? "#ef4444" : "#57534e";
     ctx.fillRect(CONFIG.HQ_X, 0, CONFIG.WIDTH - CONFIG.HQ_X, CONFIG.HEIGHT);
-    // 벽돌 무늬
-    ctx.strokeStyle = "rgba(0,0,0,0.25)";
-    ctx.lineWidth = 1;
-    for (let yy = 0; yy < CONFIG.HEIGHT; yy += 20) {
-      ctx.beginPath();
-      ctx.moveTo(CONFIG.HQ_X, yy);
-      ctx.lineTo(CONFIG.WIDTH, yy);
-      ctx.stroke();
-    }
-    // 등대 (본부 중앙)
+    ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 1;
+    for (let yy = 0; yy < CONFIG.HEIGHT; yy += 20) { ctx.beginPath(); ctx.moveTo(CONFIG.HQ_X, yy); ctx.lineTo(CONFIG.WIDTH, yy); ctx.stroke(); }
     const lx = CONFIG.HQ_X + 25, ly = CONFIG.HEIGHT / 2;
-    ctx.fillStyle = "#f8fafc";
-    ctx.fillRect(lx - 9, ly - 40, 18, 80);
-    ctx.fillStyle = "#dc2626";
-    ctx.fillRect(lx - 9, ly - 26, 18, 10);
-    ctx.fillRect(lx - 9, ly + 2, 18, 10);
-    // 등대 불빛
-    ctx.fillStyle = "#fde047";
-    ctx.beginPath();
-    ctx.arc(lx, ly - 46, 7, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(253,224,71,0.35)";
-    ctx.beginPath();
-    ctx.arc(lx, ly - 46, 12 + Math.sin(t * 3) * 3, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // 영역 라벨
-    ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.font = "bold 13px sans-serif";
-    ctx.textAlign = "center";
+    ctx.fillStyle = "#f8fafc"; ctx.fillRect(lx - 9, ly - 40, 18, 80);
+    ctx.fillStyle = "#dc2626"; ctx.fillRect(lx - 9, ly - 26, 18, 10); ctx.fillRect(lx - 9, ly + 2, 18, 10);
+    ctx.fillStyle = "#fde047"; ctx.beginPath(); ctx.arc(lx, ly - 46, 7, 0, 7); ctx.fill();
+    ctx.strokeStyle = "rgba(253,224,71,0.35)"; ctx.beginPath(); ctx.arc(lx, ly - 46, 12 + Math.sin(t * 3) * 3, 0, 7); ctx.stroke();
+    // 라벨
+    ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.font = "bold 13px sans-serif"; ctx.textAlign = "center";
     ctx.fillText("🌊 바다 (적 이동)", CONFIG.SEA_END / 2, 24);
-    ctx.fillStyle = "rgba(120,90,40,0.6)";
-    ctx.fillText("🏖 해변 (타워 건설 영역)", (CONFIG.SEA_END + CONFIG.BEACH_END) / 2, 24);
-    ctx.save();
-    ctx.translate(CONFIG.HQ_X + 25, CONFIG.HEIGHT - 14);
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    ctx.fillText("본부", 0, 0);
-    ctx.restore();
+    ctx.fillStyle = "rgba(120,90,40,0.55)"; ctx.fillText("🏖 해변 (건설 영역)", (CONFIG.SEA_END + CONFIG.BEACH_END) / 2, 24);
+    // 보스 경고 오버레이
+    if (this.bossWarn > 0) {
+      ctx.fillStyle = `rgba(190,18,60,${0.15 + Math.sin(t * 10) * 0.1})`;
+      ctx.fillRect(0, 0, CONFIG.WIDTH, CONFIG.HEIGHT);
+      ctx.fillStyle = "#fecaca"; ctx.font = "bold 30px sans-serif";
+      ctx.fillText("⚠️ BOSS INCOMING ⚠️", CONFIG.WIDTH / 2, CONFIG.HEIGHT / 2);
+    }
   }
 
-  /* ---------------------------- 건설 미리보기 ---------------------------- */
   drawBuildPreview(ctx) {
-    const { x, y } = this.mouse;
-    const ok = this.isBuildable(x, y) && this.gold >= CONFIG.TOWER_COST;
-
-    // 사정거리 가이드 원
+    const { x, y } = this.mouse; const def = TOWER_TYPES[this.selectedType];
+    let ok = this.isBuildable(x, y) && this.gold >= def.cost;
+    for (const t of this.towers) if (dist(t.x, t.y, x, y) < 32) ok = false;
+    const range = def.base.range;
     ctx.save();
-    ctx.beginPath();
-    ctx.arc(x, y, CONFIG.TOWER_RANGE, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(x, y, range, 0, 7);
     ctx.fillStyle = ok ? "rgba(56,189,248,0.12)" : "rgba(239,68,68,0.12)";
-    ctx.strokeStyle = ok ? "rgba(56,189,248,0.7)" : "rgba(239,68,68,0.7)";
-    ctx.lineWidth = 1.5;
-    ctx.fill();
-    ctx.stroke();
-
-    // 타워 실루엣
-    ctx.beginPath();
-    ctx.arc(x, y, 14, 0, Math.PI * 2);
-    ctx.fillStyle = ok ? "rgba(139,90,43,0.7)" : "rgba(239,68,68,0.5)";
-    ctx.fill();
-    ctx.strokeStyle = ok ? "#44403c" : "#991b1b";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.strokeStyle = ok ? "rgba(56,189,248,0.7)" : "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
+    ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, 14, 0, 7);
+    ctx.fillStyle = ok ? def.color : "rgba(239,68,68,0.5)"; ctx.fill();
+    ctx.strokeStyle = ok ? "#44403c" : "#991b1b"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = "#111"; ctx.font = "12px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(def.icon, x, y); ctx.textBaseline = "alphabetic";
     ctx.restore();
-
-    // 안내 텍스트
-    ctx.fillStyle = ok ? "#065f46" : "#7f1d1d";
-    ctx.font = "bold 11px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(ok ? "여기에 건설 (100G)" : "건설 불가", x, y + 30);
+    ctx.fillStyle = ok ? "#065f46" : "#7f1d1d"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(ok ? def.name + " 건설 (" + def.cost + "G)" : "건설 불가", x, y + 30);
   }
 
-  /* ---------------------------- 게임오버 ---------------------------- */
+  drawAbilityPreview(ctx) {
+    const { x, y } = this.mouse; const a = ABILITIES[this.selectedAbility];
+    ctx.save();
+    if (this.selectedAbility === "meteor") {
+      ctx.beginPath(); ctx.arc(x, y, a.radius, 0, 7);
+      ctx.fillStyle = "rgba(245,158,11,0.18)"; ctx.strokeStyle = "rgba(245,158,11,0.8)"; ctx.lineWidth = 2;
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#f59e0b"; ctx.font = "20px serif"; ctx.textAlign = "center"; ctx.fillText("💥", x, y + 7);
+    } else {
+      ctx.fillStyle = "rgba(56,189,248,0.12)"; ctx.fillRect(CONFIG.SEA_END, 0, CONFIG.WIDTH - CONFIG.SEA_END, CONFIG.HEIGHT);
+      ctx.fillStyle = "#7dd3fc"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("🧊 전체 빙결 (클릭)", CONFIG.WIDTH * 0.68, 60);
+    }
+    ctx.restore();
+  }
+
   triggerGameOver() {
-    this.gameOver = true;
-    const ov = document.getElementById("overlay");
+    this.gameOver = true; this.audio.lose();
+    if (this.wave > this.best) { this.best = this.wave; localStorage.setItem(CONFIG.BEST_KEY, this.best); }
     document.getElementById("overlay-title").textContent = "GAME OVER";
-    document.getElementById("overlay-sub").textContent = "본부가 함락되었습니다.";
-    ov.classList.remove("hidden");
-    ov.classList.add("flex");
+    document.getElementById("overlay-sub").textContent = "웨이브 " + this.wave + "에서 본부가 함락되었습니다.";
+    document.getElementById("overlay-score").textContent = "점수 " + this.score + " · 최고 웨이브 " + this.best;
+    const ov = document.getElementById("overlay"); ov.classList.remove("hidden"); ov.classList.add("flex");
   }
 
-  /* ---------------------------- 토스트 안내 ---------------------------- */
+  /* ---------------- UI 갱신 ---------------- */
   showToast(msg) {
     const el = document.getElementById("toast");
-    el.textContent = msg;
-    el.classList.remove("hidden");
-    // 재생 애니메이션 재시작
-    el.style.animation = "none";
-    void el.offsetWidth; // reflow
-    el.style.animation = "toastIn 2.6s ease forwards";
+    el.textContent = msg; el.classList.remove("hidden");
+    el.style.animation = "none"; void el.offsetWidth; el.style.animation = "toastIn 2.6s ease forwards";
     this.toastTimer = 2.6;
   }
-
-  /* ---------------------------- UI 갱신 ---------------------------- */
   updateUI() {
     document.getElementById("ui-wave").textContent = this.wave;
-    document.getElementById("ui-gold").textContent = "💰 " + this.gold;
+    document.getElementById("ui-gold").textContent = this.gold;
+    document.getElementById("ui-score").textContent = this.score;
+    document.getElementById("ui-best").textContent = this.best;
     document.getElementById("ui-hp").textContent = this.hp;
     const pct = clamp((this.hp / CONFIG.START_HP) * 100, 0, 100);
     const bar = document.getElementById("ui-hp-bar");
     bar.style.width = pct + "%";
-    // 체력에 따라 색상 변경
-    bar.className = "h-full transition-all duration-300 " +
-      (pct > 50 ? "bg-emerald-400" : pct > 25 ? "bg-amber-400" : "bg-rose-500");
+    bar.className = "h-full transition-all duration-300 " + (pct > 50 ? "bg-emerald-400" : pct > 25 ? "bg-amber-400" : "bg-rose-500");
+  }
+  updateComboUI() {
+    const el = document.getElementById("combo");
+    if (this.combo >= 2) { el.classList.remove("hidden"); document.getElementById("combo-num").textContent = this.combo; }
+    else el.classList.add("hidden");
+  }
+  updateShop() {
+    document.querySelectorAll("#shop-towers .shop-btn").forEach((b, i) => {
+      const key = TOWER_ORDER[i];
+      b.classList.toggle("active", this.mode === "build" && this.selectedType === key);
+      b.disabled = this.gold < TOWER_TYPES[key].cost;
+    });
+    document.querySelectorAll("#shop-abilities .ability-btn").forEach((b) => {
+      const key = b.dataset.ability;
+      b.classList.toggle("active", this.mode === "ability" && this.selectedAbility === key);
+    });
+  }
+  updateAbilityUI() {
+    document.querySelectorAll("#shop-abilities .ability-btn").forEach((b) => {
+      const key = b.dataset.ability, cd = this.abilityCd[key];
+      const label = b.querySelector(".cd-label");
+      if (cd > 0) { label.textContent = cd.toFixed(1) + "s"; label.className = "text-[9px] text-rose-300 font-bold cd-label"; b.disabled = true; }
+      else { label.textContent = "준비"; label.className = "text-[9px] text-sky-300 font-bold cd-label"; b.disabled = false; }
+    });
+  }
+  updateInspector() {
+    const el = document.getElementById("inspector");
+    const t = this.selectedTower;
+    if (this.mode === "build") {
+      const d = TOWER_TYPES[this.selectedType];
+      el.innerHTML = `<span class="text-sm"><b style="color:${d.color}">${d.icon} ${d.name}</b> 건설 모드 — <span class="text-slate-300">${d.desc}</span> · <span class="text-amber-300">${d.cost}G</span> · 모래사장을 클릭하세요 <span class="text-slate-500">(ESC 취소)</span></span>`;
+      return;
+    }
+    if (this.mode === "ability") {
+      const a = ABILITIES[this.selectedAbility];
+      el.innerHTML = `<span class="text-sm"><b>${a.icon} ${a.name}</b> — ${a.desc} · 위치를 클릭하세요 <span class="text-slate-500">(ESC 취소)</span></span>`;
+      return;
+    }
+    if (!t) {
+      el.innerHTML = `<span class="text-xs">타워/스킬을 골라 <b class="text-slate-200">모래사장</b>에 설치하세요. 설치된 타워를 <b class="text-slate-200">클릭</b>하면 업그레이드·판매할 수 있어요.</span>`;
+      return;
+    }
+    const d = t.def;
+    const upBtn = t.maxLevel()
+      ? `<span class="px-2 py-1 rounded bg-slate-600 text-xs text-slate-300">MAX 레벨</span>`
+      : `<button id="ins-up" class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-bold">⬆ 업그레이드 (${t.upgradeCost()}G)</button>`;
+    el.innerHTML = `
+      <div class="flex items-center gap-3 text-sm">
+        <b style="color:${d.color}">${d.icon} ${d.name} <span class="text-amber-300">Lv.${t.level+1}</span></b>
+        <span class="text-slate-400 text-xs">사거리 ${Math.round(t.stat("range"))} · 데미지 ${Math.round(t.stat("dmg"))}${d.base.splash?` · 폭발 ${Math.round(t.stat("splash"))}`:""}${d.base.chain?` · 연쇄 ${t.stat("chain")}`:""}${d.base.slow!==undefined?` · 감속 ${Math.round((1-t.stat("slow"))*100)}%`:""}</span>
+        ${upBtn}
+        <button id="ins-sell" class="px-3 py-1.5 rounded bg-rose-700 hover:bg-rose-600 text-xs font-bold">💰 판매 (+${t.sellValue()}G)</button>
+      </div>`;
+    const up = document.getElementById("ins-up"); if (up) up.addEventListener("click", () => this.upgradeTower());
+    document.getElementById("ins-sell").addEventListener("click", () => this.sellTower());
   }
 
-  /* ==================================================================
-   *  저장 / 불러오기 (localStorage)
-   *  저장 항목: 골드, 본부 HP, 웨이브, 모든 타워 좌표(x,y)
-   * ================================================================== */
+  /* ---------------- 저장/불러오기 ---------------- */
   save() {
     const data = {
-      gold: this.gold,
-      hp: this.hp,
-      wave: this.wave,
-      towers: this.towers.map((t) => ({ x: Math.round(t.x), y: Math.round(t.y) })),
+      gold: this.gold, hp: this.hp, wave: this.wave, score: this.score,
+      towers: this.towers.map((t) => ({ x: Math.round(t.x), y: Math.round(t.y), type: t.type, level: t.level, invested: t.invested })),
     };
-    try {
-      localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(data));
-    } catch (err) {
-      console.warn("저장 실패:", err);
-      this.showToast("⚠ 저장에 실패했습니다.");
-    }
+    try { localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(data)); } catch (e) { this.showToast("⚠ 저장 실패"); }
   }
-
-  hasSave() {
-    try {
-      return !!localStorage.getItem(CONFIG.SAVE_KEY);
-    } catch (err) {
-      return false;
-    }
-  }
-
-  // silent=true 이면 토스트를 별도로 띄우지 않음(초기 자동 로드용)
+  hasSave() { try { return !!localStorage.getItem(CONFIG.SAVE_KEY); } catch (e) { return false; } }
   load(silent) {
     try {
-      const raw = localStorage.getItem(CONFIG.SAVE_KEY);
-      if (!raw) return;
-      const data = JSON.parse(raw);
-
-      // 진행 중이던 전투는 초기화하고 상태만 복원
-      this.gold = data.gold ?? CONFIG.START_GOLD;
-      this.hp = data.hp ?? CONFIG.START_HP;
-      this.wave = data.wave ?? 1;
-      this.enemies = [];
-      this.boats = [];
-      this.arrows = [];
-      this.waveActive = false;
-      this.boatsToSpawn = 0;
-      this.gameOver = false;
-
-      // 타워 복원
-      this.towers = (data.towers || []).map((tp) => new Tower(this, tp.x, tp.y));
-
-      // 오버레이 숨김
-      const ov = document.getElementById("overlay");
-      ov.classList.add("hidden");
-      ov.classList.remove("flex");
-
-      this.updateUI();
-    } catch (err) {
-      console.warn("불러오기 실패:", err);
-      if (!silent) this.showToast("⚠ 불러오기에 실패했습니다.");
-    }
-  }
-
-  /* ---------------------------- 초기화 ---------------------------- */
-  reset() {
-    // 저장 데이터까지 삭제하고 완전 초기 상태로
-    try { localStorage.removeItem(CONFIG.SAVE_KEY); } catch (err) {}
-
-    this.gold = CONFIG.START_GOLD;
-    this.hp = CONFIG.START_HP;
-    this.wave = 1;
-    this.towers = [];
-    this.enemies = [];
-    this.boats = [];
-    this.arrows = [];
-    this.waveActive = false;
-    this.boatsToSpawn = 0;
-    this.gameOver = false;
-    if (this.buildMode) this.toggleBuildMode();
-
-    const ov = document.getElementById("overlay");
-    ov.classList.add("hidden");
-    ov.classList.remove("flex");
-
-    this.updateUI();
-    this.showToast("♻ 게임을 초기화했습니다.");
+      const raw = localStorage.getItem(CONFIG.SAVE_KEY); if (!raw) return;
+      const d = JSON.parse(raw);
+      this.gold = d.gold ?? CONFIG.START_GOLD; this.hp = d.hp ?? CONFIG.START_HP;
+      this.wave = d.wave ?? 1; this.score = d.score ?? 0;
+      this.enemies = []; this.boats = []; this.projectiles = []; this.particles = []; this.floats = []; this.lightnings = [];
+      this.waveActive = false; this.boatPlan = []; this.gameOver = false;
+      this.towers = (d.towers || []).map((tp) => new Tower(this, tp.x, tp.y, tp.type || "archer", tp.level || 0, tp.invested));
+      const ov = document.getElementById("overlay"); ov.classList.add("hidden"); ov.classList.remove("flex");
+      this.cancelMode(); this.updateUI();
+    } catch (e) { if (!silent) this.showToast("⚠ 불러오기 실패"); }
   }
 }
 
-// ----- 부트스트랩 -----------------------------------------------------------------
+// ------------------------------- 부트스트랩 -------------------------------
 window.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.getElementById("game");
-  // 전역 참조(디버깅 편의)
-  window.game = new Game(canvas);
+  window.game = new Game(document.getElementById("game"));
 });
 </script>
 </body>
