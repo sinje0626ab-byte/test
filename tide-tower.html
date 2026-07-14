@@ -171,6 +171,152 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (arr) => arr[(Math.random() * arr.length) | 0];
 
+/* ============================ 도트(픽셀) 스프라이트 ============================
+ * 문자 배열을 팔레트로 매핑해 픽셀 단위로 그린다. '.'/공백 = 투명. */
+function S(rows, palette) {
+  let w = 0; for (const r of rows) w = Math.max(w, r.length);
+  return { rows, palette, w, h: rows.length };
+}
+function drawSprite(ctx, sp, cx, cy, px, opts = {}) {
+  const { rows, w, h, palette } = sp;
+  const ox = cx - (w * px) / 2, oy = cy - (h * px) / 2;
+  const tint = opts.tint, flip = opts.flip;
+  const cell = px + 0.6; // 픽셀 사이 미세 겹침으로 틈 제거
+  for (let y = 0; y < h; y++) {
+    const row = rows[y]; if (!row) continue;
+    for (let x = 0; x < w; x++) {
+      const ch = row[flip ? (w - 1 - x) : x];
+      if (!ch || ch === "." || ch === " ") continue;
+      const col = tint || palette[ch];
+      if (!col) continue;
+      ctx.fillStyle = col;
+      ctx.fillRect(ox + x * px, oy + y * px, cell, cell);
+    }
+  }
+}
+
+// ---- 적 스프라이트 ----
+const SPRITES = {
+  // 졸병: 빨간 임프
+  grunt: S([
+    "...D...D...",
+    "..DRD.DRD..",
+    "..DRRRRRD..",
+    ".DRRRRRRRD.",
+    ".DRWRRRWRD.",
+    ".DRKRRRKRD.",
+    ".DRRRRRRRD.",
+    ".DRRMMMRRD.",
+    "..DRRRRRD..",
+    "..DR.R.RD..",
+    "...K...K...",
+  ], { R:"#e23b3b", D:"#7d1414", W:"#ffffff", K:"#1a1a1a", M:"#5b0d0d" }),
+
+  // 질주자: 노란 스피드형
+  runner: S([
+    "...........",
+    "....YYY....",
+    "...YYYYY...",
+    "..OYYYYYO..",
+    "..OYWYWYO..",
+    "..OYKYKYO..",
+    "..OYYYYYO..",
+    "...YYYYY...",
+    "..Y.YYY.Y..",
+    "...O...O...",
+    "..O.....O..",
+  ], { Y:"#eab308", O:"#854d0e", W:"#ffffff", K:"#1a1a1a" }),
+
+  // 탱크: 보라 장갑 브루트
+  tank: S([
+    "............",
+    "..AAAAAAAA..",
+    ".AGAAAAAAGA.",
+    ".UPPPPPPPPU.",
+    ".UPWPPPPWPU.",
+    ".UPKPPPPKPU.",
+    ".UPPPPPPPPU.",
+    ".UAAAAAAAAU.",
+    ".UAGAAAAGAU.",
+    "..UPPPPPPU..",
+    "..U.PPPP.U..",
+  ], { P:"#7c3aed", U:"#4c1d95", A:"#9ca3af", G:"#4b5563", W:"#ffffff", K:"#1a1a1a" }),
+
+  // 보스: 뿔·왕관 달린 대형 데몬
+  boss: S([
+    "...C..C..C...",
+    "...CCCCCCC...",
+    "..HDDDDDDDH..",
+    ".HDRRRRRRRDH.",
+    ".DRRRRRRRRRD.",
+    ".DRYYRRRYYRD.",
+    ".DRKKRRRKKRD.",
+    ".DRRRRRRRRRD.",
+    ".DRRKKKKKRRD.",
+    ".DRKWKWKWKRD.",
+    "..DRRRRRRRD..",
+    "..DR.RRR.RD..",
+    "...K..K..K...",
+  ], { R:"#be123c", D:"#4c0519", K:"#1a1a1a", W:"#ffffff", Y:"#fde047", C:"#fbbf24", H:"#d1d5db" }),
+
+  // ---- 타워(아군) 스프라이트 ----
+  tower_archer: S([
+    "....GGG....",
+    "...GHHHG...",
+    "...GFFFG..B",
+    "...GFKFG.BW",
+    "....GGG..BW",
+    "...SGGGS.BW",
+    "..SGGGGGSB.",
+    "...GGGGG...",
+    "...G.G.G...",
+    "...Q.Q.Q...",
+    ".PPPPPPPPP.",
+  ], { G:"#65a30d", H:"#3f6212", S:"#4d7c0f", F:"#fcd9b0", K:"#1a1a1a", B:"#7c4a1e", W:"#e5e7eb", P:"#78716c", Q:"#44403c" }),
+
+  tower_cannon: S([
+    "............",
+    "......KKKKKO",
+    ".KKKKKKKKKKO",
+    ".KKKKKKKKKK.",
+    ".KKKKKKKKK..",
+    "..KKKKKKK...",
+    "..WWKKKWW...",
+    ".WDDWKWDDW..",
+    ".WDDW.WDDW..",
+    "..WW...WW...",
+    ".PPPPPPPPPP.",
+  ], { K:"#1f2937", D:"#111827", O:"#f97316", W:"#374151", P:"#78716c" }),
+
+  tower_frost: S([
+    ".....B.....",
+    "....BCB....",
+    "...BCWCB...",
+    "..BCWWWCB..",
+    ".BCWWWWWCB.",
+    "BCWWWWWWWCB",
+    ".BCWWWWWCB.",
+    "..BCWWWCB..",
+    "...BCWCB...",
+    "....BCB....",
+    "..D.....D..",
+  ], { B:"#0369a1", C:"#38bdf8", W:"#e0f2fe", D:"#075985" }),
+
+  tower_tesla: S([
+    "....SYS....",
+    "...S.V.S...",
+    ".....V.....",
+    "....VVV....",
+    "...VVVVV...",
+    "...VMMMV...",
+    "....VVV....",
+    "....MMM....",
+    "...MMMMM...",
+    "..PPPPPPP..",
+    "..QQQQQQQ..",
+  ], { M:"#6d28d9", V:"#a78bfa", S:"#e9d5ff", Y:"#facc15", P:"#78716c", Q:"#44403c" }),
+};
+
 /* ============================ 사운드 매니저 ============================
  * 외부 파일 없이 Web Audio API로 효과음을 즉석 생성한다. */
 class Audio2 {
@@ -338,10 +484,13 @@ class Enemy {
   constructor(game, x, y, typeKey) {
     this.game = game; this.x = x; this.y = y; this.type = typeKey;
     const t = ENEMY_TYPES[typeKey];
-    const mul = game.enemyHpMul();
     this.def = t;
-    this.maxHp = Math.round(t.hp * mul); this.hp = this.maxHp;
-    this.baseSpeed = t.speed; this.r = t.r; this.armor = t.armor || 0;
+    // 웨이브가 오를수록 정예화: 체력/장갑 추가 (보스는 별도)
+    this.tier = t.boss ? 0 : game.waveTier();
+    const hpMul = game.enemyHpMul() * (1 + this.tier * 0.15);
+    this.maxHp = Math.round(t.hp * hpMul); this.hp = this.maxHp;
+    this.baseSpeed = t.speed * (t.boss ? 1 : game.enemySpeedMul());
+    this.r = t.r; this.armor = (t.armor || 0) + this.tier;
     this.dead = false; this.reachedHQ = false; this._rewarded = false;
     this.slowMul = 1; this.slowTimer = 0; // 서리탑 감속
     this.freezeTimer = 0;                 // 빙결 스킬
@@ -375,21 +524,36 @@ class Enemy {
   }
   draw(ctx) {
     const d = this.def;
-    // 빙결/감속 시 얼음빛
-    if (this.freezeTimer > 0) { ctx.fillStyle = "#bae6fd"; ctx.strokeStyle = "#0369a1"; }
-    else if (this.slowMul < 1) { ctx.fillStyle = this.hitFlash>0?"#fff":d.color; ctx.strokeStyle = "#38bdf8"; }
-    else { ctx.fillStyle = this.hitFlash > 0 ? "#fff" : d.color; ctx.strokeStyle = d.stroke; }
-    ctx.lineWidth = d.boss ? 3 : 2;
-    ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    // 눈(귀여운 악당 느낌)
-    ctx.fillStyle = "#fff";
-    ctx.beginPath(); ctx.arc(this.x + this.r*0.3, this.y - this.r*0.2, this.r*0.22, 0, 7); ctx.fill();
-    ctx.fillStyle = "#111";
-    ctx.beginPath(); ctx.arc(this.x + this.r*0.38, this.y - this.r*0.2, this.r*0.11, 0, 7); ctx.fill();
-    // 보스 왕관
-    if (d.boss) { ctx.fillStyle = "#fbbf24"; ctx.font = `${this.r}px serif`; ctx.textAlign="center"; ctx.fillText("👑", this.x, this.y - this.r - 4); }
+    // 바닥 그림자
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.beginPath(); ctx.ellipse(this.x, this.y + this.r * 0.9, this.r * 0.9, this.r * 0.4, 0, 0, 7); ctx.fill();
+    // 정예(고웨이브) 오라 링 — 강해질수록 색이 진해짐
+    if (this.tier > 0) {
+      const glow = ["#f59e0b", "#ef4444", "#a855f7", "#22d3ee"][Math.min(this.tier - 1, 3)];
+      ctx.save();
+      ctx.strokeStyle = glow; ctx.globalAlpha = 0.5 + Math.sin(this.wobble) * 0.15; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r + 3, 0, 7); ctx.stroke();
+      ctx.restore();
+    }
+    // 도트 스프라이트 (피격=하양, 빙결=하늘색 실루엣)
+    const sp = SPRITES[this.type] || SPRITES.grunt;
+    const px = (this.r * 2.3) / sp.w;
+    let tint = null;
+    if (this.hitFlash > 0) tint = "#ffffff";
+    else if (this.freezeTimer > 0) tint = "#bae6fd";
+    drawSprite(ctx, sp, this.x, this.y, px, { tint });
+    // 감속 표시 링
+    if (this.slowMul < 1 && this.freezeTimer <= 0) {
+      ctx.strokeStyle = "rgba(56,189,248,0.8)"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r + 2, 0, 7); ctx.stroke();
+    }
+    // 정예 등급 별
+    if (this.tier > 0) {
+      ctx.fillStyle = "#fde047"; ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("★".repeat(Math.min(this.tier, 3)), this.x, this.y - this.r - (d.boss ? 18 : 8));
+    }
     // 체력바
-    const bw = Math.max(22, this.r*2), bh = d.boss ? 6 : 4, bx = this.x - bw/2, by = this.y - this.r - (d.boss?14:9);
+    const bw = Math.max(22, this.r * 2), bh = d.boss ? 6 : 4, bx = this.x - bw / 2, by = this.y - this.r - (d.boss ? 26 : 13);
     ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(bx, by, bw, bh);
     const hpPct = this.hp / this.maxHp;
     ctx.fillStyle = hpPct > 0.5 ? "#4ade80" : hpPct > 0.25 ? "#facc15" : "#f87171";
@@ -440,7 +604,6 @@ class Projectile {
     const R = this.tower.stat("splash");
     this.game.audio.cannon();
     this.game.boom(this.tx, this.ty, R, "#fb923c");
-    this.game.shake += 4;
     for (const e of this.game.enemies) {
       if (e.dead) continue;
       if (dist(this.tx, this.ty, e.x, e.y) <= R + e.r) {
@@ -561,26 +724,16 @@ class Tower {
       ctx.beginPath(); ctx.arc(this.x, this.y, rr, 0, 7); ctx.fill();
       ctx.restore();
     }
-    // 기단
-    ctx.fillStyle = "#78716c"; ctx.strokeStyle = "#44403c"; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(this.x, this.y, 15, 0, 7); ctx.fill(); ctx.stroke();
-    // 몸통 색
-    ctx.fillStyle = this.def.color;
-    ctx.beginPath(); ctx.arc(this.x, this.y, 10, 0, 7); ctx.fill();
-    // 아이콘
-    ctx.font = "13px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(this.def.icon, this.x, this.y + 0.5);
-    ctx.textBaseline = "alphabetic";
+    // 바닥 그림자
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.beginPath(); ctx.ellipse(this.x, this.y + 12, 13, 5, 0, 0, 7); ctx.fill();
+    // 도트 캐릭터
+    const sp = SPRITES["tower_" + this.type];
+    if (sp) drawSprite(ctx, sp, this.x, this.y - 2, 2.4);
     // 레벨 별
     if (this.level > 0) {
-      ctx.fillStyle = "#fbbf24"; ctx.font = "9px sans-serif";
-      ctx.fillText("★".repeat(this.level), this.x, this.y - 18);
-    }
-    // 포탑 방향(오라 제외)
-    if (this.def.proj !== "aura") {
-      ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle);
-      ctx.strokeStyle = "#292524"; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(15,0); ctx.stroke(); ctx.restore();
+      ctx.fillStyle = "#fbbf24"; ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("★".repeat(this.level), this.x, this.y - 20);
     }
   }
 }
@@ -624,7 +777,11 @@ class Game {
     }
   }
 
-  enemyHpMul() { return 1 + (this.wave - 1) * 0.14; }
+  // ------- 웨이브별 난이도 스케일링 (점점 강해짐) -------
+  enemyHpMul()    { return 1 + (this.wave - 1) * 0.35; }              // 체력 급상승
+  enemySpeedMul() { return Math.min(1.9, 1 + (this.wave - 1) * 0.045); } // 이동속도 상승(상한 1.9x)
+  rewardMul()     { return 1 + (this.wave - 1) * 0.06; }              // 보상도 함께 상승
+  waveTier()      { return Math.floor((this.wave - 1) / 5); }          // 5웨이브마다 '정예' 등급
 
   /* ---------------- 상점/스킬 버튼 생성 ---------------- */
   buildShop() {
@@ -757,7 +914,7 @@ class Game {
     if (this.abilityCd[key] > 0) return;
     if (key === "meteor") {
       this.abilityCd.meteor = a.cd;
-      this.audio.explode(); this.shake += 12;
+      this.audio.explode();
       this.boom(x, y, a.radius, "#f59e0b");
       for (let i=0;i<30;i++) this.particles.push(new Particle(x, y, {color: pick(["#f59e0b","#ef4444","#fbbf24"]), speed: rand(60,260), life: rand(0.4,0.9), size: rand(3,6)}));
       for (const e of this.enemies) {
@@ -821,8 +978,11 @@ class Game {
       for (let j = 0; j < n; j++) {
         let type = "grunt";
         const r = Math.random();
-        if (wave >= 3 && r < 0.28) type = "runner";
-        if (wave >= 4 && r > 0.82) type = "tank";
+        // 웨이브가 오를수록 질주자/탱크 비중 증가
+        const runnerP = wave >= 3 ? Math.min(0.45, 0.15 + wave * 0.02) : 0;
+        const tankP   = wave >= 4 ? Math.min(0.40, 0.05 + wave * 0.03) : 0;
+        if (r < runnerP) type = "runner";
+        else if (r > 1 - tankP) type = "tank";
         cargo.push(type);
       }
       plan.push(cargo);
@@ -861,7 +1021,7 @@ class Game {
     // 콤보 증가
     this.combo++; this.comboTimer = CONFIG.COMBO_WINDOW;
     const mult = 1 + Math.floor(this.combo / 5) * 0.5; // 5콤보마다 +0.5배
-    const reward = Math.round(e.def.reward * mult);
+    const reward = Math.round(e.def.reward * mult * this.rewardMul());
     this.gold += reward;
     this.score += Math.round(e.def.score * mult);
     this.audio.coin();
@@ -910,7 +1070,7 @@ class Game {
       e.update(dt);
       if (e.reachedHQ) {
         this.hp = clamp(this.hp - e.def.dmg, 0, CONFIG.START_HP);
-        this.flashHQ = 0.3; this.shake += e.def.boss ? 10 : 4; this.audio.hqHit();
+        this.flashHQ = 0.3; this.audio.hqHit();
         this.combo = 0; this.comboTimer = 0; // 본부 피격 시 콤보 리셋
         this.updateUI();
         if (this.hp <= 0) this.triggerGameOver();
