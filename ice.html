@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>빙판닦개 뒤뚱이 · Ice Rink Cleaner</title>
+<style>
+  :root{
+    --bg0:#0a1420; --bg1:#122236; --wall:#1b2f45; --line:#26425f;
+    --ice:#a9e6ff; --ice2:#7cc9ef; --dirty:#7a93a6; --dirty2:#63808f;
+    --rock:#3f5f7d; --rock-d:#2a465f; --rock-l:#5a7d9d;
+    --gold:#ffd24d; --accent:#38d0e6; --accent-d:#1a94a8;
+    --start:#ffb03b; --ink:#eaf6ff; --ink-dim:#9db6c9; --panel:#14263a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg0);
+    font-family:"Segoe UI",system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;}
+  .bgtex{position:fixed;inset:0;z-index:-1;
+    background:
+      radial-gradient(1100px 560px at 50% -10%, #1a3350, transparent 70%),
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(255,255,255,.02) 38px 40px),
+      repeating-linear-gradient(90deg, transparent 0 38px, rgba(255,255,255,.02) 38px 40px),
+      linear-gradient(180deg,var(--bg1),var(--bg0));}
+
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;}
+  .screen.show{display:flex;}
+
+  /* ---------- intro splash ---------- */
+  #intro{z-index:50;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;
+    background:radial-gradient(circle at 50% 38%,#101a22,#05080c 72%);}
+  #intro.leaving{animation:fadeOut .45s ease forwards;}
+  @keyframes fadeOut{to{opacity:0;}}
+  .intro-badge{width:min(46vw,180px);opacity:0;transform:scale(.62);
+    animation:badgeIn .62s cubic-bezier(.2,1.4,.4,1) forwards .08s;
+    filter:drop-shadow(0 0 22px rgba(60,200,180,.35));}
+  @keyframes badgeIn{0%{opacity:0;transform:scale(.62) rotate(-6deg);}62%{opacity:1;transform:scale(1.06) rotate(1deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
+  .intro-badge svg{width:100%;height:100%;display:block;animation:badgeGlow 1.8s ease-in-out infinite .7s;}
+  @keyframes badgeGlow{0%,100%{filter:drop-shadow(0 0 6px rgba(90,220,190,.35));}50%{filter:drop-shadow(0 0 16px rgba(90,220,190,.7));}}
+  .intro-word{margin-top:16px;opacity:0;transform:translateY(8px);animation:wordIn .5s ease forwards .38s;
+    display:flex;align-items:baseline;gap:.32em;font-weight:900;letter-spacing:.04em;font-size:clamp(26px,7vw,40px);}
+  @keyframes wordIn{to{opacity:1;transform:translateY(0);}}
+  .intro-word .yj{background:linear-gradient(120deg,#3fa9ff,#3ee08a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .intro-word .games{color:#f4f8fb;text-shadow:0 2px 0 rgba(0,0,0,.5);}
+  .intro-tag{margin-top:6px;font-size:11px;letter-spacing:.42em;color:#7fa0ac;text-transform:uppercase;opacity:0;animation:wordIn .5s ease forwards .55s;}
+
+  /* ---------- game title card ---------- */
+  #gameLogo{align-items:center;justify-content:center;flex-direction:column;cursor:pointer;overflow:hidden;
+    background:radial-gradient(circle at 50% 22%,#173a55,#050d16 76%);}
+  .gl-scene{position:absolute;inset:0;z-index:0;opacity:.9;}
+  .gl-scene svg{width:100%;height:100%;display:block;}
+  .gl-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:0 24px;text-align:center;
+    opacity:0;transform:scale(.9);animation:glIn .55s cubic-bezier(.2,1.3,.4,1) forwards .1s;}
+  @keyframes glIn{to{opacity:1;transform:scale(1);}}
+  .gl-ribbon{display:inline-block;margin:0 auto 18px;padding:7px 22px;border-radius:20px;
+    background:linear-gradient(180deg,#39b6ff,#1c72c8);color:#fff;font-weight:800;font-size:13px;letter-spacing:.05em;
+    box-shadow:0 4px 10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.3);white-space:nowrap;}
+  .gl-title{margin:0;font-size:clamp(30px,9vw,50px);font-weight:900;line-height:1.22;color:#eafaff;
+    text-shadow:-2px -2px 0 #0d3a5c,2px -2px 0 #0d3a5c,-2px 2px 0 #0d3a5c,2px 2px 0 #0d3a5c,0 0 22px rgba(80,200,255,.6),0 8px 16px rgba(0,0,0,.55);
+    letter-spacing:-.01em;max-width:340px;}
+  .gl-mascot{width:min(38vw,158px);margin:14px auto 0;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5));animation:glBob 2.2s ease-in-out infinite;}
+  .gl-mascot svg{width:100%;height:100%;display:block;}
+  @keyframes glBob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-7px) rotate(2deg);}}
+  .gl-sparkle{position:absolute;font-size:20px;opacity:.85;z-index:0;animation:glTw 1.8s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(180,240,255,.7));}
+  .gl-sparkle.s1{top:16%;left:11%;}.gl-sparkle.s2{top:13%;right:10%;animation-delay:.5s;font-size:16px;}.gl-sparkle.s3{bottom:15%;left:14%;animation-delay:1s;font-size:14px;}
+  @keyframes glTw{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.15);}}
+  .gl-prompt{position:absolute;left:0;right:0;bottom:calc(46px + env(safe-area-inset-bottom));text-align:center;
+    color:#cdeeff;font-weight:800;font-size:14px;letter-spacing:.03em;z-index:1;animation:glPulse 1.3s ease-in-out infinite;}
+  @keyframes glPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  /* ---------- main menu ---------- */
+  #mainMenu{align-items:center;justify-content:center;overflow:hidden;}
+  .mm-scene{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+  .mm-scene svg{width:100%;height:100%;display:block;}
+  .mm-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 22px;}
+  .mm-kicker{font-size:clamp(14px,4vw,18px);font-weight:800;letter-spacing:.08em;color:#ffe27a;
+    text-shadow:-1px -1px 0 #7a5312,1px -1px 0 #7a5312,-1px 1px 0 #7a5312,1px 1px 0 #7a5312,0 4px 10px rgba(0,0,0,.5);}
+  .mm-title{margin-top:6px;font-size:clamp(32px,9.4vw,50px);font-weight:900;line-height:1.15;color:#eafaff;
+    text-shadow:-2px -2px 0 #0d3a5c,2px -2px 0 #0d3a5c,-2px 2px 0 #0d3a5c,2px 2px 0 #0d3a5c,0 0 22px rgba(80,200,255,.55),0 8px 16px rgba(0,0,0,.55);}
+  .mm-tag{margin-top:10px;font-size:13px;color:#cfe6f4;max-width:300px;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+  .mm-btns{display:flex;gap:10px;margin-top:24px;}
+  .menu-btn{padding:13px 22px;font-weight:900;font-size:15px;cursor:pointer;transition:transform .1s;border:none;
+    display:inline-flex;align-items:center;gap:7px;
+    background:linear-gradient(180deg,#2b4a68,#18293c);border:2px solid #0d1c2c;border-radius:12px;color:#eaf6ff;
+    box-shadow:0 4px 0 #08131f,0 7px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);text-shadow:0 2px 2px rgba(0,0,0,.5);}
+  .menu-btn.start{background:linear-gradient(180deg,var(--accent),var(--accent-d));border-color:#0c5563;color:#032329;font-size:17px;padding:13px 34px;}
+  .menu-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #08131f,0 4px 8px rgba(0,0,0,.5);}
+
+  /* ---------- stage select ---------- */
+  #select{overflow-y:auto;padding:0 16px 40px;-webkit-overflow-scrolling:touch;}
+  #select .hud{padding-left:0;padding-right:0;}
+  .tiers{max-width:520px;margin:14px auto 0;display:flex;gap:8px;background:#122236;border:1px solid var(--line);border-radius:16px;padding:6px;}
+  .tier-tab{flex:1;padding:11px 4px;border:none;border-radius:11px;background:none;color:var(--ink-dim);font-size:15px;font-weight:800;
+    cursor:pointer;transition:background .18s,color .18s;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;}
+  .tier-tab .tsub{font-size:9.5px;letter-spacing:.12em;opacity:.75;font-weight:700;}
+  .tier-tab.active{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#032329;}
+  .stages{max-width:560px;margin:16px auto 0;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  @media(max-width:400px){.stages{grid-template-columns:repeat(4,1fr);}}
+  .stage-btn{position:relative;aspect-ratio:1;border:1px solid var(--line);border-radius:14px;
+    background:linear-gradient(180deg,#1c3247,#142335);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .2s;box-shadow:0 4px 10px rgba(0,0,0,.3);}
+  .stage-btn .num{font-size:20px;}
+  .stage-btn .lab{font-size:8.5px;letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;}
+  .stage-btn:not(.locked):active{transform:scale(.94);}
+  .stage-btn.locked{opacity:.5;cursor:not-allowed;color:var(--ink-dim);}
+  .stage-btn.cleared{border-color:rgba(56,208,230,.6);}
+  .stage-btn.cleared .num{color:#8fe9ff;}
+  .stage-btn .stars{position:absolute;top:6px;right:8px;font-size:10px;color:var(--gold);}
+  .stage-btn .lockic{font-size:18px;}
+  .reset-prog{display:block;margin:24px auto 0;background:none;border:1px solid var(--line);color:var(--ink-dim);font-size:12px;padding:8px 16px;border-radius:20px;cursor:pointer;}
+
+  /* ---------- hud ---------- */
+  .hud{display:flex;align-items:center;gap:7px;padding:calc(12px + env(safe-area-inset-top)) 12px 6px;}
+  .hud .iconbtn{width:40px;height:40px;flex:0 0 auto;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .1s;position:relative;}
+  .hud .iconbtn:active{transform:scale(.9);}
+  .hud .iconbtn:disabled{opacity:.35;cursor:default;}
+  .hud .iconbtn svg{width:20px;height:20px;}
+  .hud .iconbtn.restart-btn{width:48px;height:48px;border-radius:14px;}
+  .hud .iconbtn.restart-btn svg{width:27px;height:27px;}
+  .hud .center{flex:1;text-align:center;min-width:0;}
+  .hud .stg{font-size:11px;letter-spacing:.16em;color:var(--accent);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hud .prog{font-size:15px;font-weight:800;margin-top:1px;}
+  .hud .prog .done{color:var(--accent);}
+
+  /* ---------- board ---------- */
+  #game .hud,#game .board-wrap,#game .pad-wrap{position:relative;z-index:1;}
+  .scene{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+  .scene svg{width:100%;height:100%;display:block;}
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 14px;min-height:0;}
+  .board{position:relative;width:min(94vw,60vh);max-width:520px;aspect-ratio:1;background:var(--wall);border:3px solid #0c1a28;border-radius:12px;
+    box-shadow:0 20px 46px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4),inset 0 0 0 2px rgba(255,255,255,.04);display:grid;gap:0;overflow:hidden;padding:4px;}
+  .cell{position:relative;border:1px solid rgba(0,0,0,.22);overflow:hidden;}
+  /* dirty (frosty/scuffed) ice */
+  .cell.ice{background:
+      repeating-linear-gradient(58deg, rgba(255,255,255,.05) 0 2px, transparent 2px 9px),
+      repeating-linear-gradient(-58deg, rgba(255,255,255,.045) 0 2px, transparent 2px 11px),
+      linear-gradient(150deg,var(--dirty),var(--dirty2));}
+  .cell.ice::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(9px 6px at 40% 30%, rgba(255,255,255,.09), transparent 62%),
+      radial-gradient(7px 5px at 70% 68%, rgba(20,30,40,.28), transparent 62%);}
+  /* cleaned shiny ice */
+  .cell.clean{background:
+      linear-gradient(120deg, rgba(255,255,255,.55), transparent 42%),
+      linear-gradient(150deg,var(--ice),var(--ice2) 72%,#5cb4e0);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.35), inset 0 0 12px rgba(255,255,255,.45);animation:shine .45s ease-out;}
+  .cell.clean::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.7) 50%,transparent 62%);opacity:0;animation:sweep .5s ease-out;}
+  @keyframes sweep{0%{transform:translateX(-120%);opacity:.9;}100%{transform:translateX(120%);opacity:0;}}
+  @keyframes shine{0%{filter:brightness(1.7);}100%{filter:brightness(1);}}
+  /* rock / snow-capped ice block obstacle (kept clearly darker than cleaned ice) */
+  .cell.rock{background:linear-gradient(180deg,#24425e,#152838);}
+  .cell.rock::before{content:"";position:absolute;inset:7%;border-radius:5px;
+    background:linear-gradient(165deg,#4d7ea6,#2c526f 52%,#17303f);border:2px solid #10222f;
+    box-shadow:inset 0 3px 4px rgba(255,255,255,.28), inset 0 -4px 6px rgba(0,0,0,.4),0 3px 6px rgba(0,0,0,.5);}
+  /* snow cap on top */
+  .cell.rock::after{content:"";position:absolute;left:9%;right:9%;top:6%;height:26%;border-radius:6px 6px 12px 12px/6px 6px 20px 20px;
+    background:linear-gradient(180deg,#ffffff,#dcefff);box-shadow:0 2px 3px rgba(0,0,0,.25);}
+  .cell.bump{animation:bump .28s;}
+  @keyframes bump{0%,100%{filter:none;}50%{filter:brightness(1.35) saturate(1.3);}}
+
+  /* penguin */
+  .peng{position:absolute;z-index:5;pointer-events:none;transform:translate(-50%,-60%);}
+  .peng svg{display:block;width:100%;height:100%;filter:drop-shadow(0 4px 3px rgba(0,0,0,.45));}
+  .peng.squish{animation:squish .18s ease;}
+  @keyframes squish{0%{transform:translate(-50%,-60%) scale(1,1);}50%{transform:translate(-50%,-58%) scale(1.12,.86);}100%{transform:translate(-50%,-60%) scale(1,1);}}
+  .peng.flip{transform:translate(-50%,-60%) scaleX(-1);}
+
+  /* ice spray particle */
+  .fx{position:absolute;left:50%;top:52%;pointer-events:none;z-index:6;}
+  .fx-spray{border-radius:50%;background:radial-gradient(circle at 35% 30%, #fff, rgba(200,240,255,.4) 70%);transform:translate(-50%,-50%);animation:spray .5s ease-out forwards;}
+  @keyframes spray{0%{opacity:.95;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(.3);}}
+  .fx-star{font-size:min(4.4vw,18px);transform:translate(-50%,-50%) scale(.2);filter:drop-shadow(0 0 3px rgba(180,240,255,.9));animation:starp .5s ease-out forwards;}
+  @keyframes starp{0%{opacity:0;transform:translate(-50%,-50%) scale(.2);}40%{opacity:1;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(1.1);}100%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy) - 6px)) scale(.5);}}
+
+  /* d-pad */
+  .pad-wrap{display:flex;justify-content:center;padding:6px 0 calc(16px + env(safe-area-inset-bottom));}
+  .dpad{display:grid;grid-template-columns:72px 72px 72px;grid-template-rows:72px 72px 72px;gap:7px;}
+  .dbtn{border:none;cursor:pointer;border-radius:16px;touch-action:none;user-select:none;
+    background:linear-gradient(180deg,#26405a,#152435);color:var(--ink);font-size:30px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 5px 0 #0a1622,0 8px 14px rgba(0,0,0,.4);transition:transform .06s,box-shadow .06s;}
+  .dbtn:active{transform:translateY(4px);box-shadow:0 1px 0 #0a1622,0 3px 8px rgba(0,0,0,.4);}
+  .dbtn.up{grid-column:2;grid-row:1;}.dbtn.left{grid-column:1;grid-row:2;}.dbtn.right{grid-column:3;grid-row:2;}.dbtn.down{grid-column:2;grid-row:3;}
+
+  /* overlays */
+  .overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:20px;}
+  .overlay.show{display:flex;}
+  .veil{position:absolute;inset:0;background:rgba(4,10,16,.72);backdrop-filter:blur(3px);}
+  .card{position:relative;width:min(420px,92vw);max-height:90vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
+    border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.6);}
+  .card h2{margin:6px 0 4px;font-size:25px;}
+  .card p{color:var(--ink-dim);font-size:14px;margin:0 0 6px;}
+  .card .big{font-size:52px;line-height:1;margin-bottom:6px;}
+  .card .stars-big{font-size:30px;letter-spacing:6px;color:var(--gold);margin:8px 0 4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
+  .btns{display:flex;gap:10px;margin-top:18px;}
+  .btn{flex:1;padding:13px 10px;border-radius:13px;border:none;font-weight:800;font-size:15px;cursor:pointer;transition:transform .1s;}
+  .btn:active{transform:scale(.96);}
+  .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#032329;}
+  .btn.ghost{background:#22384f;color:var(--ink);border:1px solid var(--line);}
+  .howlist{text-align:left;margin:14px 0 4px;font-size:14px;line-height:1.65;color:var(--ink-dim);}
+  .howlist .row{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px;}
+  .howlist .ic{font-size:19px;line-height:1.4;flex:0 0 auto;}
+  .howlist b{color:var(--ink);}
+  .toast{position:fixed;left:50%;bottom:calc(200px + env(safe-area-inset-bottom));transform:translateX(-50%);
+    background:rgba(10,22,34,.94);border:1px solid var(--line);color:var(--ink);padding:9px 16px;border-radius:20px;font-size:13.5px;font-weight:700;
+    z-index:25;max-width:90vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+  .langbar{position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;display:flex;gap:7px;z-index:6;}
+</style>
+</head>
+<body>
+<div class="bgtex"></div>
+<div id="app">
+
+  <!-- INTRO -->
+  <section id="intro" class="screen show">
+    <div class="intro-badge">
+      <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#2e6fe0"/><stop offset=".5" stop-color="#22b8c4"/><stop offset="1" stop-color="#3ee08a"/></linearGradient></defs>
+        <path d="M112 34 Q120 14 140 8 Q131 24 137 36 Q146 27 154 30 Q147 46 131 50 Q117 47 112 34Z" fill="url(#ig)"/>
+        <path d="M100 16 L164 40 Q168 98 149 134 Q129 172 100 194 Q71 172 51 134 Q32 98 36 40 Z" fill="#0d151c" stroke="url(#ig)" stroke-width="7" stroke-linejoin="round"/>
+        <path d="M66 52 L100 102 L134 52" fill="none" stroke="url(#ig)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M100 102 L100 124" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M132 66 L132 138 Q132 156 114 160" fill="none" stroke="url(#ig)" stroke-width="8" stroke-linecap="round"/>
+        <g fill="#eafcff"><rect x="92" y="122" width="15" height="36" rx="3.5"/><rect x="81" y="133" width="37" height="15" rx="3.5"/></g>
+      </svg>
+    </div>
+    <div class="intro-word"><span class="yj">YJ</span><span class="games">GAMES</span></div>
+    <div class="intro-tag">PRESENTS</div>
+  </section>
+
+  <!-- GAME LOGO -->
+  <section id="gameLogo" class="screen">
+    <div class="gl-scene" id="glScene"></div>
+    <div class="gl-content">
+      <div class="gl-ribbon">미끌미끌 빙판 대청소!</div>
+      <h1 class="gl-title">빙판닦개 뒤뚱이</h1>
+      <div class="gl-mascot" id="glMascot"></div>
+      <div class="gl-sparkle s1">❄️</div><div class="gl-sparkle s2">✨</div><div class="gl-sparkle s3">❄️</div>
+    </div>
+    <div class="gl-prompt">아무 버튼이나 눌러주세요</div>
+  </section>
+
+  <!-- MAIN MENU -->
+  <section id="mainMenu" class="screen">
+    <div class="mm-scene" id="mmScene"></div>
+    <div class="mm-content">
+      <div class="mm-kicker">미끌미끌 빙판 대청소!</div>
+      <div class="mm-title">빙판닦개 뒤뚱이</div>
+      <div class="mm-tag">얼음판을 슝~ 밀어서 구석구석 반짝반짝 청소하자!</div>
+      <div class="mm-btns">
+        <button class="menu-btn" id="howtoBtn">❓ 게임 방법</button>
+        <button class="menu-btn start" id="startBtn">START</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAGE SELECT -->
+  <section id="select" class="screen">
+    <div class="hud">
+      <button class="iconbtn" id="selBackBtn">←</button>
+      <div class="center"><div class="stg">스테이지 선택</div></div>
+    </div>
+    <div class="tiers" id="tierTabs"></div>
+    <div class="stages" id="stageGrid"></div>
+    <button class="reset-prog" id="resetProg">진행 기록 초기화</button>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="screen">
+    <div class="scene" id="scene"></div>
+    <div class="hud">
+      <button class="iconbtn" id="backBtn">←</button>
+      <div class="center"><div class="stg" id="hudStage"></div><div class="prog" id="hudProg"></div></div>
+      <button class="iconbtn" id="undoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 V11 a5 5 0 0 1 10 0 V20"/><path d="M13 16 l4 4 4 -4"/></svg></button>
+      <button class="iconbtn restart-btn" id="restartBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 2.64 6.36"/><path d="M3 21v-6h6"/></svg></button>
+    </div>
+    <div class="board-wrap"><div class="board" id="board"></div></div>
+    <div class="pad-wrap">
+      <div class="dpad">
+        <button class="dbtn up" data-dir="up">▲</button>
+        <button class="dbtn left" data-dir="left">◀</button>
+        <button class="dbtn right" data-dir="right">▶</button>
+        <button class="dbtn down" data-dir="down">▼</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- overlays -->
+<div class="overlay" id="howtoOverlay"><div class="veil"></div><div class="card">
+  <h2>게임 방법</h2>
+  <div class="howlist">
+    <div class="row"><span class="ic">🐧</span><div><b>목표</b> — 뒤뚱이를 밀어서 <b>온 빙판(더러운 얼음)</b>을 남김없이 반짝반짝 닦으면 성공!</div></div>
+    <div class="row"><span class="ic">🧊</span><div><b>미끄러짐</b> — 한 방향으로 밀면 <b>얼음벽에 부딪힐 때까지 쭉</b> 미끄러져요. 중간에 못 멈춰요!</div></div>
+    <div class="row"><span class="ic">🕹️</span><div><b>조작</b> — 방향키 / 화면 방향 버튼 / 화면 쓸어넘기기 (한 번 = 한 번 미끄러짐)</div></div>
+    <div class="row"><span class="ic">↩️</span><div><b>되돌리기</b> — 꼬였으면 되돌리기(↩︎)나 다시 시작(⟳)으로 얼마든지 재도전!</div></div>
+    <div class="row"><span class="ic">🏆</span><div><b>난이도</b> — 초급·중급·고급·특급 각 30스테이지. 뒤로 갈수록 판이 커지고 얼음벽이 많아져요.</div></div>
+  </div>
+  <div class="btns"><button class="btn primary" id="howtoClose">닫기</button></div>
+</div></div>
+
+<div class="overlay" id="winOverlay"><div class="veil"></div><div class="card">
+  <div class="big">✨🐧✨</div>
+  <h2>반짝반짝 완료!</h2>
+  <div class="stars-big" id="winStars">★★★</div>
+  <p id="winMsg"></p>
+  <div class="btns"><button class="btn ghost" id="winRetry">다시</button><button class="btn primary" id="winNext">다음 →</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+(function(){
+  const $=s=>document.querySelector(s);
+  const TIERS=["beginner","intermediate","advanced","master"];
+  const TIER_KO={beginner:"초급",intermediate:"중급",advanced:"고급",master:"특급"};
+  const STAGES=30, PROG_KEY="bingpanWiper.progress.v1";
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  /* ---------- sprites ---------- */
+  const PENGUIN=`
+  <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="60" cy="132" rx="26" ry="6" fill="rgba(0,0,0,.25)"/>
+    <!-- squeegee -->
+    <rect x="86" y="34" width="6" height="74" rx="3" fill="#ffcf4d" transform="rotate(10 89 71)"/>
+    <rect x="74" y="104" width="34" height="9" rx="3" fill="#39b6ff" transform="rotate(10 91 108)"/>
+    <!-- feet -->
+    <path d="M44 118 q-4 12 6 13 q10 -1 8 -12 z" fill="#ff9f2e"/>
+    <path d="M64 118 q-2 12 8 13 q10 -1 6 -12 z" fill="#ff8f1e"/>
+    <!-- body -->
+    <path d="M60 26 q30 0 30 44 q0 42 -30 46 q-30 -4 -30 -46 q0 -44 30 -44 z" fill="#22364d"/>
+    <path d="M60 30 q26 0 26 40 q0 38 -26 42 q-26 -4 -26 -42 q0 -40 26 -40 z" fill="#2c4763"/>
+    <!-- belly -->
+    <path d="M60 46 q17 0 17 26 q0 26 -17 30 q-17 -4 -17 -30 q0 -26 17 -26 z" fill="#eef8ff"/>
+    <!-- wings -->
+    <path d="M32 56 q-8 20 2 40 q6 -2 8 -12 q-6 -16 -2 -30 z" fill="#22364d"/>
+    <path d="M88 52 q10 18 4 40 q-6 -2 -9 -12 q4 -16 1 -30 z" fill="#22364d"/>
+    <!-- head cap -->
+    <path d="M60 26 q24 0 26 22 q-26 -8 -52 0 q2 -22 26 -22 z" fill="#1b2c40"/>
+    <!-- eyes -->
+    <circle cx="51" cy="46" r="5.4" fill="#fff"/><circle cx="69" cy="46" r="5.4" fill="#fff"/>
+    <circle cx="52" cy="47" r="2.6" fill="#1a1a1a"/><circle cx="68" cy="47" r="2.6" fill="#1a1a1a"/>
+    <!-- beak -->
+    <path d="M54 54 q6 6 12 0 q-6 5 -12 0 z" fill="#ff9f2e"/>
+    <path d="M55 53 l5 4 l5 -4 q-5 3 -10 0 z" fill="#ffb84d"/>
+    <!-- scarf -->
+    <path d="M40 70 q20 8 40 0 l-1 8 q-19 7 -38 0 z" fill="#38d0e6"/>
+    <path d="M74 76 q8 2 9 12 l-7 -1 q-3 -7 -3 -9 z" fill="#2aa9bd"/>
+    <!-- cheeks -->
+    <circle cx="45" cy="54" r="3" fill="#ff9db0" opacity=".6"/><circle cx="75" cy="54" r="3" fill="#ff9db0" opacity=".6"/>
+  </svg>`;
+
+  /* ---------- ice-arena backdrop ---------- */
+  function arenaSVG(){
+    const W=100,H=180,hz=100;
+    const defs=`<defs>
+      <linearGradient id="awW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16324b"/><stop offset="1" stop-color="#0a1c2d"/></linearGradient>
+      <linearGradient id="awF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe8ff"/><stop offset="1" stop-color="#79b7dd"/></linearGradient>
+      <radialGradient id="awV" cx="50%" cy="36%" r="80%"><stop offset="42%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".55"/></radialGradient>
+    </defs>`;
+    let wall=`<rect x="0" y="0" width="${W}" height="${hz}" fill="url(#awW)"/>`;
+    // stadium lights
+    wall+=`<g fill="#ffef9e"><circle cx="18" cy="14" r="3.4"/><circle cx="38" cy="9" r="3.4"/><circle cx="62" cy="9" r="3.4"/><circle cx="82" cy="14" r="3.4"/></g>`;
+    wall+=`<g fill="#ffffff" opacity=".14"><path d="M18 14 L2 46 L34 46 Z"/><path d="M82 14 L66 46 L98 46 Z"/><path d="M50 6 L34 44 L66 44 Z"/></g>`;
+    // scoreboard
+    wall+=`<rect x="36" y="24" width="28" height="16" rx="2" fill="#0c1a28" stroke="#26425f" stroke-width="1.4"/><text x="50" y="35.5" font-size="7" fill="#7fe6ff" text-anchor="middle" font-family="Arial" font-weight="bold">ICE</text>`;
+    // rink board wall
+    wall+=`<rect x="0" y="${hz-8}" width="${W}" height="8" fill="#e9f4ff"/><rect x="0" y="${hz-8}" width="${W}" height="2" fill="#9fc6e0"/>`;
+    let floor=`<rect x="0" y="${hz}" width="${W}" height="${H-hz}" fill="url(#awF)"/>`;
+    for(let x=-40;x<=140;x+=15) floor+=`<line x1="50" y1="${hz}" x2="${x}" y2="${H}" stroke="#5f9dc4" stroke-width="0.5" opacity=".5"/>`;
+    floor+=`<ellipse cx="50" cy="${hz+40}" rx="46" ry="20" fill="none" stroke="#5f9dc4" stroke-width="0.8" opacity=".5"/>`;
+    floor+=`<line x1="0" y1="${hz+40}" x2="100" y2="${hz+40}" stroke="#e05a6a" stroke-width="0.8" opacity=".4"/>`;
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${defs}${wall}${floor}<rect x="0" y="0" width="${W}" height="${H}" fill="url(#awV)"/></svg>`;
+  }
+
+  /* ---------- difficulty ---------- */
+  const BANDS={
+    beginner:    {sizes:[5,6,7],  rock:[0.05,0.13], moves:[6,13]},
+    intermediate:{sizes:[6,7,8],  rock:[0.08,0.17], moves:[8,17]},
+    advanced:    {sizes:[7,8,9],  rock:[0.10,0.20], moves:[10,20]},
+    master:      {sizes:[8,9,10], rock:[0.12,0.24], moves:[12,26]}
+  };
+  function stageCfg(tier,n){
+    const b=BANDS[tier];
+    const size=b.sizes[Math.min(2,Math.floor((n-1)/10))];
+    const tt=(n-1)/(STAGES-1);
+    return {size, rockRatio:b.rock[0]+(b.rock[1]-b.rock[0])*tt, moves:Math.round(b.moves[0]+(b.moves[1]-b.moves[0])*tt),
+      seed:(((TIERS.indexOf(tier)*131+n)>>>0)*2654435761)>>>0};
+  }
+  const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+  const DIRLIST=["up","down","left","right"];
+
+  // slide from (x,y); returns landing + passed path (excluding origin)
+  function slide(grid,size,x,y,dir){
+    const [dx,dy]=DIRS[dir]; let cx=x,cy=y; const path=[];
+    while(true){ const nx=cx+dx,ny=cy+dy; if(nx<0||ny<0||nx>=size||ny>=size)break; if(grid[ny*size+nx]==="rock")break; cx=nx;cy=ny;path.push([cx,cy]); }
+    return {x:cx,y:cy,path};
+  }
+
+  function generateStage(tier,n){
+    const {size,rockRatio,moves,seed}=stageCfg(tier,n);
+    const N=size*size, idx=(x,y)=>y*size+x;
+    let best=null;
+    for(let attempt=0;attempt<40;attempt++){
+      const rng=mulberry32((seed^((attempt*0x9E3779B1)>>>0))>>>0);
+      const grid=new Array(N).fill("ice");
+      let want=Math.round(N*rockRatio),g=0;
+      while(want>0&&g++<400){const p=(rng()*N)|0;if(grid[p]==="ice"){grid[p]="rock";want--;}}
+      // pick a start ice cell that can move
+      const ice=[]; for(let i=0;i<N;i++) if(grid[i]==="ice") ice.push(i);
+      if(!ice.length) continue;
+      const s=ice[(rng()*ice.length)|0]; let px=s%size, py=(s/size)|0;
+      const covered=new Set([px+","+py]); const sol=[];
+      for(let m=0;m<moves;m++){
+        const order=DIRLIST.slice().sort(()=>rng()-0.5);
+        let moved=false;
+        for(const d of order){ const r=slide(grid,size,px,py,d); if(r.path.length){ r.path.forEach(([a,b])=>covered.add(a+","+b)); px=r.x;py=r.y; sol.push(d); moved=true; break; } }
+        if(!moved) break;
+      }
+      // convert non-covered ice to rock so ice == covered exactly (whole rink must be cleaned)
+      for(let y=0;y<size;y++)for(let x=0;x<size;x++){ if(grid[idx(x,y)]==="ice" && !covered.has(x+","+y)) grid[idx(x,y)]="rock"; }
+      const iceCount=covered.size;
+      const cand={size,grid,start:{x:s%size,y:(s/size)|0},iceCount,solution:sol};
+      const minIce=Math.max(6,Math.round(size*size*0.32));
+      if(sol.length>=Math.max(3,Math.floor(moves*0.5)) && iceCount>=minIce){ return cand; }
+      if(!best || cand.iceCount>best.iceCount) best=cand;
+    }
+    return best;
+  }
+
+  /* ---------- progress ---------- */
+  function fresh(){const p={};TIERS.forEach(t=>p[t]={unlocked:1,stars:{}});return p;}
+  function load(){try{const r=localStorage.getItem(PROG_KEY);if(r){const p=JSON.parse(r);TIERS.forEach(t=>{if(!p[t])p[t]={unlocked:1,stars:{}};});return p;}}catch(e){}return fresh();}
+  function save(){try{localStorage.setItem(PROG_KEY,JSON.stringify(progress));}catch(e){}}
+  let progress=load();
+
+  /* ---------- sound ---------- */
+  let actx=null;
+  function tone(f,d,type,v){try{if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type||"sine";o.frequency.value=f;g.gain.value=v||0.05;o.connect(g);g.connect(actx.destination);const t=actx.currentTime;o.start(t);g.gain.exponentialRampToValueAtTime(0.0001,t+(d||0.09));o.stop(t+(d||0.09));}catch(e){}}
+  function sfxSlide(){try{if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();const dur=0.2,buf=actx.createBuffer(1,(actx.sampleRate*dur)|0,actx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const src=actx.createBufferSource();src.buffer=buf;const bp=actx.createBiquadFilter();bp.type="bandpass";bp.frequency.value=3200;bp.Q.value=0.6;const g=actx.createGain();g.gain.value=0.05;src.connect(bp);bp.connect(g);g.connect(actx.destination);src.start();}catch(e){}}
+  const sfxClean=()=>tone(720+Math.random()*120,0.06,"sine",0.04);
+  const sfxBump=()=>tone(130,0.1,"square",0.05);
+  const sfxWin=()=>[659,784,988,1319].forEach((f,i)=>setTimeout(()=>tone(f,0.16,"triangle",0.06),i*110));
+
+  /* ---------- screens ---------- */
+  const SCR={intro:$("#intro"),gameLogo:$("#gameLogo"),mainMenu:$("#mainMenu"),select:$("#select"),game:$("#game")};
+  function showScreen(w){for(const k in SCR)SCR[k].classList.toggle("show",k===w);}
+  const board=$("#board");
+  let curTier="beginner", cur=null, busy=false;
+  const key=(x,y)=>x+","+y;
+
+  /* ---------- tier tabs / stage grid ---------- */
+  function buildTabs(){
+    const wrap=$("#tierTabs");wrap.innerHTML="";
+    TIERS.forEach(tr=>{const b=document.createElement("button");b.className="tier-tab"+(curTier===tr?" active":"");
+      b.innerHTML=`<span>${TIER_KO[tr]}</span><span class="tsub">1 – 30</span>`;
+      b.addEventListener("click",()=>{curTier=tr;buildTabs();buildGrid();});wrap.appendChild(b);});
+  }
+  function buildGrid(){
+    const grid=$("#stageGrid");grid.innerHTML="";const tp=progress[curTier];
+    for(let n=1;n<=STAGES;n++){const locked=n>tp.unlocked;const stars=tp.stars[n]||0;
+      const btn=document.createElement("button");btn.className="stage-btn"+(locked?" locked":"")+(stars?" cleared":"");
+      btn.innerHTML=locked?`<span class="lockic">🔒</span><span class="lab">스테이지 ${String(n).padStart(2,"0")}</span>`
+        :`${stars?`<span class="stars">${"★".repeat(stars)}</span>`:""}<span class="num">${String(n).padStart(2,"0")}</span><span class="lab">스테이지</span>`;
+      if(!locked)btn.addEventListener("click",()=>startStage(curTier,n));grid.appendChild(btn);}
+  }
+
+  /* ---------- toast ---------- */
+  let toastT=null;
+  function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),1300);}
+
+  /* ---------- start / render ---------- */
+  function startStage(tier,n){
+    const data=generateStage(tier,n);
+    cur={tier,stage:n,data,size:data.size,cleaned:new Set(),pos:{...data.start},history:[],undos:0,pengEl:null,cellEls:{}};
+    renderBoard();
+    cleanCell(data.start.x,data.start.y,false);
+    updateHud();showScreen("game");$("#winOverlay").classList.remove("show");
+  }
+  function renderBoard(){
+    const {data,size}=cur;
+    $("#scene").innerHTML=arenaSVG();
+    board.style.gridTemplateColumns=`repeat(${size},1fr)`;board.innerHTML="";cur.cellEls={};
+    for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      const t=data.grid[y*size+x];const cell=document.createElement("div");
+      cell.className="cell "+(t==="rock"?"rock":"ice");
+      board.appendChild(cell);cur.cellEls[key(x,y)]=cell;
+    }
+    const p=document.createElement("div");p.className="peng";p.innerHTML=PENGUIN;
+    const cp=100/size;p.style.width=(cp*0.92)+"%";p.style.height=(cp*1.12)+"%";
+    board.appendChild(p);cur.pengEl=p;positionPeng(false,0);
+  }
+  function positionPeng(anim,ms){
+    const {pos,size,pengEl}=cur,cp=100/size;
+    pengEl.style.transition = anim ? `left ${ms}ms cubic-bezier(.25,.9,.35,1), top ${ms}ms cubic-bezier(.25,.9,.35,1)` : "none";
+    pengEl.style.left=(cp*(pos.x+0.5))+"%";pengEl.style.top=(cp*(pos.y+0.55))+"%";
+  }
+  function cleanCell(x,y,animate){
+    const k=key(x,y);if(cur.cleaned.has(k))return false;
+    cur.cleaned.add(k);const c=cur.cellEls[k];c.classList.add("clean");c.classList.remove("ice");
+    if(animate)sfxClean();return true;
+  }
+  function updateHud(){
+    $("#hudStage").textContent=`${TIER_KO[cur.tier]} · 스테이지 ${String(cur.stage).padStart(2,"0")}`;
+    $("#hudProg").innerHTML=`<span class="done">${cur.cleaned.size}</span> / ${cur.data.iceCount} 칸`;
+    $("#undoBtn").disabled=cur.history.length===0;
+  }
+
+  /* ---------- movement (slide) ---------- */
+  function move(dir){
+    if(!cur||busy)return;
+    if($("#winOverlay").classList.contains("show"))return;
+    if(dir==="left")cur.pengEl.classList.add("flip");else if(dir==="right")cur.pengEl.classList.remove("flip");
+    const {data,size}=cur;const r=slide(data.grid,size,cur.pos.x,cur.pos.y,dir);
+    if(!r.path.length){sfxBump();cur.pengEl.classList.remove("squish");void cur.pengEl.offsetWidth;cur.pengEl.classList.add("squish");return;}
+    busy=true;
+    const dist=r.path.length;const ms=Math.max(120,Math.min(520,dist*70));
+    // record undo
+    const newlyClean=[];const prevPos={...cur.pos};
+    cur.pos={x:r.x,y:r.y};positionPeng(true,ms);sfxSlide();
+    // stagger-clean along the path
+    const stepMs=ms/dist;
+    r.path.forEach(([cx,cy],i)=>{ setTimeout(()=>{ if(cleanCell(cx,cy,true)) newlyClean.push(cx+","+cy); spraySmall(cx,cy); },(i+0.6)*stepMs); });
+    setTimeout(()=>{
+      cur.history.push({prevPos,newlyClean:newlyClean.slice(),flip:cur.pengEl.classList.contains("flip")});
+      cur.pengEl.classList.remove("squish");void cur.pengEl.offsetWidth;cur.pengEl.classList.add("squish");
+      spraySmall(r.x,r.y);updateHud();busy=false;
+      if(cur.cleaned.size>=data.iceCount) onWin();
+    },ms+20);
+  }
+  function spraySmall(x,y){
+    const cell=cur.cellEls[key(x,y)];if(!cell)return;const frag=document.createDocumentFragment();
+    for(let i=0;i<3;i++){const d=document.createElement("span");d.className="fx fx-spray";const sz=(2.5+Math.random()*3);d.style.width=sz+"px";d.style.height=sz+"px";
+      const a=Math.random()*Math.PI*2,r=6+Math.random()*8;d.style.setProperty("--sx",(Math.cos(a)*r).toFixed(1)+"px");d.style.setProperty("--sy",(Math.sin(a)*r-4).toFixed(1)+"px");
+      frag.appendChild(d);setTimeout(()=>d.remove(),520);}
+    cell.appendChild(frag);
+  }
+  function burstStars(x,y){
+    const cell=cur.cellEls[key(x,y)];if(!cell)return;const frag=document.createDocumentFragment();
+    for(let i=0;i<2;i++){const s=document.createElement("span");s.className="fx fx-star";s.textContent="✨";
+      s.style.setProperty("--sx",((Math.random()*2-1)*10).toFixed(1)+"px");s.style.setProperty("--sy",(-5-Math.random()*8).toFixed(1)+"px");
+      frag.appendChild(s);setTimeout(()=>s.remove(),560);}
+    cell.appendChild(frag);
+  }
+
+  /* ---------- undo / win ---------- */
+  function undo(){
+    if(!cur||busy||!cur.history.length)return;
+    const h=cur.history.pop();cur.undos++;
+    h.newlyClean.forEach(k=>{cur.cleaned.delete(k);const c=cur.cellEls[k];c.classList.remove("clean");c.classList.add("ice");});
+    cur.pos={...h.prevPos};cur.pengEl.classList.toggle("flip",!!h.flip);positionPeng(true,140);updateHud();
+  }
+  function onWin(){
+    busy=true;sfxWin();
+    // sparkle burst over cleaned tiles
+    let i=0;for(const k of cur.cleaned){if(i++%3===0){const [x,y]=k.split(",").map(Number);setTimeout(()=>burstStars(x,y),Math.random()*300);}}
+    const stars=cur.undos===0?3:cur.undos<=2?2:1;
+    const tp=progress[cur.tier];tp.stars[cur.stage]=Math.max(tp.stars[cur.stage]||0,stars);
+    if(cur.stage>=tp.unlocked&&cur.stage<STAGES)tp.unlocked=cur.stage+1;
+    save();buildGrid();
+    const isLast=cur.stage>=STAGES;
+    $("#winStars").textContent="★".repeat(stars)+"☆".repeat(3-stars);
+    $("#winMsg").textContent=(cur.undos===0?"완벽해요! ":"")+(isLast?"모든 빙판을 다 닦았어요! 🏆":"온 빙판이 반짝반짝!");
+    $("#winNext").textContent=isLast?"메인으로":"다음 →";
+    setTimeout(()=>{$("#winOverlay").classList.add("show");busy=false;},500);
+  }
+
+  /* ---------- input ---------- */
+  document.addEventListener("keydown",(e)=>{
+    const k=e.key,confirm=k==="Enter"||k===" ",escape=k==="Escape";
+    if(SCR.gameLogo.classList.contains("show")){e.preventDefault();showScreen("mainMenu");return;}
+    if($("#howtoOverlay").classList.contains("show")){if(confirm||escape){e.preventDefault();$("#howtoOverlay").classList.remove("show");}return;}
+    if($("#winOverlay").classList.contains("show")){if(confirm){e.preventDefault();$("#winNext").click();}return;}
+    if(SCR.game.classList.contains("show")){
+      if(escape){e.preventDefault();showScreen("select");return;}
+      const m={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",w:"up",s:"down",a:"left",d:"right",W:"up",S:"down",A:"left",D:"right"};
+      if(m[k]){e.preventDefault();move(m[k]);}else if(k==="z"||k==="Z"||k==="Backspace"){e.preventDefault();undo();}
+    }
+  });
+  document.querySelectorAll(".dbtn").forEach(b=>b.addEventListener("pointerdown",(e)=>{e.preventDefault();move(b.dataset.dir);}));
+  let ts=null;
+  SCR.game.addEventListener("touchstart",(e)=>{if(e.target.closest(".dpad")){ts=null;return;}const t=e.changedTouches[0];ts={x:t.clientX,y:t.clientY};},{passive:true});
+  SCR.game.addEventListener("touchend",(e)=>{if(!ts)return;const t=e.changedTouches[0];const dx=t.clientX-ts.x,dy=t.clientY-ts.y,ax=Math.abs(dx),ay=Math.abs(dy);ts=null;if(Math.max(ax,ay)<20)return;if(ax>ay)move(dx>0?"right":"left");else move(dy>0?"down":"up");},{passive:true});
+
+  /* ---------- buttons ---------- */
+  $("#backBtn").addEventListener("click",()=>{$("#winOverlay").classList.remove("show");showScreen("select");});
+  $("#restartBtn").addEventListener("click",()=>{if(cur)startStage(cur.tier,cur.stage);});
+  $("#undoBtn").addEventListener("click",undo);
+  $("#howtoBtn").addEventListener("click",()=>$("#howtoOverlay").classList.add("show"));
+  $("#howtoClose").addEventListener("click",()=>$("#howtoOverlay").classList.remove("show"));
+  $("#howtoOverlay").addEventListener("click",(e)=>{if(e.target.classList.contains("veil"))$("#howtoOverlay").classList.remove("show");});
+  $("#winNext").addEventListener("click",()=>{if(cur.stage>=STAGES){$("#winOverlay").classList.remove("show");showScreen("mainMenu");}else startStage(cur.tier,cur.stage+1);});
+  $("#winRetry").addEventListener("click",()=>startStage(cur.tier,cur.stage));
+  $("#startBtn").addEventListener("click",()=>showScreen("select"));
+  $("#selBackBtn").addEventListener("click",()=>showScreen("mainMenu"));
+  $("#gameLogo").addEventListener("click",()=>showScreen("mainMenu"));
+  $("#resetProg").addEventListener("click",()=>{if(confirm("모든 진행 기록을 지울까요?")){progress=fresh();save();buildGrid();}});
+
+  /* ---------- intro ---------- */
+  let introDone=false,introTimer=null;
+  function finishIntro(){if(introDone)return;introDone=true;if(introTimer)clearTimeout(introTimer);const el=$("#intro");el.classList.add("leaving");setTimeout(()=>{el.classList.remove("show","leaving");showScreen("gameLogo");},450);}
+  $("#intro").addEventListener("click",finishIntro,{once:true});
+  introTimer=setTimeout(finishIntro,3000);
+
+  /* ---------- boot ---------- */
+  buildTabs();buildGrid();
+  $("#glMascot").innerHTML=PENGUIN;
+  $("#glScene").innerHTML=arenaSVG();
+  $("#mmScene").innerHTML=arenaSVG();
+
+  // expose a tiny test hook (used only by automated checks)
+  window.__ICE={generateStage,startStage,move,get cur(){return cur;}};
+})();
+</script>
+</body>
+</html>
