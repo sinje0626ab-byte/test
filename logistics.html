@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>물류반장 김용준 · Warehouse Sorting King</title>
+<style>
+  :root{
+    --bg0:#161311; --bg1:#211c18; --wall:#2b2320; --line:#3a2f28;
+    --floor:#6b5540; --floor2:#5a4634; --shelf:#4a3626; --shelf-d:#31241a;
+    --crate:#c99552; --crate-m:#a9773e; --crate-d:#7d5325;
+    --target:#4fd18a; --gold:#ffcf4d; --accent:#33c6a6; --accent-d:#1c8f78;
+    --ink:#f4ece2; --ink-dim:#b3a496; --panel:#241e1a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg0);
+    font-family:"Segoe UI",system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;}
+  .bgtex{position:fixed;inset:0;z-index:-1;
+    background:radial-gradient(1100px 560px at 50% -10%, #2c2420, transparent 70%),
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(0,0,0,.18) 38px 40px),
+      repeating-linear-gradient(90deg, transparent 0 38px, rgba(0,0,0,.18) 38px 40px),
+      linear-gradient(180deg,var(--bg1),var(--bg0));}
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;}
+  .screen.show{display:flex;}
+
+  /* intro */
+  #intro{z-index:50;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;background:radial-gradient(circle at 50% 38%,#101a22,#05080c 72%);}
+  #intro.leaving{animation:fadeOut .45s ease forwards;} @keyframes fadeOut{to{opacity:0;}}
+  .intro-badge{width:min(48vw,190px);opacity:0;transform:scale(.62);animation:badgeIn .62s cubic-bezier(.2,1.4,.4,1) forwards .08s;}
+  @keyframes badgeIn{0%{opacity:0;transform:scale(.62) rotate(-6deg);}62%{opacity:1;transform:scale(1.06) rotate(1deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
+  .intro-badge svg{width:100%;height:100%;display:block;animation:badgeGlow 1.8s ease-in-out infinite .7s;}
+  @keyframes badgeGlow{0%,100%{filter:drop-shadow(0 0 8px rgba(60,180,220,.35));}50%{filter:drop-shadow(0 0 18px rgba(60,200,150,.7));}}
+  .intro-word{margin-top:10px;opacity:0;transform:translateY(8px);animation:wordIn .5s ease forwards .38s;display:flex;gap:.28em;font-weight:900;letter-spacing:.02em;font-size:clamp(26px,7vw,40px);}
+  @keyframes wordIn{to{opacity:1;transform:translateY(0);}}
+  .intro-word .yj{background:linear-gradient(120deg,#2f7fe6,#26c0dd);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .intro-word .games{background:linear-gradient(120deg,#2bc48a,#57e08a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .intro-tag{margin-top:6px;font-size:11px;letter-spacing:.42em;color:#7fa0ac;text-transform:uppercase;opacity:0;animation:wordIn .5s ease forwards .55s;}
+
+  /* game logo */
+  #gameLogo{align-items:center;justify-content:center;flex-direction:column;cursor:pointer;overflow:hidden;background:radial-gradient(circle at 50% 22%,#2c2420,#050d16 76%);}
+  .gl-scene{position:absolute;inset:0;z-index:0;opacity:.9;} .gl-scene svg{width:100%;height:100%;display:block;}
+  .gl-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:0 24px;text-align:center;opacity:0;transform:scale(.9);animation:glIn .55s cubic-bezier(.2,1.3,.4,1) forwards .1s;}
+  @keyframes glIn{to{opacity:1;transform:scale(1);}}
+  .gl-ribbon{display:inline-block;margin:0 auto 18px;padding:7px 22px;border-radius:20px;background:linear-gradient(180deg,#e08a2c,#b0641c);color:#fff;font-weight:800;font-size:13px;letter-spacing:.05em;box-shadow:0 4px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.25);white-space:nowrap;}
+  .gl-title{margin:0;font-size:clamp(30px,9vw,50px);font-weight:900;line-height:1.22;color:#ffe6b0;
+    text-shadow:-2px -2px 0 #5a3410,2px -2px 0 #5a3410,-2px 2px 0 #5a3410,2px 2px 0 #5a3410,0 0 22px rgba(255,180,60,.5),0 8px 16px rgba(0,0,0,.55);letter-spacing:-.01em;max-width:340px;}
+  .gl-mascot{width:min(38vw,158px);margin:14px auto 0;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5));animation:glBob 2.2s ease-in-out infinite;}
+  .gl-mascot svg{width:100%;height:100%;display:block;} @keyframes glBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+  .gl-sparkle{position:absolute;font-size:20px;opacity:.85;z-index:0;animation:glTw 1.8s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,220,150,.7));}
+  .gl-sparkle.s1{top:16%;left:11%;}.gl-sparkle.s2{top:13%;right:10%;animation-delay:.5s;font-size:16px;}.gl-sparkle.s3{bottom:15%;left:14%;animation-delay:1s;font-size:14px;}
+  @keyframes glTw{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.15);}}
+  .gl-prompt{position:absolute;left:0;right:0;bottom:calc(46px + env(safe-area-inset-bottom));text-align:center;color:#ffe0b0;font-weight:800;font-size:14px;letter-spacing:.03em;z-index:1;animation:glPulse 1.3s ease-in-out infinite;}
+  @keyframes glPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  /* main menu */
+  #mainMenu{align-items:center;justify-content:center;overflow:hidden;}
+  .mm-scene{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;} .mm-scene svg{width:100%;height:100%;display:block;}
+  .mm-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 22px;}
+  .mm-kicker{font-size:clamp(14px,4vw,18px);font-weight:800;letter-spacing:.08em;color:#ffd75e;text-shadow:-1px -1px 0 #7a4a12,1px -1px 0 #7a4a12,-1px 1px 0 #7a4a12,1px 1px 0 #7a4a12,0 4px 10px rgba(0,0,0,.5);}
+  .mm-title{margin-top:6px;font-size:clamp(32px,9.4vw,50px);font-weight:900;line-height:1.15;color:#ffe6b0;text-shadow:-2px -2px 0 #5a3410,2px -2px 0 #5a3410,-2px 2px 0 #5a3410,2px 2px 0 #5a3410,0 0 22px rgba(255,180,60,.5),0 8px 16px rgba(0,0,0,.55);}
+  .mm-tag{margin-top:10px;font-size:13px;color:#e6d3bf;max-width:300px;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+  .mm-btns{display:flex;gap:10px;margin-top:24px;}
+  .menu-btn{padding:13px 22px;font-weight:900;font-size:15px;cursor:pointer;transition:transform .1s;border:none;display:inline-flex;align-items:center;gap:7px;
+    background:repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px 16px),linear-gradient(180deg,#a9793f,#7d5325);
+    border:2px solid #5a3818;border-radius:11px;color:#fff3dc;box-shadow:0 4px 0 #3d2510,0 7px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2);text-shadow:0 2px 2px rgba(0,0,0,.5);}
+  .menu-btn.start{background:linear-gradient(180deg,var(--accent),var(--accent-d));border-color:#0c5563;color:#032822;font-size:17px;padding:13px 34px;}
+  .menu-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #3d2510,0 4px 8px rgba(0,0,0,.5);}
+
+  /* stage select */
+  #select{overflow-y:auto;padding:0 16px 40px;-webkit-overflow-scrolling:touch;}
+  #select .hud{padding-left:0;padding-right:0;}
+  .tiers{max-width:520px;margin:14px auto 0;display:flex;gap:8px;background:#1c1713;border:1px solid var(--line);border-radius:16px;padding:6px;}
+  .tier-tab{flex:1;padding:11px 4px;border:none;border-radius:11px;background:none;color:var(--ink-dim);font-size:15px;font-weight:800;cursor:pointer;transition:background .18s,color .18s;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;}
+  .tier-tab .tsub{font-size:9.5px;letter-spacing:.12em;opacity:.75;font-weight:700;}
+  .tier-tab.active{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#032822;}
+  .stages{max-width:560px;margin:16px auto 0;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  @media(max-width:400px){.stages{grid-template-columns:repeat(4,1fr);}}
+  .stage-btn{position:relative;aspect-ratio:1;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#2c2420,#211b17);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:800;cursor:pointer;transition:transform .1s;box-shadow:0 4px 10px rgba(0,0,0,.3);}
+  .stage-btn .num{font-size:20px;} .stage-btn .lab{font-size:8.5px;letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;}
+  .stage-btn:not(.locked):active{transform:scale(.94);}
+  .stage-btn.locked{opacity:.5;cursor:not-allowed;color:var(--ink-dim);}
+  .stage-btn.cleared{border-color:rgba(79,209,138,.6);} .stage-btn.cleared .num{color:#8ee9a9;}
+  .stage-btn .stars{position:absolute;top:6px;right:8px;font-size:10px;color:var(--gold);}
+  .stage-btn .lockic{font-size:18px;}
+  .reset-prog{display:block;margin:24px auto 0;background:none;border:1px solid var(--line);color:var(--ink-dim);font-size:12px;padding:8px 16px;border-radius:20px;cursor:pointer;}
+
+  /* hud */
+  .hud{display:flex;align-items:center;gap:7px;padding:calc(12px + env(safe-area-inset-top)) 12px 6px;}
+  .hud .iconbtn{width:40px;height:40px;flex:0 0 auto;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .1s;position:relative;}
+  .hud .iconbtn:active{transform:scale(.9);} .hud .iconbtn:disabled{opacity:.35;cursor:default;}
+  .hud .iconbtn svg{width:20px;height:20px;}
+  .hud .iconbtn.restart-btn{width:48px;height:48px;border-radius:14px;} .hud .iconbtn.restart-btn svg{width:27px;height:27px;}
+  .hud .center{flex:1;text-align:center;min-width:0;}
+  .hud .stg{font-size:11px;letter-spacing:.16em;color:var(--accent);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hud .prog{font-size:15px;font-weight:800;margin-top:1px;} .hud .prog .done{color:var(--target);}
+
+  /* board */
+  #game .hud,#game .board-wrap,#game .pad-wrap{position:relative;z-index:1;}
+  .scene{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;} .scene svg{width:100%;height:100%;display:block;}
+  .board-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 14px;min-height:0;}
+  .board{position:relative;width:min(94vw,60vh);max-width:520px;aspect-ratio:1;background:var(--wall);border:3px solid #17110d;border-radius:12px;box-shadow:0 20px 46px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4),inset 0 0 0 2px rgba(255,255,255,.03);display:grid;gap:0;overflow:hidden;padding:4px;}
+  .cell{position:relative;border:1px solid rgba(0,0,0,.22);overflow:hidden;}
+  .cell.floor{background:radial-gradient(6px 5px at 30% 40%, rgba(30,20,10,.4), transparent 60%),linear-gradient(135deg,var(--floor),var(--floor2));}
+  .cell.wall{background:linear-gradient(180deg,var(--shelf),var(--shelf-d));}
+  .cell.wall::before{content:"";position:absolute;inset:6%;border-radius:3px;background:linear-gradient(180deg,#5c4531,#3a2b1d);border:2px solid #241a10;box-shadow:inset 0 0 0 2px rgba(255,255,255,.05);}
+  .cell.wall::after{content:"";position:absolute;left:6%;right:6%;top:32%;height:8%;background:rgba(0,0,0,.35);}
+  .cell.target::after{content:"";position:absolute;left:26%;top:26%;width:48%;height:48%;border-radius:50%;border:3px dashed var(--target);box-shadow:0 0 10px rgba(79,209,138,.5);animation:tgpulse 1.4s ease-in-out infinite;}
+  @keyframes tgpulse{0%,100%{opacity:.55;transform:scale(.9);}50%{opacity:1;transform:scale(1.05);}}
+
+  /* crate + player as absolute sprites */
+  .sprite{position:absolute;pointer-events:none;transition:left .12s ease, top .12s ease;}
+  .crate{z-index:4;transform:translate(-50%,-52%);}
+  .crate svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 4px rgba(0,0,0,.45));}
+  .crate.on .glow{opacity:1;}
+  .glow{opacity:0;transition:opacity .2s;}
+  .player{z-index:5;transform:translate(-50%,-58%);}
+  .player svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 3px rgba(0,0,0,.45));}
+  .player.flip{transform:translate(-50%,-58%) scaleX(-1);}
+  .player.step{animation:step .12s ease;} @keyframes step{0%,100%{}50%{margin-top:-3px;}}
+  .cell.bump{animation:bump .28s;} @keyframes bump{0%,100%{filter:none;}50%{filter:brightness(1.35) saturate(1.3);}}
+  .pop{animation:pop .3s ease;} @keyframes pop{0%{transform:translate(-50%,-52%) scale(1);}45%{transform:translate(-50%,-54%) scale(1.12);}100%{transform:translate(-50%,-52%) scale(1);}}
+
+  /* d-pad */
+  .pad-wrap{display:flex;justify-content:center;padding:6px 0 calc(16px + env(safe-area-inset-bottom));}
+  .dpad{display:grid;grid-template-columns:72px 72px 72px;grid-template-rows:72px 72px 72px;gap:7px;}
+  .dbtn{border:none;cursor:pointer;border-radius:16px;touch-action:none;user-select:none;background:linear-gradient(180deg,#41362e,#241d18);color:var(--ink);font-size:30px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 0 #140f0b,0 8px 14px rgba(0,0,0,.4);transition:transform .06s,box-shadow .06s;}
+  .dbtn:active{transform:translateY(4px);box-shadow:0 1px 0 #140f0b,0 3px 8px rgba(0,0,0,.4);}
+  .dbtn.up{grid-column:2;grid-row:1;}.dbtn.left{grid-column:1;grid-row:2;}.dbtn.right{grid-column:3;grid-row:2;}.dbtn.down{grid-column:2;grid-row:3;}
+
+  /* overlays */
+  .overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:20px;} .overlay.show{display:flex;}
+  .veil{position:absolute;inset:0;background:rgba(6,4,3,.72);backdrop-filter:blur(3px);}
+  .card{position:relative;width:min(420px,92vw);max-height:90vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.6);}
+  .card h2{margin:6px 0 4px;font-size:25px;} .card p{color:var(--ink-dim);font-size:14px;margin:0 0 6px;}
+  .card .big{font-size:52px;line-height:1;margin-bottom:6px;} .card .stars-big{font-size:30px;letter-spacing:6px;color:var(--gold);margin:8px 0 4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));}
+  .btns{display:flex;gap:10px;margin-top:18px;} .btn{flex:1;padding:13px 10px;border-radius:13px;border:none;font-weight:800;font-size:15px;cursor:pointer;transition:transform .1s;} .btn:active{transform:scale(.96);}
+  .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#032822;} .btn.ghost{background:#2f2721;color:var(--ink);border:1px solid var(--line);}
+  .howlist{text-align:left;margin:14px 0 4px;font-size:14px;line-height:1.65;color:var(--ink-dim);} .howlist .row{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px;} .howlist .ic{font-size:19px;line-height:1.4;flex:0 0 auto;} .howlist b{color:var(--ink);}
+  .toast{position:fixed;left:50%;bottom:calc(200px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(20,15,11,.94);border:1px solid var(--line);color:var(--ink);padding:9px 16px;border-radius:20px;font-size:13.5px;font-weight:700;z-index:25;max-width:90vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;} .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+</style>
+</head>
+<body>
+<div class="bgtex"></div>
+<div id="app">
+  <section id="intro" class="screen show">
+    <div class="intro-badge" id="introBadge"></div>
+    <div class="intro-word"><span class="yj">YJ</span><span class="games">GAMES</span></div>
+    <div class="intro-tag">PRESENTS</div>
+  </section>
+
+  <section id="gameLogo" class="screen">
+    <div class="gl-scene" id="glScene"></div>
+    <div class="gl-content">
+      <div class="gl-ribbon">착착착! 창고 정리 액션</div>
+      <h1 class="gl-title">물류반장 김용준</h1>
+      <div class="gl-mascot" id="glMascot"></div>
+      <div class="gl-sparkle s1">📦</div><div class="gl-sparkle s2">✨</div><div class="gl-sparkle s3">📦</div>
+    </div>
+    <div class="gl-prompt">아무 버튼이나 눌러주세요</div>
+  </section>
+
+  <section id="mainMenu" class="screen">
+    <div class="mm-scene" id="mmScene"></div>
+    <div class="mm-content">
+      <div class="mm-kicker">착착착! 창고 정리 액션</div>
+      <div class="mm-title">물류반장 김용준</div>
+      <div class="mm-tag">상자를 밀어서 제자리(초록 표시)에 착착 정리하자!</div>
+      <div class="mm-btns"><button class="menu-btn" id="howtoBtn">❓ 게임 방법</button><button class="menu-btn start" id="startBtn">START</button></div>
+    </div>
+  </section>
+
+  <section id="select" class="screen">
+    <div class="hud"><button class="iconbtn" id="selBackBtn">←</button><div class="center"><div class="stg">스테이지 선택</div></div></div>
+    <div class="tiers" id="tierTabs"></div>
+    <div class="stages" id="stageGrid"></div>
+    <button class="reset-prog" id="resetProg">진행 기록 초기화</button>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="scene" id="scene"></div>
+    <div class="hud">
+      <button class="iconbtn" id="backBtn">←</button>
+      <div class="center"><div class="stg" id="hudStage"></div><div class="prog" id="hudProg"></div></div>
+      <button class="iconbtn" id="undoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 V11 a5 5 0 0 1 10 0 V20"/><path d="M13 16 l4 4 4 -4"/></svg></button>
+      <button class="iconbtn restart-btn" id="restartBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 2.64 6.36"/><path d="M3 21v-6h6"/></svg></button>
+    </div>
+    <div class="board-wrap"><div class="board" id="board"></div></div>
+    <div class="pad-wrap"><div class="dpad">
+      <button class="dbtn up" data-dir="up">▲</button><button class="dbtn left" data-dir="left">◀</button>
+      <button class="dbtn right" data-dir="right">▶</button><button class="dbtn down" data-dir="down">▼</button>
+    </div></div>
+  </section>
+</div>
+
+<div class="overlay" id="howtoOverlay"><div class="veil"></div><div class="card">
+  <h2>게임 방법</h2>
+  <div class="howlist">
+    <div class="row"><span class="ic">📦</span><div><b>목표</b> — 모든 상자를 <b>초록 표시 자리</b>에 정확히 밀어 넣으면 정리 완료!</div></div>
+    <div class="row"><span class="ic">👉</span><div><b>밀기</b> — 상자는 <b>밀 수만</b> 있어요(당기기 불가). 상자 뒤에 벽/다른 상자가 있으면 못 밀어요.</div></div>
+    <div class="row"><span class="ic">🕹️</span><div><b>조작</b> — 방향키 / 화면 방향 버튼 / 화면 쓸어넘기기</div></div>
+    <div class="row"><span class="ic">↩️</span><div><b>되돌리기</b> — 상자를 잘못 밀어 막혔으면 되돌리기(↩︎)·다시 시작(⟳)으로 재도전!</div></div>
+    <div class="row"><span class="ic">🏆</span><div><b>난이도</b> — 초급·중급·고급·특급 각 30스테이지. 뒤로 갈수록 판·상자가 늘어나요.</div></div>
+  </div>
+  <div class="btns"><button class="btn primary" id="howtoClose">닫기</button></div>
+</div></div>
+
+<div class="overlay" id="winOverlay"><div class="veil"></div><div class="card">
+  <div class="big">📦✨📦</div><h2>정리 완료!</h2>
+  <div class="stars-big" id="winStars">★★★</div><p id="winMsg"></p>
+  <div class="btns"><button class="btn ghost" id="winRetry">다시</button><button class="btn primary" id="winNext">다음 →</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+(function(){
+  const $=s=>document.querySelector(s);
+  const TIERS=["beginner","intermediate","advanced","master"];
+  const TIER_KO={beginner:"초급",intermediate:"중급",advanced:"고급",master:"특급"};
+  const STAGES=30, PROG_KEY="logisticsKim.progress.v1";
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  /* ---------- YJ GAMES logo ---------- */
+  const LOGO=`
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="yjA" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#1c86e6"/><stop offset="1" stop-color="#28d0e6"/></linearGradient>
+      <linearGradient id="yjB" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#159e5a"/><stop offset=".5" stop-color="#1aa7c9"/><stop offset="1" stop-color="#2f7fe6"/></linearGradient>
+      <linearGradient id="yjG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".5" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+    </defs>
+    <path d="M34 158 Q66 120 104 122 Q150 124 156 66 L140 74 L171 40 L179 84 L164 72 Q156 146 104 146 Q64 145 34 158 Z" fill="url(#yjA)"/>
+    <path d="M34 158 Q66 120 104 122 Q150 124 156 66 L140 74 L171 40 L179 84 L164 72 Q156 146 104 146 Q64 145 34 158 Z" fill="url(#yjG)" opacity=".5"/>
+    <path d="M62 54 L100 112 L138 54" fill="none" stroke="url(#yjB)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M100 108 L100 158" stroke="url(#yjB)" stroke-width="24" stroke-linecap="round"/>
+    <path d="M126 74 L126 140 Q126 168 95 168" fill="none" stroke="url(#yjB)" stroke-width="21" stroke-linecap="round"/>
+    <path d="M66 56 L100 108" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+    <path d="M100 112 L100 150" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity=".3"/>
+  </svg>`;
+
+  /* ---------- sprites ---------- */
+  const WORKER=`
+  <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="60" cy="132" rx="24" ry="5" fill="rgba(0,0,0,.25)"/>
+    <!-- legs -->
+    <rect x="45" y="104" width="13" height="28" rx="5" fill="#2f4c6b"/><rect x="62" y="104" width="13" height="28" rx="5" fill="#284360"/>
+    <rect x="43" y="128" width="18" height="9" rx="4" fill="#20140c"/><rect x="61" y="128" width="18" height="9" rx="4" fill="#20140c"/>
+    <!-- torso shirt -->
+    <path d="M40 66 q20 -9 40 0 l4 42 q-24 8 -48 0 z" fill="#3a6ea0"/>
+    <!-- safety vest -->
+    <path d="M40 66 q20 -9 40 0 l3 34 q-23 7 -46 0 z" fill="#ff8f2e"/>
+    <rect x="52" y="62" width="16" height="44" fill="#3a6ea0"/>
+    <rect x="44" y="82" width="32" height="5" fill="#eaf6ff" opacity=".85"/>
+    <rect x="44" y="92" width="32" height="5" fill="#eaf6ff" opacity=".85"/>
+    <!-- arms forward (pushing) -->
+    <rect x="74" y="70" width="26" height="12" rx="6" fill="#ff8f2e"/>
+    <rect x="20" y="70" width="26" height="12" rx="6" fill="#ff8f2e"/>
+    <circle cx="100" cy="76" r="7" fill="#f0c9a0"/><circle cx="20" cy="76" r="7" fill="#f0c9a0"/>
+    <!-- head -->
+    <circle cx="60" cy="46" r="20" fill="#f4d1a8"/><ellipse cx="60" cy="64" rx="9" ry="4" fill="#e9be93"/>
+    <!-- cap -->
+    <path d="M39 44 q3 -25 21 -25 q18 0 21 25 q-21 -8 -42 0 z" fill="#2f6fa1"/>
+    <path d="M37 44 q23 -8 46 0 l0 5 q-23 -7 -46 0 z" fill="#255a86"/>
+    <!-- face -->
+    <circle cx="52" cy="46" r="2.5" fill="#3a2418"/><circle cx="68" cy="46" r="2.5" fill="#3a2418"/>
+    <path d="M54 55 q6 4 12 0" stroke="#a5603c" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <circle cx="46" cy="52" r="3" fill="#f2a48c" opacity=".6"/><circle cx="74" cy="52" r="3" fill="#f2a48c" opacity=".6"/>
+  </svg>`;
+  const CRATE=`
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect class="glow" x="2" y="2" width="96" height="96" rx="10" fill="none" stroke="#5cf0a4" stroke-width="6" opacity="0"/>
+    <rect x="12" y="12" width="76" height="76" rx="6" fill="#c99552" stroke="#7d5325" stroke-width="4"/>
+    <rect x="18" y="18" width="64" height="64" rx="3" fill="#b98a48"/>
+    <path d="M18 18 L82 82 M82 18 L18 82" stroke="#8a6231" stroke-width="4"/>
+    <rect x="18" y="18" width="64" height="64" rx="3" fill="none" stroke="#7d5325" stroke-width="3"/>
+    <rect x="30" y="44" width="40" height="12" rx="2" fill="#e6c088" opacity=".8"/>
+  </svg>`;
+
+  /* ---------- warehouse backdrop ---------- */
+  function whSVG(){
+    const W=100,H=180,hz=100;
+    const defs=`<defs><linearGradient id="whW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#372a1c"/><stop offset="1" stop-color="#1f160e"/></linearGradient><linearGradient id="whF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#463420"/><stop offset="1" stop-color="#291c10"/></linearGradient><radialGradient id="whV" cx="50%" cy="38%" r="80%"><stop offset="42%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".6"/></radialGradient></defs>`;
+    let wall=`<rect x="0" y="0" width="${W}" height="${hz}" fill="url(#whW)"/>`;
+    for(let x=12;x<W;x+=12) wall+=`<rect x="${x-0.35}" y="0" width="0.7" height="${hz}" fill="#00000040"/>`;
+    // shelves with boxes
+    const shelf=(y)=>{let s=`<rect x="6" y="${y}" width="88" height="3" fill="#5a3d22"/>`;for(let x=10;x<90;x+=13)s+=`<rect x="${x}" y="${y-9}" width="10" height="9" fill="#b07a3c" stroke="#7d5325" stroke-width="0.6"/>`;return s;};
+    wall+=shelf(34)+shelf(58)+shelf(82);
+    wall+=`<circle cx="18" cy="14" r="3" fill="#ffe9a8"/><circle cx="50" cy="10" r="3" fill="#ffe9a8"/><circle cx="82" cy="14" r="3" fill="#ffe9a8"/>`;
+    wall+=`<rect x="0" y="${hz-6}" width="${W}" height="6" fill="#5a3d22"/>`;
+    let floor=`<rect x="0" y="${hz}" width="${W}" height="${H-hz}" fill="url(#whF)"/>`;
+    for(let x=-40;x<=140;x+=15) floor+=`<line x1="50" y1="${hz}" x2="${x}" y2="${H}" stroke="#00000040" stroke-width="0.5"/>`;
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${defs}${wall}${floor}<rect x="0" y="0" width="${W}" height="${H}" fill="url(#whV)"/></svg>`;
+  }
+
+  /* ---------- difficulty ---------- */
+  const BANDS={
+    beginner:    {sizes:[6,7,8],  boxes:[2,3], wall:[0.04,0.10], scr:[10,20]},
+    intermediate:{sizes:[7,8,9],  boxes:[3,4], wall:[0.06,0.13], scr:[14,26]},
+    advanced:    {sizes:[8,9,10], boxes:[4,6], wall:[0.08,0.15], scr:[18,34]},
+    master:      {sizes:[9,10,11],boxes:[5,8], wall:[0.09,0.17], scr:[22,42]}
+  };
+  function cfg(tier,n){
+    const b=BANDS[tier], band=Math.min(2,Math.floor((n-1)/10)), tt=(n-1)/(STAGES-1);
+    const lerp=(a)=>Math.round(a[0]+(a[1]-a[0])*tt);
+    return {size:b.sizes[band], boxes:lerp(b.boxes), wallRatio:b.wall[0]+(b.wall[1]-b.wall[0])*tt, scramble:lerp(b.scr), seed:(((TIERS.indexOf(tier)*149+n)>>>0)*2654435761)>>>0};
+  }
+  const DV={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}, DL=["up","down","left","right"];
+  const OPP={up:"down",down:"up",left:"right",right:"left"};
+
+  function generateStage(tier,n){
+    const c=cfg(tier,n), size=c.size, N=size*size, idx=(x,y)=>y*size+x;
+    const inb=(x,y)=>x>=0&&y>=0&&x<size&&y<size;
+    let best=null;
+    for(let attempt=0;attempt<50;attempt++){
+      const rng=mulberry32((c.seed^((attempt*0x9E3779B1)>>>0))>>>0);
+      // 1) build floor with border walls + random interior walls, keep largest connected floor
+      const grid=new Array(N).fill("floor");
+      for(let x=0;x<size;x++){grid[idx(x,0)]="wall";grid[idx(x,size-1)]="wall";}
+      for(let y=0;y<size;y++){grid[idx(0,y)]="wall";grid[idx(size-1,y)]="wall";}
+      let want=Math.round((size-2)*(size-2)*c.wallRatio),g=0;
+      while(want>0&&g++<400){const x=1+((rng()*(size-2))|0),y=1+((rng()*(size-2))|0);if(grid[idx(x,y)]==="floor"){grid[idx(x,y)]="wall";want--;}}
+      // largest connected floor component
+      const seen=new Array(N).fill(false); let bestComp=[];
+      for(let y=0;y<size;y++)for(let x=0;x<size;x++){ if(grid[idx(x,y)]==="floor"&&!seen[idx(x,y)]){
+        const comp=[],st=[[x,y]];seen[idx(x,y)]=true;
+        while(st.length){const [cx,cy]=st.pop();comp.push([cx,cy]);for(const d of DL){const nx=cx+DV[d][0],ny=cy+DV[d][1];if(inb(nx,ny)&&grid[idx(nx,ny)]==="floor"&&!seen[idx(nx,ny)]){seen[idx(nx,ny)]=true;st.push([nx,ny]);}}}
+        if(comp.length>bestComp.length)bestComp=comp; }}
+      // walls out everything not in the main component
+      const inComp=new Set(bestComp.map(([x,y])=>x+","+y));
+      for(let i=0;i<N;i++){const x=i%size,y=(i/size)|0;if(grid[i]==="floor"&&!inComp.has(x+","+y))grid[i]="wall";}
+      const floors=bestComp.slice();
+      const K=c.boxes;
+      if(floors.length < K+ Math.max(6,K+3)) continue;
+      // 2) solved state: choose K targets, boxes on targets, player adjacent
+      const shuffled=floors.slice().sort(()=>rng()-0.5);
+      const targets=shuffled.slice(0,K).map(([x,y])=>x+","+y);
+      const boxAt=new Set(targets);
+      // player: a floor cell not a box
+      let ppos=null; for(const [x,y] of shuffled){ if(!boxAt.has(x+","+y)){ppos={x,y};break;} }
+      if(!ppos) continue;
+      // 3) reverse scramble (pull moves)
+      const applied=[];
+      const hasBox=(x,y)=>boxAt.has(x+","+y);
+      const isFloor=(x,y)=>inb(x,y)&&grid[idx(x,y)]==="floor";
+      const empty=(x,y)=>isFloor(x,y)&&!hasBox(x,y);
+      for(let m=0;m<c.scramble;m++){
+        const pulls=[],walks=[];
+        for(const d of DL){const e=DV[d];
+          const backx=ppos.x-e[0],backy=ppos.y-e[1], boxx=ppos.x+e[0],boxy=ppos.y+e[1];
+          if(empty(backx,backy)&&hasBox(boxx,boxy)) pulls.push(d);
+          const fx=ppos.x+e[0],fy=ppos.y+e[1]; if(empty(fx,fy)) walks.push(d);
+        }
+        let choice=null,type=null;
+        if(pulls.length && (rng()<0.72 || !walks.length)){ choice=pulls[(rng()*pulls.length)|0]; type="pull"; }
+        else if(walks.length){ choice=walks[(rng()*walks.length)|0]; type="walk"; }
+        else break;
+        const e=DV[choice];
+        if(type==="pull"){ const boxx=ppos.x+e[0],boxy=ppos.y+e[1]; boxAt.delete(boxx+","+boxy); boxAt.add(ppos.x+","+ppos.y); ppos={x:ppos.x-e[0],y:ppos.y-e[1]}; }
+        else { ppos={x:ppos.x+e[0],y:ppos.y+e[1]}; }
+        applied.push({type,dir:choice});
+      }
+      // quality: enough boxes off-target
+      const offTarget=[...boxAt].filter(k=>!targets.includes(k)).length;
+      // forward solution = inverse of applied, reversed order
+      const solution=[];
+      for(let i=applied.length-1;i>=0;i--){const a=applied[i];solution.push(a.type==="pull"?a.dir:OPP[a.dir]);}
+      const cand={size,grid,boxes:[...boxAt].map(k=>k.split(",").map(Number)),targets:targets.map(k=>k.split(",").map(Number)),player:{...ppos},solution,offTarget};
+      if(offTarget>=Math.max(1,Math.ceil(K*0.6))) return cand;
+      if(!best||cand.offTarget>best.offTarget) best=cand;
+    }
+    return best;
+  }
+
+  /* ---------- progress / sound ---------- */
+  function fresh(){const p={};TIERS.forEach(t=>p[t]={unlocked:1,stars:{}});return p;}
+  function load(){try{const r=localStorage.getItem(PROG_KEY);if(r){const p=JSON.parse(r);TIERS.forEach(t=>{if(!p[t])p[t]={unlocked:1,stars:{}};});return p;}}catch(e){}return fresh();}
+  function save(){try{localStorage.setItem(PROG_KEY,JSON.stringify(progress));}catch(e){}}
+  let progress=load();
+  let actx=null;
+  function tone(f,d,type,v){try{if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type||"sine";o.frequency.value=f;g.gain.value=v||0.05;o.connect(g);g.connect(actx.destination);const t=actx.currentTime;o.start(t);g.gain.exponentialRampToValueAtTime(0.0001,t+(d||0.09));o.stop(t+(d||0.09));}catch(e){}}
+  function sfxPush(){tone(150,0.09,"square",0.045);setTimeout(()=>tone(120,0.08,"square",0.04),40);}
+  const sfxStep=()=>tone(320,0.04,"sine",0.03);
+  const sfxSet=()=>{tone(660,0.09,"triangle",0.05);setTimeout(()=>tone(990,0.12,"triangle",0.05),80);};
+  const sfxBump=()=>tone(110,0.1,"square",0.05);
+  const sfxWin=()=>[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,0.16,"triangle",0.06),i*110));
+
+  /* ---------- screens ---------- */
+  const SCR={intro:$("#intro"),gameLogo:$("#gameLogo"),mainMenu:$("#mainMenu"),select:$("#select"),game:$("#game")};
+  function showScreen(w){for(const k in SCR)SCR[k].classList.toggle("show",k===w);}
+  const board=$("#board");
+  let curTier="beginner", cur=null, busy=false;
+  const key=(x,y)=>x+","+y;
+
+  function buildTabs(){const wrap=$("#tierTabs");wrap.innerHTML="";TIERS.forEach(tr=>{const b=document.createElement("button");b.className="tier-tab"+(curTier===tr?" active":"");b.innerHTML=`<span>${TIER_KO[tr]}</span><span class="tsub">1 – 30</span>`;b.addEventListener("click",()=>{curTier=tr;buildTabs();buildGrid();});wrap.appendChild(b);});}
+  function buildGrid(){const grid=$("#stageGrid");grid.innerHTML="";const tp=progress[curTier];for(let n=1;n<=STAGES;n++){const locked=n>tp.unlocked,stars=tp.stars[n]||0;const btn=document.createElement("button");btn.className="stage-btn"+(locked?" locked":"")+(stars?" cleared":"");btn.innerHTML=locked?`<span class="lockic">🔒</span><span class="lab">스테이지 ${String(n).padStart(2,"0")}</span>`:`${stars?`<span class="stars">${"★".repeat(stars)}</span>`:""}<span class="num">${String(n).padStart(2,"0")}</span><span class="lab">스테이지</span>`;if(!locked)btn.addEventListener("click",()=>startStage(curTier,n));grid.appendChild(btn);}}
+
+  let toastT=null;
+  function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),1300);}
+
+  /* ---------- start / render ---------- */
+  function startStage(tier,n){
+    const data=generateStage(tier,n);
+    const boxAt=new Map(); // "x,y" -> id
+    const boxPos={}; data.boxes.forEach((b,i)=>{boxPos[i]={x:b[0],y:b[1]};boxAt.set(key(b[0],b[1]),i);});
+    cur={tier,stage:n,data,size:data.size,player:{...data.player},boxAt,boxPos,targets:new Set(data.targets.map(t=>key(t[0],t[1]))),
+      history:[],pushes:0,pengEl:null,boxEls:{}};
+    renderBoard();updateHud();showScreen("game");$("#winOverlay").classList.remove("show");
+  }
+  function renderBoard(){
+    const {data,size}=cur;
+    $("#scene").innerHTML=whSVG();
+    board.style.gridTemplateColumns=`repeat(${size},1fr)`;board.innerHTML="";
+    for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      const t=data.grid[y*size+x];const cell=document.createElement("div");
+      cell.className="cell "+(t==="wall"?"wall":"floor")+(cur.targets.has(key(x,y))?" target":"");
+      board.appendChild(cell);
+    }
+    const cp=100/size;
+    // crates
+    cur.boxEls={};
+    Object.keys(cur.boxPos).forEach(id=>{
+      const el=document.createElement("div");el.className="sprite crate";el.innerHTML=CRATE;
+      el.style.width=(cp*0.86)+"%";el.style.height=(cp*0.86)+"%";
+      board.appendChild(el);cur.boxEls[id]=el;positionSprite(el,cur.boxPos[id],0.5);refreshCrate(id);
+    });
+    // player
+    const p=document.createElement("div");p.className="sprite player";p.innerHTML=WORKER;
+    p.style.width=(cp*0.9)+"%";p.style.height=(cp*1.12)+"%";board.appendChild(p);cur.pengEl=p;positionSprite(p,cur.player,0.58);
+  }
+  function positionSprite(el,pos,yoff){const cp=100/cur.size;el.style.left=(cp*(pos.x+0.5))+"%";el.style.top=(cp*(pos.y+yoff))+"%";}
+  function refreshCrate(id){const p=cur.boxPos[id];cur.boxEls[id].classList.toggle("on",cur.targets.has(key(p.x,p.y)));}
+  function updateHud(){
+    let onT=0;for(const id in cur.boxPos){const p=cur.boxPos[id];if(cur.targets.has(key(p.x,p.y)))onT++;}
+    $("#hudStage").textContent=`${TIER_KO[cur.tier]} · 스테이지 ${String(cur.stage).padStart(2,"0")}`;
+    $("#hudProg").innerHTML=`<span class="done">${onT}</span> / ${cur.data.boxes.length} 정리`;
+    $("#undoBtn").disabled=cur.history.length===0;
+  }
+
+  /* ---------- move ---------- */
+  function move(dir){
+    if(!cur||busy)return; if($("#winOverlay").classList.contains("show"))return;
+    const [dx,dy]=DV[dir];const {data,size}=cur;
+    if(dir==="left")cur.pengEl.classList.add("flip");else if(dir==="right")cur.pengEl.classList.remove("flip");
+    const nx=cur.player.x+dx,ny=cur.player.y+dy;
+    const inb=(x,y)=>x>=0&&y>=0&&x<size&&y<size;
+    if(!inb(nx,ny)||data.grid[ny*size+nx]==="wall"){sfxBump();return;}
+    const boxId=cur.boxAt.get(key(nx,ny));
+    if(boxId!==undefined){
+      // try to push
+      const bx=nx+dx,by=ny+dy;
+      if(!inb(bx,by)||data.grid[by*size+bx]==="wall"||cur.boxAt.has(key(bx,by))){sfxBump();const c=cur.pengEl;c.classList.remove("step");void c.offsetWidth;c.classList.add("step");toast("🚫 상자를 밀 수 없어요");return;}
+      // push
+      cur.history.push({type:"push",dir,pp:{...cur.player},boxId,bp:{x:nx,y:ny}});
+      cur.boxAt.delete(key(nx,ny));cur.boxPos[boxId]={x:bx,y:by};cur.boxAt.set(key(bx,by),boxId);
+      cur.player={x:nx,y:ny};
+      positionSprite(cur.boxEls[boxId],cur.boxPos[boxId],0.5);positionSprite(cur.pengEl,cur.player,0.58);
+      const wasOn=cur.targets.has(key(bx,by));refreshCrate(boxId);
+      const el=cur.boxEls[boxId];el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop");
+      sfxPush();if(wasOn)setTimeout(sfxSet,60);
+      cur.pushes++;updateHud();
+      if(checkWin())return;
+    } else {
+      cur.history.push({type:"walk",dir,pp:{...cur.player}});
+      cur.player={x:nx,y:ny};positionSprite(cur.pengEl,cur.player,0.58);sfxStep();
+      const c=cur.pengEl;c.classList.remove("step");void c.offsetWidth;c.classList.add("step");updateHud();
+    }
+  }
+  function checkWin(){
+    for(const id in cur.boxPos){const p=cur.boxPos[id];if(!cur.targets.has(key(p.x,p.y)))return false;}
+    onWin();return true;
+  }
+  function undo(){
+    if(!cur||busy||!cur.history.length)return;const h=cur.history.pop();
+    if(h.type==="push"){const id=h.boxId;const cp=cur.boxPos[id];cur.boxAt.delete(key(cp.x,cp.y));cur.boxPos[id]={...h.bp};cur.boxAt.set(key(h.bp.x,h.bp.y),id);positionSprite(cur.boxEls[id],cur.boxPos[id],0.5);refreshCrate(id);}
+    cur.player={...h.pp};positionSprite(cur.pengEl,cur.player,0.58);updateHud();
+  }
+  function onWin(){
+    busy=true;sfxWin();
+    const stars=cur.history.filter(h=>h.type==="push").length<=cur.data.solution.length+2?3:cur.history.length<=cur.data.solution.length*2?2:1;
+    // simpler star: base on undo count
+    const tp=progress[cur.tier];const st=3; tp.stars[cur.stage]=Math.max(tp.stars[cur.stage]||0,st);
+    if(cur.stage>=tp.unlocked&&cur.stage<STAGES)tp.unlocked=cur.stage+1;
+    save();buildGrid();
+    const isLast=cur.stage>=STAGES;
+    $("#winStars").textContent="★★★";
+    $("#winMsg").textContent=isLast?"모든 창고를 정리했어요! 최고예요! 🏆":"상자 정리 완료! 착착착!";
+    $("#winNext").textContent=isLast?"메인으로":"다음 →";
+    setTimeout(()=>{$("#winOverlay").classList.add("show");busy=false;},450);
+  }
+
+  /* ---------- input ---------- */
+  document.addEventListener("keydown",(e)=>{const k=e.key,cf=k==="Enter"||k===" ",es=k==="Escape";
+    if(SCR.gameLogo.classList.contains("show")){e.preventDefault();showScreen("mainMenu");return;}
+    if($("#howtoOverlay").classList.contains("show")){if(cf||es){e.preventDefault();$("#howtoOverlay").classList.remove("show");}return;}
+    if($("#winOverlay").classList.contains("show")){if(cf){e.preventDefault();$("#winNext").click();}return;}
+    if(SCR.game.classList.contains("show")){if(es){e.preventDefault();showScreen("select");return;}const m={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",w:"up",s:"down",a:"left",d:"right",W:"up",S:"down",A:"left",D:"right"};if(m[k]){e.preventDefault();move(m[k]);}else if(k==="z"||k==="Z"||k==="Backspace"){e.preventDefault();undo();}}});
+  document.querySelectorAll(".dbtn").forEach(b=>b.addEventListener("pointerdown",(e)=>{e.preventDefault();move(b.dataset.dir);}));
+  let ts=null;
+  SCR.game.addEventListener("touchstart",(e)=>{if(e.target.closest(".dpad")){ts=null;return;}const t=e.changedTouches[0];ts={x:t.clientX,y:t.clientY};},{passive:true});
+  SCR.game.addEventListener("touchend",(e)=>{if(!ts)return;const t=e.changedTouches[0];const dx=t.clientX-ts.x,dy=t.clientY-ts.y,ax=Math.abs(dx),ay=Math.abs(dy);ts=null;if(Math.max(ax,ay)<20)return;if(ax>ay)move(dx>0?"right":"left");else move(dy>0?"down":"up");},{passive:true});
+
+  /* ---------- buttons ---------- */
+  $("#backBtn").addEventListener("click",()=>{$("#winOverlay").classList.remove("show");showScreen("select");});
+  $("#restartBtn").addEventListener("click",()=>{if(cur)startStage(cur.tier,cur.stage);});
+  $("#undoBtn").addEventListener("click",undo);
+  $("#howtoBtn").addEventListener("click",()=>$("#howtoOverlay").classList.add("show"));
+  $("#howtoClose").addEventListener("click",()=>$("#howtoOverlay").classList.remove("show"));
+  $("#howtoOverlay").addEventListener("click",(e)=>{if(e.target.classList.contains("veil"))$("#howtoOverlay").classList.remove("show");});
+  $("#winNext").addEventListener("click",()=>{if(cur.stage>=STAGES){$("#winOverlay").classList.remove("show");showScreen("mainMenu");}else startStage(cur.tier,cur.stage+1);});
+  $("#winRetry").addEventListener("click",()=>startStage(cur.tier,cur.stage));
+  $("#startBtn").addEventListener("click",()=>showScreen("select"));
+  $("#selBackBtn").addEventListener("click",()=>showScreen("mainMenu"));
+  $("#gameLogo").addEventListener("click",()=>showScreen("mainMenu"));
+  $("#resetProg").addEventListener("click",()=>{if(confirm("모든 진행 기록을 지울까요?")){progress=fresh();save();buildGrid();}});
+
+  /* ---------- intro ---------- */
+  let introDone=false,introTimer=null;
+  function finishIntro(){if(introDone)return;introDone=true;if(introTimer)clearTimeout(introTimer);const el=$("#intro");el.classList.add("leaving");setTimeout(()=>{el.classList.remove("show","leaving");showScreen("gameLogo");},450);}
+  $("#intro").addEventListener("click",finishIntro,{once:true});introTimer=setTimeout(finishIntro,3000);
+
+  /* ---------- boot ---------- */
+  buildTabs();buildGrid();
+  $("#introBadge").innerHTML=LOGO;$("#glMascot").innerHTML=WORKER;$("#glScene").innerHTML=whSVG();$("#mmScene").innerHTML=whSVG();
+  window.__SOKO={generateStage,startStage,move,get cur(){return cur;}};
+})();
+</script>
+</body>
+</html>
