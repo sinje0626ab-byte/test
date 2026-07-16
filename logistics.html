@@ -25,6 +25,13 @@
   .screen{position:absolute;inset:0;display:none;flex-direction:column;}
   .screen.show{display:flex;}
 
+  /* language bar */
+  .langbar{position:absolute;top:calc(10px + env(safe-area-inset-top));right:14px;display:flex;gap:7px;z-index:8;}
+  .flagbtn{width:39px;height:26px;border-radius:6px;border:2px solid transparent;overflow:hidden;opacity:.5;cursor:pointer;padding:0;background:none;transition:transform .1s,opacity .15s,border-color .15s;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+  .flagbtn svg{width:100%;height:100%;display:block;}
+  .flagbtn.active{opacity:1;border-color:var(--accent);}
+  .flagbtn:active{transform:scale(.9);}
+
   /* intro */
   #intro{z-index:50;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;background:radial-gradient(circle at 50% 38%,#101a22,#05080c 72%);}
   #intro.leaving{animation:fadeOut .45s ease forwards;} @keyframes fadeOut{to{opacity:0;}}
@@ -152,27 +159,30 @@
 
   <section id="gameLogo" class="screen">
     <div class="gl-scene" id="glScene"></div>
+    <div class="langbar"></div>
     <div class="gl-content">
-      <div class="gl-ribbon">착착착! 창고 정리 액션</div>
-      <h1 class="gl-title">물류반장 김용준</h1>
+      <div class="gl-ribbon" id="glRibbon">착착착! 창고 정리 액션</div>
+      <h1 class="gl-title" id="glTitle">물류반장 김용준</h1>
       <div class="gl-mascot" id="glMascot"></div>
       <div class="gl-sparkle s1">📦</div><div class="gl-sparkle s2">✨</div><div class="gl-sparkle s3">📦</div>
     </div>
-    <div class="gl-prompt">아무 버튼이나 눌러주세요</div>
+    <div class="gl-prompt" id="glPrompt">아무 버튼이나 눌러주세요</div>
   </section>
 
   <section id="mainMenu" class="screen">
     <div class="mm-scene" id="mmScene"></div>
+    <div class="langbar"></div>
     <div class="mm-content">
-      <div class="mm-kicker">착착착! 창고 정리 액션</div>
-      <div class="mm-title">물류반장 김용준</div>
-      <div class="mm-tag">상자를 밀어서 제자리(초록 표시)에 착착 정리하자!</div>
+      <div class="mm-kicker" id="mmKicker">착착착! 창고 정리 액션</div>
+      <div class="mm-title" id="mmTitle">물류반장 김용준</div>
+      <div class="mm-tag" id="mmTag">상자를 밀어서 제자리(초록 표시)에 착착 정리하자!</div>
       <div class="mm-btns"><button class="menu-btn" id="howtoBtn">❓ 게임 방법</button><button class="menu-btn start" id="startBtn">START</button></div>
     </div>
   </section>
 
   <section id="select" class="screen">
-    <div class="hud"><button class="iconbtn" id="selBackBtn">←</button><div class="center"><div class="stg">스테이지 선택</div></div></div>
+    <div class="hud"><button class="iconbtn" id="selBackBtn">←</button><div class="center"><div class="stg" id="selTitle">스테이지 선택</div></div></div>
+    <div class="langbar"></div>
     <div class="tiers" id="tierTabs"></div>
     <div class="stages" id="stageGrid"></div>
     <button class="reset-prog" id="resetProg">진행 기록 초기화</button>
@@ -195,20 +205,13 @@
 </div>
 
 <div class="overlay" id="howtoOverlay"><div class="veil"></div><div class="card">
-  <h2>게임 방법</h2>
-  <div class="howlist">
-    <div class="row"><span class="ic">📦</span><div><b>목표</b> — 상자를 <b>같은 색 표시 자리</b>에 정확히 밀어 넣어야 해요. 색이 다르면 정리로 인정되지 않아요!</div></div>
-    <div class="row"><span class="ic">🎨</span><div><b>색 맞추기</b> — 빨강 상자는 빨강 자리, 파랑 상자는 파랑 자리… 색깔별로 알맞게 배치해야 완료!</div></div>
-    <div class="row"><span class="ic">👉</span><div><b>밀기</b> — 상자는 <b>밀 수만</b> 있어요(당기기 불가). 뒤에 벽·기둥·다른 상자가 있으면 못 밀고, 구석에 몰면 영영 못 빼요.</div></div>
-    <div class="row"><span class="ic">🧠</span><div><b>순서가 관건</b> — 어떤 상자를 먼저 옮길지 순서를 잘못 잡으면 길이 막혀요. 밀기 전에 여러 수 앞을 생각하세요.</div></div>
-    <div class="row"><span class="ic">↩️</span><div><b>되돌리기</b> — 막혔으면 되돌리기(↩︎)·다시 시작(⟳)으로 재도전! 조작: 방향키 / 화면 버튼 / 쓸어넘기기</div></div>
-    <div class="row"><span class="ic">🏆</span><div><b>난이도</b> — 초급·중급·고급·특급 각 30스테이지. 초급도 성인용으로 묵직하게, 뒤로 갈수록 판·상자·색·장애물이 늘어나요.</div></div>
-  </div>
+  <h2 id="howtoTitle">게임 방법</h2>
+  <div class="howlist" id="howtoList"></div>
   <div class="btns"><button class="btn primary" id="howtoClose">닫기</button></div>
 </div></div>
 
 <div class="overlay" id="winOverlay"><div class="veil"></div><div class="card">
-  <div class="big">📦✨📦</div><h2>정리 완료!</h2>
+  <div class="big">📦✨📦</div><h2 id="winTitle">정리 완료!</h2>
   <div class="stars-big" id="winStars">★★★</div><p id="winMsg"></p>
   <div class="btns"><button class="btn ghost" id="winRetry">다시</button><button class="btn primary" id="winNext">다음 →</button></div>
 </div></div>
@@ -220,8 +223,125 @@
 (function(){
   const $=s=>document.querySelector(s);
   const TIERS=["beginner","intermediate","advanced","master"];
-  const TIER_KO={beginner:"초급",intermediate:"중급",advanced:"고급",master:"특급"};
-  const STAGES=30, PROG_KEY="logisticsKim.progress.v1";
+  const STAGES=30, PROG_KEY="logisticsKim.progress.v1", LANG_KEY="logisticsKim.lang.v1";
+
+  /* ---------------- i18n (한국어 / 中文 / English / Tiếng Việt) ---------------- */
+  const I18N={
+    ko:{
+      ribbon:"착착착! 창고 정리 액션", title:"물류반장 김용준",
+      tag:"상자를 밀어 같은 색 자리에 착착 정리하자!",
+      pressStart:"아무 버튼이나 눌러주세요", start:"START",
+      howto:"게임 방법", stageSelect:"스테이지 선택", stageWord:"스테이지", sorted:"정리",
+      reset:"진행 기록 초기화",
+      tierBeginner:"초급", tierIntermediate:"중급", tierAdvanced:"고급", tierMaster:"특급", tierSub:"1 – 30",
+      howtoTitle:"게임 방법",
+      how:[
+        ["📦","<b>목표</b> — 상자를 <b>같은 색 표시 자리</b>에 정확히 밀어 넣어야 해요. 색이 다르면 정리로 인정되지 않아요!"],
+        ["🎨","<b>색 맞추기</b> — 빨강 상자는 빨강 자리, 파랑 상자는 파랑 자리… 색깔별로 알맞게 배치해야 완료!"],
+        ["👉","<b>밀기</b> — 상자는 <b>밀 수만</b> 있어요(당기기 불가). 뒤에 벽·기둥·다른 상자가 있으면 못 밀고, 구석에 몰면 영영 못 빼요."],
+        ["🧠","<b>순서가 관건</b> — 어떤 상자를 먼저 옮길지 순서를 잘못 잡으면 길이 막혀요. 밀기 전에 여러 수 앞을 생각하세요."],
+        ["↩️","<b>되돌리기</b> — 막혔으면 되돌리기(↩︎)·다시 시작(⟳)으로 재도전! 조작: 방향키 / 화면 버튼 / 쓸어넘기기"],
+        ["🏆","<b>난이도</b> — 초급·중급·고급·특급 각 30스테이지. 초급도 성인용으로 묵직하게, 뒤로 갈수록 판·상자·색·장애물이 늘어나요."]
+      ],
+      close:"닫기", winTitle:"정리 완료!",
+      winMsg:"상자 정리 완료! 착착착!", winLast:"모든 창고를 정리했어요! 최고예요! 🏆",
+      retry:"다시", next:"다음 →", toMenu:"메인으로",
+      tBlocked:"🚫 상자를 밀 수 없어요", confirmReset:"모든 진행 기록을 지울까요?"
+    },
+    zh:{
+      ribbon:"推箱整理大作战", title:"物流班长 金龙俊",
+      tag:"把箱子推到相同颜色的标记上，整整齐齐！",
+      pressStart:"按任意键继续", start:"开始",
+      howto:"游戏玩法", stageSelect:"选择关卡", stageWord:"关卡", sorted:"已整理",
+      reset:"清除进度",
+      tierBeginner:"初级", tierIntermediate:"中级", tierAdvanced:"高级", tierMaster:"特级", tierSub:"1 – 30",
+      howtoTitle:"游戏玩法",
+      how:[
+        ["📦","<b>目标</b> — 把每个箱子准确推到<b>相同颜色的标记格</b>上。颜色不对就不算整理完成！"],
+        ["🎨","<b>颜色匹配</b> — 红箱子放红标记，蓝箱子放蓝标记……按颜色一一对应才能通关！"],
+        ["👉","<b>只能推</b> — 箱子<b>只能推、不能拉</b>。背后有墙、柱子或别的箱子就推不动，推进死角就再也拿不出来了。"],
+        ["🧠","<b>顺序是关键</b> — 先推哪个箱子的顺序错了，路就会被堵死。推之前先想好几步。"],
+        ["↩️","<b>撤销</b> — 卡住了就用撤销(↩︎)·重来(⟳)再挑战！操作：方向键 / 屏幕按钮 / 滑动"],
+        ["🏆","<b>难度</b> — 初级·中级·高级·特级各30关。初级也是成人级别，越往后棋盘、箱子、颜色和障碍越多。"]
+      ],
+      close:"关闭", winTitle:"整理完成！",
+      winMsg:"箱子整理完成！咔咔咔！", winLast:"你整理好了所有仓库！太棒了！🏆",
+      retry:"重试", next:"下一关 →", toMenu:"返回主菜单",
+      tBlocked:"🚫 无法推动这个箱子", confirmReset:"要清除所有进度吗？"
+    },
+    en:{
+      ribbon:"Push & Sort Action!", title:"Warehouse Chief Kim",
+      tag:"Push each crate onto its matching-color spot!",
+      pressStart:"Tap or press any key to continue", start:"START",
+      howto:"How to Play", stageSelect:"Stage Select", stageWord:"Stage", sorted:"sorted",
+      reset:"Reset progress",
+      tierBeginner:"Beginner", tierIntermediate:"Intermediate", tierAdvanced:"Advanced", tierMaster:"Master", tierSub:"1 – 30",
+      howtoTitle:"How to Play",
+      how:[
+        ["📦","<b>Goal</b> — Push every crate exactly onto a <b>same-color marker</b>. A wrong color doesn't count as sorted!"],
+        ["🎨","<b>Match colors</b> — Red crate to a red spot, blue crate to a blue spot… every color must match to clear the stage!"],
+        ["👉","<b>Push only</b> — Crates can only be <b>pushed, never pulled</b>. A wall, pillar or another crate behind it blocks the push, and a crate shoved into a corner is stuck for good."],
+        ["🧠","<b>Order matters</b> — Move the crates in the wrong order and you'll block your own path. Think several moves ahead before you push."],
+        ["↩️","<b>Undo</b> — Stuck? Use undo (↩︎) / restart (⟳) and try again! Controls: arrow keys / on-screen buttons / swipe"],
+        ["🏆","<b>Difficulty</b> — Beginner, Intermediate, Advanced & Master, 30 stages each. Even Beginner is adult-grade; boards, crates, colors and obstacles all grow as you go."]
+      ],
+      close:"Close", winTitle:"Sorted!",
+      winMsg:"All crates sorted! 📦", winLast:"You've sorted every warehouse! Amazing! 🏆",
+      retry:"Retry", next:"Next →", toMenu:"Back to menu",
+      tBlocked:"🚫 Can't push the crate", confirmReset:"Erase all progress?"
+    },
+    vi:{
+      ribbon:"Xếp kho ầm ầm!", title:"Quản kho Kim",
+      tag:"Đẩy mỗi thùng vào đúng ô cùng màu cho gọn gàng!",
+      pressStart:"Chạm hoặc nhấn phím bất kỳ để tiếp tục", start:"BẮT ĐẦU",
+      howto:"Cách chơi", stageSelect:"Chọn màn", stageWord:"Màn", sorted:"đã xếp",
+      reset:"Đặt lại tiến trình",
+      tierBeginner:"Sơ cấp", tierIntermediate:"Trung cấp", tierAdvanced:"Cao cấp", tierMaster:"Bậc thầy", tierSub:"1 – 30",
+      howtoTitle:"Cách chơi",
+      how:[
+        ["📦","<b>Mục tiêu</b> — Đẩy từng thùng vào đúng <b>ô đánh dấu cùng màu</b>. Sai màu thì không được tính là đã xếp!"],
+        ["🎨","<b>Ghép màu</b> — Thùng đỏ vào ô đỏ, thùng xanh vào ô xanh… mọi màu phải khớp mới qua màn!"],
+        ["👉","<b>Chỉ đẩy</b> — Thùng <b>chỉ đẩy được, không kéo</b>. Phía sau có tường, cột hay thùng khác thì không đẩy nổi, đẩy vào góc là kẹt luôn."],
+        ["🧠","<b>Thứ tự quan trọng</b> — Đẩy sai thứ tự là tự chặn đường mình. Hãy nghĩ trước vài nước rồi mới đẩy."],
+        ["↩️","<b>Hoàn tác</b> — Bí thì dùng hoàn tác (↩︎) / chơi lại (⟳) và thử lại! Điều khiển: phím mũi tên / nút trên màn hình / vuốt"],
+        ["🏆","<b>Độ khó</b> — Sơ cấp, Trung cấp, Cao cấp & Bậc thầy, mỗi mức 30 màn. Ngay cả Sơ cấp cũng dành cho người lớn; càng về sau bàn, thùng, màu và chướng ngại càng nhiều."]
+      ],
+      close:"Đóng", winTitle:"Hoàn thành!",
+      winMsg:"Xếp xong hết rồi! 📦", winLast:"Bạn đã dọn xong mọi nhà kho! Tuyệt vời! 🏆",
+      retry:"Chơi lại", next:"Màn tiếp →", toMenu:"Về menu",
+      tBlocked:"🚫 Không thể đẩy thùng này", confirmReset:"Xóa toàn bộ tiến trình?"
+    }
+  };
+  const LANGS=["ko","zh","en","vi"];
+  let lang=(()=>{try{const l=localStorage.getItem(LANG_KEY);if(l&&I18N[l])return l;}catch(e){}return "ko";})();
+  const t=k=>(I18N[lang][k]!==undefined?I18N[lang][k]:I18N.en[k]);
+  const tierName=tr=>t("tier"+tr.charAt(0).toUpperCase()+tr.slice(1));
+
+  /* ---------------- flags (inline SVG for cross-platform) ---------------- */
+  function starPts(cx,cy,r,rot){let p="";for(let i=0;i<5;i++){const a=rot+i*2*Math.PI/5-Math.PI/2;p+=(cx+r*Math.cos(a)).toFixed(2)+","+(cy+r*Math.sin(a)).toFixed(2)+" ";const b=a+Math.PI/5;p+=(cx+r*0.4*Math.cos(b)).toFixed(2)+","+(cy+r*0.4*Math.sin(b)).toFixed(2)+" ";}return p.trim();}
+  const zhStars=(()=>{const bx=5,by=5;let s=`<polygon points="${starPts(bx,by,3,0)}"/>`;
+    [[10,2],[12,4],[12,7],[10,9]].forEach(([x,y])=>{const rot=Math.atan2(by-y,bx-x)+Math.PI/2;s+=`<polygon points="${starPts(x,y,1,rot)}"/>`;});return s;})();
+  const FLAGS={
+    ko:`<svg viewBox="0 0 36 24"><rect width="36" height="24" fill="#fff"/><rect x="0.4" y="0.4" width="35.2" height="23.2" fill="none" stroke="#ddd" stroke-width="0.6"/>
+      <g transform="rotate(-33.69 18 12)"><circle cx="18" cy="12" r="6" fill="#003478"/>
+      <path d="M12,12 A6,6 0 0 1 24,12 A3,3 0 0 0 18,12 A3,3 0 0 1 12,12 Z" fill="#cd2e3a"/></g>
+      <g fill="#000">
+      <g transform="translate(7,6) rotate(33.69)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
+      <g transform="translate(29,18) rotate(33.69)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
+      <g transform="translate(29,6) rotate(-33.69)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
+      <g transform="translate(7,18) rotate(-33.69)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
+      </g></svg>`,
+    zh:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#de2910"/><g fill="#ffde00">${zhStars}</g></svg>`,
+    en:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#b22234"/>
+      <g fill="#fff"><rect y="1.54" width="30" height="1.54"/><rect y="4.62" width="30" height="1.54"/><rect y="7.7" width="30" height="1.54"/>
+      <rect y="10.77" width="30" height="1.54"/><rect y="13.85" width="30" height="1.54"/><rect y="16.92" width="30" height="1.54"/></g>
+      <rect width="13" height="10.77" fill="#3c3b6e"/>
+      <g fill="#fff"><circle cx="2.6" cy="2" r="0.7"/><circle cx="6.5" cy="2" r="0.7"/><circle cx="10.4" cy="2" r="0.7"/>
+      <circle cx="4.5" cy="4.3" r="0.7"/><circle cx="8.4" cy="4.3" r="0.7"/><circle cx="2.6" cy="6.5" r="0.7"/>
+      <circle cx="6.5" cy="6.5" r="0.7"/><circle cx="10.4" cy="6.5" r="0.7"/><circle cx="4.5" cy="8.7" r="0.7"/><circle cx="8.4" cy="8.7" r="0.7"/></g></svg>`,
+    vi:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#da251d"/>
+      <polygon points="15,4.8 16.23,8.30 19.95,8.39 17.00,10.65 18.06,14.21 15,12.1 11.94,14.21 13.00,10.65 10.05,8.39 13.77,8.30" fill="#ff0"/></svg>`
+  };
   function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
   /* ---------- YJ GAMES logo ---------- */
@@ -308,10 +428,10 @@
   // harder tuning: bigger boards, more crates, more obstacles, colored crates, deep drags.
   // scr = pulls-per-crate multiplier (deep reverse dragging → long solutions).
   const BANDS={
-    beginner:    {sizes:[8,9,10],   boxes:[3,4], wall:[0.07,0.13], colors:[1,2], scr:[7,11]},
-    intermediate:{sizes:[9,10,11],  boxes:[4,6], wall:[0.09,0.15], colors:[2,3], scr:[8,13]},
-    advanced:    {sizes:[10,11,12], boxes:[5,7], wall:[0.11,0.17], colors:[3,4], scr:[10,16]},
-    master:      {sizes:[11,12,13], boxes:[6,9], wall:[0.12,0.18], colors:[3,5], scr:[12,20]}
+    beginner:    {sizes:[9,10,11],  boxes:[4,6],  wall:[0.09,0.15], colors:[2,3], scr:[15,24]},
+    intermediate:{sizes:[10,11,12], boxes:[6,9],  wall:[0.11,0.17], colors:[3,4], scr:[18,30]},
+    advanced:    {sizes:[12,13,14], boxes:[8,12], wall:[0.13,0.19], colors:[4,5], scr:[22,38]},
+    master:      {sizes:[13,14,15], boxes:[10,16],wall:[0.14,0.21], colors:[4,5], scr:[28,46]}
   };
   function cfg(tier,n){
     const b=BANDS[tier], band=Math.min(2,Math.floor((n-1)/10)), tt=(n-1)/(STAGES-1);
@@ -334,14 +454,21 @@
     const minPush=Math.max(K*2, Math.round(K*(3+3*c.tt)));
     const minDisp=Math.max(K*2, Math.round(K*(3+2*c.tt)));
     let best=null,bestScore=-1;
-    for(let attempt=0;attempt<160;attempt++){
+    for(let attempt=0;attempt<220;attempt++){
       const rng=mulberry32((c.seed^((attempt*0x9E3779B1)>>>0))>>>0);
-      // 1) walls: border + random interior obstacles, keep largest connected floor
+      // 1) walls: border + interior obstacles (some grown into pillars/nooks), keep largest floor
       const grid=new Array(N).fill("floor");
       for(let x=0;x<size;x++){grid[idx(x,0)]="wall";grid[idx(x,size-1)]="wall";}
       for(let y=0;y<size;y++){grid[idx(0,y)]="wall";grid[idx(size-1,y)]="wall";}
       let want=Math.round((size-2)*(size-2)*c.wallRatio),g=0;
-      while(want>0&&g++<600){const x=1+((rng()*(size-2))|0),y=1+((rng()*(size-2))|0);if(grid[idx(x,y)]==="floor"){grid[idx(x,y)]="wall";want--;}}
+      while(want>0&&g++<900){
+        let x=1+((rng()*(size-2))|0),y=1+((rng()*(size-2))|0);
+        if(grid[idx(x,y)]!=="floor")continue;
+        grid[idx(x,y)]="wall";want--;
+        // grow a short wall segment to form pillars, nooks & dead-ends (real obstacles)
+        if(rng()<0.5){const len=1+((rng()*2)|0),dir=DL[(rng()*4)|0];
+          for(let s=0;s<len&&want>0;s++){x+=DV[dir][0];y+=DV[dir][1];if(x>0&&y>0&&x<size-1&&y<size-1&&grid[idx(x,y)]==="floor"){grid[idx(x,y)]="wall";want--;}else break;}}
+      }
       const seen=new Array(N).fill(false); let bestComp=[];
       for(let y=0;y<size;y++)for(let x=0;x<size;x++){ if(grid[idx(x,y)]==="floor"&&!seen[idx(x,y)]){
         const comp=[],st=[[x,y]];seen[idx(x,y)]=true;
@@ -409,8 +536,21 @@
   let curTier="beginner", cur=null, busy=false;
   const key=(x,y)=>x+","+y;
 
-  function buildTabs(){const wrap=$("#tierTabs");wrap.innerHTML="";TIERS.forEach(tr=>{const b=document.createElement("button");b.className="tier-tab"+(curTier===tr?" active":"");b.innerHTML=`<span>${TIER_KO[tr]}</span><span class="tsub">1 – 30</span>`;b.addEventListener("click",()=>{curTier=tr;buildTabs();buildGrid();});wrap.appendChild(b);});}
-  function buildGrid(){const grid=$("#stageGrid");grid.innerHTML="";const tp=progress[curTier];for(let n=1;n<=STAGES;n++){const locked=n>tp.unlocked,stars=tp.stars[n]||0;const btn=document.createElement("button");btn.className="stage-btn"+(locked?" locked":"")+(stars?" cleared":"");btn.innerHTML=locked?`<span class="lockic">🔒</span><span class="lab">스테이지 ${String(n).padStart(2,"0")}</span>`:`${stars?`<span class="stars">${"★".repeat(stars)}</span>`:""}<span class="num">${String(n).padStart(2,"0")}</span><span class="lab">스테이지</span>`;if(!locked)btn.addEventListener("click",()=>startStage(curTier,n));grid.appendChild(btn);}}
+  function buildTabs(){const wrap=$("#tierTabs");wrap.innerHTML="";TIERS.forEach(tr=>{const b=document.createElement("button");b.className="tier-tab"+(curTier===tr?" active":"");b.innerHTML=`<span>${tierName(tr)}</span><span class="tsub">${t("tierSub")}</span>`;b.addEventListener("click",()=>{curTier=tr;buildTabs();buildGrid();});wrap.appendChild(b);});}
+  function buildGrid(){const grid=$("#stageGrid");grid.innerHTML="";const tp=progress[curTier];for(let n=1;n<=STAGES;n++){const locked=n>tp.unlocked,stars=tp.stars[n]||0;const btn=document.createElement("button");btn.className="stage-btn"+(locked?" locked":"")+(stars?" cleared":"");btn.innerHTML=locked?`<span class="lockic">🔒</span><span class="lab">${t("stageWord")} ${String(n).padStart(2,"0")}</span>`:`${stars?`<span class="stars">${"★".repeat(stars)}</span>`:""}<span class="num">${String(n).padStart(2,"0")}</span><span class="lab">${t("stageWord")}</span>`;if(!locked)btn.addEventListener("click",()=>startStage(curTier,n));grid.appendChild(btn);}}
+
+  /* ---------------- language UI ---------------- */
+  function buildLangBar(){document.querySelectorAll(".langbar").forEach(bar=>{bar.innerHTML="";LANGS.forEach(lc=>{const b=document.createElement("button");b.className="flagbtn"+(lang===lc?" active":"");b.innerHTML=FLAGS[lc];b.title=lc.toUpperCase();b.addEventListener("click",()=>setLang(lc));bar.appendChild(b);});});}
+  function setLang(lc){lang=lc;try{localStorage.setItem(LANG_KEY,lc);}catch(e){}document.documentElement.lang=lc;buildLangBar();renderStatic();buildHowto();buildTabs();buildGrid();if(SCR.game.classList.contains("show"))updateHud();}
+  function renderStatic(){
+    $("#glRibbon").textContent=t("ribbon");$("#glTitle").textContent=t("title");$("#glPrompt").textContent=t("pressStart");
+    $("#mmKicker").textContent=t("ribbon");$("#mmTitle").textContent=t("title");$("#mmTag").textContent=t("tag");
+    $("#howtoBtn").textContent="❓ "+t("howto");$("#startBtn").textContent=t("start");
+    $("#selTitle").textContent=t("stageSelect");$("#resetProg").textContent=t("reset");
+    $("#howtoTitle").textContent=t("howtoTitle");$("#howtoClose").textContent=t("close");
+    $("#winTitle").textContent=t("winTitle");$("#winRetry").textContent=t("retry");
+  }
+  function buildHowto(){const box=$("#howtoList");box.innerHTML=t("how").map(([ic,txt])=>`<div class="row"><span class="ic">${ic}</span><div>${txt}</div></div>`).join("");}
 
   let toastT=null;
   function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),1300);}
@@ -454,8 +594,8 @@
   function refreshCrate(id){cur.boxEls[id].classList.toggle("on",onMatch(id));}
   function updateHud(){
     let onT=0;for(const id in cur.boxPos){if(onMatch(id))onT++;}
-    $("#hudStage").textContent=`${TIER_KO[cur.tier]} · 스테이지 ${String(cur.stage).padStart(2,"0")}`;
-    $("#hudProg").innerHTML=`<span class="done">${onT}</span> / ${cur.data.boxes.length} 정리`;
+    $("#hudStage").textContent=`${tierName(cur.tier)} · ${t("stageWord")} ${String(cur.stage).padStart(2,"0")}`;
+    $("#hudProg").innerHTML=`<span class="done">${onT}</span> / ${cur.data.boxes.length} ${t("sorted")}`;
     $("#undoBtn").disabled=cur.history.length===0;
   }
 
@@ -471,7 +611,7 @@
     if(boxId!==undefined){
       // try to push
       const bx=nx+dx,by=ny+dy;
-      if(!inb(bx,by)||data.grid[by*size+bx]==="wall"||cur.boxAt.has(key(bx,by))){sfxBump();const c=cur.pengEl;c.classList.remove("step");void c.offsetWidth;c.classList.add("step");toast("🚫 상자를 밀 수 없어요");return;}
+      if(!inb(bx,by)||data.grid[by*size+bx]==="wall"||cur.boxAt.has(key(bx,by))){sfxBump();const c=cur.pengEl;c.classList.remove("step");void c.offsetWidth;c.classList.add("step");toast(t("tBlocked"));return;}
       // push
       cur.history.push({type:"push",dir,pp:{...cur.player},boxId,bp:{x:nx,y:ny}});
       cur.boxAt.delete(key(nx,ny));cur.boxPos[boxId]={x:bx,y:by};cur.boxAt.set(key(bx,by),boxId);
@@ -506,8 +646,8 @@
     save();buildGrid();
     const isLast=cur.stage>=STAGES;
     $("#winStars").textContent="★★★";
-    $("#winMsg").textContent=isLast?"모든 창고를 정리했어요! 최고예요! 🏆":"상자 정리 완료! 착착착!";
-    $("#winNext").textContent=isLast?"메인으로":"다음 →";
+    $("#winMsg").textContent=isLast?t("winLast"):t("winMsg");
+    $("#winNext").textContent=isLast?t("toMenu"):t("next");
     setTimeout(()=>{$("#winOverlay").classList.add("show");busy=false;},450);
   }
 
@@ -534,7 +674,7 @@
   $("#startBtn").addEventListener("click",()=>showScreen("select"));
   $("#selBackBtn").addEventListener("click",()=>showScreen("mainMenu"));
   $("#gameLogo").addEventListener("click",()=>showScreen("mainMenu"));
-  $("#resetProg").addEventListener("click",()=>{if(confirm("모든 진행 기록을 지울까요?")){progress=fresh();save();buildGrid();}});
+  $("#resetProg").addEventListener("click",()=>{if(confirm(t("confirmReset"))){progress=fresh();save();buildGrid();}});
 
   /* ---------- intro ---------- */
   let introDone=false,introTimer=null;
@@ -542,9 +682,10 @@
   $("#intro").addEventListener("click",finishIntro,{once:true});introTimer=setTimeout(finishIntro,3000);
 
   /* ---------- boot ---------- */
-  buildTabs();buildGrid();
+  document.documentElement.lang=lang;
+  buildLangBar();renderStatic();buildHowto();buildTabs();buildGrid();
   $("#introBadge").innerHTML=LOGO;$("#glMascot").innerHTML=WORKER;$("#glScene").innerHTML=whSVG();$("#mmScene").innerHTML=whSVG();
-  window.__SOKO={generateStage,startStage,move,get cur(){return cur;}};
+  window.__SOKO={generateStage,startStage,move,get cur(){return cur;},setLang};
 })();
 </script>
 </body>
