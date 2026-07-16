@@ -106,7 +106,7 @@
   .cell.wall{background:linear-gradient(180deg,var(--shelf),var(--shelf-d));}
   .cell.wall::before{content:"";position:absolute;inset:6%;border-radius:3px;background:linear-gradient(180deg,#5c4531,#3a2b1d);border:2px solid #241a10;box-shadow:inset 0 0 0 2px rgba(255,255,255,.05);}
   .cell.wall::after{content:"";position:absolute;left:6%;right:6%;top:32%;height:8%;background:rgba(0,0,0,.35);}
-  .cell.target::after{content:"";position:absolute;left:26%;top:26%;width:48%;height:48%;border-radius:50%;border:3px dashed var(--target);box-shadow:0 0 10px rgba(79,209,138,.5);animation:tgpulse 1.4s ease-in-out infinite;}
+  .cell.target::after{content:"";position:absolute;left:24%;top:24%;width:52%;height:52%;border-radius:50%;border:3px dashed var(--target,#4fd18a);box-shadow:0 0 10px var(--target,#4fd18a),inset 0 0 8px var(--target,#4fd18a);animation:tgpulse 1.4s ease-in-out infinite;}
   @keyframes tgpulse{0%,100%{opacity:.55;transform:scale(.9);}50%{opacity:1;transform:scale(1.05);}}
 
   /* crate + player as absolute sprites */
@@ -197,11 +197,12 @@
 <div class="overlay" id="howtoOverlay"><div class="veil"></div><div class="card">
   <h2>게임 방법</h2>
   <div class="howlist">
-    <div class="row"><span class="ic">📦</span><div><b>목표</b> — 모든 상자를 <b>초록 표시 자리</b>에 정확히 밀어 넣으면 정리 완료!</div></div>
-    <div class="row"><span class="ic">👉</span><div><b>밀기</b> — 상자는 <b>밀 수만</b> 있어요(당기기 불가). 상자 뒤에 벽/다른 상자가 있으면 못 밀어요.</div></div>
-    <div class="row"><span class="ic">🕹️</span><div><b>조작</b> — 방향키 / 화면 방향 버튼 / 화면 쓸어넘기기</div></div>
-    <div class="row"><span class="ic">↩️</span><div><b>되돌리기</b> — 상자를 잘못 밀어 막혔으면 되돌리기(↩︎)·다시 시작(⟳)으로 재도전!</div></div>
-    <div class="row"><span class="ic">🏆</span><div><b>난이도</b> — 초급·중급·고급·특급 각 30스테이지. 뒤로 갈수록 판·상자가 늘어나요.</div></div>
+    <div class="row"><span class="ic">📦</span><div><b>목표</b> — 상자를 <b>같은 색 표시 자리</b>에 정확히 밀어 넣어야 해요. 색이 다르면 정리로 인정되지 않아요!</div></div>
+    <div class="row"><span class="ic">🎨</span><div><b>색 맞추기</b> — 빨강 상자는 빨강 자리, 파랑 상자는 파랑 자리… 색깔별로 알맞게 배치해야 완료!</div></div>
+    <div class="row"><span class="ic">👉</span><div><b>밀기</b> — 상자는 <b>밀 수만</b> 있어요(당기기 불가). 뒤에 벽·기둥·다른 상자가 있으면 못 밀고, 구석에 몰면 영영 못 빼요.</div></div>
+    <div class="row"><span class="ic">🧠</span><div><b>순서가 관건</b> — 어떤 상자를 먼저 옮길지 순서를 잘못 잡으면 길이 막혀요. 밀기 전에 여러 수 앞을 생각하세요.</div></div>
+    <div class="row"><span class="ic">↩️</span><div><b>되돌리기</b> — 막혔으면 되돌리기(↩︎)·다시 시작(⟳)으로 재도전! 조작: 방향키 / 화면 버튼 / 쓸어넘기기</div></div>
+    <div class="row"><span class="ic">🏆</span><div><b>난이도</b> — 초급·중급·고급·특급 각 30스테이지. 초급도 성인용으로 묵직하게, 뒤로 갈수록 판·상자·색·장애물이 늘어나요.</div></div>
   </div>
   <div class="btns"><button class="btn primary" id="howtoClose">닫기</button></div>
 </div></div>
@@ -268,15 +269,24 @@
     <path d="M54 55 q6 4 12 0" stroke="#a5603c" stroke-width="2.2" fill="none" stroke-linecap="round"/>
     <circle cx="46" cy="52" r="3" fill="#f2a48c" opacity=".6"/><circle cx="74" cy="52" r="3" fill="#f2a48c" opacity=".6"/>
   </svg>`;
-  const CRATE=`
+  // colored crates — index 0 = plain wood (single-color stages)
+  const PAL=[
+    {main:"#c99552",inner:"#b98a48",dark:"#7d5325",light:"#e6c088",glow:"#ffd45c"}, // 0 wood
+    {main:"#e05a4d",inner:"#cf4d40",dark:"#8f2f26",light:"#f4b3aa",glow:"#ff6f61"}, // 1 red
+    {main:"#4d86e0",inner:"#4078cf",dark:"#264f8f",light:"#aecbf6",glow:"#5aa8ff"}, // 2 blue
+    {main:"#4dae5a",inner:"#409e4d",dark:"#256a2f",light:"#aadfb2",glow:"#5cf07a"}, // 3 green
+    {main:"#e0a63d",inner:"#cf9730",dark:"#8f6620",light:"#f4dca6",glow:"#ffcf5a"}, // 4 amber
+    {main:"#a45ce0",inner:"#944fcf",dark:"#5f2f8f",light:"#d6b3f4",glow:"#c07aff"}  // 5 purple
+  ];
+  function crateSVG(ci){const p=PAL[ci]||PAL[0];return `
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect class="glow" x="2" y="2" width="96" height="96" rx="10" fill="none" stroke="#5cf0a4" stroke-width="6" opacity="0"/>
-    <rect x="12" y="12" width="76" height="76" rx="6" fill="#c99552" stroke="#7d5325" stroke-width="4"/>
-    <rect x="18" y="18" width="64" height="64" rx="3" fill="#b98a48"/>
-    <path d="M18 18 L82 82 M82 18 L18 82" stroke="#8a6231" stroke-width="4"/>
-    <rect x="18" y="18" width="64" height="64" rx="3" fill="none" stroke="#7d5325" stroke-width="3"/>
-    <rect x="30" y="44" width="40" height="12" rx="2" fill="#e6c088" opacity=".8"/>
-  </svg>`;
+    <rect class="glow" x="2" y="2" width="96" height="96" rx="10" fill="none" stroke="${p.glow}" stroke-width="6" opacity="0"/>
+    <rect x="12" y="12" width="76" height="76" rx="6" fill="${p.main}" stroke="${p.dark}" stroke-width="4"/>
+    <rect x="18" y="18" width="64" height="64" rx="3" fill="${p.inner}"/>
+    <path d="M18 18 L82 82 M82 18 L18 82" stroke="${p.dark}" stroke-width="4"/>
+    <rect x="18" y="18" width="64" height="64" rx="3" fill="none" stroke="${p.dark}" stroke-width="3"/>
+    <rect x="30" y="44" width="40" height="12" rx="2" fill="${p.light}" opacity=".85"/>
+  </svg>`;}
 
   /* ---------- warehouse backdrop ---------- */
   function whSVG(){
@@ -295,16 +305,21 @@
   }
 
   /* ---------- difficulty ---------- */
+  // harder tuning: bigger boards, more crates, more obstacles, colored crates, deep drags.
+  // scr = pulls-per-crate multiplier (deep reverse dragging → long solutions).
   const BANDS={
-    beginner:    {sizes:[6,7,8],  boxes:[2,3], wall:[0.04,0.10], scr:[10,20]},
-    intermediate:{sizes:[7,8,9],  boxes:[3,4], wall:[0.06,0.13], scr:[14,26]},
-    advanced:    {sizes:[8,9,10], boxes:[4,6], wall:[0.08,0.15], scr:[18,34]},
-    master:      {sizes:[9,10,11],boxes:[5,8], wall:[0.09,0.17], scr:[22,42]}
+    beginner:    {sizes:[8,9,10],   boxes:[3,4], wall:[0.07,0.13], colors:[1,2], scr:[7,11]},
+    intermediate:{sizes:[9,10,11],  boxes:[4,6], wall:[0.09,0.15], colors:[2,3], scr:[8,13]},
+    advanced:    {sizes:[10,11,12], boxes:[5,7], wall:[0.11,0.17], colors:[3,4], scr:[10,16]},
+    master:      {sizes:[11,12,13], boxes:[6,9], wall:[0.12,0.18], colors:[3,5], scr:[12,20]}
   };
   function cfg(tier,n){
     const b=BANDS[tier], band=Math.min(2,Math.floor((n-1)/10)), tt=(n-1)/(STAGES-1);
     const lerp=(a)=>Math.round(a[0]+(a[1]-a[0])*tt);
-    return {size:b.sizes[band], boxes:lerp(b.boxes), wallRatio:b.wall[0]+(b.wall[1]-b.wall[0])*tt, scramble:lerp(b.scr), seed:(((TIERS.indexOf(tier)*149+n)>>>0)*2654435761)>>>0};
+    const boxes=lerp(b.boxes);
+    const colors=Math.max(1,Math.min(boxes,lerp(b.colors),PAL.length-1));
+    return {size:b.sizes[band], boxes, colors, wallRatio:b.wall[0]+(b.wall[1]-b.wall[0])*tt,
+      scrMul:b.scr[0]+(b.scr[1]-b.scr[0])*tt, tt, seed:(((TIERS.indexOf(tier)*149+n)>>>0)*2654435761)>>>0};
   }
   const DV={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}, DL=["up","down","left","right"];
   const OPP={up:"down",down:"up",left:"right",right:"left"};
@@ -312,63 +327,64 @@
   function generateStage(tier,n){
     const c=cfg(tier,n), size=c.size, N=size*size, idx=(x,y)=>y*size+x;
     const inb=(x,y)=>x>=0&&y>=0&&x<size&&y<size;
-    let best=null;
-    for(let attempt=0;attempt<50;attempt++){
+    const K=c.boxes, nc=c.colors;
+    // colors assigned round-robin so every color has ≥1 crate (index 0 only when single-color)
+    const colorOf=(i)=> nc===1 ? 0 : (1 + (i % nc));
+    // difficulty gates (grow within a tier)
+    const minPush=Math.max(K*2, Math.round(K*(3+3*c.tt)));
+    const minDisp=Math.max(K*2, Math.round(K*(3+2*c.tt)));
+    let best=null,bestScore=-1;
+    for(let attempt=0;attempt<160;attempt++){
       const rng=mulberry32((c.seed^((attempt*0x9E3779B1)>>>0))>>>0);
-      // 1) build floor with border walls + random interior walls, keep largest connected floor
+      // 1) walls: border + random interior obstacles, keep largest connected floor
       const grid=new Array(N).fill("floor");
       for(let x=0;x<size;x++){grid[idx(x,0)]="wall";grid[idx(x,size-1)]="wall";}
       for(let y=0;y<size;y++){grid[idx(0,y)]="wall";grid[idx(size-1,y)]="wall";}
       let want=Math.round((size-2)*(size-2)*c.wallRatio),g=0;
-      while(want>0&&g++<400){const x=1+((rng()*(size-2))|0),y=1+((rng()*(size-2))|0);if(grid[idx(x,y)]==="floor"){grid[idx(x,y)]="wall";want--;}}
-      // largest connected floor component
+      while(want>0&&g++<600){const x=1+((rng()*(size-2))|0),y=1+((rng()*(size-2))|0);if(grid[idx(x,y)]==="floor"){grid[idx(x,y)]="wall";want--;}}
       const seen=new Array(N).fill(false); let bestComp=[];
       for(let y=0;y<size;y++)for(let x=0;x<size;x++){ if(grid[idx(x,y)]==="floor"&&!seen[idx(x,y)]){
         const comp=[],st=[[x,y]];seen[idx(x,y)]=true;
         while(st.length){const [cx,cy]=st.pop();comp.push([cx,cy]);for(const d of DL){const nx=cx+DV[d][0],ny=cy+DV[d][1];if(inb(nx,ny)&&grid[idx(nx,ny)]==="floor"&&!seen[idx(nx,ny)]){seen[idx(nx,ny)]=true;st.push([nx,ny]);}}}
         if(comp.length>bestComp.length)bestComp=comp; }}
-      // walls out everything not in the main component
       const inComp=new Set(bestComp.map(([x,y])=>x+","+y));
       for(let i=0;i<N;i++){const x=i%size,y=(i/size)|0;if(grid[i]==="floor"&&!inComp.has(x+","+y))grid[i]="wall";}
       const floors=bestComp.slice();
-      const K=c.boxes;
-      if(floors.length < K+ Math.max(6,K+3)) continue;
-      // 2) solved state: choose K targets, boxes on targets, player adjacent
+      if(floors.length < K*3+4) continue;
+      // 2) solved state: K targets, a crate (with identity+color) on each, player on free floor
       const shuffled=floors.slice().sort(()=>rng()-0.5);
-      const targets=shuffled.slice(0,K).map(([x,y])=>x+","+y);
-      const boxAt=new Set(targets);
-      // player: a floor cell not a box
-      let ppos=null; for(const [x,y] of shuffled){ if(!boxAt.has(x+","+y)){ppos={x,y};break;} }
+      const tpos=shuffled.slice(0,K).map(([x,y])=>({x,y}));
+      const targets=tpos.map((t,i)=>({x:t.x,y:t.y,c:colorOf(i)}));
+      const boxMap=new Map(); // "x,y" -> {id,c}
+      tpos.forEach((t,i)=>boxMap.set(t.x+","+t.y,{id:i,c:colorOf(i)}));
+      let ppos=null; for(const [x,y] of shuffled){ if(!boxMap.has(x+","+y)){ppos={x,y};break;} }
       if(!ppos) continue;
-      // 3) reverse scramble (pull moves)
-      const applied=[];
-      const hasBox=(x,y)=>boxAt.has(x+","+y);
+      // 3) deep reverse scramble with focused dragging (runs of same-direction pulls)
+      const hasBox=(x,y)=>boxMap.has(x+","+y);
       const isFloor=(x,y)=>inb(x,y)&&grid[idx(x,y)]==="floor";
       const empty=(x,y)=>isFloor(x,y)&&!hasBox(x,y);
-      for(let m=0;m<c.scramble;m++){
-        const pulls=[],walks=[];
-        for(const d of DL){const e=DV[d];
-          const backx=ppos.x-e[0],backy=ppos.y-e[1], boxx=ppos.x+e[0],boxy=ppos.y+e[1];
-          if(empty(backx,backy)&&hasBox(boxx,boxy)) pulls.push(d);
-          const fx=ppos.x+e[0],fy=ppos.y+e[1]; if(empty(fx,fy)) walks.push(d);
-        }
-        let choice=null,type=null;
-        if(pulls.length && (rng()<0.72 || !walks.length)){ choice=pulls[(rng()*pulls.length)|0]; type="pull"; }
-        else if(walks.length){ choice=walks[(rng()*walks.length)|0]; type="walk"; }
+      const canPull=(d)=>{const e=DV[d];return empty(ppos.x-e[0],ppos.y-e[1])&&hasBox(ppos.x+e[0],ppos.y+e[1]);};
+      const canWalk=(d)=>{const e=DV[d];return empty(ppos.x+e[0],ppos.y+e[1]);};
+      const applyPull=(d)=>{const e=DV[d];const b=boxMap.get((ppos.x+e[0])+","+(ppos.y+e[1]));boxMap.delete((ppos.x+e[0])+","+(ppos.y+e[1]));boxMap.set(ppos.x+","+ppos.y,b);ppos={x:ppos.x-e[0],y:ppos.y-e[1]};};
+      const applyWalk=(d)=>{const e=DV[d];ppos={x:ppos.x+e[0],y:ppos.y+e[1]};};
+      const applied=[]; const target=Math.max(K*3,Math.round(K*c.scrMul)); let curDir=null,guard=0;
+      while(applied.length<target && guard++<target*14){
+        if(curDir && canPull(curDir) && rng()<0.82){ applyPull(curDir); applied.push({type:"pull",dir:curDir}); continue; }
+        const pulls=DL.filter(canPull), walks=DL.filter(canWalk);
+        if(pulls.length && (!walks.length || rng()<0.68)){ curDir=pulls[(rng()*pulls.length)|0]; applyPull(curDir); applied.push({type:"pull",dir:curDir}); }
+        else if(walks.length){ curDir=null; const w=walks[(rng()*walks.length)|0]; applyWalk(w); applied.push({type:"walk",dir:w}); }
         else break;
-        const e=DV[choice];
-        if(type==="pull"){ const boxx=ppos.x+e[0],boxy=ppos.y+e[1]; boxAt.delete(boxx+","+boxy); boxAt.add(ppos.x+","+ppos.y); ppos={x:ppos.x-e[0],y:ppos.y-e[1]}; }
-        else { ppos={x:ppos.x+e[0],y:ppos.y+e[1]}; }
-        applied.push({type,dir:choice});
       }
-      // quality: enough boxes off-target
-      const offTarget=[...boxAt].filter(k=>!targets.includes(k)).length;
-      // forward solution = inverse of applied, reversed order
-      const solution=[];
-      for(let i=applied.length-1;i>=0;i--){const a=applied[i];solution.push(a.type==="pull"?a.dir:OPP[a.dir]);}
-      const cand={size,grid,boxes:[...boxAt].map(k=>k.split(",").map(Number)),targets:targets.map(k=>k.split(",").map(Number)),player:{...ppos},solution,offTarget};
-      if(offTarget>=Math.max(1,Math.ceil(K*0.6))) return cand;
-      if(!best||cand.offTarget>best.offTarget) best=cand;
+      // 4) evaluate — all crates must be off their target and moved a real distance
+      let offTarget=0,disp=0;
+      const cells=[...boxMap.entries()].map(([k,v])=>{const [x,y]=k.split(",").map(Number);const t=tpos[v.id];const d=Math.abs(x-t.x)+Math.abs(y-t.y);disp+=d;if(d>0)offTarget++;return {x,y,c:v.c,id:v.id};});
+      const solution=[]; for(let i=applied.length-1;i>=0;i--){const a=applied[i];solution.push(a.type==="pull"?a.dir:OPP[a.dir]);}
+      const pushes=applied.filter(a=>a.type==="pull").length;
+      const boxesArr=new Array(K); cells.forEach(cl=>boxesArr[cl.id]=[cl.x,cl.y,cl.c]);
+      const cand={size,grid,boxes:boxesArr,targets:targets.map(t=>[t.x,t.y,t.c]),player:{...ppos},solution,offTarget,pushes,disp};
+      if(offTarget===K && pushes>=minPush && disp>=minDisp) return cand;
+      const score=offTarget*1000+Math.min(pushes,minPush)*4+Math.min(disp,minDisp);
+      if(score>bestScore){bestScore=score;best=cand;}
     }
     return best;
   }
@@ -403,8 +419,10 @@
   function startStage(tier,n){
     const data=generateStage(tier,n);
     const boxAt=new Map(); // "x,y" -> id
-    const boxPos={}; data.boxes.forEach((b,i)=>{boxPos[i]={x:b[0],y:b[1]};boxAt.set(key(b[0],b[1]),i);});
-    cur={tier,stage:n,data,size:data.size,player:{...data.player},boxAt,boxPos,targets:new Set(data.targets.map(t=>key(t[0],t[1]))),
+    const boxPos={},boxColor={}; data.boxes.forEach((b,i)=>{boxPos[i]={x:b[0],y:b[1]};boxColor[i]=b[2]||0;boxAt.set(key(b[0],b[1]),i);});
+    const targetColor=new Map(data.targets.map(t=>[key(t[0],t[1]),t[2]||0]));
+    cur={tier,stage:n,data,size:data.size,player:{...data.player},boxAt,boxPos,boxColor,
+      targets:new Set(data.targets.map(t=>key(t[0],t[1]))),targetColor,
       history:[],pushes:0,pengEl:null,boxEls:{}};
     renderBoard();updateHud();showScreen("game");$("#winOverlay").classList.remove("show");
   }
@@ -414,14 +432,16 @@
     board.style.gridTemplateColumns=`repeat(${size},1fr)`;board.innerHTML="";
     for(let y=0;y<size;y++)for(let x=0;x<size;x++){
       const t=data.grid[y*size+x];const cell=document.createElement("div");
-      cell.className="cell "+(t==="wall"?"wall":"floor")+(cur.targets.has(key(x,y))?" target":"");
+      const isT=cur.targets.has(key(x,y));
+      cell.className="cell "+(t==="wall"?"wall":"floor")+(isT?" target":"");
+      if(isT)cell.style.setProperty("--target",PAL[cur.targetColor.get(key(x,y))||0].glow);
       board.appendChild(cell);
     }
     const cp=100/size;
     // crates
     cur.boxEls={};
     Object.keys(cur.boxPos).forEach(id=>{
-      const el=document.createElement("div");el.className="sprite crate";el.innerHTML=CRATE;
+      const el=document.createElement("div");el.className="sprite crate";el.innerHTML=crateSVG(cur.boxColor[id]);
       el.style.width=(cp*0.86)+"%";el.style.height=(cp*0.86)+"%";
       board.appendChild(el);cur.boxEls[id]=el;positionSprite(el,cur.boxPos[id],0.5);refreshCrate(id);
     });
@@ -430,9 +450,10 @@
     p.style.width=(cp*0.9)+"%";p.style.height=(cp*1.12)+"%";board.appendChild(p);cur.pengEl=p;positionSprite(p,cur.player,0.58);
   }
   function positionSprite(el,pos,yoff){const cp=100/cur.size;el.style.left=(cp*(pos.x+0.5))+"%";el.style.top=(cp*(pos.y+yoff))+"%";}
-  function refreshCrate(id){const p=cur.boxPos[id];cur.boxEls[id].classList.toggle("on",cur.targets.has(key(p.x,p.y)));}
+  function onMatch(id){const p=cur.boxPos[id];return cur.targetColor.get(key(p.x,p.y))===cur.boxColor[id];}
+  function refreshCrate(id){cur.boxEls[id].classList.toggle("on",onMatch(id));}
   function updateHud(){
-    let onT=0;for(const id in cur.boxPos){const p=cur.boxPos[id];if(cur.targets.has(key(p.x,p.y)))onT++;}
+    let onT=0;for(const id in cur.boxPos){if(onMatch(id))onT++;}
     $("#hudStage").textContent=`${TIER_KO[cur.tier]} · 스테이지 ${String(cur.stage).padStart(2,"0")}`;
     $("#hudProg").innerHTML=`<span class="done">${onT}</span> / ${cur.data.boxes.length} 정리`;
     $("#undoBtn").disabled=cur.history.length===0;
@@ -456,7 +477,7 @@
       cur.boxAt.delete(key(nx,ny));cur.boxPos[boxId]={x:bx,y:by};cur.boxAt.set(key(bx,by),boxId);
       cur.player={x:nx,y:ny};
       positionSprite(cur.boxEls[boxId],cur.boxPos[boxId],0.5);positionSprite(cur.pengEl,cur.player,0.58);
-      const wasOn=cur.targets.has(key(bx,by));refreshCrate(boxId);
+      refreshCrate(boxId);const wasOn=onMatch(boxId);
       const el=cur.boxEls[boxId];el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop");
       sfxPush();if(wasOn)setTimeout(sfxSet,60);
       cur.pushes++;updateHud();
@@ -468,7 +489,7 @@
     }
   }
   function checkWin(){
-    for(const id in cur.boxPos){const p=cur.boxPos[id];if(!cur.targets.has(key(p.x,p.y)))return false;}
+    for(const id in cur.boxPos){if(!onMatch(id))return false;}
     onWin();return true;
   }
   function undo(){
