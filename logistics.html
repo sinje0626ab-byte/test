@@ -323,13 +323,14 @@
     [[10,2],[12,4],[12,7],[10,9]].forEach(([x,y])=>{const rot=Math.atan2(by-y,bx-x)+Math.PI/2;s+=`<polygon points="${starPts(x,y,1,rot)}"/>`;});return s;})();
   const FLAGS={
     ko:`<svg viewBox="0 0 36 24"><rect width="36" height="24" fill="#fff"/><rect x="0.4" y="0.4" width="35.2" height="23.2" fill="none" stroke="#ddd" stroke-width="0.6"/>
-      <g transform="rotate(-33.69 18 12)"><circle cx="18" cy="12" r="6" fill="#003478"/>
-      <path d="M12,12 A6,6 0 0 1 24,12 A3,3 0 0 0 18,12 A3,3 0 0 1 12,12 Z" fill="#cd2e3a"/></g>
+      <circle cx="18" cy="12" r="6" fill="#0047a0"/>
+      <path d="M12,12 A6,6 0 0 1 24,12 Z" fill="#cd2e3a"/>
+      <circle cx="15" cy="12" r="3" fill="#cd2e3a"/><circle cx="21" cy="12" r="3" fill="#0047a0"/>
       <g fill="#000">
-      <g transform="translate(7,6) rotate(33.69)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
-      <g transform="translate(29,18) rotate(33.69)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
-      <g transform="translate(29,6) rotate(-33.69)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
-      <g transform="translate(7,18) rotate(-33.69)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
+      <g transform="translate(7,6)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
+      <g transform="translate(29,18)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
+      <g transform="translate(29,6)"><rect x="-3.6" y="-2.4" width="2.8" height="1.2"/><rect x="0.8" y="-2.4" width="2.8" height="1.2"/><rect x="-3.6" y="-0.6" width="7.2" height="1.2"/><rect x="-3.6" y="1.2" width="2.8" height="1.2"/><rect x="0.8" y="1.2" width="2.8" height="1.2"/></g>
+      <g transform="translate(7,18)"><rect x="-3.6" y="-2.4" width="7.2" height="1.2"/><rect x="-3.6" y="-0.6" width="2.8" height="1.2"/><rect x="0.8" y="-0.6" width="2.8" height="1.2"/><rect x="-3.6" y="1.2" width="7.2" height="1.2"/></g>
       </g></svg>`,
     zh:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#de2910"/><g fill="#ffde00">${zhStars}</g></svg>`,
     en:`<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#b22234"/>
