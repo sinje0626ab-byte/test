@@ -51,8 +51,9 @@
   /* ---------- 스플래시 (퍼블리셔 로고 오프닝) — 전체화면 순검정 배경, 로고 가운데 정렬 ---------- */
   #splash{cursor:pointer;background:#000;}
   #splash .veil{background:#000;backdrop-filter:none;}
+  /* 기본 opacity:1 → 애니메이션이 꺼진 기기에서도 로고가 항상 보이도록(오프닝 생략 방지) */
   .splash-logo{position:relative;width:min(420px,86vw);height:auto;border-radius:0;box-shadow:none;
-    opacity:0;animation:splashIn 2.6s ease forwards;}
+    opacity:1;animation:splashIn 2.6s ease forwards;}
   @keyframes splashIn{
     0%{opacity:0;transform:scale(.86);}
     14%{opacity:1;transform:scale(1);}
@@ -80,6 +81,12 @@
     text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 22px rgba(255,150,60,.5);
     animation:pressBlink 1.15s ease-in-out infinite;}
   @keyframes pressBlink{0%,100%{opacity:1;}50%{opacity:.3;}}
+  /* 애니메이션 감소 설정 기기에서도 오프닝(로고·타이틀)이 확실히 보이도록 */
+  @media (prefers-reduced-motion: reduce){
+    .splash-logo,.title-logo{animation:none;opacity:1;}
+    #titleScreen .veil{animation:none;}
+    .press-prompt{animation:none;opacity:1;}
+  }
 
   .btn{appearance:none;border:1px solid var(--line);background:linear-gradient(180deg,#16201b,#0c110f);
     color:var(--ink);font-weight:800;font-size:16px;padding:14px 18px;border-radius:12px;cursor:pointer;
