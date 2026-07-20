@@ -48,6 +48,31 @@
     text-shadow:0 6px 40px rgba(229,35,43,.35);}
   .tag{color:var(--ink-dim);font-size:14px;margin-bottom:20px;letter-spacing:.02em;}
 
+  /* ---------- 스플래시 (퍼블리셔 로고 오프닝) ---------- */
+  #splash .veil{background:#050706;}
+  #splash{cursor:pointer;}
+  .splash-logo{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;
+    opacity:0;animation:splashIn 2.6s ease forwards;}
+  .splash-logo .sl-mark{font-size:clamp(48px,12vw,72px);font-weight:900;letter-spacing:.05em;color:#fff;
+    text-shadow:0 0 30px rgba(229,35,43,.6),0 0 70px rgba(139,255,90,.22);
+    border:3px solid var(--toxic);border-radius:18px;padding:8px 26px;}
+  .splash-logo .sl-word{font-size:14px;font-weight:800;letter-spacing:.55em;color:var(--ink-dim);
+    margin-left:.55em;text-transform:uppercase;}
+  @keyframes splashIn{
+    0%{opacity:0;transform:scale(.86);}
+    14%{opacity:1;transform:scale(1);}
+    78%{opacity:1;transform:scale(1);}
+    100%{opacity:0;transform:scale(1.02);}
+  }
+
+  /* ---------- 타이틀 화면 (아무 버튼이나 눌러주세요) ---------- */
+  #titleScreen{cursor:pointer;}
+  .title-wrap{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;}
+  .title-wrap .title{margin-top:8px;}
+  .press-prompt{margin-top:36px;font-size:15px;font-weight:800;letter-spacing:.08em;color:var(--toxic);
+    animation:pressBlink 1.15s ease-in-out infinite;}
+  @keyframes pressBlink{0%,100%{opacity:1;}50%{opacity:.22;}}
+
   .btn{appearance:none;border:1px solid var(--line);background:linear-gradient(180deg,#16201b,#0c110f);
     color:var(--ink);font-weight:800;font-size:16px;padding:14px 18px;border-radius:12px;cursor:pointer;
     width:100%;letter-spacing:.02em;transition:transform .06s ease,border-color .2s,box-shadow .2s;}
@@ -233,8 +258,27 @@
   <div id="hint"></div>
 </div>
 
+<!-- SPLASH: 퍼블리셔 로고 오프닝 -->
+<div class="overlay show" id="splash">
+  <div class="veil"></div>
+  <div class="splash-logo" id="splashLogo">
+    <div class="sl-mark">YJ</div>
+    <div class="sl-word">G A M E S</div>
+  </div>
+</div>
+
+<!-- TITLE: 타이틀 화면 (아무 버튼이나 눌러주세요) -->
+<div class="overlay" id="titleScreen">
+  <div class="veil"></div>
+  <div class="title-wrap">
+    <div class="brand" style="justify-content:center;">Undead Rush · 로그라이트 서바이벌</div>
+    <h1 class="title">UNDEAD<br>RUSH</h1>
+    <div class="press-prompt">아무 버튼이나 눌러주세요</div>
+  </div>
+</div>
+
 <!-- MENU / ARMORY -->
-<div class="overlay show" id="menu">
+<div class="overlay" id="menu">
   <div class="veil"></div>
   <div class="card">
     <div class="brand">Undead Rush · 로그라이트 서바이벌</div>
@@ -440,6 +484,7 @@ const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 const hud = $('hud');
 const el = {
+  splash:$('splash'), titleScreen:$('titleScreen'),
   menu:$('menu'), how:$('how'), pause:$('pause'), levelup:$('levelup'), result:$('result'),
   xpfill:$('xpfill'), lvChip:$('lvChip'), hpfill:$('hpfill'), hptext:$('hptext'),
   timeChip:$('timeChip'), killChip:$('killChip'), coinChip:$('coinChip'), shieldChip:$('shieldChip'),
@@ -1852,7 +1897,7 @@ function renderLoadout() {
 /* ============================================================================
    상태 전환 / 메뉴 / 아머리
    ========================================================================== */
-function hideAllOverlays() { ['menu','how','pause','levelup','result'].forEach(k => el[k].classList.remove('show')); }
+function hideAllOverlays() { ['splash','titleScreen','menu','how','pause','levelup','result'].forEach(k => el[k].classList.remove('show')); }
 
 function togglePause() {
   if (G.state === 'play') {
@@ -1987,10 +2032,34 @@ function init() {
   $('resumeBtn').onclick = () => togglePause();
   $('exitBtn').onclick = () => endRun(false);
   $('resAgain').onclick = () => backToMenu();
-  window.addEventListener('pointerdown', () => { Audio.ensure(); Audio.resume(); }, { once:true });
   requestAnimationFrame(loop);
 }
+/* 오프닝 시퀀스: YJ GAMES 로고 스플래시 -> 타이틀("아무 버튼이나 눌러주세요") -> 로비 메뉴.
+   스플래시는 클릭으로 스킵 가능, 아니면 애니메이션 종료(2.5s) 후 자동 진행. */
+function bootSequence() {
+  let advanced = false;
+  function showTitle() {
+    if (advanced) return; advanced = true;
+    el.splash.classList.remove('show');
+    el.titleScreen.classList.add('show');
+    // 스플래시를 넘긴 클릭 이벤트가 그대로 버블링돼 타이틀을 동시에 넘기지 않도록 한 틱 지연
+    setTimeout(() => {
+      const start = () => {
+        el.titleScreen.classList.remove('show');
+        el.menu.classList.add('show');
+        Audio.ensure(); Audio.resume(); Audio.S.pickup();
+        window.removeEventListener('keydown', start);
+        window.removeEventListener('pointerdown', start);
+      };
+      window.addEventListener('keydown', start, { once:true });
+      window.addEventListener('pointerdown', start, { once:true });
+    }, 50);
+  }
+  el.splash.addEventListener('pointerdown', showTitle, { once:true });
+  setTimeout(showTitle, 2500);
+}
 init();
+bootSequence();
 </script>
 </body>
 </html>
