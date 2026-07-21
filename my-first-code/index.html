@@ -1369,6 +1369,15 @@ function nearestEnemyPlayer() {
   G._np = nearestEnemy(p.x, p.y);
   return G._np;
 }
+/* 플레이어 기준 가까운 순서로 최대 n명의 서로 다른 적을 반환 (멀티 샷용) */
+function nearestEnemiesPlayer(n) {
+  const p = P();
+  if (n <= 1) { const e = nearestEnemyPlayer(); return e ? [e] : []; }
+  const arr = [];
+  for (let i = 0; i < G.enemies.length; i++) { const e = G.enemies[i]; if (!e.dead) arr.push(e); }
+  arr.sort((a, b) => dist2(p.x, p.y, a.x, a.y) - dist2(p.x, p.y, b.x, b.y));
+  return arr.slice(0, n);
+}
 
 function fireBullet(x, y, ang, dmg, spd, opt = {}) {
   const b = takeBullet();
@@ -1478,16 +1487,29 @@ function fireWeapon(w) {
   }
   if (key === 'grenade') {
     const e = nearestEnemyPlayer(); if (!e) return;
-    const ang = Math.atan2(e.y - p.y, e.x - p.x);
-    fireBullet(p.x, p.y, ang, s.dmg, s.spd, { type:'nade', tx:e.x, ty:e.y, r:6, col:'#c8ff8a',
-      radius:s.radius * pRangeMult(), cluster:w.evolved ? EVOS.cluster.stats().cluster : 0, life:140 });
+    const n = 1 + pProjBonus();                       // 멀티 샷: 폭탄 개수 증가
+    const targets = nearestEnemiesPlayer(n);
+    const radius = s.radius * pRangeMult(), cluster = w.evolved ? EVOS.cluster.stats().cluster : 0;
+    for (let i = 0; i < n; i++) {
+      let tx, ty; const te = targets[i];
+      if (te) { tx = te.x; ty = te.y; }                // 서로 다른 적을 우선 조준
+      else { const off = 46 + i * 8, a = i * 2.39996;  // 적이 모자라면 주 타깃 주변에 흩뿌림
+        tx = e.x + Math.cos(a) * off; ty = e.y + Math.sin(a) * off; }
+      const ang = Math.atan2(ty - p.y, tx - p.x);
+      fireBullet(p.x, p.y, ang, s.dmg, s.spd, { type:'nade', tx, ty, r:6, col:'#c8ff8a',
+        radius, cluster, life:140 });
+    }
     return;
   }
   if (key === 'axe') {
     const e = nearestEnemyPlayer(); if (!e) return;
-    const ang = Math.atan2(e.y - p.y, e.x - p.x);
-    fireBullet(p.x, p.y, ang, s.dmg, s.spd, { type:'axe', r:12, col:'#d9d2c4',
-      reach:s.reach * pRangeMult(), pierce:999, life:220, mode:'out' });
+    const base = Math.atan2(e.y - p.y, e.x - p.x);
+    const n = 1 + pProjBonus(), reach = s.reach * pRangeMult();   // 멀티 샷: 도끼 개수 증가(부채꼴)
+    for (let i = 0; i < n; i++) {
+      const a = base + (n === 1 ? 0 : lerp(-0.22, 0.22, i / (n - 1)));
+      fireBullet(p.x, p.y, a, s.dmg, s.spd, { type:'axe', r:12, col:'#d9d2c4',
+        reach, pierce:999, life:220, mode:'out' });
+    }
     Audio.S.axe(); return;
   }
   if (key === 'shotgun') {
@@ -1501,7 +1523,7 @@ function fireWeapon(w) {
   }
   // pistol / machinegun
   const ang = aimAngle(w); if (ang == null) return;
-  const n = (s.proj || 1) + (w.evolved ? 0 : pProjBonus());
+  const n = (s.proj || 1) + pProjBonus();   // 멀티 샷: 진화형(기관총)에도 적용
   for (let i = 0; i < n; i++) {
     const a = ang + (n > 1 ? lerp(-0.14, 0.14, i / (n - 1)) : 0);
     fireBullet(p.x, p.y, a, s.dmg, s.spd, { r: w.evolved ? 3.5 : 4,
@@ -1911,7 +1933,15 @@ function updateSentries() {
     const s = list[i]; s.life--; s.fireT--;
     if (s.fireT <= 0) {
       const e = nearestEnemy(s.x, s.y, s.rng);
-      if (e) { const a = Math.atan2(e.y - s.y, e.x - s.x); fireBullet(s.x, s.y, a, s.dmg, 7, { r:3, col:'#9fe0ff', life:50 }); s.fireT = s.fireCd; }
+      if (e) {
+        const base = Math.atan2(e.y - s.y, e.x - s.x);
+        const n = 1 + pProjBonus();                    // 멀티 샷: 터렛 연사 탄환 증가(부채꼴)
+        for (let k = 0; k < n; k++) {
+          const a = base + (n === 1 ? 0 : lerp(-0.16, 0.16, k / (n - 1)));
+          fireBullet(s.x, s.y, a, s.dmg, 7, { r:3, col:'#9fe0ff', life:50 });
+        }
+        s.fireT = s.fireCd;
+      }
       else s.fireT = 6;
     }
   }
@@ -2041,7 +2071,8 @@ function applyChoice(o) {
 }
 function afterPassive(id) {
   if (id === 'maxhp') recomputeMaxHP();
-  if (id === 'range' || id === 'proj') rebuildBlades();
+  // 마체테/버즈쏘 블레이드는 생성 시점의 수치를 저장하므로 관련 패시브 습득 시 재생성
+  if (id === 'range' || id === 'proj' || id === 'dmg' || id === 'speed') rebuildBlades();
 }
 
 function enterLevelUp() {
