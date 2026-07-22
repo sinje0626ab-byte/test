@@ -481,6 +481,7 @@
     <div class="brand" style="margin-bottom:10px;" data-i18n="menu.armory">메타 아머리 · 영구 강화</div>
     <div class="armory" id="armory"></div>
     <div class="cta">
+      <button class="btn primary" id="continueBtn" style="display:none;background:linear-gradient(180deg,#d4af37,#a8811f);margin-bottom:10px;" data-i18n="btn.continue">이어하기</button>
       <button class="btn primary" id="startBtn" data-i18n="btn.start">출격하기</button>
       <div class="row" style="margin-top:10px;">
         <button class="btn ghost" id="howBtn" data-i18n="btn.how">조작법</button>
@@ -552,6 +553,7 @@
     <h1 class="title" style="font-size:40px;" data-i18n="pause.title">멈춤</h1>
     <div id="pauseStats" class="muted" style="margin-bottom:16px;"></div>
     <button class="btn primary" id="resumeBtn" data-i18n="pause.resume">계속하기</button>
+    <button class="btn ghost" id="saveExitBtn" style="margin-top:10px;" data-i18n="pause.save">저장하고 나가기</button>
     <button class="btn ghost" id="exitBtn" style="margin-top:10px;" data-i18n="pause.exit">피난처로 대피 (종료)</button>
   </div>
 </div>
@@ -605,7 +607,7 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1)
 const Store = (() => {
   const KEY = 'undead_rush_save_v1';
   let mem = null;
-  const def = () => ({ coins: 0, bestTime: 0, totalKills: 0, meta: {}, metaByChar: {}, character: 'hunter', lang: '', maxTier: 1, passiveSlots: 6, sfxOn: true, bgmOn: true, guideReward: false });
+  const def = () => ({ coins: 0, bestTime: 0, totalKills: 0, meta: {}, metaByChar: {}, character: 'hunter', lang: '', maxTier: 1, passiveSlots: 6, sfxOn: true, bgmOn: true, guideReward: false, runState: null });
   const CHARS3 = ['hunter', 'berserker', 'pyromancer'];
   function normalize(d) {
     if (!d.metaByChar || typeof d.metaByChar !== 'object') d.metaByChar = {};
@@ -620,6 +622,7 @@ const Store = (() => {
     if (typeof d.sfxOn !== 'boolean') d.sfxOn = (typeof d.muted === 'boolean') ? !d.muted : true;
     if (typeof d.bgmOn !== 'boolean') d.bgmOn = true;
     if (typeof d.guideReward !== 'boolean') d.guideReward = false;
+    if (d.runState === undefined) d.runState = null;
     return d;
   }
   function load() {
@@ -1209,7 +1212,8 @@ const UI = {
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
     'how.brand':'조작법 & 규칙', 'how.title':'플레이 방법', 'how.close':'알겠어요',
     'how.body':'<p><b>이동 (PC)</b> — WASD 또는 방향키로 8방향 이동. <b>Esc / P</b> 로 일시정지.</p><p><b>이동 (모바일)</b> — 화면을 터치·드래그하면 그 자리에 가상 조이스틱이 생깁니다.</p><p><b>전투</b> — 모든 무기는 <b>자동</b>으로 조준·발사됩니다. 당신은 이동에만 집중하세요.</p><p><b>성장</b> — 좀비가 떨어뜨리는 <span style="color:var(--toxic)">젬</span>을 모아 레벨업. 레벨업 때 능력 1개를 고르고 체력의 30%가 즉시 회복됩니다.</p><p><b>초월 진화</b> — 무기를 8레벨까지 키우고 짝이 되는 패시브를 1레벨 이상 보유하면, 레벨업 선택지에 황금빛 <span style="color:var(--gold)">진화</span>가 등장합니다.</p><p><b>목표</b> — 2:30 미니보스, 5:00 최종 보스. 최종 보스를 처치하면 승리! 판당 모은 <span style="color:var(--gold)">코인</span>으로 로비에서 영구 강화를 구매하세요.</p>',
-    'pause.brand':'일시정지', 'pause.title':'멈춤', 'pause.resume':'계속하기', 'pause.exit':'피난처로 대피 (종료)',
+    'pause.brand':'일시정지', 'pause.title':'멈춤', 'pause.resume':'계속하기', 'pause.save':'저장하고 나가기', 'pause.exit':'피난처로 대피 (종료)',
+    'btn.continue':'이어하기 · {n}차 Lv{lv} ({t})',
     'pause.stats':'생존 {t} · 처치 {k} · 코인 {c}',
     'title.press':'아무 버튼이나 눌러주세요', 'splash.start':'▶ 클릭하여 시작',
     'lu.label':'Level Up', 'lu.title':'능력을 선택하라', 'lu.heal':'＋ 긴급 치유 발동',
@@ -1239,7 +1243,8 @@ const UI = {
     'menu.autosave':'Progress is saved automatically in this browser.',
     'how.brand':'Controls & Rules', 'how.title':'How to Play', 'how.close':'Got it',
     'how.body':'<p><b>Move (PC)</b> — WASD or arrow keys for 8-way movement. <b>Esc / P</b> to pause.</p><p><b>Move (Mobile)</b> — Touch and drag anywhere to spawn a virtual joystick there.</p><p><b>Combat</b> — All weapons aim and fire <b>automatically</b>. Just focus on moving.</p><p><b>Growth</b> — Collect the <span style="color:var(--toxic)">gems</span> zombies drop to level up. On level-up, pick one ability and instantly heal 30% HP.</p><p><b>Evolution</b> — Raise a weapon to level 8 while holding its paired passive at level 1+, and a golden <span style="color:var(--gold)">Evolution</span> appears in your level-up picks.</p><p><b>Goal</b> — Mini-boss at 2:30, final boss at 5:00. Beat the final boss to win! Spend the <span style="color:var(--gold)">coins</span> you earn on permanent upgrades in the lobby.</p>',
-    'pause.brand':'Paused', 'pause.title':'Paused', 'pause.resume':'Resume', 'pause.exit':'Retreat to Shelter (Quit)',
+    'pause.brand':'Paused', 'pause.title':'Paused', 'pause.resume':'Resume', 'pause.save':'Save & Exit', 'pause.exit':'Retreat to Shelter (Quit)',
+    'btn.continue':'Continue · Tier {n} Lv{lv} ({t})',
     'pause.stats':'Survived {t} · Kills {k} · Coins {c}',
     'title.press':'Press any button', 'splash.start':'▶ Click to start',
     'lu.label':'Level Up', 'lu.title':'Choose an ability', 'lu.heal':'＋ Emergency heal triggered',
@@ -1269,7 +1274,8 @@ const UI = {
     'menu.autosave':'进度会自动保存在此浏览器中。',
     'how.brand':'操作与规则', 'how.title':'玩法说明', 'how.close':'知道了',
     'how.body':'<p><b>移动（PC）</b> — WASD 或方向键进行8方向移动。<b>Esc / P</b> 暂停。</p><p><b>移动（手机）</b> — 触摸并拖动屏幕，会在该处生成虚拟摇杆。</p><p><b>战斗</b> — 所有武器都会<b>自动</b>瞄准并射击，你只需专注移动。</p><p><b>成长</b> — 收集僵尸掉落的<span style="color:var(--toxic)">宝石</span>升级。升级时选择一项能力，并立即恢复30%生命。</p><p><b>进化</b> — 将武器升到8级并持有其对应被动1级以上，升级选项中会出现金色的<span style="color:var(--gold)">进化</span>。</p><p><b>目标</b> — 2:30 出现小首领，5:00 出现最终首领。击败最终首领即获胜！用获得的<span style="color:var(--gold)">金币</span>在大厅购买永久强化。</p>',
-    'pause.brand':'暂停', 'pause.title':'暂停', 'pause.resume':'继续', 'pause.exit':'撤回避难所（退出）',
+    'pause.brand':'暂停', 'pause.title':'暂停', 'pause.resume':'继续', 'pause.save':'保存并退出', 'pause.exit':'撤回避难所（退出）',
+    'btn.continue':'继续 · 第{n}层 Lv{lv} ({t})',
     'pause.stats':'生存 {t} · 击杀 {k} · 金币 {c}',
     'title.press':'请按任意键', 'splash.start':'▶ 点击开始',
     'lu.label':'Level Up', 'lu.title':'选择一项能力', 'lu.heal':'＋ 紧急治疗已触发',
@@ -1299,7 +1305,8 @@ const UI = {
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
     'how.brand':'การควบคุมและกติกา', 'how.title':'วิธีเล่น', 'how.close':'เข้าใจแล้ว',
     'how.body':'<p><b>เคลื่อนที่ (PC)</b> — WASD หรือปุ่มลูกศรเพื่อเคลื่อนที่ 8 ทิศ กด <b>Esc / P</b> เพื่อหยุด</p><p><b>เคลื่อนที่ (มือถือ)</b> — แตะแล้วลากบนหน้าจอเพื่อสร้างจอยสติ๊กเสมือน ณ จุดนั้น</p><p><b>การต่อสู้</b> — อาวุธทุกชิ้นเล็งและยิง<b>อัตโนมัติ</b> คุณเพียงโฟกัสที่การเคลื่อนที่</p><p><b>การเติบโต</b> — เก็บ<span style="color:var(--toxic)">อัญมณี</span>ที่ซอมบี้ทิ้งไว้เพื่อเลเวลอัป เมื่อเลเวลอัปให้เลือกความสามารถ 1 อย่างและฟื้นพลังชีวิต 30% ทันที</p><p><b>วิวัฒนาการ</b> — อัปอาวุธถึงเลเวล 8 พร้อมถือพาสซีฟคู่ของมันตั้งแต่เลเวล 1 ขึ้นไป จะมี<span style="color:var(--gold)">วิวัฒนาการ</span>สีทองปรากฏในตัวเลือกเลเวลอัป</p><p><b>เป้าหมาย</b> — มินิบอสที่ 2:30 บอสสุดท้ายที่ 5:00 กำจัดบอสสุดท้ายเพื่อชนะ! ใช้<span style="color:var(--gold)">เหรียญ</span>ที่ได้ซื้ออัปเกรดถาวรในล็อบบี้</p>',
-    'pause.brand':'หยุดชั่วคราว', 'pause.title':'หยุด', 'pause.resume':'เล่นต่อ', 'pause.exit':'ถอยกลับที่หลบภัย (ออก)',
+    'pause.brand':'หยุดชั่วคราว', 'pause.title':'หยุด', 'pause.resume':'เล่นต่อ', 'pause.save':'บันทึกแล้วออก', 'pause.exit':'ถอยกลับที่หลบภัย (ออก)',
+    'btn.continue':'เล่นต่อ · ระดับ{n} Lv{lv} ({t})',
     'pause.stats':'รอด {t} · สังหาร {k} · เหรียญ {c}',
     'title.press':'กดปุ่มใดก็ได้', 'splash.start':'▶ คลิกเพื่อเริ่ม',
     'lu.label':'Level Up', 'lu.title':'เลือกความสามารถ', 'lu.heal':'＋ ฟื้นฟูฉุกเฉินทำงาน',
@@ -1329,7 +1336,8 @@ const UI = {
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
     'how.brand':'Điều khiển & Luật', 'how.title':'Cách chơi', 'how.close':'Đã hiểu',
     'how.body':'<p><b>Di chuyển (PC)</b> — WASD hoặc phím mũi tên để di chuyển 8 hướng. <b>Esc / P</b> để tạm dừng.</p><p><b>Di chuyển (Điện thoại)</b> — Chạm và kéo bất kỳ đâu để tạo cần điều khiển ảo tại đó.</p><p><b>Chiến đấu</b> — Mọi vũ khí tự động ngắm và bắn. Bạn chỉ cần tập trung di chuyển.</p><p><b>Phát triển</b> — Nhặt <span style="color:var(--toxic)">ngọc</span> zombie rơi ra để lên cấp. Khi lên cấp, chọn một kỹ năng và hồi ngay 30% máu.</p><p><b>Tiến hóa</b> — Nâng vũ khí lên cấp 8 và giữ bị động ghép đôi của nó từ cấp 1 trở lên, một <span style="color:var(--gold)">Tiến hóa</span> vàng sẽ xuất hiện trong lựa chọn lên cấp.</p><p><b>Mục tiêu</b> — Trùm nhỏ ở 2:30, trùm cuối ở 5:00. Hạ trùm cuối để thắng! Dùng <span style="color:var(--gold)">xu</span> kiếm được để mua nâng cấp vĩnh viễn ở sảnh.</p>',
-    'pause.brand':'Tạm dừng', 'pause.title':'Tạm dừng', 'pause.resume':'Tiếp tục', 'pause.exit':'Rút về nơi trú ẩn (Thoát)',
+    'pause.brand':'Tạm dừng', 'pause.title':'Tạm dừng', 'pause.resume':'Tiếp tục', 'pause.save':'Lưu & Thoát', 'pause.exit':'Rút về nơi trú ẩn (Thoát)',
+    'btn.continue':'Tiếp tục · Cấp {n} Lv{lv} ({t})',
     'pause.stats':'Sống sót {t} · Hạ gục {k} · Xu {c}',
     'title.press':'Nhấn phím bất kỳ', 'splash.start':'▶ Nhấn để bắt đầu',
     'lu.label':'Level Up', 'lu.title':'Chọn một kỹ năng', 'lu.heal':'＋ Hồi máu khẩn cấp kích hoạt',
@@ -1359,7 +1367,8 @@ const UI = {
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
     'how.brand':'Controles y reglas', 'how.title':'Cómo jugar', 'how.close':'Entendido',
     'how.body':'<p><b>Mover (PC)</b> — WASD o flechas para moverte en 8 direcciones. <b>Esc / P</b> para pausar.</p><p><b>Mover (Móvil)</b> — Toca y arrastra en cualquier lugar para crear un joystick virtual ahí.</p><p><b>Combate</b> — Todas las armas apuntan y disparan <b>automáticamente</b>. Tú solo concéntrate en moverte.</p><p><b>Crecimiento</b> — Recoge las <span style="color:var(--toxic)">gemas</span> que sueltan los zombis para subir de nivel. Al subir, elige una habilidad y recupera al instante el 30% de vida.</p><p><b>Evolución</b> — Sube un arma al nivel 8 con su pasiva emparejada en nivel 1 o más, y aparecerá una <span style="color:var(--gold)">Evolución</span> dorada en tus opciones de nivel.</p><p><b>Objetivo</b> — Minijefe a las 2:30, jefe final a las 5:00. ¡Vence al jefe final para ganar! Gasta las <span style="color:var(--gold)">monedas</span> que ganes en mejoras permanentes en el vestíbulo.</p>',
-    'pause.brand':'Pausa', 'pause.title':'Pausa', 'pause.resume':'Continuar', 'pause.exit':'Retirarse al refugio (Salir)',
+    'pause.brand':'Pausa', 'pause.title':'Pausa', 'pause.resume':'Continuar', 'pause.save':'Guardar y salir', 'pause.exit':'Retirarse al refugio (Salir)',
+    'btn.continue':'Continuar · Nivel {n} Lv{lv} ({t})',
     'pause.stats':'Sobrevivió {t} · Bajas {k} · Monedas {c}',
     'title.press':'Pulsa cualquier botón', 'splash.start':'▶ Haz clic para empezar',
     'lu.label':'Level Up', 'lu.title':'Elige una habilidad', 'lu.heal':'＋ Curación de emergencia activada',
@@ -1788,6 +1797,7 @@ const isTouch = () => ('ontouchstart' in window) || navigator.maxTouchPoints > 0
 
 function startRun(){
   Audio.ensure(); Audio.resume(); Audio.startMusic('game');   // 게임 BGM
+  clearSavedRun();                                            // 새 판 시작 → 이전 중간저장 폐기
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
@@ -3096,6 +3106,7 @@ function cashOutRun() {
   G.save.coins += earned; G.save.totalKills += G.kills;
   if (G.time > G.save.bestTime) G.save.bestTime = G.time;
   G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier);
+  G.save.runState = null;                                     // 판 정산 → 중간저장 폐기
   Store.save(G.save);
   return { earned, bonusMul };
 }
@@ -3129,6 +3140,7 @@ function winRound() {
   // 3차 클리어 보상: 패시브 슬롯 +1 (최대 6 → 7)
   const p3reward = (G.tier >= 3 && (G.save.passiveSlots || 6) < 7);
   if (p3reward) G.save.passiveSlots = 7;
+  G.save.runState = null;                                     // 차수 클리어 → 중간저장 폐기
   Store.save(G.save);
   const bonusMul = 1.5 * (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
   const pending = Math.round(G.runCoins * bonusMul);
@@ -3176,6 +3188,90 @@ function continueTier() {
   if (G.player.pendingLevels > 0) enterLevelUp();
   else G.state = 'play';
 }
+/* ============================================================================
+   중간 저장 / 이어하기 — 진행 중인 판을 통째로 저장했다가 나중에 재개
+   ========================================================================== */
+function serializeRun() {
+  const p = P(); if (!p) return null;
+  const miniAlive = G.enemies.some(e => e.mini && !e.dead);
+  return {
+    v: 1, character: G.character || 'hunter',
+    tier: G.tier, time: G.time, frame: G.frame,
+    runCoins: G.runCoins, kills: G.kills, bossKilled: !!G.bossKilled,
+    miniSpawned: !!G.miniSpawned, bossSpawned: !!G.bossSpawned,
+    bossPending: (G.boss && !G.boss.dead) ? 'final' : (miniAlive ? 'mini' : null),
+    heartTimer: G.heartTimer || 0,
+    player: {
+      hp: p.hp, maxhp: p.maxhp, level: p.level, xp: p.xp, xpNext: p.xpNext,
+      baseSpd: p.baseSpd, shield: p.shield || 0, revived: !!p.revived,
+      pendingLevels: p.pendingLevels || 0, regenAcc: p.regenAcc || 0, facing: p.facing || 1,
+      weapons: p.weapons.map(w => ({ key: w.key, level: w.level, evolved: !!w.evolved })),
+      passives: Object.assign({}, p.passives),
+    },
+    sentries: G.sentries.map(s => ({ evolved: !!s.evolved, level: s.level || 1,
+      atkLv: s.atkLv || 0, spdLv: s.spdLv || 0, points: s.points || 0, xp: s.xp || 0,
+      dmg: s.dmg, rng: s.rng, fireCd: s.fireCd })),
+    // 요약(메뉴 '이어하기' 버튼에 표시)
+    label: { tier: G.tier, time: G.time, level: p.level },
+  };
+}
+function hasSavedRun() { return !!(G.save && G.save.runState && G.save.runState.player); }
+/* 자동 저장: 판 도중 탭을 닫거나 백그라운드로 보내면 현재 판을 저장(그냥 꺼도 유실 방지) */
+function autoSaveRun() {
+  if (!G.save || !G.player) return;
+  if (G.state === 'menu' || G.state === 'result') return;   // 이미 끝났거나 로비면 저장 안 함
+  const rs = serializeRun();
+  if (rs) { G.save.runState = rs; Store.save(G.save); }
+}
+function clearSavedRun() { if (G.save && G.save.runState) { G.save.runState = null; Store.save(G.save); } }
+/* 저장하고 나가기: 정산하지 않고 현재 판을 저장한 뒤 로비로 */
+function saveAndExit() {
+  const rs = serializeRun();
+  if (!rs) { backToMenu(); return; }
+  G.save.runState = rs; Store.save(G.save);
+  G.state = 'menu'; G.player = null; G.boss = null;
+  hideAllOverlays(); hud.classList.remove('show'); el.bossbar.classList.remove('show'); loadoutSig = '';
+  refreshMenu(); el.menu.classList.add('show');
+  Audio.startMusic('title');
+}
+/* 이어하기: 저장된 판을 복원 (필드 엔티티는 새로 시작, 빌드·시간·차수·코인은 유지) */
+function resumeRun() {
+  const rs = G.save && G.save.runState;
+  if (!rs || !rs.player) { startRun(); return; }
+  Audio.ensure(); Audio.resume(); Audio.startMusic('game');
+  G.character = rs.character || 'hunter'; G.save.character = G.character;
+  Object.assign(G, {
+    time: rs.time || 0, frame: rs.frame || 0, enemies: [], bullets: [], acids: [], gems: [], coins: [], hearts: [],
+    particles: [], blades: [], sentries: [], hazards: [], orbs: [], spawnTimer: 0, heartTimer: rs.heartTimer || 0,
+    miniSpawned: !!rs.miniSpawned, bossSpawned: !!rs.bossSpawned, boss: null,
+    runCoins: rs.runCoins || 0, kills: rs.kills || 0, screenShake: 0,
+    tier: rs.tier || 1, _cashed: false, bossKilled: !!rs.bossKilled,
+  });
+  const p = makePlayer(), P0 = rs.player;
+  p.hp = P0.hp; p.maxhp = P0.maxhp; p.level = P0.level; p.xp = P0.xp; p.xpNext = P0.xpNext;
+  p.baseSpd = P0.baseSpd || 2.7; p.shield = P0.shield || 0; p.revived = !!P0.revived;
+  p.pendingLevels = P0.pendingLevels || 0; p.regenAcc = P0.regenAcc || 0; p.facing = P0.facing || 1;
+  p.weapons = (P0.weapons || []).map(w => ({ key: w.key, level: w.level, timer: 0, evolved: !!w.evolved }));
+  p.passives = Object.assign({}, P0.passives);
+  G.player = p;
+  const sl = rs.sentries || [];
+  sl.forEach((s, i) => {
+    const ang = (i / Math.max(1, sl.length)) * TAU;
+    G.sentries.push({ x: p.x + Math.cos(ang) * 80, y: p.y + Math.sin(ang) * 80, vx: 0, vy: 0,
+      dmg: s.dmg, fireCd: s.fireCd, fireT: 0, rng: s.rng, evolved: !!s.evolved,
+      xp: s.xp || 0, level: s.level || 1, atkLv: s.atkLv || 0, spdLv: s.spdLv || 0, points: s.points || 0, dead: false });
+  });
+  rebuildBlades();
+  G.camX = p.x; G.camY = p.y;
+  hideAllOverlays(); hud.classList.add('show');
+  hudReset(); loadoutSig = '';
+  el.hint.style.opacity = '0'; el.hint.dataset.hidden = '1';
+  el.bossbar.classList.remove('show');
+  clearSavedRun();                              // 저장본은 소비됨
+  if (rs.bossPending) spawnBoss(rs.bossPending);
+  if (p.pendingLevels > 0) enterLevelUp(); else G.state = 'play';
+}
+
 /* 결과 화면 → 로비 (아직 정산 안 됐으면 코인 지급) */
 function lobbyFromResult() { cashOutRun(); backToMenu(); }
 function backToMenu() {
@@ -3189,6 +3285,15 @@ function refreshMenu() {
   el.bestTime.textContent = fmtTime(G.save.bestTime);
   el.totalKills.textContent = G.save.totalKills;
   $('maxTier').textContent = t('hud.tierLabel').replace('{n}', G.save.maxTier || 1);
+  // 이어하기 버튼: 중간 저장이 있으면 표시(차수·레벨 요약)
+  const cbtn = $('continueBtn');
+  if (cbtn) {
+    if (hasSavedRun()) {
+      const lb = G.save.runState.label || {};
+      cbtn.style.display = '';
+      cbtn.textContent = t('btn.continue').replace('{n}', lb.tier || 1).replace('{lv}', lb.level || 1).replace('{t}', fmtTime(lb.time || 0));
+    } else cbtn.style.display = 'none';
+  }
   renderCharSelect();
   renderArmory();
 }
@@ -3297,6 +3402,7 @@ function init() {
   refreshMenu();
   $('soundBtn').onclick = () => { Audio.ensure(); const m = Audio.toggle(); if (!m) Audio.resume(); G.save.sfxOn = !m; Store.save(G.save); updateSoundBtn(); syncSettingsUI(); };
   $('startBtn').onclick = () => { Audio.ensure(); Audio.resume(); G.meta = curMeta(); startRun(); };
+  $('continueBtn').onclick = () => { Audio.ensure(); Audio.resume(); G.meta = curMeta(); resumeRun(); };
   $('howBtn').onclick = () => el.how.classList.add('show');
   $('howClose').onclick = () => el.how.classList.remove('show');
   // 가이드 도감
@@ -3311,12 +3417,16 @@ function init() {
     if (!bm) { Audio.resume(); Audio.startMusic(G.state === 'play' ? 'game' : 'title'); } };
   $('resetBtn').onclick = () => {
     if (confirm(t('reset.confirm'))) {
-      G.save = { coins:0, bestTime:0, totalKills:0, meta:{}, metaByChar:{}, character:'hunter', lang:curLang, maxTier:1, passiveSlots:6, sfxOn:true, bgmOn:true, guideReward:false }; G.character = 'hunter'; G.meta = curMeta(); Store.save(G.save); refreshMenu();
+      G.save = { coins:0, bestTime:0, totalKills:0, meta:{}, metaByChar:{}, character:'hunter', lang:curLang, maxTier:1, passiveSlots:6, sfxOn:true, bgmOn:true, guideReward:false, runState:null }; G.character = 'hunter'; G.meta = curMeta(); Store.save(G.save); refreshMenu();
     }
   };
   $('pauseBtn').onclick = () => togglePause();
   $('resumeBtn').onclick = () => togglePause();
+  $('saveExitBtn').onclick = () => saveAndExit();
   $('exitBtn').onclick = () => endRun(false);
+  // 그냥 끄거나 앱을 전환해도 진행 중인 판을 자동 저장 → '이어하기'로 복구 가능
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') autoSaveRun(); });
+  window.addEventListener('pagehide', autoSaveRun);
   $('resAgain').onclick = () => lobbyFromResult();
   $('resNext').onclick = () => continueTier();
   requestAnimationFrame(loop);
