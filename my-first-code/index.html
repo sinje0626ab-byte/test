@@ -578,10 +578,16 @@ const Audio = (() => {
     try {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
       master = ctx.createGain(); master.gain.value = 0.28; master.connect(ctx.destination);
-      initMusicGraph();
-    } catch (e) { ctx = null; }
+    } catch (e) { ctx = null; return; }
+    // 음악 그래프(리버브 등)가 모바일에서 실패해도 효과음은 살아있도록 별도 try
+    try { initMusicGraph(); } catch (e) { musicBus = null; reverb = null; }
   }
-  function resume(){ if (ctx && ctx.state === 'suspended') ctx.resume(); }
+  function resume(){
+    if (!ctx) return;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    // iOS 오디오 잠금 해제: 무음 버퍼를 한 번 재생
+    try { const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(master); s.start(0); } catch (e) {}
+  }
   function tone(freq, dur, type = 'square', vol = 1, slideTo = null) {
     if (!ctx || muted || voices >= MAX_VOICES) return;
     voices++;
@@ -654,14 +660,16 @@ const Audio = (() => {
   function initMusicGraph() {
     if (!ctx || musicBus) return;
     musicBus = ctx.createGain(); musicBus.gain.value = bgmMuted ? 0 : 0.9;
-    // 알고리즈믹 임펄스 응답 리버브 → 풍성한 홀 사운드(고음질 느낌)
-    const len = (ctx.sampleRate * 1.7) | 0, ir = ctx.createBuffer(2, len, ctx.sampleRate);
-    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.8); }
-    reverb = ctx.createConvolver(); reverb.buffer = ir;
-    const wet = ctx.createGain(); wet.gain.value = 0.34;
     dryG = ctx.createGain(); dryG.gain.value = 0.9;
-    musicBus.connect(dryG); dryG.connect(master);
-    musicBus.connect(reverb); reverb.connect(wet); wet.connect(master);
+    musicBus.connect(dryG); dryG.connect(master);   // 필수 경로 먼저 연결 (리버브 실패해도 음악 재생)
+    // 알고리즈믹 임펄스 응답 리버브 → 풍성한 홀 사운드 (선택 사항)
+    try {
+      const len = (ctx.sampleRate * 1.7) | 0, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+      for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.8); }
+      reverb = ctx.createConvolver(); reverb.buffer = ir;
+      const wet = ctx.createGain(); wet.gain.value = 0.34;
+      musicBus.connect(reverb); reverb.connect(wet); wet.connect(master);
+    } catch (e) { reverb = null; }
   }
   let dryG = null;
   const NB = {};
@@ -2868,7 +2876,14 @@ function detectLang() {
 }
 function init() {
   G.save = Store.load(); G.character = G.save.character || 'hunter'; G.meta = curMeta();
-  Audio.setMuted(!G.save.sfxOn); Audio.setBgmMuted(!G.save.bgmOn); updateSoundBtn();
+  // 명시적으로 꺼둔 경우에만 음소거 (값이 없으면 켜짐 유지)
+  Audio.setMuted(G.save.sfxOn === false); Audio.setBgmMuted(G.save.bgmOn === false); updateSoundBtn();
+  // 모바일 포함: 어떤 입력이든 첫 상호작용에서 오디오 잠금 해제 (한 번 성공하면 리스너 제거)
+  const audioUnlock = () => {
+    Audio.ensure(); Audio.resume();
+    if (Audio.isRunning()) ['pointerdown','touchend','mousedown','keydown','click'].forEach(ev => window.removeEventListener(ev, audioUnlock, true));
+  };
+  ['pointerdown','touchend','mousedown','keydown','click'].forEach(ev => window.addEventListener(ev, audioUnlock, { capture:true, passive:true }));
   curLang = (G.save.lang && LANGS.some(l => l.code === G.save.lang)) ? G.save.lang : detectLang();
   applyStaticText(); renderLangMenu();
   $('langBtn').onclick = (e) => { e.stopPropagation(); toggleLangMenu();
