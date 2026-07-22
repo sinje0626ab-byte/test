@@ -1185,6 +1185,30 @@ const SPRITES = {
     "rrr....c","rrrr...c","rrrrr..c","....c..c","....c..c","....c..c",
     "....c..c","....c..c",
   ], { g:'#d4af37', h:'#15080a', p:'#e8d9c9', e:'#ff2d34', c:'#1a0d10', r:'#8a1418' }),
+  /* 2차 — 역병 콜로서스 (거대·독성 녹색) */
+  boss2: buildSprite([
+    "......nn",".....nnn","....gggg","...ggggg","...gggeg","..gggggg",
+    ".ggggggg","gggggggg","ggttttgg","ggttttgg","gggttggg",".gggggg.",
+    "..ggggg.","..gg.gg.","..gg.gg.","..gg.gg.","...g..g.","...g..g.",
+  ], { n:'#243010', g:'#5a9a3f', t:'#c7e04a', e:'#eaff5a' }),
+  /* 3차 — 서리 망령 기사 (얼음·강철) */
+  boss3: buildSprite([
+    "......ii","......ii","....bbbb","....bbeb","....bbbb","...bbbbb",
+    "..bbbbbb","..ibbbbb",".iibbbbb","iiabbbbb","iiaaaaab",".aaaaaaa",
+    ".aallaaa",".aaaaaaa","..aa.aa.","..aa.aa.","..aa.aa.","...a..a.",
+  ], { i:'#cdefff', b:'#3a6a8a', a:'#5f7f9a', l:'#16202c', e:'#8fe0ff' }),
+  /* 4차 — 인페르노 마귀 (지옥불·뿔) */
+  boss4: buildSprite([
+    "rr......","rr......",".rrr....","..rrhhhh","...hhhhh","...hhheh",
+    "..hhhhhh",".hhhhhhh","hhhhhhhh","hhoooohh","hhoooohh",".hhoohh.",
+    "..hhhhh.","..hh.hh.","..hh.hh.","..hh.hh.","...h..h.","...h..h.",
+  ], { r:'#6e0f0f', h:'#c23a1a', o:'#ffb84d', e:'#ffe08a' }),
+  /* 5차 — 공허의 군주 (암흑·왕관·마젠타 안광) */
+  boss5: buildSprite([
+    "...v.v.v","....vvvv","...ddddd","...ddede","...ddddd","..dddddd",
+    ".ddddddd","dddddddd","ddmmmmdd","ddmmmmdd",".dmmmmd.","..dmmd..",
+    "..dddd..","..dd.dd.","..dd.dd.","..dd.dd.","...d..d.","...d..d.",
+  ], { v:'#c96bff', d:'#241236', m:'#6a2a8a', e:'#ff4dd8' }),
 };
 
 /* 화염/연기 스프라이트를 오프스크린 캔버스에 1회만 렌더.
@@ -1470,18 +1494,20 @@ function fireWeapon(w) {
   }
   if (key === 'scythe') {
     const ang = aimAngle(w) ?? p.lastAngle, range = s.range * pRangeMult(), arc = s.arc;
+    const evo = w.evolved, hitCol = evo ? '#b46bff' : '#ff2d4d', arcCol = evo ? '#d9a0ff' : '#ff8a90';
     let healSum = 0;
     forEachNearbyEnemy(p.x, p.y, range + 60, e => {
       const d = Math.hypot(e.x - p.x, e.y - p.y);
       if (d > range + e.r) return;
       let da = Math.atan2(e.y - p.y, e.x - p.x) - ang;
       da = Math.atan2(Math.sin(da), Math.cos(da));
-      if (Math.abs(da) < arc) { damageEnemy(e, s.dmg); healSum += s.dmg; spark(e.x, e.y, '#ff2d4d', 3, 2.6, 14); }
+      if (Math.abs(da) < arc) { damageEnemy(e, s.dmg); healSum += s.dmg; spark(e.x, e.y, hitCol, evo ? 5 : 3, 2.6, 14); }
     });
-    for (let i = 0; i < 6; i++) {
-      const a = ang + lerp(-arc, arc, i / 5), r = range * rand(0.5, 1);
+    const sweeps = evo ? 12 : 6;   // 진화(소울 리퍼): 광역 보라빛 영혼 베기
+    for (let i = 0; i < sweeps; i++) {
+      const a = ang + lerp(-arc, arc, i / (sweeps - 1)), r = range * rand(0.5, 1);
       const sp = takePart(); sp.type = 'spark'; sp.x = p.x + Math.cos(a) * r; sp.y = p.y + Math.sin(a) * r;
-      sp.vx = Math.cos(a) * 0.6; sp.vy = Math.sin(a) * 0.6; sp.life = 10; sp.max = 10; sp.r = 2; sp.col = '#ff8a90';
+      sp.vx = Math.cos(a) * 0.6; sp.vy = Math.sin(a) * 0.6; sp.life = evo ? 16 : 10; sp.max = sp.life; sp.r = evo ? 3 : 2; sp.col = arcCol;
       G.particles.push(sp);
     }
     if (healSum > 0 && p.hp < p.maxhp) {
@@ -1706,6 +1732,14 @@ function rollEnemyType(t) {
   return r < 0.22 ? 'walker' : r < 0.44 ? 'runner' : r < 0.6 ? 'bomber' : r < 0.74 ? 'spitter' : r < 0.87 ? 'howler' : 'brute';
 }
 
+/* 차수별 최종 보스 — 도트 스프라이트/이름/색상 (5차 이후는 5차 보스 유지) */
+const BOSS_TIERS = [
+  { key:'boss',  name:'NECRO TYRANT',    col:'#e5232b', dark:'#4a0d0d' },
+  { key:'boss2', name:'PLAGUE COLOSSUS', col:'#5a9a3f', dark:'#243010' },
+  { key:'boss3', name:'FROST REVENANT',  col:'#5f9fc4', dark:'#16202c' },
+  { key:'boss4', name:'INFERNO FIEND',   col:'#c23a1a', dark:'#3a0a0a' },
+  { key:'boss5', name:'VOID SOVEREIGN',  col:'#8a3ab0', dark:'#241236' },
+];
 function spawnBoss(kind) {
   const p = P();
   const ang = Math.random() * TAU, rad = Math.hypot(W, H) / 2 + 120;
@@ -1717,10 +1751,11 @@ function spawnBoss(kind) {
     e.mini = true; e.boss = false;
     e.maxhp = 900 * hpMul(); e.hp = e.maxhp; e.r = 34; e.spd = 0.6 * tierSpdMul(); e.key = 'mini';
   } else {
-    e.def = { name:'네크로 타이런트', dark:'#4a0d0d', col:'#e5232b', xp:0, coin:0 };
-    e.maxhp = 4200 * hpMul(); e.hp = e.maxhp; e.r = 52; e.spd = 0.55 * tierSpdMul(); e.key = 'boss';
+    const bi = Math.min(G.tier, BOSS_TIERS.length) - 1, bt = BOSS_TIERS[bi];
+    e.def = { name:bt.name, dark:bt.dark, col:bt.col, xp:0, coin:0 };
+    e.maxhp = 4200 * hpMul(); e.hp = e.maxhp; e.r = 52; e.spd = 0.55 * tierSpdMul(); e.key = bt.key;
     e.patternT = 130; e.summonT = 260; e.mini = false;
-    G.boss = e; el.bossbar.classList.add('show'); el.bossName.textContent = 'NECRO TYRANT';
+    G.boss = e; el.bossbar.classList.add('show'); el.bossName.textContent = bt.name;
   }
   G.enemies.push(e); G.screenShake = 16; Audio.S.boss();
 }
@@ -2439,25 +2474,32 @@ function winRound() {
   hud.classList.remove('show'); el.bossbar.classList.remove('show');
   el.result.classList.add('show');
 }
-/* 다음 차수로 계속 — 캐릭터·무기·패시브·코인은 유지, 전장만 리셋하고 난이도 상승 */
+/* 다음 차수로 계속 — 무기·기술은 처음 상태로 초기화, 코인·처치수·차수는 유지, 난이도 상승 */
 function continueTier() {
-  const p = P();
   G.tier++;
   G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier); Store.save(G.save);
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
-    particles:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
+    particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, screenShake:0,
   });
-  p.hp = p.maxhp; p.iframe = 90; p.slowT = 0;   // 보상: 완전 회복 + 무적 잠깐
+  // 처음 상태로 재시작: 새 플레이어 + 시작 무기/짝 패시브 1레벨
+  G.player = makePlayer();
+  const char = CHARACTERS[G.character || 'hunter'];
+  G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
+  G.player.passives[WEAPONS[char.weapon].pair] = 1;
   rebuildBlades();
+  G.camX = 0; G.camY = 0;
   hudReset(); loadoutSig = '';
   el.result.classList.remove('show');
   el.bossbar.classList.remove('show');
   hud.classList.add('show');
   el.hint.textContent = t('tier.banner').replace('{n}', G.tier);
   el.hint.style.opacity = '1'; el.hint.dataset.hidden = '';
-  G.state = 'play'; Audio.resume(); Audio.S.pickup();
+  Audio.resume(); Audio.S.pickup();
+  G.player.pendingLevels = metaVal('bonus');
+  if (G.player.pendingLevels > 0) enterLevelUp();
+  else G.state = 'play';
 }
 /* 결과 화면 → 로비 (아직 정산 안 됐으면 코인 지급) */
 function lobbyFromResult() { cashOutRun(); backToMenu(); }
