@@ -509,6 +509,7 @@ const Audio = (() => {
     try {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
       master = ctx.createGain(); master.gain.value = 0.28; master.connect(ctx.destination);
+      initMusicGraph();
     } catch (e) { ctx = null; }
   }
   function resume(){ if (ctx && ctx.state === 'suspended') ctx.resume(); }
@@ -578,10 +579,118 @@ const Audio = (() => {
     lose(){ [400,330,262,180].forEach((f,i)=>setTimeout(()=>tone(f,0.35,'sawtooth',0.34,f*0.6),i*160)); },
     deploy(){ tone(300,0.1,'square',0.25,500); },
   };
+
+  /* ================= 배경음악 (BGM) 엔진 ================= */
+  let musicBus = null, reverb = null, musicOn = null, mus = { timer:null, track:null, step:0, next:0 };
+  function initMusicGraph() {
+    if (!ctx || musicBus) return;
+    musicBus = ctx.createGain(); musicBus.gain.value = muted ? 0 : 0.9;
+    // 알고리즈믹 임펄스 응답 리버브 → 풍성한 홀 사운드(고음질 느낌)
+    const len = (ctx.sampleRate * 1.7) | 0, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.8); }
+    reverb = ctx.createConvolver(); reverb.buffer = ir;
+    const wet = ctx.createGain(); wet.gain.value = 0.34;
+    dryG = ctx.createGain(); dryG.gain.value = 0.9;
+    musicBus.connect(dryG); dryG.connect(master);
+    musicBus.connect(reverb); reverb.connect(wet); wet.connect(master);
+  }
+  let dryG = null;
+  const NB = {};
+  function noiseBuf(dur) { const k = dur.toFixed(3); if (NB[k]) return NB[k];
+    const n = (ctx.sampleRate*dur)|0, b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random()*2-1; NB[k] = b; return b; }
+  // 멜로디/패드 노트: 디튠 2겹 + 로우패스 + ADSR
+  function mnote(freq, t, dur, o = {}) {
+    if (!ctx || !musicBus || freq <= 0) return;
+    const type = o.type||'triangle', vol = o.vol!=null?o.vol:0.2, cut = o.cut||2200, atk = o.atk||0.012;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t+atk); g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value = cut;
+    lp.connect(g); g.connect(musicBus);
+    for (const det of (o.thick ? [-6, 6] : [0])) {
+      const osc = ctx.createOscillator(); osc.type = type; osc.frequency.value = freq; osc.detune.value = det;
+      osc.connect(lp); osc.start(t); osc.stop(t + dur + 0.05);
+    }
+  }
+  function kick(t, v = 0.9) { if (!ctx||!musicBus) return; const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(45,t+0.12);
+    g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.2); o.connect(g); g.connect(musicBus); o.start(t); o.stop(t+0.22); }
+  function hat(t, v = 0.14) { if (!ctx||!musicBus) return; const s = ctx.createBufferSource(); s.buffer = noiseBuf(0.03);
+    const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=7500; const g = ctx.createGain(); g.gain.value=v;
+    s.connect(hp); hp.connect(g); g.connect(musicBus); s.start(t); }
+  function snare(t, v = 0.3) { if (!ctx||!musicBus) return; const s = ctx.createBufferSource(); s.buffer = noiseBuf(0.14);
+    const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1900; const g = ctx.createGain();
+    g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.16); s.connect(bp); bp.connect(g); g.connect(musicBus); s.start(t); }
+  function timp(t, freq, v = 0.5) { if (!ctx||!musicBus) return; const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(freq*1.6,t); o.frequency.exponentialRampToValueAtTime(freq,t+0.09);
+    g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.45); o.connect(g); g.connect(musicBus); o.start(t); o.stop(t+0.5); }
+
+  // 음이름 주파수
+  const A1=55, F1=43.65, G1=49, C2=65.41, D2=73.42, E2=82.41, F2=87.31, G2=98, A2=110,
+    C3=130.81, D3=146.83, E3=164.81, F3=174.61, G3=196, A3=220, Bb3=233.08, B3=246.94,
+    C4=261.63, D4=293.66, E4=329.63, F4=349.23, G4=392, A4=440, Bb4=466.16, B4=493.88,
+    C5=523.25, D5=587.33, E5=659.25, F5=698.46, G5=783.99, A5=880;
+  // 오프닝(중세 웅장) — Am–F–C–G, 4마디 루프(64 스텝, 16분음표)
+  const TITLE_CHORDS = [[A2,C4,E4],[F2,A3,C4],[C3,E4,G4],[G2,B3,D4]];
+  const TITLE_BASS = [A1,F1,C2,G1];
+  const TITLE_MEL = [E5,0,D5,0, C5,0,D5,0,  F5,0,E5,0, D5,0,C5,0,  G5,0,E5,0, D5,0,C5,0,  D5,0,B4,0, C5,0,0,0];
+  function titleFn(step, t) {
+    const bar = (step >> 4) & 3, s16 = step & 15;
+    if (s16 === 0) { // 마디 시작: 패드 코드 + 베이스 + 팀파니
+      const ch = TITLE_CHORDS[bar];
+      for (const f of ch) mnote(f, t, 2.9, { type:'sawtooth', vol:0.075, cut:1500, thick:true, atk:0.06 });
+      mnote(TITLE_BASS[bar], t, 1.4, { type:'triangle', vol:0.22, cut:900 });
+      timp(t, TITLE_BASS[bar]*2, 0.5);
+    }
+    if (s16 === 8) { mnote(TITLE_BASS[bar], t, 1.0, { type:'triangle', vol:0.16, cut:900 }); timp(t, TITLE_BASS[bar]*2, 0.32); }
+    if ((step & 1) === 0) { const m = TITLE_MEL[step >> 1]; if (m) mnote(m, t, 0.62, { type:'triangle', vol:0.2, cut:3200, thick:true }); }
+  }
+  // 게임(질주감) — Dm, 2마디 루프(32 스텝)
+  const GAME_BASS = [D2,A2,D3,A2, F2,C3,F2,A2, D2,A2,D3,A2, G2,D3,A2,F2];
+  const GAME_LEAD = [0,0,A4,0, 0,0,0,0, D5,0,C5,0, 0,0,A4,0, 0,0,F4,0, 0,0,0,0, A4,0,G4,0, 0,0,0,0];
+  function gameFn(step, t) {
+    if ((step & 3) === 0) kick(t, 0.85);
+    if ((step & 1) === 1) hat(t, 0.12);
+    if ((step & 7) === 4) snare(t, 0.26);
+    if ((step & 1) === 0) mnote(GAME_BASS[step >> 1], t, 0.2, { type:'sawtooth', vol:0.17, cut:700 });
+    const ld = GAME_LEAD[step]; if (ld) mnote(ld, t, 0.34, { type:'square', vol:0.12, cut:2600, thick:true });
+  }
+  const TRACKS = { title:{ name:'title', len:64, step:0.183, fn:titleFn },
+                   game:{ name:'game', len:32, step:0.107, fn:gameFn } };
+  function scheduler() {
+    if (!ctx || !mus.track) return;
+    const sd = mus.track.step;
+    while (mus.next < ctx.currentTime + 0.16) {
+      if (!muted && ctx.state === 'running') mus.track.fn(mus.step, mus.next);
+      mus.step = (mus.step + 1) % mus.track.len; mus.next += sd;
+    }
+  }
+  function startMusic(name) {
+    ensure(); if (!ctx) return;
+    if (mus.track && mus.track.name === name) return;
+    musicOn = name; stopMusic();
+    mus.track = TRACKS[name]; mus.step = 0; mus.next = ctx.currentTime + 0.08;
+    mus.timer = setInterval(scheduler, 30);
+  }
+  function stopMusic() { if (mus.timer) { clearInterval(mus.timer); mus.timer = null; } mus.track = null; }
+  // YJ GAMES 로고송 — 귀여운 실로폰 상승 아르페지오
+  function logoJingle() {
+    ensure(); if (!ctx) return;
+    const seq = [C5, E5, G5, C5*2, E5*2], t0 = ctx.currentTime + 0.02;
+    seq.forEach((f, i) => {
+      const t = t0 + i * 0.11;
+      mnote(f, t, 0.5, { type:'sine', vol:0.28, cut:5000 });
+      mnote(f*2, t, 0.4, { type:'triangle', vol:0.09, cut:6000 });
+    });
+    mnote(C5*2, t0 + seq.length*0.11, 0.7, { type:'sine', vol:0.3, cut:5000 });
+  }
+
   return { ensure, resume, S,
     frameReset(){ voices = 0; },
-    setMuted(v){ muted = v; }, isMuted(){ return muted; },
-    toggle(){ muted = !muted; return muted; } };
+    startMusic, stopMusic, logoJingle,
+    setMuted(v){ muted = v; if (musicBus) musicBus.gain.value = v ? 0 : 0.9; },
+    isMuted(){ return muted; },
+    toggle(){ muted = !muted; if (musicBus) musicBus.gain.value = muted ? 0 : 0.9; return muted; } };
 })();
 
 /* ---------------- DOM ---------------- */
@@ -1381,7 +1490,7 @@ function makePlayer(){
 const isTouch = () => ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
 function startRun(){
-  Audio.ensure(); Audio.resume();
+  Audio.ensure(); Audio.resume(); Audio.startMusic('game');   // 게임 BGM
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
@@ -2495,6 +2604,7 @@ function endRun(win) {
      <div class="kv"><span>${t('res.level')}</span><span class="v" style="color:var(--toxic)">Lv ${P().level}</span></div>
      <div class="kv"><span>${t('res.coins')}</span><span class="v" style="color:var(--gold)">◈ ${earned}${bonusMul>1?` (＋${Math.round((bonusMul-1)*100)}%)`:''}</span></div>`;
   win ? Audio.S.win() : Audio.S.lose();
+  Audio.startMusic('title');
   el.resNext.style.display = 'none';
   el.resReward.style.display = 'none';
   hud.classList.remove('show'); el.bossbar.classList.remove('show');
@@ -2521,7 +2631,7 @@ function winRound() {
      <div class="kv"><span>${t('res.kills')}</span><span class="v" style="color:var(--blood-bright)">${G.kills}</span></div>
      <div class="kv"><span>${t('res.level')}</span><span class="v" style="color:var(--toxic)">Lv ${P().level}</span></div>
      <div class="kv"><span>${t('res.pending')}</span><span class="v" style="color:var(--gold)">◈ ${pending}</span></div>`;
-  Audio.S.win();
+  Audio.S.win(); Audio.startMusic('title');
   if (p3reward) { el.resReward.innerHTML = t('reward.p3'); el.resReward.style.display = ''; }
   else el.resReward.style.display = 'none';
   el.resNext.style.display = '';
@@ -2551,7 +2661,7 @@ function continueTier() {
   hud.classList.add('show');
   el.hint.textContent = t('tier.banner').replace('{n}', G.tier);
   el.hint.style.opacity = '1'; el.hint.dataset.hidden = '';
-  Audio.resume(); Audio.S.pickup();
+  Audio.resume(); Audio.S.pickup(); Audio.startMusic('game');
   G.player.pendingLevels = metaVal('bonus');
   if (G.player.pendingLevels > 0) enterLevelUp();
   else G.state = 'play';
@@ -2562,6 +2672,7 @@ function backToMenu() {
   G.state = 'menu'; G.player = null; G.boss = null;
   hideAllOverlays(); hud.classList.remove('show'); loadoutSig = '';
   refreshMenu(); el.menu.classList.add('show');
+  Audio.startMusic('title');   // 로비: 오프닝 웅장 BGM
 }
 function refreshMenu() {
   el.bankCoins.textContent = G.save.coins;
@@ -2684,6 +2795,9 @@ function bootSequence() {
   let advanced = false;
   function showTitle() {
     if (advanced) return; advanced = true;
+    Audio.ensure(); Audio.resume();
+    Audio.logoJingle();                       // YJ GAMES 로고송(실로폰)
+    setTimeout(() => Audio.startMusic('title'), 850);  // 이어서 중세 웅장 오프닝 BGM
     el.splash.classList.remove('show');
     el.titleScreen.classList.add('show');
     // 스플래시를 넘긴 클릭 이벤트가 그대로 버블링돼 타이틀을 동시에 넘기지 않도록 한 틱 지연
