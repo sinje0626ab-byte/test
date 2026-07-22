@@ -2301,9 +2301,13 @@ function updateBlades() {
 }
 
 function updateSentries() {
-  const list = G.sentries;
+  const list = G.sentries, p = P(), n = list.length;
   for (let i = 0; i < list.length; i++) {
     const s = list[i]; s.fireT--;   // 지속형: 수명 없음(상한으로 개수 제어)
+    // 플레이어를 따라다님: 주위를 천천히 도는 대형 위치로 부드럽게 이동
+    const ang = (i / Math.max(1, n)) * TAU + G.frame * 0.01;
+    const tx = p.x + Math.cos(ang) * 50, ty = p.y + Math.sin(ang) * 50;
+    s.x += (tx - s.x) * 0.1; s.y += (ty - s.y) * 0.1;
     if (s.fireT <= 0) {
       const e = nearestEnemy(s.x, s.y, s.rng);
       if (e) {
