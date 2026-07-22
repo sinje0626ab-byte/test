@@ -1518,7 +1518,7 @@ function fireWeapon(w) {
     Audio.S.scythe(); return;
   }
   if (key === 'taser') {
-    let fx = p.x, fy = p.y, chain = s.chain + pProjBonus(), hit = [];
+    let fx = p.x, fy = p.y, chain = s.chain, hit = [];   // 멀티 샷 미적용(자체 체인 정체성)
     let target = nearestEnemy(p.x, p.y, s.jump);
     for (let i = 0; i < chain && target; i++) {
       lightning(fx, fy, target.x, target.y, '#9fdcff');
@@ -1584,7 +1584,7 @@ function fireWeapon(w) {
 function rebuildBlades(){
   G.blades = [];
   const w = ownWeapon('machete'); if (!w) return;
-  const s = wstats(w), n = s.blades + pProjBonus();
+  const s = wstats(w), n = s.blades;   // 멀티 샷 미적용(자체 칼날 증가 정체성)
   const radius = s.radius * pRangeMult();
   for (let i = 0; i < n; i++) {
     G.blades.push({ ang:(i/n)*TAU, radius, dmg:s.dmg, speed:s.speed, r:w.evolved?22:15, evolved:w.evolved, px:0, py:0 });
@@ -2131,7 +2131,7 @@ function applyChoice(o) {
 function afterPassive(id) {
   if (id === 'maxhp') recomputeMaxHP();
   // 마체테/버즈쏘 블레이드는 생성 시점의 수치를 저장하므로 관련 패시브 습득 시 재생성
-  if (id === 'range' || id === 'proj' || id === 'dmg' || id === 'speed') rebuildBlades();
+  if (id === 'range' || id === 'dmg' || id === 'speed') rebuildBlades();
 }
 
 function enterLevelUp() {
