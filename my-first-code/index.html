@@ -195,6 +195,17 @@
     background:#e8ece9;box-shadow:0 2px 5px rgba(0,0,0,.5);transition:left .18s ease;}
   .toggle[aria-checked="true"]{background:linear-gradient(180deg,#5fd66a,#2fa03d);border-color:#6fe07a;}
   .toggle[aria-checked="true"] .knob{left:28px;}
+  /* 가드 터렛 업그레이드 패널 */
+  .tr-pts{font-size:14px;color:var(--ink);margin:6px 0 14px;} .tr-pts b{color:var(--gold);font-size:18px;}
+  .tr-row{display:flex;align-items:center;gap:12px;background:#0b100e;border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+  .tr-info{flex:1;text-align:left;} .tr-nm{font-size:14px;font-weight:800;margin-bottom:6px;} .tr-nm b{color:var(--toxic);}
+  .tr-bar{height:8px;border-radius:6px;background:#1b2420;overflow:hidden;}
+  .tr-bar i{display:block;height:100%;background:linear-gradient(90deg,#6fd6ff,#3a9fd6);}
+  .tr-up{flex:0 0 auto;width:48px;height:44px;border-radius:11px;border:1px solid #6fe07a;cursor:pointer;
+    background:linear-gradient(180deg,#5fd66a,#2fa03d);color:#08110a;font-size:20px;font-weight:900;
+    -webkit-tap-highlight-color:transparent;}
+  .tr-up:active{transform:scale(.94);} .tr-up.off{background:#241417;border-color:var(--line);color:var(--ink-dim);cursor:default;}
   #langBtn{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:11px;cursor:pointer;
     background:rgba(10,15,13,.82);border:1px solid var(--line);color:var(--ink);font-weight:800;
     font-size:13px;letter-spacing:.02em;backdrop-filter:blur(4px);box-shadow:0 4px 14px rgba(0,0,0,.4);
@@ -477,6 +488,12 @@
     </div>
     <button class="btn primary" id="setClose" style="margin-top:18px;" data-i18n="set.close">닫기</button>
   </div>
+</div>
+
+<!-- GUARD TURRET UPGRADE -->
+<div class="overlay" id="turretPanel">
+  <div class="veil"></div>
+  <div class="card center"></div>
 </div>
 
 <!-- PAUSE -->
@@ -803,7 +820,7 @@ const cv = $('cv'), ctx = cv.getContext('2d');
 const hud = $('hud');
 const el = {
   splash:$('splash'), titleScreen:$('titleScreen'),
-  menu:$('menu'), how:$('how'), pause:$('pause'), levelup:$('levelup'), result:$('result'), settings:$('settings'),
+  menu:$('menu'), how:$('how'), pause:$('pause'), levelup:$('levelup'), result:$('result'), settings:$('settings'), turretPanel:$('turretPanel'),
   xpfill:$('xpfill'), lvChip:$('lvChip'), hpfill:$('hpfill'), hptext:$('hptext'),
   timeChip:$('timeChip'), killChip:$('killChip'), coinChip:$('coinChip'), shieldChip:$('shieldChip'), tierChip:$('tierChip'),
   loadout:$('loadout'), choices:$('choices'), hint:$('hint'), luHeal:$('luHeal'),
@@ -865,9 +882,13 @@ cv.addEventListener('touchmove', e => {
   }
   e.preventDefault();
 }, { passive:false });
-function endTouch(e){ for (const t of e.changedTouches) if (t.identifier === touch.id){ touch.active=false; touch.id=null; } }
+function endTouch(e){ for (const t of e.changedTouches) if (t.identifier === touch.id){
+  if (Math.hypot(touch.dx, touch.dy) < 12) handleTurretTap(t.clientX, t.clientY);   // 탭(드래그 X) → 가드 터렛 설정
+  touch.active=false; touch.id=null; } }
 cv.addEventListener('touchend', endTouch, { passive:false });
 cv.addEventListener('touchcancel', endTouch, { passive:false });
+// PC: 마우스로 가드 터렛 클릭 시 설정 창
+cv.addEventListener('mousedown', e => { if (G.state === 'play') handleTurretTap(e.clientX, e.clientY); });
 
 function getMoveVector() {
   let mx = 0, my = 0;
@@ -1045,7 +1066,7 @@ const UI = {
     'hint.touch':'화면을 드래그해 이동하세요', 'hint.pc':'WASD / 방향키로 이동 · P 로 일시정지',
     'reset.confirm':'모든 진행 상황(코인·강화·기록)을 삭제할까요?',
     'lang.label':'언어',
-    'set.brand':'환경설정', 'set.title':'사운드 설정', 'set.sfx':'효과음', 'set.bgm':'배경음', 'set.close':'닫기',
+    'set.brand':'환경설정', 'set.title':'사운드 설정', 'set.sfx':'효과음', 'set.bgm':'배경음', 'set.close':'닫기', 'turret.title':'가드 터렛', 'turret.points':'남은 포인트', 'turret.atk':'공격력', 'turret.spd':'총알 스피드', 'turret.max':'MAX',
     'f.dmg':'피해 +', 'f.proj':'발사 수 +', 'f.projU':'발', 'f.pellets':'탄환 +', 'f.pelletsU':'발',
     'f.blades':'톱날 +', 'f.bladesU':'개', 'f.chain':'전이 대상 +', 'f.chainU':'명',
     'f.radius':'폭발 범위 +', 'f.range':'사거리 +', 'f.reach':'관통 거리 +', 'f.life':'설치 지속 +',
@@ -1075,7 +1096,7 @@ const UI = {
     'hint.touch':'Drag the screen to move', 'hint.pc':'WASD / Arrow keys to move · P to pause',
     'reset.confirm':'Delete all progress (coins, upgrades, records)?',
     'lang.label':'Language',
-    'set.brand':'Settings', 'set.title':'Sound Settings', 'set.sfx':'Sound Effects', 'set.bgm':'Music', 'set.close':'Close',
+    'set.brand':'Settings', 'set.title':'Sound Settings', 'set.sfx':'Sound Effects', 'set.bgm':'Music', 'set.close':'Close', 'turret.title':'Guard Turret', 'turret.points':'Points left', 'turret.atk':'Attack', 'turret.spd':'Bullet Speed', 'turret.max':'MAX',
     'f.dmg':'Damage +', 'f.proj':'Shots +', 'f.projU':'', 'f.pellets':'Pellets +', 'f.pelletsU':'',
     'f.blades':'Blades +', 'f.bladesU':'', 'f.chain':'Chain targets +', 'f.chainU':'',
     'f.radius':'Blast radius +', 'f.range':'Range +', 'f.reach':'Pierce range +', 'f.life':'Duration +',
@@ -1105,7 +1126,7 @@ const UI = {
     'hint.touch':'拖动屏幕移动', 'hint.pc':'WASD / 方向键移动 · P 暂停',
     'reset.confirm':'删除所有进度（金币、强化、记录）？',
     'lang.label':'语言',
-    'set.brand':'设置', 'set.title':'声音设置', 'set.sfx':'音效', 'set.bgm':'背景音乐', 'set.close':'关闭',
+    'set.brand':'设置', 'set.title':'声音设置', 'set.sfx':'音效', 'set.bgm':'背景音乐', 'set.close':'关闭', 'turret.title':'守卫炮塔', 'turret.points':'剩余点数', 'turret.atk':'攻击力', 'turret.spd':'子弹速度', 'turret.max':'满级',
     'f.dmg':'伤害 +', 'f.proj':'弹数 +', 'f.projU':'', 'f.pellets':'弹丸 +', 'f.pelletsU':'',
     'f.blades':'锯刃 +', 'f.bladesU':'', 'f.chain':'连锁目标 +', 'f.chainU':'',
     'f.radius':'爆炸范围 +', 'f.range':'射程 +', 'f.reach':'穿透距离 +', 'f.life':'持续 +',
@@ -1135,7 +1156,7 @@ const UI = {
     'hint.touch':'ลากหน้าจอเพื่อเคลื่อนที่', 'hint.pc':'WASD / ปุ่มลูกศรเพื่อเคลื่อนที่ · P เพื่อหยุด',
     'reset.confirm':'ลบความคืบหน้าทั้งหมด (เหรียญ, อัปเกรด, สถิติ) หรือไม่?',
     'lang.label':'ภาษา',
-    'set.brand':'ตั้งค่า', 'set.title':'ตั้งค่าเสียง', 'set.sfx':'เสียงเอฟเฟกต์', 'set.bgm':'เพลงประกอบ', 'set.close':'ปิด',
+    'set.brand':'ตั้งค่า', 'set.title':'ตั้งค่าเสียง', 'set.sfx':'เสียงเอฟเฟกต์', 'set.bgm':'เพลงประกอบ', 'set.close':'ปิด', 'turret.title':'ป้อมปืน', 'turret.points':'แต้มที่เหลือ', 'turret.atk':'พลังโจมตี', 'turret.spd':'ความเร็วกระสุน', 'turret.max':'สูงสุด',
     'f.dmg':'ความเสียหาย +', 'f.proj':'จำนวนยิง +', 'f.projU':'', 'f.pellets':'กระสุน +', 'f.pelletsU':'',
     'f.blades':'ใบเลื่อย +', 'f.bladesU':'', 'f.chain':'เป้าหมายลูกโซ่ +', 'f.chainU':'',
     'f.radius':'รัศมีระเบิด +', 'f.range':'ระยะ +', 'f.reach':'ระยะทะลุ +', 'f.life':'ระยะเวลา +',
@@ -1165,7 +1186,7 @@ const UI = {
     'hint.touch':'Kéo màn hình để di chuyển', 'hint.pc':'WASD / phím mũi tên để di chuyển · P để tạm dừng',
     'reset.confirm':'Xóa toàn bộ tiến trình (xu, nâng cấp, kỷ lục)?',
     'lang.label':'Ngôn ngữ',
-    'set.brand':'Cài đặt', 'set.title':'Cài đặt âm thanh', 'set.sfx':'Hiệu ứng âm thanh', 'set.bgm':'Nhạc nền', 'set.close':'Đóng',
+    'set.brand':'Cài đặt', 'set.title':'Cài đặt âm thanh', 'set.sfx':'Hiệu ứng âm thanh', 'set.bgm':'Nhạc nền', 'set.close':'Đóng', 'turret.title':'Tháp Pháo', 'turret.points':'Điểm còn lại', 'turret.atk':'Tấn công', 'turret.spd':'Tốc độ đạn', 'turret.max':'TỐI ĐA',
     'f.dmg':'Sát thương +', 'f.proj':'Số phát bắn +', 'f.projU':'', 'f.pellets':'Đạn +', 'f.pelletsU':'',
     'f.blades':'Lưỡi cưa +', 'f.bladesU':'', 'f.chain':'Mục tiêu lan +', 'f.chainU':'',
     'f.radius':'Bán kính nổ +', 'f.range':'Tầm +', 'f.reach':'Tầm xuyên +', 'f.life':'Thời lượng +',
@@ -1195,7 +1216,7 @@ const UI = {
     'hint.touch':'Arrastra la pantalla para moverte', 'hint.pc':'WASD / flechas para moverte · P para pausar',
     'reset.confirm':'¿Borrar todo el progreso (monedas, mejoras, registros)?',
     'lang.label':'Idioma',
-    'set.brand':'Ajustes', 'set.title':'Ajustes de sonido', 'set.sfx':'Efectos de sonido', 'set.bgm':'Música', 'set.close':'Cerrar',
+    'set.brand':'Ajustes', 'set.title':'Ajustes de sonido', 'set.sfx':'Efectos de sonido', 'set.bgm':'Música', 'set.close':'Cerrar', 'turret.title':'Torreta', 'turret.points':'Puntos restantes', 'turret.atk':'Ataque', 'turret.spd':'Vel. de bala', 'turret.max':'MÁX',
     'f.dmg':'Daño +', 'f.proj':'Disparos +', 'f.projU':'', 'f.pellets':'Perdigones +', 'f.pelletsU':'',
     'f.blades':'Cuchillas +', 'f.bladesU':'', 'f.chain':'Objetivos en cadena +', 'f.chainU':'',
     'f.radius':'Radio de explosión +', 'f.range':'Alcance +', 'f.reach':'Alcance de perforación +', 'f.life':'Duración +',
@@ -1706,7 +1727,7 @@ function fireBullet(x, y, ang, dmg, spd, opt = {}) {
   b.col = opt.col || '#ffe08a'; b.type = opt.type || 'bullet'; b.owner = opt.owner || 'p';
   b.tx = opt.tx; b.ty = opt.ty; b.radius = opt.radius; b.mode = opt.mode; b.spin = 0;
   b.startX = x; b.startY = y; b.reach = opt.reach; b.cluster = opt.cluster || 0;
-  b.trail = opt.trail; b.chill = opt.chill || 0; b.chillPow = opt.chillPow || 0.42; b.dead = false; b.id = G.uid++;
+  b.trail = opt.trail; b.chill = opt.chill || 0; b.chillPow = opt.chillPow || 0.42; b.turret = opt.turret || null; b.dead = false; b.id = G.uid++;
   G.bullets.push(b); return b;
 }
 
@@ -1728,7 +1749,10 @@ function fireWeapon(w) {
   const p = P(), s = wstats(w), key = w.key;
   if (key === 'machete') return; // 지속형
   if (key === 'sentry') {
-    G.sentries.push({ x:p.x, y:p.y, life:s.life, dmg:s.dmg, fireCd:s.fireCd, fireT:0, rng:s.rng, evolved:w.evolved });
+    const maxT = w.evolved ? 4 : 3;
+    if (G.sentries.length >= maxT) return;   // 지속형 터렛 상한 (레벨업 누적을 위해)
+    G.sentries.push({ x:p.x, y:p.y, dmg:s.dmg, fireCd:s.fireCd, fireT:0, rng:s.rng, evolved:w.evolved,
+      xp:0, level:1, atkLv:0, spdLv:0, points:0, dead:false });
     Audio.S.deploy(); return;
   }
   if (key === 'flamethrower') {
@@ -2231,6 +2255,7 @@ function updateBullets() {
         if (dist2(b.x, b.y, e.x, e.y) < rr*rr) {
           damageEnemy(e, b.dmg); hit = true; if (b.pierce > 0) b.pierce--;
           if (b.chill && !e.boss) { e.chill = Math.max(e.chill || 0, b.chill); e.chillPow = Math.min(e.chillPow || 1, b.chillPow); }   // 냉기 둔화(강할수록 낮은 값)
+          if (b.turret && !b.turret.dead) turretGainXP(b.turret);   // 가드 터렛 경험치
         }
       });
       if ((hit && b.pierce <= 0) || b.life <= 0) b.dead = true;
@@ -2278,22 +2303,23 @@ function updateBlades() {
 function updateSentries() {
   const list = G.sentries;
   for (let i = 0; i < list.length; i++) {
-    const s = list[i]; s.life--; s.fireT--;
+    const s = list[i]; s.fireT--;   // 지속형: 수명 없음(상한으로 개수 제어)
     if (s.fireT <= 0) {
       const e = nearestEnemy(s.x, s.y, s.rng);
       if (e) {
         const base = Math.atan2(e.y - s.y, e.x - s.x);
         const n = 1 + pProjBonus();                    // 멀티 샷: 터렛 연사 탄환 증가(부채꼴)
+        const dmg = s.dmg * (1 + (s.atkLv || 0) * 0.12);   // 공격력 업그레이드
+        const spd = 7 + (s.spdLv || 0) * 0.7;              // 총알 스피드 업그레이드
         for (let k = 0; k < n; k++) {
           const a = base + (n === 1 ? 0 : lerp(-0.16, 0.16, k / (n - 1)));
-          fireBullet(s.x, s.y, a, s.dmg, 7, { r:3, col:'#9fe0ff', life:50 });
+          fireBullet(s.x, s.y, a, dmg, spd, { r:3, col:'#9fe0ff', life:50, turret:s });
         }
         s.fireT = s.fireCd;
       }
       else s.fireT = 6;
     }
   }
-  for (let i = list.length - 1; i >= 0; i--) if (list[i].life <= 0) list.splice(i, 1);
 }
 
 function updateHazards() {
@@ -2520,6 +2546,8 @@ function drawHeart(x, y, s, col) {
 function drawSentries() {
   for (const s of G.sentries) {
     if (!onScreen(s.x, s.y, 30)) continue;
+    if (G.selTurret === s) { ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = 2; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.arc(s.x, s.y, 18, 0, TAU); ctx.stroke(); ctx.setLineDash([]); }
     ctx.fillStyle = s.evolved ? '#5a6b52' : '#46524a';
     ctx.beginPath(); ctx.arc(s.x, s.y, 12, 0, TAU); ctx.fill();
     ctx.strokeStyle = s.evolved ? '#ffcf4d' : '#8bff5a'; ctx.lineWidth = 2;
@@ -2528,7 +2556,70 @@ function drawSentries() {
     const a = e ? Math.atan2(e.y - s.y, e.x - s.x) : 0;
     ctx.strokeStyle = '#cfe'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x + Math.cos(a)*16, s.y + Math.sin(a)*16); ctx.stroke();
+    // 레벨 라벨 + 업그레이드 가능(⚙) 표시
+    ctx.fillStyle = '#cfe'; ctx.font = 'bold 9px system-ui'; ctx.textAlign = 'center';
+    ctx.fillText('Lv' + s.level, s.x, s.y - 15);
+    if (s.points > 0) { ctx.font = '13px system-ui'; ctx.fillText('⚙️', s.x, s.y - 26); }
+    ctx.textAlign = 'start';
   }
+}
+/* ---------------- 가드 터렛 레벨업 시스템 ---------------- */
+const TURRET_MAX = 10;
+function turretGainXP(s) {
+  if ((s.atkLv + s.spdLv) >= TURRET_MAX * 2) { s.xp = 0; return; }
+  s.xp++; let need = 5 + s.level * 4;
+  while (s.xp >= need && (s.atkLv + s.spdLv) < TURRET_MAX * 2) {
+    s.xp -= need; s.level++; s.points++; need = 5 + s.level * 4;
+    floatText(s.x, s.y - 24, 'Lv ' + s.level + '!', '#9fe0ff');
+  }
+}
+function turretAt(clientX, clientY) {
+  const rect = cv.getBoundingClientRect();
+  const wx = G.camX + (clientX - rect.left) * (W / rect.width) - W/2;
+  const wy = G.camY + (clientY - rect.top) * (H / rect.height) - H/2;
+  let best = null, bd = 30*30;
+  for (const s of G.sentries) { const d = dist2(wx, wy, s.x, s.y); if (d < bd) { bd = d; best = s; } }
+  return best;
+}
+function handleTurretTap(clientX, clientY) {
+  if (G.state !== 'play') return false;
+  const s = turretAt(clientX, clientY);
+  if (s) { openTurretPanel(s); return true; }
+  return false;
+}
+function openTurretPanel(s) {
+  if (G.state !== 'play') return;
+  G.selTurret = s; G.state = 'turret';
+  renderTurretPanel(); el.turretPanel.classList.add('show');
+}
+function closeTurretPanel() {
+  el.turretPanel.classList.remove('show');
+  if (G.state === 'turret') { G.state = 'play'; Audio.resume(); }
+  G.selTurret = null;
+}
+function upgradeTurret(kind) {
+  const s = G.selTurret; if (!s || s.points <= 0) return;
+  if (kind === 'atk' && s.atkLv < TURRET_MAX) { s.atkLv++; s.points--; }
+  else if (kind === 'spd' && s.spdLv < TURRET_MAX) { s.spdLv++; s.points--; }
+  else return;
+  Audio.S.coin(); renderTurretPanel();
+}
+function renderTurretPanel() {
+  const s = G.selTurret; if (!s) return;
+  const rowHtml = (kind, lv, label) => {
+    const max = lv >= TURRET_MAX, can = s.points > 0 && !max;
+    return `<div class="tr-row"><div class="tr-info"><div class="tr-nm">${label} <b>Lv ${lv}/${TURRET_MAX}</b></div>
+      <div class="tr-bar"><i style="width:${(lv/TURRET_MAX*100).toFixed(0)}%"></i></div></div>
+      <button class="tr-up ${can?'':'off'}" data-k="${kind}">${max ? t('turret.max') : '＋'}</button></div>`;
+  };
+  el.turretPanel.querySelector('.card').innerHTML =
+    `<div class="brand" style="justify-content:center;">🛡️ ${t('turret.title')} · Lv ${s.level}</div>
+     <div class="tr-pts">${t('turret.points')} : <b>${s.points}</b></div>
+     ${rowHtml('atk', s.atkLv, t('turret.atk'))}
+     ${rowHtml('spd', s.spdLv, t('turret.spd'))}
+     <button class="btn primary" id="trClose" style="margin-top:16px;">${t('set.close')}</button>`;
+  el.turretPanel.querySelectorAll('.tr-up').forEach(b => b.onclick = () => upgradeTurret(b.dataset.k));
+  el.turretPanel.querySelector('#trClose').onclick = closeTurretPanel;
 }
 function drawEnemies() {
   for (const e of G.enemies) {
@@ -2705,7 +2796,7 @@ function renderLoadout() {
 /* ============================================================================
    상태 전환 / 메뉴 / 아머리
    ========================================================================== */
-function hideAllOverlays() { ['splash','titleScreen','menu','how','pause','levelup','result','settings'].forEach(k => el[k].classList.remove('show')); }
+function hideAllOverlays() { ['splash','titleScreen','menu','how','pause','levelup','result','settings','turretPanel'].forEach(k => el[k].classList.remove('show')); }
 
 function togglePause() {
   if (G.state === 'play') {
