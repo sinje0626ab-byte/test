@@ -611,7 +611,7 @@ const Audio = (() => {
     src.connect(bp); bp.connect(g); g.connect(master); src.start();
   }
   const S = {
-    shoot(){ tone(rand(620,720), 0.05, 'square', 0.25, 300); },
+    shoot(){ noise(0.026, 0.34, 1150); tone(rand(200,240), 0.032, 'square', 0.16, 85); },
     shotgun(){ noise(0.09, 0.5, 700); tone(200,0.08,'sawtooth',0.2,120); },
     flame(){ noise(0.06, 0.12, 420); tone(90,0.05,'sawtooth',0.06,60); },
     hit(){ tone(rand(300,360), 0.04, 'triangle', 0.18, 180); },
@@ -707,33 +707,38 @@ const Audio = (() => {
     C3=130.81, D3=146.83, Eb3=155.56, E3=164.81, F3=174.61, G3=196, A3=220, Bb3=233.08, B3=246.94,
     C4=261.63, D4=293.66, Eb4=311.13, E4=329.63, F4=349.23, G4=392, Ab4=415.30, A4=440, Bb4=466.16, B4=493.88,
     C5=523.25, D5=587.33, E5=659.25, F5=698.46, G5=783.99, A5=880;
-  // 오프닝(중세 웅장) — Am–F–C–G, 4마디 루프(64 스텝, 16분음표)
-  const TITLE_CHORDS = [[A2,C4,E4],[F2,A3,C4],[C3,E4,G4],[G2,B3,D4]];
+  // 오프닝(중세 웅장) — Am–F–C–G, 4마디 루프. 5성부 코드 + 서브베이스 + 아르페지오 + 하이 패드 + 멜로디(다성부)
+  const TITLE_CHORDS = [[A2,E3,A3,C4,E4],[F2,C3,F3,A3,C4],[C3,G3,C4,E4,G4],[G2,D3,G3,B3,D4]];
   const TITLE_BASS = [A1,F1,C2,G1];
   const TITLE_MEL = [E5,0,D5,0, C5,0,D5,0,  F5,0,E5,0, D5,0,C5,0,  G5,0,E5,0, D5,0,C5,0,  D5,0,B4,0, C5,0,0,0];
   function titleFn(step, t) {
-    const bar = (step >> 4) & 3, s16 = step & 15;
-    if (s16 === 0) { // 마디 시작: 패드 코드 + 베이스 + 팀파니
-      const ch = TITLE_CHORDS[bar];
-      for (const f of ch) mnote(f, t, 2.9, { type:'sawtooth', vol:0.075, cut:1500, thick:true, atk:0.06 });
-      mnote(TITLE_BASS[bar], t, 1.4, { type:'triangle', vol:0.22, cut:900 });
+    const bar = (step >> 4) & 3, s16 = step & 15, ch = TITLE_CHORDS[bar];
+    if (s16 === 0) { // 마디 시작: 5성부 현악 패드 + 하이 패드 + 베이스/서브베이스 + 팀파니
+      for (const f of ch) mnote(f, t, 2.95, { type:'sawtooth', vol:0.05, cut:1600, thick:true, atk:0.06 });
+      mnote(ch[ch.length-1]*2, t, 2.95, { type:'triangle', vol:0.028, cut:3800, thick:true, atk:0.22 });
+      mnote(TITLE_BASS[bar], t, 1.5, { type:'triangle', vol:0.2, cut:900 });
+      mnote(TITLE_BASS[bar]/2, t, 1.5, { type:'sine', vol:0.13, cut:200 });
       timp(t, TITLE_BASS[bar]*2, 0.5);
     }
-    if (s16 === 8) { mnote(TITLE_BASS[bar], t, 1.0, { type:'triangle', vol:0.16, cut:900 }); timp(t, TITLE_BASS[bar]*2, 0.32); }
-    if ((step & 1) === 0) { const m = TITLE_MEL[step >> 1]; if (m) mnote(m, t, 0.62, { type:'triangle', vol:0.2, cut:3200, thick:true }); }
+    if (s16 === 8) { mnote(TITLE_BASS[bar], t, 1.0, { type:'triangle', vol:0.14, cut:900 }); timp(t, TITLE_BASS[bar]*2, 0.32); }
+    if ((step & 1) === 0) { const an = ch[((step>>1) % (ch.length-1)) + 1] * 2; mnote(an, t, 0.26, { type:'triangle', vol:0.055, cut:4400 }); } // 하프 아르페지오
+    if ((step & 1) === 0) { const m = TITLE_MEL[step >> 1]; if (m) { mnote(m, t, 0.62, { type:'triangle', vol:0.18, cut:3200, thick:true }); mnote(m/2, t, 0.62, { type:'triangle', vol:0.05, cut:1600 }); } } // 멜로디+옥타브
   }
-  // 게임(긴장·서스펜스) — 느린 템포, 불협 드론(D+Eb) + 심장박동 + 트레몰로 + 트라이톤 스탭
+  // 게임(긴장·서스펜스) — 느린 템포, 불협 드론(D+Eb) + 마이너 패드 + 저음 아르페지오 + 심장박동 + 트레몰로 + 트라이톤
   const GAME_STEP = 0.14, GAME_LEN = 32, GAME_LOOP = GAME_LEN * GAME_STEP;
+  const GAME_ARP = [D2,A2,D3,F3, A3,F3,D3,A2, D2,A2,D3,F3, Eb3,C3,A2,F2];
   function gameFn(step, t) {
-    if (step === 0) {  // 어둡고 불협한 지속 드론 (단2도 D+Eb)
-      mnote(D1, t, GAME_LOOP, { type:'sawtooth', vol:0.09, cut:170 });
-      mnote(Eb2, t, GAME_LOOP, { type:'sawtooth', vol:0.028, cut:220 });
+    if (step === 0) {  // 어둡고 불협한 지속 드론 (단2도 D+Eb) + Dm 마이너 패드(두께)
+      mnote(D1, t, GAME_LOOP, { type:'sawtooth', vol:0.085, cut:170 });
+      mnote(Eb2, t, GAME_LOOP, { type:'sawtooth', vol:0.026, cut:220 });
+      for (const f of [D2,F2,A2]) mnote(f, t, GAME_LOOP, { type:'sawtooth', vol:0.028, cut:360, thick:true, atk:0.12 });
     }
-    if ((step & 1) === 0) mnote(A4, t, 0.17, { type:'triangle', vol:0.045, cut:2600, thick:true }); // 트레몰로 고음(불안)
-    if ((step % 8) === 0) { kick(t, 0.8); mnote(D2, t, 0.5, { type:'sawtooth', vol:0.16, cut:340 }); } // 심장박동 강
+    if ((step & 1) === 0) mnote(A4, t, 0.17, { type:'triangle', vol:0.04, cut:2600, thick:true }); // 트레몰로 고음(불안)
+    if ((step & 1) === 0) mnote(GAME_ARP[(step>>1) % GAME_ARP.length], t, 0.16, { type:'sawtooth', vol:0.075, cut:520 }); // 저음 아르페지오
+    if ((step % 8) === 0) { kick(t, 0.8); mnote(D2, t, 0.5, { type:'sawtooth', vol:0.14, cut:340 }); } // 심장박동 강
     if ((step % 8) === 3) kick(t, 0.42);                                                              // 두근-두근 약
-    if (step === 16) { mnote(Ab4, t, 0.55, { type:'sawtooth', vol:0.1, cut:1300, thick:true }); mnote(D4, t, 0.55, { type:'sawtooth', vol:0.07, cut:1300 }); } // 트라이톤 스탭
-    if (step === 26) mnote(Eb4, t, 0.45, { type:'sawtooth', vol:0.075, cut:1200 });                   // 불협 여운
+    if (step === 16) { mnote(Ab4, t, 0.55, { type:'sawtooth', vol:0.09, cut:1300, thick:true }); mnote(D4, t, 0.55, { type:'sawtooth', vol:0.06, cut:1300 }); } // 트라이톤 스탭
+    if (step === 26) mnote(Eb4, t, 0.45, { type:'sawtooth', vol:0.07, cut:1200 });                    // 불협 여운
     if (step === 30) snare(t, 0.16);                                                                  // 긴장 고조 히트
   }
   const TRACKS = { title:{ name:'title', len:64, step:0.183, fn:titleFn },
@@ -913,8 +918,8 @@ const WEAPONS = {
     desc:'이동 방향 부채꼴을 베어 피해를 주고, 준 피해의 일부만큼 체력을 회복.',
     stats:l=>({ dmg:12+(l-1)*4.2, cd:Math.max(30,60-(l-1)*3.5), range:78+(l-1)*5, arc:0.72, lifesteal:0.10+(l-1)*0.01 }) },
   frostwand:{ name:'프로스트 완드', icon:'❄️', aim:'nearest', pair:'speed', evo:'blizzard',
-    desc:'냉기 탄을 발사, 맞은 적의 이동을 느리게 만든다.',
-    stats:l=>({ dmg:8+(l-1)*3, cd:Math.max(24,44-(l-1)*2.5), spd:8, chill:120 }) },
+    desc:'냉기 탄을 발사, 맞은 적의 이동을 느리게 만든다. 레벨업마다 둔화가 강해진다.',
+    stats:l=>({ dmg:8+(l-1)*2, cd:Math.max(26,44-(l-1)*2), spd:8, chill:110+(l-1)*26, chillPow:Math.max(0.22, 0.5-(l-1)*0.035) }) },
 };
 /* 진화 무기 — 설계서 5장 */
 const EVOS = {
@@ -937,7 +942,7 @@ const EVOS = {
   soulreaper:{ name:'소울 리퍼', icon:'🌑', base:'scythe', desc:'광역 베기와 강화된 흡혈로 전장을 정화.',
     stats:()=>({ dmg:36, cd:38, range:132, arc:1.05, lifesteal:0.24 }) },
   blizzard:{ name:'블리자드', icon:'🌨️', base:'frostwand', desc:'광역 눈보라로 다수의 적을 강하게 둔화.',
-    stats:()=>({ dmg:14, cd:30, spd:9, chill:210, proj:3, blizzard:true }) },
+    stats:()=>({ dmg:14, cd:30, spd:9, chill:240, chillPow:0.18, proj:3, blizzard:true }) },
 };
 
 /* 패시브 9종 — 설계서 4장 (레벨 1~5) */
@@ -1044,7 +1049,7 @@ const UI = {
     'f.dmg':'피해 +', 'f.proj':'발사 수 +', 'f.projU':'발', 'f.pellets':'탄환 +', 'f.pelletsU':'발',
     'f.blades':'톱날 +', 'f.bladesU':'개', 'f.chain':'전이 대상 +', 'f.chainU':'명',
     'f.radius':'폭발 범위 +', 'f.range':'사거리 +', 'f.reach':'관통 거리 +', 'f.life':'설치 지속 +',
-    'f.lifesteal':'흡혈 +', 'f.cdup':'공격 속도 ↑', 'f.firecdup':'점사 속도 ↑', 'cum':'누적',
+    'f.lifesteal':'흡혈 +', 'f.cdup':'공격 속도 ↑', 'f.firecdup':'점사 속도 ↑', 'f.chilldur':'둔화 시간 +', 'f.chillpow':'둔화 강화 ↑', 'cum':'누적',
   },
   en:{
     'menu.brand':'Undead Rush · Roguelite Survival', 'menu.tag':'Survive the horde for 5 minutes and slay the final boss.',
@@ -1074,7 +1079,7 @@ const UI = {
     'f.dmg':'Damage +', 'f.proj':'Shots +', 'f.projU':'', 'f.pellets':'Pellets +', 'f.pelletsU':'',
     'f.blades':'Blades +', 'f.bladesU':'', 'f.chain':'Chain targets +', 'f.chainU':'',
     'f.radius':'Blast radius +', 'f.range':'Range +', 'f.reach':'Pierce range +', 'f.life':'Duration +',
-    'f.lifesteal':'Lifesteal +', 'f.cdup':'Attack speed ↑', 'f.firecdup':'Burst speed ↑', 'cum':'Total',
+    'f.lifesteal':'Lifesteal +', 'f.cdup':'Attack speed ↑', 'f.firecdup':'Burst speed ↑', 'f.chilldur':'Slow duration +', 'f.chillpow':'Slow strength ↑', 'cum':'Total',
   },
   zh:{
     'menu.brand':'Undead Rush · 类Rogue生存', 'menu.tag':'坚守5分钟，击败最终首领。',
@@ -1104,7 +1109,7 @@ const UI = {
     'f.dmg':'伤害 +', 'f.proj':'弹数 +', 'f.projU':'', 'f.pellets':'弹丸 +', 'f.pelletsU':'',
     'f.blades':'锯刃 +', 'f.bladesU':'', 'f.chain':'连锁目标 +', 'f.chainU':'',
     'f.radius':'爆炸范围 +', 'f.range':'射程 +', 'f.reach':'穿透距离 +', 'f.life':'持续 +',
-    'f.lifesteal':'吸血 +', 'f.cdup':'攻击速度 ↑', 'f.firecdup':'点射速度 ↑', 'cum':'累计',
+    'f.lifesteal':'吸血 +', 'f.cdup':'攻击速度 ↑', 'f.firecdup':'点射速度 ↑', 'f.chilldur':'减速时间 +', 'f.chillpow':'减速强化 ↑', 'cum':'累计',
   },
   th:{
     'menu.brand':'Undead Rush · เอาชีวิตรอดสไตล์ Roguelite', 'menu.tag':'เอาชีวิตรอด 5 นาทีแล้วกำจัดบอสสุดท้าย',
@@ -1134,7 +1139,7 @@ const UI = {
     'f.dmg':'ความเสียหาย +', 'f.proj':'จำนวนยิง +', 'f.projU':'', 'f.pellets':'กระสุน +', 'f.pelletsU':'',
     'f.blades':'ใบเลื่อย +', 'f.bladesU':'', 'f.chain':'เป้าหมายลูกโซ่ +', 'f.chainU':'',
     'f.radius':'รัศมีระเบิด +', 'f.range':'ระยะ +', 'f.reach':'ระยะทะลุ +', 'f.life':'ระยะเวลา +',
-    'f.lifesteal':'ดูดเลือด +', 'f.cdup':'ความเร็วโจมตี ↑', 'f.firecdup':'ความเร็วยิงชุด ↑', 'cum':'รวม',
+    'f.lifesteal':'ดูดเลือด +', 'f.cdup':'ความเร็วโจมตี ↑', 'f.firecdup':'ความเร็วยิงชุด ↑', 'f.chilldur':'เวลาชะลอ +', 'f.chillpow':'ชะลอแรงขึ้น ↑', 'cum':'รวม',
   },
   vi:{
     'menu.brand':'Undead Rush · Sinh tồn Roguelite', 'menu.tag':'Sống sót 5 phút và tiêu diệt trùm cuối.',
@@ -1164,7 +1169,7 @@ const UI = {
     'f.dmg':'Sát thương +', 'f.proj':'Số phát bắn +', 'f.projU':'', 'f.pellets':'Đạn +', 'f.pelletsU':'',
     'f.blades':'Lưỡi cưa +', 'f.bladesU':'', 'f.chain':'Mục tiêu lan +', 'f.chainU':'',
     'f.radius':'Bán kính nổ +', 'f.range':'Tầm +', 'f.reach':'Tầm xuyên +', 'f.life':'Thời lượng +',
-    'f.lifesteal':'Hút máu +', 'f.cdup':'Tốc đánh ↑', 'f.firecdup':'Tốc bắn loạt ↑', 'cum':'Tổng',
+    'f.lifesteal':'Hút máu +', 'f.cdup':'Tốc đánh ↑', 'f.firecdup':'Tốc bắn loạt ↑', 'f.chilldur':'Thời gian làm chậm +', 'f.chillpow':'Làm chậm mạnh hơn ↑', 'cum':'Tổng',
   },
   es:{
     'menu.brand':'Undead Rush · Supervivencia Roguelite', 'menu.tag':'Sobrevive 5 minutos y elimina al jefe final.',
@@ -1194,7 +1199,7 @@ const UI = {
     'f.dmg':'Daño +', 'f.proj':'Disparos +', 'f.projU':'', 'f.pellets':'Perdigones +', 'f.pelletsU':'',
     'f.blades':'Cuchillas +', 'f.bladesU':'', 'f.chain':'Objetivos en cadena +', 'f.chainU':'',
     'f.radius':'Radio de explosión +', 'f.range':'Alcance +', 'f.reach':'Alcance de perforación +', 'f.life':'Duración +',
-    'f.lifesteal':'Robo de vida +', 'f.cdup':'Vel. de ataque ↑', 'f.firecdup':'Vel. de ráfaga ↑', 'cum':'Total',
+    'f.lifesteal':'Robo de vida +', 'f.cdup':'Vel. de ataque ↑', 'f.firecdup':'Vel. de ráfaga ↑', 'f.chilldur':'Duración de ralentización +', 'f.chillpow':'Ralentización más fuerte ↑', 'cum':'Total',
   },
 };
 
@@ -1508,7 +1513,7 @@ const G = {
   spawnTimer:0, heartTimer:0,
   miniSpawned:false, bossSpawned:false, boss:null,
   runCoins:0, kills:0, camX:0, camY:0,
-  screenShake:0, uid:1, tier:1, _cashed:false,
+  screenShake:0, uid:1, tier:1, _cashed:false, bossKilled:false,
 };
 const pool = { enemy:[], bullet:[], part:[], gem:[], acid:[] };
 const takeEnemy = () => pool.enemy.pop() || {};
@@ -1607,7 +1612,7 @@ function startRun(){
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, runCoins:0, kills:0, screenShake:0,
-    tier: Math.max(1, G.save.maxTier || 1), _cashed:false,   // 클리어한 만큼 다음 차수부터 시작
+    tier: Math.max(1, G.save.maxTier || 1), _cashed:false, bossKilled:false,   // 클리어한 만큼 다음 차수부터 시작
   });
   G.player = makePlayer();
   const char = CHARACTERS[G.character || 'hunter'];
@@ -1701,7 +1706,7 @@ function fireBullet(x, y, ang, dmg, spd, opt = {}) {
   b.col = opt.col || '#ffe08a'; b.type = opt.type || 'bullet'; b.owner = opt.owner || 'p';
   b.tx = opt.tx; b.ty = opt.ty; b.radius = opt.radius; b.mode = opt.mode; b.spin = 0;
   b.startX = x; b.startY = y; b.reach = opt.reach; b.cluster = opt.cluster || 0;
-  b.trail = opt.trail; b.chill = opt.chill || 0; b.dead = false; b.id = G.uid++;
+  b.trail = opt.trail; b.chill = opt.chill || 0; b.chillPow = opt.chillPow || 0.42; b.dead = false; b.id = G.uid++;
   G.bullets.push(b); return b;
 }
 
@@ -1791,7 +1796,7 @@ function fireWeapon(w) {
     const n = w.evolved ? EVOS.blizzard.stats().proj : 1;
     for (let i = 0; i < n; i++) {
       const a = ang + (n > 1 ? lerp(-0.3, 0.3, i / (n - 1)) : 0);
-      fireBullet(p.x, p.y, a, s.dmg, s.spd, { r:5, col:'#a9e8ff', life:72, pierce:w.evolved ? 2 : 0, chill:s.chill, trail:true });
+      fireBullet(p.x, p.y, a, s.dmg, s.spd, { r:5, col:'#a9e8ff', life:72, pierce:w.evolved ? 2 : 0, chill:s.chill, chillPow:s.chillPow, trail:true });
     }
     Audio.S.shoot(); return;
   }
@@ -1978,7 +1983,7 @@ function spawnEnemy(typeKey, ox, oy) {
   e.maxhp = def.hp * hpMul(); e.hp = e.maxhp;
   e.r = def.r; e.spd = def.spd * tierSpdMul(); e.dead = false; e.boss = false; e.mini = false;
   e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140);
-  e.howlT = randInt(140, 220); e.hasteT = 0; e.chill = 0; e.pullT = 0; e.facing = 1; e.id = G.uid++;
+  e.howlT = randInt(140, 220); e.hasteT = 0; e.chill = 0; e.chillPow = 1; e.pullT = 0; e.facing = 1; e.id = G.uid++;
   G.enemies.push(e); return e;
 }
 
@@ -2003,11 +2008,14 @@ function spawnDirector() {
 }
 function rollEnemyType(t) {
   const r = Math.random();
-  if (t < 20) return r < 0.85 ? 'walker' : 'runner';
-  if (t < 40) return r < 0.55 ? 'walker' : r < 0.85 ? 'runner' : 'brute';
-  if (t < 70) return r < 0.4 ? 'walker' : r < 0.68 ? 'runner' : r < 0.85 ? 'bomber' : 'brute';
-  if (t < 120) return r < 0.28 ? 'walker' : r < 0.52 ? 'runner' : r < 0.68 ? 'bomber' : r < 0.8 ? 'spitter' : r < 0.9 ? 'howler' : 'brute';
-  return r < 0.22 ? 'walker' : r < 0.44 ? 'runner' : r < 0.6 ? 'bomber' : r < 0.74 ? 'spitter' : r < 0.87 ? 'howler' : 'brute';
+  let type;
+  if (t < 20) type = r < 0.85 ? 'walker' : 'runner';
+  else if (t < 40) type = r < 0.55 ? 'walker' : r < 0.85 ? 'runner' : 'brute';
+  else if (t < 70) type = r < 0.4 ? 'walker' : r < 0.68 ? 'runner' : r < 0.85 ? 'bomber' : 'brute';
+  else if (t < 120) type = r < 0.28 ? 'walker' : r < 0.52 ? 'runner' : r < 0.68 ? 'bomber' : r < 0.8 ? 'spitter' : r < 0.9 ? 'howler' : 'brute';
+  else type = r < 0.22 ? 'walker' : r < 0.44 ? 'runner' : r < 0.6 ? 'bomber' : r < 0.74 ? 'spitter' : r < 0.87 ? 'howler' : 'brute';
+  if (type === 'howler' && G.tier < 4) type = 'spitter';   // 하울러(보라·둔화)는 4차부터 등장
+  return type;
 }
 
 /* 차수별 최종 보스 — 도트 스프라이트/이름/색상 (5차 이후는 5차 보스 유지) */
@@ -2062,8 +2070,8 @@ function update() {
   }
   G.camX = p.x; G.camY = p.y;
 
-  const rg = pRegen();
-  if (rg > 0 && p.hp < p.maxhp) { p.regenAcc += rg / 60; if (p.regenAcc >= 1) { const w = Math.floor(p.regenAcc); p.hp = Math.min(p.maxhp, p.hp + w); p.regenAcc -= w; } }
+  const rg = pRegen() + p.maxhp * 0.001;   // 기본 자연 회복 0.1%/초 + 리커버리 패시브
+  if (p.hp < p.maxhp) { p.regenAcc += rg / 60; if (p.regenAcc >= 1) { const w = Math.floor(p.regenAcc); p.hp = Math.min(p.maxhp, p.hp + w); p.regenAcc -= w; } }
   if (p.iframe > 0) p.iframe--;
   if (p.hurtFlash > 0) p.hurtFlash--;
   if (p.shield > 0) p.shield--;
@@ -2099,7 +2107,7 @@ function updateEnemies() {
     if (e.hasteT > 0) e.hasteT--;
     if (e.chill > 0) e.chill--;
     const dx = p.x - e.x, dy = p.y - e.y, d = Math.sqrt(dx*dx + dy*dy) || 1;
-    const spd = e.spd * (e.hasteT > 0 ? 1.4 : 1) * (e.chill > 0 ? 0.42 : 1);   // 냉기: 둔화
+    const spd = e.spd * (e.hasteT > 0 ? 1.4 : 1) * (e.chill > 0 ? (e.chillPow || 0.42) : 1);   // 냉기: 둔화(레벨↑일수록 강함)
     if (Math.abs(dx) > 4) e.facing = dx < 0 ? -1 : 1;
 
     if (e.pullT > 0) { e.pullT--; e.x += dx/d * 6.5; e.y += dy/d * 6.5; }   // 체인 훅: 강제 견인
@@ -2222,7 +2230,7 @@ function updateBullets() {
         const rr = b.r + e.r;
         if (dist2(b.x, b.y, e.x, e.y) < rr*rr) {
           damageEnemy(e, b.dmg); hit = true; if (b.pierce > 0) b.pierce--;
-          if (b.chill && !e.boss) e.chill = Math.max(e.chill || 0, b.chill);   // 냉기 둔화
+          if (b.chill && !e.boss) { e.chill = Math.max(e.chill || 0, b.chill); e.chillPow = Math.min(e.chillPow || 1, b.chillPow); }   // 냉기 둔화(강할수록 낮은 값)
         }
       });
       if ((hit && b.pierce <= 0) || b.life <= 0) b.dead = true;
@@ -2380,6 +2388,8 @@ function statDeltaDesc(key, lvl) {
   if (a.reach != null && b.reach > a.reach) parts.push(t('f.reach') + Math.round(b.reach - a.reach));
   if (a.life != null && b.life > a.life) parts.push(t('f.life') + (Math.round((b.life - a.life) / 60 * 10) / 10) + 's');
   if (a.lifesteal != null && b.lifesteal > a.lifesteal) parts.push(t('f.lifesteal') + Math.round((b.lifesteal - a.lifesteal) * 100) + '%');
+  if (a.chill != null && b.chill > a.chill) parts.push(t('f.chilldur') + (Math.round((b.chill - a.chill) / 60 * 10) / 10) + 's');
+  if (a.chillPow != null && b.chillPow < a.chillPow) parts.push(t('f.chillpow'));
   if (a.cd != null && b.cd < a.cd) parts.push(t('f.cdup'));
   if (a.fireCd != null && b.fireCd < a.fireCd) parts.push(t('f.firecdup'));
   return parts.length ? parts.join(' · ') : trDesc('weapon', key);
@@ -2709,7 +2719,9 @@ function togglePause() {
 function cashOutRun() {
   if (G._cashed) return { earned:0, bonusMul:1 };
   G._cashed = true;
-  const bonusMul = (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
+  // 보스 처치 시 150%, 보스 못 잡고 전멸/종료 시 80%
+  const winMul = G.bossKilled ? 1.5 : 0.8;
+  const bonusMul = winMul * (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
   const earned = Math.round(G.runCoins * bonusMul);
   G.save.coins += earned; G.save.totalKills += G.kills;
   if (G.time > G.save.bestTime) G.save.bestTime = G.time;
@@ -2741,13 +2753,14 @@ function endRun(win) {
 function winRound() {
   if (G.state === 'result') return;
   G.state = 'result';
+  G.bossKilled = true;   // 보스 처치 → 정산 시 150%
   G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier + 1);
   if (G.time > G.save.bestTime) G.save.bestTime = G.time;
   // 3차 클리어 보상: 패시브 슬롯 +1 (최대 6 → 7)
   const p3reward = (G.tier >= 3 && (G.save.passiveSlots || 6) < 7);
   if (p3reward) G.save.passiveSlots = 7;
   Store.save(G.save);
-  const bonusMul = (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
+  const bonusMul = 1.5 * (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
   const pending = Math.round(G.runCoins * bonusMul);
   el.resEmoji.textContent = '🏆';
   el.resTitle.textContent = t('res.clear').replace('{n}', G.tier);
