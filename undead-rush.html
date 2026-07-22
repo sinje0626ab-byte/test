@@ -2319,10 +2319,16 @@ function updateSentries() {
   const list = G.sentries, p = P(), n = list.length;
   for (let i = 0; i < list.length; i++) {
     const s = list[i]; s.fireT--;   // 지속형: 수명 없음(상한으로 개수 제어)
-    // 플레이어를 따라다님: 주위를 천천히 도는 대형 위치로 부드럽게 이동
-    const ang = (i / Math.max(1, n)) * TAU + G.frame * 0.01;
-    const tx = p.x + Math.cos(ang) * 50, ty = p.y + Math.sin(ang) * 50;
-    s.x += (tx - s.x) * 0.1; s.y += (ty - s.y) * 0.1;
+    // NPC 스타일 추적: 가까이 있으면 제자리에서 사격, 시야에서 멀어지면
+    // 거리를 유지한 채로 천천히 따라온다(계속 붙어다니지 않음).
+    const dx = p.x - s.x, dy = p.y - s.y, d = Math.hypot(dx, dy) || 1;
+    const FOLLOW = 240, KEEP = 130;                  // 240 넘게 벌어지면 추적 시작, 130 거리 유지
+    if (s.chase || d > FOLLOW) {
+      s.chase = d > KEEP + 12;                        // 유지 거리에 닿으면 멈춤(히스테리시스)
+      const nx = dx / d, ny = dy / d;
+      const tx = p.x - nx * KEEP, ty = p.y - ny * KEEP;
+      s.x += (tx - s.x) * 0.05; s.y += (ty - s.y) * 0.05;   // 느리고 자연스럽게
+    }
     if (s.fireT <= 0) {
       const e = nearestEnemy(s.x, s.y, s.rng);
       if (e) {
@@ -2567,9 +2573,10 @@ function drawSentries() {
     if (!onScreen(s.x, s.y, 30)) continue;
     if (G.selTurret === s) { ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = 2; ctx.setLineDash([4,3]);
       ctx.beginPath(); ctx.arc(s.x, s.y, 18, 0, TAU); ctx.stroke(); ctx.setLineDash([]); }
-    ctx.fillStyle = s.evolved ? '#5a6b52' : '#46524a';
+    const spent = ((s.atkLv || 0) + (s.spdLv || 0)) > 0;   // 스탯을 찍었는지
+    ctx.fillStyle = spent ? '#4a5158' : '#3f5560';
     ctx.beginPath(); ctx.arc(s.x, s.y, 12, 0, TAU); ctx.fill();
-    ctx.strokeStyle = s.evolved ? '#ffcf4d' : '#8bff5a'; ctx.lineWidth = 2;
+    ctx.strokeStyle = spent ? '#9aa4ad' : '#7fd4ff'; ctx.lineWidth = 2;   // 회색 : 하늘색
     ctx.beginPath(); ctx.arc(s.x, s.y, 12, 0, TAU); ctx.stroke();
     const e = nearestEnemy(s.x, s.y, s.rng);
     const a = e ? Math.atan2(e.y - s.y, e.x - s.x) : 0;
