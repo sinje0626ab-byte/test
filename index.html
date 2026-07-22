@@ -912,21 +912,9 @@ const WEAPONS = {
   scythe:{ name:'블러드 사이드', icon:'🩸', aim:'move', pair:'regen', evo:'soulreaper', melee:true,
     desc:'이동 방향 부채꼴을 베어 피해를 주고, 준 피해의 일부만큼 체력을 회복.',
     stats:l=>({ dmg:12+(l-1)*4.2, cd:Math.max(30,60-(l-1)*3.5), range:78+(l-1)*5, arc:0.72, lifesteal:0.10+(l-1)*0.01 }) },
-  crossbow:{ name:'크로스보우', icon:'🏹', aim:'nearest', pair:'crit', evo:'tripleshot',
-    desc:'강력한 관통 볼트를 발사해 일직선의 적을 꿰뚫는다.',
-    stats:l=>({ dmg:16+(l-1)*6, cd:Math.max(28,54-(l-1)*3), spd:11, pierce:3+Math.floor((l-1)/3) }) },
-  greatsword:{ name:'그레이트소드', icon:'⚔️', aim:'move', pair:'dmg', evo:'earthcleaver', melee:true,
-    desc:'전방을 크게 내려베는 광역 근접 강타.',
-    stats:l=>({ dmg:20+(l-1)*7, cd:Math.max(40,72-(l-1)*4), range:90+(l-1)*5, arc:1.0 }) },
-  fireball:{ name:'파이어볼', icon:'☄️', aim:'nearest', pair:'range', evo:'meteor',
-    desc:'폭발하는 화염구를 던져 반경에 화염 피해를 준다.',
-    stats:l=>({ dmg:18+(l-1)*7, cd:Math.max(48,84-(l-1)*4), radius:58+(l-1)*5, spd:5 }) },
   frostwand:{ name:'프로스트 완드', icon:'❄️', aim:'nearest', pair:'speed', evo:'blizzard',
     desc:'냉기 탄을 발사, 맞은 적의 이동을 느리게 만든다.',
     stats:l=>({ dmg:8+(l-1)*3, cd:Math.max(24,44-(l-1)*2.5), spd:8, chill:120 }) },
-  chainhook:{ name:'체인 훅', icon:'⛓️', aim:'nearest', pair:'range', evo:'souldrag',
-    desc:'갈고리로 적을 꿰어 플레이어 쪽으로 끌어당기고 피해를 준다.',
-    stats:l=>({ dmg:12+(l-1)*5, cd:Math.max(40,70-(l-1)*4), reach:250+(l-1)*8 }) },
 };
 /* 진화 무기 — 설계서 5장 */
 const EVOS = {
@@ -948,16 +936,8 @@ const EVOS = {
     stats:()=>({ dmg:9, cd:120, fireCd:3, life:480, rng:240 }) },
   soulreaper:{ name:'소울 리퍼', icon:'🌑', base:'scythe', desc:'광역 베기와 강화된 흡혈로 전장을 정화.',
     stats:()=>({ dmg:36, cd:38, range:132, arc:1.05, lifesteal:0.24 }) },
-  tripleshot:{ name:'트리플 볼트', icon:'🎯', base:'crossbow', desc:'세 발의 관통 볼트를 동시에 발사.',
-    stats:()=>({ dmg:26, cd:26, spd:12, pierce:5, triple:true }) },
-  earthcleaver:{ name:'어스 클리버', icon:'🗿', base:'greatsword', desc:'내려벨 때 대지를 가르는 충격파가 발생.',
-    stats:()=>({ dmg:44, cd:44, range:120, arc:1.15, shock:true }) },
-  meteor:{ name:'메테오', icon:'🌠', base:'fireball', desc:'하늘에서 다수의 화염구가 쏟아진다.',
-    stats:()=>({ dmg:30, cd:70, radius:74, spd:5, meteor:5 }) },
   blizzard:{ name:'블리자드', icon:'🌨️', base:'frostwand', desc:'광역 눈보라로 다수의 적을 강하게 둔화.',
     stats:()=>({ dmg:14, cd:30, spd:9, chill:210, proj:3, blizzard:true }) },
-  souldrag:{ name:'소울 드래그', icon:'🕸️', base:'chainhook', desc:'여러 적을 한꺼번에 끌어당기고 강타한다.',
-    stats:()=>({ dmg:30, cd:44, reach:300, multi:3 }) },
 };
 
 /* 패시브 9종 — 설계서 4장 (레벨 1~5) */
@@ -1026,10 +1006,10 @@ let curLang = 'ko';
 const EN_NAMES = {
   weapon:{ pistol:'Dead Shot', shotgun:'Spread Shot', flamethrower:'Flame Jet', machete:'Spin Blade',
     grenade:'Boom Shot', taser:'Thunder Bolt', axe:'Boomerang Axe', sentry:'Guard Turret', scythe:'Blood Scythe',
-    crossbow:'Crossbow', greatsword:'Greatsword', fireball:'Fireball', frostwand:'Frost Wand', chainhook:'Chain Hook' },
+    frostwand:'Frost Wand' },
   evo:{ machinegun:'Bullet Storm', gatling:'Bullet Rain', inferno:'Fire Storm', buzzsaw:'Blade Storm',
     cluster:'Cluster Boom', chainstorm:'Chain Storm', executioner:'Death Axe', minigun:'Minigun', soulreaper:'Soul Reaper',
-    tripleshot:'Triple Bolt', earthcleaver:'Earth Cleaver', meteor:'Meteor', blizzard:'Blizzard', souldrag:'Soul Drag' },
+    blizzard:'Blizzard' },
   passive:{ dmg:'Power Up', speed:'Rapid', proj:'Multi Shot', range:'Wide', movespeed:'Speed',
     maxhp:'Life Up', regen:'Recovery', magnet:'Magnet', crit:'Critical' },
 };
@@ -1229,12 +1209,12 @@ const TR = {
       taser:{desc:'Chain lightning that jumps between nearby foes.'},
       axe:{desc:'Pierces in a straight line, then returns to you.'},
       sentry:{desc:'Drops a fixed turret that auto-fires.'},
-      scythe:{desc:'Sweeps a fan and heals for part of the damage dealt.'}, crossbow:{desc:'Fires a powerful piercing bolt that skewers enemies in a line.'}, greatsword:{desc:'A wide melee slam that cleaves everything in front.'}, fireball:{desc:'Lobs an exploding fireball for fire damage in a radius.'}, frostwand:{desc:'Fires a frost bolt that slows enemies it hits.'}, chainhook:{desc:'Hooks an enemy and drags it toward you, dealing damage.'} },
+      scythe:{desc:'Sweeps a fan and heals for part of the damage dealt.'}, frostwand:{desc:'Fires a frost bolt that slows enemies it hits.'} },
     evo:{ machinegun:{desc:'Ultra-fast rapid-fire bursts.'}, gatling:{desc:'A wide fan of bullets blankets the front.'},
       inferno:{desc:'Leaves lingering pillars of fire along its path.'}, buzzsaw:{desc:'Huge saw blades spin furiously at all times.'},
       cluster:{desc:'Splits into secondary chain explosions.'}, chainstorm:{desc:'Chains at high speed across up to 7 targets.'},
       executioner:{desc:'Cleaves everything in its path near-instantly.'}, minigun:{desc:'A firepower nest raining a storm of shots.'},
-      soulreaper:{desc:'Wide slashes with boosted lifesteal cleanse the field.'}, tripleshot:{desc:'Fires three piercing bolts at once.'}, earthcleaver:{desc:'Each slam sends out a ground-splitting shockwave.'}, meteor:{desc:'Rains down multiple fireballs from the sky.'}, blizzard:{desc:'A wide blizzard that heavily slows many enemies.'}, souldrag:{desc:'Drags several enemies in at once and strikes hard.'} },
+      soulreaper:{desc:'Wide slashes with boosted lifesteal cleanse the field.'}, blizzard:{desc:'A wide blizzard that heavily slows many enemies.'} },
     passive:{ dmg:{desc:'All weapon damage +10%'}, speed:{desc:'Reload delay -10%'}, proj:{desc:'Projectiles +1'},
       range:{desc:'Blast · fire · axe area +15%'}, movespeed:{desc:'Move speed +8%'}, maxhp:{desc:'Max HP +20%'},
       regen:{desc:'HP per second +0.5'}, magnet:{desc:'Pickup range +30%'}, crit:{desc:'Crit chance +8% (double damage)'} },
@@ -1251,12 +1231,12 @@ const TR = {
       flamethrower:{desc:'对身前锥形区域造成持续火焰伤害。'}, machete:{desc:'近战刀刃环绕你形成防护罩。'},
       grenade:{desc:'投向目标点，范围爆炸。'}, taser:{desc:'连锁闪电在附近敌人间跳跃。'},
       axe:{desc:'直线穿透后返回到你身边。'}, sentry:{desc:'在脚下放置固定炮塔，自动点射。'},
-      scythe:{desc:'挥砍扇形造成伤害，并按造成伤害的一部分回复生命。'}, crossbow:{desc:'发射强力穿透弩箭，贯穿一线上的敌人。'}, greatsword:{desc:'大范围近战下劈，斩击前方一切。'}, fireball:{desc:'投掷爆炸火球，对范围造成火焰伤害。'}, frostwand:{desc:'发射冰霜弹，减速命中的敌人。'}, chainhook:{desc:'用钩子勾住敌人拉向自己并造成伤害。'} },
+      scythe:{desc:'挥砍扇形造成伤害，并按造成伤害的一部分回复生命。'}, frostwand:{desc:'发射冰霜弹，减速命中的敌人。'} },
     evo:{ machinegun:{desc:'超高速连射点射。'}, gatling:{desc:'覆盖前方的扇形弹幕。'},
       inferno:{desc:'在路径上留下持续燃烧的火柱。'}, buzzsaw:{desc:'时刻狂暴旋转的大型锯刃。'},
       cluster:{desc:'二次连锁爆炸。'}, chainstorm:{desc:'最多7个目标的超高速连锁。'},
       executioner:{desc:'瞬间斩杀路径上的所有敌人。'}, minigun:{desc:'倾泻弹雨的火力据点。'},
-      soulreaper:{desc:'广域挥砍与强化吸血净化战场。'}, tripleshot:{desc:'同时发射三支穿透弩箭。'}, earthcleaver:{desc:'每次下劈产生撕裂大地的冲击波。'}, meteor:{desc:'从天空降下多颗火球。'}, blizzard:{desc:'大范围暴风雪，大幅减速众多敌人。'}, souldrag:{desc:'一次拉入多个敌人并重击。'} },
+      soulreaper:{desc:'广域挥砍与强化吸血净化战场。'}, blizzard:{desc:'大范围暴风雪，大幅减速众多敌人。'} },
     passive:{ dmg:{desc:'所有武器伤害 +10%'}, speed:{desc:'装填等待 -10%'}, proj:{desc:'弹幕 +1'},
       range:{desc:'爆炸·火焰·斧头范围 +15%'}, movespeed:{desc:'移动力 +8%'}, maxhp:{desc:'最大生命 +20%'},
       regen:{desc:'每秒生命 +0.5'}, magnet:{desc:'拾取范围 +30%'}, crit:{desc:'暴击率 +8%（双倍伤害）'} },
@@ -1273,12 +1253,12 @@ const TR = {
       flamethrower:{desc:'สร้างความเสียหายไฟต่อเนื่องเป็นรูปกรวยด้านหน้า'}, machete:{desc:'ใบมีดระยะประชิดหมุนรอบตัวเป็นเกราะ'},
       grenade:{desc:'ขว้างไปยังเป้าหมาย ระเบิดเป็นวงกว้าง'}, taser:{desc:'สายฟ้าลูกโซ่กระโดดระหว่างศัตรูที่อยู่ใกล้'},
       axe:{desc:'ทะลุเป็นเส้นตรงแล้วกลับมาหาคุณ'}, sentry:{desc:'วางป้อมปืนอยู่กับที่ ยิงอัตโนมัติ'},
-      scythe:{desc:'ฟันเป็นรูปพัดสร้างความเสียหาย และฟื้นพลังตามส่วนหนึ่งของความเสียหายที่ทำ'}, crossbow:{desc:'ยิงลูกธนูหน้าไม้ทรงพลังที่ทะลุศัตรูเป็นแนว'}, greatsword:{desc:'ฟันระยะประชิดวงกว้าง กวาดทุกอย่างด้านหน้า'}, fireball:{desc:'ขว้างลูกไฟระเบิด สร้างความเสียหายไฟเป็นวง'}, frostwand:{desc:'ยิงกระสุนน้ำแข็ง ทำให้ศัตรูที่โดนช้าลง'}, chainhook:{desc:'เกี่ยวศัตรูลากเข้าหาตัวและสร้างความเสียหาย'} },
+      scythe:{desc:'ฟันเป็นรูปพัดสร้างความเสียหาย และฟื้นพลังตามส่วนหนึ่งของความเสียหายที่ทำ'}, frostwand:{desc:'ยิงกระสุนน้ำแข็ง ทำให้ศัตรูที่โดนช้าลง'} },
     evo:{ machinegun:{desc:'ยิงรัวความเร็วสูงมาก'}, gatling:{desc:'ม่านกระสุนรูปพัดปกคลุมด้านหน้า'},
       inferno:{desc:'ทิ้งเสาไฟที่คงอยู่ตลอดเส้นทาง'}, buzzsaw:{desc:'ใบเลื่อยขนาดใหญ่หมุนอย่างดุเดือดตลอดเวลา'},
       cluster:{desc:'ระเบิดลูกโซ่รอบสอง'}, chainstorm:{desc:'ลูกโซ่ความเร็วสูงสูงสุด 7 เป้าหมาย'},
       executioner:{desc:'ตัดขาดศัตรูทุกตัวในเส้นทางแทบจะทันที'}, minigun:{desc:'ฐานพลังยิงที่กระหน่ำห่ากระสุน'},
-      soulreaper:{desc:'ฟันวงกว้างพร้อมดูดเลือดที่แข็งแกร่งขึ้นเพื่อชำระสนามรบ'}, tripleshot:{desc:'ยิงลูกธนูทะลุสามดอกพร้อมกัน'}, earthcleaver:{desc:'การฟันแต่ละครั้งปล่อยคลื่นกระแทกแยกพื้นดิน'}, meteor:{desc:'ลูกไฟหลายลูกตกลงมาจากท้องฟ้า'}, blizzard:{desc:'พายุหิมะวงกว้างชะลอศัตรูจำนวนมากอย่างรุนแรง'}, souldrag:{desc:'ลากศัตรูหลายตัวเข้ามาพร้อมกันและฟาดแรง'} },
+      soulreaper:{desc:'ฟันวงกว้างพร้อมดูดเลือดที่แข็งแกร่งขึ้นเพื่อชำระสนามรบ'}, blizzard:{desc:'พายุหิมะวงกว้างชะลอศัตรูจำนวนมากอย่างรุนแรง'} },
     passive:{ dmg:{desc:'ความเสียหายอาวุธทั้งหมด +10%'}, speed:{desc:'เวลาบรรจุกระสุน -10%'}, proj:{desc:'กระสุน +1'},
       range:{desc:'ระเบิด·ไฟ·ขวาน +15%'}, movespeed:{desc:'ความเร็วเคลื่อนที่ +8%'}, maxhp:{desc:'พลังชีวิตสูงสุด +20%'},
       regen:{desc:'พลังชีวิตต่อวินาที +0.5'}, magnet:{desc:'ระยะดูด +30%'}, crit:{desc:'โอกาสคริติคอล +8% (ความเสียหายสองเท่า)'} },
@@ -1295,12 +1275,12 @@ const TR = {
       flamethrower:{desc:'Sát thương lửa liên tục theo hình nón phía trước.'}, machete:{desc:'Lưỡi dao cận chiến xoay quanh bạn như lá chắn.'},
       grenade:{desc:'Ném vào điểm mục tiêu, nổ theo bán kính.'}, taser:{desc:'Sét dây chuyền nhảy giữa các kẻ địch gần.'},
       axe:{desc:'Xuyên theo đường thẳng rồi quay về với bạn.'}, sentry:{desc:'Đặt tháp pháo cố định dưới chân, tự động bắn.'},
-      scythe:{desc:'Chém hình quạt gây sát thương và hồi máu theo một phần sát thương gây ra.'}, crossbow:{desc:'Bắn mũi tên nỏ xuyên mạnh, xuyên qua kẻ địch theo hàng.'}, greatsword:{desc:'Chém cận chiến diện rộng, quét sạch phía trước.'}, fireball:{desc:'Ném quả cầu lửa nổ, gây sát thương lửa theo bán kính.'}, frostwand:{desc:'Bắn đạn băng làm chậm kẻ địch trúng phải.'}, chainhook:{desc:'Móc kẻ địch kéo về phía bạn và gây sát thương.'} },
+      scythe:{desc:'Chém hình quạt gây sát thương và hồi máu theo một phần sát thương gây ra.'}, frostwand:{desc:'Bắn đạn băng làm chậm kẻ địch trúng phải.'} },
     evo:{ machinegun:{desc:'Bắn loạt siêu tốc.'}, gatling:{desc:'Màn đạn hình quạt phủ kín phía trước.'},
       inferno:{desc:'Để lại các cột lửa còn cháy dọc đường đi.'}, buzzsaw:{desc:'Lưỡi cưa lớn xoay dữ dội liên tục.'},
       cluster:{desc:'Tách thành các vụ nổ dây chuyền phụ.'}, chainstorm:{desc:'Lan tốc độ cao qua tối đa 7 mục tiêu.'},
       executioner:{desc:'Chém đứt gần như tức thì mọi kẻ địch trên đường.'}, minigun:{desc:'Cứ điểm hỏa lực trút bão đạn.'},
-      soulreaper:{desc:'Chém rộng cùng hút máu tăng cường thanh lọc chiến trường.'}, tripleshot:{desc:'Bắn ba mũi tên xuyên cùng lúc.'}, earthcleaver:{desc:'Mỗi cú chém tạo sóng xung kích xé đất.'}, meteor:{desc:'Mưa nhiều quả cầu lửa từ trên trời.'}, blizzard:{desc:'Bão tuyết diện rộng làm chậm mạnh nhiều kẻ địch.'}, souldrag:{desc:'Kéo nhiều kẻ địch vào cùng lúc và đánh mạnh.'} },
+      soulreaper:{desc:'Chém rộng cùng hút máu tăng cường thanh lọc chiến trường.'}, blizzard:{desc:'Bão tuyết diện rộng làm chậm mạnh nhiều kẻ địch.'} },
     passive:{ dmg:{desc:'Sát thương mọi vũ khí +10%'}, speed:{desc:'Thời gian nạp -10%'}, proj:{desc:'Đạn +1'},
       range:{desc:'Vùng nổ·lửa·rìu +15%'}, movespeed:{desc:'Tốc độ di chuyển +8%'}, maxhp:{desc:'Máu tối đa +20%'},
       regen:{desc:'Máu mỗi giây +0.5'}, magnet:{desc:'Tầm hút +30%'}, crit:{desc:'Tỉ lệ chí mạng +8% (sát thương gấp đôi)'} },
@@ -1317,12 +1297,12 @@ const TR = {
       flamethrower:{desc:'Daño de fuego continuo en un cono frente a ti.'}, machete:{desc:'Cuchillas cuerpo a cuerpo orbitan a tu alrededor como escudo.'},
       grenade:{desc:'Se lanza a un punto y explota en un radio.'}, taser:{desc:'Rayo en cadena que salta entre enemigos cercanos.'},
       axe:{desc:'Perfora en línea recta y regresa a ti.'}, sentry:{desc:'Coloca una torreta fija que dispara sola.'},
-      scythe:{desc:'Barre en abanico y cura una parte del daño causado.'}, crossbow:{desc:'Dispara un potente virote perforante que atraviesa en línea.'}, greatsword:{desc:'Un amplio golpe cuerpo a cuerpo que corta todo al frente.'}, fireball:{desc:'Lanza una bola de fuego explosiva con daño en área.'}, frostwand:{desc:'Dispara un proyectil de escarcha que ralentiza a los enemigos.'}, chainhook:{desc:'Engancha a un enemigo y lo arrastra hacia ti causando daño.'} },
+      scythe:{desc:'Barre en abanico y cura una parte del daño causado.'}, frostwand:{desc:'Dispara un proyectil de escarcha que ralentiza a los enemigos.'} },
     evo:{ machinegun:{desc:'Ráfagas de disparo ultrarrápidas.'}, gatling:{desc:'Un amplio abanico de balas cubre el frente.'},
       inferno:{desc:'Deja columnas de fuego persistentes en su camino.'}, buzzsaw:{desc:'Enormes sierras giran furiosamente todo el tiempo.'},
       cluster:{desc:'Se divide en explosiones en cadena secundarias.'}, chainstorm:{desc:'Encadena a gran velocidad hasta 7 objetivos.'},
       executioner:{desc:'Corta casi al instante todo lo que hay en su camino.'}, minigun:{desc:'Un nido de fuego que lanza una tormenta de disparos.'},
-      soulreaper:{desc:'Tajos amplios con robo de vida mejorado limpian el campo.'}, tripleshot:{desc:'Dispara tres virotes perforantes a la vez.'}, earthcleaver:{desc:'Cada golpe lanza una onda de choque que parte el suelo.'}, meteor:{desc:'Hace llover varias bolas de fuego desde el cielo.'}, blizzard:{desc:'Una amplia ventisca que ralentiza mucho a los enemigos.'}, souldrag:{desc:'Arrastra a varios enemigos a la vez y golpea fuerte.'} },
+      soulreaper:{desc:'Tajos amplios con robo de vida mejorado limpian el campo.'}, blizzard:{desc:'Una amplia ventisca que ralentiza mucho a los enemigos.'} },
     passive:{ dmg:{desc:'Daño de todas las armas +10%'}, speed:{desc:'Espera de recarga -10%'}, proj:{desc:'Proyectiles +1'},
       range:{desc:'Área de explosión·fuego·hacha +15%'}, movespeed:{desc:'Velocidad de movimiento +8%'}, maxhp:{desc:'Vida máxima +20%'},
       regen:{desc:'Vida por segundo +0.5'}, magnet:{desc:'Rango de recogida +30%'}, crit:{desc:'Prob. de crítico +8% (daño doble)'} },
@@ -1806,41 +1786,6 @@ function fireWeapon(w) {
     }
     Audio.S.scythe(); return;
   }
-  if (key === 'crossbow') {   // 관통 볼트 (진화: 3연발)
-    const ang = aimAngle(w); if (ang == null) return;
-    const n = w.evolved ? 3 : 1;
-    for (let i = 0; i < n; i++) {
-      const a = ang + (n > 1 ? lerp(-0.12, 0.12, i / (n - 1)) : 0);
-      fireBullet(p.x, p.y, a, s.dmg, s.spd, { r:5, col:'#d8e0ea', life:72, pierce:s.pierce, trail:true });
-    }
-    Audio.S.shoot(); return;
-  }
-  if (key === 'greatsword') {   // 광역 근접 강타 (진화: 충격파)
-    const ang = aimAngle(w) ?? p.lastAngle, range = s.range * pRangeMult(), arc = s.arc;
-    forEachNearbyEnemy(p.x, p.y, range + 60, e => {
-      const d = Math.hypot(e.x - p.x, e.y - p.y); if (d > range + e.r) return;
-      let da = Math.atan2(e.y - p.y, e.x - p.x) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
-      if (Math.abs(da) < arc) { damageEnemy(e, s.dmg); spark(e.x, e.y, '#fff', 3, 3, 14); }
-    });
-    for (let i = 0; i < 9; i++) { const a = ang + lerp(-arc, arc, i / 8), r = range * rand(0.55, 1);
-      const sp = takePart(); sp.type = 'spark'; sp.x = p.x + Math.cos(a) * r; sp.y = p.y + Math.sin(a) * r;
-      sp.vx = Math.cos(a) * 1.2; sp.vy = Math.sin(a) * 1.2; sp.life = 12; sp.max = 12; sp.r = 2.6; sp.col = '#dfe6ea'; G.particles.push(sp); }
-    if (w.evolved) { const r = range * 0.66, hx = p.x + Math.cos(ang) * r, hy = p.y + Math.sin(ang) * r;
-      G.hazards.push({ x:hx, y:hy, r:58, life:40, dmg:s.dmg * 0.6, tick:0 }); ring(hx, hy, 58, '#ffcf4d', 26); G.screenShake = Math.max(G.screenShake, 5); }
-    Audio.S.scythe(); return;
-  }
-  if (key === 'fireball') {   // 폭발 화염구 (진화: 메테오 다중 낙하)
-    const e0 = nearestEnemyPlayer(); if (!e0) return;
-    const n = w.evolved ? EVOS.meteor.stats().meteor : 1, radius = s.radius * pRangeMult();
-    const targets = nearestEnemiesPlayer(n);
-    for (let i = 0; i < n; i++) {
-      let tx, ty; const te = targets[i];
-      if (te) { tx = te.x; ty = te.y; } else { const off = 52 + i * 10, a = i * 2.39996; tx = e0.x + Math.cos(a) * off; ty = e0.y + Math.sin(a) * off; }
-      const ang = Math.atan2(ty - p.y, tx - p.x);
-      fireBullet(p.x, p.y, ang, s.dmg, s.spd, { type:'nade', tx, ty, r:8, col:'#ff8a3a', radius, cluster:0, life:130, fire:true });
-    }
-    Audio.S.flame(); return;
-  }
   if (key === 'frostwand') {   // 냉기 탄 → 둔화 (진화: 눈보라 다발)
     const ang = aimAngle(w); if (ang == null) return;
     const n = w.evolved ? EVOS.blizzard.stats().proj : 1;
@@ -1849,14 +1794,6 @@ function fireWeapon(w) {
       fireBullet(p.x, p.y, a, s.dmg, s.spd, { r:5, col:'#a9e8ff', life:72, pierce:w.evolved ? 2 : 0, chill:s.chill, trail:true });
     }
     Audio.S.shoot(); return;
-  }
-  if (key === 'chainhook') {   // 갈고리 견인 (진화: 다중 견인)
-    const reach = s.reach;
-    const cand = nearestEnemiesPlayer(w.evolved ? EVOS.souldrag.stats().multi : 1)
-      .filter(e => Math.hypot(e.x - p.x, e.y - p.y) <= reach);
-    if (!cand.length) return;
-    for (const e of cand) { damageEnemy(e, s.dmg); if (!e.boss && !e.mini) e.pullT = 14; lightning(p.x, p.y, e.x, e.y, '#c9b8ff'); }
-    Audio.S.axe(); return;
   }
   if (key === 'taser') {
     let fx = p.x, fy = p.y, chain = s.chain, hit = [];   // 멀티 샷 미적용(자체 체인 정체성)
