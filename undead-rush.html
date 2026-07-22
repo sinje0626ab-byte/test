@@ -2316,33 +2316,35 @@ function updateBlades() {
 
 function updateSentries() {
   const list = G.sentries, p = P(), n = list.length;
+  const threat = nearestEnemy(p.x, p.y, 99999);         // 플레이어에게 가장 가까운(=가장 위협적인) 적
   for (let i = 0; i < list.length; i++) {
     const s = list[i]; s.fireT--;   // 지속형: 수명 없음(상한으로 개수 제어)
-    // 자율 유닛: 플레이어가 아니라 적을 우선 추적하며 랜덤하게 배회하고,
-    // 서로 겹치지 않게 분리, 화면 밖으로는 벗어나지 않는다.
+    // 자율 유닛: 플레이어 근처로 접근하는 몹을 우선 요격하며, 플레이어와
+    // 적당한 거리를 유지한 채 그 안에서 자유롭게(랜덤) 배회한다.
     if (s.vx === undefined) { s.vx = rand(-1, 1); s.vy = rand(-1, 1); }
     let ax = 0, ay = 0;
-    const tgt = nearestEnemy(s.x, s.y, 99999);          // 화면 어디든 가장 가까운 적
-    if (tgt) {
-      const dx = tgt.x - s.x, dy = tgt.y - s.y, d = Math.hypot(dx, dy) || 1;
-      const w = d > s.rng ? 0.9 : 0.15;                 // 사거리 밖이면 강하게 접근, 안이면 느슨하게
+    if (threat) {                                        // 1) 플레이어를 위협하는 적 쪽으로 이동해 요격
+      const dx = threat.x - s.x, dy = threat.y - s.y, d = Math.hypot(dx, dy) || 1;
+      const w = d > s.rng ? 0.85 : 0.12;                 // 사거리 밖이면 강하게 접근, 안이면 느슨하게
       ax += dx / d * w; ay += dy / d * w;
     }
-    ax += rand(-0.5, 0.5); ay += rand(-0.5, 0.5);       // 랜덤 배회
-    for (let j = 0; j < list.length; j++) {             // 서로 겹치지 않게 분리
+    ax += rand(-0.45, 0.45); ay += rand(-0.45, 0.45);   // 2) 자유로운 랜덤 배회
+    for (let j = 0; j < list.length; j++) {             // 3) 서로 겹치지 않게 분리
       if (j === i) continue;
       const o = list[j], dx = s.x - o.x, dy = s.y - o.y, d2 = dx*dx + dy*dy;
       if (d2 < 36*36 && d2 > 0.01) { const d = Math.sqrt(d2); ax += dx/d * (1 - d/36) * 1.8; ay += dy/d * (1 - d/36) * 1.8; }
     }
-    const mgn = 40, minX = G.camX - W/2 + mgn, maxX = G.camX + W/2 - mgn,
-          minY = G.camY - H/2 + mgn, maxY = G.camY + H/2 - mgn;
-    if (s.x < minX) ax += (minX - s.x) * 0.02; else if (s.x > maxX) ax += (maxX - s.x) * 0.02;
-    if (s.y < minY) ay += (minY - s.y) * 0.02; else if (s.y > maxY) ay += (maxY - s.y) * 0.02;
+    // 4) 플레이어와 거리 유지: 너무 멀면 끌어오고, 너무 붙으면 밀어냄(그 사이는 자유)
+    const pdx = s.x - p.x, pdy = s.y - p.y, pd = Math.hypot(pdx, pdy) || 1;
+    const NEAR = 55, FAR = 250;
+    if (pd > FAR) { ax += (p.x - s.x) / pd * (pd - FAR) * 0.03; ay += (p.y - s.y) / pd * (pd - FAR) * 0.03; }
+    else if (pd < NEAR) { ax += pdx / pd * (NEAR - pd) * 0.05; ay += pdy / pd * (NEAR - pd) * 0.05; }
     s.vx = (s.vx + ax) * 0.9; s.vy = (s.vy + ay) * 0.9;
     const sp = Math.hypot(s.vx, s.vy), MAX = 2.8;
     if (sp > MAX) { s.vx = s.vx / sp * MAX; s.vy = s.vy / sp * MAX; }
     s.x += s.vx; s.y += s.vy;
-    s.x = Math.max(minX, Math.min(maxX, s.x)); s.y = Math.max(minY, Math.min(maxY, s.y));  // 화면 밖 이탈 방지
+    const nd = Math.hypot(s.x - p.x, s.y - p.y);         // 하드 리시: 플레이어와 최대 거리 초과 금지
+    if (nd > FAR + 40) { const k = (FAR + 40) / nd; s.x = p.x + (s.x - p.x) * k; s.y = p.y + (s.y - p.y) * k; }
     if (s.fireT <= 0) {
       const e = nearestEnemy(s.x, s.y, s.rng);
       if (e) {
