@@ -232,6 +232,7 @@
   .chip.time{font-variant-numeric:tabular-nums;color:#fff;}
   .chip.kill{color:var(--blood-bright);}
   .chip.coin{color:var(--gold);}
+  .chip.tier{color:var(--gold);border-color:rgba(212,175,55,.5);font-weight:800;}
   .chip.shield{color:#6fd6ff;border-color:rgba(111,214,255,.45);font-variant-numeric:tabular-nums;
     box-shadow:0 0 14px rgba(111,214,255,.25);}
   #soundBtn,#pauseBtn{pointer-events:auto;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
@@ -304,6 +305,7 @@
     <div class="toprow">
       <span class="chip" id="lvChip">Lv 1</span>
       <div class="hpwrap"><div class="hpfill" id="hpfill"></div><div class="hptext" id="hptext">100%</div></div>
+      <span class="chip tier" id="tierChip">1차</span>
       <span class="chip time" id="timeChip">00:00</span>
       <span class="chip kill" id="killChip">☠ 0</span>
       <span class="chip coin" id="coinChip">◈ 0</span>
@@ -353,6 +355,7 @@
       <div class="pill"><div class="k" data-i18n="menu.coins">보유 코인</div><div class="v" id="bankCoins">0</div></div>
       <div class="pill blood"><div class="k" data-i18n="menu.best">최고 생존</div><div class="v" id="bestTime">00:00</div></div>
       <div class="pill tox"><div class="k" data-i18n="menu.kills">총 처치</div><div class="v" id="totalKills">0</div></div>
+      <div class="pill tier"><div class="k" data-i18n="menu.tier">최고 차수</div><div class="v" id="maxTier">1차</div></div>
     </div>
     <div class="brand" style="margin-bottom:10px;" data-i18n="menu.charsel">출격 대원 선택</div>
     <div class="charsel" id="charsel"></div>
@@ -419,7 +422,8 @@
     <div class="result-emoji" id="resEmoji">☠️</div>
     <h2 class="res" id="resTitle">전멸</h2>
     <div id="resStats"></div>
-    <button class="btn primary" id="resAgain" style="margin-top:18px;" data-i18n="res.again">로비로 돌아가기</button>
+    <button class="btn primary" id="resNext" style="margin-top:18px;display:none;">▶ 다음 차수 도전</button>
+    <button class="btn ghost" id="resAgain" style="margin-top:10px;" data-i18n="res.again">로비로 돌아가기</button>
   </div>
 </div>
 
@@ -446,7 +450,7 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1)
 const Store = (() => {
   const KEY = 'undead_rush_save_v1';
   let mem = null;
-  const def = () => ({ coins: 0, bestTime: 0, totalKills: 0, meta: {}, character: 'hunter', lang: '' });
+  const def = () => ({ coins: 0, bestTime: 0, totalKills: 0, meta: {}, character: 'hunter', lang: '', maxTier: 1 });
   function load() {
     try { const raw = localStorage.getItem(KEY); if (raw) return Object.assign(def(), JSON.parse(raw)); }
     catch (e) {}
@@ -552,11 +556,11 @@ const el = {
   splash:$('splash'), titleScreen:$('titleScreen'),
   menu:$('menu'), how:$('how'), pause:$('pause'), levelup:$('levelup'), result:$('result'),
   xpfill:$('xpfill'), lvChip:$('lvChip'), hpfill:$('hpfill'), hptext:$('hptext'),
-  timeChip:$('timeChip'), killChip:$('killChip'), coinChip:$('coinChip'), shieldChip:$('shieldChip'),
+  timeChip:$('timeChip'), killChip:$('killChip'), coinChip:$('coinChip'), shieldChip:$('shieldChip'), tierChip:$('tierChip'),
   loadout:$('loadout'), choices:$('choices'), hint:$('hint'), luHeal:$('luHeal'),
   bossbar:$('bossbar'), bossName:$('bossName'), bossFill:$('bossFill'),
   bankCoins:$('bankCoins'), bestTime:$('bestTime'), totalKills:$('totalKills'),
-  armory:$('armory'), resEmoji:$('resEmoji'), resTitle:$('resTitle'), resStats:$('resStats'),
+  armory:$('armory'), resEmoji:$('resEmoji'), resTitle:$('resTitle'), resStats:$('resStats'), resNext:$('resNext'),
   pauseStats:$('pauseStats'), charsel:$('charsel'),
 };
 
@@ -779,6 +783,8 @@ const UI = {
     'coin.nm':'긴급 물자', 'coin.lv':'코인', 'coin.ds':'코인 +40',
     'res.win':'생존 성공!', 'res.lose':'전멸', 'res.time':'생존 시간', 'res.kills':'처치 수',
     'res.level':'최종 레벨', 'res.coins':'획득 코인', 'res.again':'로비로 돌아가기',
+    'res.tier':'도달 차수', 'res.pending':'획득 예정 코인', 'res.clear':'{n}차 클리어!', 'res.next':'▶ 다음 차수 ({n}차) 도전',
+    'hud.tierLabel':'{n}차', 'menu.tier':'최고 차수', 'tier.banner':'{n}차 시작! 더 강해진 적들을 버텨라',
     'hint.touch':'화면을 드래그해 이동하세요', 'hint.pc':'WASD / 방향키로 이동 · P 로 일시정지',
     'reset.confirm':'모든 진행 상황(코인·강화·기록)을 삭제할까요?',
     'lang.label':'언어',
@@ -805,6 +811,8 @@ const UI = {
     'coin.nm':'Emergency Supplies', 'coin.lv':'Coins', 'coin.ds':'Coins +40',
     'res.win':'You Survived!', 'res.lose':'Wiped Out', 'res.time':'Survival Time', 'res.kills':'Kills',
     'res.level':'Final Level', 'res.coins':'Coins Earned', 'res.again':'Back to Lobby',
+    'res.tier':'Tier', 'res.pending':'Coins to bank', 'res.clear':'Tier {n} Cleared!', 'res.next':'▶ Challenge Tier {n}',
+    'hud.tierLabel':'Tier {n}', 'menu.tier':'Best Tier', 'tier.banner':'Tier {n} begins! Tougher foes ahead',
     'hint.touch':'Drag the screen to move', 'hint.pc':'WASD / Arrow keys to move · P to pause',
     'reset.confirm':'Delete all progress (coins, upgrades, records)?',
     'lang.label':'Language',
@@ -831,6 +839,8 @@ const UI = {
     'coin.nm':'紧急补给', 'coin.lv':'金币', 'coin.ds':'金币 +40',
     'res.win':'生存成功！', 'res.lose':'全军覆没', 'res.time':'生存时间', 'res.kills':'击杀数',
     'res.level':'最终等级', 'res.coins':'获得金币', 'res.again':'返回大厅',
+    'res.tier':'轮次', 'res.pending':'待入账金币', 'res.clear':'第{n}轮通关！', 'res.next':'▶ 挑战第{n}轮',
+    'hud.tierLabel':'第{n}轮', 'menu.tier':'最高轮次', 'tier.banner':'第{n}轮开始！迎战更强的敌人',
     'hint.touch':'拖动屏幕移动', 'hint.pc':'WASD / 方向键移动 · P 暂停',
     'reset.confirm':'删除所有进度（金币、强化、记录）？',
     'lang.label':'语言',
@@ -857,6 +867,8 @@ const UI = {
     'coin.nm':'เสบียงฉุกเฉิน', 'coin.lv':'เหรียญ', 'coin.ds':'เหรียญ +40',
     'res.win':'คุณรอดชีวิต!', 'res.lose':'ถูกกวาดล้าง', 'res.time':'เวลาที่รอด', 'res.kills':'สังหาร',
     'res.level':'เลเวลสุดท้าย', 'res.coins':'เหรียญที่ได้', 'res.again':'กลับสู่ล็อบบี้',
+    'res.tier':'รอบ', 'res.pending':'เหรียญที่จะได้รับ', 'res.clear':'ผ่านรอบ {n}!', 'res.next':'▶ ท้าทายรอบ {n}',
+    'hud.tierLabel':'รอบ {n}', 'menu.tier':'รอบสูงสุด', 'tier.banner':'เริ่มรอบ {n}! ศัตรูแข็งแกร่งขึ้น',
     'hint.touch':'ลากหน้าจอเพื่อเคลื่อนที่', 'hint.pc':'WASD / ปุ่มลูกศรเพื่อเคลื่อนที่ · P เพื่อหยุด',
     'reset.confirm':'ลบความคืบหน้าทั้งหมด (เหรียญ, อัปเกรด, สถิติ) หรือไม่?',
     'lang.label':'ภาษา',
@@ -883,6 +895,8 @@ const UI = {
     'coin.nm':'Tiếp tế khẩn cấp', 'coin.lv':'Xu', 'coin.ds':'Xu +40',
     'res.win':'Bạn đã sống sót!', 'res.lose':'Bị xóa sổ', 'res.time':'Thời gian sống sót', 'res.kills':'Hạ gục',
     'res.level':'Cấp cuối', 'res.coins':'Xu kiếm được', 'res.again':'Về sảnh',
+    'res.tier':'Vòng', 'res.pending':'Xu sẽ nhận', 'res.clear':'Hoàn thành Vòng {n}!', 'res.next':'▶ Thử thách Vòng {n}',
+    'hud.tierLabel':'Vòng {n}', 'menu.tier':'Vòng cao nhất', 'tier.banner':'Vòng {n} bắt đầu! Kẻ địch mạnh hơn',
     'hint.touch':'Kéo màn hình để di chuyển', 'hint.pc':'WASD / phím mũi tên để di chuyển · P để tạm dừng',
     'reset.confirm':'Xóa toàn bộ tiến trình (xu, nâng cấp, kỷ lục)?',
     'lang.label':'Ngôn ngữ',
@@ -909,6 +923,8 @@ const UI = {
     'coin.nm':'Suministros de emergencia', 'coin.lv':'Monedas', 'coin.ds':'Monedas +40',
     'res.win':'¡Sobreviviste!', 'res.lose':'Aniquilado', 'res.time':'Tiempo de supervivencia', 'res.kills':'Bajas',
     'res.level':'Nivel final', 'res.coins':'Monedas ganadas', 'res.again':'Volver al vestíbulo',
+    'res.tier':'Ronda', 'res.pending':'Monedas por cobrar', 'res.clear':'¡Ronda {n} superada!', 'res.next':'▶ Desafiar Ronda {n}',
+    'hud.tierLabel':'Ronda {n}', 'menu.tier':'Mejor ronda', 'tier.banner':'¡Ronda {n}! Enemigos más fuertes',
     'hint.touch':'Arrastra la pantalla para moverte', 'hint.pc':'WASD / flechas para moverte · P para pausar',
     'reset.confirm':'¿Borrar todo el progreso (monedas, mejoras, registros)?',
     'lang.label':'Idioma',
@@ -1205,7 +1221,7 @@ const G = {
   spawnTimer:0, heartTimer:0,
   miniSpawned:false, bossSpawned:false, boss:null,
   runCoins:0, kills:0, camX:0, camY:0,
-  screenShake:0, uid:1,
+  screenShake:0, uid:1, tier:1, _cashed:false,
 };
 const pool = { enemy:[], bullet:[], part:[], gem:[], acid:[] };
 const takeEnemy = () => pool.enemy.pop() || {};
@@ -1225,7 +1241,11 @@ const pMoveSpd = () => P().baseSpd * (1 + 0.08 * (P().passives.movespeed || 0)) 
 const pMagnet = () => 82 * (1 + 0.3 * (P().passives.magnet || 0));
 const pRegen = () => 0.5 * (P().passives.regen || 0);
 const pCritChance = () => clamp(0.08 * (P().passives.crit || 0) + metaVal('precision') / 100, 0, 0.75);
-const hpMul = () => 1 + G.time * 0.004;
+/* 차수(루프) 난이도 배수 — 차수가 오를수록 체력·공격력·속도·스폰이 가중된다 */
+const tierHpMul  = () => 1 + (G.tier - 1) * 0.60;   // 적 체력
+const tierDmgMul = () => 1 + (G.tier - 1) * 0.35;   // 적 공격력
+const tierSpdMul = () => Math.min(1.6, 1 + (G.tier - 1) * 0.06); // 적 이동속도(상한)
+const hpMul = () => (1 + G.time * 0.004) * tierHpMul();
 const xpForLevel = lv => Math.floor(4 + lv * 3 + lv * lv * 0.4);
 
 function wdef(w){ return w.evolved ? EVOS[WEAPONS[w.key].evo] : WEAPONS[w.key]; }
@@ -1292,7 +1312,9 @@ function startRun(){
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, runCoins:0, kills:0, screenShake:0,
+    tier:1, _cashed:false,
   });
+  G.save.maxTier = Math.max(G.save.maxTier || 1, 1);
   G.player = makePlayer();
   const char = CHARACTERS[G.character || 'hunter'];
   G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
@@ -1650,7 +1672,7 @@ function spawnEnemy(typeKey, ox, oy) {
   e.y = (oy !== undefined) ? oy : P().y + Math.sin(ang) * rad;
   e.def = def; e.key = typeKey;
   e.maxhp = def.hp * hpMul(); e.hp = e.maxhp;
-  e.r = def.r; e.spd = def.spd; e.dead = false; e.boss = false; e.mini = false;
+  e.r = def.r; e.spd = def.spd * tierSpdMul(); e.dead = false; e.boss = false; e.mini = false;
   e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140);
   e.howlT = randInt(140, 220); e.hasteT = 0; e.facing = 1; e.id = G.uid++;
   G.enemies.push(e); return e;
@@ -1660,8 +1682,9 @@ function spawnDirector() {
   G.spawnTimer--;
   if (G.spawnTimer <= 0 && G.enemies.length < 300) {
     const t = G.time;
-    G.spawnTimer = Math.max(9, 55 - t * 0.85);
-    const batch = Math.min(1 + Math.floor(t / 22), 8);
+    const dens = 1 + (G.tier - 1) * 0.22;   // 차수마다 스폰 밀도 증가
+    G.spawnTimer = Math.max(6, (55 - t * 0.85) / dens);
+    const batch = Math.min(Math.round((1 + Math.floor(t / 22)) * dens), 12);
     for (let i = 0; i < batch; i++) spawnEnemy(rollEnemyType(t));
   }
   if (!G.miniSpawned && G.time >= 150) { G.miniSpawned = true; spawnBoss('mini'); }
@@ -1692,10 +1715,10 @@ function spawnBoss(kind) {
   if (kind === 'mini') {
     e.def = { name:'변이 거수', dark:'#3a1d3f', col:'#9a4fa8', xp:30, coin:0 };
     e.mini = true; e.boss = false;
-    e.maxhp = 900 * hpMul(); e.hp = e.maxhp; e.r = 34; e.spd = 0.6; e.key = 'mini';
+    e.maxhp = 900 * hpMul(); e.hp = e.maxhp; e.r = 34; e.spd = 0.6 * tierSpdMul(); e.key = 'mini';
   } else {
     e.def = { name:'네크로 타이런트', dark:'#4a0d0d', col:'#e5232b', xp:0, coin:0 };
-    e.maxhp = 4200 * hpMul(); e.hp = e.maxhp; e.r = 52; e.spd = 0.55; e.key = 'boss';
+    e.maxhp = 4200 * hpMul(); e.hp = e.maxhp; e.r = 52; e.spd = 0.55 * tierSpdMul(); e.key = 'boss';
     e.patternT = 130; e.summonT = 260; e.mini = false;
     G.boss = e; el.bossbar.classList.add('show'); el.bossName.textContent = 'NECRO TYRANT';
   }
@@ -1706,7 +1729,7 @@ function onBossDown(e) {
     for (let i = 0; i < 40; i++) spawnCoin(e.x, e.y, 50);
     ring(e.x, e.y, 120, '#ffcf4d', 40); G.screenShake = 20;
     G.boss = null; el.bossbar.classList.remove('show');
-    setTimeout(() => { if (G.state !== 'menu') endRun(true); }, 700);
+    setTimeout(() => { if (G.state !== 'menu' && G.state !== 'result') winRound(); }, 700);
   }
 }
 
@@ -1834,6 +1857,7 @@ function howl(e) {
 
 function hurtPlayer(amt) {
   const p = P();
+  amt *= tierDmgMul();                    // 차수(루프) 난이도: 받는 피해 가중
   if (p.shield > 0) {                    // 방어막이 피해 흡수
     spark(p.x, p.y, '#6fd6ff', 4, 2.6, 12);
     return;
@@ -2317,6 +2341,7 @@ function updateHUD() {
   hudSet(el.lvChip, 'lv', 'Lv ' + p.level);
   hudSet(el.hpfill, 'hpw', (clamp(p.hp / p.maxhp, 0, 1) * 100).toFixed(1) + '%', 'w');
   hudSet(el.hptext, 'hpt', Math.max(0, Math.round(clamp(p.hp / p.maxhp, 0, 1) * 100)) + '%');
+  hudSet(el.tierChip, 'tier', t('hud.tierLabel').replace('{n}', G.tier));
   hudSet(el.timeChip, 'time', fmtTime(G.time));
   hudSet(el.killChip, 'kill', '☠ ' + G.kills);
   hudSet(el.coinChip, 'coin', '◈ ' + G.runCoins);
@@ -2360,26 +2385,82 @@ function togglePause() {
   } else if (G.state === 'pause') { el.pause.classList.remove('show'); G.state = 'play'; Audio.resume(); }
 }
 
-function endRun(win) {
-  if (G.state === 'result') return;
-  G.state = 'result';
+/* 판을 정산해 코인·기록을 영구 저장 (사망/피난 또는 로비 귀환 시 1회) */
+function cashOutRun() {
+  if (G._cashed) return { earned:0, bonusMul:1 };
+  G._cashed = true;
   const bonusMul = (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
   const earned = Math.round(G.runCoins * bonusMul);
   G.save.coins += earned; G.save.totalKills += G.kills;
   if (G.time > G.save.bestTime) G.save.bestTime = G.time;
+  G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier);
   Store.save(G.save);
+  return { earned, bonusMul };
+}
+function endRun(win) {
+  if (G.state === 'result') return;
+  G.state = 'result';
+  const { earned, bonusMul } = cashOutRun();
   el.resEmoji.textContent = win ? '🏆' : '☠️';
   el.resTitle.textContent = win ? t('res.win') : t('res.lose');
   el.resTitle.className = 'res ' + (win ? 'win' : 'lose');
   el.resStats.innerHTML =
-    `<div class="kv"><span>${t('res.time')}</span><span class="v">${fmtTime(G.time)}</span></div>
+    `<div class="kv"><span>${t('res.tier')}</span><span class="v" style="color:var(--gold)">${t('hud.tierLabel').replace('{n}', G.tier)}</span></div>
+     <div class="kv"><span>${t('res.time')}</span><span class="v">${fmtTime(G.time)}</span></div>
      <div class="kv"><span>${t('res.kills')}</span><span class="v" style="color:var(--blood-bright)">${G.kills}</span></div>
      <div class="kv"><span>${t('res.level')}</span><span class="v" style="color:var(--toxic)">Lv ${P().level}</span></div>
      <div class="kv"><span>${t('res.coins')}</span><span class="v" style="color:var(--gold)">◈ ${earned}${bonusMul>1?` (＋${Math.round((bonusMul-1)*100)}%)`:''}</span></div>`;
   win ? Audio.S.win() : Audio.S.lose();
+  el.resNext.style.display = 'none';
   hud.classList.remove('show'); el.bossbar.classList.remove('show');
   el.result.classList.add('show');
 }
+/* 차수 클리어(최종 보스 처치): 다음 차수 도전 또는 로비 귀환 선택 */
+function winRound() {
+  if (G.state === 'result') return;
+  G.state = 'result';
+  G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier + 1);
+  if (G.time > G.save.bestTime) G.save.bestTime = G.time;
+  Store.save(G.save);
+  const bonusMul = (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
+  const pending = Math.round(G.runCoins * bonusMul);
+  el.resEmoji.textContent = '🏆';
+  el.resTitle.textContent = t('res.clear').replace('{n}', G.tier);
+  el.resTitle.className = 'res win';
+  el.resStats.innerHTML =
+    `<div class="kv"><span>${t('res.tier')}</span><span class="v" style="color:var(--gold)">${t('hud.tierLabel').replace('{n}', G.tier)} ✔</span></div>
+     <div class="kv"><span>${t('res.time')}</span><span class="v">${fmtTime(G.time)}</span></div>
+     <div class="kv"><span>${t('res.kills')}</span><span class="v" style="color:var(--blood-bright)">${G.kills}</span></div>
+     <div class="kv"><span>${t('res.level')}</span><span class="v" style="color:var(--toxic)">Lv ${P().level}</span></div>
+     <div class="kv"><span>${t('res.pending')}</span><span class="v" style="color:var(--gold)">◈ ${pending}</span></div>`;
+  Audio.S.win();
+  el.resNext.style.display = '';
+  el.resNext.textContent = t('res.next').replace('{n}', G.tier + 1);
+  hud.classList.remove('show'); el.bossbar.classList.remove('show');
+  el.result.classList.add('show');
+}
+/* 다음 차수로 계속 — 캐릭터·무기·패시브·코인은 유지, 전장만 리셋하고 난이도 상승 */
+function continueTier() {
+  const p = P();
+  G.tier++;
+  G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier); Store.save(G.save);
+  Object.assign(G, {
+    time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
+    particles:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
+    miniSpawned:false, bossSpawned:false, boss:null, screenShake:0,
+  });
+  p.hp = p.maxhp; p.iframe = 90; p.slowT = 0;   // 보상: 완전 회복 + 무적 잠깐
+  rebuildBlades();
+  hudReset(); loadoutSig = '';
+  el.result.classList.remove('show');
+  el.bossbar.classList.remove('show');
+  hud.classList.add('show');
+  el.hint.textContent = t('tier.banner').replace('{n}', G.tier);
+  el.hint.style.opacity = '1'; el.hint.dataset.hidden = '';
+  G.state = 'play'; Audio.resume(); Audio.S.pickup();
+}
+/* 결과 화면 → 로비 (아직 정산 안 됐으면 코인 지급) */
+function lobbyFromResult() { cashOutRun(); backToMenu(); }
 function backToMenu() {
   G.state = 'menu'; G.player = null; G.boss = null;
   hideAllOverlays(); hud.classList.remove('show'); loadoutSig = '';
@@ -2389,6 +2470,7 @@ function refreshMenu() {
   el.bankCoins.textContent = G.save.coins;
   el.bestTime.textContent = fmtTime(G.save.bestTime);
   el.totalKills.textContent = G.save.totalKills;
+  $('maxTier').textContent = t('hud.tierLabel').replace('{n}', G.save.maxTier || 1);
   renderCharSelect();
   renderArmory();
 }
@@ -2494,7 +2576,8 @@ function init() {
   $('pauseBtn').onclick = () => togglePause();
   $('resumeBtn').onclick = () => togglePause();
   $('exitBtn').onclick = () => endRun(false);
-  $('resAgain').onclick = () => backToMenu();
+  $('resAgain').onclick = () => lobbyFromResult();
+  $('resNext').onclick = () => continueTier();
   requestAnimationFrame(loop);
 }
 /* 오프닝 시퀀스: YJ GAMES 로고 스플래시 -> 타이틀("아무 버튼이나 눌러주세요") -> 로비 메뉴.
