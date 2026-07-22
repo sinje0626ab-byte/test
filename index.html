@@ -3023,17 +3023,16 @@ function bootSequence() {
   function doJingle() {
     if (jingled || !Audio.isRunning()) return;
     jingled = true; Audio.logoJingle();
-    setTimeout(showTitle, 3900);   // 로고+로고송을 끝까지 들려준 뒤 타이틀로
   }
   // 자동재생 시도: 정책이 허용하면 로고와 '동시에' 재생. 막히면 첫 입력 때 재생.
   Audio.ensure(); Audio.resume();
   let tries = 0;
-  const autoTry = setInterval(() => { if (jingled || ++tries > 20) { clearInterval(autoTry); return; } Audio.resume(); doJingle(); }, 90);
-  // 첫 입력: 오디오 잠금 해제 + 로고송(스킵 안 함). 그다음 입력부터 타이틀로 진행.
-  function onTap() { Audio.ensure(); Audio.resume(); if (!jingled) { setTimeout(doJingle, 30); } else showTitle(); }
-  el.splash.addEventListener('pointerdown', onTap);
-  window.addEventListener('keydown', function k() { if (el.splash.classList.contains('show')) onTap(); else window.removeEventListener('keydown', k); });
-  setTimeout(showTitle, 6500);   // 무입력 안전장치
+  const autoTry = setInterval(() => { if (jingled || ++tries > 25) { clearInterval(autoTry); return; } Audio.resume(); doJingle(); }, 90);
+  // 스플래시는 스킵 불가: 입력은 오디오 잠금 해제 + 로고송 재생만 (화면은 안 넘김)
+  const unlock = () => { Audio.ensure(); Audio.resume(); setTimeout(doJingle, 30); };
+  el.splash.addEventListener('pointerdown', unlock);
+  window.addEventListener('keydown', function k() { if (el.splash.classList.contains('show')) unlock(); else window.removeEventListener('keydown', k); });
+  setTimeout(showTitle, 5000);   // 무조건 5초 재생 후 타이틀로 전환 (클릭으로 스킵 불가)
 }
 init();
 bootSequence();
