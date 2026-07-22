@@ -2318,16 +2318,31 @@ function updateSentries() {
   const list = G.sentries, p = P(), n = list.length;
   for (let i = 0; i < list.length; i++) {
     const s = list[i]; s.fireT--;   // 지속형: 수명 없음(상한으로 개수 제어)
-    // NPC 스타일 추적: 가까이 있으면 제자리에서 사격, 시야에서 멀어지면
-    // 거리를 유지한 채로 천천히 따라온다(계속 붙어다니지 않음).
-    const dx = p.x - s.x, dy = p.y - s.y, d = Math.hypot(dx, dy) || 1;
-    const FOLLOW = 240, KEEP = 130;                  // 240 넘게 벌어지면 추적 시작, 130 거리 유지
-    if (s.chase || d > FOLLOW) {
-      s.chase = d > KEEP + 12;                        // 유지 거리에 닿으면 멈춤(히스테리시스)
-      const nx = dx / d, ny = dy / d;
-      const tx = p.x - nx * KEEP, ty = p.y - ny * KEEP;
-      s.x += (tx - s.x) * 0.05; s.y += (ty - s.y) * 0.05;   // 느리고 자연스럽게
+    // 자율 유닛: 플레이어가 아니라 적을 우선 추적하며 랜덤하게 배회하고,
+    // 서로 겹치지 않게 분리, 화면 밖으로는 벗어나지 않는다.
+    if (s.vx === undefined) { s.vx = rand(-1, 1); s.vy = rand(-1, 1); }
+    let ax = 0, ay = 0;
+    const tgt = nearestEnemy(s.x, s.y, 99999);          // 화면 어디든 가장 가까운 적
+    if (tgt) {
+      const dx = tgt.x - s.x, dy = tgt.y - s.y, d = Math.hypot(dx, dy) || 1;
+      const w = d > s.rng ? 0.9 : 0.15;                 // 사거리 밖이면 강하게 접근, 안이면 느슨하게
+      ax += dx / d * w; ay += dy / d * w;
     }
+    ax += rand(-0.5, 0.5); ay += rand(-0.5, 0.5);       // 랜덤 배회
+    for (let j = 0; j < list.length; j++) {             // 서로 겹치지 않게 분리
+      if (j === i) continue;
+      const o = list[j], dx = s.x - o.x, dy = s.y - o.y, d2 = dx*dx + dy*dy;
+      if (d2 < 36*36 && d2 > 0.01) { const d = Math.sqrt(d2); ax += dx/d * (1 - d/36) * 1.8; ay += dy/d * (1 - d/36) * 1.8; }
+    }
+    const mgn = 40, minX = G.camX - W/2 + mgn, maxX = G.camX + W/2 - mgn,
+          minY = G.camY - H/2 + mgn, maxY = G.camY + H/2 - mgn;
+    if (s.x < minX) ax += (minX - s.x) * 0.02; else if (s.x > maxX) ax += (maxX - s.x) * 0.02;
+    if (s.y < minY) ay += (minY - s.y) * 0.02; else if (s.y > maxY) ay += (maxY - s.y) * 0.02;
+    s.vx = (s.vx + ax) * 0.9; s.vy = (s.vy + ay) * 0.9;
+    const sp = Math.hypot(s.vx, s.vy), MAX = 2.8;
+    if (sp > MAX) { s.vx = s.vx / sp * MAX; s.vy = s.vy / sp * MAX; }
+    s.x += s.vx; s.y += s.vy;
+    s.x = Math.max(minX, Math.min(maxX, s.x)); s.y = Math.max(minY, Math.min(maxY, s.y));  // 화면 밖 이탈 방지
     if (s.fireT <= 0) {
       const e = nearestEnemy(s.x, s.y, s.rng);
       if (e) {
@@ -2584,7 +2599,6 @@ function drawSentries() {
     // 레벨 라벨 + 업그레이드 가능(⚙) 표시
     ctx.fillStyle = '#cfe'; ctx.font = 'bold 9px system-ui'; ctx.textAlign = 'center';
     ctx.fillText('Lv' + s.level, s.x, s.y - 15);
-    if (s.points > 0) { ctx.font = '13px system-ui'; ctx.fillText('⚙️', s.x, s.y - 26); }
     ctx.textAlign = 'start';
   }
 }
