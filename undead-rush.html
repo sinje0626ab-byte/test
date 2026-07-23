@@ -772,6 +772,20 @@ const Audio = (() => {
   function timp(t, freq, v = 0.5) { if (!ctx||!musicBus) return; const o = ctx.createOscillator(), g = ctx.createGain();
     o.type='sine'; o.frequency.setValueAtTime(freq*1.6,t); o.frequency.exponentialRampToValueAtTime(freq,t+0.09);
     g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.45); o.connect(g); g.connect(musicBus); o.start(t); o.stop(t+0.5); }
+  // 큰 전투북(타이코): 피치가 떨어지는 저음 사인 + 저역 노이즈 바디 → 웅장한 "둥" 소리
+  function taiko(t, freq = 92, v = 0.8) { if (!ctx||!musicBus) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(freq*2.0, t); o.frequency.exponentialRampToValueAtTime(freq, t+0.07);
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t+0.5);
+    o.connect(g); g.connect(musicBus); o.start(t); o.stop(t+0.55);
+    const o2 = ctx.createOscillator(), g2 = ctx.createGain();   // 서브 배음(두께)
+    o2.type='triangle'; o2.frequency.setValueAtTime(freq*1.5, t); o2.frequency.exponentialRampToValueAtTime(freq*0.75, t+0.08);
+    g2.gain.setValueAtTime(v*0.4, t); g2.gain.exponentialRampToValueAtTime(0.0001, t+0.3);
+    o2.connect(g2); g2.connect(musicBus); o2.start(t); o2.stop(t+0.34);
+    const s = ctx.createBufferSource(); s.buffer = noiseBuf(0.13);   // 가죽 타격 바디
+    const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=420;
+    const ng = ctx.createGain(); ng.gain.setValueAtTime(v*0.5, t); ng.gain.exponentialRampToValueAtTime(0.0001, t+0.16);
+    s.connect(lp); lp.connect(ng); ng.connect(musicBus); s.start(t); s.stop(t+0.18); }
 
   // 음이름 주파수
   const D1=36.71, A1=55, F1=43.65, G1=49, C2=65.41, D2=73.42, Eb2=77.78, E2=82.41, F2=87.31, G2=98, A2=110, B2=123.47, Bb2=116.54,
@@ -792,9 +806,17 @@ const Audio = (() => {
       mnote(TITLE_BASS[bar], t, 1.7, { type:'triangle', vol:0.19, cut:900 });
       mnote(TITLE_BASS[bar]/2, t, 1.7, { type:'sine', vol:0.14, cut:200 });
       mnote(TITLE_BASS[bar]*1.5, t, 1.4, { type:'triangle', vol:0.05, cut:800 });
-      timp(t, TITLE_BASS[bar]*2, 0.5); snare(t, 0.05);
+      timp(t, TITLE_BASS[bar]*2, 0.42);
     }
-    if (s16 === 8) { mnote(TITLE_BASS[bar], t, 1.0, { type:'triangle', vol:0.13, cut:900 }); timp(t, TITLE_BASS[bar]*2, 0.3); }
+    if (s16 === 8) { mnote(TITLE_BASS[bar], t, 1.0, { type:'triangle', vol:0.13, cut:900 }); timp(t, TITLE_BASS[bar]*2, 0.28); }
+    // --- 웅장한 타악(대기실 전용): 전투북(타이코) + 드럼킷 ---
+    if (s16 === 0)  taiko(t, bar === 0 ? 84 : bar === 2 ? 98 : 90, 0.82);   // 강한 다운비트 북
+    if (s16 === 6)  taiko(t, 80, 0.5);                                       // "둥…둥-둥" 전투 리듬
+    if (s16 === 10) taiko(t, 92, 0.56);
+    if ((step & 3) === 0) kick(t, 0.5);                                      // 4분음 드라이브 킥
+    if (s16 === 8) snare(t, 0.16);                                           // 백비트 스네어
+    if ((step & 1) === 1) hat(t, 0.055);                                     // 오프비트 하이햇 셔플
+    if (bar === 3 && s16 >= 12) { snare(t, 0.05 + (s16 - 12) * 0.028); if (s16 === 14) taiko(t, 104, 0.6); } // 루프 전환 스네어 롤 고조
     if ((step & 1) === 0) { const an = ch[((step>>1) % 5) + 1] * 2; mnote(an, t, 0.24, { type:'triangle', vol:0.05, cut:4400 }); mnote(an/2, t, 0.24, { type:'sine', vol:0.03, cut:3000 }); } // 2단 하프 아르페지오
     if ((step & 1) === 0) { const m = TITLE_MEL[step >> 1]; if (m) { mnote(m, t, 0.62, { type:'triangle', vol:0.17, cut:3200, thick:true }); mnote(m/2, t, 0.62, { type:'triangle', vol:0.05, cut:1600 }); } } // 멜로디+옥타브
   }
