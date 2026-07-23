@@ -820,23 +820,38 @@ const Audio = (() => {
     if ((step & 1) === 0) { const an = ch[((step>>1) % 5) + 1] * 2; mnote(an, t, 0.24, { type:'triangle', vol:0.05, cut:4400 }); mnote(an/2, t, 0.24, { type:'sine', vol:0.03, cut:3000 }); } // 2단 하프 아르페지오
     if ((step & 1) === 0) { const m = TITLE_MEL[step >> 1]; if (m) { mnote(m, t, 0.62, { type:'triangle', vol:0.17, cut:3200, thick:true }); mnote(m/2, t, 0.62, { type:'triangle', vol:0.05, cut:1600 }); } } // 멜로디+옥타브
   }
-  // 게임(긴장·서스펜스) — 느린 템포, 불협 드론(D+Eb) + 마이너 패드 + 저음 아르페지오 + 심장박동 + 트레몰로 + 트라이톤
-  const GAME_STEP = 0.14, GAME_LEN = 32, GAME_LOOP = GAME_LEN * GAME_STEP;
-  const GAME_ARP = [D2,A2,D3,F3, A3,F3,D3,A2, D2,A2,D3,F3, Eb3,C3,A2,F2];
+  // 게임(어둡고 생동감 있는 전투) — Dm–Bb–F–A 진행. 펄싱 베이스 + 아르페지오 + 리드 모티프 + 전투 드럼(64스텝)
+  const GAME_STEP = 0.132, GAME_LEN = 64, GAME_LOOP = GAME_LEN * GAME_STEP;
+  const GAME_BASS  = [D2, Bb2, F2, A2];
+  const GAME_TRIAD = [[D3,F3,A3],[Bb2,D3,F3],[F2,A2,C3],[A2,C3,E3]];
+  // 후반 2마디 긴장 리드 모티프(8분 위치 8개 × 2마디)
+  const GAME_LEAD  = [ F4,A4,C5,A4, D5,C5,A4,F4,   A4,C5,E5,D5, C5,A4,0,A4 ];
   function gameFn(step, t) {
-    if (step === 0) {  // 어둡고 불협한 드론(D+Eb) + Dm 저음 패드(두께) + 저음 합창
-      mnote(D1, t, GAME_LOOP, { type:'sawtooth', vol:0.08, cut:170 });
-      mnote(Eb2, t, GAME_LOOP, { type:'sawtooth', vol:0.024, cut:220 });
-      for (const f of [D2,F2,A2,D3]) mnote(f, t, GAME_LOOP, { type:'sawtooth', vol:0.024, cut:380, thick:true, atk:0.12 });
-      for (const f of [D2,A2]) mnote(f, t, GAME_LOOP, { type:'sine', vol:0.03, cut:320, atk:0.2 });
+    const bar = (step >> 4) & 3, s16 = step & 15;
+    const root = GAME_BASS[bar], triad = GAME_TRIAD[bar], barLen = 16 * GAME_STEP;
+    // --- 하모니 레이어 ---
+    if (s16 === 0) {
+      mnote(root / 2, t, barLen * 0.98, { type:'sawtooth', vol:0.07,  cut:150 });                                  // 저음 드론
+      for (const f of triad) mnote(f, t, barLen * 0.98, { type:'sawtooth', vol:0.024, cut:430, thick:true, atk:0.1 }); // 패드(두께)
+      mnote(triad[0], t, barLen * 0.98, { type:'sine', vol:0.028, cut:320, atk:0.15 });                            // 저음 합창
     }
-    if ((step & 1) === 0) mnote(A4, t, 0.17, { type:'triangle', vol:0.038, cut:2600, thick:true }); // 트레몰로 고음(불안)
-    if ((step & 1) === 0) { const g = GAME_ARP[(step>>1) % GAME_ARP.length]; mnote(g, t, 0.16, { type:'sawtooth', vol:0.07, cut:520 }); mnote(g*2, t, 0.14, { type:'triangle', vol:0.03, cut:1400 }); } // 저음 아르페지오+옥타브
-    if ((step % 8) === 0) { kick(t, 0.8); mnote(D2, t, 0.5, { type:'sawtooth', vol:0.14, cut:340 }); } // 심장박동 강
-    if ((step % 8) === 3) kick(t, 0.42);                                                              // 두근-두근 약
-    if (step === 16) { mnote(Ab4, t, 0.55, { type:'sawtooth', vol:0.09, cut:1300, thick:true }); mnote(D4, t, 0.55, { type:'sawtooth', vol:0.06, cut:1300 }); } // 트라이톤 스탭
-    if (step === 26) mnote(Eb4, t, 0.45, { type:'sawtooth', vol:0.07, cut:1200 });                    // 불협 여운
-    if (step === 30) snare(t, 0.16);                                                                  // 긴장 고조 히트
+    // 펄싱 8분 베이스(추진력·생동감)
+    if ((step & 1) === 0) mnote(root, t, GAME_STEP * 1.5, { type:'sawtooth', vol:0.10, cut:360, atk:0.005 });
+    // 8분 아르페지오(코드 톤 순환) + 저옥타브 지지
+    if ((step & 1) === 0) { const a = triad[(step >> 1) % 3] * 2;
+      mnote(a,   t, GAME_STEP * 1.2, { type:'triangle', vol:0.048, cut:2400, atk:0.004 });
+      mnote(a/2, t, GAME_STEP * 1.1, { type:'sawtooth', vol:0.028, cut:720 }); }
+    // 후반부(3·4마디) 긴장 리드 모티프 + 옥타브
+    if (bar >= 2 && (step & 1) === 0) { const m = GAME_LEAD[((step >> 1) & 7) + (bar === 3 ? 8 : 0)];
+      if (m) { mnote(m, t, 0.42, { type:'sawtooth', vol:0.075, cut:2600, thick:true }); mnote(m/2, t, 0.42, { type:'triangle', vol:0.028, cut:1400 }); } }
+    // 트레몰로 고음(불안 유지)
+    if ((step & 3) === 2) mnote(A4, t, 0.13, { type:'triangle', vol:0.03, cut:2600 });
+    // --- 전투 드럼(생동감) ---
+    if (s16 === 0) { kick(t, 0.85); if (bar === 0 || bar === 2) taiko(t, 82, 0.62); }   // 강 다운비트 + 전투북 무게
+    if (s16 === 8) { kick(t, 0.7); snare(t, 0.14); }                                     // 백비트
+    if (s16 === 3 || s16 === 11) kick(t, 0.4);                                           // 싱코페이션 고스트 킥
+    if ((step & 1) === 1) hat(t, 0.05);                                                  // 오프비트 하이햇 드라이브
+    if (bar === 3 && s16 >= 12) snare(t, 0.05 + (s16 - 12) * 0.03);                       // 루프 전환 스네어 롤 고조
   }
   const TRACKS = { title:{ name:'title', len:64, step:0.183, fn:titleFn },
                    game:{ name:'game', len:GAME_LEN, step:GAME_STEP, fn:gameFn } };
