@@ -922,7 +922,10 @@ resize();
 
 /* ---------------- 입력 ---------------- */
 const keys = {};
-const touch = { active:false, ox:0, oy:0, dx:0, dy:0, id:null };
+const touch = { active:false, ox:0, oy:0, dx:0, dy:0, id:null, sx:0, sy:0 };
+// 모바일 조작감: 트레일링(플로팅) 조이스틱 — 원점이 손가락을 따라와 방향 전환(회피)이 즉각 반응한다.
+const JOY_MAX = 42, JOY_DEAD = 7;
+const moveSmooth = { x:0, y:0 };
 window.addEventListener('keydown', e => {
   keys[e.key.toLowerCase()] = true;
   if (['arrowup','arrowdown','arrowleft','arrowright',' '].includes(e.key.toLowerCase())) e.preventDefault();
@@ -937,17 +940,22 @@ cv.addEventListener('touchstart', e => {
   const t = e.changedTouches[0];
   touch.active = true; touch.id = t.identifier;
   touch.ox = t.clientX; touch.oy = t.clientY; touch.dx = 0; touch.dy = 0;
+  touch.sx = t.clientX; touch.sy = t.clientY;   // 최초 지점(탭 판정용)
   e.preventDefault();
 }, { passive:false });
 cv.addEventListener('touchmove', e => {
   if (!touch.active) return;
   for (const t of e.changedTouches) if (t.identifier === touch.id) {
+    // 트레일링 원점: 손가락이 JOY_MAX 밖으로 나가면 원점을 손가락 쪽으로 끌어와
+    // 항상 반경 안에 유지 → 반대 방향으로 살짝만 움직여도 즉시 방향이 바뀐다(회피 개선).
+    const rx = t.clientX - touch.ox, ry = t.clientY - touch.oy, m = Math.hypot(rx, ry);
+    if (m > JOY_MAX) { touch.ox += rx * (m - JOY_MAX) / m; touch.oy += ry * (m - JOY_MAX) / m; }
     touch.dx = t.clientX - touch.ox; touch.dy = t.clientY - touch.oy;
   }
   e.preventDefault();
 }, { passive:false });
 function endTouch(e){ for (const t of e.changedTouches) if (t.identifier === touch.id){
-  if (Math.hypot(touch.dx, touch.dy) < 12) handleTurretTap(t.clientX, t.clientY);   // 탭(드래그 X) → 가드 터렛 설정
+  if (Math.hypot(t.clientX - touch.sx, t.clientY - touch.sy) < 12) handleTurretTap(t.clientX, t.clientY);   // 탭(드래그 X) → 가드 터렛 설정
   touch.active=false; touch.id=null; } }
 cv.addEventListener('touchend', endTouch, { passive:false });
 cv.addEventListener('touchcancel', endTouch, { passive:false });
@@ -962,11 +970,22 @@ function getMoveVector() {
   if (keys['d'] || keys['arrowright']) mx += 1;
   if (touch.active) {
     const m = Math.hypot(touch.dx, touch.dy);
-    if (m > 12) { const s = Math.min(m, 60) / 60; mx = (touch.dx / m) * s; my = (touch.dy / m) * s; }
+    if (m > JOY_DEAD) {
+      // 데드존~최대 사이를 부드럽게 램프: 작은 기울임은 정밀 저속, 끝까지 밀면 최고속.
+      const s = Math.min(1, (m - JOY_DEAD) / (JOY_MAX - JOY_DEAD));
+      mx = (touch.dx / m) * s; my = (touch.dy / m) * s;
+    }
   }
-  const mag = Math.hypot(mx, my);
+  let mag = Math.hypot(mx, my);
   if (mag > 1) { mx /= mag; my /= mag; }
-  return { mx, my, mag: Math.min(mag, 1) };
+  // 부드러운 이동: 목표 벡터로 보간해 미세 떨림 제거(터치는 부드럽게, 키보드/손 뗌은 즉각).
+  const ease = touch.active ? 0.55 : 1;
+  moveSmooth.x += (mx - moveSmooth.x) * ease;
+  moveSmooth.y += (my - moveSmooth.y) * ease;
+  if (Math.abs(moveSmooth.x) < 0.001) moveSmooth.x = 0;
+  if (Math.abs(moveSmooth.y) < 0.001) moveSmooth.y = 0;
+  const sm = Math.min(1, Math.hypot(moveSmooth.x, moveSmooth.y));
+  return { mx: moveSmooth.x, my: moveSmooth.y, mag: sm };
 }
 
 /* ============================================================================
@@ -1809,7 +1828,7 @@ function startRun(){
   G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
   rebuildBlades();
-  G.camX = 0; G.camY = 0;
+  G.camX = 0; G.camY = 0; moveSmooth.x = 0; moveSmooth.y = 0;
   hideAllOverlays(); hud.classList.add('show');
   el.hint.textContent = isTouch() ? t('hint.touch') : t('hint.pc');
   el.hint.style.opacity = '1'; el.hint.dataset.hidden = '';
@@ -3021,11 +3040,17 @@ function drawParticles() {
 }
 function drawJoystick() {
   if (!touch.active) return;
-  ctx.globalAlpha = 0.5; ctx.strokeStyle = 'rgba(139,255,90,.5)'; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.arc(touch.ox, touch.oy, 46, 0, TAU); ctx.stroke();
-  const m = Math.hypot(touch.dx, touch.dy), cl = Math.min(m, 46);
+  // 베이스 링
+  ctx.globalAlpha = 0.5; ctx.lineWidth = 3;
+  ctx.fillStyle = 'rgba(10,20,12,.32)';
+  ctx.beginPath(); ctx.arc(touch.ox, touch.oy, JOY_MAX, 0, TAU); ctx.fill();
+  ctx.strokeStyle = 'rgba(139,255,90,.45)';
+  ctx.beginPath(); ctx.arc(touch.ox, touch.oy, JOY_MAX, 0, TAU); ctx.stroke();
+  // 노브(손가락 방향, JOY_MAX 안으로 클램프)
+  const m = Math.hypot(touch.dx, touch.dy), cl = Math.min(m, JOY_MAX);
   const kx = touch.ox + (m ? touch.dx/m*cl : 0), ky = touch.oy + (m ? touch.dy/m*cl : 0);
-  ctx.fillStyle = 'rgba(139,255,90,.7)'; ctx.beginPath(); ctx.arc(kx, ky, 20, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 0.85;
+  ctx.fillStyle = 'rgba(139,255,90,.75)'; ctx.beginPath(); ctx.arc(kx, ky, 19, 0, TAU); ctx.fill();
   ctx.globalAlpha = 1;
 }
 function drawVignette() {
@@ -3176,7 +3201,7 @@ function continueTier() {
   G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
   rebuildBlades();
-  G.camX = 0; G.camY = 0;
+  G.camX = 0; G.camY = 0; moveSmooth.x = 0; moveSmooth.y = 0;
   hudReset(); loadoutSig = '';
   el.result.classList.remove('show');
   el.bossbar.classList.remove('show');
@@ -3262,7 +3287,7 @@ function resumeRun() {
       xp: s.xp || 0, level: s.level || 1, atkLv: s.atkLv || 0, spdLv: s.spdLv || 0, points: s.points || 0, dead: false });
   });
   rebuildBlades();
-  G.camX = p.x; G.camY = p.y;
+  G.camX = p.x; G.camY = p.y; moveSmooth.x = 0; moveSmooth.y = 0;
   hideAllOverlays(); hud.classList.add('show');
   hudReset(); loadoutSig = '';
   el.hint.style.opacity = '0'; el.hint.dataset.hidden = '1';
