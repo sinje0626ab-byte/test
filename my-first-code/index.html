@@ -1195,6 +1195,16 @@ const ENEMIES = {
   bomber:{ name:'봄버', hp:25, spd:1.05, r:14, dmg:30, xp:2, col:'#d76a3a', coin:0.1, dark:'#7a3313', bomb:true, radius:70, elite:true, tier:'mid' },
   spitter:{ name:'스피터', hp:20, spd:0.6, r:13, dmg:10, xp:2, col:'#63c39a', coin:0.1, dark:'#2f6b50', spit:true, elite:true, tier:'mid' },
   howler:{ name:'하울러', hp:34, spd:0.62, r:15, dmg:12, xp:3, col:'#b23a9e', coin:0.09, dark:'#5c1d52', howl:true, elite:true, tier:'mid' },
+  /* 신규 몬스터 8종 — 차수별 누적 등장 */
+  armorwalker:{ name:'아머 워커',     hp:95,  spd:0.5,  r:15, dmg:14, xp:4, col:'#6b7683', dark:'#242a30', coin:0.14, elite:true, tier:'mid' },
+  archer:     { name:'스켈레톤 아처', hp:24,  spd:0.72, r:12, dmg:12, xp:3, col:'#e6e6d8', dark:'#3a3a30', coin:0.09, spit:true, projCol:'#f0f0e0' },
+  reaper:     { name:'리퍼',          hp:42,  spd:1.5,  r:13, dmg:20, xp:4, col:'#5a2480', dark:'#191322', coin:0.12, elite:true, tier:'mid' },
+  slime:      { name:'슬라임',        hp:36,  spd:0.6,  r:14, dmg:10, xp:2, col:'#4fb39a', dark:'#123a34', coin:0.08, split:true },
+  slimeling:  { name:'슬라임',        hp:10,  spd:0.95, r:8,  dmg:6,  xp:1, col:'#4fb39a', dark:'#123a34', coin:0.03 },
+  necromancer:{ name:'네크로맨서',    hp:64,  spd:0.46, r:14, dmg:12, xp:6, col:'#7a3ab0', dark:'#20143a', coin:0.18, summon:true, elite:true, tier:'high' },
+  stonegolem: { name:'스톤 골렘',     hp:170, spd:0.4,  r:20, dmg:22, xp:8, col:'#7a6f5a', dark:'#3a3228', coin:0.20, elite:true, tier:'high' },
+  lich:       { name:'리치',          hp:74,  spd:0.5,  r:14, dmg:16, xp:7, col:'#bfe8ff', dark:'#101820', coin:0.18, spit:true, projCol:'#8fe0ff', elite:true, tier:'high' },
+  firedemon:  { name:'파이어 데몬',   hp:82,  spd:0.85, r:15, dmg:20, xp:7, col:'#d94a1a', dark:'#6e0f0f', coin:0.18, firetrail:true, elite:true, tier:'high' },
 };
 
 /* 메타 아머리 — 설계서 9장 */
@@ -1796,7 +1806,56 @@ const SPRITES = {
     ".ddddddd","dddddddd","ddmmmmdd","ddmmmmdd",".dmmmmd.","..dmmd..",
     "..dddd..","..dd.dd.","..dd.dd.","..dd.dd.","...d..d.","...d..d.",
   ], { v:'#c96bff', d:'#241236', m:'#6a2a8a', e:'#ff4dd8' }),
+  /* ===== 신규 몬스터 8종 (차수별 누적 등장) ===== */
+  /* 2차 — 아머 워커 (강철 갑주 언데드) */
+  armorwalker: buildSprite([
+    "......nn",".....nnn","....aaaa","...aavae","...asssa","..aaaaaa",
+    ".aaaaaaa","aaaaaaaa","aaggggaa","aaggggaa",".aaggaa.","..aaaaa.",
+    "..gg.gg.","..gg.gg.","..gg.gg.","...g.g..","...g.g..","...g.g..",
+  ], { n:'#141a1f', a:'#6b7683', g:'#2f3842', v:'#0e1216', s:'#8a9a5f', e:'#ff4d4d' }),
+  /* 2차 — 스켈레톤 아처 (백골 궁수) */
+  archer: buildSprite([
+    "......ww",".....www","....wwww","...wwkkw","...wwwww","..wwwwww",
+    "o.wwwwww","oowwwwww","o.wwwwww","..wwkwww","..wwwww.","..wwwww.",
+    "..ww.ww.","..ww.ww.","..w..w..","..w..w..","..w..w..","..w..w..",
+  ], { w:'#e6e6d8', k:'#141414', o:'#8a5a2e' }),
+  /* 3차 — 리퍼 (검은 후드·자색 안광) */
+  reaper: buildSprite([
+    "......kk",".....kkk","....kkkk","...kkrke","...kkkkk","..kkkkkk",
+    ".kkkkkkk","kkkkkkkk","kkkkkkkk",".kkkkkk.",".kkkkkk.","..kkkkk.",
+    "..kkkkk.","..kk.kk.","..kk.kk.","...k.k..","...k.k..","...k.k..",
+  ], { k:'#191322', r:'#5a2480', e:'#c96bff' }),
+  /* 3차 — 슬라임 (반투명 점액) */
+  slime: buildSprite([
+    "......gg",".....ggg","....gggg","...ggwgg","..ggeggg","..gggggg",
+    "..gggggg","..gggggg","...ggggg","....gggg",".....ggg",
+  ], { g:'#4fb39a', w:'#cffff0', e:'#123a34' }),
+  /* 4차 — 네크로맨서 (암흑 로브·소환술) */
+  necromancer: buildSprite([
+    "......kk",".....kkk","....kkkk","...kkeke","...ppppp","..pppppp",
+    ".ppppppp","pppppppp","o.pppppp","o.pppppp","o.ppppp.","..ppppp.",
+    "..pp.pp.","..pp.pp.","...p.p..","...p.p..","...p.p..","...p.p..",
+  ], { k:'#20143a', p:'#7a3ab0', e:'#c96bff', o:'#c9a24a' }),
+  /* 4차 — 스톤 골렘 (거대 암석) */
+  stonegolem: buildSprite([
+    ".....nnn","....aaaa","...aaaaa","..aaxaae","..aaaaaa",".aaaaaaa",
+    "aaaaaaaa","aaaaaaaa","aaxxxxaa","aaxxxxaa","aaaaaaaa",".aaaaaa.",
+    "..aa.aa.","..aa.aa.","..cc.cc.","..cc.cc.",
+  ], { n:'#3a3228', a:'#7a6f5a', x:'#4a4034', c:'#2a2419', e:'#ffd24d' }),
+  /* 5차 — 리치 (서리 해골 대마법사·왕관) */
+  lich: buildSprite([
+    "...o.o.o","....iii.","...iiiii","...iikke","...iiiii","..iiiiii",
+    ".bbbbbbb","bbbbbbbb","bbbbbbbb","bibbbbbb","bibbbbb.","..bbbbb.",
+    "..bb.bb.","..bb.bb.","...b.b..","...b.b..","...b.b..","...b.b..",
+  ], { b:'#3a5a7a', i:'#bfe8ff', k:'#101820', e:'#6ff0ff', o:'#c9a24a' }),
+  /* 5차 — 파이어 데몬 (뿔·지옥불) */
+  firedemon: buildSprite([
+    "rr....hh","rrr..hhh",".rrhhhhh","..hhhheh","..hhhhhh",".hhhhhhh",
+    "hhhhhhhh","hhhhhhhh","hhoooohh","hhoooohh",".hhoohh.","..hhhhh.",
+    "..hh.hh.","..hh.hh.","..yy.yy.","...y.y..","...y.y..","...y.y..",
+  ], { r:'#6e0f0f', h:'#d94a1a', o:'#ffb020', e:'#ffe85a', y:'#7a1a0a' }),
 };
+SPRITES.slimeling = SPRITES.slime;   // 작은 슬라임(분열체)은 같은 스프라이트를 축소해 사용
 
 /* 화염/연기 스프라이트를 오프스크린 캔버스에 1회만 렌더.
    기존엔 파티클마다 매 프레임 createRadialGradient를 호출해 화염방사기 사용 시 부하가 컸다.
@@ -2229,6 +2288,9 @@ function killEnemy(e) {
   spawnGem(e.x, e.y, e.def.xp);
   if (Math.random() < (e.def.coin || 0)) spawnCoin(e.x, e.y, 6);
   if (Math.random() < 0.01) spawnHeart(e.x, e.y);   // 하트 드랍률 2배 감소
+  if (e.def.split && !e.child && G.enemies.length < 260) {   // 슬라임: 죽으면 작은 슬라임 2마리로 분열
+    for (let i = 0; i < 2; i++) { const a = Math.random()*TAU; const c = spawnEnemy('slimeling', e.x + Math.cos(a)*14, e.y + Math.sin(a)*14); if (c) c.child = true; }
+  }
   // 특수 드롭
   if (e.def.elite) {
     if (Math.random() < 0.004) spawnOrb(e.x, e.y, 'magnet');       // 슈퍼자석: 2배 더 희귀
@@ -2307,6 +2369,7 @@ function spawnEnemy(typeKey, ox, oy) {
   e.r = def.r; e.spd = def.spd * tierSpdMul(); e.dead = false; e.boss = false; e.mini = false;
   e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140);
   e.howlT = randInt(140, 220); e.hasteT = 0; e.chill = 0; e.chillPow = 1; e.pullT = 0; e.facing = 1; e.id = G.uid++;
+  e.summonT = randInt(160, 300); e.fireT = randInt(20, 45); e.child = false;   // 네크로맨서 소환 / 파이어데몬 화염 / 슬라임 분열체
   G.enemies.push(e); return e;
 }
 
@@ -2338,6 +2401,14 @@ function rollEnemyType(t) {
   else if (t < 120) type = r < 0.28 ? 'walker' : r < 0.52 ? 'runner' : r < 0.68 ? 'bomber' : r < 0.8 ? 'spitter' : r < 0.9 ? 'howler' : 'brute';
   else type = r < 0.22 ? 'walker' : r < 0.44 ? 'runner' : r < 0.6 ? 'bomber' : r < 0.74 ? 'spitter' : r < 0.87 ? 'howler' : 'brute';
   if (type === 'howler' && G.tier < 4) type = 'spitter';   // 하울러(보라·둔화)는 4차부터 등장
+  // 신규 몬스터 8종: 차수별 누적 등장 (2차부터, 초반 25초 이후)
+  if (t >= 25 && G.tier >= 2) {
+    const extras = ['armorwalker', 'archer'];
+    if (G.tier >= 3) extras.push('reaper', 'slime');
+    if (G.tier >= 4) extras.push('necromancer', 'stonegolem');
+    if (G.tier >= 5) extras.push('lich', 'firedemon');
+    if (Math.random() < 0.42) type = extras[(Math.random() * extras.length) | 0];
+  }
   return type;
 }
 
@@ -2445,6 +2516,15 @@ function updateEnemies() {
       else if (d < 150) { e.x -= dx/d*spd*0.5; e.y -= dy/d*spd*0.5; }
       e.howlT--; if (e.howlT <= 0) { howl(e); e.howlT = randInt(220, 320); }
     }
+    else if (e.def.summon) {                                   // 네크로맨서: 거리 유지 + 언데드 소환
+      if (d > 240) { e.x += dx/d*spd; e.y += dy/d*spd; }
+      else if (d < 190) { e.x -= dx/d*spd*0.5; e.y -= dy/d*spd*0.5; }
+      e.summonT--; if (e.summonT <= 0) { necroSummon(e); e.summonT = randInt(280, 400); }
+    }
+    else if (e.def.firetrail) {                                // 파이어 데몬: 추격하며 화염 장판 생성
+      e.x += dx/d*spd; e.y += dy/d*spd;
+      e.fireT--; if (e.fireT <= 0) { dropFire(e); e.fireT = randInt(26, 44); }
+    }
     else { e.x += dx/d*spd; e.y += dy/d*spd; }
 
     e.wob += 0.15;
@@ -2465,7 +2545,7 @@ function bossAI(e, dx, dy, d) {
     e.patternT = 150; const n = 14;
     for (let i = 0; i < n; i++) {
       const a = (i/n)*TAU;
-      const ac = takeAcid(); ac.x=e.x; ac.y=e.y; ac.vx=Math.cos(a)*2.4; ac.vy=Math.sin(a)*2.4; ac.life=150; ac.dmg=22; ac.r=8; ac.dead=false;
+      const ac = takeAcid(); ac.x=e.x; ac.y=e.y; ac.vx=Math.cos(a)*2.4; ac.vy=Math.sin(a)*2.4; ac.life=150; ac.dmg=22; ac.r=8; ac.dead=false; ac.col=null;
       G.acids.push(ac);
     }
     Audio.S.boss();
@@ -2489,6 +2569,16 @@ function bomberExplode(e) {
 function spitAcid(e, p) {
   const a = Math.atan2(p.y - e.y, p.x - e.x);
   const ac = takeAcid(); ac.x=e.x; ac.y=e.y; ac.vx=Math.cos(a)*3.2; ac.vy=Math.sin(a)*3.2; ac.life=130; ac.dmg=e.def.dmg; ac.r=7; ac.dead=false;
+  ac.col = e.def.projCol || null;   // 아처/리치 등 투사체 색상
+  G.acids.push(ac);
+}
+function necroSummon(e) {   // 네크로맨서: 주변에 언데드 소환
+  ring(e.x, e.y, 44, '#9a4fff', 28); if (Audio.S.howl) Audio.S.howl();
+  if (G.enemies.length > 240) return;
+  for (let i = 0; i < 2; i++) { const a = Math.random()*TAU, r = e.r + 34; spawnEnemy('walker', e.x + Math.cos(a)*r, e.y + Math.sin(a)*r); }
+}
+function dropFire(e) {   // 파이어 데몬: 바닥에 화염 장판(지속 피해)
+  const ac = takeAcid(); ac.x=e.x; ac.y=e.y; ac.vx=0; ac.vy=0; ac.life=80; ac.dmg=Math.round((e.def.dmg||16)*0.5); ac.r=11; ac.dead=false; ac.col='#ff7a2a';
   G.acids.push(ac);
 }
 function howl(e) {
@@ -2957,7 +3047,7 @@ function buildGuide() {
   // 04 몬스터
   h += `<div class="gd-sec"><span class="n">04</span><h3>${gt('s_enemy')}</h3></div>`;
   h += `<div class="gd-lead">${gt('lead_enemy')}</div>`;
-  for (const id in ENEMIES) { const e = ENEMIES[id];
+  for (const id in ENEMIES) { if (id === 'slimeling') continue; const e = ENEMIES[id];   // 분열체는 도감 제외
     const chips = statChip(gt('st_hp'),e.hp) + statChip(gt('st_spd'),e.spd) + statChip(gt('st_dmg'),e.dmg) + statChip(gt('st_exp'),e.xp);
     h += `<div class="gd-card"><div class="gd-nm">${e.name}${e.elite?' <span class="gd-stat" style="color:var(--gold)">ELITE</span>':''}</div>
       <div class="gd-stats">${chips}</div></div>`; }
@@ -3084,6 +3174,10 @@ function drawBullets() {
 }
 function drawAcids() {
   for (const a of G.acids) { if (!onScreen(a.x,a.y,20)) continue;
+    if (a.col) {   // 색상 지정 투사체(아처 화살·리치 냉기·데몬 화염)
+      ctx.globalAlpha = 0.32; ctx.fillStyle = a.col; ctx.beginPath(); ctx.arc(a.x, a.y, a.r * 1.7, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.fillStyle = a.col; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, TAU); ctx.fill(); continue;
+    }
     ctx.fillStyle = 'rgba(99,195,154,0.35)'; ctx.beginPath(); ctx.arc(a.x, a.y, a.r * 1.6, 0, TAU); ctx.fill();
     ctx.fillStyle = '#7dff9a'; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, TAU); ctx.fill(); }
 }
