@@ -1969,7 +1969,7 @@ const G = {
   spawnTimer:0, heartTimer:0,
   miniSpawned:false, bossSpawned:false, boss:null,
   runCoins:0, kills:0, camX:0, camY:0,
-  screenShake:0, uid:1, tier:1, _cashed:false, bossKilled:false,
+  screenShake:0, uid:1, tier:1, _cashed:false, bossKilled:false, clearing:false,
 };
 const pool = { enemy:[], bullet:[], part:[], gem:[], acid:[] };
 const takeEnemy = () => pool.enemy.pop() || {};
@@ -2069,7 +2069,7 @@ function startRun(){
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, runCoins:0, kills:0, screenShake:0,
-    tier: Math.max(1, Math.min(G.save.maxTier || 1, G.startStage || G.save.maxTier || 1)), _cashed:false, bossKilled:false,   // 선택한 출격 스테이지부터 시작
+    tier: Math.max(1, Math.min(G.save.maxTier || 1, G.startStage || G.save.maxTier || 1)), _cashed:false, bossKilled:false, clearing:false,   // 선택한 출격 스테이지부터 시작
   });
   G.player = makePlayer();
   const char = CHARACTERS[G.character || 'hunter'];
@@ -2452,6 +2452,7 @@ function spawnEnemy(typeKey, ox, oy) {
 }
 
 function spawnDirector() {
+  if (G.clearing) return;                 // 스테이지 클리어 연출 중엔 스폰 정지
   G.spawnTimer--;
   if (G.spawnTimer <= 0 && G.enemies.length < 300) {
     const t = G.time;
@@ -2520,11 +2521,29 @@ function spawnBoss(kind) {
 }
 function onBossDown(e) {
   if (e === G.boss) {
-    for (let i = 0; i < 40; i++) spawnCoin(e.x, e.y, 50);
+    for (let i = 0; i < 40; i++) spawnCoin(e.x, e.y, 50);   // 보스 골드 드랍
     ring(e.x, e.y, 120, '#ffcf4d', 40); G.screenShake = 20;
     G.boss = null; el.bossbar.classList.remove('show');
-    setTimeout(() => { if (G.state !== 'menu' && G.state !== 'result') winRound(); }, 700);
+    beginStageClear();
   }
+}
+/* 스테이지 클리어 연출: 보스 제외 몬스터 전멸(드롭 없음) → 슈퍼자석으로 금 흡수 → 3초 뒤 클리어 */
+function beginStageClear() {
+  G.clearing = true;                                  // 추가 스폰 중지
+  // 1) 보스를 제외한 모든 몬스터 즉사 — 아이템/젬/코인을 떨구지 않는다
+  for (const en of G.enemies) {
+    if (en.dead || en.boss) continue;
+    en.dead = true; G.kills++;
+    spark(en.x, en.y, (en.def && en.def.dark) || '#7a3', 6, 3, 20);
+  }
+  // 2) 슈퍼 자석 발동 — 필드에 떨궈진 모든 금(코인)·젬·하트를 빨아들인다
+  for (const c of G.coins) c.mag = true;
+  for (const g of G.gems) g.mag = true;
+  for (const h of G.hearts) h.mag = true;
+  G.screenShake = Math.max(G.screenShake, 6); Audio.S.magnet();
+  floatText(P().x, P().y - 40, '🧲', '#ffd24d');
+  // 3) 3초 뒤 스테이지 클리어
+  setTimeout(() => { G.clearing = false; if (G.state !== 'menu' && G.state !== 'result') winRound(); }, 3000);
 }
 
 /* ============================================================================
@@ -3484,7 +3503,7 @@ function continueTier() {
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
-    miniSpawned:false, bossSpawned:false, boss:null, screenShake:0,
+    miniSpawned:false, bossSpawned:false, boss:null, screenShake:0, clearing:false,
   });
   // 처음 상태로 재시작: 새 플레이어 + 시작 무기/짝 패시브 1레벨
   G.player = makePlayer();
@@ -3561,7 +3580,7 @@ function resumeRun() {
     particles: [], blades: [], sentries: [], hazards: [], orbs: [], spawnTimer: 0, heartTimer: rs.heartTimer || 0,
     miniSpawned: !!rs.miniSpawned, bossSpawned: !!rs.bossSpawned, boss: null,
     runCoins: rs.runCoins || 0, kills: rs.kills || 0, screenShake: 0,
-    tier: rs.tier || 1, _cashed: false, bossKilled: !!rs.bossKilled,
+    tier: rs.tier || 1, _cashed: false, bossKilled: !!rs.bossKilled, clearing: false,
   });
   const p = makePlayer(), P0 = rs.player;
   p.hp = P0.hp; p.maxhp = P0.maxhp; p.level = P0.level; p.xp = P0.xp; p.xpNext = P0.xpNext;
