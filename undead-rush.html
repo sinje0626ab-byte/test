@@ -2910,6 +2910,7 @@ function buildChoices() {
   if (p.weapons.length < 6) for (const k in WEAPONS) if (!ownWeapon(k)) opts.push({ type:'wnew', key:k });
   if (Object.keys(p.passives).length < (G.save.passiveSlots || 6)) for (const k in PASSIVES) if (!(k in p.passives)) opts.push({ type:'pnew', id:k });
   shuffle(opts);
+  shuffle(evoOpts);            // 진화 후보가 3개보다 많을 때 특정 무기(붐샷 등)가 계속 밀려나 진화 못하는 문제 방지
   const chosen = [];
   for (const e of evoOpts) if (chosen.length < 3) chosen.push(e);
   for (const o of opts) { if (chosen.length >= 3) break; chosen.push(o); }
