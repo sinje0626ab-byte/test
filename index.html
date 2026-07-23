@@ -1937,7 +1937,7 @@ function fireWeapon(w) {
   const p = P(), s = wstats(w), key = w.key;
   if (key === 'machete') return; // 지속형
   if (key === 'sentry') {
-    const maxT = w.evolved ? 4 : 3;
+    const maxT = 2;                          // 가드 터렛 최대 2개
     if (G.sentries.length >= maxT) return;   // 지속형 터렛 상한 (레벨업 누적을 위해)
     G.sentries.push({ x:p.x, y:p.y, dmg:s.dmg, fireCd:s.fireCd, fireT:0, rng:s.rng, evolved:w.evolved,
       xp:0, level:1, atkLv:0, spdLv:0, points:0, dead:false });
@@ -2782,9 +2782,10 @@ function drawSentries() {
 const TURRET_MAX = 10;
 function turretGainXP(s) {
   if ((s.atkLv + s.spdLv) >= TURRET_MAX * 2) { s.xp = 0; return; }
-  s.xp++; let need = 5 + s.level * 4;
+  const req = lv => Math.round((5 + lv * 4) * 2.5);   // 레벨업 요구 경험치 2.5배 상향
+  s.xp++; let need = req(s.level);
   while (s.xp >= need && (s.atkLv + s.spdLv) < TURRET_MAX * 2) {
-    s.xp -= need; s.level++; s.points++; need = 5 + s.level * 4;
+    s.xp -= need; s.level++; s.points++; need = req(s.level);
     floatText(s.x, s.y - 24, 'Lv ' + s.level + '!', '#9fe0ff');
   }
 }
