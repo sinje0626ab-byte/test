@@ -227,12 +227,14 @@
   .gd-spr{image-rendering:pixelated;flex:0 0 auto;width:46px;height:auto;align-self:center;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5));}
   .gd-spr.sm{width:44px;}
   .gd-boss .gd-spr{width:52px;}
-  /* 출격 스테이지 선택 */
-  .stagesel{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
-  .stagesel .sp{padding:7px 14px;border-radius:10px;border:1px solid var(--line);background:#0e1512;color:var(--ink-dim);
-    font-weight:800;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-  .stagesel .sp.on{background:linear-gradient(180deg,#d4af37,#a8811f);color:#1a1206;border-color:#d4af37;}
-  .stagesel .sp:active{transform:scale(.95);}
+  /* 출격 스테이지 선택 팝업 */
+  .stage-lead{font-size:12.5px;color:var(--ink-dim);text-align:center;margin:2px 0 14px;}
+  .stagesel{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:14px;}
+  .stagesel .sp{padding:12px 20px;border-radius:12px;border:1px solid var(--line);background:#0e1512;color:var(--ink);
+    font-weight:800;font-size:15px;cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:96px;
+    box-shadow:0 3px 10px rgba(0,0,0,.35);transition:transform .08s;}
+  .stagesel .sp.top{background:linear-gradient(180deg,#d4af37,#a8811f);color:#1a1206;border-color:#d4af37;}
+  .stagesel .sp:active{transform:scale(.94);}
   .gd-nm{font-size:13.5px;font-weight:800;} .gd-ds{font-size:11px;color:var(--ink-dim);margin-top:3px;line-height:1.5;}
   .gd-badge{font-size:9px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:middle;}
   .gd-badge.on{color:#08110a;background:var(--toxic);} .gd-badge.off{color:var(--ink-dim);border:1px solid var(--line);}
@@ -495,8 +497,6 @@
     <div class="charsel" id="charsel"></div>
     <div class="brand" style="margin-bottom:10px;" data-i18n="menu.armory">메타 아머리 · 영구 강화</div>
     <div class="armory" id="armory"></div>
-    <div class="brand stagesel-lbl" id="stageSelLbl" style="margin-bottom:8px;display:none;" data-i18n="menu.stage">출격 스테이지 선택</div>
-    <div class="stagesel" id="stageSel"></div>
     <div class="cta">
       <button class="btn primary" id="continueBtn" style="display:none;background:linear-gradient(180deg,#d4af37,#a8811f);margin-bottom:10px;" data-i18n="btn.continue">이어하기</button>
       <button class="btn primary" id="startBtn" data-i18n="btn.start">출격하기</button>
@@ -555,6 +555,18 @@
   </div>
 </div>
 <div class="gd-toast" id="gdToast"></div>
+
+<!-- STAGE PICK (출격 스테이지 선택 팝업) -->
+<div class="overlay" id="stagePick">
+  <div class="veil"></div>
+  <div class="card center">
+    <div class="brand" style="justify-content:center;" data-i18n="menu.stage">출격 스테이지 선택</div>
+    <h1 class="title" style="font-size:30px;" data-i18n="stage.title">스테이지 선택</h1>
+    <div class="stage-lead" data-i18n="stage.lead">시작할 스테이지를 골라 출격하세요.</div>
+    <div class="stagesel" id="stagePickList"></div>
+    <button class="btn ghost" id="stagePickClose" style="margin-top:6px;" data-i18n="stage.cancel">취소</button>
+  </div>
+</div>
 
 <!-- GUARD TURRET UPGRADE -->
 <div class="overlay" id="turretPanel">
@@ -801,6 +813,16 @@ const Audio = (() => {
     } catch (e) {}
   }
   function stopGameBgm(ms) { if (!gameBgm) return; fadeVol(gameBgm, 0, ms || 400, () => { try { gameBgm.pause(); } catch (e) {} gameActive = false; }); }
+  // 멈춤(일시정지) 시 배경음 크게 줄이기(덕킹)
+  let ducked = false;
+  function setDuck(on) {
+    ducked = on;
+    const gm = bgmMuted ? 0 : 1, f = on ? 0.15 : 1;   // 멈춤 시 15%로 확 줄임
+    if (gameBgm)  fadeVol(gameBgm,  GAME_VOL  * gm * f, 220);
+    if (lobbyBgm) fadeVol(lobbyBgm, LOBBY_VOL * gm * f, 220);
+    if (anthem)   fadeVol(anthem,   ANTHEM_VOL * gm * f, 220);
+    if (musicBus) musicBus.gain.value = 0.9 * gm * f;
+  }
   function initMusicGraph() {
     if (!ctx || musicBus) return;
     musicBus = ctx.createGain(); musicBus.gain.value = bgmMuted ? 0 : 0.9;
@@ -990,7 +1012,7 @@ const Audio = (() => {
   return { ensure, resume, S,
     frameReset(){ voices = 0; },
     isRunning(){ return !!ctx && ctx.state === 'running'; },
-    startMusic, stopMusic, logoJingle, playAnthem, fadeOutAnthem, stopAnthem, isAnthemPlaying,
+    startMusic, stopMusic, logoJingle, playAnthem, fadeOutAnthem, stopAnthem, isAnthemPlaying, setDuck,
     setMuted(v){ muted = v; },                      // 효과음(SFX)
     isMuted(){ return muted; },
     toggle(){ muted = !muted; return muted; },
@@ -1006,7 +1028,7 @@ const hud = $('hud');
 const el = {
   splash:$('splash'), titleScreen:$('titleScreen'),
   menu:$('menu'), how:$('how'), pause:$('pause'), levelup:$('levelup'), result:$('result'), settings:$('settings'), turretPanel:$('turretPanel'),
-  guide:$('guide'), guideCard:$('guideCard'), guideBody:$('guideBody'),
+  guide:$('guide'), guideCard:$('guideCard'), guideBody:$('guideBody'), stagePick:$('stagePick'),
   xpfill:$('xpfill'), lvChip:$('lvChip'), hpfill:$('hpfill'), hptext:$('hptext'),
   timeChip:$('timeChip'), killChip:$('killChip'), coinChip:$('coinChip'), shieldChip:$('shieldChip'), tierChip:$('tierChip'),
   loadout:$('loadout'), choices:$('choices'), hint:$('hint'), luHeal:$('luHeal'),
@@ -1393,7 +1415,7 @@ const UI = {
   ko:{
     'menu.brand':'Undead Rush · 로그라이트 서바이벌', 'menu.tag':'5분간 좀비 군단을 버텨내고 최종 보스를 처치하라.',
     'menu.coins':'보유 코인', 'menu.best':'최고 생존', 'menu.kills':'총 처치',
-    'menu.charsel':'출격 대원 선택', 'menu.armory':'메타 아머리 · 영구 강화', 'menu.stage':'출격 스테이지 선택',
+    'menu.charsel':'출격 대원 선택', 'menu.armory':'메타 아머리 · 영구 강화', 'menu.stage':'출격 스테이지 선택', 'stage.title':'스테이지 선택', 'stage.lead':'시작할 스테이지를 골라 출격하세요.', 'stage.cancel':'취소',
     'btn.start':'출격하기', 'btn.how':'조작법', 'btn.guide':'가이드 도감', 'btn.reset':'데이터 초기화',
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
     'how.brand':'조작법 & 규칙', 'how.title':'플레이 방법', 'how.close':'알겠어요',
@@ -1424,7 +1446,7 @@ const UI = {
   en:{
     'menu.brand':'Undead Rush · Roguelite Survival', 'menu.tag':'Survive the horde for 5 minutes and slay the final boss.',
     'menu.coins':'Coins', 'menu.best':'Best Time', 'menu.kills':'Total Kills',
-    'menu.charsel':'Choose Your Operative', 'menu.armory':'Meta Armory · Permanent Upgrades', 'menu.stage':'Choose Starting Stage',
+    'menu.charsel':'Choose Your Operative', 'menu.armory':'Meta Armory · Permanent Upgrades', 'menu.stage':'Choose Starting Stage', 'stage.title':'Select Stage', 'stage.lead':'Pick a stage to deploy into.', 'stage.cancel':'Cancel',
     'btn.start':'Deploy', 'btn.how':'How to Play', 'btn.guide':'Guide & Codex', 'btn.reset':'Reset Data',
     'menu.autosave':'Progress is saved automatically in this browser.',
     'how.brand':'Controls & Rules', 'how.title':'How to Play', 'how.close':'Got it',
@@ -1455,7 +1477,7 @@ const UI = {
   zh:{
     'menu.brand':'Undead Rush · 类Rogue生存', 'menu.tag':'坚守5分钟，击败最终首领。',
     'menu.coins':'金币', 'menu.best':'最佳时间', 'menu.kills':'总击杀',
-    'menu.charsel':'选择你的干员', 'menu.armory':'元武库 · 永久强化', 'menu.stage':'选择出击层数',
+    'menu.charsel':'选择你的干员', 'menu.armory':'元武库 · 永久强化', 'menu.stage':'选择出击层数', 'stage.title':'选择层数', 'stage.lead':'选择要出击的层数。', 'stage.cancel':'取消',
     'btn.start':'出击', 'btn.how':'玩法说明', 'btn.guide':'指南图鉴', 'btn.reset':'重置数据',
     'menu.autosave':'进度会自动保存在此浏览器中。',
     'how.brand':'操作与规则', 'how.title':'玩法说明', 'how.close':'知道了',
@@ -1486,7 +1508,7 @@ const UI = {
   th:{
     'menu.brand':'Undead Rush · เอาชีวิตรอดสไตล์ Roguelite', 'menu.tag':'เอาชีวิตรอด 5 นาทีแล้วกำจัดบอสสุดท้าย',
     'menu.coins':'เหรียญ', 'menu.best':'เวลาที่ดีที่สุด', 'menu.kills':'สังหารรวม',
-    'menu.charsel':'เลือกตัวละครของคุณ', 'menu.armory':'คลังอาวุธเมตา · อัปเกรดถาวร', 'menu.stage':'เลือกด่านเริ่ม',
+    'menu.charsel':'เลือกตัวละครของคุณ', 'menu.armory':'คลังอาวุธเมตา · อัปเกรดถาวร', 'menu.stage':'เลือกด่านเริ่ม', 'stage.title':'เลือกด่าน', 'stage.lead':'เลือกด่านที่จะเริ่ม', 'stage.cancel':'ยกเลิก',
     'btn.start':'ออกรบ', 'btn.how':'วิธีเล่น', 'btn.guide':'คู่มือ', 'btn.reset':'ล้างข้อมูล',
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
     'how.brand':'การควบคุมและกติกา', 'how.title':'วิธีเล่น', 'how.close':'เข้าใจแล้ว',
@@ -1517,7 +1539,7 @@ const UI = {
   vi:{
     'menu.brand':'Undead Rush · Sinh tồn Roguelite', 'menu.tag':'Sống sót 5 phút và tiêu diệt trùm cuối.',
     'menu.coins':'Xu', 'menu.best':'Thời gian tốt nhất', 'menu.kills':'Tổng hạ gục',
-    'menu.charsel':'Chọn đặc vụ của bạn', 'menu.armory':'Kho Meta · Nâng cấp vĩnh viễn', 'menu.stage':'Chọn ải bắt đầu',
+    'menu.charsel':'Chọn đặc vụ của bạn', 'menu.armory':'Kho Meta · Nâng cấp vĩnh viễn', 'menu.stage':'Chọn ải bắt đầu', 'stage.title':'Chọn ải', 'stage.lead':'Chọn ải để xuất kích.', 'stage.cancel':'Hủy',
     'btn.start':'Xuất kích', 'btn.how':'Cách chơi', 'btn.guide':'Hướng dẫn', 'btn.reset':'Đặt lại dữ liệu',
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
     'how.brand':'Điều khiển & Luật', 'how.title':'Cách chơi', 'how.close':'Đã hiểu',
@@ -1548,7 +1570,7 @@ const UI = {
   es:{
     'menu.brand':'Undead Rush · Supervivencia Roguelite', 'menu.tag':'Sobrevive 5 minutos y elimina al jefe final.',
     'menu.coins':'Monedas', 'menu.best':'Mejor tiempo', 'menu.kills':'Bajas totales',
-    'menu.charsel':'Elige tu operativo', 'menu.armory':'Arsenal Meta · Mejoras permanentes', 'menu.stage':'Elige nivel inicial',
+    'menu.charsel':'Elige tu operativo', 'menu.armory':'Arsenal Meta · Mejoras permanentes', 'menu.stage':'Elige nivel inicial', 'stage.title':'Elegir nivel', 'stage.lead':'Elige un nivel para desplegarte.', 'stage.cancel':'Cancelar',
     'btn.start':'Desplegar', 'btn.how':'Cómo jugar', 'btn.guide':'Guía', 'btn.reset':'Borrar datos',
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
     'how.brand':'Controles y reglas', 'how.title':'Cómo jugar', 'how.close':'Entendido',
@@ -2333,7 +2355,7 @@ function killEnemy(e) {
   if (e.boss) { onBossDown(e); return; }   // 차수별 보스(boss~boss5) 모두 처리
   spawnGem(e.x, e.y, e.def.xp);
   if (Math.random() < (e.def.coin || 0)) spawnCoin(e.x, e.y, 6);
-  if (Math.random() < 0.01) spawnHeart(e.x, e.y);   // 하트 드랍률 2배 감소
+  if (Math.random() < ((G.tier <= 2) ? 0.015 : 0.01)) spawnHeart(e.x, e.y);   // 하트 드랍(스테이지 1~2는 1.5배)
   if (e.def.split && !e.child && G.enemies.length < 260) {   // 슬라임: 죽으면 작은 슬라임 2마리로 분열
     for (let i = 0; i < 2; i++) { const a = Math.random()*TAU; const c = spawnEnemy('slimeling', e.x + Math.cos(a)*14, e.y + Math.sin(a)*14); if (c) c.child = true; }
   }
@@ -3368,14 +3390,15 @@ function renderLoadout() {
 /* ============================================================================
    상태 전환 / 메뉴 / 아머리
    ========================================================================== */
-function hideAllOverlays() { ['splash','titleScreen','menu','how','pause','levelup','result','settings','turretPanel'].forEach(k => el[k].classList.remove('show')); }
+function hideAllOverlays() { ['splash','titleScreen','menu','how','pause','levelup','result','settings','turretPanel','stagePick'].forEach(k => el[k].classList.remove('show')); }
 
 function togglePause() {
   if (G.state === 'play') {
     G.state = 'pause';
     el.pauseStats.innerHTML = t('pause.stats').replace('{t}', fmtTime(G.time)).replace('{k}', G.kills).replace('{c}', G.runCoins);
     el.pause.classList.add('show');
-  } else if (G.state === 'pause') { el.pause.classList.remove('show'); G.state = 'play'; Audio.resume(); }
+    Audio.setDuck(true);                                  // 멈춤: 배경음 확 줄임
+  } else if (G.state === 'pause') { el.pause.classList.remove('show'); G.state = 'play'; Audio.resume(); Audio.setDuck(false); }
 }
 
 /* 판을 정산해 코인·기록을 영구 저장 (사망/피난 또는 로비 귀환 시 1회) */
@@ -3577,26 +3600,27 @@ function refreshMenu() {
       cbtn.textContent = t('btn.continue').replace('{n}', lb.tier || 1).replace('{lv}', lb.level || 1).replace('{t}', fmtTime(lb.time || 0));
     } else cbtn.style.display = 'none';
   }
-  renderStageSelect();
   renderCharSelect();
   renderArmory();
 }
-/* 출격 스테이지 선택 — 최고 스테이지가 2 이상이면 1~최고 스테이지 중 골라 시작 */
-function renderStageSelect() {
-  const wrap = $('stageSel'), lbl = $('stageSelLbl');
-  if (!wrap) return;
+/* 출격하기 → 최고 스테이지가 2 이상이면 선택 팝업, 아니면 바로 출격 */
+function deploy() {
+  Audio.ensure(); Audio.resume(); G.meta = curMeta();
   const maxS = Math.max(1, G.save.maxTier || 1);
-  if (G.startStage === undefined || G.startStage > maxS || G.startStage < 1) G.startStage = maxS;
-  if (maxS < 2) { wrap.innerHTML = ''; wrap.style.display = 'none'; if (lbl) lbl.style.display = 'none'; return; }
-  wrap.style.display = 'flex'; if (lbl) lbl.style.display = '';
+  if (maxS < 2) { G.startStage = 1; startRun(); return; }
+  openStagePick(maxS);
+}
+function openStagePick(maxS) {
+  const wrap = $('stagePickList'); if (!wrap) { startRun(); return; }
   wrap.innerHTML = '';
   for (let i = 1; i <= maxS; i++) {
     const b = document.createElement('button');
-    b.className = 'sp' + (i === G.startStage ? ' on' : '');
+    b.className = 'sp' + (i === maxS ? ' top' : '');   // 최고 스테이지 강조
     b.textContent = t('hud.tierLabel').replace('{n}', i);
-    b.onclick = () => { G.startStage = i; Audio.ensure(); Audio.S.pickup(); renderStageSelect(); };
+    b.onclick = () => { G.startStage = i; Audio.S.pickup(); el.stagePick.classList.remove('show'); startRun(); };
     wrap.appendChild(b);
   }
+  el.stagePick.classList.add('show');
 }
 function renderCharSelect() {
   el.charsel.innerHTML = '';
@@ -3702,7 +3726,8 @@ function init() {
   document.addEventListener('click', (e) => { const w = document.getElementById('langWrap'); if (w && !w.contains(e.target)) closeLangMenu(); });
   refreshMenu();
   $('soundBtn').onclick = () => { Audio.ensure(); const m = Audio.toggle(); if (!m) Audio.resume(); G.save.sfxOn = !m; Store.save(G.save); updateSoundBtn(); syncSettingsUI(); };
-  $('startBtn').onclick = () => { Audio.ensure(); Audio.resume(); G.meta = curMeta(); startRun(); };
+  $('startBtn').onclick = () => deploy();
+  $('stagePickClose').onclick = () => el.stagePick.classList.remove('show');
   $('continueBtn').onclick = () => { Audio.ensure(); Audio.resume(); G.meta = curMeta(); resumeRun(); };
   $('howBtn').onclick = () => el.how.classList.add('show');
   $('howClose').onclick = () => el.how.classList.remove('show');
