@@ -777,6 +777,19 @@ const Audio = (() => {
     } catch (e) {}
   }
   function stopLobby(ms) { if (!lobbyBgm) return; fadeVol(lobbyBgm, 0, ms || 500, () => { try { lobbyBgm.pause(); } catch (e) {} lobbyActive = false; }); }
+  // 플레이 중(전투) BGM = 외부 MP3(Final Stand at Dawn) — 볼륨 70%, 페이드인/루프
+  let gameBgm = null, gameActive = false;
+  const GAME_VOL = 0.70;
+  function startGameBgm() {
+    if (!gameBgm) { gameBgm = document.createElement('audio'); gameBgm.src = 'final-stand-at-dawn.mp3'; gameBgm.preload = 'auto'; gameBgm.loop = true; try { document.body.appendChild(gameBgm); } catch (e) {} }
+    if (gameActive && !gameBgm.paused) return;
+    gameBgm.volume = 0;
+    try { const p = gameBgm.play();
+      const ok = () => { gameActive = true; fadeVol(gameBgm, bgmMuted ? 0 : GAME_VOL, 900); };
+      if (p && p.then) p.then(ok, () => {}); else ok();
+    } catch (e) {}
+  }
+  function stopGameBgm(ms) { if (!gameBgm) return; fadeVol(gameBgm, 0, ms || 400, () => { try { gameBgm.pause(); } catch (e) {} gameActive = false; }); }
   function initMusicGraph() {
     if (!ctx || musicBus) return;
     musicBus = ctx.createGain(); musicBus.gain.value = bgmMuted ? 0 : 0.9;
@@ -915,13 +928,9 @@ const Audio = (() => {
   function startMusic(name) {
     ensure(); if (!ctx) return;
     musicOn = name;
-    if (name === 'title') { stopMusic(); stopAnthem(); startLobby(); return; }  // 로비 BGM = MP3(페이드인)
-    // game (신스 전투 트랙)
-    stopAnthem(); stopLobby(350);
-    if (mus.track && mus.track.name === name) return;
-    stopMusic();
-    mus.track = TRACKS[name]; mus.step = 0; mus.next = ctx.currentTime + 0.08;
-    mus.timer = setInterval(scheduler, 30);
+    stopMusic();                                     // 신스 트랙 사용 안 함(MP3로 대체)
+    if (name === 'title') { stopAnthem(); stopGameBgm(400); startLobby(); return; }   // 로비 BGM = MP3
+    if (name === 'game')  { stopAnthem(); stopLobby(350); startGameBgm(); return; }   // 전투 BGM = MP3(70%)
   }
   function stopMusic() { if (mus.timer) { clearInterval(mus.timer); mus.timer = null; } mus.track = null; }
   // YJ GAMES 로고송 — 색다르고 경쾌한 실로폰/마림바 멜로디 (약 3.6초)
@@ -974,9 +983,9 @@ const Audio = (() => {
     setMuted(v){ muted = v; },                      // 효과음(SFX)
     isMuted(){ return muted; },
     toggle(){ muted = !muted; return muted; },
-    setBgmMuted(v){ bgmMuted = v; if (musicBus) musicBus.gain.value = v ? 0 : 0.9; if (anthem) anthem.volume = v ? 0 : ANTHEM_VOL; if (lobbyBgm) lobbyBgm.volume = v ? 0 : LOBBY_VOL; },   // 배경음(BGM)
+    setBgmMuted(v){ bgmMuted = v; if (musicBus) musicBus.gain.value = v ? 0 : 0.9; if (anthem) anthem.volume = v ? 0 : ANTHEM_VOL; if (lobbyBgm) lobbyBgm.volume = v ? 0 : LOBBY_VOL; if (gameBgm) gameBgm.volume = v ? 0 : GAME_VOL; },   // 배경음(BGM)
     isBgmMuted(){ return bgmMuted; },
-    toggleBgm(){ bgmMuted = !bgmMuted; if (musicBus) musicBus.gain.value = bgmMuted ? 0 : 0.9; if (anthem) anthem.volume = bgmMuted ? 0 : ANTHEM_VOL; if (lobbyBgm) lobbyBgm.volume = bgmMuted ? 0 : LOBBY_VOL; return bgmMuted; } };
+    toggleBgm(){ bgmMuted = !bgmMuted; if (musicBus) musicBus.gain.value = bgmMuted ? 0 : 0.9; if (anthem) anthem.volume = bgmMuted ? 0 : ANTHEM_VOL; if (lobbyBgm) lobbyBgm.volume = bgmMuted ? 0 : LOBBY_VOL; if (gameBgm) gameBgm.volume = bgmMuted ? 0 : GAME_VOL; return bgmMuted; } };
 })();
 
 /* ---------------- DOM ---------------- */
