@@ -652,10 +652,12 @@ const Audio = (() => {
     try { initMusicGraph(); } catch (e) { musicBus = null; reverb = null; }
   }
   function resume(){
-    if (!ctx) return;
-    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    if (!ctx) return null;
+    let pr = null;
+    if (ctx.state === 'suspended') { try { pr = ctx.resume(); } catch (e) {} }
     // iOS 오디오 잠금 해제: 무음 버퍼를 한 번 재생
     try { const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(master); s.start(0); } catch (e) {}
+    return pr;   // ctx.resume()의 프로미스 반환(잠금 해제 완료 시점 파악용)
   }
   function tone(freq, dur, type = 'square', vol = 1, slideTo = null) {
     if (!ctx || muted || voices >= MAX_VOICES) return;
@@ -833,10 +835,20 @@ const Audio = (() => {
   }
   function stopMusic() { if (mus.timer) { clearInterval(mus.timer); mus.timer = null; } mus.track = null; }
   // YJ GAMES 로고송 — 색다르고 경쾌한 실로폰/마림바 멜로디 (약 3.6초)
-  function bell(f, t, dur, vol) {   // 실로폰: 사인+옥타브 하모닉스, 빠른 감쇠
-    mnote(f, t, dur, { type:'sine', vol:vol, cut:6000 });
-    mnote(f*2, t, dur*0.7, { type:'triangle', vol:vol*0.32, cut:7000 });
-    mnote(f*3, t, dur*0.4, { type:'sine', vol:vol*0.12, cut:8000 });
+  // 말렛 타격 트랜지언트 — 실로폰 특유의 "톡" 나무 타격음(짧은 밴드패스 노이즈)
+  function malletTick(t, v) {
+    if (!ctx || !musicBus) return;
+    const s = ctx.createBufferSource(); s.buffer = noiseBuf(0.025);
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 5200; bp.Q.value = 0.8;
+    const g = ctx.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.022);
+    s.connect(bp); bp.connect(g); g.connect(musicBus); s.start(t); s.stop(t + 0.03);
+  }
+  function bell(f, t, dur, vol) {   // 실로폰(고음질): 기음 + 비화성 배음(2·4·6.2배) + 말렛 클릭, 빠른 어택·지수 감쇠
+    mnote(f,     t, dur,        { type:'sine',     vol:vol,       cut:7800,  atk:0.002 });   // 기음
+    mnote(f*2,   t, dur*0.60,   { type:'sine',     vol:vol*0.30,  cut:9500,  atk:0.002 });   // 옥타브 배음
+    mnote(f*4,   t, dur*0.32,   { type:'sine',     vol:vol*0.16,  cut:12000, atk:0.001 });   // 2옥타브 — 실로폰 밝기
+    mnote(f*6.2, t, dur*0.15,   { type:'triangle', vol:vol*0.06,  cut:13000, atk:0.001 });   // 상단 광휘(비화성)
+    malletTick(t, vol*0.55);                                                                 // 나무 타격음
   }
   function logoJingle() {
     ensure(); if (!ctx) return;
@@ -850,9 +862,9 @@ const Audio = (() => {
     ];
     let tt = t0;
     mel.forEach(([f, len]) => {
-      bell(f, tt, len*s*0.95 + 0.1, 0.24);
-      bell(f*1.5, tt, len*s*0.6 + 0.08, 0.06);   // 화음(완전5도) 겹벨
-      mnote(f/2, tt, len*s*0.9 + 0.1, { type:'triangle', vol:0.05, cut:2600 }); // 옥타브 아래 지지음
+      bell(f, tt, len*s*0.95 + 0.12, 0.26);                                       // 메인 실로폰 음(고음질)
+      mnote(f*1.5, tt, len*s*0.55 + 0.06, { type:'sine', vol:0.045, cut:9000, atk:0.002 }); // 완전5도 살짝(겹음, 말렛 중복 제거)
+      mnote(f/2, tt, len*s*0.9 + 0.1, { type:'triangle', vol:0.045, cut:2400, atk:0.01 });  // 옥타브 아래 지지음
       tt += len*s;
     });
     // 아래 옥타브 마림바 반주 (통통 튀는 베이스) + 코드 패드
@@ -3460,7 +3472,7 @@ function init() {
 /* 오프닝: (클릭하여 시작) -> YJ GAMES 로고+로고송 5초 -> 타이틀 -> 로비.
    브라우저 자동재생 정책상 소리는 첫 입력 뒤에만 나므로, 첫 클릭에서 오디오를 켜고 로고송을 재생한다(PC 포함). */
 function bootSequence() {
-  let advanced = false, jingled = false;
+  let advanced = false, jingled = false, titleTimer = null;
   function showTitle() {
     if (advanced) return; advanced = true;
     Audio.ensure(); Audio.resume();
@@ -3479,19 +3491,36 @@ function bootSequence() {
       window.addEventListener('pointerdown', start, { once:true });
     }, 50);
   }
-  // 오디오가 실제로 켜져 있을 때만 로고송 재생(정지 상태면 첫 제스처에서 재시도)
-  function playJingle() {
-    Audio.ensure(); Audio.resume();
-    if (!jingled && Audio.isRunning()) { jingled = true; Audio.logoJingle(); }
+  function scheduleTitle(ms) { clearTimeout(titleTimer); titleTimer = setTimeout(showTitle, ms); }
+  // 로고 애니메이션을 처음부터 다시 재생(멜로디와 등장 타이밍을 맞추기 위해)
+  function restartSplashAnim() {
+    const logo = $('splashLogo'), glow = document.querySelector('.splash-glow');
+    [logo, glow].forEach(n => { if (!n) return; n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; });
   }
-  // 자동 진행: 클릭 없이 로고를 보여주고 5초 뒤 타이틀로 넘어감
+  // 오디오가 실제로 켜지는 순간, 로고 등장과 멜로디를 "동시에" 시작
+  function fireJingle() {
+    if (jingled || !Audio.isRunning()) return;
+    jingled = true;
+    restartSplashAnim();            // 로고 등장을 리셋 → 멜로디와 동시에 뜨게
+    Audio.logoJingle();
+    scheduleTitle(4600);            // 로고+멜로디를 온전히 보여준 뒤 타이틀로
+  }
+  function playJingle() {
+    if (jingled) return;
+    Audio.ensure();
+    const pr = Audio.resume();      // resume은 비동기 → 완료 시점에 재생
+    if (pr && pr.then) pr.then(fireJingle, fireJingle);
+    fireJingle();                   // 이미 켜진 경우 즉시
+    setTimeout(fireJingle, 60);     // 프로미스가 없는 브라우저 대비 지연 재시도
+  }
+  // 자동 진행: 클릭 없이 로고를 보여주고, 소리가 나면 그때 동기화. 무음이면 5초 폴백.
   Audio.ensure(); Audio.resume();
-  setTimeout(playJingle, 120);
-  setTimeout(showTitle, 5000);
-  // 브라우저 자동재생 정책으로 소리가 막혔다면 첫 입력 순간 잠금 해제 후 로고송 재생
+  setTimeout(playJingle, 80);
+  scheduleTitle(5000);
+  // 브라우저 자동재생 정책으로 막혔다면 첫 입력 순간 잠금 해제 → 로고 재등장 + 멜로디 동시 재생
   const unlock = () => {
-    playJingle();
-    if (jingled) { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); }
+    window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock);
+    playJingle();   // resume 프로미스가 완료되면 fireJingle이 로고+멜로디를 동시에 시작
   };
   window.addEventListener('pointerdown', unlock);
   window.addEventListener('keydown', unlock);
