@@ -224,6 +224,15 @@
   .gd-card{background:#0b100e;border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:9px;text-align:left;}
   .gd-row{display:flex;gap:10px;align-items:flex-start;}
   .gd-ico{font-size:22px;flex:0 0 auto;width:30px;text-align:center;}
+  .gd-spr{image-rendering:pixelated;flex:0 0 auto;width:46px;height:auto;align-self:center;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5));}
+  .gd-spr.sm{width:44px;}
+  .gd-boss .gd-spr{width:52px;}
+  /* 출격 스테이지 선택 */
+  .stagesel{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+  .stagesel .sp{padding:7px 14px;border-radius:10px;border:1px solid var(--line);background:#0e1512;color:var(--ink-dim);
+    font-weight:800;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .stagesel .sp.on{background:linear-gradient(180deg,#d4af37,#a8811f);color:#1a1206;border-color:#d4af37;}
+  .stagesel .sp:active{transform:scale(.95);}
   .gd-nm{font-size:13.5px;font-weight:800;} .gd-ds{font-size:11px;color:var(--ink-dim);margin-top:3px;line-height:1.5;}
   .gd-badge{font-size:9px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:middle;}
   .gd-badge.on{color:#08110a;background:var(--toxic);} .gd-badge.off{color:var(--ink-dim);border:1px solid var(--line);}
@@ -480,12 +489,14 @@
       <div class="pill"><div class="k" data-i18n="menu.coins">보유 코인</div><div class="v" id="bankCoins">0</div></div>
       <div class="pill blood"><div class="k" data-i18n="menu.best">최고 생존</div><div class="v" id="bestTime">00:00</div></div>
       <div class="pill tox"><div class="k" data-i18n="menu.kills">총 처치</div><div class="v" id="totalKills">0</div></div>
-      <div class="pill tier"><div class="k" data-i18n="menu.tier">최고 차수</div><div class="v" id="maxTier">1차</div></div>
+      <div class="pill tier"><div class="k" data-i18n="menu.tier">최고 차수</div><div class="v" id="maxTier">스테이지 1</div></div>
     </div>
     <div class="brand" style="margin-bottom:10px;" data-i18n="menu.charsel">출격 대원 선택</div>
     <div class="charsel" id="charsel"></div>
     <div class="brand" style="margin-bottom:10px;" data-i18n="menu.armory">메타 아머리 · 영구 강화</div>
     <div class="armory" id="armory"></div>
+    <div class="brand stagesel-lbl" id="stageSelLbl" style="margin-bottom:8px;display:none;" data-i18n="menu.stage">출격 스테이지 선택</div>
+    <div class="stagesel" id="stageSel"></div>
     <div class="cta">
       <button class="btn primary" id="continueBtn" style="display:none;background:linear-gradient(180deg,#d4af37,#a8811f);margin-bottom:10px;" data-i18n="btn.continue">이어하기</button>
       <button class="btn primary" id="startBtn" data-i18n="btn.start">출격하기</button>
@@ -1228,30 +1239,32 @@ const GUIDE_STR = {
     rewardDone:'✓ 완독 보상(코인 100)을 이미 받았습니다.',
     s_intro:'게임 소개', s_char:'출격 대원', s_weapon:'무기 도감', s_passive:'패시브 스킬',
     s_enemy:'몬스터 도감', s_boss:'보스 도감', s_item:'아이템', s_meta:'메타 아머리 · 영구 강화',
-    s_tier:'차수(난이도) 시스템', s_tip:'전략 & 팁',
-    intro:'끝없이 몰려오는 좀비 군단을 버텨내는 <b>서바이버 로그라이트</b>. 무기는 자동 공격하니, 당신은 <b>이동</b>과 <b>성장 선택</b>에만 집중하세요. 2:30 미니보스, 5:00 최종 보스 — 최종 보스를 처치하면 클리어! 클리어하면 더 강한 <b>다음 차수</b>로 이어집니다(무기·기술은 초기화, 코인·차수는 유지).',
+    s_tier:'스테이지(난이도) 시스템', s_tip:'전략 & 팁',
+    intro:'끝없이 몰려오는 좀비 군단을 버텨내는 <b>서바이버 로그라이트</b>. 무기는 자동 공격하니, 당신은 <b>이동</b>과 <b>성장 선택</b>에만 집중하세요. 2:30 미니보스, 5:00 최종 보스 — 최종 보스를 처치하면 클리어! 클리어하면 더 강한 <b>다음 스테이지</b>로 이어집니다(무기·기술은 초기화, 코인·스테이지는 유지).',
     lead_weapon:'각 무기는 Lv8 + 짝 패시브를 갖추면 강력한 <b>진화형</b>으로 초월합니다. <span class="gd-badge on">멀티샷 ○</span> 표시는 「멀티 샷」 패시브로 투사체가 늘어나는 무기입니다.',
-    lead_enemy:'엘리트 몹은 처치 시 방어막·슈퍼 자석 같은 희귀 아이템을 드랍할 수 있습니다. 수치는 1차 기준.',
+    lead_enemy:'엘리트 몹은 처치 시 방어막·슈퍼 자석 같은 희귀 아이템을 드랍할 수 있습니다. 수치는 스테이지 1 기준.',
+    lead_boss:'최종 보스는 공통으로 <b>원형 산성 탄막(노바)</b>을 쏘고 <b>잡몹을 소환</b>하며 <b>강한 접촉 피해</b>를 줍니다. 스테이지가 오를수록 더 강해집니다.',
     msOn:'멀티샷 ○', msOff:'멀티샷 ✕', evo:'진화', pair:'진화 조건 · Lv8 +',
     st_hp:'HP', st_spd:'속도', st_dmg:'접촉', st_exp:'EXP',
-    bosses:[['변이 거수','미니보스 · 2:30 등장, 하트·방어막 확정 드랍'],['NECRO TYRANT','1차 최종 보스 · 5:00'],['PLAGUE COLOSSUS','2차 최종 보스'],['FROST REVENANT','3차 최종 보스'],['INFERNO FIEND','4차 최종 보스'],['VOID SOVEREIGN','5차+ 최종 보스']],
+    bosses:[['변이 거수','미니보스 · 2:30 등장 · 체력 900×배수. 처치 시 하트·방어막·코인 대량 확정 드랍.'],['NECRO TYRANT','스테이지 1 보스 · 5:00 · 사방 산성 탄막(노바) + 잡몹 소환.'],['PLAGUE COLOSSUS','스테이지 2 보스 · 독성 콜로서스 · 산성 노바 + 소환.'],['FROST REVENANT','스테이지 3 보스 · 서리 망령 기사 · 산성 노바 + 소환.'],['INFERNO FIEND','스테이지 4 보스 · 지옥불 마귀 · 산성 노바 + 소환.'],['VOID SOVEREIGN','스테이지 5+ 보스 · 공허의 군주 · 산성 노바 + 소환.']],
     items:[['💎','젬','좀비가 떨어뜨리는 경험치. 모으면 레벨업.'],['◈','코인','판이 끝나면 정산되어 영구 강화 구매에 쓰인다.'],['❤️','하트','최대 체력의 25% 회복.'],['🛡️','방어막 오브','8초간 모든 피해 무효. 매우 희귀(미니보스 확정).'],['🧲','슈퍼 자석','맵의 모든 젬·코인·하트를 즉시 흡수.']],
-    tierHead:['항목','차수당','2차','5차'], tierRows:[['적 체력','+60%','×1.6','×3.4'],['적 공격력','+35%','×1.35','×2.4'],['적 이동속도','+6%','×1.06','×1.24'],['스폰 밀도','+22%','×1.22','×1.88']],
+    tierHead:['항목','스테이지당','S2','S5'], tierRows:[['적 체력','+60%','×1.6','×3.4'],['적 공격력','+35%','×1.35','×2.4'],['적 이동속도','+6%','×1.06','×1.24'],['스폰 밀도','+22%','×1.22','×1.88']],
     tips:['<b>이동이 곧 생존.</b> 무리를 원을 그리며 유인·정리하세요.','<b>진화를 목표로.</b> 주력 무기 1개를 Lv8 + 짝 패시브로 빠르게 진화시키면 판이 쉬워집니다.','<b>멀티샷은 총알형 무기에.</b> 데드샷·스프레드샷·붐샷·부메랑 액스·가드 터렛에만 적용됩니다.','<b>하울러·스피터 우선 처치.</b> 하울러는 무리를 가속, 스피터는 원거리에서 갉아먹습니다.','<b>봄버는 거리 유지.</b> 접근을 허용하면 큰 자폭 피해를 입습니다.','<b>방어막은 위기 탈출용.</b> 8초 무적, 미니보스로 확정 확보 가능.'] },
   en:{ title:'Game Guide & Codex', close:'Close', hint:'Read to the very bottom for a reward ↓',
     toast:'📖 Guide finished! +100 coins', rewardWait:'🎉 Read this far to earn a <b>+100 coin completion reward</b> (once only)',
     rewardDone:'✓ You already claimed the completion reward (100 coins).',
     s_intro:'Overview', s_char:'Operatives', s_weapon:'Weapons', s_passive:'Passive Skills',
     s_enemy:'Bestiary', s_boss:'Bosses', s_item:'Items', s_meta:'Meta Armory · Permanent Upgrades',
-    s_tier:'Tier (Difficulty) System', s_tip:'Strategy & Tips',
-    intro:'A <b>survivor roguelite</b> where you endure endless zombie hordes. Weapons fire automatically — just focus on <b>movement</b> and <b>growth choices</b>. Mini-boss at 2:30, final boss at 5:00 — beat the final boss to clear! Each clear leads to a tougher <b>next tier</b> (weapons/skills reset, coins/tier kept).',
+    s_tier:'Stage (Difficulty) System', s_tip:'Strategy & Tips',
+    intro:'A <b>survivor roguelite</b> where you endure endless zombie hordes. Weapons fire automatically — just focus on <b>movement</b> and <b>growth choices</b>. Mini-boss at 2:30, final boss at 5:00 — beat the final boss to clear! Each clear leads to a tougher <b>next stage</b> (weapons/skills reset, coins/stage kept).',
     lead_weapon:'Each weapon transcends into a powerful <b>evolution</b> at Lv8 with its paired passive. <span class="gd-badge on">Multishot ○</span> marks weapons whose projectiles grow via the Multi Shot passive.',
-    lead_enemy:'Elite mobs can drop rare items like Shield Orbs and Super Magnets. Values shown are Tier 1.',
+    lead_enemy:'Elite mobs can drop rare items like Shield Orbs and Super Magnets. Values shown are Stage 1.',
+    lead_boss:'Every final boss fires a <b>radial acid nova</b>, <b>summons minions</b>, and deals <b>heavy contact damage</b>. They grow stronger each stage.',
     msOn:'Multishot ○', msOff:'Multishot ✕', evo:'Evolution', pair:'Evolves · Lv8 +',
     st_hp:'HP', st_spd:'Speed', st_dmg:'Contact', st_exp:'EXP',
-    bosses:[['MUTANT BEHEMOTH','Mini-boss · appears at 2:30, guaranteed heart & shield'],['NECRO TYRANT','Tier 1 final boss · 5:00'],['PLAGUE COLOSSUS','Tier 2 final boss'],['FROST REVENANT','Tier 3 final boss'],['INFERNO FIEND','Tier 4 final boss'],['VOID SOVEREIGN','Tier 5+ final boss']],
+    bosses:[['MUTANT BEHEMOTH','Mini-boss · 2:30 · 900×HP. Guaranteed heart, shield & coins on kill.'],['NECRO TYRANT','Stage 1 boss · 5:00 · radial acid nova + summons minions.'],['PLAGUE COLOSSUS','Stage 2 boss · toxic colossus · acid nova + summons.'],['FROST REVENANT','Stage 3 boss · frost revenant knight · acid nova + summons.'],['INFERNO FIEND','Stage 4 boss · hellfire fiend · acid nova + summons.'],['VOID SOVEREIGN','Stage 5+ boss · void sovereign · acid nova + summons.']],
     items:[['💎','Gem','XP dropped by zombies. Collect to level up.'],['◈','Coin','Banked at run end to buy permanent upgrades.'],['❤️','Heart','Restores 25% of max HP.'],['🛡️','Shield Orb','8s full immunity. Very rare (guaranteed from mini-boss).'],['🧲','Super Magnet','Instantly pulls in every gem, coin and heart.']],
-    tierHead:['Stat','Per tier','T2','T5'], tierRows:[['Enemy HP','+60%','×1.6','×3.4'],['Enemy DMG','+35%','×1.35','×2.4'],['Enemy Speed','+6%','×1.06','×1.24'],['Spawn density','+22%','×1.22','×1.88']],
+    tierHead:['Stat','Per stage','S2','S5'], tierRows:[['Enemy HP','+60%','×1.6','×3.4'],['Enemy DMG','+35%','×1.35','×2.4'],['Enemy Speed','+6%','×1.06','×1.24'],['Spawn density','+22%','×1.22','×1.88']],
     tips:['<b>Movement is survival.</b> Kite the horde in circles to thin it out.','<b>Aim for evolution.</b> Rush one main weapon to Lv8 + its pair to make runs far easier.','<b>Multishot is for bullet weapons.</b> Only Deadshot, Spread Shot, Boom Shot, Boomerang Axe and Guard Turret.','<b>Kill Howlers & Spitters first.</b> Howlers speed up the horde; Spitters chip from range.','<b>Keep distance from Bombers.</b> Letting them close deals heavy self-destruct damage.','<b>Shield = escape.</b> 8s of invulnerability; guaranteed from the mini-boss.'] },
   zh:{ title:'游戏指南 & 图鉴', close:'关闭', hint:'读到最底部有奖励 ↓',
     toast:'📖 读完指南！金币 +100', rewardWait:'🎉 读到这里即可获得 <b>通读奖励 金币 +100</b>（仅一次）',
@@ -1262,6 +1275,7 @@ const GUIDE_STR = {
     intro:'一款抵御无尽僵尸潮的<b>幸存者肉鸽</b>。武器自动攻击，你只需专注<b>走位</b>与<b>成长选择</b>。2:30 迷你首领，5:00 最终首领——击败最终首领即通关！通关后进入更强的<b>下一层</b>（武器技能重置，金币与层级保留）。',
     lead_weapon:'每种武器在 Lv8 且拥有配对被动时可超越进化为强力<b>进化形态</b>。<span class="gd-badge on">多重射击 ○</span> 表示可通过「多重射击」被动增加弹幕的武器。',
     lead_enemy:'精英怪被击杀时可能掉落护盾球、超级磁铁等稀有道具。数值为第 1 层。',
+    lead_boss:'所有最终首领都会发射<b>环形酸液弹幕</b>、<b>召唤小怪</b>并造成<b>强力接触伤害</b>，层数越高越强。',
     msOn:'多重 ○', msOff:'多重 ✕', evo:'进化', pair:'进化条件 · Lv8 +',
     st_hp:'HP', st_spd:'速度', st_dmg:'接触', st_exp:'EXP',
     bosses:[['变异巨兽','迷你首领 · 2:30 出现，必掉爱心与护盾'],['NECRO TYRANT','第 1 层最终首领 · 5:00'],['PLAGUE COLOSSUS','第 2 层最终首领'],['FROST REVENANT','第 3 层最终首领'],['INFERNO FIEND','第 4 层最终首领'],['VOID SOVEREIGN','第 5 层+ 最终首领']],
@@ -1277,6 +1291,7 @@ const GUIDE_STR = {
     intro:'เกม <b>survivor roguelite</b> ที่ต้องอยู่รอดจากฝูงซอมบี้ไม่รู้จบ อาวุธยิงอัตโนมัติ คุณแค่โฟกัสที่<b>การเคลื่อนที่</b>และ<b>การเลือกอัปเกรด</b> มินิบอส 2:30 บอสสุดท้าย 5:00 — ล้มบอสสุดท้ายเพื่อผ่าน! ผ่านแล้วไปสู่<b>ระดับถัดไป</b>ที่ยากขึ้น (อาวุธ/สกิลรีเซ็ต เหรียญ/ระดับคงไว้)',
     lead_weapon:'อาวุธแต่ละชิ้นวิวัฒน์เป็น<b>ร่างพัฒนา</b>อันทรงพลังที่ Lv8 พร้อมพาสซีฟคู่ <span class="gd-badge on">มัลติช็อต ○</span> คืออาวุธที่เพิ่มกระสุนด้วยพาสซีฟ Multi Shot',
     lead_enemy:'มอนสเตอร์อีลิทอาจดรอปไอเทมหายากเช่นโล่และแม่เหล็ก ค่าที่แสดงคือระดับ 1',
+    lead_boss:'บอสสุดท้ายทุกตัวยิง<b>กระสุนกรดเป็นวงกลม</b> <b>เรียกลูกสมุน</b> และสร้าง<b>ความเสียหายจากการสัมผัสสูง</b> ยิ่งด่านสูงยิ่งแข็งแกร่ง',
     msOn:'มัลติ ○', msOff:'มัลติ ✕', evo:'วิวัฒน์', pair:'เงื่อนไข · Lv8 +',
     st_hp:'HP', st_spd:'ความเร็ว', st_dmg:'สัมผัส', st_exp:'EXP',
     bosses:[['MUTANT BEHEMOTH','มินิบอส · โผล่ 2:30 ดรอปหัวใจ+โล่แน่นอน'],['NECRO TYRANT','บอสสุดท้ายระดับ 1 · 5:00'],['PLAGUE COLOSSUS','บอสสุดท้ายระดับ 2'],['FROST REVENANT','บอสสุดท้ายระดับ 3'],['INFERNO FIEND','บอสสุดท้ายระดับ 4'],['VOID SOVEREIGN','บอสสุดท้ายระดับ 5+']],
@@ -1292,6 +1307,7 @@ const GUIDE_STR = {
     intro:'Một <b>survivor roguelite</b> nơi bạn trụ lại trước bầy zombie vô tận. Vũ khí tự bắn — chỉ cần tập trung <b>di chuyển</b> và <b>chọn nâng cấp</b>. Mini-boss 2:30, trùm cuối 5:00 — hạ trùm cuối để qua màn! Mỗi lần qua dẫn tới <b>cấp kế tiếp</b> khó hơn (vũ khí/kỹ năng reset, xu/cấp giữ lại).',
     lead_weapon:'Mỗi vũ khí siêu tiến hóa thành <b>dạng tiến hóa</b> mạnh mẽ ở Lv8 với bị động ghép đôi. <span class="gd-badge on">Đa đạn ○</span> đánh dấu vũ khí tăng đạn nhờ bị động Multi Shot.',
     lead_enemy:'Quái tinh anh có thể rơi vật phẩm hiếm như Khiên và Nam châm. Số liệu là Cấp 1.',
+    lead_boss:'Mọi trùm cuối đều bắn <b>đạn axit vòng tròn</b>, <b>triệu hồi quái</b> và gây <b>sát thương va chạm mạnh</b>. Càng lên ải càng mạnh.',
     msOn:'Đa đạn ○', msOff:'Đa đạn ✕', evo:'Tiến hóa', pair:'Tiến hóa · Lv8 +',
     st_hp:'HP', st_spd:'Tốc độ', st_dmg:'Va chạm', st_exp:'EXP',
     bosses:[['MUTANT BEHEMOTH','Mini-boss · xuất hiện 2:30, chắc chắn rơi tim & khiên'],['NECRO TYRANT','Trùm cuối Cấp 1 · 5:00'],['PLAGUE COLOSSUS','Trùm cuối Cấp 2'],['FROST REVENANT','Trùm cuối Cấp 3'],['INFERNO FIEND','Trùm cuối Cấp 4'],['VOID SOVEREIGN','Trùm cuối Cấp 5+']],
@@ -1307,6 +1323,7 @@ const GUIDE_STR = {
     intro:'Un <b>survivor roguelite</b> donde resistes hordas infinitas de zombis. Las armas disparan solas — concéntrate en <b>moverte</b> y <b>elegir mejoras</b>. Mini-jefe a las 2:30, jefe final a las 5:00 — ¡vence al jefe final para superarlo! Cada victoria lleva a un <b>siguiente nivel</b> más duro (armas/habilidades se reinician, monedas/nivel se conservan).',
     lead_weapon:'Cada arma trasciende a una poderosa <b>evolución</b> al nivel 8 con su pasiva emparejada. <span class="gd-badge on">Multidisparo ○</span> marca las armas cuyos proyectiles crecen con la pasiva Multi Shot.',
     lead_enemy:'Los élite pueden soltar objetos raros como Orbe Escudo e Imán Súper. Los valores son del Nivel 1.',
+    lead_boss:'Todos los jefes finales disparan una <b>nova de ácido radial</b>, <b>invocan secuaces</b> y hacen <b>gran daño por contacto</b>. Se fortalecen cada nivel.',
     msOn:'Multi ○', msOff:'Multi ✕', evo:'Evolución', pair:'Evoluciona · Lv8 +',
     st_hp:'HP', st_spd:'Vel.', st_dmg:'Contacto', st_exp:'EXP',
     bosses:[['MUTANT BEHEMOTH','Mini-jefe · aparece a las 2:30, corazón y escudo garantizados'],['NECRO TYRANT','Jefe final Nivel 1 · 5:00'],['PLAGUE COLOSSUS','Jefe final Nivel 2'],['FROST REVENANT','Jefe final Nivel 3'],['INFERNO FIEND','Jefe final Nivel 4'],['VOID SOVEREIGN','Jefe final Nivel 5+']],
@@ -1315,6 +1332,35 @@ const GUIDE_STR = {
     tips:['<b>Moverse es sobrevivir.</b> Atrae a la horda en círculos para reducirla.','<b>Apunta a evolucionar.</b> Lleva un arma principal a Lv8 + su pasiva para facilitar la partida.','<b>Multidisparo es para armas de bala.</b> Solo Deadshot, Spread, Boom, Hacha y Torreta.','<b>Mata Howlers y Spitters primero.</b> Los Howler aceleran la horda; los Spitter desgastan a distancia.','<b>Mantén distancia de los Bombers.</b> Dejar que se acerquen causa gran daño por autodestrucción.','<b>El escudo es para escapar.</b> 8 s de invulnerabilidad; garantizado del mini-jefe.'] },
 };
 const gt = (k) => { const o = GUIDE_STR[curLang]; return (o && o[k] != null) ? o[k] : GUIDE_STR.ko[k]; };
+// 몬스터 특징(도감용) — ko/en 제공, 그 외 언어는 en 폴백
+const ENEMY_INFO = {
+  ko:{ walker:'가장 흔한 느린 좀비. 수로 밀어붙인다.', runner:'체력은 낮지만 매우 빠르게 달려든다.',
+    brute:'느리지만 체력·피해가 높은 탱커. 경험치를 많이 준다.', bomber:'접근하면 자폭(반경 70). 폭발 전에 거리를 벌려라.',
+    spitter:'멀리서 <b>산성 침</b>을 발사하는 원거리 몹. 바닥 산성도 주의.', howler:'<b>포효</b>로 주변 좀비를 가속시키고 플레이어를 둔화시킨다. 우선 처치.',
+    armorwalker:'강철 갑주로 무장한 탱커. 체력이 매우 높아 오래 버틴다.', archer:'멀리서 <b>화살</b>을 발사하는 백골 궁수. 3분 30초 이후 등장.',
+    reaper:'매우 빠르고 공격력이 높은 근접 습격자. 포위당하지 않게 주의.', slime:'처치하면 <b>작은 슬라임 2마리로 분열</b>. 광역기로 한 번에 처리.',
+    necromancer:'거리를 유지하며 주변에 <b>언데드를 소환</b>. 빠르게 제거 권장.', stonegolem:'거대한 암석 골렘. 느리지만 체력·피해가 최상급.',
+    lich:'<b>냉기 마법</b>을 원거리로 발사하는 해골 대마법사.', firedemon:'추격하며 바닥에 <b>화염 장판</b>을 남긴다. 장판을 밟지 마라.' },
+  en:{ walker:'The most common slow zombie. Overwhelms with numbers.', runner:'Low HP but charges very fast.',
+    brute:'Slow but high HP/damage tank. Gives lots of XP.', bomber:'Self-destructs on contact (radius 70). Keep your distance.',
+    spitter:'Ranged mob that spits <b>acid</b>; watch the acid pools too.', howler:'<b>Howls</b> to speed up nearby zombies and slow you. Kill first.',
+    armorwalker:'Steel-armored tank with very high HP; endures a long time.', archer:'Skeletal archer firing <b>arrows</b> from range. Appears after 3:30.',
+    reaper:'Very fast, high-damage melee striker. Avoid getting surrounded.', slime:'<b>Splits into two small slimes</b> on death. Clear with AoE.',
+    necromancer:'Keeps distance and <b>summons undead</b>. Remove quickly.', stonegolem:'Giant rock golem. Slow but top-tier HP and damage.',
+    lich:'Skeletal archmage firing <b>frost bolts</b> from range.', firedemon:'Chases while leaving <b>fire pools</b> on the ground. Don\'t stand in them.' },
+};
+const einfo = (id) => { const m = ENEMY_INFO[curLang] || ENEMY_INFO.en; return m[id] || ENEMY_INFO.en[id] || ENEMY_INFO.ko[id] || ''; };
+// 스프라이트를 도감용 이미지(데이터 URL, 픽셀 확대)로 캐싱
+const _spriteURL = {};
+function spriteImg(key, cls) {
+  const sp = SPRITES[key]; if (!sp) return '';
+  if (!_spriteURL[key]) {
+    const sc = 5, c = document.createElement('canvas'); c.width = sp.width * sc; c.height = sp.height * sc;
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(sp, 0, 0, c.width, c.height);
+    _spriteURL[key] = c.toDataURL();
+  }
+  return `<img class="gd-spr ${cls || ''}" src="${_spriteURL[key]}" alt="">`;
+}
 
 /* ============================================================================
    다국어(i18n) — 한국어/English/中文/ไทย/Tiếng Việt/Español
@@ -1347,7 +1393,7 @@ const UI = {
   ko:{
     'menu.brand':'Undead Rush · 로그라이트 서바이벌', 'menu.tag':'5분간 좀비 군단을 버텨내고 최종 보스를 처치하라.',
     'menu.coins':'보유 코인', 'menu.best':'최고 생존', 'menu.kills':'총 처치',
-    'menu.charsel':'출격 대원 선택', 'menu.armory':'메타 아머리 · 영구 강화',
+    'menu.charsel':'출격 대원 선택', 'menu.armory':'메타 아머리 · 영구 강화', 'menu.stage':'출격 스테이지 선택',
     'btn.start':'출격하기', 'btn.how':'조작법', 'btn.guide':'가이드 도감', 'btn.reset':'데이터 초기화',
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
     'how.brand':'조작법 & 규칙', 'how.title':'플레이 방법', 'how.close':'알겠어요',
@@ -1363,9 +1409,9 @@ const UI = {
     'coin.nm':'긴급 물자', 'coin.lv':'코인', 'coin.ds':'코인 +40',
     'res.win':'생존 성공!', 'res.lose':'전멸', 'res.time':'생존 시간', 'res.kills':'처치 수',
     'res.level':'최종 레벨', 'res.coins':'획득 코인', 'res.again':'로비로 돌아가기',
-    'res.tier':'도달 차수', 'res.pending':'획득 예정 코인', 'res.clear':'{n}차 클리어!', 'res.next':'▶ 다음 차수 ({n}차) 도전',
-    'reward.p3':'🎉 축하합니다! 3차 클리어 보상으로<br>패시브 스킬 슬롯이 하나 늘어났습니다! (최대 6 → 7개)',
-    'hud.tierLabel':'{n}차', 'menu.tier':'최고 차수', 'tier.banner':'{n}차 시작! 더 강해진 적들을 버텨라',
+    'res.tier':'도달 스테이지', 'res.pending':'획득 예정 코인', 'res.clear':'스테이지 {n} 클리어!', 'res.next':'▶ 다음 스테이지 {n} 도전',
+    'reward.p3':'🎉 축하합니다! 스테이지 3 클리어 보상으로<br>패시브 스킬 슬롯이 하나 늘어났습니다! (최대 6 → 7개)',
+    'hud.tierLabel':'스테이지 {n}', 'menu.tier':'최고 스테이지', 'tier.banner':'스테이지 {n} 시작! 더 강해진 적들을 버텨라',
     'hint.touch':'화면을 드래그해 이동하세요', 'hint.pc':'WASD / 방향키로 이동 · P 로 일시정지',
     'reset.confirm':'모든 진행 상황(코인·강화·기록)을 삭제할까요?',
     'lang.label':'언어',
@@ -1378,7 +1424,7 @@ const UI = {
   en:{
     'menu.brand':'Undead Rush · Roguelite Survival', 'menu.tag':'Survive the horde for 5 minutes and slay the final boss.',
     'menu.coins':'Coins', 'menu.best':'Best Time', 'menu.kills':'Total Kills',
-    'menu.charsel':'Choose Your Operative', 'menu.armory':'Meta Armory · Permanent Upgrades',
+    'menu.charsel':'Choose Your Operative', 'menu.armory':'Meta Armory · Permanent Upgrades', 'menu.stage':'Choose Starting Stage',
     'btn.start':'Deploy', 'btn.how':'How to Play', 'btn.guide':'Guide & Codex', 'btn.reset':'Reset Data',
     'menu.autosave':'Progress is saved automatically in this browser.',
     'how.brand':'Controls & Rules', 'how.title':'How to Play', 'how.close':'Got it',
@@ -1394,9 +1440,9 @@ const UI = {
     'coin.nm':'Emergency Supplies', 'coin.lv':'Coins', 'coin.ds':'Coins +40',
     'res.win':'You Survived!', 'res.lose':'Wiped Out', 'res.time':'Survival Time', 'res.kills':'Kills',
     'res.level':'Final Level', 'res.coins':'Coins Earned', 'res.again':'Back to Lobby',
-    'res.tier':'Tier', 'res.pending':'Coins to bank', 'res.clear':'Tier {n} Cleared!', 'res.next':'▶ Challenge Tier {n}',
-    'reward.p3':'🎉 Congratulations! Clearing Tier 3 grants you<br>one more passive skill slot! (max 6 → 7)',
-    'hud.tierLabel':'Tier {n}', 'menu.tier':'Best Tier', 'tier.banner':'Tier {n} begins! Tougher foes ahead',
+    'res.tier':'Stage', 'res.pending':'Coins to bank', 'res.clear':'Stage {n} Cleared!', 'res.next':'▶ Challenge Stage {n}',
+    'reward.p3':'🎉 Congratulations! Clearing Stage 3 grants you<br>one more passive skill slot! (max 6 → 7)',
+    'hud.tierLabel':'Stage {n}', 'menu.tier':'Best Stage', 'tier.banner':'Stage {n} begins! Tougher foes ahead',
     'hint.touch':'Drag the screen to move', 'hint.pc':'WASD / Arrow keys to move · P to pause',
     'reset.confirm':'Delete all progress (coins, upgrades, records)?',
     'lang.label':'Language',
@@ -1409,7 +1455,7 @@ const UI = {
   zh:{
     'menu.brand':'Undead Rush · 类Rogue生存', 'menu.tag':'坚守5分钟，击败最终首领。',
     'menu.coins':'金币', 'menu.best':'最佳时间', 'menu.kills':'总击杀',
-    'menu.charsel':'选择你的干员', 'menu.armory':'元武库 · 永久强化',
+    'menu.charsel':'选择你的干员', 'menu.armory':'元武库 · 永久强化', 'menu.stage':'选择出击层数',
     'btn.start':'出击', 'btn.how':'玩法说明', 'btn.guide':'指南图鉴', 'btn.reset':'重置数据',
     'menu.autosave':'进度会自动保存在此浏览器中。',
     'how.brand':'操作与规则', 'how.title':'玩法说明', 'how.close':'知道了',
@@ -1440,7 +1486,7 @@ const UI = {
   th:{
     'menu.brand':'Undead Rush · เอาชีวิตรอดสไตล์ Roguelite', 'menu.tag':'เอาชีวิตรอด 5 นาทีแล้วกำจัดบอสสุดท้าย',
     'menu.coins':'เหรียญ', 'menu.best':'เวลาที่ดีที่สุด', 'menu.kills':'สังหารรวม',
-    'menu.charsel':'เลือกตัวละครของคุณ', 'menu.armory':'คลังอาวุธเมตา · อัปเกรดถาวร',
+    'menu.charsel':'เลือกตัวละครของคุณ', 'menu.armory':'คลังอาวุธเมตา · อัปเกรดถาวร', 'menu.stage':'เลือกด่านเริ่ม',
     'btn.start':'ออกรบ', 'btn.how':'วิธีเล่น', 'btn.guide':'คู่มือ', 'btn.reset':'ล้างข้อมูล',
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
     'how.brand':'การควบคุมและกติกา', 'how.title':'วิธีเล่น', 'how.close':'เข้าใจแล้ว',
@@ -1471,7 +1517,7 @@ const UI = {
   vi:{
     'menu.brand':'Undead Rush · Sinh tồn Roguelite', 'menu.tag':'Sống sót 5 phút và tiêu diệt trùm cuối.',
     'menu.coins':'Xu', 'menu.best':'Thời gian tốt nhất', 'menu.kills':'Tổng hạ gục',
-    'menu.charsel':'Chọn đặc vụ của bạn', 'menu.armory':'Kho Meta · Nâng cấp vĩnh viễn',
+    'menu.charsel':'Chọn đặc vụ của bạn', 'menu.armory':'Kho Meta · Nâng cấp vĩnh viễn', 'menu.stage':'Chọn ải bắt đầu',
     'btn.start':'Xuất kích', 'btn.how':'Cách chơi', 'btn.guide':'Hướng dẫn', 'btn.reset':'Đặt lại dữ liệu',
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
     'how.brand':'Điều khiển & Luật', 'how.title':'Cách chơi', 'how.close':'Đã hiểu',
@@ -1502,7 +1548,7 @@ const UI = {
   es:{
     'menu.brand':'Undead Rush · Supervivencia Roguelite', 'menu.tag':'Sobrevive 5 minutos y elimina al jefe final.',
     'menu.coins':'Monedas', 'menu.best':'Mejor tiempo', 'menu.kills':'Bajas totales',
-    'menu.charsel':'Elige tu operativo', 'menu.armory':'Arsenal Meta · Mejoras permanentes',
+    'menu.charsel':'Elige tu operativo', 'menu.armory':'Arsenal Meta · Mejoras permanentes', 'menu.stage':'Elige nivel inicial',
     'btn.start':'Desplegar', 'btn.how':'Cómo jugar', 'btn.guide':'Guía', 'btn.reset':'Borrar datos',
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
     'how.brand':'Controles y reglas', 'how.title':'Cómo jugar', 'how.close':'Entendido',
@@ -1991,7 +2037,7 @@ function startRun(){
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, runCoins:0, kills:0, screenShake:0,
-    tier: Math.max(1, G.save.maxTier || 1), _cashed:false, bossKilled:false,   // 클리어한 만큼 다음 차수부터 시작
+    tier: Math.max(1, Math.min(G.save.maxTier || 1, G.startStage || G.save.maxTier || 1)), _cashed:false, bossKilled:false,   // 선택한 출격 스테이지부터 시작
   });
   G.player = makePlayer();
   const char = CHARACTERS[G.character || 'hunter'];
@@ -2403,7 +2449,8 @@ function rollEnemyType(t) {
   if (type === 'howler' && G.tier < 4) type = 'spitter';   // 하울러(보라·둔화)는 4차부터 등장
   // 신규 몬스터 8종: 차수별 누적 등장 (2차부터, 초반 25초 이후)
   if (t >= 25 && G.tier >= 2) {
-    const extras = ['armorwalker', 'archer'];
+    const extras = ['armorwalker'];
+    if (t >= 210) extras.push('archer');              // 스켈레톤 아처는 3분 30초 이후 등장
     if (G.tier >= 3) extras.push('reaper', 'slime');
     if (G.tier >= 4) extras.push('necromancer', 'stonegolem');
     if (G.tier >= 5) extras.push('lich', 'firedemon');
@@ -3049,12 +3096,17 @@ function buildGuide() {
   h += `<div class="gd-lead">${gt('lead_enemy')}</div>`;
   for (const id in ENEMIES) { if (id === 'slimeling') continue; const e = ENEMIES[id];   // 분열체는 도감 제외
     const chips = statChip(gt('st_hp'),e.hp) + statChip(gt('st_spd'),e.spd) + statChip(gt('st_dmg'),e.dmg) + statChip(gt('st_exp'),e.xp);
-    h += `<div class="gd-card"><div class="gd-nm">${e.name}${e.elite?' <span class="gd-stat" style="color:var(--gold)">ELITE</span>':''}</div>
-      <div class="gd-stats">${chips}</div></div>`; }
+    h += `<div class="gd-card"><div class="gd-row">${spriteImg(id,'sm')}<div style="flex:1">
+      <div class="gd-nm">${e.name}${e.elite?' <span class="gd-stat" style="color:var(--gold)">ELITE</span>':''}</div>
+      <div class="gd-stats">${chips}</div>
+      <div class="gd-ds">${einfo(id)}</div></div></div></div>`; }
   // 05 보스
   h += `<div class="gd-sec"><span class="n">05</span><h3>${gt('s_boss')}</h3></div>`;
-  gt('bosses').forEach(b => {
-    h += `<div class="gd-card gd-boss"><div class="gd-nm">${b[0]}</div><div class="gd-ds">${b[1]}</div></div>`; });
+  h += `<div class="gd-lead">${gt('lead_boss')}</div>`;
+  const bs = gt('bosses');
+  GUIDE_BOSSES.forEach((key, i) => { const b = bs[i]; if (!b) return;
+    h += `<div class="gd-card gd-boss"><div class="gd-row">${spriteImg(key,'sm')}<div style="flex:1">
+      <div class="gd-nm">${b[0]}</div><div class="gd-ds">${b[1]}</div></div></div></div>`; });
   // 06 아이템
   h += `<div class="gd-sec"><span class="n">06</span><h3>${gt('s_item')}</h3></div>`;
   gt('items').forEach(it => {
@@ -3331,7 +3383,7 @@ function cashOutRun() {
   if (G._cashed) return { earned:0, bonusMul:1 };
   G._cashed = true;
   // 보스 처치 시 150%, 보스 못 잡고 전멸/종료 시 80%
-  const winMul = G.bossKilled ? 1.5 : 0.8;
+  const winMul = G.bossKilled ? 1.5 : 0.9;   // 보스 처치 150% / 실패(전멸) 90%
   const bonusMul = winMul * (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
   const earned = Math.round(G.runCoins * bonusMul);
   G.save.coins += earned; G.save.totalKills += G.kills;
@@ -3525,8 +3577,26 @@ function refreshMenu() {
       cbtn.textContent = t('btn.continue').replace('{n}', lb.tier || 1).replace('{lv}', lb.level || 1).replace('{t}', fmtTime(lb.time || 0));
     } else cbtn.style.display = 'none';
   }
+  renderStageSelect();
   renderCharSelect();
   renderArmory();
+}
+/* 출격 스테이지 선택 — 최고 스테이지가 2 이상이면 1~최고 스테이지 중 골라 시작 */
+function renderStageSelect() {
+  const wrap = $('stageSel'), lbl = $('stageSelLbl');
+  if (!wrap) return;
+  const maxS = Math.max(1, G.save.maxTier || 1);
+  if (G.startStage === undefined || G.startStage > maxS || G.startStage < 1) G.startStage = maxS;
+  if (maxS < 2) { wrap.innerHTML = ''; wrap.style.display = 'none'; if (lbl) lbl.style.display = 'none'; return; }
+  wrap.style.display = 'flex'; if (lbl) lbl.style.display = '';
+  wrap.innerHTML = '';
+  for (let i = 1; i <= maxS; i++) {
+    const b = document.createElement('button');
+    b.className = 'sp' + (i === G.startStage ? ' on' : '');
+    b.textContent = t('hud.tierLabel').replace('{n}', i);
+    b.onclick = () => { G.startStage = i; Audio.ensure(); Audio.S.pickup(); renderStageSelect(); };
+    wrap.appendChild(b);
+  }
 }
 function renderCharSelect() {
   el.charsel.innerHTML = '';
