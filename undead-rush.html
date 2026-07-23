@@ -1372,6 +1372,16 @@ const ENEMY_INFO = {
     lich:'Skeletal archmage firing <b>frost bolts</b> from range.', firedemon:'Chases while leaving <b>fire pools</b> on the ground. Don\'t stand in them.' },
 };
 const einfo = (id) => { const m = ENEMY_INFO[curLang] || ENEMY_INFO.en; return m[id] || ENEMY_INFO.en[id] || ENEMY_INFO.ko[id] || ''; };
+// 몬스터 이름(도감용) — 각국 언어 표기
+const ENEMY_NAMES = {
+  ko:{ walker:'워커', runner:'러너', brute:'브루트', bomber:'봄버', spitter:'스피터', howler:'하울러', armorwalker:'아머 워커', archer:'스켈레톤 아처', reaper:'리퍼', slime:'슬라임', necromancer:'네크로맨서', stonegolem:'스톤 골렘', lich:'리치', firedemon:'파이어 데몬' },
+  en:{ walker:'Walker', runner:'Runner', brute:'Brute', bomber:'Bomber', spitter:'Spitter', howler:'Howler', armorwalker:'Armor Walker', archer:'Skeleton Archer', reaper:'Reaper', slime:'Slime', necromancer:'Necromancer', stonegolem:'Stone Golem', lich:'Lich', firedemon:'Fire Demon' },
+  zh:{ walker:'行尸', runner:'奔尸', brute:'蛮尸', bomber:'自爆尸', spitter:'吐酸者', howler:'咆哮者', armorwalker:'装甲行尸', archer:'骷髅弓手', reaper:'收割者', slime:'史莱姆', necromancer:'死灵法师', stonegolem:'岩石傀儡', lich:'巫妖', firedemon:'火焰恶魔' },
+  th:{ walker:'วอล์กเกอร์', runner:'รันเนอร์', brute:'บรูท', bomber:'บอมเบอร์', spitter:'สปิตเตอร์', howler:'ฮาวเลอร์', armorwalker:'วอล์กเกอร์เกราะ', archer:'นักธนูโครงกระดูก', reaper:'รีปเปอร์', slime:'สไลม์', necromancer:'เนโครแมนเซอร์', stonegolem:'หินโกเลม', lich:'ลิช', firedemon:'ปิศาจไฟ' },
+  vi:{ walker:'Xác Đi', runner:'Xác Chạy', brute:'Quái Bạo', bomber:'Xác Nổ', spitter:'Kẻ Phun Axit', howler:'Kẻ Gào Thét', armorwalker:'Xác Giáp', archer:'Cung Thủ Xương', reaper:'Tử Thần', slime:'Slime', necromancer:'Pháp Sư Tử Linh', stonegolem:'Golem Đá', lich:'Lich', firedemon:'Quỷ Lửa' },
+  es:{ walker:'Andante', runner:'Corredor', brute:'Bruto', bomber:'Bombardero', spitter:'Escupidor', howler:'Aullador', armorwalker:'Andante Blindado', archer:'Arquero Esqueleto', reaper:'Segador', slime:'Limo', necromancer:'Nigromante', stonegolem:'Gólem de Piedra', lich:'Liche', firedemon:'Demonio de Fuego' },
+};
+const ename = (id) => { const m = ENEMY_NAMES[curLang] || ENEMY_NAMES.en; return m[id] || ENEMY_NAMES.en[id] || (ENEMIES[id] && ENEMIES[id].name) || id; };
 // 스프라이트를 도감용 이미지(데이터 URL, 픽셀 확대)로 캐싱
 const _spriteURL = {};
 function spriteImg(key, cls) {
@@ -3119,7 +3129,7 @@ function buildGuide() {
   for (const id in ENEMIES) { if (id === 'slimeling') continue; const e = ENEMIES[id];   // 분열체는 도감 제외
     const chips = statChip(gt('st_hp'),e.hp) + statChip(gt('st_spd'),e.spd) + statChip(gt('st_dmg'),e.dmg) + statChip(gt('st_exp'),e.xp);
     h += `<div class="gd-card"><div class="gd-row">${spriteImg(id,'sm')}<div style="flex:1">
-      <div class="gd-nm">${e.name}${e.elite?' <span class="gd-stat" style="color:var(--gold)">ELITE</span>':''}</div>
+      <div class="gd-nm">${ename(id)}${e.elite?' <span class="gd-stat" style="color:var(--gold)">ELITE</span>':''}</div>
       <div class="gd-stats">${chips}</div>
       <div class="gd-ds">${einfo(id)}</div></div></div></div>`; }
   // 05 보스
