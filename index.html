@@ -748,7 +748,7 @@ const Audio = (() => {
       tone(165, 0.16, 'sawtooth', 0.42, 58); tone(90, 0.22, 'triangle', 0.32, 42); noise(0.16, 0.4, 300);
     },
     boss(){ tone(70,0.6,'sawtooth',0.5,40); noise(0.5,0.4,120); },
-    scythe(){ noise(0.09, 0.4, 500); tone(160,0.1,'sawtooth',0.22,80); },
+    scythe(){ noise(0.13, 0.6, 2200); tone(600, 0.13, 'sawtooth', 0.22, 150); tone(300, 0.16, 'triangle', 0.12, 90); },   // 슉! 하는 뚜렷한 베기음
     howl(){ tone(200,0.3,'sawtooth',0.3,90); noise(0.3,0.3,600); tone(340,0.25,'sine',0.18,260); },
     win(){ [523,659,784,1046,1318,1568].forEach((f,i)=>setTimeout(()=>tone(f,0.3,'triangle',0.34),i*110)); },
     lose(){ [400,330,262,180].forEach((f,i)=>setTimeout(()=>tone(f,0.35,'sawtooth',0.34,f*0.6),i*160)); },
@@ -1186,7 +1186,7 @@ const EVOS = {
   executioner:{ name:'데스 액스', icon:'☠️', base:'axe', desc:'경로상 모든 적을 즉사급 절단.',
     stats:()=>({ dmg:60, cd:52, spd:7, reach:300, spin:0.5 }) },
   minigun:{ name:'미니건', icon:'🏗️', base:'sentry', desc:'폭풍 사격을 퍼붓는 화력 거점.',
-    stats:()=>({ dmg:9, cd:120, fireCd:3, life:480, rng:240 }) },
+    stats:()=>({ dmg:15, cd:120, fireCd:3, life:480, rng:260 }) },
   soulreaper:{ name:'소울 리퍼', icon:'🌑', base:'scythe', desc:'광역 베기와 강화된 흡혈로 전장을 정화.',
     stats:()=>({ dmg:36, cd:38, range:132, arc:1.05, lifesteal:0.24 }) },
   blizzard:{ name:'블리자드', icon:'🌨️', base:'frostwand', desc:'광역 눈보라로 다수의 적을 강하게 둔화.',
@@ -1443,7 +1443,7 @@ const UI = {
     'res.level':'최종 레벨', 'res.coins':'획득 코인', 'res.again':'로비로 돌아가기',
     'res.tier':'도달 스테이지', 'res.pending':'획득 예정 코인', 'res.clear':'스테이지 {n} 클리어!', 'res.next':'▶ 다음 스테이지 {n} 도전',
     'reward.p3':'🎉 축하합니다! 스테이지 3 클리어 보상으로<br>패시브 스킬 슬롯이 하나 늘어났습니다! (최대 6 → 7개)',
-    'hud.tierLabel':'스테이지 {n}', 'menu.tier':'최고 스테이지', 'tier.banner':'스테이지 {n} 시작! 더 강해진 적들을 버텨라',
+    'hud.tierLabel':'스테이지 {n}', 'menu.tier':'최고 스테이지', 'revive.pop':'부활!', 'tier.banner':'스테이지 {n} 시작! 더 강해진 적들을 버텨라',
     'hint.touch':'화면을 드래그해 이동하세요', 'hint.pc':'WASD / 방향키로 이동 · P 로 일시정지',
     'reset.confirm':'모든 진행 상황(코인·강화·기록)을 삭제할까요?',
     'lang.label':'언어',
@@ -1474,7 +1474,7 @@ const UI = {
     'res.level':'Final Level', 'res.coins':'Coins Earned', 'res.again':'Back to Lobby',
     'res.tier':'Stage', 'res.pending':'Coins to bank', 'res.clear':'Stage {n} Cleared!', 'res.next':'▶ Challenge Stage {n}',
     'reward.p3':'🎉 Congratulations! Clearing Stage 3 grants you<br>one more passive skill slot! (max 6 → 7)',
-    'hud.tierLabel':'Stage {n}', 'menu.tier':'Best Stage', 'tier.banner':'Stage {n} begins! Tougher foes ahead',
+    'hud.tierLabel':'Stage {n}', 'menu.tier':'Best Stage', 'revive.pop':'REVIVE!', 'tier.banner':'Stage {n} begins! Tougher foes ahead',
     'hint.touch':'Drag the screen to move', 'hint.pc':'WASD / Arrow keys to move · P to pause',
     'reset.confirm':'Delete all progress (coins, upgrades, records)?',
     'lang.label':'Language',
@@ -1505,7 +1505,7 @@ const UI = {
     'res.level':'最终等级', 'res.coins':'获得金币', 'res.again':'返回大厅',
     'res.tier':'轮次', 'res.pending':'待入账金币', 'res.clear':'第{n}轮通关！', 'res.next':'▶ 挑战第{n}轮',
     'reward.p3':'🎉 恭喜！通关第3轮的奖励，<br>被动技能栏位增加了一个！(上限 6 → 7)',
-    'hud.tierLabel':'第{n}轮', 'menu.tier':'最高轮次', 'tier.banner':'第{n}轮开始！迎战更强的敌人',
+    'hud.tierLabel':'第{n}轮', 'menu.tier':'最高轮次', 'revive.pop':'复活！', 'tier.banner':'第{n}轮开始！迎战更强的敌人',
     'hint.touch':'拖动屏幕移动', 'hint.pc':'WASD / 方向键移动 · P 暂停',
     'reset.confirm':'删除所有进度（金币、强化、记录）？',
     'lang.label':'语言',
@@ -1536,7 +1536,7 @@ const UI = {
     'res.level':'เลเวลสุดท้าย', 'res.coins':'เหรียญที่ได้', 'res.again':'กลับสู่ล็อบบี้',
     'res.tier':'รอบ', 'res.pending':'เหรียญที่จะได้รับ', 'res.clear':'ผ่านรอบ {n}!', 'res.next':'▶ ท้าทายรอบ {n}',
     'reward.p3':'🎉 ยินดีด้วย! รางวัลผ่านรอบ 3<br>เพิ่มช่องสกิลพาสซีฟอีกหนึ่งช่อง! (สูงสุด 6 → 7)',
-    'hud.tierLabel':'รอบ {n}', 'menu.tier':'รอบสูงสุด', 'tier.banner':'เริ่มรอบ {n}! ศัตรูแข็งแกร่งขึ้น',
+    'hud.tierLabel':'รอบ {n}', 'menu.tier':'รอบสูงสุด', 'revive.pop':'ฟื้นคืนชีพ!', 'tier.banner':'เริ่มรอบ {n}! ศัตรูแข็งแกร่งขึ้น',
     'hint.touch':'ลากหน้าจอเพื่อเคลื่อนที่', 'hint.pc':'WASD / ปุ่มลูกศรเพื่อเคลื่อนที่ · P เพื่อหยุด',
     'reset.confirm':'ลบความคืบหน้าทั้งหมด (เหรียญ, อัปเกรด, สถิติ) หรือไม่?',
     'lang.label':'ภาษา',
@@ -1567,7 +1567,7 @@ const UI = {
     'res.level':'Cấp cuối', 'res.coins':'Xu kiếm được', 'res.again':'Về sảnh',
     'res.tier':'Vòng', 'res.pending':'Xu sẽ nhận', 'res.clear':'Hoàn thành Vòng {n}!', 'res.next':'▶ Thử thách Vòng {n}',
     'reward.p3':'🎉 Chúc mừng! Phần thưởng hoàn thành Vòng 3:<br>bạn được thêm một ô kỹ năng bị động! (tối đa 6 → 7)',
-    'hud.tierLabel':'Vòng {n}', 'menu.tier':'Vòng cao nhất', 'tier.banner':'Vòng {n} bắt đầu! Kẻ địch mạnh hơn',
+    'hud.tierLabel':'Vòng {n}', 'menu.tier':'Vòng cao nhất', 'revive.pop':'HỒI SINH!', 'tier.banner':'Vòng {n} bắt đầu! Kẻ địch mạnh hơn',
     'hint.touch':'Kéo màn hình để di chuyển', 'hint.pc':'WASD / phím mũi tên để di chuyển · P để tạm dừng',
     'reset.confirm':'Xóa toàn bộ tiến trình (xu, nâng cấp, kỷ lục)?',
     'lang.label':'Ngôn ngữ',
@@ -1598,7 +1598,7 @@ const UI = {
     'res.level':'Nivel final', 'res.coins':'Monedas ganadas', 'res.again':'Volver al vestíbulo',
     'res.tier':'Ronda', 'res.pending':'Monedas por cobrar', 'res.clear':'¡Ronda {n} superada!', 'res.next':'▶ Desafiar Ronda {n}',
     'reward.p3':'🎉 ¡Felicidades! Por superar la Ronda 3<br>ganas una ranura de habilidad pasiva más. (máx. 6 → 7)',
-    'hud.tierLabel':'Ronda {n}', 'menu.tier':'Mejor ronda', 'tier.banner':'¡Ronda {n}! Enemigos más fuertes',
+    'hud.tierLabel':'Ronda {n}', 'menu.tier':'Mejor ronda', 'revive.pop':'¡REVIVIR!', 'tier.banner':'¡Ronda {n}! Enemigos más fuertes',
     'hint.touch':'Arrastra la pantalla para moverte', 'hint.pc':'WASD / flechas para moverte · P para pausar',
     'reset.confirm':'¿Borrar todo el progreso (monedas, mejoras, registros)?',
     'lang.label':'Idioma',
@@ -2237,11 +2237,14 @@ function fireWeapon(w) {
       da = Math.atan2(Math.sin(da), Math.cos(da));
       if (Math.abs(da) < arc) { damageEnemy(e, s.dmg); healSum += s.dmg; spark(e.x, e.y, hitCol, evo ? 5 : 3, 2.6, 14); }
     });
-    const sweeps = evo ? 12 : 6;   // 진화(소울 리퍼): 광역 보라빛 영혼 베기
+    // 뚜렷한 반달 베기 이펙트(공격 방향·범위 표시)
+    const sl = takePart(); sl.type = 'arc'; sl.x = p.x; sl.y = p.y; sl.ang = ang; sl.arc = arc; sl.range = range;
+    sl.col = arcCol; sl.evolved = evo; sl.life = evo ? 17 : 13; sl.max = sl.life; sl.r = 0; G.particles.push(sl);
+    const sweeps = evo ? 10 : 6;   // 진화(소울 리퍼): 광역 보라빛 영혼 베기 잔광
     for (let i = 0; i < sweeps; i++) {
-      const a = ang + lerp(-arc, arc, i / (sweeps - 1)), r = range * rand(0.5, 1);
+      const a = ang + lerp(-arc, arc, i / (sweeps - 1)), r = range * rand(0.7, 1);
       const sp = takePart(); sp.type = 'spark'; sp.x = p.x + Math.cos(a) * r; sp.y = p.y + Math.sin(a) * r;
-      sp.vx = Math.cos(a) * 0.6; sp.vy = Math.sin(a) * 0.6; sp.life = evo ? 16 : 10; sp.max = sp.life; sp.r = evo ? 3 : 2; sp.col = arcCol;
+      sp.vx = Math.cos(a) * 0.9; sp.vy = Math.sin(a) * 0.9; sp.life = evo ? 16 : 11; sp.max = sp.life; sp.r = evo ? 3.4 : 2.4; sp.col = arcCol;
       G.particles.push(sp);
     }
     if (healSum > 0 && p.hp < p.maxhp) {
@@ -2706,9 +2709,13 @@ function hurtPlayer(amt) {
 function handleDeath() {
   const p = P();
   if (!p.revived && metaVal('revive') > 0) {
-    p.revived = true; p.hp = p.maxhp * 0.5; p.iframe = 90;
-    for (const e of G.enemies) if (!e.dead && !e.boss && !e.mini && dist2(e.x,e.y,p.x,p.y) < 180*180) killEnemy(e);
-    ring(p.x, p.y, 180, '#8bff5a', 40); Audio.S.levelup(); return;
+    p.revived = true; p.hp = p.maxhp * 0.5; p.iframe = 120;
+    // 주변 적 제거(드롭 없이) + 강한 시각/사운드 피드백 → 부활을 확실히 인지
+    for (const e of G.enemies) if (!e.dead && !e.boss && !e.mini && dist2(e.x,e.y,p.x,p.y) < 220*220) { e.dead = true; G.kills++; spark(e.x,e.y,'#8bff5a',5,3,18); }
+    ring(p.x, p.y, 220, '#8bff5a', 50); ring(p.x, p.y, 120, '#dfffcf', 40);
+    spark(p.x, p.y, '#8bff5a', 22, 4.5, 44); G.screenShake = 16;
+    floatText(p.x, p.y - 42, '💉 ' + t('revive.pop'), '#8bff5a');
+    Audio.S.levelup(); return;
   }
   endRun(false);
 }
@@ -2952,7 +2959,12 @@ function choiceInfo(o) {
 }
 function applyChoice(o) {
   const p = P();
-  if (o.type === 'evo') { const w = ownWeapon(o.key); w.evolved = true; w.timer = 0; Audio.S.evolve(); ring(p.x, p.y, 100, '#ffcf4d', 34); if (o.key === 'machete') rebuildBlades(); }
+  if (o.type === 'evo') { const w = ownWeapon(o.key); w.evolved = true; w.timer = 0; Audio.S.evolve(); ring(p.x, p.y, 100, '#ffcf4d', 34); if (o.key === 'machete') rebuildBlades();
+    if (o.key === 'sentry') {   // 이미 배치된 가드 터렛도 즉시 미니건(진화) 스탯으로 갱신 — 진화 체감 반영
+      const es = EVOS.minigun.stats();
+      for (const s of G.sentries) { s.dmg = es.dmg; s.fireCd = es.fireCd; s.rng = es.rng; s.evolved = true; ring(s.x, s.y, 30, '#ffcf4d', 24); }
+    }
+  }
   else if (o.type === 'wup') { ownWeapon(o.key).level++; if (o.key === 'machete') rebuildBlades(); }
   else if (o.type === 'pup') { p.passives[o.id]++; afterPassive(o.id); }
   else if (o.type === 'wnew') { p.weapons.push({ key:o.key, level:1, timer:0, evolved:false }); if (o.key === 'machete') rebuildBlades(); }
@@ -3345,6 +3357,15 @@ function drawParticles() {
     else if (p.type === 'ring') { ctx.globalAlpha = a*0.7; ctx.strokeStyle = p.col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.stroke(); }
     else if (p.type === 'line') { ctx.globalAlpha = a; ctx.strokeStyle = p.col; ctx.lineWidth = 2.5; ctx.shadowColor = p.col; ctx.shadowBlur = 8; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x2, p.y2); ctx.stroke(); ctx.shadowBlur = 0; }
     else if (p.type === 'text') { ctx.globalAlpha = a; ctx.fillStyle = p.col; ctx.font = '900 14px system-ui'; ctx.textAlign = 'center'; ctx.fillText(p.txt, p.x, p.y); ctx.textAlign = 'start'; }
+    else if (p.type === 'arc') {   // 블러드 사이드/소울 리퍼 반달 베기 — 공격 방향과 범위를 뚜렷하게 표시
+      const R = p.range * (0.72 + 0.28 * (1 - a));
+      ctx.globalAlpha = a; ctx.strokeStyle = p.col; ctx.lineWidth = p.evolved ? 8 : 5; ctx.lineCap = 'round';
+      ctx.shadowColor = p.col; ctx.shadowBlur = p.evolved ? 18 : 11;
+      ctx.beginPath(); ctx.arc(p.x, p.y, R, p.ang - p.arc, p.ang + p.arc); ctx.stroke();
+      ctx.globalAlpha = a * 0.16; ctx.fillStyle = p.col;
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.range, p.ang - p.arc, p.ang + p.arc); ctx.closePath(); ctx.fill();
+      ctx.shadowBlur = 0; ctx.lineCap = 'butt';
+    }
   }
   ctx.globalAlpha = 1;
 }
