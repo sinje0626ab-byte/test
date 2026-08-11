@@ -1788,6 +1788,14 @@ function setLang(code){
    도트 캐릭터 스프라이트 — 악마성풍 픽셀 아트 (오프스크린 캔버스에 1회 생성)
    ========================================================================== */
 function spriteMirror(half){ return half + half.split('').reverse().join(''); }
+// 색을 밝게/어둡게 (입체 셰이딩용)
+function shade(hex, f){
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.max(0, Math.min(255, Math.round(((n>>16)&255) * f)));
+  const g = Math.max(0, Math.min(255, Math.round(((n>>8)&255) * f)));
+  const b = Math.max(0, Math.min(255, Math.round((n&255) * f)));
+  return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
 function buildSprite(halfRows, palette){
   const rows = halfRows.map(spriteMirror);
   const w = rows[0].length, h = rows.length;
@@ -1803,9 +1811,17 @@ function buildSprite(halfRows, palette){
   }
   const cnv = document.createElement('canvas'); cnv.width = w; cnv.height = h;
   const c = cnv.getContext('2d');
+  const solid = (x,y) => x>=0 && y>=0 && x<w && y<h && grid[y][x] !== '.';
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const ch = outline[y][x]; if (ch === '.') continue;
-    c.fillStyle = ch === 'K' ? '#0a0808' : palette[ch];
+    if (ch === 'K') { c.fillStyle = '#0a0808'; c.fillRect(x, y, 1, 1); continue; }
+    const base = palette[ch] || '#888888';
+    // 입체감: 위에서 비추는 광원(위 밝고 아래 어둡게) + 가장자리 베벨(좌상 하이라이트/우하 그림자)
+    const vfac = 1.14 - (y / (h - 1)) * 0.34;
+    let ef = 1;
+    if (!solid(x, y+1) || !solid(x+1, y)) ef = 0.80;        // 우/하단 가장자리 → 그림자
+    else if (!solid(x, y-1) || !solid(x-1, y)) ef = 1.20;   // 좌/상단 가장자리 → 하이라이트
+    c.fillStyle = shade(base, vfac * ef);
     c.fillRect(x, y, 1, 1);
   }
   return cnv;
@@ -3073,6 +3089,7 @@ function drawHeart(x, y, s, col) {
 function drawSentries() {
   for (const s of G.sentries) {
     if (!onScreen(s.x, s.y, 30)) continue;
+    drawGroundShadow(s.x, s.y + 13, 12, 4.5);
     if (G.selTurret === s) { ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = 2; ctx.setLineDash([4,3]);
       ctx.beginPath(); ctx.arc(s.x, s.y, 18, 0, TAU); ctx.stroke(); ctx.setLineDash([]); }
     const spent = ((s.atkLv || 0) + (s.spdLv || 0)) > 0;   // 스탯을 찍었는지
@@ -3247,12 +3264,18 @@ function renderTurretPanel() {
   el.turretPanel.querySelectorAll('.tr-up').forEach(b => b.onclick = () => upgradeTurret(b.dataset.k));
   el.turretPanel.querySelector('#trClose').onclick = closeTurretPanel;
 }
+function drawGroundShadow(x, y, rx, ry) {   // 바닥 그림자(입체감·접지감)
+  ctx.globalAlpha = 0.26; ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 1;
+}
 function drawEnemies() {
   for (const e of G.enemies) {
     if (e.dead || !onScreen(e.x, e.y, e.r + 20)) continue;
     const wob = Math.sin(e.wob) * (e.r * 0.08);
     const sp = SPRITES[e.key] || SPRITES.walker;
     const dw = e.r * 2.5, dh = dw * sp.height / sp.width;
+    drawGroundShadow(e.x, e.y + dh * 0.42, e.r * (e.boss ? 1.0 : 0.92), e.r * (e.boss ? 0.4 : 0.34));
     ctx.save();
     ctx.translate(e.x, e.y + wob);
     if (e.facing < 0) ctx.scale(-1, 1);
@@ -3312,6 +3335,7 @@ function drawPlayer() {
   const blink = p.iframe > 0 && (G.frame % 8 < 4);
   if (!blink) {
     const sp = SPRITES[CHARACTERS[G.character || 'hunter'].sprite] || SPRITES.player, dw = 34, dh = dw * sp.height / sp.width;
+    drawGroundShadow(p.x, p.y + dh * 0.42, 13, 5);
     ctx.save();
     ctx.translate(p.x, p.y);
     if (p.facing < 0) ctx.scale(-1, 1);
