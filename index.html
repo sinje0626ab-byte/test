@@ -347,12 +347,17 @@
   .xpfill{height:100%;width:0%;background:linear-gradient(90deg,var(--toxic-dim),var(--toxic));
     box-shadow:0 0 12px rgba(139,255,90,.5);transition:width .12s linear;}
   .toprow{display:flex;align-items:center;gap:10px;font-weight:900;font-size:13px;}
-  .hpwrap{flex:1;height:20px;border-radius:8px;background:#160a0b;border:1px solid rgba(229,35,43,.35);
-    position:relative;overflow:hidden;}
-  .hpfill{position:absolute;inset:0;width:100%;background:linear-gradient(90deg,#7c1114,var(--blood));
-    box-shadow:0 0 14px rgba(229,35,43,.4) inset;transition:width .15s ease;}
+  .hpwrap{flex:1;height:22px;border-radius:11px;background:linear-gradient(180deg,#0a0304,#1c0c0d);
+    border:1px solid rgba(229,35,43,.4);position:relative;overflow:hidden;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.75), inset 0 -1px 1px rgba(255,255,255,.06), 0 1px 0 rgba(255,255,255,.05);}
+  .hpfill{position:absolute;top:0;bottom:0;left:0;width:100%;border-radius:11px;
+    background:linear-gradient(180deg,#ff676d 0%,#e5232b 48%,#8a1216 100%);
+    box-shadow:inset 0 6px 7px -4px rgba(255,255,255,.6), inset 0 -7px 9px -4px rgba(0,0,0,.55), 0 0 14px rgba(229,35,43,.45);
+    transition:width .15s ease;}
+  .hpfill::after{content:"";position:absolute;left:5px;right:5px;top:2px;height:36%;pointer-events:none;
+    border-radius:9px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0));}
   .hptext{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    font-size:12px;text-shadow:0 1px 2px #000;letter-spacing:.03em;}
+    font-size:12px;text-shadow:0 1px 2px #000,0 0 3px #000;letter-spacing:.03em;z-index:2;}
   .chip{display:flex;align-items:center;gap:4px;background:rgba(8,12,10,.7);border:1px solid var(--line);
     border-radius:8px;padding:4px 9px;font-size:13px;}
   .chip.time{font-variant-numeric:tabular-nums;color:#fff;}
@@ -385,9 +390,15 @@
   .bossbar.show{display:block;}
   .bossbar .nm{text-align:center;font-weight:900;letter-spacing:.16em;font-size:12px;color:var(--blood-bright);
     text-transform:uppercase;margin-bottom:4px;text-shadow:0 0 12px rgba(229,35,43,.5);}
-  .bossbar .track{height:14px;border-radius:8px;background:#120708;border:1px solid rgba(229,35,43,.5);overflow:hidden;}
-  .bossbar .fill{height:100%;width:100%;background:linear-gradient(90deg,#ff2d34,#7c0f12);
-    box-shadow:0 0 16px rgba(229,35,43,.6) inset;transition:width .12s linear;}
+  .bossbar .track{height:17px;border-radius:9px;background:linear-gradient(180deg,#070203,#1a0809);
+    border:1px solid rgba(229,35,43,.55);overflow:hidden;position:relative;
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.05);}
+  .bossbar .fill{height:100%;width:100%;border-radius:9px;position:relative;
+    background:linear-gradient(180deg,#ff787d 0%,#ff2d34 46%,#7c0f12 100%);
+    box-shadow:inset 0 7px 8px -4px rgba(255,255,255,.6), inset 0 -8px 10px -4px rgba(0,0,0,.55), 0 0 16px rgba(229,35,43,.55);
+    transition:width .12s linear;}
+  .bossbar .fill::after{content:"";position:absolute;left:6px;right:6px;top:2px;height:38%;pointer-events:none;
+    border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));}
 
   #hint{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
     transform:translateX(-50%);font-size:12px;color:var(--ink-dim);text-align:center;
