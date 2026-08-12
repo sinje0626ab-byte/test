@@ -41,7 +41,13 @@
   #menu .veil{background:
     radial-gradient(130% 95% at 50% -12%, rgba(229,35,43,.20), transparent 52%),
     radial-gradient(130% 95% at 50% 112%, rgba(139,255,90,.11), transparent 52%),
-    radial-gradient(circle at 50% 42%, rgba(9,13,12,.62), rgba(3,5,5,.95));backdrop-filter:blur(3px);}
+    radial-gradient(circle at 50% 42%, rgba(9,13,12,.62), rgba(3,5,5,.95));backdrop-filter:blur(3px);overflow:hidden;}
+  #menu .veil::after{content:"";position:absolute;left:50%;top:8%;width:76vw;max-width:560px;height:360px;
+    transform:translateX(-50%);pointer-events:none;filter:blur(34px);
+    background:radial-gradient(ellipse at center, rgba(229,35,43,.24), rgba(255,120,60,.08) 45%, transparent 72%);
+    animation:menuGlow 6.5s ease-in-out infinite;}
+  @keyframes menuGlow{0%,100%{opacity:.5;transform:translateX(-50%) scale(1);}50%{opacity:.9;transform:translateX(-50%) scale(1.14);}}
+  @media(prefers-reduced-motion:reduce){#menu .veil::after{animation:none;}}
   #menu .card::before{content:"";position:absolute;top:0;left:22px;right:22px;height:1px;
     background:linear-gradient(90deg,transparent,rgba(255,120,120,.55),rgba(255,207,77,.5),transparent);}
   .cta{position:sticky;bottom:-26px;margin:0 -24px -26px;padding:14px 24px 22px;
@@ -333,10 +339,16 @@
 
   /* level up choices */
   #levelup .card{width:min(720px,96vw);}
-  .lvhead{text-align:center;margin-bottom:16px;}
-  .lvhead .lu{font-size:13px;letter-spacing:.2em;color:var(--toxic);font-weight:900;text-transform:uppercase;}
-  .lvhead h2{margin:6px 0 0;font-size:26px;font-weight:900;}
-  .lvhead .heal{color:var(--blood-bright);font-size:13px;margin-top:4px;}
+  .lvhead{text-align:center;margin-bottom:18px;}
+  .lvhead .lu{display:inline-block;font-size:11px;letter-spacing:.28em;color:var(--gold);font-weight:900;
+    padding:3px 13px;border-radius:20px;background:rgba(255,207,77,.12);border:1px solid rgba(255,207,77,.32);}
+  .lvjump{display:flex;align-items:center;justify-content:center;gap:11px;margin:12px 0 2px;font-weight:900;line-height:1;}
+  .lvjump .from{font-size:20px;color:var(--ink-dim);}
+  .lvjump .arw{font-size:20px;color:var(--gold);}
+  .lvjump .to{font-size:36px;background:linear-gradient(180deg,#fff,var(--toxic));
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 12px rgba(139,255,90,.55));}
+  .lvhead h2{margin:8px 0 0;font-size:18px;font-weight:800;letter-spacing:.03em;color:var(--ink);}
+  .lvhead .heal{color:var(--blood-bright);font-size:13px;margin-top:7px;font-weight:800;}
   .choices{display:grid;grid-template-columns:1fr;gap:12px;}
   @media(min-width:560px){.choices{grid-template-columns:1fr 1fr 1fr;}}
   .choice{cursor:pointer;background:linear-gradient(180deg,#141c17,#0b100e);border:1px solid var(--line);
@@ -346,9 +358,15 @@
   .choice.evo:hover{box-shadow:0 12px 34px rgba(255,207,77,.2);}
   .choice .cico{font-size:38px;line-height:1;margin-bottom:8px;}
   .choice .cnm{font-weight:900;font-size:16px;}
-  .choice .clv{font-size:12px;font-weight:800;margin:3px 0 8px;color:var(--toxic);}
-  .choice.evo .clv{color:var(--gold);}
-  .choice .cds{font-size:12px;color:var(--ink-dim);line-height:1.35;}
+  .choice .clv{display:inline-block;font-size:12px;font-weight:800;margin:4px 0 9px;color:var(--toxic);
+    padding:2px 9px;border-radius:8px;background:rgba(139,255,90,.1);border:1px solid rgba(139,255,90,.22);}
+  .choice.evo .clv{color:var(--gold);background:rgba(255,207,77,.12);border-color:rgba(255,207,77,.3);}
+  .choice .cds{font-size:12px;color:var(--ink-dim);line-height:1.4;}
+  .choice .cds-txt{font-size:11.5px;color:var(--ink-dim);line-height:1.45;margin-top:2px;}
+  .sulist{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:3px;}
+  .su{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:9px;
+    background:rgba(139,255,90,.12);color:#c3f5a2;border:1px solid rgba(139,255,90,.22);}
+  .su.tot{background:rgba(255,207,77,.14);color:#ffe08a;border-color:rgba(255,207,77,.32);}
   .choice .badge{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.1em;
     padding:2px 8px;border-radius:20px;margin-bottom:8px;text-transform:uppercase;}
   .badge.new{background:rgba(139,255,90,.14);color:var(--toxic);}
@@ -620,8 +638,9 @@
   <div class="veil"></div>
   <div class="card">
     <div class="lvhead">
-      <div class="lu" data-i18n="lu.label">Level Up</div>
-      <h2 id="luTitle" data-i18n="lu.title">능력을 선택하라</h2>
+      <div class="lu" data-i18n="lu.label">LEVEL UP</div>
+      <div class="lvjump" id="luLevel"><span class="from">Lv 1</span><span class="arw">→</span><span class="to">Lv 2</span></div>
+      <h2 id="luTitle" data-i18n="lu.title">능력 선택</h2>
       <div class="heal" id="luHeal" data-i18n="lu.heal">＋ 긴급 치유 발동</div>
     </div>
     <div class="choices" id="choices"></div>
@@ -1462,7 +1481,7 @@ const UI = {
     'btn.continue':'이어하기 · {n}차 Lv{lv} ({t})',
     'pause.stats':'생존 {t} · 처치 {k} · 코인 {c}',
     'title.press':'아무 버튼이나 눌러주세요', 'splash.start':'아무 버튼이나 눌러주세요',
-    'lu.label':'Level Up', 'lu.title':'능력을 선택하라', 'lu.heal':'＋ 긴급 치유 발동',
+    'lu.label':'LEVEL UP', 'lu.title':'능력 선택', 'lu.heal':'＋ 긴급 치유 발동',
     'b.evo':'진화', 'b.up':'강화', 'b.new':'신규',
     'lv.evo':'초월 진화', 'lv.wnew':'신규 무기', 'lv.pnew':'신규 패시브',
     'heal.nm':'전열 정비', 'heal.lv':'회복', 'heal.ds':'체력을 완전히 회복합니다.',
@@ -2396,12 +2415,12 @@ function damageEnemy(e, amt) {
 }
 function spawnGem(x, y, xp) {
   const g = takeGem(); g.x = x; g.y = y; g.xp = xp; g.type = 'gem';
-  g.vx = rand(-1,1); g.vy = rand(-1,1); g.mag = false; g.life = 2400;
+  g.vx = rand(-1,1); g.vy = rand(-1,1); g.mag = false; g.life = undefined;   // 젬은 사라지지 않음(직접 먹을 때까지 유지)
   G.gems.push(g);
 }
 function spawnCoin(x, y, spread) {
   const c = takeGem(); c.x = x + rand(-spread,spread); c.y = y + rand(-spread,spread); c.type = 'coin';
-  c.vx = rand(-2,2); c.vy = rand(-2,2); c.mag = false; c.life = 2400;
+  c.vx = rand(-2,2); c.vy = rand(-2,2); c.mag = false; c.life = undefined;   // 코인도 사라지지 않음
   G.coins.push(c);
 }
 function killEnemy(e) {
@@ -2968,28 +2987,31 @@ function buildChoices() {
   if (chosen.length === 0) chosen.push({ type:'heal' }, { type:'coins' });
   return chosen;
 }
+const round1 = n => Math.round(n * 10) / 10;
+const suChip = (emoji, txt) => `<span class="su">${emoji} ${txt}</span>`;
 function statDeltaDesc(key, lvl) {
   const a = WEAPONS[key].stats(lvl), b = WEAPONS[key].stats(lvl + 1), parts = [];
-  if (a.dmg != null && b.dmg > a.dmg) parts.push(t('f.dmg') + (Math.round((b.dmg - a.dmg) * 10) / 10));
-  if (a.proj != null && b.proj > a.proj) parts.push(t('f.proj') + (b.proj - a.proj) + t('f.projU'));
-  if (a.pellets != null && b.pellets > a.pellets) parts.push(t('f.pellets') + (b.pellets - a.pellets) + t('f.pelletsU'));
-  if (a.blades != null && b.blades > a.blades) parts.push(t('f.blades') + (b.blades - a.blades) + t('f.bladesU'));
-  if (a.chain != null && b.chain > a.chain) parts.push(t('f.chain') + (b.chain - a.chain) + t('f.chainU'));
-  if (a.radius != null && b.radius > a.radius) parts.push(t('f.radius') + Math.round(b.radius - a.radius));
-  if (a.range != null && b.range > a.range) parts.push(t('f.range') + Math.round(b.range - a.range));
-  if (a.reach != null && b.reach > a.reach) parts.push(t('f.reach') + Math.round(b.reach - a.reach));
-  if (a.life != null && b.life > a.life) parts.push(t('f.life') + (Math.round((b.life - a.life) / 60 * 10) / 10) + 's');
-  if (a.lifesteal != null && b.lifesteal > a.lifesteal) parts.push(t('f.lifesteal') + Math.round((b.lifesteal - a.lifesteal) * 100) + '%');
-  if (a.chill != null && b.chill > a.chill) parts.push(t('f.chilldur') + (Math.round((b.chill - a.chill) / 60 * 10) / 10) + 's');
-  if (a.chillPow != null && b.chillPow < a.chillPow) parts.push(t('f.chillpow'));
-  if (a.cd != null && b.cd < a.cd) parts.push(t('f.cdup'));
-  if (a.fireCd != null && b.fireCd < a.fireCd) parts.push(t('f.firecdup'));
-  return parts.length ? parts.join(' · ') : trDesc('weapon', key);
+  if (a.dmg != null && b.dmg > a.dmg) parts.push(suChip('💥', t('f.dmg') + round1(b.dmg - a.dmg)));
+  if (a.proj != null && b.proj > a.proj) parts.push(suChip('➕', t('f.proj') + (b.proj - a.proj) + t('f.projU')));
+  if (a.pellets != null && b.pellets > a.pellets) parts.push(suChip('➕', t('f.pellets') + (b.pellets - a.pellets) + t('f.pelletsU')));
+  if (a.blades != null && b.blades > a.blades) parts.push(suChip('🌀', t('f.blades') + (b.blades - a.blades) + t('f.bladesU')));
+  if (a.chain != null && b.chain > a.chain) parts.push(suChip('⚡', t('f.chain') + (b.chain - a.chain) + t('f.chainU')));
+  if (a.radius != null && b.radius > a.radius) parts.push(suChip('💣', t('f.radius') + Math.round(b.radius - a.radius)));
+  if (a.range != null && b.range > a.range) parts.push(suChip('📏', t('f.range') + Math.round(b.range - a.range)));
+  if (a.reach != null && b.reach > a.reach) parts.push(suChip('📏', t('f.reach') + Math.round(b.reach - a.reach)));
+  if (a.life != null && b.life > a.life) parts.push(suChip('⏳', t('f.life') + round1((b.life - a.life) / 60) + 's'));
+  if (a.lifesteal != null && b.lifesteal > a.lifesteal) parts.push(suChip('🩸', t('f.lifesteal') + Math.round((b.lifesteal - a.lifesteal) * 100) + '%'));
+  if (a.chill != null && b.chill > a.chill) parts.push(suChip('❄️', t('f.chilldur') + round1((b.chill - a.chill) / 60) + 's'));
+  if (a.chillPow != null && b.chillPow < a.chillPow) parts.push(suChip('❄️', t('f.chillpow')));
+  if (a.cd != null && b.cd < a.cd) parts.push(suChip('⏱️', t('f.cdup')));
+  if (a.fireCd != null && b.fireCd < a.fireCd) parts.push(suChip('🔥', t('f.firecdup')));
+  return parts.length ? `<div class="sulist">${parts.join('')}</div>` : `<div class="cds-txt">${trDesc('weapon', key)}</div>`;
 }
 function passiveDeltaDesc(id, lvl) {
   const n = lvl + 1;
   const total = { dmg:'+'+10*n+'%', speed:'-'+10*n+'%', proj:'+'+n, range:'+'+15*n+'%', movespeed:'+'+8*n+'%', maxhp:'+'+20*n+'%', regen:'+'+(0.5*n)+'/s', magnet:'+'+30*n+'%', crit:'+'+8*n+'%' };
-  return trDesc('passive', id) + ' → ' + t('cum') + ' ' + total[id];
+  const emo = { dmg:'💥', speed:'⏱️', proj:'➕', range:'📐', movespeed:'👟', maxhp:'❤️', regen:'✚', magnet:'🧲', crit:'🎯' };
+  return `<div class="cds-txt">${trDesc('passive', id)}</div><div class="sulist"><span class="su tot">${emo[id]||'⭐'} ${t('cum')} ${total[id]}</span></div>`;
 }
 function choiceInfo(o) {
   const p = P();
@@ -3024,6 +3046,11 @@ function afterPassive(id) {
 
 function enterLevelUp() {
   G.state = 'levelup';
+  const p = P();
+  // 이번 선택으로 도달하는 레벨: Lv (to-1) → to 로 직관적으로 표시
+  const to = Math.max(2, p.level - p.pendingLevels + 1);
+  const lvEl = $('luLevel');
+  if (lvEl) lvEl.innerHTML = `<span class="from">Lv ${to-1}</span><span class="arw">→</span><span class="to">Lv ${to}</span>`;
   const list = buildChoices();
   el.choices.innerHTML = '';
   el.luHeal.style.display = G.frame > 1 ? 'block' : 'none';
