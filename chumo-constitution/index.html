@@ -118,10 +118,83 @@ tr:nth-child(even) td { background:#f8f5ed; }
   background:#2c281f; color:#f4f0e5; border:none; border-radius:3px;
   font-size:14px; cursor:pointer; font-family:inherit; letter-spacing:2px;
 }
+.anthem {
+  background:#2c281f; color:#f4f0e5; border:1px solid #b3a888;
+  border-radius:4px; padding:16px 20px 18px; margin-bottom:34px;
+  box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+.anthem-head {
+  display:flex; align-items:center; gap:10px; margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.anthem-emblem { font-size:20px; }
+.anthem-title {
+  font-size:17px; font-weight:700; letter-spacing:4px; color:#f7f4ec;
+  flex:1 1 auto;
+}
+.anthem-lyrics-btn {
+  background:#f4f0e5; color:#2c281f; border:none; border-radius:3px;
+  padding:7px 16px; font-family:inherit; font-size:13px; font-weight:600;
+  letter-spacing:2px; cursor:pointer;
+}
+.anthem-lyrics-btn.active { background:#b3a888; color:#14120f; }
+.anthem-controls { display:flex; align-items:center; gap:12px; }
+.anthem-play {
+  flex:0 0 auto; width:44px; height:44px; border-radius:50%;
+  background:#f4f0e5; color:#2c281f; border:none; cursor:pointer;
+  font-size:17px; line-height:1; display:flex; align-items:center; justify-content:center;
+}
+.anthem-play:hover { background:#fff; }
+.anthem-time { font-size:12.5px; color:#cfc7b4; font-variant-numeric:tabular-nums; min-width:34px; }
+.anthem-seek {
+  flex:1 1 auto; -webkit-appearance:none; appearance:none; height:6px;
+  border-radius:3px; background:#5c5548; cursor:pointer; outline:none;
+}
+.anthem-seek::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none; width:15px; height:15px;
+  border-radius:50%; background:#f4f0e5; border:2px solid #b3a888; cursor:pointer;
+}
+.anthem-seek::-moz-range-thumb {
+  width:15px; height:15px; border-radius:50%; background:#f4f0e5;
+  border:2px solid #b3a888; cursor:pointer;
+}
+.anthem-lyrics {
+  margin-top:16px; padding-top:16px; border-top:1px solid #5c5548;
+  font-size:15px; line-height:2.0; color:#f4f0e5; text-align:center;
+  letter-spacing:1px;
+}
+.anthem-lyrics .lv { display:block; margin:14px 0; }
+.anthem-lyrics .tag {
+  display:block; font-size:12.5px; letter-spacing:4px; color:#c9b98a;
+  font-weight:700; margin-bottom:4px;
+}
+.anthem-lyrics .refrain { color:#ffe6a3; }
+@media print { .anthem { display:none; } }
 </style>
 </head>
 <body>
 <div class="paper">
+
+<div class="anthem noprint">
+  <div class="anthem-head">
+    <span class="anthem-emblem">🕯️</span>
+    <span class="anthem-title">추모공화국 국가</span>
+    <button type="button" class="anthem-lyrics-btn" id="lyricsBtn" aria-expanded="false">가사</button>
+  </div>
+  <audio id="anthemAudio" preload="metadata" src="anthem.mp3"></audio>
+  <div class="anthem-controls">
+    <button type="button" class="anthem-play" id="playBtn" aria-label="재생">▶</button>
+    <span class="anthem-time" id="curTime">0:00</span>
+    <input type="range" class="anthem-seek" id="seek" min="0" max="100" value="0" step="0.1" aria-label="재생 구간">
+    <span class="anthem-time" id="durTime">0:00</span>
+  </div>
+  <div class="anthem-lyrics" id="lyricsPanel" hidden>
+    <span class="lv"><span class="tag">1절</span>우리는 추모공화국의 국민이다<br>모든 망자를 함께 기억한다<br>높고 낮음 없이 이름만 남으면<br>그 이름 하나하나 우리가 부른다</span>
+    <span class="lv refrain"><span class="tag">후렴</span>추모하라 추모하라 오직 추모하라<br>나눌수록 배가 되는 우리의 뜻<br>촛불을 높이 들고 함께 나아가자<br>영원하라 추모공화국</span>
+    <span class="lv"><span class="tag">2절</span>사람이든 동물이든 가리지 않고<br>먼 곳의 이름까지 예를 갖춘다<br>대형추모건 오기를 바라면서도<br>오늘 할 추모부터 먼저 한다</span>
+    <span class="lv refrain"><span class="tag">후렴</span>추모하라 추모하라 오직 추모하라<br>나눌수록 배가 되는 우리의 뜻<br>촛불을 높이 들고 함께 나아가자<br>영원하라 추모공화국</span>
+  </div>
+</div>
 
 <div class="cover">
   <div class="emblem">🕯️</div>
@@ -916,6 +989,59 @@ tr:nth-child(even) td { background:#f8f5ed; }
 </div>
 
 <button class="btn noprint" onclick="window.print()">🖨️ PDF로 저장</button>
+
+<script>
+(function(){
+  var audio = document.getElementById('anthemAudio');
+  var playBtn = document.getElementById('playBtn');
+  var seek = document.getElementById('seek');
+  var cur = document.getElementById('curTime');
+  var dur = document.getElementById('durTime');
+  var lyricsBtn = document.getElementById('lyricsBtn');
+  var lyricsPanel = document.getElementById('lyricsPanel');
+  var seeking = false;
+
+  function fmt(t){
+    if(!isFinite(t)||t<0) t=0;
+    var m=Math.floor(t/60), s=Math.floor(t%60);
+    return m+':'+(s<10?'0':'')+s;
+  }
+  audio.addEventListener('loadedmetadata', function(){
+    dur.textContent = fmt(audio.duration);
+  });
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    cur.textContent = fmt(audio.currentTime);
+    if(audio.duration){ seek.value = (audio.currentTime/audio.duration)*100; }
+  });
+  audio.addEventListener('ended', function(){
+    playBtn.textContent='▶'; playBtn.setAttribute('aria-label','재생');
+  });
+  playBtn.addEventListener('click', function(){
+    if(audio.paused){
+      audio.play();
+      playBtn.textContent='❚❚'; playBtn.setAttribute('aria-label','정지');
+    } else {
+      audio.pause();
+      playBtn.textContent='▶'; playBtn.setAttribute('aria-label','재생');
+    }
+  });
+  seek.addEventListener('input', function(){
+    seeking = true;
+    if(audio.duration){ cur.textContent = fmt(audio.duration*(seek.value/100)); }
+  });
+  seek.addEventListener('change', function(){
+    if(audio.duration){ audio.currentTime = audio.duration*(seek.value/100); }
+    seeking = false;
+  });
+  lyricsBtn.addEventListener('click', function(){
+    var show = lyricsPanel.hasAttribute('hidden');
+    if(show){ lyricsPanel.removeAttribute('hidden'); } else { lyricsPanel.setAttribute('hidden',''); }
+    lyricsBtn.classList.toggle('active', show);
+    lyricsBtn.setAttribute('aria-expanded', show ? 'true':'false');
+  });
+})();
+</script>
 
 </body>
 </html>
