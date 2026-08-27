@@ -88,6 +88,9 @@ th {
   background:#2c281f; color:#f4f0e5; font-weight:500; letter-spacing:2px;
 }
 tr:nth-child(even) td { background:#f8f5ed; }
+.orgtable { margin:14px 0 26px; font-size:14px; }
+.orgtable td { padding:9px 13px; }
+.orgtable th { background:#3a352b; }
 .note {
   background:#f4f0e5; border-left:4px solid #8a7c5c;
   padding:16px 22px; margin:20px 0; font-size:14.5px; color:#3a352b; line-height:1.95;
@@ -286,59 +289,293 @@ tr:nth-child(even) td { background:#f8f5ed; }
 <div class="article"><span class="num">제19조 (행정각부)</span> 추모공화국의 행정각부는 다음과 같다.</div>
 
 <h3>1. 대통령 직속기관 (2원 2실 1사령부)</h3>
-<table>
-<tr><th style="width:34%;">기관</th><th>소관 사무</th></tr>
-<tr><td>추모감사원</td><td>국정 전반의 감찰, 공직자 직무 감사</td></tr>
-<tr><td>추모정보원</td><td>추모꾼 신원 조사, 정보 수집, 심화 조사</td></tr>
-<tr><td>추모언론통제실</td><td>언론 관리, 여론 조성, 대외 홍보</td></tr>
-<tr><td>추모방첩사령부</td><td>프락치 색출, 내부 보안, 유사추모업체 대응</td></tr>
-<tr><td>추모경호실</td><td>대통령 및 국무위원 신변 보호</td></tr>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모감사원</th></tr>
+<tr><td>감찰총괄실</td><td>감사 계획을 세우고 각 국 감찰 일정을 조정한다. 대통령 지시 감찰의 착수 여부를 결정한다.</td></tr>
+<tr><td>공직감찰국</td><td>국무위원과 공직자의 직무 일탈, 직권 남용, 품위 손상을 조사한다.</td></tr>
+<tr><td>직무감사과</td><td>출근, 보고, 지시 이행 같은 일상 직무가 제대로 되는지를 점검한다.</td></tr>
+<tr><td>재산심사과</td><td>추모연금·등급·특전 수령 내역이 실적과 맞는지 대조한다.</td></tr>
+<tr><td>기강감사과</td><td>공직기강 해이, 불성실, 지시 불이행을 적발한다.</td></tr>
+<tr><td>특별감찰단</td><td>급하거나 민감한 건만 따로 맡아 비공개로 조사한다.</td></tr>
+<tr><td>익명제보센터</td><td>내부 제보를 받고, 익명성을 지킨 채 감사원에 넘긴다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모정보원</th></tr>
+<tr><td>정보기획실</td><td>누구를 조사할지, 어떤 정보를 모을지 우선순위를 정한다.</td></tr>
+<tr><td>신원조사실</td><td>신규·기존 추모꾼의 입장 경로, 닉 이력, 활동 패턴을 확인한다.</td></tr>
+<tr><td>국내정보국</td><td>내부 여론, 파벌, 불만, 이탈 조짐을 수집한다.</td></tr>
+<tr><td>해외정보국</td><td>해외 추모건과 외부 커뮤니티 동향을 수집한다.</td></tr>
+<tr><td>심화조사국</td><td>단순 확인으로 안 끝나는 건을 깊게 판다.</td></tr>
+<tr><td>통신분석과</td><td>말투, 답장 속도, 반복 표현, 링크 투척 습관을 비교한다.</td></tr>
+<tr><td>부계추적과</td><td>동일인 부계정 가능성을 추적한다.</td></tr>
+<tr><td>기록보존실</td><td>조사 기록과 신상 파일을 보관한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모언론통제실</th></tr>
+<tr><td>보도관리과</td><td>대외로 나갈 공지와 보도 톤을 관리한다.</td></tr>
+<tr><td>여론조성과</td><td>필요한 여론을 만들고 불리한 분위기를 정리한다.</td></tr>
+<tr><td>대외홍보과</td><td>협회와 공화국의 공식 이미지를 알린다.</td></tr>
+<tr><td>금칙어관리과</td><td>금지 표현과 일베 용어를 지정하고 단속 기준을 내린다.</td></tr>
+<tr><td>정정·삭제과</td><td>잘못된 공지, 오보성 발언의 정정과 삭제 지시를 낸다.</td></tr>
+<tr><td>담화문작성반</td><td>대통령·국무회의 명의 담화문을 작성한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모방첩사령부</th></tr>
+<tr><td>방첩기획실</td><td>보안 위협을 분류하고 대응 순서를 정한다.</td></tr>
+<tr><td>내부보안국</td><td>내부 유출, 회의 내용 반출, 링크 무단 공유를 막는다.</td></tr>
+<tr><td>프락치색출과</td><td>잠입 계정과 적대 세력을 가려낸다.</td></tr>
+<tr><td>유사업체대응과</td><td>유사 추모 세력과 경쟁 세력의 접근을 차단한다.</td></tr>
+<tr><td>부계감식과</td><td>닉·프사·말투가 겹치는 계정을 대조한다.</td></tr>
+<tr><td>보안교육대</td><td>공직자에게 보안 수칙을 가르친다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모경호실</th></tr>
+<tr><td>경호운영과</td><td>경호 일정과 배치를 짠다.</td></tr>
+<tr><td>근접경호과</td><td>대통령과 국무위원 바로 옆을 지킨다.</td></tr>
+<tr><td>행사경호과</td><td>임명식, 선서, 국무회의 행사장을 지킨다.</td></tr>
+<tr><td>경호장비과</td><td>경호에 필요한 수단과 대기 인력을 관리한다.</td></tr>
+<tr><td>비상대기조</td><td>돌발 상황 때 즉시 투입된다.</td></tr>
 </table>
 
 <h3>2. 국무총리 소속기관 (3처 1청)</h3>
-<table>
-<tr><th style="width:34%;">기관</th><th>소관 사무</th></tr>
-<tr><td>추모인사처</td><td>공직 인사, 등급 심사, 휴가 관리</td></tr>
-<tr><td>추모법제처</td><td>법령 심사, 조문 정비</td></tr>
-<tr><td>추모통계청</td><td>추모건 집계, 카테고리별 통계 산출</td></tr>
-<tr><td>추모공보처</td><td>공고문·담화문 발행, 관보 관리</td></tr>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모인사처</th></tr>
+<tr><td>임용과</td><td>공직 임명 서류와 보직 발령을 처리한다.</td></tr>
+<tr><td>등급심사과</td><td>브론즈부터 VIP까지 등급을 심사한다.</td></tr>
+<tr><td>승진·강등과</td><td>실적에 따라 올리고 내린다.</td></tr>
+<tr><td>휴가복지과</td><td>휴가 신청을 받고 승인 절차를 돌린다.</td></tr>
+<tr><td>공직윤리과</td><td>공직자 겸직, 품위, 이해충돌을 본다.</td></tr>
+<tr><td>인사기록과</td><td>임명·징계·평가 기록을 남긴다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모법제처</th></tr>
+<tr><td>법령심사과</td><td>새 규정과 부처 신설안이 헌법에 맞는지 본다.</td></tr>
+<tr><td>헌법조문과</td><td>헌법 조문을 고치고 해설한다.</td></tr>
+<tr><td>선서·공고문과</td><td>선서문, 임명장, 공고문의 문안을 확정한다.</td></tr>
+<tr><td>유권해석과</td><td>규정이 애매할 때 공식 해석을 내린다.</td></tr>
+<tr><td>관례정리과</td><td>지금까지의 선례를 모아 기준으로 만든다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모통계청</th></tr>
+<tr><td>총조사과</td><td>전체 추모건 수와 인원 변동을 센다.</td></tr>
+<tr><td>카테고리통계과</td><td>돌진츄, 유명인츄 같은 유형별 숫자를 낸다.</td></tr>
+<tr><td>기근·성수기분석과</td><td>추모 공백기와 성수기를 구분한다.</td></tr>
+<tr><td>인원변동과</td><td>입장, 퇴장, 잔류 인원을 집계한다.</td></tr>
+<tr><td>연감편찬과</td><td>한 해 통계를 책처럼 묶는다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모공보처</th></tr>
+<tr><td>관보과</td><td>공식 관보를 발행하고 보관한다.</td></tr>
+<tr><td>공고발행과</td><td>임명, 징계, 부처 신설 공고를 낸다.</td></tr>
+<tr><td>대통령담화과</td><td>대통령 담화 초안을 다듬어 배포한다.</td></tr>
+<tr><td>기록배포과</td><td>확정된 공문을 각 부처에 돌린다.</td></tr>
+<tr><td>보존문서과</td><td>중요 문서를 영구 보존한다.</td></tr>
 </table>
 
 <h3>3. 행정각부 (1국 11부)</h3>
-<table>
-<tr><th style="width:34%;">부처</th><th>소관 사무</th></tr>
-<tr><td>추모교정국</td><td>불량추모꾼 교정, 특별추모교정실 운영, 형 집행</td></tr>
-<tr><td>추모교육부</td><td>추모 교육 프로그램, 신규 추모꾼 연수</td></tr>
-<tr><td>문화추모부</td><td>문화·연예 추모 정보, 유명인츄 관리</td></tr>
-<tr><td>추모대기부</td><td>추모건 공백기 분위기 유지, 출석 독려, 대기 예보, 광대 활동 (제19조의2)</td></tr>
-<tr><td>추모외교부</td><td>해외 추모건 유치, 글로벌 추모 네트워크</td></tr>
-<tr><td>추모복지부</td><td>추모연금 지급, 추모꾼 복지 및 상담</td></tr>
-<tr><td>추모재정부</td><td>추모연금 재원 관리, 예산 편성</td></tr>
-<tr><td>추모행정안전부</td><td>추모방 질서 유지, 입퇴장 관리</td></tr>
-<tr><td>추모의전부</td><td>조문 절차, 장례 예법, 직관추모 지원</td></tr>
-<tr><td>추모과학기술부</td><td>추모 시스템 개발, AI 추모 드립 생성 관리</td></tr>
-<tr><td>추모환경부</td><td>추모 환경 조성, 추모 분위기 관리</td></tr>
-<tr><td>추모보훈부</td><td>원로 추모꾼 예우, 은퇴 추모꾼 관리</td></tr>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모교정국</th></tr>
+<tr><td>교정기획과</td><td>누구를 어떤 단계로 교정할지 계획을 세운다.</td></tr>
+<tr><td>특별추모교정실</td><td>실제 입소와 교정 교육을 진행한다.</td></tr>
+<tr><td>입소심사과</td><td>입소 여부를 심사한다.</td></tr>
+<tr><td>갱생교육과</td><td>반성문, 재교육, 복귀 조건을 맡는다.</td></tr>
+<tr><td>형집행과</td><td>확정된 처분을 집행한다.</td></tr>
+<tr><td>가석방심사과</td><td>조기 복귀 가능 여부를 본다.</td></tr>
+<tr><td>재범방지과</td><td>다시 사고를 치는지 감시한다.</td></tr>
 </table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모교육부</th></tr>
+<tr><td>연수기획과</td><td>교육 일정과 커리큘럼을 짠다.</td></tr>
+<tr><td>신입교육과</td><td>처음 온 사람에게 기본 규칙을 가르친다.</td></tr>
+<tr><td>헌법교육과</td><td>헌법을 읽히고 시험·정독 여부를 확인한다.</td></tr>
+<tr><td>드립교육과</td><td>추모 드립의 톤과 금기 사항을 가르친다.</td></tr>
+<tr><td>교재편찬과</td><td>교육용 안내문과 교재를 만든다.</td></tr>
+<tr><td>추권보호국</td><td>추모할 권리와 교육 대상의 기본 처우를 본다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">문화추모부</th></tr>
+<tr><td>유명인츄과</td><td>유명인 추모건 정보를 모으고 관리한다.</td></tr>
+<tr><td>문화콘텐츠과</td><td>추모문, 이미지, 콘텐츠 방향을 정한다.</td></tr>
+<tr><td>추모문작성과</td><td>공식 추모문 초안을 쓴다.</td></tr>
+<tr><td>프사·상징디자인과</td><td>공직 프사와 상징 이미지를 관리한다.</td></tr>
+<tr><td>전통추모과</td><td>기존의 추모 방식과 관례를 지킨다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모외교부</th></tr>
+<tr><td>양자협력과</td><td>특정 국가·해외 건 하나를 상대로 협력한다.</td></tr>
+<tr><td>다자협력과</td><td>여러 해외 건을 한꺼번에 엮는다.</td></tr>
+<tr><td>해외건유치과</td><td>해외에서 쓸 만한 추모건을 끌어온다.</td></tr>
+<tr><td>재외추모꾼과</td><td>밖에 있는 추모꾼을 관리한다.</td></tr>
+<tr><td>국제의전과</td><td>해외 관련 인사·의전 순서를 정한다.</td></tr>
+<tr><td>IMF협력관</td><td>해외 대형 재난·기구성 건의 창구 역할을 한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모복지부</th></tr>
+<tr><td>연금지급과</td><td>확정된 등급의 연금을 지급한다.</td></tr>
+<tr><td>등급연계과</td><td>복지 혜택과 등급을 연결한다.</td></tr>
+<tr><td>복지상담과</td><td>불만, 고충, 적응 상담을 받는다.</td></tr>
+<tr><td>신입정착과</td><td>갓 들어온 사람이 자리를 잡게 돕는다.</td></tr>
+<tr><td>긴급생계과</td><td>급하다고 호소하는 민원을 가려 받는다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모재정부</th></tr>
+<tr><td>예산실</td><td>부처별 예산을 짠다.</td></tr>
+<tr><td>재원관리과</td><td>연금과 보상 재원이 어디서 나오는지 관리한다.</td></tr>
+<tr><td>기프트콘회계과</td><td>육개장 기프트콘 같은 현물 보상을 회계 처리한다.</td></tr>
+<tr><td>감사대응과</td><td>감사원 지적에 답한다.</td></tr>
+<tr><td>기금운용과</td><td>쌓아 둔 재원을 관리한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모행정안전부</th></tr>
+<tr><td>질서유지과</td><td>기본 질서가 무너지지 않게 관리한다.</td></tr>
+<tr><td>입퇴장관리과</td><td>들어오고 나가는 인원을 파악한다.</td></tr>
+<tr><td>공지운영과</td><td>고정 공지와 봇 멘트를 관리한다.</td></tr>
+<tr><td>비상연락과</td><td>급할 때 공직자를 불러 모은다.</td></tr>
+<tr><td>민원협력과</td><td>반복 민원을 받아 해당 부처로 넘긴다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모의전부</th></tr>
+<tr><td>조문절차과</td><td>조문 순서를 정한다.</td></tr>
+<tr><td>예법지도과</td><td>선서, 임명, 추모 예법을 가르친다.</td></tr>
+<tr><td>직관추모과</td><td>현장 조문 지원을 맡는다.</td></tr>
+<tr><td>화환·근조과</td><td>근조와 추모 물품 절차를 관리한다.</td></tr>
+<tr><td>임명·선서의전과</td><td>임명식과 선서식의 진행 순서를 짠다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모과학기술부</th></tr>
+<tr><td>시스템개발과</td><td>운영에 필요한 시스템을 만든다.</td></tr>
+<tr><td>AI드립과</td><td>AI 드립과 공식 문안 생성을 관리한다.</td></tr>
+<tr><td>봇명령관리과</td><td>슬래시 명령과 자동 안내를 관리한다.</td></tr>
+<tr><td>서버운영과</td><td>공지 페이지와 기록 저장소를 유지한다.</td></tr>
+<tr><td>기술보안과</td><td>계정·문서 유출을 기술적으로 막는다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모환경부</th></tr>
+<tr><td>분위기관리과</td><td>전체 분위기가 너무 과열되거나 식지 않게 조절한다.</td></tr>
+<tr><td>침묵방지과</td><td>공백이 길어져 대화가 끊기지 않게 본다.</td></tr>
+<tr><td>공백기환경과</td><td>대형 건이 없을 때의 공기와 톤을 관리한다.</td></tr>
+<tr><td>경건도평가과</td><td>추모 톤이 예법에 맞는지 평가한다.</td></tr>
+<tr><td>환경개선과</td><td>분위기 저해 요소를 고친다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모보훈부</th></tr>
+<tr><td>원로예우과</td><td>오래 활동한 원로를 예우한다.</td></tr>
+<tr><td>은퇴관리과</td><td>은퇴한 추모꾼의 예우와 기록을 맡는다.</td></tr>
+<tr><td>공로심사과</td><td>공로 여부를 심사한다.</td></tr>
+<tr><td>보훈연금과</td><td>원로·은퇴자 연금을 관리한다.</td></tr>
+<tr><td>추모명예의전당</td><td>남길 만한 인물과 문구를 기록한다.</td></tr>
+</table>
+<div class="note">추모대기부는 행정각부에 속하며, 그 조직(장관·차관 및 6실)은 제19조의2에서 따로 정한다.</div>
 
 <h3>4. 외청 (6청)</h3>
-<table>
-<tr><th style="width:34%;">기관</th><th>소관 사무</th></tr>
-<tr><td>추모기상청</td><td>추모건 탐지·예보, 추모 트렌드 분석</td></tr>
-<tr><td>추모경찰청</td><td>추모방 내 질서 위반 단속, 체포영장 집행</td></tr>
-<tr><td>추모검찰청</td><td>불량추모꾼 기소, 공소 유지</td></tr>
-<tr><td>추모소방청</td><td>대형 추모건 긴급 대응, 비상소집 관리</td></tr>
-<tr><td>추모문화재청</td><td>추모 명언·전통 보존, 역사 기록 관리</td></tr>
-<tr><td>추모관세청</td><td>해외 추모건 반입 심사</td></tr>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모기상청</th></tr>
+<tr><td>예보국</td><td>앞으로 어떤 추모건이 올지 예보한다.</td></tr>
+<tr><td>탐지과</td><td>기사, 이슈, 해외 재난을 먼저 찾는다.</td></tr>
+<tr><td>트렌드분석과</td><td>무엇이 크게 번질지 분석한다.</td></tr>
+<tr><td>속보과</td><td>터진 직후 짧은 속보를 낸다.</td></tr>
+<tr><td>특보발령과</td><td>대형 건이면 특보를 내린다.</td></tr>
+<tr><td>모닝브리핑과</td><td>아침마다 오늘 대기할 건을 브리핑한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모경찰청</th></tr>
+<tr><td>수사국</td><td>질서 위반 사건을 수사한다.</td></tr>
+<tr><td>질서단속과</td><td>현장에서 즉시 제지한다.</td></tr>
+<tr><td>영장집행과</td><td>체포·입소 결정을 집행한다.</td></tr>
+<tr><td>사이버감시과</td><td>외부 링크, 도배, 잠입성 글을 본다.</td></tr>
+<tr><td>유치장과</td><td>조치 대상자를 임시로 둔다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모검찰청</th></tr>
+<tr><td>공판과</td><td>재판에 넘길 사건을 준비한다.</td></tr>
+<tr><td>기소심의과</td><td>기소할지 말지를 심의한다.</td></tr>
+<tr><td>형집행지휘과</td><td>확정된 형을 교정국이 집행하도록 지휘한다.</td></tr>
+<tr><td>재심대응과</td><td>재심 청구를 받아 대응한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모소방청</th></tr>
+<tr><td>긴급대응과</td><td>갑자기 큰 건이 터지면 즉시 움직인다.</td></tr>
+<tr><td>비상소집과</td><td>공직자와 주요 인원을 불러 모은다.</td></tr>
+<tr><td>현장통제과</td><td>대형 건 초기 혼잡을 통제한다.</td></tr>
+<tr><td>야간당직과</td><td>밤에 터지는 건을 지킨다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모문화재청</th></tr>
+<tr><td>명언보존과</td><td>남을 만한 추모 명언을 보관한다.</td></tr>
+<tr><td>전통기록과</td><td>공화국의 전통 절차를 기록한다.</td></tr>
+<tr><td>헌법보존과</td><td>헌법 원문과 개정 이력을 지킨다.</td></tr>
+<tr><td>사료편찬과</td><td>사건과 인물의 기록을 묶어 남긴다.</td></tr>
+<tr><td>유물관리과</td><td>상징물, 임명장, 중요 문서를 관리한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모관세청</th></tr>
+<tr><td>반입심사과</td><td>해외에서 들어온 추모건을 심사한다.</td></tr>
+<tr><td>해외건분류과</td><td>재난, 유명인, 사고 등으로 분류한다.</td></tr>
+<tr><td>금지건차단과</td><td>다루지 않을 건을 걸러낸다.</td></tr>
+<tr><td>국제우편과</td><td>해외 제보와 자료를 받는다.</td></tr>
 </table>
 
 <h3>5. 사법 및 의료기관 (2원 1재판소 1수사대)</h3>
-<table>
-<tr><th style="width:34%;">기관</th><th>소관 사무</th></tr>
-<tr><td>추모헌법재판소</td><td>탄핵 심판, 위헌 심사</td></tr>
-<tr><td>추모대법원</td><td>최종심 재판, 판례 형성</td></tr>
-<tr><td>국립추모정신병원</td><td>중증 불량추모꾼 치료 및 격리</td></tr>
-<tr><td>추모과학수사대(CSI)</td><td>증거 검증, 신분 인증 감식</td></tr>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모헌법재판소</th></tr>
+<tr><td>탄핵심판부</td><td>국무위원 탄핵을 심판한다.</td></tr>
+<tr><td>위헌심사부</td><td>규정과 처분이 헌법에 맞는지 본다.</td></tr>
+<tr><td>헌법해석부</td><td>조문이 충돌할 때 해석한다.</td></tr>
+<tr><td>사무처</td><td>재판 일정과 기록을 실무적으로 돌린다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모대법원</th></tr>
+<tr><td>형사부</td><td>질서 위반·교정 관련 최종심을 한다.</td></tr>
+<tr><td>행정부</td><td>인사, 징계, 처분 불복을 본다.</td></tr>
+<tr><td>재심부</td><td>이미 끝난 사건의 재심을 본다.</td></tr>
+<tr><td>판례실</td><td>판결을 모아 기준으로 만든다.</td></tr>
+<tr><td>사무국</td><td>재판 운영을 보조한다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">국립추모정신병원</th></tr>
+<tr><td>입원과</td><td>중증 대상자의 입원을 결정한다.</td></tr>
+<tr><td>격리병동</td><td>다른 이에게 해를 끼치는 대상을 분리한다.</td></tr>
+<tr><td>상담치료과</td><td>면담과 재교육을 진행한다.</td></tr>
+<tr><td>퇴원심사과</td><td>복귀 가능 여부를 심사한다.</td></tr>
+<tr><td>의무기록과</td><td>진료와 격리 기록을 남긴다.</td></tr>
+</table>
+<table class="orgtable">
+<colgroup><col style="width:30%"><col></colgroup>
+<tr><th colspan="2" style="text-align:left;letter-spacing:2px;font-size:15.5px;">추모과학수사대</th></tr>
+<tr><td>증거분석과</td><td>올라온 자료와 대화 증거를 분석한다.</td></tr>
+<tr><td>신분감식과</td><td>본인 여부, 닉 이력, 신원을 감식한다.</td></tr>
+<tr><td>부계대조과</td><td>여러 계정이 한 사람인지 대조한다.</td></tr>
+<tr><td>디지털포렌식과</td><td>링크, 캡처, 삭제된 흔적을 본다.</td></tr>
+<tr><td>현장감식과</td><td>사건 당시 대화와 정황을 재구성한다.</td></tr>
 </table>
 
 <div class="article"><span class="num">제19조의2 (추모대기부)</span>
