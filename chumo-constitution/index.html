@@ -170,10 +170,28 @@ tr:nth-child(even) td { background:#f8f5ed; }
 }
 .anthem-lyrics .refrain { color:#ffe6a3; }
 @media print { .anthem { display:none; } }
+.docnav {
+  display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  background:#2c281f; border:1px solid #b3a888; border-radius:4px;
+  padding:12px 18px; margin-bottom:26px;
+}
+.docnav .navlabel { color:#cfc7b4; font-size:13px; letter-spacing:3px; flex:1 1 auto; }
+.docnav a.navbtn {
+  text-decoration:none; background:#f4f0e5; color:#2c281f;
+  padding:9px 18px; border-radius:3px; font-size:13.5px; font-weight:600;
+  letter-spacing:2px; cursor:pointer; white-space:nowrap;
+}
+.docnav a.navbtn:hover { background:#fff; }
+@media print { .docnav { display:none; } }
 </style>
 </head>
 <body>
 <div class="paper">
+
+<div class="docnav noprint">
+  <span class="navlabel">📜 추모공화국 헌법</span>
+  <a class="navbtn" href="../chumo-criminal-act/">⚖️ 형법 보기</a>
+</div>
 
 <div class="anthem noprint">
   <div class="anthem-head">
