@@ -183,6 +183,22 @@ tr:nth-child(even) td { background:#f8f5ed; }
 }
 .docnav a.navbtn:hover { background:#fff; }
 @media print { .docnav { display:none; } }
+.lawspy {
+  position:fixed; right:16px; top:50%; transform:translateY(-50%);
+  z-index:60; background:rgba(44,40,31,.94); color:#f4f0e5;
+  border:1px solid #b3a888; border-radius:7px; padding:10px 13px;
+  text-align:center; min-width:66px; box-shadow:0 4px 16px rgba(0,0,0,.28);
+  letter-spacing:1px; pointer-events:none; transition:opacity .15s;
+}
+.lawspy .ls-chap { display:block; font-size:10.5px; color:#cfc7b4; letter-spacing:2px; margin-bottom:4px; white-space:nowrap; }
+.lawspy .ls-art { display:block; font-size:16px; font-weight:700; white-space:nowrap; color:#fdfcf9; }
+.lawspy .ls-clause { display:block; font-size:15px; color:#ffe6a3; margin-top:3px; min-height:1em; white-space:nowrap; }
+@media (max-width: 980px) {
+  .lawspy { top:auto; bottom:84px; right:10px; transform:none; padding:7px 10px; min-width:54px; opacity:.95; }
+  .lawspy .ls-art { font-size:14px; }
+  .lawspy .ls-clause { font-size:13px; }
+}
+@media print { .lawspy { display:none; } }
 </style>
 </head>
 <body>
@@ -1009,6 +1025,70 @@ tr:nth-child(even) td { background:#f8f5ed; }
 </div>
 
 <button class="btn noprint" onclick="window.print()">🖨️ PDF로 저장</button>
+
+<div class="lawspy noprint" id="lawspy" hidden aria-hidden="true">
+  <span class="ls-chap" id="lsChap"></span>
+  <span class="ls-art" id="lsArt"></span>
+  <span class="ls-clause" id="lsClause"></span>
+</div>
+
+<script>
+(function(){
+  var spy = document.getElementById('lawspy');
+  var elChap = document.getElementById('lsChap');
+  var elArt = document.getElementById('lsArt');
+  var elCl = document.getElementById('lsClause');
+  var paper = document.querySelector('.paper');
+  if(!spy || !paper) return;
+  var articles = [].slice.call(paper.querySelectorAll('.article'));
+  var chaps = [].slice.call(paper.querySelectorAll('h2'));
+  var reArt = /제\s*\d+\s*조(?:의\s*\d+)?/;
+  var reChap = /^(제\d+편|제\d+장|부칙)/;
+
+  function artLabel(a){
+    var num = a.querySelector('.num');
+    if(!num) return '';
+    var m = num.textContent.match(reArt);
+    return m ? m[0].replace(/\s+/g,'') : '';
+  }
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var ref = 150;
+    var chap = '';
+    for(var i=0;i<chaps.length;i++){
+      if(chaps[i].getBoundingClientRect().top <= ref){
+        var t = chaps[i].textContent.trim();
+        var cm = t.match(reChap);
+        chap = cm ? cm[1] : t;
+      } else break;
+    }
+    var cur = null;
+    for(var j=0;j<articles.length;j++){
+      if(articles[j].getBoundingClientRect().top <= ref) cur = articles[j];
+      else break;
+    }
+    if(!cur){ spy.hidden = true; return; }
+    var art = artLabel(cur);
+    if(!art){ spy.hidden = true; return; }
+    var clause = '';
+    var cls = cur.querySelectorAll('.clause');
+    for(var k=0;k<cls.length;k++){
+      var cn = cls[k].querySelector('.cn');
+      if(!cn) continue;
+      if(cls[k].getBoundingClientRect().top <= ref) clause = cn.textContent.trim();
+    }
+    elChap.textContent = chap;
+    elArt.textContent = art;
+    elCl.textContent = clause;
+    spy.hidden = false;
+  }
+  function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  update();
+})();
+</script>
 
 <script>
 (function(){
