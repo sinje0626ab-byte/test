@@ -110,6 +110,36 @@ tr:nth-child(even) td { background:#f8f5ed; }
 }
 .docnav a.navbtn:hover { background:#fff; }
 @media print { .docnav { display:none; } }
+.chapnav {
+  position:fixed; right:14px; top:50%; transform:translateY(-50%);
+  z-index:60; width:158px; max-height:84vh; overflow-y:auto;
+  background:rgba(44,40,31,.95); color:#f4f0e5;
+  border:1px solid #b3a888; border-radius:8px; padding:2px 0;
+  box-shadow:0 6px 22px rgba(0,0,0,.30); -webkit-overflow-scrolling:touch;
+}
+.chapnav-item {
+  display:block; text-decoration:none; color:#cfc7b4;
+  padding:8px 13px; border-top:1px solid #4a4437; line-height:1.3;
+  transition:background .12s, color .12s;
+}
+.chapnav-item:first-child { border-top:none; }
+.chapnav-item b { display:block; font-size:13px; font-weight:700; letter-spacing:1px; white-space:nowrap; }
+.chapnav-item span { display:block; font-size:10.5px; color:#8f8672; margin-top:2px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chapnav-item:hover { background:#3a352b; color:#f4f0e5; }
+.chapnav-item.active { background:#f4f0e5; color:#2c281f; }
+.chapnav-item.active b { color:#14120f; }
+.chapnav-item.active span { color:#5c5548; }
+.chapnav-item .cur { display:none; }
+.chapnav-item.active .cur { display:block; font-size:11.5px; color:#a0331f; font-weight:700; margin-top:3px; white-space:nowrap; }
+@media (max-width: 980px) {
+  .chapnav { width:60px; right:6px; max-height:78vh; }
+  .chapnav-item { padding:7px 6px; text-align:center; }
+  .chapnav-item b { font-size:12px; letter-spacing:0; }
+  .chapnav-item span { display:none; }
+  .chapnav-item.active .cur { font-size:10px; }
+}
+@media print { .chapnav { display:none; } }
 </style>
 </head>
 <body>
@@ -554,6 +584,98 @@ tr:nth-child(even) td { background:#f8f5ed; }
 </div>
 
 <button class="btn noprint" onclick="window.print()">🖨️ PDF로 저장</button>
+
+<nav class="chapnav noprint" id="chapnav" aria-label="장 이동"></nav>
+
+<script>
+(function(){
+  var nav = document.getElementById('chapnav');
+  var paper = document.querySelector('.paper');
+  if(!nav || !paper) return;
+  var chaps = [].slice.call(paper.querySelectorAll('h2'));
+  var articles = [].slice.call(paper.querySelectorAll('.article'));
+  if(!chaps.length){ nav.style.display='none'; return; }
+  var reArt = /제\s*\d+\s*조(?:의\s*\d+)?/;
+  var reHead = /^(제\d+편|제\d+장|부칙)\s*(.*)$/;
+
+  // build nav items from chapter headings
+  var items = [];
+  chaps.forEach(function(h, i){
+    if(!h.id) h.id = 'chap-' + i;
+    var t = h.textContent.trim();
+    var m = t.match(reHead);
+    var numPart = m ? m[1] : t;
+    var namePart = m ? m[2] : '';
+    var a = document.createElement('a');
+    a.className = 'chapnav-item';
+    a.href = '#' + h.id;
+    a.setAttribute('data-target', h.id);
+    a.innerHTML = '<b>' + numPart + '</b>' +
+                  (namePart ? '<span>' + namePart.replace(/</g,'&lt;') + '</span>' : '') +
+                  '<em class="cur"></em>';
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var el = document.getElementById(this.getAttribute('data-target'));
+      if(!el) return;
+      var y = el.getBoundingClientRect().top + window.pageYOffset - 16;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+    nav.appendChild(a);
+    items.push({ h: h, a: a, cur: a.querySelector('.cur') });
+  });
+
+  function artLabel(a){
+    var num = a.querySelector('.num');
+    if(!num) return '';
+    var mm = num.textContent.match(reArt);
+    return mm ? mm[0].replace(/\s+/g,'') : '';
+  }
+
+  var ticking = false, lastActive = -1;
+  function update(){
+    ticking = false;
+    var ref = 150;
+    var idx = 0;
+    for(var i=0;i<chaps.length;i++){
+      if(chaps[i].getBoundingClientRect().top <= ref) idx = i; else break;
+    }
+    // current article label (조/항) within the active chapter region
+    var cur = null;
+    for(var j=0;j<articles.length;j++){
+      if(articles[j].getBoundingClientRect().top <= ref) cur = articles[j]; else break;
+    }
+    var label = '';
+    if(cur){
+      var art = artLabel(cur);
+      var clause = '';
+      var cls = cur.querySelectorAll('.clause');
+      for(var k=0;k<cls.length;k++){
+        var cn = cls[k].querySelector('.cn');
+        if(cn && cls[k].getBoundingClientRect().top <= ref) clause = cn.textContent.trim();
+      }
+      label = art ? (art + (clause ? ' ' + clause : '')) : '';
+    }
+    if(idx !== lastActive){
+      items.forEach(function(it, n){
+        it.a.classList.toggle('active', n === idx);
+        if(n !== idx) it.cur.textContent = '';
+      });
+      // keep active item visible inside the rail
+      var act = items[idx].a;
+      var r = act.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+      if(r.top < nr.top || r.bottom > nr.bottom){
+        nav.scrollTop += (r.top - nr.top) - (nr.height/2 - r.height/2);
+      }
+      lastActive = idx;
+    }
+    items[idx].cur.textContent = label;
+  }
+  function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', onScroll);
+  update();
+})();
+</script>
 
 </body>
 </html>
