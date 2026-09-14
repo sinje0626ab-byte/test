@@ -37,31 +37,10 @@ body { font-family:'Noto Serif KR','본명조',serif; }
 
 <main class="paper">
 
-<div class="anthem noprint">
-  <div class="anthem-head">
-    <span class="anthem-emblem">🕯️</span>
-    <span class="anthem-title">추모공화국 국가</span>
-    <button type="button" class="anthem-lyrics-btn" id="lyricsBtn" aria-expanded="false">가사</button>
-  </div>
-  <audio id="anthemAudio" preload="metadata" src="../assets/anthem.mp3"></audio>
-  <div class="anthem-controls">
-    <button type="button" class="anthem-play" id="playBtn" aria-label="재생">▶</button>
-    <span class="anthem-time" id="curTime">0:00</span>
-    <input type="range" class="anthem-seek" id="seek" min="0" max="100" value="0" step="0.1" aria-label="재생 구간">
-    <span class="anthem-time" id="durTime">0:00</span>
-  </div>
-  <div class="anthem-lyrics" id="lyricsPanel" hidden>
-    <span class="lv"><span class="tag">1절</span>우리는 추모공화국의 국민이다<br>누구도 잊지 않고 함께 기억한다<br>높고 낮음 없이 모두가 평등하니<br>그 이름 하나하나 우리가 부른다</span>
-    <span class="lv refrain"><span class="tag">후렴</span>추모하라 추모하라 오직 추모하라<br>나눌수록 배가 되는 우리의 뜻<br>촛불을 높이 들고 함께 나아가자<br>영원하라 추모공화국</span>
-    <span class="lv"><span class="tag">2절</span>먼 곳에서 스러진 이름들까지<br>빠짐없이 예를 갖춰 보내리라<br>오늘도 내일도 변함이 없이<br>우리는 이 자리를 지켜 나간다</span>
-    <span class="lv refrain"><span class="tag">후렴</span>추모하라 추모하라 오직 추모하라<br>나눌수록 배가 되는 우리의 뜻<br>촛불을 높이 들고 함께 나아가자<br>영원하라 추모공화국</span>
-  </div>
-</div>
-
 <div class="cover">
   <div class="emblem">🕯️</div>
   <div class="org">추 모 공 화 국</div>
-  <h1>憲 法</h1>
+  <h1>헌 법</h1>
   <div class="sub">CONSTITUTION OF THE MEMORIAL REPUBLIC</div>
 </div>
 
@@ -851,12 +830,9 @@ body { font-family:'Noto Serif KR','본명조',serif; }
 
 </main>
 
-<button class="btn noprint" onclick="window.print()">🖨️ PDF로 저장</button>
-
 <nav class="chapnav noprint" id="chapnav" aria-label="장 이동"></nav>
 
 <script src="../assets/nav.js" defer></script>
-<script src="../assets/anthem.js" defer></script>
 
 </body>
 </html>

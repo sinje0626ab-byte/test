@@ -196,17 +196,6 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 
 /* ==========================================================================
-   버튼
-   ========================================================================== */
-
-.btn {
-  position: fixed; bottom: 28px; right: 28px; padding: 13px 28px;
-  background: var(--navy); color: var(--navy-text); border: none;
-  border-radius: var(--radius);
-  font-size: 14px; cursor: pointer; font-family: inherit; letter-spacing: 2px;
-}
-
-/* ==========================================================================
    국가 플레이어 (헌법 페이지 / 홈 / 국가 페이지 공용)
    ========================================================================== */
 
@@ -628,8 +617,7 @@ audio:focus-visible,
   .noprint,
   .chapnav,
   .gnb,
-  .anthem,
-  .btn { display: none !important; }
+  .anthem { display: none !important; }
   .paper { box-shadow: none; border: none; padding: 0; }
   table, .note, .article { page-break-inside: avoid; }
   a { text-decoration: none; color: inherit; }
