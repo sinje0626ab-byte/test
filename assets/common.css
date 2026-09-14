@@ -555,6 +555,49 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 
 /* ==========================================================================
+   국가 페이지 — 촛불 펄스 / 가사 / 지침 목록
+   ========================================================================== */
+
+.anthem--page { box-sizing: border-box; max-width: 420px; margin: 0 auto 40px; }
+.anthem-candle { display: block; text-align: center; font-size: 34px; line-height: 1; margin-bottom: 12px; }
+@keyframes anthemPulse {
+  0%, 100% { transform: scale(1);    opacity: .85; }
+  50%      { transform: scale(1.12); opacity: 1; }
+}
+.anthem.playing .anthem-candle { animation: anthemPulse 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .anthem.playing .anthem-candle { animation: none; }
+}
+
+.lyrics { margin: 26px 0 10px; }
+.lyrics .verse {
+  margin: 0 0 24px; text-align: center;
+  font-size: 16.5px; line-height: 2.15; color: var(--ink-body);
+}
+.lyrics .vtag {
+  display: block; font-size: 12.5px; letter-spacing: 5px;
+  color: var(--gold); font-weight: 700; margin-bottom: 10px;
+}
+.lyrics .refrain {
+  background: var(--paper-deep); border-left: 4px solid var(--gold);
+  border-radius: 0 var(--radius-box) var(--radius-box) 0;
+  padding: 18px 24px; margin-left: 36px;
+}
+
+.speclist {
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box);
+  padding: 18px 26px 18px 46px; margin: 14px 0 28px;
+  font-size: 15px; line-height: 2.1; color: var(--ink-sub);
+}
+.speclist li { margin: 3px 0; }
+
+@media (max-width: 700px) {
+  .lyrics .refrain { margin-left: 0; }
+  .lyrics .verse { font-size: 15.5px; }
+}
+
+/* ==========================================================================
    접근성
    ========================================================================== */
 
