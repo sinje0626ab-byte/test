@@ -851,60 +851,8 @@ body { font-family:'Noto Serif KR','본명조',serif; }
 
 <nav class="chapnav noprint" id="chapnav" aria-label="장 이동"></nav>
 
-<script>
-(function(){
-  var audio = document.getElementById('anthemAudio');
-  var playBtn = document.getElementById('playBtn');
-  var seek = document.getElementById('seek');
-  var cur = document.getElementById('curTime');
-  var dur = document.getElementById('durTime');
-  var lyricsBtn = document.getElementById('lyricsBtn');
-  var lyricsPanel = document.getElementById('lyricsPanel');
-  var seeking = false;
-
-  function fmt(t){
-    if(!isFinite(t)||t<0) t=0;
-    var m=Math.floor(t/60), s=Math.floor(t%60);
-    return m+':'+(s<10?'0':'')+s;
-  }
-  audio.addEventListener('loadedmetadata', function(){
-    dur.textContent = fmt(audio.duration);
-  });
-  audio.addEventListener('timeupdate', function(){
-    if(seeking) return;
-    cur.textContent = fmt(audio.currentTime);
-    if(audio.duration){ seek.value = (audio.currentTime/audio.duration)*100; }
-  });
-  audio.addEventListener('ended', function(){
-    playBtn.textContent='▶'; playBtn.setAttribute('aria-label','재생');
-  });
-  playBtn.addEventListener('click', function(){
-    if(audio.paused){
-      audio.play();
-      playBtn.textContent='❚❚'; playBtn.setAttribute('aria-label','정지');
-    } else {
-      audio.pause();
-      playBtn.textContent='▶'; playBtn.setAttribute('aria-label','재생');
-    }
-  });
-  seek.addEventListener('input', function(){
-    seeking = true;
-    if(audio.duration){ cur.textContent = fmt(audio.duration*(seek.value/100)); }
-  });
-  seek.addEventListener('change', function(){
-    if(audio.duration){ audio.currentTime = audio.duration*(seek.value/100); }
-    seeking = false;
-  });
-  lyricsBtn.addEventListener('click', function(){
-    var show = lyricsPanel.hasAttribute('hidden');
-    if(show){ lyricsPanel.removeAttribute('hidden'); } else { lyricsPanel.setAttribute('hidden',''); }
-    lyricsBtn.classList.toggle('active', show);
-    lyricsBtn.setAttribute('aria-expanded', show ? 'true':'false');
-  });
-})();
-</script>
-
 <script src="../assets/nav.js" defer></script>
+<script src="../assets/anthem.js" defer></script>
 
 </body>
 </html>
