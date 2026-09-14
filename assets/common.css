@@ -368,6 +368,82 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 
 /* ==========================================================================
+   홈 — 히어로 / 바로가기 타일 / 요약
+   ========================================================================== */
+
+.hero { padding: 64px 0 48px; }
+.hero .emblem { font-size: 48px; margin-bottom: 24px; }
+.hero h1 {
+  font-size: 56px; letter-spacing: 22px; text-indent: 22px;
+  margin: 0 0 18px; font-weight: 700; color: var(--ink);
+}
+.hero .sub { font-size: 11px; letter-spacing: 5px; color: var(--ink-muted); }
+.hero .motto {
+  font-size: 20px; letter-spacing: 14px; text-indent: 14px;
+  font-weight: 700; color: var(--ink); margin-top: 30px;
+}
+
+/* 배경 워터마크 엠블럼 */
+.watermark {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 420px; line-height: 1; opacity: .03;
+  pointer-events: none; user-select: none; z-index: 0;
+}
+.paper > *:not(.watermark) { position: relative; z-index: 1; }
+
+/* 국가 미니 플레이어 */
+.anthem--mini { box-sizing: border-box; max-width: 420px; margin: 0 auto 40px; }
+.anthem-link {
+  color: var(--gold-pale); text-decoration: none; font-size: 13px;
+  letter-spacing: 2px; white-space: nowrap;
+}
+.anthem-link:hover { color: #fff; text-decoration: underline; }
+
+/* 바로가기 타일 */
+.tiles {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 18px; margin: 30px 0 10px;
+}
+.tile {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box); padding: 26px 24px;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .12);
+  border-color: var(--gold-light);
+}
+.tile .t-icon { font-size: 30px; display: block; margin-bottom: 12px; }
+.tile .t-name {
+  display: block; font-size: 19px; font-weight: 700;
+  color: var(--ink); letter-spacing: 4px; margin-bottom: 8px;
+}
+.tile .t-sub {
+  display: block; font-size: 13px; color: var(--gold);
+  letter-spacing: 2px; margin-bottom: 10px;
+}
+.tile .t-desc { display: block; font-size: 13.5px; color: var(--ink-muted); line-height: 1.85; }
+
+/* 더 보기 링크 */
+.more-link { text-align: right; margin: 10px 0 0; font-size: 13.5px; }
+.more-link a {
+  color: var(--gold); text-decoration: none; letter-spacing: 2px; font-weight: 600;
+}
+.more-link a:hover { color: var(--ink); text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .tiles { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 34px; letter-spacing: 12px; text-indent: 12px; }
+  .hero .emblem { font-size: 40px; }
+  .hero .motto { font-size: 17px; letter-spacing: 9px; text-indent: 9px; }
+  .watermark { font-size: 240px; }
+  .paper { padding: 40px 22px 48px; }
+}
+
+/* ==========================================================================
    접근성
    ========================================================================== */
 
