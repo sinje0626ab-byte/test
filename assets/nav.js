@@ -105,7 +105,7 @@
       var t = h.textContent.trim();
       var m = t.match(reHead);
       var numPart = m ? m[1] : t;
-      var namePart = m ? m[2] : '';
+      var namePart = m ? m[2].replace(/^[·・\-\u2013\u2014\s]+/, '') : '';
 
       var a = document.createElement('a');
       a.className = 'chapnav-item';

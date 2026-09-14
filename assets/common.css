@@ -505,6 +505,56 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 
 /* ==========================================================================
+   연혁 타임라인
+   ========================================================================== */
+
+.tl { --tl-indent: 34px; position: relative; padding-left: var(--tl-indent); margin: 28px 0 10px; }
+.tl::before {
+  content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px;
+  width: 2px; background: var(--gold);
+}
+.tl-item { position: relative; margin-bottom: 22px; page-break-inside: avoid; }
+.tl-item:last-child { margin-bottom: 0; }
+.tl-item::before {
+  content: ''; position: absolute; left: calc(-1 * var(--tl-indent)); top: 16px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--navy); box-shadow: 0 0 0 3px var(--paper);
+}
+.tl-card {
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box); padding: 18px 22px;
+}
+.tl-when {
+  display: block; font-size: 12px; color: var(--gold);
+  letter-spacing: 3px; font-weight: 700; margin-bottom: 6px;
+}
+.tl-card h3.tl-title {
+  font-size: var(--fs-h3); font-weight: 700; color: var(--ink);
+  letter-spacing: 1px; margin: 0 0 10px;
+  border-left: none; padding-left: 0;
+}
+.tl-body { font-size: 14.5px; line-height: 1.95; color: var(--ink-sub); margin: 0; }
+
+/* 제5편 — 재난과 애도: 차분한 톤 */
+.tl--solemn .tl-card { background: #f1f0ed; border-color: #d6d3cb; }
+.tl--solemn .tl-when { color: var(--ink-muted); }
+.tl--solemn .tl-item::before { background: var(--ink-muted); }
+.tl--solemn::before { background: var(--border); }
+
+/* 맺음말 */
+.closing {
+  margin-top: 34px; padding: 26px 30px; text-align: center;
+  background: var(--paper-deep);
+  border-top: 2.5px double var(--gold-light); border-bottom: 2.5px double var(--gold-light);
+  font-size: 15px; line-height: 2.1; color: var(--ink-sub);
+}
+
+@media (max-width: 700px) {
+  .tl { --tl-indent: 26px; }
+  .tl-card { padding: 16px 16px; }
+}
+
+/* ==========================================================================
    접근성
    ========================================================================== */
 
