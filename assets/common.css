@@ -65,7 +65,7 @@ body {
   font-family: var(--font-serif);
   line-height: var(--lh-body);
   margin: 0;
-  padding: 36px 16px;
+  padding: 0 16px 36px;   /* 상단 여백은 글로벌 네비바가 차지한다 */
   background: var(--bg-outer);
   color: var(--ink-body);
 }
@@ -256,21 +256,77 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .anthem-lyrics .refrain { color: var(--accent-amber); }
 
 /* ==========================================================================
-   문서 간 이동 바 (기존 법전 페이지)
+   글로벌 네비게이션 바 (전 페이지 공통)
    ========================================================================== */
 
-.docnav {
-  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-  background: var(--navy); border: 1px solid var(--gold-light);
-  border-radius: var(--radius-box); padding: 12px 18px; margin-bottom: 26px;
+.gnb {
+  position: sticky; top: 0; z-index: 100;
+  margin: 0 -16px 36px;              /* body 좌우 패딩을 상쇄해 전폭으로 */
+  background: var(--navy);
+  border-bottom: 1px solid var(--gold-light);
 }
-.docnav .navlabel { color: var(--navy-muted); font-size: 13px; letter-spacing: 3px; flex: 1 1 auto; }
-.docnav a.navbtn {
-  text-decoration: none; background: var(--paper-deep); color: var(--navy);
-  padding: 9px 18px; border-radius: var(--radius); font-size: 13.5px; font-weight: 600;
-  letter-spacing: 2px; cursor: pointer; white-space: nowrap;
+.gnb-inner {
+  max-width: 1180px; margin: 0 auto; padding: 0 18px;
+  height: var(--nav-height);
+  display: flex; align-items: center; gap: 14px;
 }
-.docnav a.navbtn:hover { background: #fff; }
+.gnb-brand {
+  display: flex; align-items: center; gap: 7px;
+  color: var(--navy-text); text-decoration: none;
+  font-size: 15px; font-weight: 700; letter-spacing: 3px; white-space: nowrap;
+}
+.gnb-brand:hover { color: #fff; }
+
+.gnb-nav { margin-left: auto; }
+.gnb-menu {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; align-items: center; gap: 2px;
+}
+.gnb-link {
+  display: block; text-decoration: none;
+  color: var(--navy-muted); font-size: 13px; letter-spacing: 1px;
+  padding: 0 11px; line-height: calc(var(--nav-height) - 2px);
+  border-bottom: 2px solid transparent;
+  transition: background .2s, color .2s;
+  white-space: nowrap;
+}
+.gnb-link:hover { background: var(--navy-alt); color: var(--navy-text); }
+.gnb-link.active,
+.gnb-link[aria-current="page"] {
+  color: var(--paper-deep); border-bottom-color: var(--gold-light); font-weight: 700;
+}
+
+.gnb-toggle {
+  display: none;
+  margin-left: auto;
+  background: none; border: 1px solid var(--navy-line); border-radius: var(--radius);
+  color: var(--navy-text); font-family: inherit; font-size: 18px;
+  width: 40px; height: 34px; cursor: pointer; line-height: 1;
+}
+.gnb-toggle:hover { background: var(--navy-alt); }
+
+/* --- 모바일: 햄버거 + 전체화면 오버레이 --- */
+@media (max-width: 768px) {
+  .gnb-toggle { display: block; }
+  /* 오버레이가 상단바를 덮으므로 브랜드·닫기 버튼을 그 위로 올린다 */
+  .gnb-brand, .gnb-toggle { position: relative; z-index: 2; }
+  .gnb-nav {
+    position: fixed; inset: 0; margin: 0; z-index: 1;
+    background: var(--navy);
+    display: none;
+    overflow-y: auto;
+    padding: calc(var(--nav-height) + 12px) 20px 40px;
+  }
+  .gnb.open .gnb-nav { display: block; }
+  .gnb-menu { display: block; }
+  .gnb-menu li + li { border-top: 1px solid var(--gold); }
+  .gnb-link {
+    line-height: 1.6; padding: 18px 6px; font-size: 17px; letter-spacing: 3px;
+    border-bottom: none;
+  }
+  .gnb-link.active,
+  .gnb-link[aria-current="page"] { border-bottom: none; background: var(--navy-alt); }
+}
 
 /* ==========================================================================
    우측 장 목차 레일
@@ -341,7 +397,7 @@ audio:focus-visible,
   .pagebreak { page-break-before: always; }
   .noprint,
   .chapnav,
-  .docnav,
+  .gnb,
   .anthem,
   .btn { display: none !important; }
   .paper { box-shadow: none; border: none; padding: 0; }
