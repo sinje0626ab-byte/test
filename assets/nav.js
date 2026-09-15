@@ -271,5 +271,26 @@
     });
   }
 
-  ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); });
+  /* 국기 로고와 소개 상단 이미지는 파일이 있을 때만 쓴다.
+     없으면 로고는 기존 촛불 이모지가, 소개 이미지는 아무것도 남지 않는다. */
+  function initBrandArt() {
+    var logo = document.querySelector('.gnb-logo');
+    if (logo) {
+      var candle = document.querySelector('.gnb-candle');
+      var show = function () { logo.className += ' is-on'; if (candle) candle.hidden = true; };
+      var drop = function () { if (logo.parentNode) logo.parentNode.removeChild(logo); };
+      if (logo.complete) { if (logo.naturalWidth) show(); else drop(); }
+      else { logo.addEventListener('load', show); logo.addEventListener('error', drop); }
+    }
+    var hero = document.querySelector('.hero-board');
+    if (hero) {
+      var img = hero.querySelector('.hero-img');
+      var hide = function () { hero.hidden = true; };
+      if (!img) hide();
+      else if (img.complete) { if (!img.naturalWidth) hide(); }
+      else img.addEventListener('error', hide);
+    }
+  }
+
+  ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); initBrandArt(); });
 })();
