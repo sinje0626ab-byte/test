@@ -9,10 +9,10 @@
 | `vice-president.png` | 추모합니도 | 부통령 |
 | `prime-minister.png` | 햄지 | 국무총리 |
 | `correction-chief.png` | 베네수호자 | 추모교정국장 |
-| `audit-chief.png` | 최무현 | 추모감사원장 |
-| `weather-chief.png` | 어흥 | 추모기상청장 |
-| `culture-minister.png` | 딸기 | 문화추모부장관 |
-| `rapper.png` | 들너구리 | 국무위원 (래퍼) |
+| `audit-chief.webp` | 최무현 | 추모감사원장 |
+| `weather-chief.webp` | 어흥 | 추모기상청장 |
+| `culture-minister.webp` | 딸기 | 문화추모부장관 |
+| `rapper.webp` | 들너구리 | 국무위원 (래퍼) |
 | `former-correction-chief.png` | 애국좌수 | 초대 추모교정국장 (전임) |
 
 ## 규칙
