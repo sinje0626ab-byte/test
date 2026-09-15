@@ -303,13 +303,13 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .gnb-toggle:hover { background: var(--navy-alt); }
 
 /* --- 중간 폭: 항목이 늘어나 한 줄을 넘지 않도록 압축 --- */
-@media (min-width: 769px) and (max-width: 1000px) {
+@media (min-width: 769px) and (max-width: 1140px) {
   .gnb-inner { gap: 10px; padding: 0 12px; }
   .gnb-brand { font-size: 14px; letter-spacing: 1.5px; }
   .gnb-link { padding: 0 7px; font-size: 12.5px; letter-spacing: 0; }
 }
-/* 항목이 10개가 되어, 가장 좁은 데스크톱 구간은 한 번 더 줄인다 */
-@media (min-width: 769px) and (max-width: 880px) {
+/* 항목이 12개가 되어, 가장 좁은 데스크톱 구간은 한 번 더 줄인다 */
+@media (min-width: 769px) and (max-width: 940px) {
   .gnb-inner { gap: 6px; padding: 0 8px; }
   .gnb-brand span:last-child { display: none; }   /* 촛불만 남기고 국호는 접는다 */
   .gnb-link { padding: 0 5px; font-size: 12px; }
@@ -1062,6 +1062,64 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 @media (max-width: 700px) {
   .lyrics .refrain { margin-left: 0; }
   .lyrics .verse { font-size: 15.5px; }
+}
+
+/* ==========================================================================
+   추모건 계보 — 고인별 기록 카드
+   ========================================================================== */
+
+.mms { display: grid; gap: 22px; margin: 24px 0 10px; }
+.mm {
+  position: relative;
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--border); border-radius: var(--radius-box);
+  padding: 22px 26px; page-break-inside: avoid;
+  scroll-margin-top: calc(var(--nav-height) + 16px);
+}
+.mm--origin   { background: var(--paper); border-left-color: var(--border-faint); border-style: dashed; }
+.mm--person   { border-left-color: var(--gold); }
+.mm--disaster { border-left-color: var(--accent-red); background: var(--paper-deep); }
+.mm--abroad   { border-left-color: var(--navy-line); }
+
+.mm-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft);
+}
+.mm-when {
+  flex: none; font-size: 11.5px; letter-spacing: 1.5px; color: var(--ink-muted);
+  border: 1px solid var(--border); border-radius: 2px; padding: 2px 8px; white-space: nowrap;
+}
+.mm-name {
+  margin: 0; padding: 0; border: none; flex: 1 1 auto;
+  font-size: 19.5px; font-weight: 700; color: var(--ink); letter-spacing: 1.5px;
+}
+.mm-badge {
+  flex: none; font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px;
+  padding: 2px 9px; border: 1px dashed var(--gold); border-radius: var(--radius);
+  color: var(--navy); white-space: nowrap;
+}
+.mm--disaster .mm-badge { color: var(--accent-red); border-color: var(--accent-red); }
+
+.mm-stats {
+  display: flex; flex-wrap: wrap; gap: 8px 10px; margin: 0 0 14px;
+}
+.mm-stats span {
+  font-size: 12.5px; color: var(--ink-muted); background: var(--paper);
+  border: 1px solid var(--border-faint); border-radius: 2px; padding: 3px 11px;
+  letter-spacing: .5px;
+}
+.mm-stats b {
+  font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+.mm-body { margin: 0; font-size: 15px; line-height: 2.05; color: var(--ink-sub); }
+.mm-body b { color: var(--ink); font-weight: 700; }
+
+@media (max-width: 700px) {
+  .mm { padding: 18px 18px; }
+  .mm-name { font-size: 17.5px; }
+  .mm-body { font-size: 14.5px; line-height: 1.95; }
+  .mm-stats span { padding: 2px 9px; }
 }
 
 /* ==========================================================================
