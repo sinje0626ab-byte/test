@@ -698,6 +698,105 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 .sign-flourish { display: block; width: 260px; max-width: 100%; margin-left: auto; color: var(--gold); margin-top: -8px; }
 
+/* 공개일정 — 달력 */
+.cal-head { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 22px 0 12px; }
+.cal-nav {
+  width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
+  background: var(--paper-alt); border: 1px solid var(--border);
+  color: var(--ink); font-family: inherit; font-size: 20px; line-height: 1;
+}
+.cal-nav:hover:not(:disabled) { background: var(--navy); color: var(--navy-text); border-color: var(--navy); }
+.cal-nav:disabled { opacity: .3; cursor: default; }
+.cal-label { font-size: 21px; font-weight: 700; letter-spacing: 4px; color: var(--ink); min-width: 160px; text-align: center; }
+
+.cal-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: center; margin: 0 0 20px; font-size: 12px; }
+.lg { color: var(--ink-muted); display: inline-flex; align-items: center; gap: 6px; }
+.lg::before { content: ""; width: 11px; height: 11px; border-radius: 2px; border: 1px solid var(--border); }
+.lg--today::before { background: var(--accent-amber); border-color: var(--gold); }
+.lg--trip::before  { background: var(--paper-deep); border-color: var(--gold); border-left-width: 3px; }
+.lg--off::before   { background: #e8e4da; }
+.lg--none::before  { background: repeating-linear-gradient(45deg, transparent, transparent 3px, var(--border-faint) 3px, var(--border-faint) 5px); }
+
+.cal-panel--hidden { display: none; }
+.cal-grid { border: 1px solid var(--border); border-radius: var(--radius-box); overflow: hidden; }
+.cal-dow, .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+.cal-dow span {
+  padding: 9px 0; text-align: center; font-size: 12.5px; font-weight: 700; letter-spacing: 3px;
+  background: var(--navy); color: var(--navy-text);
+}
+.cal-dow .cal-sun { color: #f0b0a0; }
+.cal-dow .cal-sat { color: #a8c4e0; }
+
+.cal-day {
+  min-height: 104px; padding: 7px 7px 9px; cursor: pointer;
+  border-top: 1px solid var(--border-soft); border-left: 1px solid var(--border-soft);
+  background: var(--paper); display: flex; flex-direction: column; gap: 3px;
+  transition: background .15s;
+}
+.cal-body > .cal-day:nth-child(7n+1) { border-left: none; }
+.cal-day:hover { background: var(--paper-alt); }
+.cal-day--out { background: var(--paper-warm); cursor: default; }
+.cal-day--off { background: #efece3; cursor: default; }
+.cal-day--none { background-image: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,.022) 6px, rgba(0,0,0,.022) 11px); }
+.cal-day--trip { border-left: 3px solid var(--gold); }
+.cal-body > .cal-day--trip:nth-child(7n+1) { border-left: 3px solid var(--gold); }
+.cal-day--today { background: #fdf6e0; box-shadow: inset 0 0 0 2px var(--gold); }
+.cal-day--today:hover { background: #fbf1d4; }
+
+.cal-num { font-size: 13.5px; font-weight: 700; color: var(--ink-sub); font-variant-numeric: tabular-nums; }
+.cal-sun .cal-num { color: var(--accent-red); }
+.cal-sat .cal-num { color: #35608c; }
+.cal-today-tag {
+  display: inline-block; margin-left: 5px; padding: 1px 6px; border-radius: 2px;
+  background: var(--gold); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 1px; vertical-align: 1px;
+}
+.cal-tag {
+  align-self: flex-start; padding: 1px 6px; border-radius: 2px; margin-bottom: 1px;
+  background: var(--navy); color: var(--navy-text); font-size: 10px; font-weight: 700; letter-spacing: 1px;
+}
+.cal-ev {
+  font-size: 10.5px; line-height: 1.45; color: var(--ink-sub);
+  overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.cal-ev b { color: var(--gold); font-weight: 700; margin-right: 3px; font-variant-numeric: tabular-nums; }
+.cal-more { font-size: 10px; color: var(--ink-faint); }
+.cal-note { font-size: 10.5px; color: var(--ink-faint); margin-top: 2px; }
+
+/* 상세 일정 */
+.dt-head { margin-top: 34px; }
+.dt-list { border-top: 1px solid var(--border-soft); }
+.dt-row { display: grid; grid-template-columns: 96px 1fr; gap: 16px; padding: 14px 4px; border-bottom: 1px solid var(--border-soft); }
+.dt-row--today { background: #fdf6e0; box-shadow: inset 3px 0 0 var(--gold); }
+.dt-row--hit { background: var(--paper-deep); transition: background .4s; }
+.dt-date { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dt-date span { display: inline-block; margin-left: 5px; font-size: 12.5px; font-weight: 400; color: var(--ink-muted); }
+.dt-badge--urgent { background: var(--accent-red); }
+.dt-badge { display: inline-block; margin-top: 5px; padding: 1px 7px; border-radius: 2px; background: var(--navy); color: var(--navy-text); font-size: 10.5px; letter-spacing: 1px; }
+.dt-items ul { list-style: none; margin: 0; padding: 0; }
+.dt-items li { display: grid; grid-template-columns: 58px 1fr; gap: 12px; padding: 3px 0; font-size: 14px; line-height: 1.85; }
+.dt-time { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
+.dt-what { color: var(--ink-body); }
+.dt-where { grid-column: 2; font-size: 12.5px; color: var(--ink-faint); }
+.dt-empty { margin: 0; font-size: 14px; color: var(--ink-faint); }
+.dt-row--none { opacity: .72; }
+
+@media (max-width: 760px) {
+  .cal-day { min-height: 60px; padding: 5px 4px 6px; }
+  .cal-ev, .cal-more, .cal-note, .cal-tag { display: none; }
+  .cal-day--work::after, .cal-day--trip::after {
+    content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-top: 2px;
+  }
+  .cal-day--trip::after { background: var(--accent-red); }
+  .cal-today-tag {
+    display: block; margin: 2px 0 0; padding: 0 4px;
+    font-size: 9px; letter-spacing: 0; align-self: flex-start; white-space: nowrap;
+  }
+  .cal-label { font-size: 18px; letter-spacing: 2px; min-width: 120px; }
+  .dt-row { grid-template-columns: 1fr; gap: 6px; }
+  .dt-items li { grid-template-columns: 52px 1fr; font-size: 13.5px; }
+}
+
 /* 공개일정 표 */
 .sched td { vertical-align: top; }
 .sc-desc { display: block; margin-top: 5px; font-size: 13px; color: var(--ink-muted); line-height: 1.8; }
