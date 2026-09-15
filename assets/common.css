@@ -355,12 +355,67 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   display: block; font-size: 11.5px; color: var(--accent-red);
   font-weight: 700; margin-top: 3px; white-space: nowrap;
 }
+/* 요약 알약 버튼은 좁은 화면에서만 쓴다 */
+.chapnav-toggle { display: none; }
+
+/* 태블릿 — 폭만 줄인 기존 레일 */
 @media (max-width: 980px) {
   .chapnav { width: 60px; right: 6px; max-height: 78vh; }
   .chapnav-item { padding: 7px 6px; text-align: center; }
   .chapnav-item b { font-size: 12px; letter-spacing: 0; }
   .chapnav-item span { display: none; }
   .chapnav-item.active .cur { font-size: 10px; }
+}
+
+/* 모바일 — 본문을 가리지 않도록 우측 하단 알약 하나로 접고,
+   누를 때만 전체 목차를 위로 펼친다 */
+@media (max-width: 768px) {
+  .chapnav {
+    top: auto; bottom: 14px; right: 10px; transform: none;
+    width: auto; max-width: 74vw; max-height: none; overflow: visible;
+    background: none; border: none; box-shadow: none; padding: 0;
+  }
+  .chapnav-toggle {
+    display: flex; align-items: center; gap: 9px;
+    max-width: 100%; padding: 9px 15px;
+    background: var(--navy); color: var(--navy-text);
+    border: 1px solid var(--gold-light); border-radius: 999px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
+    font-family: inherit; cursor: pointer;
+  }
+  .chapnav-toggle .ct-text { min-width: 0; text-align: left; }
+  .chapnav-toggle .ct-chap {
+    display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .chapnav-toggle .ct-cur {
+    display: block; font-size: 10.5px; font-style: normal;
+    color: var(--accent-amber); margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .chapnav-toggle .ct-cur:empty { display: none; }
+  .chapnav-toggle .ct-caret { font-size: 11px; color: var(--gold-pale); transition: transform .2s; }
+  .chapnav.open .ct-caret { transform: rotate(180deg); }
+
+  .chapnav-list {
+    display: none;
+    position: absolute; right: 0; bottom: calc(100% + 8px);
+    width: 224px; max-height: 58vh; overflow-y: auto;
+    background: var(--navy);
+    border: 1px solid var(--gold-light); border-radius: 8px; padding: 2px 0;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, .35);
+    -webkit-overflow-scrolling: touch;
+  }
+  .chapnav.open .chapnav-list { display: block; }
+
+  .chapnav-item { padding: 11px 14px; text-align: left; }
+  .chapnav-item b { font-size: 13px; letter-spacing: 1px; }
+  .chapnav-item span { display: block; font-size: 11px; }
+  .chapnav-item.active .cur { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapnav-toggle .ct-caret { transition: none; }
 }
 
 /* ==========================================================================
