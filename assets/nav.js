@@ -282,14 +282,17 @@
       if (logo.complete) { if (logo.naturalWidth) show(); else drop(); }
       else { logo.addEventListener('load', show); logo.addEventListener('error', drop); }
     }
-    var flag = document.querySelector('.hero-flag');
-    if (flag) {
-      var fi = flag.querySelector('.hero-flag-img');
-      var miss = function () { flag.className += ' hero-flag--missing'; };
-      if (!fi) miss();
-      else if (fi.complete) { if (!fi.naturalWidth) miss(); }
-      else fi.addEventListener('error', miss);
-    }
+    /* 표지와 워터마크의 국기 — 실패하면 각 페이지의 원래 이모지로 되돌린다 */
+    [['.natflag', '.natflag-img', 'natflag--missing'],
+     ['.watermark', '.watermark-img', 'watermark--missing']].forEach(function (spec) {
+      [].slice.call(document.querySelectorAll(spec[0])).forEach(function (box) {
+        var img = box.querySelector(spec[1]);
+        var miss = function () { box.className += ' ' + spec[2]; };
+        if (!img) { miss(); return; }
+        if (img.complete) { if (!img.naturalWidth) miss(); }
+        else img.addEventListener('error', miss);
+      });
+    });
     var hero = document.querySelector('.hero-board');
     if (hero) {
       var img = hero.querySelector('.hero-img');
