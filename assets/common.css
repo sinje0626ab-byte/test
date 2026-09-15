@@ -523,6 +523,23 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   font-size: 13px; font-weight: 700;
 }
 .oc-head { text-align: center; margin-bottom: 16px; }
+/* 국무위원 초상 — 사진이 있으면 사진, 없으면 기존 이모지가 그대로 드러난다 */
+.oc-face {
+  position: relative; display: block;
+  width: 108px; aspect-ratio: 3 / 4; max-width: 100%;
+  margin: 0 auto 14px; overflow: hidden;
+  border-radius: var(--radius-box);
+  background: var(--paper-deep); border: 1px solid var(--border);
+}
+.oc-face .oc-icon {
+  position: absolute; inset: 0; margin: 0; font-size: 42px;
+  display: flex; align-items: center; justify-content: center;
+}
+.oc-photo {
+  position: absolute; inset: 0; z-index: 1;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center 18%;
+}
 .oc-icon { font-size: 40px; display: block; margin-bottom: 10px; line-height: 1; }
 .oc-name { display: block; font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: 3px; }
 .oc-post { display: block; font-size: 15px; color: var(--gold); letter-spacing: 2px; margin-top: 6px; }
@@ -687,6 +704,7 @@ audio:focus-visible,
   .anthem { display: none !important; }
   .paper { box-shadow: none; border: none; padding: 0; }
   table, .note, .article { page-break-inside: avoid; }
+  .oc-face { width: 88px; }
   a { text-decoration: none; color: inherit; }
   a[href]::after { content: ""; }
 }
