@@ -222,10 +222,28 @@
     update();
   }
 
+  /* ------------------------------------------------------------------
+     3) 국무위원 초상 — 확장자를 차례로 시도하고, 끝내 없으면 이모지로 되돌린다
+     ------------------------------------------------------------------ */
+  function initPortraits() {
+    var NEXT = { '.png': '.jpg', '.jpg': '.jpeg', '.jpeg': '.webp' };
+    [].slice.call(document.querySelectorAll('.oc-photo')).forEach(function (img) {
+      function fallback() {
+        var src = img.getAttribute('src') || '';
+        var ext = (src.match(/\.[a-z]+$/i) || [''])[0].toLowerCase();
+        if (NEXT[ext]) { img.setAttribute('src', src.slice(0, -ext.length) + NEXT[ext]); return; }
+        img.remove();                    /* 초상 파일이 없으면 이모지가 드러난다 */
+      }
+      img.addEventListener('error', fallback);
+      /* defer 스크립트라 이미 실패했을 수 있으므로 한 번 확인한다 */
+      if (img.complete && img.naturalWidth === 0) fallback();
+    });
+  }
+
   /* ------------------------------------------------------------------ */
   function ready(fn) {
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn);
   }
-  ready(function () { initGnb(); initChapnav(); });
+  ready(function () { initGnb(); initChapnav(); initPortraits(); });
 })();
