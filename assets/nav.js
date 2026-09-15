@@ -98,6 +98,46 @@
     var reArt = /제\s*\d+\s*조(?:의\s*\d+)?/;
     var reHead = /^(제\d+편|제\d+장|부칙)\s*(.*)$/;
 
+    /* 좁은 화면 전용 요약 버튼 — 평소에는 현재 장·조만 알약 형태로 떠 있고,
+       누를 때만 전체 목차가 펼쳐진다. 데스크톱에서는 CSS로 숨긴다. */
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'chapnav-toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', 'chapnavList');
+    toggle.setAttribute('aria-label', '장 목차 열기');
+    toggle.innerHTML = '<span class="ct-text"><b class="ct-chap"></b><em class="ct-cur"></em></span>' +
+                       '<span class="ct-caret" aria-hidden="true">\u25BE</span>';
+    nav.appendChild(toggle);
+
+    var list = document.createElement('div');
+    list.className = 'chapnav-list';
+    list.id = 'chapnavList';
+    nav.appendChild(list);
+
+    var ctChap = toggle.querySelector('.ct-chap');
+    var ctCur = toggle.querySelector('.ct-cur');
+
+    function setOpen(open) {
+      nav.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? '장 목차 닫기' : '장 목차 열기');
+    }
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(!nav.classList.contains('open'));
+    });
+    /* 목차 바깥을 누르거나 ESC 를 누르면 닫는다 */
+    document.addEventListener('click', function (e) {
+      if (nav.classList.contains('open') && !nav.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && nav.classList.contains('open')) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
     /* 제목(h2)에서 항목 생성 */
     var items = [];
     chaps.forEach(function (h, i) {
@@ -116,13 +156,14 @@
                     '<em class="cur"></em>';
       a.addEventListener('click', function (e) {
         e.preventDefault();
+        setOpen(false);
         var el = document.getElementById(this.getAttribute('data-target'));
         if (!el) return;
         var y = el.getBoundingClientRect().top + window.pageYOffset - navOffset();
         window.scrollTo({ top: y, behavior: 'smooth' });
       });
-      nav.appendChild(a);
-      items.push({ h: h, a: a, cur: a.querySelector('.cur') });
+      list.appendChild(a);
+      items.push({ h: h, a: a, cur: a.querySelector('.cur'), num: numPart });
     });
 
     function artLabel(a) {
@@ -164,13 +205,15 @@
           if (n !== idx) it.cur.textContent = '';
         });
         var act = items[idx].a;
-        var r = act.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+        var r = act.getBoundingClientRect(), nr = list.getBoundingClientRect();
         if (r.top < nr.top || r.bottom > nr.bottom) {
-          nav.scrollTop += (r.top - nr.top) - (nr.height / 2 - r.height / 2);
+          list.scrollTop += (r.top - nr.top) - (nr.height / 2 - r.height / 2);
         }
+        ctChap.textContent = items[idx].num;
         lastActive = idx;
       }
       items[idx].cur.textContent = label;
+      ctCur.textContent = label;
     }
 
     function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
