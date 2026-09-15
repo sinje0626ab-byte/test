@@ -249,5 +249,19 @@
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn);
   }
-  ready(function () { initGnb(); initChapnav(); initPortraits(); });
+  /* 건국일로부터 지난 날수를 매일 다시 센다 */
+  function initCounters() {
+    [].slice.call(document.querySelectorAll('[data-since]')).forEach(function (el) {
+      var p = (el.getAttribute('data-since') || '').split('-');
+      if (p.length !== 3) return;
+      var from = new Date(+p[0], +p[1] - 1, +p[2]);
+      var now = new Date();
+      var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      var days = Math.round((today - from) / 86400000);
+      if (days < 0 || !isFinite(days)) return;
+      el.innerHTML = days.toLocaleString('ko-KR') + '<small>일째</small>';
+    });
+  }
+
+  ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); });
 })();
