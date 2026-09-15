@@ -301,6 +301,13 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 .gnb-toggle:hover { background: var(--navy-alt); }
 
+/* --- 중간 폭: 항목이 늘어나 한 줄을 넘지 않도록 압축 --- */
+@media (min-width: 769px) and (max-width: 1000px) {
+  .gnb-inner { gap: 10px; padding: 0 12px; }
+  .gnb-brand { font-size: 14px; letter-spacing: 1.5px; }
+  .gnb-link { padding: 0 7px; font-size: 12.5px; letter-spacing: 0; }
+}
+
 /* --- 모바일: 햄버거 + 전체화면 오버레이 --- */
 @media (max-width: 768px) {
   .gnb-toggle { display: block; }
@@ -575,6 +582,68 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 @media (max-width: 700px) {
   .council-grid { grid-template-columns: 1fr; }
   .cover--page h1 { font-size: 26px; letter-spacing: 8px; text-indent: 8px; }
+}
+
+/* ==========================================================================
+   추모명예의전당 — 어록 / 명문 / 시상 부문
+   ========================================================================== */
+
+.quotes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 26px 0 10px; }
+.qcard {
+  display: flex; gap: 15px; background: var(--paper-alt);
+  border: 1px solid var(--border-soft); border-radius: var(--radius-box);
+  padding: 18px 20px; margin: 0; page-break-inside: avoid;
+}
+.q-face {
+  position: relative; flex: none; width: 54px; aspect-ratio: 3 / 4;
+  border-radius: 2px; overflow: hidden;
+  background: var(--paper-deep); border: 1px solid var(--border);
+}
+.q-face img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: center 18%; }
+.q-face .q-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.q-body { min-width: 0; }
+.q-text { margin: 0 0 10px; font-size: 15px; line-height: 1.95; color: var(--ink-body); font-style: italic; }
+.q-by { font-size: 12.5px; letter-spacing: 2px; color: var(--gold); font-weight: 700; }
+.q-by span { color: var(--ink-muted); font-weight: 400; letter-spacing: 1px; }
+
+.maxims { margin: 24px 0 10px; border-top: 1px solid var(--border-soft); }
+.maxim {
+  display: grid; grid-template-columns: 1fr auto; gap: 5px 22px; align-items: baseline;
+  padding: 15px 2px; border-bottom: 1px solid var(--border-soft);
+}
+.maxim q { font-size: 16px; line-height: 1.9; color: var(--ink); font-weight: 600; }
+.maxim cite { font-style: normal; font-size: 12.5px; color: var(--ink-muted); letter-spacing: 1px; white-space: nowrap; }
+
+.awards { display: grid; gap: 18px; margin: 22px 0 10px; }
+.award {
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box); padding: 22px 24px; page-break-inside: avoid;
+}
+.award--grand { background: var(--paper-deep); border-color: var(--gold-light); border-left: 4px solid var(--gold); }
+.aw-head { display: flex; align-items: center; gap: 15px; margin-bottom: 13px; }
+.aw-icon { flex: none; font-size: 30px; line-height: 1; }
+.aw-name { margin: 0; padding: 0; border: none; font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: 3px; }
+.aw-sub { display: block; margin-top: 5px; font-size: 12px; color: var(--gold); letter-spacing: 2px; }
+.aw-desc { margin: 0 0 15px; font-size: 14.5px; line-height: 1.95; color: var(--ink-sub); }
+.aw-meta { margin: 0 0 16px; font-size: 13.5px; }
+.aw-meta > div { display: grid; grid-template-columns: 78px 1fr; gap: 12px; padding: 4px 0; }
+.aw-meta dt { font-size: 11.5px; font-weight: 700; letter-spacing: 2px; color: var(--ink-muted); padding-top: 4px; }
+.aw-meta dd { margin: 0; line-height: 1.85; color: var(--ink-sub); }
+.aw-slots { border-top: 1px solid var(--border-soft); padding-top: 15px; display: grid; gap: 11px; }
+.aw-slot { display: grid; grid-template-columns: 64px 1fr; gap: 13px; align-items: center; }
+.aw-label {
+  font-size: 11.5px; font-weight: 700; letter-spacing: 2px; text-align: center;
+  color: var(--ink-muted); background: var(--paper);
+  border: 1px solid var(--border); border-radius: 2px; padding: 3px 0;
+}
+.aw-blank { min-height: 28px; border-bottom: 1px dashed var(--border); }
+.aw-slot--win .aw-label { background: var(--navy); color: var(--navy-text); border-color: var(--navy); }
+.aw-slot--win .aw-blank { border-bottom: 2px solid var(--gold); }
+
+@media (max-width: 700px) {
+  .quotes { grid-template-columns: 1fr; }
+  .maxim { grid-template-columns: 1fr; }
+  .aw-meta > div { grid-template-columns: 1fr; gap: 2px; }
 }
 
 /* ==========================================================================
