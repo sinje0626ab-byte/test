@@ -925,6 +925,15 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .tl-body { font-size: 14.5px; line-height: 1.95; color: var(--ink-sub); margin: 0; }
 
 /* 제5편 — 재난과 애도: 차분한 톤 */
+/* 중요 사건 — 좌측 굵은 금색 선과 옅은 강조 배경 */
+.tl-card--major {
+  background: var(--paper-deep);
+  border-left: 4px solid var(--gold);
+  box-shadow: 0 1px 3px rgba(30, 26, 16, .07);
+}
+.tl-card--major .tl-title { color: var(--ink); font-size: 18.5px; }
+.tl-card--major .tl-when { color: var(--accent-red); font-weight: 700; }
+
 .tl--solemn .tl-card { background: #f1f0ed; border-color: #d6d3cb; }
 .tl--solemn .tl-when { color: var(--ink-muted); }
 .tl--solemn .tl-item::before { background: var(--ink-muted); }
