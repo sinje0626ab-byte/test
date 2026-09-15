@@ -33,13 +33,21 @@
     links.forEach(function (a) {
       if (norm(a.pathname) === here) match = a;
     });
-    /* 정확히 일치하는 항목이 없으면 하위 경로까지 포함해 최장 일치로 판정 */
+    /* 정확히 일치하는 항목이 없으면 하위 경로까지 포함해 최장 일치로 판정한다.
+       data-match 는 메뉴 항목과 경로가 다른 하위 페이지를 묶어 주기 위한 것으로,
+       공백으로 구분한 상대 경로를 적으면 그 경로도 같은 항목으로 본다. */
     if (!match) {
       var best = 0;
-      links.forEach(function (a) {
-        if (a.hasAttribute('data-home')) return;   /* 홈은 모든 경로의 접두사이므로 제외 */
-        var p = norm(a.pathname);
+      function consider(a, raw) {
+        var p;
+        try { p = norm(new URL(raw, location.href).pathname); } catch (e) { return; }
         if (here.indexOf(p) === 0 && p.length > best) { best = p.length; match = a; }
+      }
+      links.forEach(function (a) {
+        if (!a.hasAttribute('data-home')) consider(a, a.getAttribute('href'));  /* 홈은 모든 경로의 접두사이므로 제외 */
+        (a.getAttribute('data-match') || '').split(/\s+/).forEach(function (seg) {
+          if (seg) consider(a, seg);
+        });
       });
     }
     if (match) {

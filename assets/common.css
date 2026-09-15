@@ -889,46 +889,8 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 
 /* ==========================================================================
-   추모명예의전당 — 어록 / 명문 / 시상 부문
+   추모명예의전당 — 연말 시상 부문
    ========================================================================== */
-
-.quotes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 26px 0 10px; }
-.qcard {
-  display: flex; gap: 15px; background: var(--paper-alt);
-  border: 1px solid var(--border-soft); border-radius: var(--radius-box);
-  padding: 18px 20px; margin: 0; page-break-inside: avoid;
-}
-/* 초상은 국무위원 카드와 같이 테두리 없이 가장자리를 흐린다.
-   다만 썸네일 크기라 불투명한 중심부를 더 넓게 잡아 얼굴이 뭉개지지 않게 한다. */
-.q-face { position: relative; flex: none; width: 76px; aspect-ratio: 3 / 4; }
-.q-face img {
-  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%;
-  object-fit: cover; object-position: center 14%;
-  -webkit-mask-image:
-    radial-gradient(51% 64% at 50% 42%, #000 56%, rgba(0, 0, 0, .55) 84%, transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 9%, #000 74%, transparent 100%);
-          mask-image:
-    radial-gradient(51% 64% at 50% 42%, #000 56%, rgba(0, 0, 0, .55) 84%, transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 9%, #000 74%, transparent 100%);
-  -webkit-mask-composite: source-in;
-          mask-composite: intersect;
-}
-.q-face .q-emoji {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-size: 26px; background: radial-gradient(closest-side, var(--paper-deep), transparent 78%);
-}
-.q-body { min-width: 0; }
-.q-text { margin: 0 0 10px; font-size: 15px; line-height: 1.95; color: var(--ink-body); font-style: italic; }
-.q-by { font-size: 12.5px; letter-spacing: 2px; color: var(--gold); font-weight: 700; }
-.q-by span { color: var(--ink-muted); font-weight: 400; letter-spacing: 1px; }
-
-.maxims { margin: 24px 0 10px; border-top: 1px solid var(--border-soft); }
-.maxim {
-  display: grid; grid-template-columns: 1fr auto; gap: 5px 22px; align-items: baseline;
-  padding: 15px 2px; border-bottom: 1px solid var(--border-soft);
-}
-.maxim q { font-size: 16px; line-height: 1.9; color: var(--ink); font-weight: 600; }
-.maxim cite { font-style: normal; font-size: 12.5px; color: var(--ink-muted); letter-spacing: 1px; white-space: nowrap; }
 
 .awards { display: grid; gap: 18px; margin: 22px 0 10px; }
 .award {
@@ -957,8 +919,6 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .aw-slot--win .aw-blank { border-bottom: 2px solid var(--gold); }
 
 @media (max-width: 700px) {
-  .quotes { grid-template-columns: 1fr; }
-  .maxim { grid-template-columns: 1fr; }
   .aw-meta > div { grid-template-columns: 1fr; gap: 2px; }
 }
 
@@ -1210,6 +1170,72 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   .fig-num { font-size: 24px; }
   .fig-name { letter-spacing: 2px; }
   .nowbar { padding: 13px 16px; }
+}
+
+/* ==========================================================================
+   정부조직 — 기관 카드(펼침) / 인사 기록
+   ========================================================================== */
+
+.gvs { display: grid; gap: 10px; margin: 22px 0 12px; }
+.gv {
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--border); border-radius: var(--radius-box);
+  page-break-inside: avoid;
+}
+.gv[open] { background: var(--paper); border-left-color: var(--gold); }
+.gv--wide { margin: 18px 0 26px; }
+
+.gv-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+  list-style: none; cursor: pointer; padding: 15px 20px;
+  border-radius: var(--radius-box);
+}
+.gv-head::-webkit-details-marker { display: none; }
+.gv-head:hover { background: var(--paper-deep); }
+.gv-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: 1.5px; }
+.gv-sub { flex: 1 1 auto; font-size: 12.5px; color: var(--ink-muted); letter-spacing: .5px; }
+.gv-caret { flex: none; margin-left: auto; font-size: 12px; color: var(--gold); transition: transform .18s; }
+.gv[open] .gv-caret { transform: rotate(180deg); }
+
+.gv-body { padding: 2px 20px 20px; border-top: 1px solid var(--border-faint); margin-top: -1px; }
+.gv-body > :first-child { margin-top: 16px; }
+.gv-h {
+  margin: 20px 0 8px; padding: 0; border: none;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 3px; color: var(--ink-muted);
+}
+.gv-now {
+  margin: 0 0 14px; padding: 12px 16px; font-size: 14.5px; line-height: 1.9; color: var(--ink-sub);
+  background: var(--paper-deep); border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.gv-now b { color: var(--ink); font-weight: 700; }
+.gv-tag {
+  display: inline-block; margin-right: 9px; padding: 2px 9px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px;
+  color: var(--navy-text); background: var(--navy); border-radius: 2px;
+  vertical-align: 2px;
+}
+.gv-tag--past { color: var(--ink-muted); background: none; border: 1px dashed var(--border); margin-bottom: 8px; }
+.gv-hist { margin: 0; }
+.gv-table { margin: 0; font-size: 13.5px; }
+.gv-table th { font-size: 11px; letter-spacing: 1.5px; }
+.gv-table td { line-height: 1.8; vertical-align: top; }
+.gv-when { white-space: nowrap; color: var(--ink-muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.gv-role { white-space: nowrap; color: var(--ink-sub); }
+.gv-who { font-weight: 700; color: var(--ink); white-space: nowrap; }
+.gv-note { color: var(--ink-muted); font-size: 13px; }
+.gv-none {
+  margin: 16px 0 0; padding: 12px 16px; font-size: 14px; color: var(--ink-muted);
+  background: var(--paper-alt); border: 1px dashed var(--border-soft); border-radius: var(--radius);
+}
+
+@media (max-width: 700px) {
+  .gv-head { padding: 13px 15px; }
+  .gv-body { padding: 2px 15px 16px; }
+  .gv-name { font-size: 15.5px; }
+  .gv-sub { flex-basis: 100%; }
+  .gv-table { font-size: 12.5px; }
+  .gv-when, .gv-role, .gv-who { white-space: normal; }
 }
 
 /* ==========================================================================
