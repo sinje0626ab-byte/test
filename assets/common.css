@@ -771,8 +771,14 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .dt-row--hit { background: var(--paper-deep); transition: background .4s; }
 .dt-date { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
 .dt-date span { display: inline-block; margin-left: 5px; font-size: 12.5px; font-weight: 400; color: var(--ink-muted); }
-.dt-badge--urgent { background: var(--accent-red); }
-.dt-badge { display: inline-block; margin-top: 5px; padding: 1px 7px; border-radius: 2px; background: var(--navy); color: var(--navy-text); font-size: 10.5px; letter-spacing: 1px; }
+/* 상세 일정 구분 표지 — 채우지 않고 점선 테두리로만 강조한다 */
+.dt-date .dt-badge {
+  display: block; width: fit-content; margin: 7px 0 0; padding: 2px 9px;
+  background: none; color: var(--navy);
+  border: 1px dashed var(--gold); border-radius: var(--radius);
+  font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px;
+}
+.dt-date .dt-badge--urgent { color: var(--accent-red); border-color: var(--accent-red); }
 .dt-items ul { list-style: none; margin: 0; padding: 0; }
 .dt-items li { display: grid; grid-template-columns: 58px 1fr; gap: 12px; padding: 3px 0; font-size: 14px; line-height: 1.85; }
 .dt-time { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
