@@ -355,7 +355,7 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   transition: background .12s, color .12s;
 }
 .chapnav-item:first-child { border-top: none; }
-.chapnav-item b { display: block; font-size: 13px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+.chapnav-item b { display: block; font-size: 13px; font-weight: 700; letter-spacing: 1px; white-space: normal; word-break: keep-all; }
 .chapnav-item span {
   display: block; font-size: 10.5px; color: var(--navy-dim); margin-top: 2px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -1120,6 +1120,92 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   .mm-name { font-size: 17.5px; }
   .mm-body { font-size: 14.5px; line-height: 1.95; }
   .mm-stats span { padding: 2px 9px; }
+}
+
+/* ==========================================================================
+   초기 추모꾼 등재 — 명부 서식
+   ========================================================================== */
+
+.roll { list-style: none; margin: 20px 0 30px; padding: 0; counter-reset: roll; }
+.rl {
+  counter-increment: roll; position: relative;
+  padding: 16px 22px 16px 54px; margin: 0 0 12px;
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box); page-break-inside: avoid;
+}
+.rl::before {
+  content: counter(roll, decimal-leading-zero);
+  position: absolute; left: 18px; top: 17px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--gold);
+}
+.rl--plain { padding-left: 22px; }
+.rl--plain::before { content: none; }
+
+.rl-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 9px; }
+.rl-name { font-size: 16.5px; font-weight: 700; color: var(--ink); letter-spacing: .5px; }
+.rl-meta {
+  font-size: 11.5px; letter-spacing: .5px; color: var(--ink-muted);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.rl-body { margin: 0; font-size: 14.5px; line-height: 1.95; color: var(--ink-sub); }
+.rl-body b { color: var(--ink); font-weight: 700; }
+.rl-q {
+  display: block; margin: 9px 0 0; padding: 9px 16px;
+  background: var(--paper); border-left: 3px solid var(--gold-light);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 14.5px; line-height: 1.9; color: var(--ink-body);
+}
+.rl-q + .rl-body { margin-top: 9px; }
+
+@media (max-width: 700px) {
+  .rl { padding: 14px 16px 14px 44px; }
+  .rl--plain { padding-left: 16px; }
+  .rl::before { left: 14px; top: 15px; }
+  .rl-meta { white-space: normal; }
+}
+
+/* ==========================================================================
+   홈 — 국가 현황 수치
+   ========================================================================== */
+
+.figures {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--border-soft); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box); overflow: hidden; margin: 24px 0 18px;
+}
+.fig { background: var(--paper-alt); padding: 20px 14px 18px; text-align: center; }
+.fig-num {
+  display: block; font-size: 29px; font-weight: 700; color: var(--ink);
+  line-height: 1.15; letter-spacing: -.5px; font-variant-numeric: tabular-nums;
+}
+.fig-num small { font-size: 15px; font-weight: 700; margin-left: 2px; letter-spacing: 0; }
+.fig-num em { font-style: normal; font-size: 18px; letter-spacing: 0; }
+.fig-name {
+  display: block; margin-top: 8px; font-size: 11.5px; font-weight: 700;
+  letter-spacing: 2.5px; color: var(--ink-muted);
+}
+.fig-sub { display: block; margin-top: 5px; font-size: 11.5px; color: var(--ink-faint); line-height: 1.6; }
+
+.nowbar {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px;
+  margin: 0 0 8px; padding: 14px 20px;
+  background: var(--paper-deep); border-left: 4px solid var(--accent-red);
+  border-radius: 0 var(--radius-box) var(--radius-box) 0;
+}
+.nowbar .nb-label {
+  flex: none; font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px;
+  color: var(--accent-red); border: 1px dashed var(--accent-red);
+  border-radius: var(--radius); padding: 2px 9px;
+}
+.nowbar .nb-text { flex: 1 1 auto; font-size: 14.5px; color: var(--ink-sub); line-height: 1.9; }
+.nowbar .nb-text b { color: var(--ink); font-weight: 700; }
+
+@media (max-width: 700px) {
+  .figures { grid-template-columns: repeat(2, 1fr); }
+  .fig { padding: 16px 10px 14px; }
+  .fig-num { font-size: 24px; }
+  .fig-name { letter-spacing: 2px; }
+  .nowbar { padding: 13px 16px; }
 }
 
 /* ==========================================================================
