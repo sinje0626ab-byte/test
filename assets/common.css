@@ -820,6 +820,75 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 
 /* ==========================================================================
+   판례집 — 사건별 판례 서식
+   ========================================================================== */
+
+.cases { display: grid; gap: 26px; margin: 24px 0 10px; }
+.case {
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--border); border-radius: var(--radius-box);
+  padding: 24px 26px; page-break-inside: avoid;
+  scroll-margin-top: calc(var(--nav-height) + 16px);
+}
+.cs--capital { border-left-color: var(--accent-red); background: var(--paper-deep); }
+.cs--suspend { border-left-color: var(--gold); }
+.cs--correct { border-left-color: var(--gold-light); }
+.cs--audit   { border-left-color: var(--navy-line); }
+
+.cs-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-bottom: 16px;
+           padding-bottom: 13px; border-bottom: 1px solid var(--border-soft); }
+.cs-no {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px; letter-spacing: 1px; color: var(--ink-muted);
+  border: 1px solid var(--border); border-radius: 2px; padding: 2px 7px; white-space: nowrap;
+}
+.cs-name { margin: 0; padding: 0; border: none; flex: 1 1 auto;
+           font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: 1.5px; }
+.cs-grade {
+  font-size: 11px; font-weight: 700; letter-spacing: 2.5px; padding: 2px 9px;
+  border: 1px dashed var(--gold); border-radius: var(--radius); color: var(--navy); white-space: nowrap;
+}
+.cs--capital .cs-grade { color: var(--accent-red); border-color: var(--accent-red); }
+
+.cs-meta { margin: 0 0 18px; font-size: 14px; }
+.cs-meta > div { display: grid; grid-template-columns: 82px 1fr; gap: 12px; padding: 4px 0; }
+.cs-meta dt { font-size: 11.5px; font-weight: 700; letter-spacing: 2px; color: var(--ink-muted); padding-top: 4px; }
+.cs-meta dd { margin: 0; color: var(--ink-sub); line-height: 1.9; }
+.cs-laws { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 5px 8px; }
+.cs-laws li {
+  font-size: 12.5px; color: var(--ink-sub); background: var(--paper);
+  border: 1px solid var(--border-faint); border-radius: 2px; padding: 2px 8px;
+}
+
+.cs-label {
+  display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: 3px;
+  color: var(--navy-text); background: var(--navy); border-radius: 2px;
+  padding: 2px 9px; margin-bottom: 8px;
+}
+.cs-order { margin-bottom: 18px; }
+.cs-order p {
+  margin: 0; padding: 13px 18px; background: var(--paper);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.9;
+}
+.cs-reason { margin-bottom: 18px; }
+.cs-reason ol { margin: 0; padding-left: 22px; font-size: 14.5px; color: var(--ink-sub); }
+.cs-reason li { margin: 0 0 9px; line-height: 1.95; }
+.cs-reason li:last-child { margin-bottom: 0; }
+.cs-note p {
+  margin: 0; padding: 14px 18px; background: var(--paper);
+  border-left: 3px solid var(--gold); border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 14.5px; color: var(--ink-sub); line-height: 1.95;
+}
+
+@media (max-width: 700px) {
+  .case { padding: 20px 18px; }
+  .cs-name { font-size: 17px; }
+  .cs-meta > div { grid-template-columns: 1fr; gap: 2px; }
+  .cs-order p { font-size: 15px; }
+}
+
+/* ==========================================================================
    추모명예의전당 — 어록 / 명문 / 시상 부문
    ========================================================================== */
 
