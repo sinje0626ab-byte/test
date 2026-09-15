@@ -282,6 +282,14 @@
       if (logo.complete) { if (logo.naturalWidth) show(); else drop(); }
       else { logo.addEventListener('load', show); logo.addEventListener('error', drop); }
     }
+    var flag = document.querySelector('.hero-flag');
+    if (flag) {
+      var fi = flag.querySelector('.hero-flag-img');
+      var miss = function () { flag.className += ' hero-flag--missing'; };
+      if (!fi) miss();
+      else if (fi.complete) { if (!fi.naturalWidth) miss(); }
+      else fi.addEventListener('error', miss);
+    }
     var hero = document.querySelector('.hero-board');
     if (hero) {
       var img = hero.querySelector('.hero-img');

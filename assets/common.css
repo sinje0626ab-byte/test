@@ -473,6 +473,23 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 
 .hero { padding: 64px 0 48px; }
 .hero .emblem { font-size: 48px; margin-bottom: 24px; }
+
+/* 홈 표지의 국기 — 파일이 없으면 촛불 이모지가 대신 보인다 */
+.hero-flag { margin: 0 auto 26px; padding: 0; line-height: 1; }
+.hero-flag-img {
+  display: block; width: 168px; max-width: 62%; height: auto; margin: 0 auto;
+  border: 1px solid var(--border-soft); border-radius: var(--radius);
+  box-shadow: 0 2px 9px rgba(30,26,16,.13);
+}
+.hero-flag-fallback { display: none; font-size: 48px; }
+.hero-flag--missing .hero-flag-img { display: none; }
+.hero-flag--missing .hero-flag-fallback { display: block; }
+
+@media (max-width: 700px) {
+  .hero-flag { margin-bottom: 20px; }
+  .hero-flag-img { width: 132px; }
+  .hero-flag-fallback { font-size: 40px; }
+}
 .hero h1 {
   font-size: 56px; letter-spacing: 22px; text-indent: 22px;
   margin: 0 0 18px; font-weight: 700; color: var(--ink);
