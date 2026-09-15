@@ -530,22 +530,31 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   font-size: 13px; font-weight: 700;
 }
 .oc-head { text-align: center; margin-bottom: 16px; }
-/* 국무위원 초상 — 사진이 있으면 사진, 없으면 기존 이모지가 그대로 드러난다 */
+/* 국무위원 초상 — 사진이 있으면 사진, 없으면 기존 이모지가 그대로 드러난다.
+   테두리를 두지 않고 가장자리를 투명으로 흐려, 카드 종이에 스며들게 한다. */
 .oc-face {
   position: relative; display: block;
-  width: 108px; aspect-ratio: 3 / 4; max-width: 100%;
-  margin: 0 auto 14px; overflow: hidden;
-  border-radius: var(--radius-box);
-  background: var(--paper-deep); border: 1px solid var(--border);
+  width: 118px; aspect-ratio: 3 / 4; max-width: 100%;
+  margin: 0 auto 12px;
 }
 .oc-face .oc-icon {
   position: absolute; inset: 0; margin: 0; font-size: 42px;
   display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(closest-side, var(--paper-deep), transparent 78%);
 }
 .oc-photo {
   position: absolute; inset: 0; z-index: 1;
   width: 100%; height: 100%;
-  object-fit: cover; object-position: center 18%;
+  object-fit: cover; object-position: center 16%;
+  /* 좌우·모서리는 타원으로, 위아래는 선형으로 흐린다. 두 마스크의 교집합만 남는다. */
+  -webkit-mask-image:
+    radial-gradient(52% 64% at 50% 44%, #000 50%, rgba(0, 0, 0, .6) 78%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 13%, #000 66%, transparent 100%);
+          mask-image:
+    radial-gradient(52% 64% at 50% 44%, #000 50%, rgba(0, 0, 0, .6) 78%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 13%, #000 66%, transparent 100%);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
 }
 .oc-icon { font-size: 40px; display: block; margin-bottom: 10px; line-height: 1; }
 .oc-name { display: block; font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: 3px; }
