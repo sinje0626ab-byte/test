@@ -240,11 +240,19 @@
         var src = img.getAttribute('src') || '';
         var ext = (src.match(/\.[a-z]+$/i) || [''])[0].toLowerCase();
         if (NEXT[ext]) { img.setAttribute('src', src.slice(0, -ext.length) + NEXT[ext]); return; }
-        /* 파일이 없으면 이모지 또는 안내 상자가 대신 드러난다 */
+        /* 파일이 없으면 이모지 또는 안내 상자가 대신 드러난다.
+           inaug 컨테이너를 찾아 올라가되, 문서 끝까지 올라가지 않도록 막는다 —
+           document 에는 className 이 없어 그대로 두면 예외가 난다. */
         var fig = img.parentNode;
-        while (fig && fig.className.indexOf('inaug') === -1) fig = fig.parentNode;
-        if (fig) fig.className += ' inaug--missing';
-        img.remove();
+        while (fig && fig !== document.body && typeof fig.className === 'string') {
+          if (fig.className.indexOf('inaug') !== -1) break;
+          fig = fig.parentNode;
+        }
+        if (fig && fig !== document.body && typeof fig.className === 'string' &&
+            fig.className.indexOf('inaug') !== -1) {
+          fig.className += ' inaug--missing';
+        }
+        if (img.parentNode) img.parentNode.removeChild(img);
       }
       img.addEventListener('error', fallback);
       /* defer 스크립트라 이미 실패했을 수 있으므로 한 번 확인한다 */
@@ -274,6 +282,52 @@
   /* 국기 로고와 소개 상단 이미지는 파일이 있을 때만 쓴다.
      없으면 로고는 기존 촛불 이모지가, 소개 이미지는 아무것도 남지 않는다. */
   function initBrandArt() {
+    /* 자산 경로는 스타일시트 href 에서 얻는다 — 페이지 깊이마다 ../ 수가 다르다 */
+    var base = (function () {
+      var link = document.querySelector('link[rel="stylesheet"]');
+      var href = link ? (link.getAttribute('href') || '') : '';
+      var i = href.lastIndexOf('assets/');
+      return (i >= 0 ? href.slice(0, i) : '') + 'assets/';
+    }());
+    var FLAG = base + 'brand/flag.webp';
+
+    function flagImg(cls, alt) {
+      var im = document.createElement('img');
+      im.className = cls; im.src = FLAG; im.alt = alt;
+      return im;
+    }
+    function fallbackSpan(cls, text) {
+      var sp = document.createElement('span');
+      sp.className = cls; sp.setAttribute('aria-hidden', 'true');
+      sp.textContent = text;
+      return sp;
+    }
+
+    /* 브라우저에 옛 HTML 이 캐시된 채 CSS·JS 만 새로 받은 경우에도 국기가 보이도록,
+       이모지로 남아 있는 표지·워터마크·브랜드 로고를 실행 시점에 올려 준다.
+       이미 국기 마크업인 페이지에서는 아무 일도 하지 않는다. */
+    [].slice.call(document.querySelectorAll('.cover .emblem')).forEach(function (el) {
+      var hero = /(^|\s)hero(\s|$)/.test(el.parentNode.className || '');
+      var fig = document.createElement('figure');
+      fig.className = 'natflag' + (hero ? ' natflag--hero' : '');
+      fig.appendChild(flagImg('natflag-img', '추모공화국 국기'));
+      fig.appendChild(fallbackSpan('natflag-fallback', (el.textContent || '').trim()));
+      el.parentNode.replaceChild(fig, el);
+    });
+    [].slice.call(document.querySelectorAll('.watermark')).forEach(function (el) {
+      if (el.querySelector('.watermark-img')) return;
+      var mark = (el.textContent || '').trim();
+      el.textContent = '';
+      el.appendChild(flagImg('watermark-img', ''));
+      el.appendChild(fallbackSpan('watermark-fallback', mark));
+    });
+    var brand = document.querySelector('.gnb-brand');
+    if (brand && !brand.querySelector('.gnb-logo')) {
+      var old = brand.querySelector('span[aria-hidden="true"]');
+      if (old && !old.className) old.className = 'gnb-candle';
+      brand.insertBefore(flagImg('gnb-logo', ''), brand.firstChild);
+    }
+
     var logo = document.querySelector('.gnb-logo');
     if (logo) {
       var candle = document.querySelector('.gnb-candle');
