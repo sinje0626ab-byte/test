@@ -667,7 +667,7 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .inaug { margin: 22px 0 10px; }
 .inaug-img { display: block; width: 100%; border-radius: var(--radius-box); border: 1px solid var(--border); }
 .inaug-empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  display: none; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
   aspect-ratio: 16 / 10; background: var(--paper-alt);
   border: 1px dashed var(--border); border-radius: var(--radius-box);
   color: var(--ink-faint); text-align: center; line-height: 1.8;
@@ -675,6 +675,9 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .inaug-icon { font-size: 34px; }
 .inaug-text { font-size: 14px; letter-spacing: 1px; }
 .inaug-text small { font-size: 11.5px; opacity: .8; }
+/* 사진 파일이 없을 때만 안내 상자를 드러낸다 */
+.inaug--missing .inaug-img { display: none; }
+.inaug--missing .inaug-empty { display: flex; }
 .inaug figcaption { margin-top: 10px; font-size: 13px; color: var(--ink-muted); text-align: center; letter-spacing: 1px; }
 
 /* 인사말 */

@@ -227,12 +227,16 @@
      ------------------------------------------------------------------ */
   function initPortraits() {
     var NEXT = { '.png': '.jpg', '.jpg': '.jpeg', '.jpeg': '.webp' };
-    [].slice.call(document.querySelectorAll('.oc-photo')).forEach(function (img) {
+    [].slice.call(document.querySelectorAll('.oc-photo, .inaug-img')).forEach(function (img) {
       function fallback() {
         var src = img.getAttribute('src') || '';
         var ext = (src.match(/\.[a-z]+$/i) || [''])[0].toLowerCase();
         if (NEXT[ext]) { img.setAttribute('src', src.slice(0, -ext.length) + NEXT[ext]); return; }
-        img.remove();                    /* 초상 파일이 없으면 이모지가 드러난다 */
+        /* 파일이 없으면 이모지 또는 안내 상자가 대신 드러난다 */
+        var fig = img.parentNode;
+        while (fig && fig.className.indexOf('inaug') === -1) fig = fig.parentNode;
+        if (fig) fig.className += ' inaug--missing';
+        img.remove();
       }
       img.addEventListener('error', fallback);
       /* defer 스크립트라 이미 실패했을 수 있으므로 한 번 확인한다 */
