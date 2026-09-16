@@ -357,5 +357,119 @@
     }
   }
 
-  ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); initBrandArt(); });
+
+  /* ------------------------------------------------------------------
+     6) 상단 메뉴의 추모꾼 조회 칸
+     명부 자료는 처음 칸을 눌렀을 때 한 번만 받아 온다.
+     자바스크립트가 없거나 자료를 못 받아도 폼 제출은 그대로 동작한다.
+     ------------------------------------------------------------------ */
+  function initFind() {
+    var form = document.querySelector('.gnb-find');
+    if (!form) return;
+    var input = form.querySelector('.gnb-find-in');
+    var list = form.querySelector('.gnb-find-list');
+    if (!input || !list) return;
+
+    var base = (function () {
+      var link = document.querySelector('link[rel="stylesheet"]');
+      var href = link ? (link.getAttribute('href') || '') : '';
+      var i = href.lastIndexOf('assets/');
+      return (i >= 0 ? href.slice(0, i) : '') + 'assets/';
+    }());
+
+    var people = null, loading = null, cur = -1, opts = [];
+
+    /* 폼 제출에 기대지 않고 직접 옮긴다 — 어느 브라우저에서나 같게 동작한다 */
+    function goTo(name) {
+      var act = form.getAttribute('action') || '';
+      location.href = act + '?n=' + encodeURIComponent(name);
+    }
+
+    function load() {
+      if (people) return Promise.resolve(people);
+      if (loading) return loading;
+      loading = fetch(base + 'data/chumokkun.json', { cache: 'force-cache' })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (j) { people = j.people; return people; });
+      return loading;
+    }
+
+    function esc(t) {
+      return String(t).replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+      });
+    }
+
+    function close() { list.hidden = true; list.innerHTML = ''; opts = []; cur = -1; }
+
+    /* 완전 일치 > 앞부분 일치 > 부분 일치 순으로 여덟 명까지 */
+    function match(q) {
+      var lo = q.toLowerCase(), a = [], b = [], c = [];
+      for (var i = 0; i < people.length && a.length + b.length + c.length < 60; i++) {
+        var n = people[i].n.toLowerCase();
+        if (n === lo) a.push(people[i]);
+        else if (n.indexOf(lo) === 0) b.push(people[i]);
+        else if (n.indexOf(lo) !== -1) c.push(people[i]);
+      }
+      return a.concat(b, c).slice(0, 8);
+    }
+
+    function render(q) {
+      var hits = match(q);
+      if (!hits.length) {
+        list.innerHTML = '<li class="gnb-find-none">찾은 추모꾼이 없다</li>';
+        list.hidden = false; opts = []; cur = -1; return;
+      }
+      list.innerHTML = hits.map(function (p) {
+        return '<li><button type="button" class="gnb-find-opt" data-who="' + esc(p.n) + '">' +
+          '<span class="gfo-rank">' + p.r + '위</span>' +
+          '<span class="gfo-name">' + esc(p.n) + '</span>' +
+          '<span class="gfo-num">' + p.s.toLocaleString('ko-KR') + '점</span></button></li>';
+      }).join('');
+      list.hidden = false;
+      opts = [].slice.call(list.querySelectorAll('.gnb-find-opt'));
+      cur = -1;
+    }
+
+    function update() {
+      var q = input.value.trim();
+      if (!q) { close(); return; }
+      load().then(function () { if (input.value.trim() === q) render(q); })
+            .catch(function () { close(); });   /* 자료를 못 받으면 폼 제출로 넘긴다 */
+    }
+
+    function move(d) {
+      if (!opts.length) return;
+      if (cur >= 0) opts[cur].classList.remove('on');
+      cur = (cur + d + opts.length) % opts.length;
+      opts[cur].classList.add('on');
+      opts[cur].scrollIntoView({ block: 'nearest' });
+    }
+
+    input.addEventListener('focus', function () { load(); });
+    input.addEventListener('input', update);
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+      else if (e.key === 'Escape') { close(); }
+      else if (e.key === 'Enter' && cur >= 0 && opts[cur]) {
+        e.preventDefault();
+        goTo(opts[cur].getAttribute('data-who'));
+      }
+    });
+
+    list.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.gnb-find-opt') : null;
+      if (!btn) return;
+      e.preventDefault();
+      goTo(btn.getAttribute('data-who'));
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!form.contains(e.target)) close();
+    });
+  }
+
+  ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); initBrandArt(); initFind(); });
 })();

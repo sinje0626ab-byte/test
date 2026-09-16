@@ -30,11 +30,18 @@ body { font-family:'Noto Serif KR','본명조',serif; }
         <li><a class="gnb-link" href="../laws/" data-match="../chumo-constitution/ ../chumo-criminal-act/ ../chumo-correction-act/"><span aria-hidden="true">📜</span> 법률</a></li>
         <li><a class="gnb-link" href="../cases/"><span aria-hidden="true">📕</span> 판례</a></li>
         <li><a class="gnb-link" href="../memorials/"><span aria-hidden="true">🕯️</span> 추모건</a></li>
+        <li><a class="gnb-link" href="../memorials/people/"><span aria-hidden="true">📋</span> 추모꾼</a></li>
         <li><a class="gnb-link" href="../officials/"><span aria-hidden="true">👥</span> 국무위원</a></li>
         <li><a class="gnb-link" href="../hall/"><span aria-hidden="true">🏅</span> 명예의전당</a></li>
         <li><a class="gnb-link" href="../history/"><span aria-hidden="true">📖</span> 역사</a></li>
         <li><a class="gnb-link" href="../anthem/"><span aria-hidden="true">🎵</span> 국가</a></li>
       </ul>
+    <form class="gnb-find" role="search" action="../memorials/people/" method="get">
+      <input class="gnb-find-in" id="gnbFind" type="search" name="n" autocomplete="off"
+             placeholder="추모꾼 조회" aria-label="추모꾼 이름으로 조회">
+      <button class="gnb-find-go" type="submit" aria-label="조회"><span aria-hidden="true">🔎</span></button>
+      <ul class="gnb-find-list" id="gnbFindList" role="listbox" aria-label="조회 결과" hidden></ul>
+    </form>
     </nav>
   </div>
 </header>
