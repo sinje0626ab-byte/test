@@ -26,17 +26,14 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
   }
-  /* 재적 구분 — 0 체류중 / 1 자진 퇴거 / 2 강제 퇴거 */
+  /* 재적 구분 — 기준일 현재의 추모방 명단에 따른다. 0 체류중 / 1 퇴거 */
   function badge(p) {
-    if (p.g === 2) return '<span class="pg pg--kick">강제 퇴거</span>';
-    if (p.g === 1) return '<span class="pg pg--out">퇴거</span>';
-    return '';
+    return p.g ? '<span class="pg pg--out">퇴거</span>' : '';
   }
   function standing(p) {
-    if (!p.g) return '<span class="pc-stand pc-stand--in">재적 구분 · 체류중</span>';
-    var when = p.gd ? ymd(p.gd) + ' ' : '';
-    return '<span class="pc-stand pc-stand--out">재적 구분 · ' + when +
-      (p.g === 2 ? '강제 퇴거' : '자진 퇴거') + '</span>';
+    return p.g
+      ? '<span class="pc-stand pc-stand--out">재적 구분 · 퇴거</span>'
+      : '<span class="pc-stand pc-stand--in">재적 구분 · 체류중</span>';
   }
 
   function ymd(s) {

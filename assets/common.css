@@ -1636,10 +1636,8 @@ audio:focus-visible,
   border-radius: 2px; padding: 1px 6px 2px; vertical-align: 1px;
 }
 .pg--out  { color: var(--ink-faint); border: 1px solid var(--border); background: var(--paper-deep); }
-.pg--kick { color: var(--accent-red); border: 1px dashed var(--accent-red); background: transparent; }
-.pr[data-gone="1"] .pr-link, .pr[data-gone="2"] .pr-link { color: var(--ink-muted); }
-#rankBody.only-stay tr[data-gone="1"],
-#rankBody.only-stay tr[data-gone="2"] { display: none; }
+.pr[data-gone="1"] .pr-link { color: var(--ink-muted); }
+#rankBody.only-stay tr[data-gone="1"] { display: none; }
 .onlystay { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
 .onlystay input { width: 15px; height: 15px; accent-color: var(--navy); cursor: pointer; }
 
