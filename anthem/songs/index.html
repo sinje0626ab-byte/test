@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>추모가요 · 추모공화국</title>
+<meta name="description" content="추모공화국 추모가요. 국가와 이전 국가를 비롯한 공인 음원을 한자리에서 이어 듣는다. 문화추모부 문화콘텐츠과 운영.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="추모가요 · 추모공화국">
+<meta property="og:description" content="추모공화국 추모가요. 국가와 이전 국가를 비롯한 공인 음원을 한자리에서 이어 듣는다. 문화추모부 문화콘텐츠과 운영.">
+<link rel="icon" type="image/png" href="../../assets/brand/favicon-flag.png">
+<link rel="stylesheet" href="../../assets/common.css">
+</head>
+<body>
+<header class="gnb noprint">
+  <div class="gnb-inner">
+    <a class="gnb-brand" href="../../" data-home><img class="gnb-logo" src="../../assets/brand/flag.webp" alt=""><span class="gnb-candle" aria-hidden="true">🕯️</span> <span class="gnb-wordmark">추모공화국</span></a>
+    <button class="gnb-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="gnbMenu">☰</button>
+    <nav class="gnb-nav" aria-label="주 메뉴">
+      <ul class="gnb-menu" id="gnbMenu">
+        <li><a class="gnb-link" href="../../" data-home><span aria-hidden="true">🏠</span> 홈</a></li>
+        <li><a class="gnb-link" href="../../about/"><span aria-hidden="true">🏛️</span> 소개</a></li>
+        <li><a class="gnb-link" href="../../president/"><span class="ico-ribbon" role="img" aria-label="노란 리본"></span> 대통령</a></li>
+        <li><a class="gnb-link" href="../../government/"><span aria-hidden="true">🏢</span> 정부조직</a></li>
+        <li><a class="gnb-link" href="../../laws/" data-match="../../cases/ ../../chumo-constitution/ ../../chumo-criminal-act/ ../../chumo-correction-act/"><span aria-hidden="true">📜</span> 법률</a></li>
+        <li><a class="gnb-link" href="../../memorials/"><span aria-hidden="true">🕯️</span> 추모건</a></li>
+        <li><a class="gnb-link" href="../../officials/"><span aria-hidden="true">👥</span> 국무위원</a></li>
+        <li><a class="gnb-link" href="../../hall/"><span aria-hidden="true">🏅</span> 명예의전당</a></li>
+        <li><a class="gnb-link" href="../../history/"><span aria-hidden="true">📖</span> 역사</a></li>
+        <li><a class="gnb-link" href="../../anthem/"><span aria-hidden="true">🎵</span> 국가</a></li>
+        <li><a class="gnb-link" href="../../mourners/"><span aria-hidden="true">📋</span> 추모꾼</a></li>
+      </ul>
+    <form class="gnb-find" role="search" action="../../mourners/" method="get">
+      <input class="gnb-find-in" id="gnbFind" type="search" name="n" autocomplete="off"
+             placeholder="추모꾼 조회" aria-label="추모꾼 이름으로 조회">
+      <button class="gnb-find-go" type="submit" aria-label="조회"><span aria-hidden="true">🔎</span></button>
+      <ul class="gnb-find-list" id="gnbFindList" role="listbox" aria-label="조회 결과" hidden></ul>
+    </form>
+    </nav>
+  </div>
+</header>
+
+<main class="paper">
+<div class="watermark" aria-hidden="true"><img class="watermark-img" src="../../assets/brand/flag.webp" alt=""><span class="watermark-fallback">🎵</span></div>
+
+<nav class="subnav noprint" aria-label="국가 메뉴">
+  <a class="subnav-link" href="../../anthem/">국가</a>
+  <a class="subnav-link" href="../../anthem/former/">이전 국가</a>
+  <a class="subnav-link subnav-link--mark active" href="../../anthem/songs/" aria-current="page">추모가요</a>
+</nav>
+
+<header class="cover cover--page">
+  <figure class="natflag">
+  <img class="natflag-img" src="../../assets/brand/flag.webp" alt="추모공화국 국기">
+  <span class="natflag-fallback" aria-hidden="true">🎵</span>
+</figure>
+  <div class="org">추 모 공 화 국</div>
+  <h1>추 모 가 요</h1>
+  <div class="sub">SONGS OF THE MEMORIAL REPUBLIC</div>
+</header>
+
+<section class="preamble" aria-label="일러두기">
+  <div class="ptitle">일 러 두 기</div>
+  국가는 서서 부르는 것이고, 가요는 앉아서 듣는 것이다. 이 나라는 그 둘을 모두 가진다.
+  여기에는 국가와 이전 국가를 포함하여 <b>문화추모부가 공인한 음원 전부</b>를 수록하며,
+  위에서부터 차례로 이어 재생한다. 제목을 선택하면 그 곡부터 다시 시작한다.
+  <b>추모는 무거움만으로 지탱되지 않는다</b>는 것이 이 편성의 전제다.
+  <div class="motto">오직 추모</div>
+</section>
+
+<section aria-labelledby="h-now">
+<h2 id="h-now">재 생</h2>
+
+<div class="plr noprint">
+  <div class="plr-now">
+    <span class="plr-label">지금 나오는 곡</span>
+    <h3 class="plr-title" id="plTitle">—</h3>
+    <p class="plr-meta" id="plMeta"></p>
+    <p class="plr-desc" id="plDesc"></p>
+  </div>
+  <audio id="plAudio" preload="metadata"></audio>
+  <div class="plr-bar">
+    <button type="button" class="plr-btn" id="plPrev" aria-label="이전 곡">⏮</button>
+    <button type="button" class="plr-btn plr-btn--main" id="plPlay" aria-label="재생">▶</button>
+    <button type="button" class="plr-btn" id="plNext" aria-label="다음 곡">⏭</button>
+    <span class="anthem-time" id="plCur">0:00</span>
+    <input type="range" class="anthem-seek" id="plSeek" min="0" max="100" value="0" step="0.1" aria-label="재생 구간">
+    <span class="anthem-time" id="plDur">0:00</span>
+  </div>
+  <label class="plr-auto"><input type="checkbox" id="plAuto" checked> 끝나면 다음 곡을 이어서 재생</label>
+</div>
+
+<ol class="plist" id="plList"></ol>
+<div class="lk-empty" id="plEmpty" hidden>음원 목록을 준비하고 있다.</div>
+<p class="lk-hint noprint">스페이스바로 재생·정지, 좌우 방향키로 15초씩 이동한다.</p>
+</section>
+
+<section aria-labelledby="h-submit">
+<h2 id="h-submit">음 원 접 수</h2>
+<p>추모가요는 <b>문화추모부 문화콘텐츠과</b>가 편성한다. 수록을 원하는 음원은 추모방에 올려 심의를 받는다.
+심의는 아래 세 가지만 본다.</p>
+<ul class="speclist">
+  <li><b>고인과 유가족의 존엄</b>을 해치지 아니할 것 — 헌법 제8조 제3항</li>
+  <li><b>금지 표현</b>이 들어 있지 아니할 것 — 헌법 제9조 제2항</li>
+  <li>추모공화국에서 만들어졌거나, 이 나라의 일을 노래한 것일 것</li>
+</ul>
+<div class="note">가락이 무거운지 가벼운지는 심의하지 아니한다. <b>웃긴 노래도 추모가요가 될 수 있다</b>는 것이
+래퍼 국무위원을 국무회의에 앉힌 나라의 입장이다. 다만 웃겨도 되는 선과 넘으면 안 되는 선을 가르는 최종 판단은
+그 국무위원의 몫이다.</div>
+</section>
+
+<div class="closing">
+  국가는 한 곡이면 되지만<br>
+  노래는 많을수록 좋다.<br>
+  <strong>오직 추모</strong>
+</div>
+
+<div class="sig">
+  <span class="title">문화추모부 편성</span><br>
+  <span class="members">문화콘텐츠과 · 대한추모협회 공식 인증</span>
+</div>
+
+<footer class="footer">
+  대한추모협회 공식 인증 · 추모공화국 정부 발행<br>
+  본 사이트의 문서는 추모공화국 공공기록물 관리법 제14조에 의거 영구 보존된다.
+  <div class="fmotto">오직 추모</div>
+</footer>
+
+</main>
+
+<script src="../../assets/nav.js" defer></script>
+<script src="../../assets/songs.js" defer></script>
+
+</body>
+</html>

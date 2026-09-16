@@ -1689,3 +1689,94 @@ audio:focus-visible,
 .lyrics--old { margin: 0 0 6px; }
 .lyrics--old .verse { font-size: 14.5px; color: var(--ink-muted); }
 .lyrics--old .refrain { color: var(--ink-sub); }
+
+/* ==========================================================================
+   추모가요 — 재생기와 곡 목록
+   ========================================================================== */
+
+.plr {
+  background: var(--navy); border: 1px solid var(--gold-light);
+  border-radius: var(--radius-box); padding: 22px 24px; margin: 22px 0 18px;
+}
+.plr-now { margin-bottom: 16px; }
+.plr-label {
+  display: block; font-size: 10.5px; font-weight: 700; letter-spacing: 3px;
+  color: var(--navy-muted); margin-bottom: 8px;
+}
+.plr-title {
+  margin: 0 0 6px; padding: 0; border: none;
+  font-size: 22px; font-weight: 700; letter-spacing: 2px; color: var(--paper-warm);
+}
+.plr-meta { margin: 0 0 8px; font-size: 12.5px; color: var(--navy-muted); letter-spacing: .5px; }
+.plr-meta b { color: var(--gold-light); }
+.plr-meta a { color: var(--gold-light); text-decoration: none; }
+.plr-meta a:hover { color: #fff; text-decoration: underline; }
+.plr-desc { margin: 0; font-size: 13.5px; line-height: 1.95; color: var(--paper-deep); }
+.plr-desc:empty { display: none; }
+
+.plr-bar { display: flex; align-items: center; gap: 10px; }
+.plr-btn {
+  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  background: transparent; color: var(--navy-text); border: 1px solid var(--navy-line);
+  font-family: inherit; font-size: 13px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.plr-btn:hover { background: var(--navy-alt); color: #fff; }
+.plr-btn--main {
+  width: 44px; height: 44px; font-size: 17px;
+  background: var(--paper-deep); color: var(--navy); border-color: var(--paper-deep);
+}
+.plr-btn--main:hover { background: #fff; color: var(--navy); }
+.plr-auto {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 14px;
+  font-size: 12.5px; color: var(--navy-muted); cursor: pointer;
+}
+.plr-auto input { width: 14px; height: 14px; accent-color: var(--gold-light); cursor: pointer; }
+
+/* 곡 목록 */
+.plist { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 8px; }
+.plist .tr { margin: 0; }
+.tr-btn {
+  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+  font-family: inherit; cursor: pointer;
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--border); border-radius: var(--radius-box);
+  padding: 14px 18px;
+  transition: border-color .2s, background .2s;
+}
+.tr-btn:hover { background: var(--paper-deep); border-left-color: var(--gold); }
+.tr.on .tr-btn { border-left-color: var(--accent-red); background: var(--paper-deep); }
+.tr-no {
+  flex: none; width: 22px; text-align: right;
+  font-size: 12.5px; color: var(--ink-faint); font-variant-numeric: tabular-nums;
+}
+.tr-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.tr-title { font-size: 16px; font-weight: 700; color: var(--ink); letter-spacing: 1px; }
+.tr.on .tr-title { color: var(--accent-red); }
+.tr-sub { font-size: 12px; color: var(--ink-muted); letter-spacing: .5px; }
+.tr-len {
+  flex: none; font-size: 12.5px; color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+/* 재생 중인 곡에만 나타나는 표시 */
+.tr-eq { flex: none; display: none; align-items: flex-end; gap: 2px; height: 14px; }
+.tr.on .tr-eq { display: flex; }
+.tr-eq i { display: block; width: 3px; height: 4px; background: var(--accent-red); border-radius: 1px; }
+body.pl-playing .tr.on .tr-eq i { animation: plEq .9s ease-in-out infinite; }
+body.pl-playing .tr.on .tr-eq i:nth-child(2) { animation-delay: .3s; }
+body.pl-playing .tr.on .tr-eq i:nth-child(3) { animation-delay: .6s; }
+@keyframes plEq { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+@media (prefers-reduced-motion: reduce) {
+  body.pl-playing .tr.on .tr-eq i { animation: none; height: 9px; }
+}
+
+@media (max-width: 700px) {
+  .plr { padding: 18px 16px; }
+  .plr-title { font-size: 19px; }
+  .plr-bar { gap: 8px; }
+  .plr-btn { width: 32px; height: 32px; }
+  .plr-btn--main { width: 40px; height: 40px; }
+  .tr-btn { padding: 12px 14px; gap: 10px; }
+  .tr-title { font-size: 15px; }
+  .tr-no { width: 16px; }
+}
