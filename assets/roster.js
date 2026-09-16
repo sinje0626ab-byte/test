@@ -26,17 +26,17 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
   }
-  /* 재적 여부 — 0 재적 / 1 퇴장 / 2 강제 퇴장 */
+  /* 재적 구분 — 0 체류중 / 1 자진 퇴거 / 2 강제 퇴거 */
   function badge(p) {
-    if (p.g === 2) return '<span class="pg pg--kick">강제 퇴장</span>';
-    if (p.g === 1) return '<span class="pg pg--out">퇴장</span>';
+    if (p.g === 2) return '<span class="pg pg--kick">강제 퇴거</span>';
+    if (p.g === 1) return '<span class="pg pg--out">퇴거</span>';
     return '';
   }
   function standing(p) {
-    if (!p.g) return '<span class="pc-stand pc-stand--in">지금도 방에 있다</span>';
+    if (!p.g) return '<span class="pc-stand pc-stand--in">재적 구분 · 체류중</span>';
     var when = p.gd ? ymd(p.gd) + ' ' : '';
-    return '<span class="pc-stand pc-stand--out">' + when +
-      (p.g === 2 ? '교정 절차로 내보내졌다' : '방을 떠났다') + '</span>';
+    return '<span class="pc-stand pc-stand--out">재적 구분 · ' + when +
+      (p.g === 2 ? '강제 퇴거' : '자진 퇴거') + '</span>';
   }
 
   function ymd(s) {
@@ -65,7 +65,7 @@
     out.innerHTML = '<div class="lk-empty">' + esc(msg) + '</div>';
   }
 
-  /* 이름으로 찾기 — 완전 일치 > 앞부분 일치 > 부분 일치 순 */
+  /* 성명 조회 — 완전 일치 · 전방 일치 · 부분 일치 순으로 배열한다 */
   function find(q) {
     q = q.trim();
     if (!q) return [];
@@ -104,13 +104,13 @@
       '<div class="mm-stats">' +
         '<span><i>발화</i><b>' + num(p.m) + '</b>개</span>' +
         '<span><i>추모 기사</i><b>' + num(p.a) + '</b>건</span>' +
-        '<span><i>그 밖의 링크</i><b>' + num(p.l) + '</b>건</span>' +
+        '<span><i>기타 링크</i><b>' + num(p.l) + '</b>건</span>' +
         '<span><i>참여 추모건</i><b>' + p.b.length + '</b>건</span>' +
         '<span><i>활동일</i><b>' + num(p.d) + '</b>일</span>' +
       '</div>' +
-      '<p class="pc-span">' + ymd(p.f) + ' 첫 발화 &mdash; ' + ymd(p.t) + ' 마지막 발화<br>' + standing(p) + '</p>' +
+      '<p class="pc-span">최초 발화 ' + ymd(p.f) + ' &mdash; 최종 발화 ' + ymd(p.t) + '<br>' + standing(p) + '</p>' +
       (bars ? '<ul class="pbs">' + bars + '</ul>' : '') +
-      '<div class="pc-share noprint">이 기록의 주소를 그대로 추모방에 붙일 수 있다.' +
+      '<div class="pc-share noprint">본 기록의 주소는 그대로 인용·배포할 수 있다.' +
         '<button type="button" class="pc-copy" data-copy="' + esc(p.n) + '">주소 복사</button></div>' +
       '</article>';
   }
@@ -129,12 +129,12 @@
     load().then(function () {
       var hits = find(q);
       if (!hits.length) {
-        fail('「' + q + '」(으)로 찾은 추모꾼이 없다. 이름의 일부만 넣어도 된다.');
+        fail('「' + q + '」(으)로 조회된 등재자가 없다. 성명의 일부만 입력하여도 조회된다.');
         focusOut(smooth); return;
       }
       var html = card(hits[0]);
       if (hits.length > 1) {
-        html += '<div class="lk-also">같은 글자가 든 이름 ' + (hits.length - 1) + '명 &mdash; ' +
+        html += '<div class="lk-also">동일 문자열이 포함된 성명 ' + (hits.length - 1) + '건 &mdash; ' +
           hits.slice(1, 13).map(function (p) {
             return '<button type="button" class="pr-link" data-who="' + esc(p.n) + '">' + esc(p.n) + '</button>';
           }).join(' · ') + (hits.length > 13 ? ' …' : '') + '</div>';
@@ -142,7 +142,7 @@
       out.innerHTML = html;
       focusOut(smooth);
     }).catch(function () {
-      fail('명부 자료를 불러오지 못했다. 잠시 뒤 다시 조회해 주기 바란다.');
+      fail('명부 자료를 조회할 수 없다. 잠시 후 재조회하기 바란다.');
     });
   }
 
@@ -156,7 +156,7 @@
     if (e.key === 'Enter') { e.preventDefault(); input.blur(); show(input.value, true); }
   });
 
-  /* 순위표의 이름을 눌러도 같은 기록이 열린다 */
+  /* 순위표의 성명을 선택하여도 동일한 기록이 표시된다 */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (t && t.classList && t.classList.contains('pr-link')) {
@@ -165,11 +165,11 @@
     }
     if (t && t.classList && t.classList.contains('pc-copy')) {
       var url = location.origin + location.pathname + '?n=' + encodeURIComponent(t.getAttribute('data-copy'));
-      var done = function () { t.textContent = '복사했다'; setTimeout(function () { t.textContent = '주소 복사'; }, 2000); };
+      var done = function () { t.textContent = '복사 완료'; setTimeout(function () { t.textContent = '주소 복사'; }, 2000); };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(done, function () { window.prompt('주소를 복사해 주기 바란다.', url); });
+        navigator.clipboard.writeText(url).then(done, function () { window.prompt('아래 주소를 복사하기 바란다.', url); });
       } else {
-        window.prompt('주소를 복사해 주기 바란다.', url);
+        window.prompt('아래 주소를 복사하기 바란다.', url);
       }
     }
   });
@@ -177,7 +177,7 @@
   /* 전체 보기 — 101위부터 끝까지 붙인다 */
   more && more.addEventListener('click', function () {
     more.disabled = true;
-    more.textContent = '불러오는 중…';
+    more.textContent = '조회 중';
     load().then(function (j) {
       var rest = j.people.slice(body.rows.length);
       var html = rest.map(function (p) {
@@ -191,17 +191,17 @@
       more.parentNode.removeChild(more);
     }).catch(function () {
       more.disabled = false;
-      more.textContent = '불러오지 못했다. 다시 시도 →';
+      more.textContent = '조회할 수 없다. 재시도 →';
     });
   });
 
-  /* 지금 방에 있는 사람만 보기 */
+  /* 체류자만 표시 */
   var only = document.getElementById('onlyStay');
   only && only.addEventListener('change', function () {
     body.classList.toggle('only-stay', only.checked);
   });
 
-  /* 주소에 ?n=이름 이 붙어 있으면 바로 연다 — 카카오톡에 공유하기 좋다 */
+  /* 주소에 ?n=성명 이 붙어 있으면 해당 기록을 즉시 표시한다 */
   var qs = new URLSearchParams(location.search).get('n');
   if (qs) {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
