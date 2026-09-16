@@ -1380,3 +1380,168 @@ audio:focus-visible,
   a { text-decoration: none; color: inherit; }
   a[href]::after { content: ""; }
 }
+
+/* ==========================================================================
+   추모꾼 명부 — 조회 / 순위표 / 개인 기록 카드
+   ========================================================================== */
+
+.lookup {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box); padding: 16px 20px; margin: 18px 0 8px;
+}
+.lk-label {
+  flex: none; font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  color: var(--ink-faint);
+}
+.lk-in {
+  flex: 1 1 200px; min-width: 0;
+  font-family: inherit; font-size: 15.5px; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 14px; outline: none;
+}
+.lk-in:focus { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-light); }
+.lk-btn {
+  flex: none; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: 3px;
+  color: var(--navy-text); background: var(--navy); border: 1px solid var(--navy);
+  border-radius: var(--radius); padding: 10px 22px; cursor: pointer;
+}
+.lk-btn:hover { background: var(--navy-alt); }
+.lk-btn[disabled] { opacity: .55; cursor: default; }
+.lk-btn--ghost {
+  color: var(--navy); background: transparent; border-color: var(--border);
+  letter-spacing: 2px; font-weight: 600;
+}
+.lk-btn--ghost:hover { background: var(--paper-deep); color: var(--ink); }
+.lk-hint { font-size: 13px; color: var(--ink-faint); margin: 0 0 18px; }
+.lk-out:empty { display: none; }
+.lk-empty {
+  background: var(--paper-deep); border: 1px dashed var(--border);
+  border-radius: var(--radius-box); padding: 20px 22px;
+  font-size: 14.5px; color: var(--ink-sub);
+}
+.lk-also {
+  margin-top: 12px; font-size: 13px; color: var(--ink-muted); line-height: 2.1;
+}
+
+/* 개인 기록 카드 */
+.pcard {
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--gold); border-radius: var(--radius-box);
+  padding: 22px 26px; page-break-inside: avoid;
+  scroll-margin-top: calc(var(--nav-height) + 16px);
+}
+.pc-share {
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-soft);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  font-size: 12.5px; color: var(--ink-faint);
+}
+.pc-copy {
+  font-family: inherit; font-size: 12.5px; font-weight: 600; letter-spacing: 1.5px;
+  color: var(--navy); background: var(--paper); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 6px 14px; cursor: pointer;
+}
+.pc-copy:hover { background: var(--paper-deep); color: var(--ink); }
+.pc-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+  margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft);
+}
+.pc-rank {
+  flex: none; font-size: 20px; font-weight: 700; color: var(--navy);
+  font-variant-numeric: tabular-nums; letter-spacing: 0;
+}
+.pc-rank small, .pc-score small { font-size: 11.5px; font-weight: 400; letter-spacing: 1.5px; margin-left: 2px; }
+.pc-name {
+  margin: 0; padding: 0; border: none; flex: 1 1 auto;
+  font-size: 19.5px; font-weight: 700; color: var(--ink); letter-spacing: 1px;
+  word-break: break-all;
+}
+.pc-score {
+  flex: none; font-size: 22px; font-weight: 700; color: var(--accent-red);
+  font-variant-numeric: tabular-nums;
+}
+.pc-formula {
+  font-size: 13px; color: var(--ink-muted); margin-bottom: 14px;
+  font-variant-numeric: tabular-nums; letter-spacing: .5px;
+}
+.pc-formula b { color: var(--ink); }
+.pc-op { color: var(--ink-faint); margin: 0 2px; }
+.pc-span { margin: 0 0 14px; font-size: 13.5px; color: var(--ink-muted); }
+
+/* 참여 추모건 막대 */
+.pbs { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pb { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.pb-name { flex: 0 0 34%; color: var(--ink-sub); }
+.pb-bar { flex: 1 1 auto; height: 8px; background: var(--paper-deep); border-radius: 2px; overflow: hidden; }
+.pb-bar i { display: block; height: 100%; background: var(--gold); }
+.pb-num {
+  flex: 0 0 72px; text-align: right; color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.pb-num small { font-size: 10.5px; margin-left: 2px; }
+
+/* 순위표 */
+.ptable { font-size: 13.5px; }
+.ptable td { padding: 7px 11px; }
+.ptable thead th { white-space: nowrap; }
+.pr-rank { width: 56px; text-align: right; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.pr-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pr-name { word-break: break-all; }
+.pr-link {
+  font-family: inherit; font-size: inherit; color: var(--navy); font-weight: 600;
+  background: none; border: none; padding: 0; cursor: pointer; text-align: left;
+  border-bottom: 1px dotted var(--border);
+}
+.pr-link:hover { color: var(--accent-red); border-bottom-color: var(--accent-red); }
+.pr--gold   .pr-rank { color: var(--gold); font-weight: 700; }
+.pr--silver .pr-rank { color: var(--navy); font-weight: 700; }
+.pr--bronze .pr-rank { color: var(--accent-red); font-weight: 700; }
+
+/* 부문별 기록 */
+.bests { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 18px 0 10px; }
+.best {
+  display: flex; flex-direction: column; gap: 3px;
+  background: var(--paper-alt); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-box); padding: 16px 18px;
+}
+.bs-label { font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px; color: var(--ink-faint); }
+.bs-who { font-size: 15px; font-weight: 700; color: var(--ink); word-break: break-all; }
+.bs-num {
+  font-size: 22px; font-weight: 700; color: var(--navy);
+  font-variant-numeric: tabular-nums; margin-top: 2px;
+}
+.bs-num small { font-size: 12px; font-weight: 400; letter-spacing: 1.5px; margin-left: 2px; }
+.bs-sub { font-size: 12px; color: var(--ink-muted); }
+
+@media (max-width: 700px) {
+  .lookup { padding: 14px 16px; }
+  .lk-label { flex: 1 0 100%; }
+  .pcard { padding: 18px 18px; }
+  .pc-name { font-size: 17.5px; }
+  .pb-name { flex: 0 0 40%; }
+  .pb-num { flex: 0 0 62px; }
+  .bests { grid-template-columns: 1fr; }
+  .ptable { font-size: 12.5px; }
+  .ptable td, .ptable th { padding: 6px 7px; }
+  .pr-rank { width: 40px; }
+}
+
+/* 좁은 화면에서는 순위표의 뒷 열부터 접는다 */
+@media (max-width: 700px) {
+  .ptable tr > :nth-child(7) { display: none; }
+}
+@media (max-width: 460px) {
+  .ptable tr > :nth-child(6) { display: none; }
+}
+
+/* 추모건별 참여 표 — 전환일을 이름 아래 줄로 내린다 */
+.bk-cell b { display: block; font-weight: 700; color: var(--ink); }
+.bk-when { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 2px; letter-spacing: .5px; }
+.ptable--bk tr > :nth-child(n+2) { width: 15%; }
+@media (max-width: 700px) {
+  .ptable thead th { letter-spacing: 0; font-size: 11.5px; }
+  .ptable--bk tr > :nth-child(n) { display: table-cell; }
+}
+@media (max-width: 400px) {
+  .ptable--bk tr > :nth-child(4) { display: none; }
+}
