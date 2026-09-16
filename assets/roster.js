@@ -26,6 +26,19 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
   }
+  /* 재적 여부 — 0 재적 / 1 퇴장 / 2 강제 퇴장 */
+  function badge(p) {
+    if (p.g === 2) return '<span class="pg pg--kick">강제 퇴장</span>';
+    if (p.g === 1) return '<span class="pg pg--out">퇴장</span>';
+    return '';
+  }
+  function standing(p) {
+    if (!p.g) return '<span class="pc-stand pc-stand--in">지금도 방에 있다</span>';
+    var when = p.gd ? ymd(p.gd) + ' ' : '';
+    return '<span class="pc-stand pc-stand--out">' + when +
+      (p.g === 2 ? '교정 절차로 내보내졌다' : '방을 떠났다') + '</span>';
+  }
+
   function ymd(s) {
     var p = String(s).split('-');
     return p.length === 3 ? p[0] + '년 ' + (+p[1]) + '월 ' + (+p[2]) + '일' : s;
@@ -84,7 +97,7 @@
     return '<article class="pcard">' +
       '<header class="pc-head">' +
         '<span class="pc-rank">' + num(p.r) + '<small>위</small></span>' +
-        '<h3 class="pc-name">' + esc(p.n) + '</h3>' +
+        '<h3 class="pc-name">' + esc(p.n) + badge(p) + '</h3>' +
         '<span class="pc-score">' + num(p.s) + '<small>점</small></span>' +
       '</header>' +
       '<div class="pc-formula">' + scoreLine + ' <span class="pc-op">=</span> <b>' + num(p.s) + '</b></div>' +
@@ -95,17 +108,30 @@
         '<span><i>참여 추모건</i><b>' + p.b.length + '</b>건</span>' +
         '<span><i>활동일</i><b>' + num(p.d) + '</b>일</span>' +
       '</div>' +
-      '<p class="pc-span">' + ymd(p.f) + ' 첫 발화 &mdash; ' + ymd(p.t) + ' 마지막 발화</p>' +
+      '<p class="pc-span">' + ymd(p.f) + ' 첫 발화 &mdash; ' + ymd(p.t) + ' 마지막 발화<br>' + standing(p) + '</p>' +
       (bars ? '<ul class="pbs">' + bars + '</ul>' : '') +
       '<div class="pc-share noprint">이 기록의 주소를 그대로 추모방에 붙일 수 있다.' +
         '<button type="button" class="pc-copy" data-copy="' + esc(p.n) + '">주소 복사</button></div>' +
       '</article>';
   }
 
-  function show(q) {
+  /* 결과가 그려진 뒤에 그 자리로 옮긴다 — 조회하면 바로 보이도록 */
+  function focusOut(smooth) {
+    var el = out.querySelector('.pcard') || out.firstElementChild;
+    if (!el) return;
+    requestAnimationFrame(function () {
+      try { el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
+      catch (e) { el.scrollIntoView(); }
+    });
+  }
+
+  function show(q, smooth) {
     load().then(function () {
       var hits = find(q);
-      if (!hits.length) { fail('「' + q + '」(으)로 찾은 추모꾼이 없다. 이름의 일부만 넣어도 된다.'); return; }
+      if (!hits.length) {
+        fail('「' + q + '」(으)로 찾은 추모꾼이 없다. 이름의 일부만 넣어도 된다.');
+        focusOut(smooth); return;
+      }
       var html = card(hits[0]);
       if (hits.length > 1) {
         html += '<div class="lk-also">같은 글자가 든 이름 ' + (hits.length - 1) + '명 &mdash; ' +
@@ -114,27 +140,27 @@
           }).join(' · ') + (hits.length > 13 ? ' …' : '') + '</div>';
       }
       out.innerHTML = html;
+      focusOut(smooth);
     }).catch(function () {
       fail('명부 자료를 불러오지 못했다. 잠시 뒤 다시 조회해 주기 바란다.');
     });
   }
 
-  function open(name) {
+  function open(name, smooth) {
     input.value = name;
-    show(name);
-    out.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    show(name, smooth);
   }
 
-  go && go.addEventListener('click', function () { show(input.value); });
+  go && go.addEventListener('click', function () { show(input.value, true); });
   input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { e.preventDefault(); show(input.value); }
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); show(input.value, true); }
   });
 
   /* 순위표의 이름을 눌러도 같은 기록이 열린다 */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (t && t.classList && t.classList.contains('pr-link')) {
-      open(t.getAttribute('data-who') || t.textContent);
+      open(t.getAttribute('data-who') || t.textContent, true);
       return;
     }
     if (t && t.classList && t.classList.contains('pc-copy')) {
@@ -155,8 +181,8 @@
     load().then(function (j) {
       var rest = j.people.slice(body.rows.length);
       var html = rest.map(function (p) {
-        return '<tr class="pr"><td class="pr-rank">' + p.r + '</td>' +
-          '<td class="pr-name"><button type="button" class="pr-link" data-who="' + esc(p.n) + '">' + esc(p.n) + '</button></td>' +
+        return '<tr class="pr" data-gone="' + p.g + '"><td class="pr-rank">' + p.r + '</td>' +
+          '<td class="pr-name"><button type="button" class="pr-link" data-who="' + esc(p.n) + '">' + esc(p.n) + '</button>' + badge(p) + '</td>' +
           '<td class="pr-num">' + num(p.s) + '</td><td class="pr-num">' + num(p.m) + '</td>' +
           '<td class="pr-num">' + num(p.a) + '</td><td class="pr-num">' + p.b.length + '</td>' +
           '<td class="pr-num">' + num(p.d) + '</td></tr>';
@@ -169,7 +195,16 @@
     });
   });
 
+  /* 지금 방에 있는 사람만 보기 */
+  var only = document.getElementById('onlyStay');
+  only && only.addEventListener('change', function () {
+    body.classList.toggle('only-stay', only.checked);
+  });
+
   /* 주소에 ?n=이름 이 붙어 있으면 바로 연다 — 카카오톡에 공유하기 좋다 */
   var qs = new URLSearchParams(location.search).get('n');
-  if (qs) open(qs);
+  if (qs) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    open(qs, false);
+  }
 }());

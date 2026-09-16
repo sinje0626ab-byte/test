@@ -421,9 +421,11 @@
         list.hidden = false; opts = []; cur = -1; return;
       }
       list.innerHTML = hits.map(function (p) {
+        var mark = p.g === 2 ? '<span class="pg pg--kick">강제 퇴장</span>'
+                : p.g === 1 ? '<span class="pg pg--out">퇴장</span>' : '';
         return '<li><button type="button" class="gnb-find-opt" data-who="' + esc(p.n) + '">' +
           '<span class="gfo-rank">' + p.r + '위</span>' +
-          '<span class="gfo-name">' + esc(p.n) + '</span>' +
+          '<span class="gfo-name">' + esc(p.n) + mark + '</span>' +
           '<span class="gfo-num">' + p.s.toLocaleString('ko-KR') + '점</span></button></li>';
       }).join('');
       list.hidden = false;
