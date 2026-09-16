@@ -230,7 +230,8 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .anthem-play:hover { background: #fff; }
 .anthem-time { font-size: 12.5px; color: var(--navy-muted); font-variant-numeric: tabular-nums; min-width: 34px; }
 .anthem-seek {
-  flex: 1 1 auto; -webkit-appearance: none; appearance: none; height: 6px;
+  /* min-width:auto 를 그대로 두면 좁은 화면에서 막대가 줄지 않고 화면을 넘긴다 */
+  flex: 1 1 auto; min-width: 0; -webkit-appearance: none; appearance: none; height: 6px;
   border-radius: var(--radius); background: var(--ink-soft); cursor: pointer; outline: none;
 }
 .anthem-seek::-webkit-slider-thumb {
@@ -567,7 +568,16 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 
 @media (max-width: 700px) {
   .tiles { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 34px; letter-spacing: 12px; text-indent: 12px; }
+  /* 표제는 한 줄로 유지하고 화면 폭에 맞춰 크기를 줄인다.
+     자간을 넣어 적은 표제가 줄바꿈되면 「추모공화 / 국」처럼 읽히지 않는다.
+     나눗수는 글자수 기준 폭(글자 1 + 사이 공백 .25 + 자간 .3)에서 나왔다. */
+  .paper .cover h1 {
+    white-space: nowrap;
+    font-size: min(32px, calc((100vw - 48px) / 9.2));
+    letter-spacing: .3em; text-indent: .3em;
+  }
+  .paper .cover--long h1 { font-size: min(30px, calc((100vw - 48px) / 13)); }
+  .paper .hero h1 { font-size: min(34px, calc((100vw - 48px) / 9.2)); }
   .hero .emblem { font-size: 40px; }
   .hero .motto { font-size: 17px; letter-spacing: 9px; text-indent: 9px; }
   .watermark { font-size: 240px; }
@@ -658,7 +668,6 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 
 @media (max-width: 700px) {
   .council-grid { grid-template-columns: 1fr; }
-  .cover--page h1 { font-size: 26px; letter-spacing: 8px; text-indent: 8px; }
 }
 
 /* ==========================================================================
