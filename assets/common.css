@@ -347,10 +347,10 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   .gnb-brand { font-size: 14px; letter-spacing: 1.5px; }
   .gnb-link { padding: 0 6px; }
 }
-@media (min-width: 769px) and (max-width: 1120px) {
+@media (min-width: 769px) and (max-width: 1100px) {
   .gnb-link > span { display: none; }           /* 이모지를 접고 글자만 남긴다 */
 }
-@media (min-width: 769px) and (max-width: 980px) {
+@media (min-width: 769px) and (max-width: 900px) {
   .gnb-inner { gap: 6px; padding: 0 8px; }
   .gnb-brand .gnb-wordmark { display: none; }   /* 국기만 남기고 국호는 접는다 */
   .gnb-link { padding: 0 4px; font-size: 12px; }
@@ -1419,8 +1419,10 @@ audio:focus-visible,
 }
 .lk-btn--ghost:hover { background: var(--paper-deep); color: var(--ink); }
 .lk-hint { font-size: 13px; color: var(--ink-faint); margin: 0 0 18px; }
+.lk-out { scroll-margin-top: calc(var(--nav-height) + 16px); }
 .lk-out:empty { display: none; }
 .lk-empty {
+  scroll-margin-top: calc(var(--nav-height) + 16px);
   background: var(--paper-deep); border: 1px dashed var(--border);
   border-radius: var(--radius-box); padding: 20px 22px;
   font-size: 14.5px; color: var(--ink-sub);
@@ -1610,7 +1612,7 @@ audio:focus-visible,
   .gnb-find-in { width: 96px; font-size: 12px; padding: 5px 26px 5px 8px; }
   .gnb-find-in:focus { width: 160px; }
 }
-@media (min-width: 769px) and (max-width: 980px) {
+@media (min-width: 769px) and (max-width: 900px) {
   .gnb-find-in { width: 76px; }
   .gnb-find-in:focus { width: 140px; }
 }
@@ -1625,4 +1627,60 @@ audio:focus-visible,
   .gnb-find-in:focus { width: 100%; }
   .gnb-find-go { width: 38px; height: 38px; right: 2px; font-size: 15px; }
   .gnb-find-list { left: 0; right: 0; min-width: 0; max-height: 46vh; }
+}
+
+/* 재적 표시 — 방을 떠난 사람과 교정 절차로 내보내진 사람 */
+.pg {
+  display: inline-block; margin-left: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; white-space: nowrap;
+  border-radius: 2px; padding: 1px 6px 2px; vertical-align: 1px;
+}
+.pg--out  { color: var(--ink-faint); border: 1px solid var(--border); background: var(--paper-deep); }
+.pg--kick { color: var(--accent-red); border: 1px dashed var(--accent-red); background: transparent; }
+.pr[data-gone="1"] .pr-link, .pr[data-gone="2"] .pr-link { color: var(--ink-muted); }
+#rankBody.only-stay tr[data-gone="1"],
+#rankBody.only-stay tr[data-gone="2"] { display: none; }
+.onlystay { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.onlystay input { width: 15px; height: 15px; accent-color: var(--navy); cursor: pointer; }
+
+.pc-stand { font-size: 12.5px; letter-spacing: .5px; }
+.pc-stand--in  { color: var(--navy); font-weight: 600; }
+.pc-stand--out { color: var(--ink-faint); }
+.gfo-name .pg { font-size: 9.5px; margin-left: 5px; padding: 0 5px 1px; }
+
+@media (max-width: 700px) {
+  .pg { font-size: 9.5px; margin-left: 4px; padding: 1px 4px 2px; letter-spacing: 0; }
+}
+
+/* 부메뉴에서 한 항목만 도드라지게 — 법률 아래의 판례집 */
+.subnav-link--mark {
+  color: var(--navy); font-weight: 700;
+  border: 1px solid var(--gold); border-radius: var(--radius);
+}
+.subnav-link--mark:hover { background: var(--paper-deep); color: var(--ink); border-color: var(--navy); }
+.subnav-link--mark.active,
+.subnav-link--mark[aria-current="page"] { background: var(--navy); color: var(--navy-text); border-color: var(--navy); }
+
+/* 큰 유도 단추 — 한 페이지에 하나만 둔다 */
+.bigcta {
+  display: flex; align-items: center; gap: 16px;
+  margin: 22px 0 6px; padding: 20px 24px;
+  text-decoration: none; page-break-inside: avoid;
+  background: var(--paper-deep); border: 1px solid var(--gold);
+  border-left: 4px solid var(--gold); border-radius: var(--radius-box);
+  transition: border-color .2s, box-shadow .2s;
+}
+.bigcta:hover { border-color: var(--navy); box-shadow: 0 3px 12px rgba(30, 26, 16, .13); }
+.bigcta-icon { flex: none; font-size: 30px; line-height: 1; }
+.bigcta-text { display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; }
+.bigcta-text b { font-size: 17.5px; font-weight: 700; color: var(--ink); letter-spacing: 2px; }
+.bigcta-text span { font-size: 13.5px; color: var(--ink-sub); line-height: 1.8; }
+.bigcta-go { flex: none; font-size: 22px; color: var(--gold); }
+.bigcta:hover .bigcta-go { color: var(--navy); }
+
+@media (max-width: 700px) {
+  .bigcta { padding: 16px 16px; gap: 12px; }
+  .bigcta-icon { font-size: 24px; }
+  .bigcta-text b { font-size: 16px; letter-spacing: 1px; }
+  .bigcta-go { font-size: 18px; }
 }
