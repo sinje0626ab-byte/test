@@ -310,7 +310,7 @@ tr:nth-child(even) td { background: var(--paper-alt); }
   .gnb-brand .gnb-wordmark { animation: none; }
 }
 
-.gnb-nav { margin-left: auto; }
+.gnb-nav { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .gnb-menu {
   list-style: none; margin: 0; padding: 0;
   display: flex; align-items: center; gap: 2px;
@@ -338,17 +338,22 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 .gnb-toggle:hover { background: var(--navy-alt); }
 
-/* --- 중간 폭: 항목이 늘어나 한 줄을 넘지 않도록 압축 --- */
-@media (min-width: 769px) and (max-width: 1140px) {
-  .gnb-inner { gap: 10px; padding: 0 12px; }
-  .gnb-brand { font-size: 14px; letter-spacing: 1.5px; }
+/* --- 데스크톱: 항목 열둘에 조회 칸까지 붙어, 폭에 따라 단계적으로 압축한다 --- */
+@media (min-width: 769px) {
   .gnb-link { padding: 0 7px; font-size: 12.5px; letter-spacing: 0; }
 }
-/* 항목이 12개가 되어, 가장 좁은 데스크톱 구간은 한 번 더 줄인다 */
-@media (min-width: 769px) and (max-width: 940px) {
+@media (min-width: 769px) and (max-width: 1240px) {
+  .gnb-inner { gap: 10px; padding: 0 12px; }
+  .gnb-brand { font-size: 14px; letter-spacing: 1.5px; }
+  .gnb-link { padding: 0 6px; }
+}
+@media (min-width: 769px) and (max-width: 1120px) {
+  .gnb-link > span { display: none; }           /* 이모지를 접고 글자만 남긴다 */
+}
+@media (min-width: 769px) and (max-width: 980px) {
   .gnb-inner { gap: 6px; padding: 0 8px; }
-  .gnb-brand .gnb-wordmark { display: none; }   /* 촛불만 남기고 국호는 접는다 */
-  .gnb-link { padding: 0 5px; font-size: 12px; }
+  .gnb-brand .gnb-wordmark { display: none; }   /* 국기만 남기고 국호는 접는다 */
+  .gnb-link { padding: 0 4px; font-size: 12px; }
 }
 
 /* --- 모바일: 햄버거 + 전체화면 오버레이 --- */
@@ -363,7 +368,7 @@ tr:nth-child(even) td { background: var(--paper-alt); }
     overflow-y: auto;
     padding: calc(var(--nav-height) + 12px) 20px 40px;
   }
-  .gnb.open .gnb-nav { display: block; }
+  .gnb.open .gnb-nav { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
   .gnb-menu { display: block; }
   .gnb-menu li + li { border-top: 1px solid var(--gold); }
   .gnb-link {
@@ -1544,4 +1549,80 @@ audio:focus-visible,
 }
 @media (max-width: 400px) {
   .ptable--bk tr > :nth-child(4) { display: none; }
+}
+
+/* ==========================================================================
+   상단 메뉴 — 추모꾼 조회 칸
+   자바스크립트가 없어도 폼이 그대로 제출되어 명부 페이지로 넘어간다.
+   ========================================================================== */
+
+.gnb-find { position: relative; flex: none; display: flex; align-items: center; }
+.gnb-find-in {
+  width: 112px; min-width: 0;
+  font-family: inherit; font-size: 12.5px; letter-spacing: .5px; color: var(--navy-text);
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid var(--navy-line); border-radius: var(--radius);
+  padding: 6px 28px 6px 10px; outline: none;
+  transition: width .18s ease, background .18s;
+}
+.gnb-find-in::placeholder { color: var(--navy-muted); opacity: 1; }
+.gnb-find-in:focus {
+  width: 176px; background: rgba(255, 255, 255, .15); border-color: var(--gold-light);
+}
+.gnb-find-go {
+  position: absolute; right: 1px; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; line-height: 1;
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: 12.5px; color: var(--navy-muted);
+  display: flex; align-items: center; justify-content: center;
+}
+.gnb-find-go:hover { color: var(--navy-text); }
+
+/* 입력에 따라 열리는 이름 목록 */
+.gnb-find-list {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 30;
+  list-style: none; margin: 0; padding: 4px;
+  min-width: 232px; max-height: 330px; overflow-y: auto;
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: var(--radius-box); box-shadow: 0 6px 20px rgba(30, 26, 16, .22);
+}
+.gnb-find-list[hidden] { display: none; }
+.gnb-find-list li { margin: 0; }
+.gnb-find-opt {
+  display: flex; align-items: baseline; gap: 8px; width: 100%;
+  font-family: inherit; font-size: 13px; text-align: left; color: var(--ink);
+  background: none; border: none; border-radius: var(--radius);
+  padding: 7px 10px; cursor: pointer;
+}
+.gnb-find-opt:hover, .gnb-find-opt.on { background: var(--paper-deep); }
+.gfo-rank {
+  flex: none; font-size: 11px; color: var(--ink-faint);
+  font-variant-numeric: tabular-nums; min-width: 34px;
+}
+.gfo-name { flex: 1 1 auto; font-weight: 600; word-break: break-all; }
+.gfo-num {
+  flex: none; font-size: 11.5px; color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.gnb-find-none { padding: 10px 12px; font-size: 12.5px; color: var(--ink-muted); }
+
+@media (min-width: 769px) and (max-width: 1240px) {
+  .gnb-find-in { width: 96px; font-size: 12px; padding: 5px 26px 5px 8px; }
+  .gnb-find-in:focus { width: 160px; }
+}
+@media (min-width: 769px) and (max-width: 980px) {
+  .gnb-find-in { width: 76px; }
+  .gnb-find-in:focus { width: 140px; }
+}
+
+/* 모바일 — 열린 메뉴 맨 위에 전폭으로 둔다 */
+@media (max-width: 768px) {
+  .gnb-find { order: -1; width: 100%; margin-bottom: 18px; }
+  .gnb-find-in {
+    width: 100%; font-size: 16px; letter-spacing: 1px;   /* 16px 미만이면 iOS 가 화면을 확대한다 */
+    padding: 12px 42px 12px 14px;
+  }
+  .gnb-find-in:focus { width: 100%; }
+  .gnb-find-go { width: 38px; height: 38px; right: 2px; font-size: 15px; }
+  .gnb-find-list { left: 0; right: 0; min-width: 0; max-height: 46vh; }
 }
