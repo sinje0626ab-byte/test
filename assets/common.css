@@ -1682,3 +1682,10 @@ audio:focus-visible,
   .bigcta-text b { font-size: 16px; letter-spacing: 1px; }
   .bigcta-go { font-size: 18px; }
 }
+
+/* 폐지된 국가 — 현행 국가와 구별되게 가라앉힌다 */
+.anthem--old { margin: 4px auto 22px; background: var(--navy-alt); }
+.anthem--old .anthem-title { font-size: 15px; letter-spacing: 2px; color: var(--navy-muted); }
+.lyrics--old { margin: 0 0 6px; }
+.lyrics--old .verse { font-size: 14.5px; color: var(--ink-muted); }
+.lyrics--old .refrain { color: var(--ink-sub); }
