@@ -23,10 +23,17 @@
 
     var seeking = false;
 
+    /* 메타데이터가 스크립트보다 먼저 도착하면 loadedmetadata 가 다시 오지 않는다.
+       현재 상태를 먼저 한 번 반영한 뒤 이후 변화를 받는다. */
     if (dur) {
-      audio.addEventListener('loadedmetadata', function () {
-        dur.textContent = fmt(audio.duration);
-      });
+      var showDur = function () {
+        if (isFinite(audio.duration) && audio.duration > 0) dur.textContent = fmt(audio.duration);
+      };
+      showDur();
+      audio.addEventListener('loadedmetadata', showDur);
+      audio.addEventListener('durationchange', showDur);
+      /* preload="none" 인 보존 음원은 재생을 눌러야 길이를 알 수 있다 */
+      audio.addEventListener('canplay', showDur);
     }
 
     audio.addEventListener('timeupdate', function () {
