@@ -360,8 +360,8 @@
 
   /* ------------------------------------------------------------------
      6) 상단 메뉴의 추모꾼 조회 칸
-     명부 자료는 처음 칸을 눌렀을 때 한 번만 받아 온다.
-     자바스크립트가 없거나 자료를 못 받아도 폼 제출은 그대로 동작한다.
+     명부 자료는 조회 칸을 최초로 선택하였을 때 한 번만 내려받는다.
+     자바스크립트가 없거나 자료를 내려받지 못하여도 폼 제출은 정상 동작한다.
      ------------------------------------------------------------------ */
   function initFind() {
     var form = document.querySelector('.gnb-find');
@@ -402,7 +402,7 @@
 
     function close() { list.hidden = true; list.innerHTML = ''; opts = []; cur = -1; }
 
-    /* 완전 일치 > 앞부분 일치 > 부분 일치 순으로 여덟 명까지 */
+    /* 완전 일치 · 전방 일치 · 부분 일치 순으로 8인까지 제시한다 */
     function match(q) {
       var lo = q.toLowerCase(), a = [], b = [], c = [];
       for (var i = 0; i < people.length && a.length + b.length + c.length < 60; i++) {
@@ -417,12 +417,12 @@
     function render(q) {
       var hits = match(q);
       if (!hits.length) {
-        list.innerHTML = '<li class="gnb-find-none">찾은 추모꾼이 없다</li>';
+        list.innerHTML = '<li class="gnb-find-none">조회 결과 없음</li>';
         list.hidden = false; opts = []; cur = -1; return;
       }
       list.innerHTML = hits.map(function (p) {
-        var mark = p.g === 2 ? '<span class="pg pg--kick">강제 퇴장</span>'
-                : p.g === 1 ? '<span class="pg pg--out">퇴장</span>' : '';
+        var mark = p.g === 2 ? '<span class="pg pg--kick">강제 퇴거</span>'
+                : p.g === 1 ? '<span class="pg pg--out">퇴거</span>' : '';
         return '<li><button type="button" class="gnb-find-opt" data-who="' + esc(p.n) + '">' +
           '<span class="gfo-rank">' + p.r + '위</span>' +
           '<span class="gfo-name">' + esc(p.n) + mark + '</span>' +
