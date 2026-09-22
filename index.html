@@ -137,84 +137,173 @@ h1.title{margin:0 0 var(--s2);font-size:var(--f-display);font-weight:900;line-he
 .iconbtn.off{color:var(--tx-3);}
 
 /* ---------- 로비 (메인 화면 = 게임의 입구) ----------
-   스크롤 없음. 제목 · 한 줄 · 출격 · 이어하기 · 하위 메뉴 3개가 전부다.
-   주소창이 접혔다 펴지는 모바일에서 100vh는 틀린 값이 되므로
+   UI 는 최소로, 세계는 풍부하게. 뒤의 3D 장면(죽은 도시)이 주인공이고
+   여기 있는 것들은 그 위에 얹히는 얇은 층이다.
+   주소창이 접혔다 펴지는 모바일에서 100vh 는 틀린 값이 되므로
    dvh → JS 실측(--app-h) 순으로 덮어쓴다. */
 #menu{height:100vh;height:100dvh;height:var(--app-h,100dvh);
   padding:0;align-items:stretch;justify-content:stretch;overflow:hidden;}
-/* 뒤의 3D 전장이 비쳐 보이게 — 위는 투명, 아래로 갈수록 짙게 */
+/* 3D 장면이 그대로 보이도록 — 아래쪽만 눌러 글자를 받쳐 준다 */
 #menu .veil{backdrop-filter:none;-webkit-backdrop-filter:none;background:
-  radial-gradient(130% 78% at 50% 6%,rgba(5,7,6,0) 0%,rgba(5,7,6,.30) 55%,rgba(5,7,6,.66) 100%),
-  linear-gradient(180deg,rgba(5,7,6,.26) 0%,rgba(5,7,6,.40) 38%,rgba(5,7,6,.90) 100%);}
+  linear-gradient(180deg,rgba(4,7,6,.62) 0%,rgba(4,7,6,.12) 26%,rgba(4,7,6,0) 46%,
+                  rgba(4,7,6,.34) 70%,rgba(4,7,6,.80) 100%);}
+
+/* 분위기 층 — 비네트 · 아주 옅은 주사선 · 필름 그레인 */
+.lb-fx{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.lb-fx i{position:absolute;inset:0;display:block;}
+.lb-vig{background:radial-gradient(112% 72% at 50% 46%,rgba(0,0,0,0) 34%,rgba(0,0,0,.30) 62%,rgba(0,0,0,.62) 84%,rgba(0,0,0,.88) 100%);}
+.lb-scan{opacity:.34;background:repeating-linear-gradient(180deg,
+  rgba(255,255,255,.012) 0 1px,rgba(0,0,0,0) 1px 3px);}
+.lb-grain{opacity:.09;mix-blend-mode:soft-light;background-size:170px 170px;
+  background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='170' height='170' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+  animation:grainShift 5s steps(6) infinite;}
+@keyframes grainShift{0%{transform:translate(0,0)}17%{transform:translate(-3%,2%)}
+  34%{transform:translate(2%,-3%)}51%{transform:translate(-2%,-2%)}
+  68%{transform:translate(3%,1%)}85%{transform:translate(-1%,3%)}100%{transform:translate(0,0)}}
 
 .lobby{position:relative;z-index:2;display:flex;flex-direction:column;
-  width:100%;height:100%;min-height:0;text-align:center;
-  padding:calc(var(--s6) + 30px + var(--safe-t)) var(--s5) calc(var(--s5) + var(--safe-b));}
+  width:100%;height:100%;min-height:0;text-align:center;overflow:hidden;
+  padding:calc(var(--s5) + 34px + var(--safe-t)) var(--s5) calc(var(--s4) + var(--safe-b));}
 
+/* 화면 네 귀퉁이의 얇은 조준 마크 — 눈에 띄면 실패인 장식 */
+.lb-marks{position:absolute;inset:calc(var(--s3) + var(--safe-t) + 46px) var(--s4)
+  calc(var(--s3) + var(--safe-b)) var(--s4);pointer-events:none;}
+.lb-marks i{position:absolute;width:13px;height:13px;border:1px solid rgba(255,255,255,.10);}
+.lb-marks i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0;}
+.lb-marks i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0;}
+.lb-marks i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0;}
+.lb-marks i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;}
+
+/* ---- 타이틀 ---- */
 .lb-hero{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:var(--s4);}
-.lb-title{margin:0;font-weight:900;line-height:.92;letter-spacing:-.015em;
-  text-transform:uppercase;color:var(--tx);font-size:clamp(38px,13.5vw,66px);
-  text-shadow:0 2px 26px rgba(0,0,0,.7);}
+  align-items:center;justify-content:flex-start;padding-top:8vh;position:relative;}
+/* 타이틀은 배경 '위에 붙은 글자'가 아니라 공간 안에 서 있어야 한다 */
+.lb-halo{position:absolute;left:0;right:0;top:-2%;height:min(76%,380px);pointer-events:none;
+  background:radial-gradient(62% 54% at 50% 44%,rgba(141,255,90,.105) 0%,
+    rgba(110,231,255,.046) 34%,rgba(0,0,0,0) 74%);}
+.lb-title{position:relative;margin:0;font-weight:900;line-height:.9;
+  letter-spacing:.012em;text-transform:uppercase;color:var(--tx);
+  font-size:clamp(38px,13.5vw,66px);
+  text-shadow:0 1px 0 rgba(255,255,255,.10),0 4px 24px rgba(0,0,0,.85),
+              0 0 42px rgba(141,255,90,.13);}
 .lb-title span{display:block;}
-.lb-rule{display:block;width:44px;height:1px;background:var(--line-2);}
-.lb-sub{margin:0;color:var(--tx-3);font-size:var(--f-meta);font-weight:600;
-  letter-spacing:.3em;text-indent:.3em;text-transform:uppercase;}
-/* 한글·중국어·태국어는 자간을 넓히면 글자가 흩어져 보인다 — 좁게 */
-html:lang(ko) .lb-sub,html:lang(zh) .lb-sub,html:lang(th) .lb-sub{letter-spacing:.12em;text-indent:.12em;}
-html:lang(ko) .lb-deploy,html:lang(zh) .lb-deploy,html:lang(th) .lb-deploy{letter-spacing:.08em;text-indent:.08em;}
+.lb-title span+span{color:#E8EFE9;}
+/* 타이틀 아래 얇은 구획 — 가운데 작은 마름모 하나 */
+.lb-under{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:var(--s3);}
+.lb-under i{display:block;width:38px;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.22));}
+.lb-under i:last-child{background:linear-gradient(90deg,rgba(255,255,255,.22),rgba(255,255,255,0));}
+.lb-under b{display:block;width:4px;height:4px;transform:rotate(45deg);
+  background:rgba(141,255,90,.55);}
+.lb-sub{margin:var(--s3) 0 0;color:var(--tx-2);font-size:var(--f-meta);font-weight:600;
+  letter-spacing:.3em;text-indent:.3em;text-transform:uppercase;
+  text-shadow:0 2px 12px rgba(0,0,0,.9);}
+html:lang(ko) .lb-sub,html:lang(zh) .lb-sub,html:lang(th) .lb-sub{letter-spacing:.14em;text-indent:.14em;}
 
+/* ---- 출격 ---- */
 .lb-act{flex:none;display:flex;flex-direction:column;align-items:center;gap:var(--s2);
-  width:100%;max-width:330px;margin:0 auto;}
-/* 화면에서 단 하나만 강하게 — 출격 */
-.lb-deploy{appearance:none;width:100%;min-height:56px;cursor:pointer;border-radius:var(--r-s);
-  font:800 var(--f-h1)/1 inherit;font-family:inherit;letter-spacing:.24em;text-indent:.24em;
-  text-transform:uppercase;color:var(--green);border:1px solid rgba(141,255,90,.42);
-  background:linear-gradient(180deg,rgba(141,255,90,.16),rgba(141,255,90,.04));
-  box-shadow:0 0 26px -18px rgba(141,255,90,.6);
-  transition:background var(--t2) var(--ease),border-color var(--t2) var(--ease),transform var(--t1) var(--ease);}
-.lb-deploy:hover{background:linear-gradient(180deg,rgba(141,255,90,.24),rgba(141,255,90,.08));
-  border-color:rgba(141,255,90,.68);}
-.lb-deploy:active{transform:scale(.985);}
-/* 이어하기 — 상자 없이 조용한 한 줄 */
+  width:100%;max-width:334px;margin:0 auto;}
+/* 화면에서 단 하나만 강하게 — 평소엔 어둡고, 손이 닿으면 초록이 살아난다 */
+.lb-deploy{appearance:none;position:relative;width:100%;min-height:58px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:var(--s3);
+  border-radius:3px;border:1px solid rgba(141,255,90,.38);color:var(--green);
+  font:800 var(--f-h1)/1 inherit;font-family:inherit;letter-spacing:.24em;
+  text-transform:uppercase;
+  background:linear-gradient(180deg,rgba(141,255,90,.13),rgba(141,255,90,.03) 55%,rgba(6,10,8,.72));
+  box-shadow:0 0 26px -18px rgba(141,255,90,.7),0 10px 30px -18px rgba(0,0,0,.9);
+  transition:background var(--t2) var(--ease),border-color var(--t2) var(--ease),
+             box-shadow var(--t2) var(--ease),transform var(--t1) var(--ease);}
+.lb-deploy .lb-dep-t{text-indent:.24em;}
+html:lang(ko) .lb-deploy,html:lang(zh) .lb-deploy,html:lang(th) .lb-deploy{letter-spacing:.1em;}
+html:lang(ko) .lb-deploy .lb-dep-t,html:lang(zh) .lb-deploy .lb-dep-t,
+html:lang(th) .lb-deploy .lb-dep-t{text-indent:.1em;}
+.lb-dep-a{width:17px;height:17px;flex:none;opacity:.7;
+  transition:transform var(--t2) var(--ease),opacity var(--t2) var(--ease);}
+/* 버튼 안쪽 위아래의 얇은 선 — 게임 UI 다운 마감 */
+.lb-deploy::before,.lb-deploy::after{content:'';position:absolute;left:12px;right:12px;height:1px;
+  background:linear-gradient(90deg,rgba(141,255,90,0),rgba(141,255,90,.22),rgba(141,255,90,0));}
+.lb-deploy::before{top:3px;} .lb-deploy::after{bottom:3px;}
+.lb-deploy:hover{border-color:rgba(141,255,90,.72);
+  background:linear-gradient(180deg,rgba(141,255,90,.22),rgba(141,255,90,.07) 55%,rgba(8,14,10,.7));
+  box-shadow:0 0 34px -14px rgba(141,255,90,.75),0 10px 30px -18px rgba(0,0,0,.9);}
+.lb-deploy:hover .lb-dep-a{transform:translateX(3px);opacity:1;}
+.lb-deploy:active{transform:scale(.988);}
+/* 이어하기 — 상자 없는 조용한 한 줄 */
 .lb-continue{appearance:none;background:none;border:0;cursor:pointer;
-  min-height:40px;padding:0 var(--s3);color:var(--tx-2);
+  min-height:38px;padding:0 var(--s3);color:var(--tx-3);
   font:500 var(--f-body)/1.25 inherit;font-family:inherit;
+  text-shadow:0 2px 10px rgba(0,0,0,.9);
   transition:color var(--t1) var(--ease);}
-.lb-continue:hover{color:var(--tx);}
+.lb-continue:hover{color:var(--tx-2);}
 
-.lb-nav{flex:none;display:flex;justify-content:center;margin-top:var(--s5);}
+/* ---- 작전 표시줄 ---- */
+.lb-strip{flex:none;display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  margin-top:var(--s6);padding-bottom:var(--s2);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:var(--f-micro);font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--tx-3);}
+.lb-strip .lb-best{color:var(--tx-2);font-variant-numeric:tabular-nums;}
+html:lang(ko) .lb-strip,html:lang(zh) .lb-strip,html:lang(th) .lb-strip{letter-spacing:.06em;}
+
+/* ---- 하단 메뉴 ---- */
+.lb-nav{flex:none;display:flex;justify-content:space-between;padding-top:var(--s2);}
 .lb-navitem{appearance:none;background:none;border:0;cursor:pointer;position:relative;
-  min-height:44px;padding:0 var(--s4);color:var(--tx-3);
-  font:600 var(--f-body)/1 inherit;font-family:inherit;letter-spacing:.08em;
+  flex:1;min-height:52px;padding:var(--s2) var(--s1);
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  color:var(--tx-3);font:600 var(--f-micro)/1 inherit;font-family:inherit;letter-spacing:.1em;
   transition:color var(--t1) var(--ease);}
-.lb-navitem+.lb-navitem::before{content:'';position:absolute;left:0;top:50%;
-  transform:translateY(-50%);width:1px;height:11px;background:var(--line-2);}
+.lb-navitem .ic{width:17px;height:17px;opacity:.72;
+  transition:opacity var(--t1) var(--ease),transform var(--t1) var(--ease);}
+.lb-navitem::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%) scaleX(0);
+  width:22px;height:1px;background:var(--green);opacity:.8;
+  transition:transform var(--t2) var(--ease);}
 .lb-navitem:hover{color:var(--tx);}
+.lb-navitem:hover .ic{opacity:1;transform:translateY(-1px);}
+.lb-navitem:hover::after{transform:translateX(-50%) scaleX(1);}
+.lb-navitem:active{transform:scale(.97);}
 
-/* 등장 — 한 번, 아주 얕게 */
-#menu.show .lb-title{animation:lbIn 560ms var(--ease) both;}
-#menu.show .lb-rule,#menu.show .lb-sub{animation:lbIn 560ms var(--ease) 90ms both;}
-#menu.show .lb-act{animation:lbIn 560ms var(--ease) 180ms both;}
-#menu.show .lb-nav{animation:lbIn 560ms var(--ease) 250ms both;}
-@keyframes lbIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+/* ---- 등장 — 한 번, 아주 얕게 ---- */
+#menu.show .lb-title{animation:lbIn 620ms var(--ease) both;}
+#menu.show .lb-under,#menu.show .lb-sub{animation:lbIn 620ms var(--ease) 110ms both;}
+#menu.show .lb-halo{animation:lbGlow 1400ms var(--ease) both;}
+#menu.show .lb-act{animation:lbIn 620ms var(--ease) 240ms both;}
+#menu.show .lb-strip{animation:lbIn 620ms var(--ease) 330ms both;}
+#menu.show .lb-nav{animation:lbIn 620ms var(--ease) 390ms both;}
+#menu.show .lb-marks{animation:lbFade 900ms var(--ease) 520ms both;}
+@keyframes lbIn{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:none;}}
+@keyframes lbFade{from{opacity:0;}to{opacity:1;}}
+@keyframes lbGlow{from{opacity:0;}to{opacity:1;}}
 @media (prefers-reduced-motion:reduce){
-  #menu.show .lb-title,#menu.show .lb-rule,#menu.show .lb-sub,
-  #menu.show .lb-act,#menu.show .lb-nav{animation:none;}
+  #menu.show .lb-title,#menu.show .lb-under,#menu.show .lb-sub,#menu.show .lb-halo,
+  #menu.show .lb-act,#menu.show .lb-strip,#menu.show .lb-nav,#menu.show .lb-marks{animation:none;}
+  .lb-grain{animation:none;}
 }
-/* 세로로 짧은 기기 */
-@media (max-height:680px){
-  .lobby{padding-top:calc(var(--s5) + 30px + var(--safe-t));padding-bottom:calc(var(--s4) + var(--safe-b));}
-  .lb-hero{gap:var(--s3);}
+/* ---- 세로로 짧은 기기 ---- */
+@media (max-height:700px){
+  .lobby{padding-top:calc(var(--s4) + 34px + var(--safe-t));padding-bottom:calc(var(--s3) + var(--safe-b));}
+  .lb-hero{padding-top:5vh;}
   .lb-title{font-size:clamp(32px,11vw,48px);}
-  .lb-deploy{min-height:50px;}
-  .lb-nav{margin-top:var(--s4);}
+  .lb-deploy{min-height:52px;}
+  .lb-strip{margin-top:var(--s4);}
+  .lb-navitem{min-height:46px;}
 }
 @media (max-height:480px){
   .lobby{padding-left:var(--s4);padding-right:var(--s4);}
+  .lb-hero{padding-top:0;justify-content:center;}
   .lb-title{font-size:30px;}
-  .lb-rule{display:none;}
-  .lb-nav{margin-top:var(--s3);}
+  .lb-under{margin-top:var(--s2);}
+  .lb-sub{margin-top:var(--s2);}
+  .lb-strip{display:none;}
+  .lb-nav{padding-top:0;}
+  .lb-navitem{min-height:42px;}
+}
+/* 넓은 화면에서는 가운데 한 덩어리로 모은다 */
+@media (min-width:860px){
+  .lobby{padding-left:var(--s6);padding-right:var(--s6);}
+  .lb-hero{padding-top:9vh;}
+  .lb-strip{max-width:640px;width:100%;margin-left:auto;margin-right:auto;}
+  .lb-nav{max-width:640px;width:100%;margin:0 auto;justify-content:center;gap:var(--s6);}
+  .lb-navitem{flex:0 0 auto;min-width:96px;}
 }
 
 /* ---------- 로비 하위 화면 (대원 · 아머리 · 기록) ---------- */
@@ -302,7 +391,7 @@ html:lang(ko) .lb-deploy,html:lang(zh) .lb-deploy,html:lang(th) .lb-deploy{lette
 
 /* ---------- 언어 선택 ---------- */
 #langWrap{position:absolute;top:calc(var(--s3) + var(--safe-t));left:var(--s3);z-index:6;}
-#langBtn{appearance:none;display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;
+#langBtn{appearance:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 10px;
   background:transparent;border:1px solid transparent;border-radius:var(--r-s);
   color:var(--tx-3);font:600 var(--f-meta)/1 inherit;cursor:pointer;
   transition:color var(--t1) var(--ease),background var(--t1) var(--ease),border-color var(--t1) var(--ease);}
@@ -324,7 +413,7 @@ html:lang(ko) .lb-deploy,html:lang(zh) .lb-deploy,html:lang(th) .lb-deploy{lette
 .lg-item.on{color:var(--green);}
 
 #gearBtn{position:absolute;top:calc(var(--s3) + var(--safe-t));right:var(--s3);z-index:6;
-  appearance:none;width:36px;height:36px;display:grid;place-items:center;
+  appearance:none;width:40px;height:40px;display:grid;place-items:center;
   background:transparent;border:1px solid transparent;border-radius:var(--r-s);
   color:var(--tx-3);cursor:pointer;
   transition:color var(--t1) var(--ease),background var(--t1) var(--ease),border-color var(--t1) var(--ease);}
@@ -790,20 +879,31 @@ h2.res.lose{color:var(--red);}
     <div id="langList" role="menu"></div>
   </div>
   <button id="gearBtn" type="button" title="환경설정" aria-label="환경설정"></button>
+  <div class="lb-fx" aria-hidden="true"><i class="lb-vig"></i><i class="lb-scan"></i><i class="lb-grain"></i></div>
   <div class="lobby">
+    <div class="lb-marks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="lb-hero">
+      <div class="lb-halo" aria-hidden="true"></div>
       <h1 class="lb-title"><span>Undead</span><span>Rush</span></h1>
-      <i class="lb-rule"></i>
+      <div class="lb-under" aria-hidden="true"><i></i><b></b><i></i></div>
       <p class="lb-sub" data-i18n="menu.sub">감염 구역에서 살아남아라</p>
     </div>
     <div class="lb-act">
-      <button class="lb-deploy" id="startBtn" data-i18n="btn.start">출격</button>
-      <button class="lb-continue" id="continueBtn" style="display:none;" data-i18n="btn.continue">이어하기</button>
+      <button class="lb-deploy" id="startBtn" type="button">
+        <span class="lb-dep-t" data-i18n="btn.start">출격</span>
+        <svg class="lb-dep-a" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="square" aria-hidden="true"><path d="M4 12h14M13 7l5 5-5 5"/></svg>
+      </button>
+      <button class="lb-continue" id="continueBtn" type="button" style="display:none;" data-i18n="btn.continue">이어하기</button>
+    </div>
+    <div class="lb-strip">
+      <span class="lb-sys" data-i18n="menu.sector">감염구역 07 · 격리</span>
+      <span class="lb-best" id="lbBest" style="display:none;"></span>
     </div>
     <nav class="lb-nav">
-      <button class="lb-navitem" id="navSquad" type="button" data-i18n="nav.squad">대원</button>
-      <button class="lb-navitem" id="navArmory" type="button" data-i18n="nav.armory">아머리</button>
-      <button class="lb-navitem" id="navRecords" type="button" data-i18n="nav.records">기록</button>
+      <button class="lb-navitem" id="navSquad" type="button" data-ic="squad"><span data-i18n="nav.squad">대원</span></button>
+      <button class="lb-navitem" id="navArmory" type="button" data-ic="crate"><span data-i18n="nav.armory">아머리</span></button>
+      <button class="lb-navitem" id="navRecords" type="button" data-ic="trophy"><span data-i18n="nav.records">기록</span></button>
     </nav>
   </div>
 </div>
@@ -1998,6 +2098,13 @@ const ICONS = {
   close:
     '<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">'
     + '<path d="M5.4 5.4 18.6 18.6M18.6 5.4 5.4 18.6"/></g>',
+  squad:
+    '<path d="M9 3.2a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 0 1 0-7.2zM1.9 20.6c0-3.9 3.2-7 7.1-7s7.1 3.1 7.1 7z"/>'
+    + '<path d="M16.4 4.4a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM17 12.9c2.9.3 5.1 2.7 5.1 5.7v2h-3.6v-2.2c0-2-.6-3.8-1.5-5.5z" opacity=".55"/>',
+  crate:
+    '<path d="M3 7.4 12 3l9 4.4v9.2L12 21l-9-4.4z"/>'
+    + '<path d="M12 3v18l9-4.4V7.4z" fill="#000" opacity=".28"/>'
+    + '<path d="M8.6 9.1 17.6 4.7l2 1-9 4.4zM10 13.4h4v1.8h-4z" opacity=".55"/>',
   trophy:
     '<path d="M7 2.6h10v6.2a5 5 0 0 1-10 0z"/>'
     + '<path d="M10.6 13.4h2.8v4.2h-2.8zM6.8 19h10.4v2.4H6.8z"/>'
@@ -2303,6 +2410,7 @@ const UI = {
     'btn.start':'출격', 'btn.how':'조작법', 'btn.guide':'가이드 도감', 'btn.reset':'데이터 초기화',
     'menu.sub':'감염 구역에서 살아남아라', 'nav.squad':'대원', 'nav.armory':'아머리', 'nav.records':'기록',
     'sheet.squad':'대원 선택', 'sheet.armory':'영구 강화',
+    'menu.sector':'감염구역 07 · 격리', 'menu.bestShort':'최고',
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
     'how.brand':'조작법 & 규칙', 'how.title':'플레이 방법', 'how.close':'알겠어요',
     'how.body':'<p><b>이동 (PC)</b> — WASD 또는 방향키로 8방향 이동. <b>Esc / P</b> 로 일시정지.</p><p><b>이동 (모바일)</b> — 화면을 터치·드래그하면 그 자리에 가상 조이스틱이 생깁니다.</p><p><b>전투</b> — 모든 무기는 <b>자동</b>으로 조준·발사됩니다. 당신은 이동에만 집중하세요.</p><p><b>성장</b> — 좀비가 떨어뜨리는 <span style="color:var(--green)">젬</span>을 모아 레벨업. 레벨업 때 능력 1개를 고르고 체력의 30%가 즉시 회복됩니다.</p><p><b>초월 진화</b> — 무기를 8레벨까지 키우고 짝이 되는 패시브를 1레벨 이상 보유하면, 레벨업 선택지에 황금빛 <span style="color:var(--gold)">진화</span>가 등장합니다.</p><p><b>목표</b> — 2:30 미니보스, 5:00 최종 보스. 최종 보스를 처치하면 승리! 판당 모은 <span style="color:var(--gold)">코인</span>으로 로비에서 영구 강화를 구매하세요.</p>',
@@ -2337,6 +2445,7 @@ const UI = {
     'btn.start':'Deploy', 'btn.how':'How to Play', 'btn.guide':'Guide & Codex', 'btn.reset':'Reset Data',
     'menu.sub':'Survive the Outbreak', 'nav.squad':'Squad', 'nav.armory':'Armory', 'nav.records':'Records',
     'sheet.squad':'Choose Operative', 'sheet.armory':'Permanent Upgrades',
+    'menu.sector':'Sector 07 · Quarantine', 'menu.bestShort':'Best',
     'menu.autosave':'Progress is saved automatically in this browser.',
     'how.brand':'Controls & Rules', 'how.title':'How to Play', 'how.close':'Got it',
     'how.body':'<p><b>Move (PC)</b> — WASD or arrow keys for 8-way movement. <b>Esc / P</b> to pause.</p><p><b>Move (Mobile)</b> — Touch and drag anywhere to spawn a virtual joystick there.</p><p><b>Combat</b> — All weapons aim and fire <b>automatically</b>. Just focus on moving.</p><p><b>Growth</b> — Collect the <span style="color:var(--green)">gems</span> zombies drop to level up. On level-up, pick one ability and instantly heal 30% HP.</p><p><b>Evolution</b> — Raise a weapon to level 8 while holding its paired passive at level 1+, and a golden <span style="color:var(--gold)">Evolution</span> appears in your level-up picks.</p><p><b>Goal</b> — Mini-boss at 2:30, final boss at 5:00. Beat the final boss to win! Spend the <span style="color:var(--gold)">coins</span> you earn on permanent upgrades in the lobby.</p>',
@@ -2371,6 +2480,7 @@ const UI = {
     'btn.start':'出击', 'btn.how':'玩法说明', 'btn.guide':'指南图鉴', 'btn.reset':'重置数据',
     'menu.sub':'在疫区活下去', 'nav.squad':'干员', 'nav.armory':'武库', 'nav.records':'记录',
     'sheet.squad':'选择干员', 'sheet.armory':'永久强化',
+    'menu.sector':'感染区 07 · 隔离', 'menu.bestShort':'最佳',
     'menu.autosave':'进度会自动保存在此浏览器中。',
     'how.brand':'操作与规则', 'how.title':'玩法说明', 'how.close':'知道了',
     'how.body':'<p><b>移动（PC）</b> — WASD 或方向键进行8方向移动。<b>Esc / P</b> 暂停。</p><p><b>移动（手机）</b> — 触摸并拖动屏幕，会在该处生成虚拟摇杆。</p><p><b>战斗</b> — 所有武器都会<b>自动</b>瞄准并射击，你只需专注移动。</p><p><b>成长</b> — 收集僵尸掉落的<span style="color:var(--green)">宝石</span>升级。升级时选择一项能力，并立即恢复30%生命。</p><p><b>进化</b> — 将武器升到8级并持有其对应被动1级以上，升级选项中会出现金色的<span style="color:var(--gold)">进化</span>。</p><p><b>目标</b> — 2:30 出现小首领，5:00 出现最终首领。击败最终首领即获胜！用获得的<span style="color:var(--gold)">金币</span>在大厅购买永久强化。</p>',
@@ -2405,6 +2515,7 @@ const UI = {
     'btn.start':'ออกรบ', 'btn.how':'วิธีเล่น', 'btn.guide':'คู่มือ', 'btn.reset':'ล้างข้อมูล',
     'menu.sub':'รอดจากการระบาด', 'nav.squad':'ทีม', 'nav.armory':'คลังอาวุธ', 'nav.records':'สถิติ',
     'sheet.squad':'เลือกตัวละคร', 'sheet.armory':'อัปเกรดถาวร',
+    'menu.sector':'เขต 07 · กักกัน', 'menu.bestShort':'ดีสุด',
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
     'how.brand':'การควบคุมและกติกา', 'how.title':'วิธีเล่น', 'how.close':'เข้าใจแล้ว',
     'how.body':'<p><b>เคลื่อนที่ (PC)</b> — WASD หรือปุ่มลูกศรเพื่อเคลื่อนที่ 8 ทิศ กด <b>Esc / P</b> เพื่อหยุด</p><p><b>เคลื่อนที่ (มือถือ)</b> — แตะแล้วลากบนหน้าจอเพื่อสร้างจอยสติ๊กเสมือน ณ จุดนั้น</p><p><b>การต่อสู้</b> — อาวุธทุกชิ้นเล็งและยิง<b>อัตโนมัติ</b> คุณเพียงโฟกัสที่การเคลื่อนที่</p><p><b>การเติบโต</b> — เก็บ<span style="color:var(--green)">อัญมณี</span>ที่ซอมบี้ทิ้งไว้เพื่อเลเวลอัป เมื่อเลเวลอัปให้เลือกความสามารถ 1 อย่างและฟื้นพลังชีวิต 30% ทันที</p><p><b>วิวัฒนาการ</b> — อัปอาวุธถึงเลเวล 8 พร้อมถือพาสซีฟคู่ของมันตั้งแต่เลเวล 1 ขึ้นไป จะมี<span style="color:var(--gold)">วิวัฒนาการ</span>สีทองปรากฏในตัวเลือกเลเวลอัป</p><p><b>เป้าหมาย</b> — มินิบอสที่ 2:30 บอสสุดท้ายที่ 5:00 กำจัดบอสสุดท้ายเพื่อชนะ! ใช้<span style="color:var(--gold)">เหรียญ</span>ที่ได้ซื้ออัปเกรดถาวรในล็อบบี้</p>',
@@ -2439,6 +2550,7 @@ const UI = {
     'btn.start':'Xuất kích', 'btn.how':'Cách chơi', 'btn.guide':'Hướng dẫn', 'btn.reset':'Đặt lại dữ liệu',
     'menu.sub':'Sống sót qua đại dịch', 'nav.squad':'Đặc vụ', 'nav.armory':'Kho vũ khí', 'nav.records':'Hồ sơ',
     'sheet.squad':'Chọn đặc vụ', 'sheet.armory':'Nâng cấp vĩnh viễn',
+    'menu.sector':'Khu 07 · Cách ly', 'menu.bestShort':'Tốt nhất',
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
     'how.brand':'Điều khiển & Luật', 'how.title':'Cách chơi', 'how.close':'Đã hiểu',
     'how.body':'<p><b>Di chuyển (PC)</b> — WASD hoặc phím mũi tên để di chuyển 8 hướng. <b>Esc / P</b> để tạm dừng.</p><p><b>Di chuyển (Điện thoại)</b> — Chạm và kéo bất kỳ đâu để tạo cần điều khiển ảo tại đó.</p><p><b>Chiến đấu</b> — Mọi vũ khí tự động ngắm và bắn. Bạn chỉ cần tập trung di chuyển.</p><p><b>Phát triển</b> — Nhặt <span style="color:var(--green)">ngọc</span> zombie rơi ra để lên cấp. Khi lên cấp, chọn một kỹ năng và hồi ngay 30% máu.</p><p><b>Tiến hóa</b> — Nâng vũ khí lên cấp 8 và giữ bị động ghép đôi của nó từ cấp 1 trở lên, một <span style="color:var(--gold)">Tiến hóa</span> vàng sẽ xuất hiện trong lựa chọn lên cấp.</p><p><b>Mục tiêu</b> — Trùm nhỏ ở 2:30, trùm cuối ở 5:00. Hạ trùm cuối để thắng! Dùng <span style="color:var(--gold)">xu</span> kiếm được để mua nâng cấp vĩnh viễn ở sảnh.</p>',
@@ -2473,6 +2585,7 @@ const UI = {
     'btn.start':'Desplegar', 'btn.how':'Cómo jugar', 'btn.guide':'Guía', 'btn.reset':'Borrar datos',
     'menu.sub':'Sobrevive al brote', 'nav.squad':'Escuadrón', 'nav.armory':'Arsenal', 'nav.records':'Registros',
     'sheet.squad':'Elegir operativo', 'sheet.armory':'Mejoras permanentes',
+    'menu.sector':'Sector 07 · Cuarentena', 'menu.bestShort':'Mejor',
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
     'how.brand':'Controles y reglas', 'how.title':'Cómo jugar', 'how.close':'Entendido',
     'how.body':'<p><b>Mover (PC)</b> — WASD o flechas para moverte en 8 direcciones. <b>Esc / P</b> para pausar.</p><p><b>Mover (Móvil)</b> — Toca y arrastra en cualquier lugar para crear un joystick virtual ahí.</p><p><b>Combate</b> — Todas las armas apuntan y disparan <b>automáticamente</b>. Tú solo concéntrate en moverte.</p><p><b>Crecimiento</b> — Recoge las <span style="color:var(--green)">gemas</span> que sueltan los zombis para subir de nivel. Al subir, elige una habilidad y recupera al instante el 30% de vida.</p><p><b>Evolución</b> — Sube un arma al nivel 8 con su pasiva emparejada en nivel 1 o más, y aparecerá una <span style="color:var(--gold)">Evolución</span> dorada en tus opciones de nivel.</p><p><b>Objetivo</b> — Minijefe a las 2:30, jefe final a las 5:00. ¡Vence al jefe final para ganar! Gasta las <span style="color:var(--gold)">monedas</span> que ganes en mejoras permanentes en el vestíbulo.</p>',
@@ -3962,6 +4075,7 @@ window.R3 = (() => {
 
   let rn = null, scene = null, cam = null, on = false;
   let sun = null, playerLight = null, ground = null, groundTex = null;
+  let hemiLight = null, ambLight = null, fillLight = null, playFog = null;
   let camDist = 900, viewR = 900;
 
   const tmpM = new T.Matrix4(), tmpV = new T.Vector3(), tmpQ = new T.Quaternion(),
@@ -4172,7 +4286,8 @@ window.R3 = (() => {
 
     scene = new T.Scene();
     scene.background = new T.Color(0x070a09);
-    scene.fog = new T.Fog(0x070a09, 700, 2100);
+    playFog = new T.Fog(0x070a09, 700, 2100);
+    scene.fog = playFog;
     cam = new T.PerspectiveCamera(FOV, 1, 10, 6000);
 
     sun = new T.DirectionalLight(0xfff2dc, 3.2);
@@ -4181,12 +4296,12 @@ window.R3 = (() => {
     sun.shadow.bias = -0.0015;
     sun.shadow.normalBias = 1.5;
     scene.add(sun); scene.add(sun.target);
-    scene.add(new T.HemisphereLight(0x9fc0e8, 0x2a3a24, 2.6));
-    scene.add(new T.AmbientLight(0xffffff, 1.1));
+    hemiLight = new T.HemisphereLight(0x9fc0e8, 0x2a3a24, 2.6); scene.add(hemiLight);
+    ambLight = new T.AmbientLight(0xffffff, 1.1); scene.add(ambLight);
     // 태양 반대쪽에서 넣는 약한 보조광 — 그림자 쪽 면이 완전히 묻히지 않게 한다
-    const fill = new T.DirectionalLight(0xbcd4ff, 1.0);
-    fill.position.set(300, 420, 380);
-    scene.add(fill);
+    fillLight = new T.DirectionalLight(0xbcd4ff, 1.0);
+    fillLight.position.set(300, 420, 380);
+    scene.add(fillLight);
 
     playerLight = new T.PointLight(0x8bff5a, 1.4, 330, 2);
     scene.add(playerLight);
@@ -4249,11 +4364,17 @@ window.R3 = (() => {
   /* ---------------- 화면 크기 ---------------- */
   function resize3d() {
     if (!on) return;
-    rn.setPixelRatio(qLevel >= 1 ? 1 : Math.min(window.devicePixelRatio || 1, 2));   // 자동 화질 단계를 유지
+    rn.setPixelRatio(lbOn ? Math.min(window.devicePixelRatio || 1, 1.35)
+                          : (qLevel >= 1 ? 1 : Math.min(window.devicePixelRatio || 1, 2)));
     rn.setSize(W, H, false);
     cam.aspect = W / H;
     camDist = H / (2 * Math.tan(FOV * DEG / 2));   // 옛 2D 화면과 가로 시야를 맞춘다
     cam.updateProjectionMatrix();
+    if (lbCam) {   // 로비 카메라: 세로로 긴 화면에서도 지평선이 가운데 오게
+      lbCam.aspect = W / H;
+      lbCam.fov = W / H < 0.75 ? 52 : 40;
+      lbCam.updateProjectionMatrix();
+    }
     viewR = computeViewRadius();
     G.viewR = viewR;
     scene.fog.near = camDist * 0.80;
@@ -4309,9 +4430,24 @@ window.R3 = (() => {
     if (!on) return;
     if (G.player) autoQuality();
     const p = G.player;
+    if (!p) {                       // 로비 — 전투 카메라가 아니라 '죽은 도시' 장면을 그린다
+      playerLight.visible = false;
+      if (playerGrp) playerGrp.visible = false;
+      for (const k in enemyPools) flush(enemyPools[k].mesh, 0);
+      for (const k in billPools) flush(billPools[k], 0);
+      flush(gemMesh, 0); flush(coinMesh, 0); flush(heartMesh, 0); flush(bulletMesh, 0); flush(orbMesh, 0);
+      hideFrom(ringPool, 0); hideFrom(arcPool, 0); hideFrom(hazardPool, 0);
+      hideFrom(bladePool, 0); hideFrom(sentryPool, 0);
+      ground.position.set(0, 0, 0);
+      groundTex.offset.set(0, 0);
+      sun.position.set(-520, 560, -720); sun.target.position.set(0, 0, 0);
+      sun.target.updateMatrixWorld();
+      frameLobby();
+      return;
+    }
+    lobbyMode(false);
     let cx = G.camX, cy = G.camY;
     if (p && G.screenShake > 0.4) { cx += rand(-G.screenShake, G.screenShake); cy += rand(-G.screenShake, G.screenShake); }
-    if (!p) { const a = G.frame * 0.0011; cx = Math.cos(a) * 260; cy = Math.sin(a) * 260; }
 
     cam.position.set(cx, camDist * Math.sin(PITCH), cy + camDist * Math.cos(PITCH));
     cam.lookAt(cx, 0, cy);
@@ -4336,14 +4472,6 @@ window.R3 = (() => {
       drawHazards3d();
       drawBlades3d();
       drawParticles3d();
-    } else {
-      playerLight.visible = false;
-      if (playerGrp) playerGrp.visible = false;
-      for (const k in enemyPools) flush(enemyPools[k].mesh, 0);
-      for (const k in billPools) flush(billPools[k], 0);
-      flush(gemMesh, 0); flush(coinMesh, 0); flush(heartMesh, 0); flush(bulletMesh, 0); flush(orbMesh, 0);
-      hideFrom(ringPool, 0); hideFrom(arcPool, 0); hideFrom(hazardPool, 0);
-      hideFrom(bladePool, 0); hideFrom(sentryPool, 0);
     }
     rn.render(scene, cam);
   }
@@ -4617,6 +4745,330 @@ window.R3 = (() => {
                        y: -(((clientY - rect.top) / rect.height) * 2 - 1) }, cam);
     if (!rc.ray.intersectPlane(groundPlane, hitV)) return null;
     return { x: hitV.x, y: hitV.z };
+  }
+
+  /* ============================================================
+     로비 장면 — 메뉴에서 보이는 '죽은 도시'
+     전투 카메라는 위에서 내려다보므로 지평선이 없다.
+     로비는 눈높이에 가까운 별도 카메라를 써서 폐허의 실루엣과
+     안개, 조명, 그리고 출격을 기다리는 대원이 보이게 한다.
+     ============================================================ */
+  let lbCam = null, lbGrp = null, lbOn = false, lbBuilt = false;
+  let lbChar = null, lbCharKey = null, lbCharGrp = null;
+  let lbDust = null, lbDustP = null, lbBeacons = [], lbWindows = null;
+  let lbSky = null, lbFog = null, lbLamps = [], lbMist = [];
+  const playBg = new T.Color(0x070a09);
+  let savedLight = null;
+
+  /* 같은 폐허가 매번 똑같이 서 있도록 고정 난수를 쓴다 */
+  function mkRnd(seed) {
+    let v = seed >>> 0 || 1;
+    return () => { v = (v * 1664525 + 1013904223) >>> 0; return v / 4294967296; };
+  }
+
+  /* 안개 속 빛기둥 — 가장자리가 사라지는 부드러운 사다리꼴 */
+  function shaftTexture() {
+    const W0 = 128, H0 = 256, c = document.createElement('canvas');
+    c.width = W0; c.height = H0;
+    const g = c.getContext('2d');
+    for (let y = 0; y < H0; y++) {
+      const v = y / (H0 - 1);                       // 0 = 등불, 1 = 바닥
+      const spread = 0.10 + v * 0.90;               // 아래로 갈수록 퍼진다
+      const fade = (1 - v) ** 1.6 * 0.85 + 0.04;    // 아래로 갈수록 옅어진다
+      const gr = g.createLinearGradient(0, 0, W0, 0);
+      const a = 0.5 - spread * 0.5, b = 0.5 + spread * 0.5;
+      gr.addColorStop(0, 'rgba(255,255,255,0)');
+      gr.addColorStop(Math.max(0, a), 'rgba(255,255,255,0)');
+      gr.addColorStop(0.5, 'rgba(255,255,255,' + fade.toFixed(3) + ')');
+      gr.addColorStop(Math.min(1, b), 'rgba(255,255,255,0)');
+      gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.fillRect(0, y, W0, 1);
+    }
+    const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; return t;
+  }
+
+  /* 거친 아스팔트 — 로비 바닥이 단색 판으로 보이지 않게 */
+  function asphaltTexture() {
+    const S = 256, c = document.createElement('canvas'); c.width = c.height = S;
+    const g = c.getContext('2d');
+    g.fillStyle = '#0d1512'; g.fillRect(0, 0, S, S);
+    for (let i = 0; i < 1400; i++) {
+      const x = Math.random() * S, y = Math.random() * S, r = 0.6 + Math.random() * 3.4;
+      const v = 10 + Math.random() * 26 | 0;
+      g.fillStyle = 'rgba(' + v + ',' + (v + 7) + ',' + (v + 3) + ',0.55)';
+      g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+    }
+    for (let i = 0; i < 26; i++) {                  // 갈라진 금
+      g.strokeStyle = 'rgba(4,7,6,0.5)'; g.lineWidth = 0.6 + Math.random();
+      g.beginPath(); g.moveTo(Math.random() * S, Math.random() * S);
+      for (let k = 0; k < 3; k++) g.lineTo(Math.random() * S, Math.random() * S);
+      g.stroke();
+    }
+    const t = new T.CanvasTexture(c);
+    t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(90, 90);
+    t.colorSpace = T.SRGBColorSpace; return t;
+  }
+
+  /* 하늘 — 지평선만 아주 옅게 트인 세로 그라디언트 */
+  function skyTexture() {
+    const c = document.createElement('canvas'); c.width = 4; c.height = 256;
+    const g = c.getContext('2d');
+    const gr = g.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0.00, '#030504');
+    gr.addColorStop(0.30, '#050908');
+    gr.addColorStop(0.52, '#0a110e');
+    gr.addColorStop(0.68, '#101b16');
+    gr.addColorStop(0.80, '#18261f');
+    gr.addColorStop(0.88, '#1d2e25');
+    gr.addColorStop(1.00, '#0c1310');
+    g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+    const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; return t;
+  }
+
+  /* 도시 한 겹 — 멀수록 어둡고 납작하게, 안개에 잠기도록 */
+  function cityBand(rnd, n, col, z0, z1, xs, h0, h1, w0, w1, unlit) {
+    const mat = unlit
+      ? new T.MeshBasicMaterial({ color: col })
+      : new T.MeshLambertMaterial({ color: col });
+    const m = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), mat, n);
+    m.frustumCulled = false;
+    const mx = new T.Matrix4(), q = new T.Quaternion(), e = new T.Euler();
+    for (let i = 0; i < n; i++) {
+      const w = w0 + rnd() * (w1 - w0);
+      const h = h0 + rnd() * (h1 - h0);
+      const d = w * (0.7 + rnd() * 0.9);
+      e.set(0, (rnd() - 0.5) * 0.5, 0); q.setFromEuler(e);
+      mx.compose(new T.Vector3((rnd() - 0.5) * 2 * xs, h / 2, z0 + rnd() * (z1 - z0)),
+                 q, new T.Vector3(w, h, d));
+      m.setMatrixAt(i, mx);
+    }
+    m.instanceMatrix.needsUpdate = true;
+    return m;
+  }
+
+  /* 안개 속 광원 — 창문 불빛 · 경고등에 함께 쓴다 */
+  function lightPoints(rnd, n, tex, z0, z1, xs, y0, y1, size, col, opa) {
+    const m = new T.InstancedMesh(new T.PlaneGeometry(size, size),
+      new T.MeshBasicMaterial({ map: tex, color: col, transparent: true, opacity: opa,
+        blending: T.AdditiveBlending, depthWrite: false, fog: true }), n);
+    m.frustumCulled = false;
+    const mx = new T.Matrix4(), q = new T.Quaternion();
+    for (let i = 0; i < n; i++) {
+      const sc = 0.5 + rnd() * 1.1;
+      mx.compose(new T.Vector3((rnd() - 0.5) * 2 * xs, y0 + rnd() * (y1 - y0), z0 + rnd() * (z1 - z0)),
+                 q, new T.Vector3(sc, sc, sc));
+      m.setMatrixAt(i, mx);
+    }
+    m.instanceMatrix.needsUpdate = true;
+    return m;
+  }
+
+  function buildLobby() {
+    if (lbBuilt) return;
+    lbBuilt = true;
+    const rnd = mkRnd(20260922);
+
+    lbCam = new T.PerspectiveCamera(46, 1, 5, 12000);
+    lbGrp = new T.Group(); lbGrp.visible = false; scene.add(lbGrp);
+
+    lbSky = skyTexture();
+    lbFog = new T.Fog(0x0c1310, 780, 4400);
+
+    // 도시 — 세 겹의 깊이
+    lbGrp.add(cityBand(rnd, 38, 0x0a0f0e, -4600, -3200, 1900, 380, 1500, 150, 400, true));
+    lbGrp.add(cityBand(rnd,  7, 0x080c0b, -4200, -3000, 1500, 900, 2100,  70, 130, true));  // 가늘고 높은 탑
+    lbGrp.add(cityBand(rnd, 30, 0x0c1210, -2900, -2000, 1300, 240,  950, 120, 320, true));
+    lbGrp.add(cityBand(rnd, 22, 0x0b1210, -1850, -1250,  950, 130,  520,  90, 240, true));
+    // 가까운 잔해
+    lbGrp.add(cityBand(rnd, 18, 0x0e1512,  -980,  -430,  620,  40,  160,  60, 170, true));
+
+    const dot = radialTex([[0,'rgba(255,255,255,1)'],[0.3,'rgba(255,255,255,0.5)'],[1,'rgba(255,255,255,0)']]);
+
+    // 지평선까지 닿는 로비 전용 바닥 — 전투용 4000 판은 끝이 보여 이음매가 생긴다
+    const lbGround = new T.Mesh(new T.PlaneGeometry(26000, 26000),
+      new T.MeshBasicMaterial({ color: 0x27322c, map: asphaltTexture() }));
+    lbGround.rotation.x = -Math.PI / 2; lbGround.position.y = -1.2;
+    lbGrp.add(lbGround);
+    // 살아남은 창문 불빛 — 아주 드물고 희미하다
+    lbWindows = lightPoints(mkRnd(7717), 54, dot, -3600, -1350, 900, 80, 820, 24, 0xffcf9a, 0.40);
+    lbGrp.add(lbWindows);
+
+    // 멀리서 느리게 도는 붉은 경고등 세 개
+    for (let i = 0; i < 3; i++) {
+      const b = new T.Mesh(new T.PlaneGeometry(96, 96),
+        new T.MeshBasicMaterial({ map: dot, color: 0xff4d5a, transparent: true, opacity: 0,
+          blending: T.AdditiveBlending, depthWrite: false }));
+      b.position.set([-172, 96, 232][i], [262, 392, 188][i], [-1180, -1720, -980][i]);
+      b.userData.ph = i * 2.1;
+      lbGrp.add(b); lbBeacons.push(b);
+    }
+
+    // 가로등 — 안개를 가르는 빛기둥과 바닥에 번지는 빛
+    const shaftTex = shaftTexture();
+    const lampAt = (x, z, h, col, inten) => {
+      const pole = new T.Mesh(new T.CylinderGeometry(2.4, 3.2, h, 6),
+        new T.MeshLambertMaterial({ color: 0x1b2420 }));
+      pole.position.set(x, h / 2, z); lbGrp.add(pole);
+      const shaft = new T.Mesh(new T.PlaneGeometry(h * 1.05, h),
+        new T.MeshBasicMaterial({ map: shaftTex, color: col, transparent: true, opacity: 0.20,
+          blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }));
+      shaft.position.set(x, h / 2, z); lbGrp.add(shaft);
+      const pool = new T.Mesh(new T.CircleGeometry(h * 0.62, 24),
+        new T.MeshBasicMaterial({ map: dot, color: col, transparent: true, opacity: 0.30,
+          blending: T.AdditiveBlending, depthWrite: false }));
+      pool.rotation.x = -Math.PI / 2; pool.position.set(x, 0.6, z); lbGrp.add(pool);
+      if (inten > 0) {
+        const pl = new T.PointLight(col, inten, h * 4.2, 2);
+        pl.position.set(x, h * 0.95, z); pl.userData = { base: inten };
+        lbGrp.add(pl); lbLamps.push(pl);
+      }
+    };
+    lampAt(-118, -470, 205, 0xffc98a, 125000);
+    lampAt( 196, -760, 255, 0xffb877, 150000);
+    lampAt(-290, -1240, 230, 0xffbe84, 0);
+
+    // 대원 — 뒤에서 들어오는 림라이트로 실루엣을 세운다
+    lbCharGrp = new T.Group(); lbCharGrp.position.set(58, 0, -155); lbGrp.add(lbCharGrp);
+    const rim = new T.PointLight(0xa8ffd8, 46000, 420, 2);   // 뒤에서 들어오는 림라이트
+    rim.position.set(-12, 96, -175); lbCharGrp.add(rim);
+    const key = new T.PointLight(0xffd6a2, 9000, 380, 2);    // 앞쪽은 겨우 형태만 읽힐 만큼
+    key.position.set(-168, 80, 135); lbCharGrp.add(key);
+    // 대원 뒤의 옅은 후광 — 도시와 실루엣을 분리한다
+    const halo = new T.Mesh(new T.PlaneGeometry(330, 330),
+      new T.MeshBasicMaterial({ map: dot, color: 0x7fd8a8, transparent: true, opacity: 0.17,
+        blending: T.AdditiveBlending, depthWrite: false }));
+    halo.position.set(0, 62, -130); lbCharGrp.add(halo);
+
+    // 아주 넓고 옅은 달빛 — 앞쪽 바닥이 새까맣게 죽지 않게 한다
+    const moon = new T.Mesh(new T.CircleGeometry(620, 28),
+      new T.MeshBasicMaterial({ map: dot, color: 0x8fb9a6, transparent: true, opacity: 0.10,
+        blending: T.AdditiveBlending, depthWrite: false }));
+    moon.rotation.x = -Math.PI / 2; moon.position.set(20, 0.4, -120); lbGrp.add(moon);
+
+    const foot = new T.Mesh(new T.CircleGeometry(78, 28),
+      new T.MeshBasicMaterial({ map: dot, color: 0x8bff5a, transparent: true, opacity: 0.10,
+        blending: T.AdditiveBlending, depthWrite: false }));
+    foot.rotation.x = -Math.PI / 2; foot.position.set(0, 0.9, 0); lbCharGrp.add(foot);
+
+    // 앞쪽 레이어 — 카메라 바로 앞의 거의 검은 잔해가 화면 아래를 감싼다
+    const fgMat = new T.MeshBasicMaterial({ color: 0x040706 });
+    const fgAt = (x, y, z, w, h, d, ry) => {
+      const m = new T.Mesh(new T.BoxGeometry(w, h, d), fgMat);
+      m.position.set(x, y, z); m.rotation.y = ry; lbGrp.add(m);
+    };
+    fgAt(-220,  22, 400, 240,  60, 100, 0.22);
+    fgAt( 255,  16, 445, 190,  48,  90, -0.3);
+    fgAt(-330,  46, 330,  46, 100,  46, 0.5);
+
+    // 공기 중의 먼지 — 아주 느리게 흐른다
+    const N = 96;
+    lbDust = new T.InstancedMesh(new T.PlaneGeometry(3.0, 3.0),
+      new T.MeshBasicMaterial({ map: dot, color: 0xbcd6c6, transparent: true, opacity: 0.13,
+        blending: T.AdditiveBlending, depthWrite: false }), N);
+    lbDust.frustumCulled = false;
+    lbDustP = [];
+    const dr = mkRnd(4242);
+    for (let i = 0; i < N; i++) lbDustP.push({
+      x: (dr() - 0.5) * 900, y: dr() * 200, z: -560 + dr() * 900,
+      s: 0.35 + dr() * 0.9, vy: 0.05 + dr() * 0.14, vx: (dr() - 0.5) * 0.20, ph: dr() * 6.28 });
+    lbGrp.add(lbDust);
+
+    // 바닥을 기어가는 안개 — 아주 넓고 아주 옅은 판 세 겹이 서로 다른 속도로 흐른다
+    const fogTex = radialTex([[0,'rgba(255,255,255,0.55)'],[0.45,'rgba(255,255,255,0.22)'],[1,'rgba(255,255,255,0)']]);
+    lbMist = [];
+    for (let i = 0; i < 2; i++) {
+      const m = new T.Mesh(new T.PlaneGeometry(2600, 560),
+        new T.MeshBasicMaterial({ map: fogTex, color: 0x9fc4ae, transparent: true,
+          opacity: [0.085, 0.058][i], blending: T.AdditiveBlending, depthWrite: false }));
+      m.position.set(0, [50, 96][i], [-360, -1120][i]);
+      m.userData = { sp: [0.030, 0.015][i], y: m.position.y };
+      lbGrp.add(m); lbMist.push(m);
+    }
+  }
+
+  /* 전투 조명 ↔ 로비 조명 전환 (필요할 때 한 번만) */
+  function lobbyMode(want) {
+    if (want === lbOn) return;
+    lbOn = want;
+    if (!savedLight) savedLight = { sun: sun.intensity, sunCol: sun.color.getHex(),
+      hemi: hemiLight.intensity, amb: ambLight.intensity, fill: fillLight.intensity,
+      ground: ground.material.color.getHex() };
+    if (want) {
+      lbGrp.visible = true;
+      sun.castShadow = false;
+      rn.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.35));
+      scene.background = lbSky; scene.fog = lbFog;
+      sun.intensity = 0.38; sun.color.setHex(0x8299bf);
+      hemiLight.intensity = 0.30; ambLight.intensity = 0.09; fillLight.intensity = 0.11;
+      ground.visible = false;              // 로비는 전용 바닥을 쓴다
+      playerLight.visible = false;
+    } else {
+      lbGrp.visible = false;
+      sun.castShadow = true;
+      rn.setPixelRatio(qLevel >= 1 ? 1 : Math.min(window.devicePixelRatio || 1, 2));
+      scene.background = playBg; scene.fog = playFog;
+      sun.intensity = savedLight.sun; sun.color.setHex(savedLight.sunCol);
+      hemiLight.intensity = savedLight.hemi; ambLight.intensity = savedLight.amb;
+      fillLight.intensity = savedLight.fill;
+      ground.visible = true;
+    }
+  }
+
+  function frameLobby() {
+    buildLobby();
+    lobbyMode(true);
+    const t = G.frame * 0.001;
+
+    // 선택한 대원을 세운다
+    const ck = CHARACTERS[G.character || 'hunter'].sprite;
+    if (ck !== lbCharKey) {
+      if (lbChar) { lbCharGrp.remove(lbChar); }
+      lbChar = new T.Mesh(voxelGeo(ck) || voxelGeo('player'),
+        new T.MeshLambertMaterial({ vertexColors: true }));
+      lbChar.material.color.setHex(0x5d6f68);   // 밝기를 눌러 장면의 차가운 색조에 맞춘다
+      const sc = voxScale(ck, 52);
+      lbChar.scale.set(sc, sc * STAND, sc);
+      lbChar.rotation.y = -0.42;
+      lbCharGrp.add(lbChar); lbCharKey = ck;
+    }
+    lbChar.position.y = Math.sin(t * 1.7) * 1.4;    // 아주 얕은 호흡
+    // 세로 화면에선 중앙 가까이, 가로 화면에선 가운데 버튼을 피해 옆으로
+    lbCharGrp.position.x = (W / H < 0.9) ? 58 : (W / H > 1.7 ? 290 : 215);
+
+    // 경고등 — 서로 다른 박자로 느리게 숨 쉰다
+    for (const b of lbBeacons) {
+      const v = Math.sin(t * 1.15 + b.userData.ph);
+      b.material.opacity = 0.16 + Math.max(0, v) ** 3 * 0.95;
+    }
+    // 가로등이 아주 미세하게 흔들린다 (죽어가는 형광등)
+    for (let i = 0; i < lbLamps.length; i++) {
+      const L = lbLamps[i];
+      L.intensity = L.userData.base * (1 + Math.sin(t * (4.1 + i * 1.7) + i) * 0.055);
+    }
+    // 바닥 안개가 아주 느리게 옆으로 흐른다
+    for (const m of lbMist) {
+      m.position.x = Math.sin(t * m.userData.sp * 12) * 260;
+      m.position.y = m.userData.y + Math.sin(t * 0.6 + m.userData.sp * 40) * 6;
+    }
+
+    // 먼지
+    const mx = new T.Matrix4(), q = new T.Quaternion(), sv = new T.Vector3();
+    lbCam.getWorldQuaternion(q);
+    for (let i = 0; i < lbDustP.length; i++) {
+      const d = lbDustP[i];
+      d.y += d.vy; d.x += d.vx + Math.sin(t * 2 + d.ph) * 0.12;
+      if (d.y > 360) { d.y = -10; d.x = (Math.random() - 0.5) * 1100; }
+      sv.set(d.s, d.s, d.s);
+      mx.compose(tmpV.set(d.x, d.y, d.z), q, sv);
+      lbDust.setMatrixAt(i, mx);
+    }
+    lbDust.instanceMatrix.needsUpdate = true;
+
+    // 카메라 — 숨 쉬듯 아주 느린 패럴랙스
+    lbCam.position.set(Math.sin(t * 0.34) * 26, 118 + Math.sin(t * 0.23) * 5, 540);
+    lbCam.lookAt(Math.sin(t * 0.34) * 10, 152, -700);
+    lbCam.updateMatrixWorld();
+    rn.render(scene, lbCam);
   }
 
   function setPitch(deg) { PITCH = deg * DEG; resize3d(); }
@@ -5110,6 +5562,12 @@ function refreshMenu() {
   el.bestTime.textContent = fmtTime(G.save.bestTime);
   el.totalKills.textContent = G.save.totalKills;
   $('maxTier').textContent = t('hud.tierLabel').replace('{n}', G.save.maxTier || 1);
+  // 로비 표시줄의 아주 작은 기록 한 줄 — 세운 적이 있을 때만 나온다
+  const lb = $('lbBest');
+  if (lb) {
+    if (G.save.bestTime > 0) { lb.style.display = ''; lb.textContent = t('menu.bestShort') + ' ' + fmtTime(G.save.bestTime); }
+    else lb.style.display = 'none';
+  }
   // 이어하기 버튼: 중간 저장이 있으면 표시(차수·레벨 요약)
   const cbtn = $('continueBtn');
   if (cbtn) {
