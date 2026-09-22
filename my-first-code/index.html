@@ -345,19 +345,6 @@ html:lang(ko) .lb-deploy,html:lang(zh) .lb-deploy,html:lang(th) .lb-deploy{lette
 .toggle[aria-checked="true"]{background:rgba(141,255,90,.18);border-color:rgba(141,255,90,.45);}
 .toggle[aria-checked="true"] .knob{transform:translateX(19px);background:var(--green);}
 
-/* ---------- 가드 터렛 패널 ---------- */
-.tr-pts{font-size:var(--f-meta);color:var(--tx-3);margin-bottom:var(--s3);letter-spacing:.06em;}
-.tr-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line);}
-.tr-row:last-of-type{border-bottom:0;}
-.tr-info{flex:1;min-width:0;text-align:left;font-size:var(--f-body);color:var(--tx-2);}
-.tr-bar{display:flex;gap:3px;margin-top:6px;}
-.tr-bar i{width:9px;height:3px;border-radius:2px;background:var(--line-2);}
-.tr-bar i.on{background:var(--cyan);}
-.tr-up{appearance:none;flex:none;min-width:40px;min-height:36px;border-radius:var(--r-s);
-  background:var(--panel-2);border:1px solid var(--line);color:var(--cyan);
-  font:700 var(--f-h2)/1 inherit;cursor:pointer;}
-.tr-up:active{transform:scale(.94);}
-
 /* ---------- 가이드 도감 ---------- */
 #guide .card{width:min(600px,100%);}
 .gd-hint{font-size:var(--f-meta);color:var(--tx-3);margin-bottom:var(--s4);}
@@ -932,11 +919,6 @@ h2.res.lose{color:var(--red);}
   </div>
 </div>
 
-<!-- GUARD TURRET UPGRADE -->
-<div class="overlay" id="turretPanel">
-  <div class="veil"></div>
-  <div class="card center"></div>
-</div>
 
 <!-- PAUSE -->
 <div class="overlay" id="pause">
@@ -1729,7 +1711,7 @@ const cv = $('cv'), ctx = cv.getContext('2d');
 const hud = $('hud');
 const el = {
   splash:$('splash'), titleScreen:$('titleScreen'),
-  menu:$('menu'), how:$('how'), pause:$('pause'), levelup:$('levelup'), result:$('result'), settings:$('settings'), turretPanel:$('turretPanel'),
+  menu:$('menu'), how:$('how'), pause:$('pause'), levelup:$('levelup'), result:$('result'), settings:$('settings'),
   guide:$('guide'), guideCard:$('guideCard'), guideBody:$('guideBody'), stagePick:$('stagePick'),
   sqSheet:$('sqSheet'), amSheet:$('amSheet'), rcSheet:$('rcSheet'),
   xpfill:$('xpfill'), lvChip:$('lvChip'), hpfill:$('hpfill'), hptext:$('hptext'),
@@ -1799,12 +1781,9 @@ cv.addEventListener('touchmove', e => {
   e.preventDefault();
 }, { passive:false });
 function endTouch(e){ for (const t of e.changedTouches) if (t.identifier === touch.id){
-  if (Math.hypot(t.clientX - touch.sx, t.clientY - touch.sy) < 12) handleTurretTap(t.clientX, t.clientY);   // 탭(드래그 X) → 가드 터렛 설정
   touch.active=false; touch.id=null; } }
 cv.addEventListener('touchend', endTouch, { passive:false });
 cv.addEventListener('touchcancel', endTouch, { passive:false });
-// PC: 마우스로 가드 터렛 클릭 시 설정 창
-cv.addEventListener('mousedown', e => { if (G.state === 'play') handleTurretTap(e.clientX, e.clientY); });
 
 function getMoveVector() {
   let mx = 0, my = 0;
@@ -2055,7 +2034,7 @@ const WEAPONS = {
     desc:'직선 관통 후 플레이어에게 복귀.',
     stats:l=>({ dmg:14+(l-1)*5, cd:Math.max(46,80-(l-1)*4), spd:6, reach:230, spin:0.3 }) },
   sentry:{ name:'가드 터렛', icon:'sentry', aim:'deploy', pair:'speed', evo:'minigun',
-    desc:'적을 따라다니며 자동 사격하는 자율 포탑. 탭하면 능력을 레벨업할 수 있다.',
+    desc:'적을 따라다니며 자동 사격하는 자율 포탑. 적을 잡을수록 스스로 레벨업해 공격력과 탄속이 올라간다.',
     stats:l=>({ dmg:5+(l-1)*2.2, cd:Math.max(120,180-(l-1)*8), fireCd:Math.max(8,20-(l-1)), life:360+(l-1)*30, rng:200 }) },
   scythe:{ name:'블러드 사이드', icon:'scythe', aim:'move', pair:'regen', evo:'soulreaper', melee:true,
     desc:'이동 방향 부채꼴을 베어 피해를 주고, 준 피해의 일부만큼 체력을 회복.',
@@ -2345,7 +2324,7 @@ const UI = {
     'reset.confirm':'모든 진행 상황(코인·강화·기록)을 삭제할까요?',
     'webgl.fail':'이 기기에서는 3D 화면을 켤 수 없습니다. 브라우저를 최신으로 올리거나 다른 브라우저로 열어 주세요.',
     'lang.label':'언어',
-    'set.brand':'환경설정', 'set.title':'설정', 'set.sfx':'효과음', 'set.bgm':'배경음', 'set.close':'닫기', 'turret.title':'가드 터렛', 'turret.points':'남은 포인트', 'turret.atk':'공격력', 'turret.spd':'총알 스피드', 'turret.max':'MAX',
+    'set.brand':'환경설정', 'set.title':'설정', 'set.sfx':'효과음', 'set.bgm':'배경음', 'set.close':'닫기', 'turret.atk':'공격력', 'turret.spd':'탄속',
     'f.dmg':'피해 +', 'f.proj':'발사 수 +', 'f.projU':'발', 'f.pellets':'탄환 +', 'f.pelletsU':'발',
     'f.blades':'톱날 +', 'f.bladesU':'개', 'f.chain':'전이 대상 +', 'f.chainU':'명',
     'f.radius':'폭발 범위 +', 'f.range':'사거리 +', 'f.reach':'관통 거리 +', 'f.life':'설치 지속 +',
@@ -2379,7 +2358,7 @@ const UI = {
     'reset.confirm':'Delete all progress (coins, upgrades, records)?',
     'webgl.fail':'This device cannot run the 3D view. Please update your browser or try a different one.',
     'lang.label':'Language',
-    'set.brand':'Settings', 'set.title':'Settings', 'set.sfx':'Sound Effects', 'set.bgm':'Music', 'set.close':'Close', 'turret.title':'Guard Turret', 'turret.points':'Points left', 'turret.atk':'Attack', 'turret.spd':'Bullet Speed', 'turret.max':'MAX',
+    'set.brand':'Settings', 'set.title':'Settings', 'set.sfx':'Sound Effects', 'set.bgm':'Music', 'set.close':'Close', 'turret.atk':'ATK', 'turret.spd':'SPD',
     'f.dmg':'Damage +', 'f.proj':'Shots +', 'f.projU':'', 'f.pellets':'Pellets +', 'f.pelletsU':'',
     'f.blades':'Blades +', 'f.bladesU':'', 'f.chain':'Chain targets +', 'f.chainU':'',
     'f.radius':'Blast radius +', 'f.range':'Range +', 'f.reach':'Pierce range +', 'f.life':'Duration +',
@@ -2413,7 +2392,7 @@ const UI = {
     'reset.confirm':'删除所有进度（金币、强化、记录）？',
     'webgl.fail':'此设备无法运行 3D 画面。请更新浏览器或换一个浏览器打开。',
     'lang.label':'语言',
-    'set.brand':'设置', 'set.title':'设置', 'set.sfx':'音效', 'set.bgm':'背景音乐', 'set.close':'关闭', 'turret.title':'守卫炮塔', 'turret.points':'剩余点数', 'turret.atk':'攻击力', 'turret.spd':'子弹速度', 'turret.max':'满级',
+    'set.brand':'设置', 'set.title':'设置', 'set.sfx':'音效', 'set.bgm':'背景音乐', 'set.close':'关闭', 'turret.atk':'攻击', 'turret.spd':'弹速',
     'f.dmg':'伤害 +', 'f.proj':'弹数 +', 'f.projU':'', 'f.pellets':'弹丸 +', 'f.pelletsU':'',
     'f.blades':'锯刃 +', 'f.bladesU':'', 'f.chain':'连锁目标 +', 'f.chainU':'',
     'f.radius':'爆炸范围 +', 'f.range':'射程 +', 'f.reach':'穿透距离 +', 'f.life':'持续 +',
@@ -2447,7 +2426,7 @@ const UI = {
     'reset.confirm':'ลบความคืบหน้าทั้งหมด (เหรียญ, อัปเกรด, สถิติ) หรือไม่?',
     'webgl.fail':'อุปกรณ์นี้ไม่รองรับภาพ 3D กรุณาอัปเดตเบราว์เซอร์หรือลองเบราว์เซอร์อื่น',
     'lang.label':'ภาษา',
-    'set.brand':'ตั้งค่า', 'set.title':'ตั้งค่า', 'set.sfx':'เสียงเอฟเฟกต์', 'set.bgm':'เพลงประกอบ', 'set.close':'ปิด', 'turret.title':'ป้อมปืน', 'turret.points':'แต้มที่เหลือ', 'turret.atk':'พลังโจมตี', 'turret.spd':'ความเร็วกระสุน', 'turret.max':'สูงสุด',
+    'set.brand':'ตั้งค่า', 'set.title':'ตั้งค่า', 'set.sfx':'เสียงเอฟเฟกต์', 'set.bgm':'เพลงประกอบ', 'set.close':'ปิด', 'turret.atk':'โจมตี', 'turret.spd':'ความเร็ว',
     'f.dmg':'ความเสียหาย +', 'f.proj':'จำนวนยิง +', 'f.projU':'', 'f.pellets':'กระสุน +', 'f.pelletsU':'',
     'f.blades':'ใบเลื่อย +', 'f.bladesU':'', 'f.chain':'เป้าหมายลูกโซ่ +', 'f.chainU':'',
     'f.radius':'รัศมีระเบิด +', 'f.range':'ระยะ +', 'f.reach':'ระยะทะลุ +', 'f.life':'ระยะเวลา +',
@@ -2481,7 +2460,7 @@ const UI = {
     'reset.confirm':'Xóa toàn bộ tiến trình (xu, nâng cấp, kỷ lục)?',
     'webgl.fail':'Thiết bị này không chạy được chế độ 3D. Hãy cập nhật trình duyệt hoặc thử trình duyệt khác.',
     'lang.label':'Ngôn ngữ',
-    'set.brand':'Cài đặt', 'set.title':'Cài đặt', 'set.sfx':'Hiệu ứng âm thanh', 'set.bgm':'Nhạc nền', 'set.close':'Đóng', 'turret.title':'Tháp Pháo', 'turret.points':'Điểm còn lại', 'turret.atk':'Tấn công', 'turret.spd':'Tốc độ đạn', 'turret.max':'TỐI ĐA',
+    'set.brand':'Cài đặt', 'set.title':'Cài đặt', 'set.sfx':'Hiệu ứng âm thanh', 'set.bgm':'Nhạc nền', 'set.close':'Đóng', 'turret.atk':'Tấn công', 'turret.spd':'Tốc độ',
     'f.dmg':'Sát thương +', 'f.proj':'Số phát bắn +', 'f.projU':'', 'f.pellets':'Đạn +', 'f.pelletsU':'',
     'f.blades':'Lưỡi cưa +', 'f.bladesU':'', 'f.chain':'Mục tiêu lan +', 'f.chainU':'',
     'f.radius':'Bán kính nổ +', 'f.range':'Tầm +', 'f.reach':'Tầm xuyên +', 'f.life':'Thời lượng +',
@@ -2515,7 +2494,7 @@ const UI = {
     'reset.confirm':'¿Borrar todo el progreso (monedas, mejoras, registros)?',
     'webgl.fail':'Este dispositivo no puede ejecutar la vista 3D. Actualiza el navegador o prueba con otro.',
     'lang.label':'Idioma',
-    'set.brand':'Ajustes', 'set.title':'Ajustes', 'set.sfx':'Efectos de sonido', 'set.bgm':'Música', 'set.close':'Cerrar', 'turret.title':'Torreta', 'turret.points':'Puntos restantes', 'turret.atk':'Ataque', 'turret.spd':'Vel. de bala', 'turret.max':'MÁX',
+    'set.brand':'Ajustes', 'set.title':'Ajustes', 'set.sfx':'Efectos de sonido', 'set.bgm':'Música', 'set.close':'Cerrar', 'turret.atk':'ATQ', 'turret.spd':'VEL',
     'f.dmg':'Daño +', 'f.proj':'Disparos +', 'f.projU':'', 'f.pellets':'Perdigones +', 'f.pelletsU':'',
     'f.blades':'Cuchillas +', 'f.bladesU':'', 'f.chain':'Objetivos en cadena +', 'f.chainU':'',
     'f.radius':'Radio de explosión +', 'f.range':'Alcance +', 'f.reach':'Alcance de perforación +', 'f.life':'Duración +',
@@ -2533,7 +2512,7 @@ const TR = {
       grenade:{desc:'Lobbed at a target, explodes in a radius.'},
       taser:{desc:'Chain lightning that jumps between nearby foes.'},
       axe:{desc:'Pierces in a straight line, then returns to you.'},
-      sentry:{desc:'A roaming auto-turret that hunts nearby enemies. Tap it to level up.'},
+      sentry:{desc:'A roaming auto-turret that hunts nearby enemies. It levels itself up as it kills, raising attack and bullet speed.'},
       scythe:{desc:'Sweeps a fan and heals for part of the damage dealt.'}, frostwand:{desc:'Fires a frost bolt that slows enemies it hits.'} },
     evo:{ machinegun:{desc:'Ultra-fast rapid-fire bursts.'}, gatling:{desc:'A wide fan of bullets blankets the front.'},
       inferno:{desc:'Leaves lingering pillars of fire along its path.'}, buzzsaw:{desc:'Huge saw blades spin furiously at all times.'},
@@ -2555,7 +2534,7 @@ const TR = {
     weapon:{ pistol:{desc:'自动瞄准最近的僵尸，稳定的单发火力。'}, shotgun:{desc:'朝移动方向发射扇形多发弹丸。'},
       flamethrower:{desc:'对身前锥形区域造成持续火焰伤害。'}, machete:{desc:'近战刀刃环绕你形成防护罩。'},
       grenade:{desc:'投向目标点，范围爆炸。'}, taser:{desc:'连锁闪电在附近敌人间跳跃。'},
-      axe:{desc:'直线穿透后返回到你身边。'}, sentry:{desc:'自动追击附近敌人的移动炮塔。点击即可升级。'},
+      axe:{desc:'直线穿透后返回到你身边。'}, sentry:{desc:'自动追击附近敌人的移动炮塔。击杀会自行升级，攻击力与弹速同步提升。'},
       scythe:{desc:'挥砍扇形造成伤害，并按造成伤害的一部分回复生命。'}, frostwand:{desc:'发射冰霜弹，减速命中的敌人。'} },
     evo:{ machinegun:{desc:'超高速连射点射。'}, gatling:{desc:'覆盖前方的扇形弹幕。'},
       inferno:{desc:'在路径上留下持续燃烧的火柱。'}, buzzsaw:{desc:'时刻狂暴旋转的大型锯刃。'},
@@ -2577,7 +2556,7 @@ const TR = {
     weapon:{ pistol:{desc:'เล็งซอมบี้ที่ใกล้ที่สุดอัตโนมัติ ยิงทีละนัดอย่างมั่นคง'}, shotgun:{desc:'ยิงกระสุนรูปพัดไปตามทิศที่เคลื่อนที่'},
       flamethrower:{desc:'สร้างความเสียหายไฟต่อเนื่องเป็นรูปกรวยด้านหน้า'}, machete:{desc:'ใบมีดระยะประชิดหมุนรอบตัวเป็นเกราะ'},
       grenade:{desc:'ขว้างไปยังเป้าหมาย ระเบิดเป็นวงกว้าง'}, taser:{desc:'สายฟ้าลูกโซ่กระโดดระหว่างศัตรูที่อยู่ใกล้'},
-      axe:{desc:'ทะลุเป็นเส้นตรงแล้วกลับมาหาคุณ'}, sentry:{desc:'ป้อมปืนเคลื่อนที่ไล่ล่าศัตรูใกล้เคียงโดยอัตโนมัติ แตะเพื่ออัปเกรด'},
+      axe:{desc:'ทะลุเป็นเส้นตรงแล้วกลับมาหาคุณ'}, sentry:{desc:'ป้อมปืนเคลื่อนที่ไล่ล่าศัตรูใกล้เคียงโดยอัตโนมัติ เก็บศัตรูแล้วจะอัปเกรดเองทั้งพลังโจมตีและความเร็วกระสุน'},
       scythe:{desc:'ฟันเป็นรูปพัดสร้างความเสียหาย และฟื้นพลังตามส่วนหนึ่งของความเสียหายที่ทำ'}, frostwand:{desc:'ยิงกระสุนน้ำแข็ง ทำให้ศัตรูที่โดนช้าลง'} },
     evo:{ machinegun:{desc:'ยิงรัวความเร็วสูงมาก'}, gatling:{desc:'ม่านกระสุนรูปพัดปกคลุมด้านหน้า'},
       inferno:{desc:'ทิ้งเสาไฟที่คงอยู่ตลอดเส้นทาง'}, buzzsaw:{desc:'ใบเลื่อยขนาดใหญ่หมุนอย่างดุเดือดตลอดเวลา'},
@@ -2599,7 +2578,7 @@ const TR = {
     weapon:{ pistol:{desc:'Tự động ngắm zombie gần nhất với phát bắn đơn ổn định.'}, shotgun:{desc:'Bắn một loạt đạn hình quạt theo hướng di chuyển.'},
       flamethrower:{desc:'Sát thương lửa liên tục theo hình nón phía trước.'}, machete:{desc:'Lưỡi dao cận chiến xoay quanh bạn như lá chắn.'},
       grenade:{desc:'Ném vào điểm mục tiêu, nổ theo bán kính.'}, taser:{desc:'Sét dây chuyền nhảy giữa các kẻ địch gần.'},
-      axe:{desc:'Xuyên theo đường thẳng rồi quay về với bạn.'}, sentry:{desc:'Tháp pháo tự hành săn kẻ địch gần đó. Chạm để nâng cấp.'},
+      axe:{desc:'Xuyên theo đường thẳng rồi quay về với bạn.'}, sentry:{desc:'Tháp pháo tự hành săn kẻ địch gần đó. Tự lên cấp khi tiêu diệt, tăng đều tấn công và tốc độ đạn.'},
       scythe:{desc:'Chém hình quạt gây sát thương và hồi máu theo một phần sát thương gây ra.'}, frostwand:{desc:'Bắn đạn băng làm chậm kẻ địch trúng phải.'} },
     evo:{ machinegun:{desc:'Bắn loạt siêu tốc.'}, gatling:{desc:'Màn đạn hình quạt phủ kín phía trước.'},
       inferno:{desc:'Để lại các cột lửa còn cháy dọc đường đi.'}, buzzsaw:{desc:'Lưỡi cưa lớn xoay dữ dội liên tục.'},
@@ -2621,7 +2600,7 @@ const TR = {
     weapon:{ pistol:{desc:'Apunta solo al zombi más cercano con disparos únicos estables.'}, shotgun:{desc:'Dispara un abanico de perdigones en tu dirección de avance.'},
       flamethrower:{desc:'Daño de fuego continuo en un cono frente a ti.'}, machete:{desc:'Cuchillas cuerpo a cuerpo orbitan a tu alrededor como escudo.'},
       grenade:{desc:'Se lanza a un punto y explota en un radio.'}, taser:{desc:'Rayo en cadena que salta entre enemigos cercanos.'},
-      axe:{desc:'Perfora en línea recta y regresa a ti.'}, sentry:{desc:'Torreta autónoma que persigue enemigos cercanos. Tócala para subir de nivel.'},
+      axe:{desc:'Perfora en línea recta y regresa a ti.'}, sentry:{desc:'Torreta autónoma que persigue enemigos cercanos. Sube de nivel sola al matar, mejorando ataque y velocidad de bala.'},
       scythe:{desc:'Barre en abanico y cura una parte del daño causado.'}, frostwand:{desc:'Dispara un proyectil de escarcha que ralentiza a los enemigos.'} },
     evo:{ machinegun:{desc:'Ráfagas de disparo ultrarrápidas.'}, gatling:{desc:'Un amplio abanico de balas cubre el frente.'},
       inferno:{desc:'Deja columnas de fuego persistentes en su camino.'}, buzzsaw:{desc:'Enormes sierras giran furiosamente todo el tiempo.'},
@@ -3119,7 +3098,7 @@ function fireWeapon(w) {
     const maxT = 2;                          // 가드 터렛 최대 2개
     if (G.sentries.length >= maxT) return;   // 지속형 터렛 상한 (레벨업 누적을 위해)
     G.sentries.push({ x:p.x, y:p.y, dmg:s.dmg, fireCd:s.fireCd, fireT:0, rng:s.rng, evolved:w.evolved,
-      xp:0, level:1, atkLv:0, spdLv:0, points:0, dead:false });
+      xp:0, level:1, atkLv:0, spdLv:0, dead:false });
     Audio.S.deploy(); return;
   }
   if (key === 'flamethrower') {
@@ -4446,17 +4425,15 @@ window.R3 = (() => {
         barrel.rotation.z = Math.PI / 2; barrel.position.set(11, 12, 0); barrel.castShadow = true;
         const rim = new T.Mesh(new T.TorusGeometry(14, 1.2, 6, 24), new T.MeshBasicMaterial({ color: 0x7fd4ff }));
         rim.rotation.x = -Math.PI / 2; rim.position.y = 1.2;
-        const sel = new T.Mesh(new T.TorusGeometry(20, 1, 6, 28), new T.MeshBasicMaterial({ color: 0xffe08a }));
-        sel.rotation.x = -Math.PI / 2; sel.position.y = 1.4; sel.visible = false;
-        o.add(base); o.add(dome); o.add(barrel); o.add(rim); o.add(sel);
-        o.userData = { rim, sel };
+        o.add(base); o.add(dome); o.add(barrel); o.add(rim);
+        o.userData = { rim };
         scene.add(o); sentryPool[i] = o;
       }
       o.visible = true;
       o.position.set(s.x, 0, s.y);
-      const spent = ((s.atkLv || 0) + (s.spdLv || 0)) > 0;
-      o.userData.rim.material.color.set(spent ? 0x9aa4ad : 0x7fd4ff);   // 스탯 찍음: 회색 / 안 찍음: 하늘색
-      o.userData.sel.visible = (G.selTurret === s);
+      // 스스로 자란 만큼 링이 하늘색에서 금빛으로 달아오른다
+      const gr = Math.min(1, ((s.atkLv || 0) + (s.spdLv || 0)) / (TURRET_MAX * 2));
+      o.userData.rim.material.color.setRGB(0.50 + 0.50 * gr, 0.83, 1 - 0.55 * gr);
       const e = nearestEnemy(s.x, s.y, s.rng);
       o.rotation.y = e ? Math.PI / 2 - Math.atan2(e.y - s.y, e.x - s.x) : 0;
       i++;
@@ -4775,39 +4752,28 @@ function drawVignette() {
 
 /* ---------------- 가드 터렛 레벨업 시스템 ---------------- */
 const TURRET_MAX = 10;
+/* 가드 터렛은 알아서 자란다 — 레벨업 포인트를 공격력 · 탄속에
+   낮은 쪽부터 자동으로 넣어 두 스탯이 골고루 올라간다. 플레이어가 할 일은 없다. */
+function turretAutoSpend(s) {
+  const a = s.atkLv || 0, d = s.spdLv || 0;
+  let kind = null;
+  if (a < TURRET_MAX && d < TURRET_MAX) kind = (a <= d) ? 'atk' : 'spd';   // 낮은 쪽 먼저
+  else if (a < TURRET_MAX) kind = 'atk';
+  else if (d < TURRET_MAX) kind = 'spd';
+  if (kind === 'atk') s.atkLv = a + 1;
+  else if (kind === 'spd') s.spdLv = d + 1;
+  return kind;
+}
 function turretGainXP(s) {
   if ((s.atkLv + s.spdLv) >= TURRET_MAX * 2) { s.xp = 0; return; }
   const req = lv => Math.round((5 + lv * 4) * 2.5);   // 레벨업 요구 경험치 2.5배 상향
   s.xp++; let need = req(s.level);
   while (s.xp >= need && (s.atkLv + s.spdLv) < TURRET_MAX * 2) {
-    s.xp -= need; s.level++; s.points++; need = req(s.level);
-    floatText(s.x, s.y - 24, 'Lv ' + s.level + '!', '#9fe0ff');
+    s.xp -= need; s.level++; need = req(s.level);
+    const kind = turretAutoSpend(s);
+    if (kind) floatText(s.x, s.y - 24, 'Lv ' + s.level + ' · ' + t('turret.' + kind),
+      kind === 'spd' ? '#9fe0ff' : '#ffd45a');
   }
-}
-function turretAt(clientX, clientY) {
-  // 3D 카메라에서는 화면 좌표를 지면으로 역투영해야 한다
-  const hit = R3.ready ? R3.unproject(clientX, clientY) : null;
-  if (!hit) return null;
-  const wx = hit.x, wy = hit.y;
-  let best = null, bd = 34*34;
-  for (const s of G.sentries) { const d = dist2(wx, wy, s.x, s.y); if (d < bd) { bd = d; best = s; } }
-  return best;
-}
-function handleTurretTap(clientX, clientY) {
-  if (G.state !== 'play') return false;
-  const s = turretAt(clientX, clientY);
-  if (s) { openTurretPanel(s); return true; }
-  return false;
-}
-function openTurretPanel(s) {
-  if (G.state !== 'play') return;
-  G.selTurret = s; G.state = 'turret';
-  renderTurretPanel(); el.turretPanel.classList.add('show');
-}
-function closeTurretPanel() {
-  el.turretPanel.classList.remove('show');
-  if (G.state === 'turret') { G.state = 'play'; Audio.resume(); }
-  G.selTurret = null;
 }
 
 /* ---------------- 가이드 도감 ---------------- */
@@ -4908,30 +4874,6 @@ function openGuide() {
   requestAnimationFrame(() => onGuideScroll());
 }
 function closeGuide() { el.guide.classList.remove('show'); }
-function upgradeTurret(kind) {
-  const s = G.selTurret; if (!s || s.points <= 0) return;
-  if (kind === 'atk' && s.atkLv < TURRET_MAX) { s.atkLv++; s.points--; }
-  else if (kind === 'spd' && s.spdLv < TURRET_MAX) { s.spdLv++; s.points--; }
-  else return;
-  Audio.S.coin(); renderTurretPanel();
-}
-function renderTurretPanel() {
-  const s = G.selTurret; if (!s) return;
-  const rowHtml = (kind, lv, label) => {
-    const max = lv >= TURRET_MAX, can = s.points > 0 && !max;
-    return `<div class="tr-row"><div class="tr-info"><div class="tr-nm">${label} <b>Lv ${lv}/${TURRET_MAX}</b></div>
-      <div class="tr-bar"><i style="width:${(lv/TURRET_MAX*100).toFixed(0)}%"></i></div></div>
-      <button class="tr-up ${can?'':'off'}" data-k="${kind}">${max ? t('turret.max') : '＋'}</button></div>`;
-  };
-  el.turretPanel.querySelector('.card').innerHTML =
-    `<div class="brand" style="justify-content:center;">${ico('sentry')} ${t('turret.title')} · Lv ${s.level}</div>
-     <div class="tr-pts">${t('turret.points')} : <b>${s.points}</b></div>
-     ${rowHtml('atk', s.atkLv, t('turret.atk'))}
-     ${rowHtml('spd', s.spdLv, t('turret.spd'))}
-     <button class="btn primary" id="trClose" style="margin-top:16px;">${t('set.close')}</button>`;
-  el.turretPanel.querySelectorAll('.tr-up').forEach(b => b.onclick = () => upgradeTurret(b.dataset.k));
-  el.turretPanel.querySelector('#trClose').onclick = closeTurretPanel;
-}
 /* ============================================================================
    HUD
    ========================================================================== */
@@ -5000,7 +4942,7 @@ window.addEventListener('resize', syncAppHeight, { passive:true });
 window.addEventListener('orientationchange', () => setTimeout(syncAppHeight, 150), { passive:true });
 if (window.visualViewport) window.visualViewport.addEventListener('resize', syncAppHeight, { passive:true });
 
-function hideAllOverlays() { ['splash','titleScreen','menu','how','pause','levelup','result','settings','turretPanel','stagePick','sqSheet','amSheet','rcSheet'].forEach(k => el[k].classList.remove('show')); }
+function hideAllOverlays() { ['splash','titleScreen','menu','how','pause','levelup','result','settings','stagePick','sqSheet','amSheet','rcSheet'].forEach(k => el[k].classList.remove('show')); }
 
 function togglePause() {
   if (G.state === 'play') {
@@ -5125,7 +5067,7 @@ function serializeRun() {
       passives: Object.assign({}, p.passives),
     },
     sentries: G.sentries.map(s => ({ evolved: !!s.evolved, level: s.level || 1,
-      atkLv: s.atkLv || 0, spdLv: s.spdLv || 0, points: s.points || 0, xp: s.xp || 0,
+      atkLv: s.atkLv || 0, spdLv: s.spdLv || 0, xp: s.xp || 0,
       dmg: s.dmg, rng: s.rng, fireCd: s.fireCd })),
     // 요약(메뉴 '이어하기' 버튼에 표시)
     label: { tier: G.tier, time: G.time, level: p.level },
@@ -5175,7 +5117,7 @@ function resumeRun() {
     const ang = (i / Math.max(1, sl.length)) * TAU;
     G.sentries.push({ x: p.x + Math.cos(ang) * 80, y: p.y + Math.sin(ang) * 80, vx: 0, vy: 0,
       dmg: s.dmg, fireCd: s.fireCd, fireT: 0, rng: s.rng, evolved: !!s.evolved,
-      xp: s.xp || 0, level: s.level || 1, atkLv: s.atkLv || 0, spdLv: s.spdLv || 0, points: s.points || 0, dead: false });
+      xp: s.xp || 0, level: s.level || 1, atkLv: s.atkLv || 0, spdLv: s.spdLv || 0, dead: false });
   });
   rebuildBlades();
   G.camX = p.x; G.camY = p.y; moveSmooth.x = 0; moveSmooth.y = 0;
