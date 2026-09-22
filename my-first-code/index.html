@@ -8,66 +8,523 @@
 <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAkcElEQVR4nKW7W4yta3ae9Yzv9B/mPw91Wmuv3bu73VbHHbU7sUHtJA5YG0g7aZM4lrCWgSacwkGKgoVJQKAE09qygBss7qIYJbkiIHlFQooUYxlQZGGJpJFpMLGFwWr37n1aa1XVrHn6j9+Ji3+utTsNNomYUl3UrFLV/MY3xjve8b7jF37nl+ScERH+tad//Nnv/cx3/fgnHz1KBC8vnn8o7773bte2x68OPvyJ5Wr59urqMl3d3KhmuQQRuu7E4bDj1B7wecI4TbNesLm6YLVe4soCAVJMiE/IlJAkoBQBOPQd9/s9x/aEAKt6weObR3zyE5/i8uoJPkj+5jc/kK997Vc//F/+7v/+hf/x135t9xM/8RPq2bNn8Xc50//jZX6nw3/1q1+VL37xi/pfefqjf+Uzn/rEj18sl2nqe3Xa7dJuu5XT6fT37h8eMM79PjMVuY5JQsqElMg5M3lPCBGlNaWp0IUmIxzbE1P02LLAOYdVFpsEQsL3nn4cOXYt94c92/2e0XvqqsTeaHLM5AQhBIIXUUrFzXr95pNPPf5zIvLTIhIBBaT/XwF4+vSpeuedd+JX/uSP/Jvf892f+ZfeenQT8jCYuxfPuXvxUh3bIzHLF1frzR8IZNCWkDOD96hxhJSYxgmAqqwpFwWqUExxoht6jn2PLQuqumZRLSjFgo+0bcf9/ZbbuztuH7acuh7rDPbmGq001jlSzhyPR9rO03WtdmWRLi4v/8M/+vYf/uRvvff83/7GN76xBzTwD5QJ/68B+Pmf//kkIrJqFn/68fV1Wla1PByOPNw/cL/dEsmYolBRSRKyKKPFp8QwjYjRaAFRirKqKCtHtawRK3Rjx5QTMXpQGjEWtCWhiUS6yXM8tez3B7pTR86ZwpYsqoa6XKCVxfvAMLa03URKieVqpR4/Samf/L98t334/uv1+l+92++/DljA/0MH4OnTp1pE4o/98Nvfv2zq79MgfhxU17V0/YAPCe0srqzIWqspemJOjD6ihgnRhqpwFGVJ6QxF5XBVQdIQlaJRipKEKR1FWWONRXxizJ6QIGRBGceiWVGUJZeXl9zcXFPXDSlB343EJCSfccbgbIkSrbquDy9vrr5vu3v4JY//8n7f/er5fOEfOgMAVk39F5qqdH17imOMer8/MvmAGIsta4qqIWlFmkbCNDD5SB4GlNI4a3BFwaKpcaUDIwQSTgnKOdAKUzqMc4AQugnRHmUdZb1gnQWlhOVyyeXFBav1mqKY079te/wUSQGMdWjjkJSoCmc262W8ury4Hsfpvwtl+rPtMPzX/19B+PsC8PTpU/3s2bP443/in/qR5aJ+moNPx/1OT93Afrdn9BG0xRQVpqzJWgiiUDkxjSOhHxERqtKhtKIsS4qqIKoMKZKTRgmIMWhn0c5CBpzCVZG6CeQk1IslVmuaxYLVckW9qFFaMU4jXX/k4W7H6dCSk8JYhzKGIQScMXq9XqW27S6Gfvgvx4HfDvB3+F0w4e8LwOefPcs8RTtv/4NFVZJizIddR3dsadueyUeUK0jakpRBtEZMBjUR80gIHvpMX5dMPhBzJosAQoqBEBI+J/KUUD5jfUYpTU6CNo5ysUSJIfmAFsEag4gmZyGLkFLmdDrx/nvv8eG3PqQ/eYwzNKsl1XIJ2tCUhVo1ddztnDq1/d8k5R8BfpXfoTt8ewDkHUif/fpnC/P96tPkxDRM0p9aTseOcQxkMVilSSj8uXVNITKFiI+RGDMmZSYf6IaBQ9syRk9ImX4c6caR8RwYpTW2KLDWYbRBI0gGbR1aWyQlYkq0/cAQPEor+q7l7m7L8w8/4v3f/ibH3Yi1iourCy4fPaJerRARrFLaaJ1EuBH4mzX8Iy28BIQ55353DJAcc4weP460Q083DvggKGtQWYhJ8FPER8+xPdF2B2L0uEJjXYFoTTcOhLs7Ykr0w0Tb9pz6gWnyxBhBaYxzVEVJUTiqsqAuK6qyxDmLCHjvGYee0U9MfqI7ntg+f8luuyNNnhJFIRoXM9JPBFomMr7tyTEqJRKU4s2k+fm3ff7SL8+HT98ehO8MgKzX65Siv4tx/K4pTkwxMKVMAFQGncHHTBo8Xd9yv73n1B1xhaGqL6jrBuMsp77ndHvksD+w37ccDx19NxF9IKUECNoYnHOUhaNpajYXGy6vLllerHGlI6bA6XRk+/DAdrvl8LBj2p9Q3cj1csPqakFTVtjCkRBOXU/Xnjh1A6EfUQqjREIW3v67Tv49pvSfficefHsA8hkE/eee/OO/GWL4oo8xeyAqIYlGtCIBMUZSTPRtz3F/pO1PrDdLnKuo6gZUYvew5f0PPuL2xUsODweGkydOCZUzKs93kEVACVopqkXB5fUVxzdPXE+PWV6sMM7Qh8BDe+S95x9x//wWNQSeVAturp/wXY/e4HK5hgwP+z3vnlr67W7OtJwRnVFK6ZhyJOeftvC3PPzatwfhdQC++lXUO+88S3/kB37v9/gQ/tjgQ/YpK3++fZQgRiFGgUBOmZQSOYNSc+qXRYUxBe3Ycrc98sGHt9y9vGc6BmyCQgmlNlitIWamEBhjZCAyjh4fEkkrxFmUMyztClsUaOOYQuR4GtEDBBMoC8fVZs2TqxvIgsqZFx99RJo8PiYCkAVQSJ6LvxLNXyby9vnwAmT1cQJ8FSBP0f/n2trriEohi4wx4VMiK0EZjTKKrDKRiCihKEsWzZKmWeHKipQVp9PI7d2B29sDx2NAJ7isLZ+6vuKzb77J5z7xST735lt89voxT4qGJQoBhmHkeGppTx1xihS2YLVcc3l5xcXmkrouURpCjIzTyORHEhFjNWXhqEpHYQ3mDPkg5LnatQjBavWDS6f+7BkH1OsMeAr6nXfeid/9qeYfi/AjEZ2yciqJJ6HIohCt5sNLYvIjfvSMYUIZodAlRVWhjcXHxKkd2O9bTqeRnGBZGN68uuITVzdc1EtqV6IT9G3PR3d3qNuX+O7IGDPTFEgxYZSmdiXVcgEIQzeQp8D+oxeYKXBsTzy/u8MqQ7Oo6X2PaJmp9zDQxcyUz9OmgFaijNG5UPrPP27qv/Zb2+0REAPw7IyK0xD+YswiSXRCWyUalLEoBG0NKJjCSHfq6U4d4zCRgbJezNiQMyFE+tEzDJ4QEw5hWdZcry64Wa1ZlwsWrqLWFt9MaKXYDQMvh5Y2BlLKWGMpXYGzjsIWXG0u0d+tWBQFL5oVhw8+5HA48tvvfcDp0HOxrlGSGaYB6wxV7bCDh5hIEZQCpUQZUbEqyrdEy78B/OzbYMwrQDDwQ90Y/9gYUvIp64Qg2sx0VSm0MWQyfd+x2z3MzHDwaGtZK2EKHh8jpESM80isACtCaQsK4zBJkX0EPKa2FGXJsq4pnZ3TFXDW0TQNdV0jOeOHEVM4ri+vWRQVlbJ8s+t4fn/P/u7EdnvkcuVYNtVMw6uCpYLODAx9j58SkkEyGNFitc0LV/zU25/+9F/95Xff3ZtXPTHCvzsFUYMnDlOi8hkypCykPNddDpF+6Oj6E13fMk0Bmwt8nIg5kgWUnnHCGIUWQaWMZEghMY0eNUXEeHRKWGuYpoEQPUKidIb1ZsXl5SWLekGYPKfjCWUdzXqFtY5muaReLVGFZcgDU9eSVEcyifVqRdMs0bJGugE5HNHHE303zqfMKEFi44q3JMtXgL9kzoDw3Rn1JZ9MHj2qHyJFP0FKjMOIDyNKZciRcZpAwJUOZQ3GOlxhsYWjrEq0NlRlidVmVnzITMPI0PaMYlBawzQRxoGUIy8OB47dATGZ9WbJ48fXXF9fUpUFh92Oj54/p/eRerWmrh1h6lHOcvHGDdZVpDFQ2ki5WrDYbGjWGygr1j7R7I4Uz1/y4vlL+lNHCgEVExrJldL/4ttv81+c26D5Ckgdsw6Dz6btJ7TukJzw40AII0hEJJFzolxUlHUFIihlqJdLFk1NVZdoZSgLR+ksVilSSnRDz+F4pFKK7BwjiTCNtF3LfX/iNPWUjePqyRVvfOIRFxdrjFKcDkfef/dbfPjygewKlo1lta5pSsvVm4959OQxEiKayKIsWC2WNMs1brFkwrJ8OJLF0O5PDMeOGAKEqHPM2Vj5gav3P/dDBihFqX8u57mlj4PneGxRKVM4gwK0UuRXOaQ11s5ylrEWbQxFWVHXBUoyKXm0gsWiYrmo6I8tQ/TcH3fk6GmqEquEaRzox46egF06mkeXPPn0Gzx6ckW1KOiOHdvdjvff/4hvfnSHz0JRwKPHKz791hs0Tx5xc7lmURYU2lAaS2ktzpbYoiHgyOK4fbGlNA7JkFMixwQpJ5VFJ+//dWPK8h8lpM+REVKUsTtxVBlDpHIbVssGYxQhTud6DRijKJybFZ+yxJUlVgvtac80efzU0Swr3njyiJ17YNjvuZtGDn6iajW1M7Nm0JSsVjXVzYrlG1fcvPUmm+sVmDzrgrsdt7sjU8qIwDBkXr7c4SwUhaZZFlzfbLi5uGJZVqgE0SdS1KQpkSdPHicIEZVBIQhCzlmN0UPwXzYqpR+GbERIpKDiFJm6TFwUOGe4uNhQVSWTHzme9vRdR84RQbBaU5cVZVUQYuSwe+DYtuSYWa5qSvcm1aLkxXuJ7d2OfcpYH9joxKPLhvWTRzx66xGbNy5ZXDbU6xVlXTL1ntPQcux7xjjT9lmhnrHsYbfDWmgWlsePbmiahsv1GqbIcXdkf+rYbk/cfXjL7u6OqR/QgFEGpRWJLD4GYpwujeT4ozNnEhQZLQprhMJqytJSVo6yKtBGCHEihYj3EwqFVhpnLYV1xNgxDT1j32JtwWq9xF5eUFYlmUxSQnvqMUZoNkvWTx5z/ck3efzJx2xuVrjazQKJCDEHAhGxmnJR4RM4o1ltCqwTQhjwIdAPIzEmtDWURUliIqfE8XDgow9e8K1vfcTLl7cMfY9BKIxFa0POmUDCp4CRzBdiTihEaaVZ1DUXFxvW69W5TY3kHGfenzJaGxCwRqONRWuNiKBEYYylcAWuKKmrmqqucbZAa8Nqs8ZPAesMy6ZmtVlycbGiXC4QY8gCOc+3rZRQFJblqubm8SWbTWS1bLi+3qAttN0Osme52aCdI2YhJMgRJh/ZH0989OIl7334Ebf7PZP3OGUorcMpPbflnEgpYQRxKWUSmdIULJcrrq9v2FysUEo4HPbEGGbEl/OtuwLnLNY6YsyMoyeGROFKRBmstThXYIxj0Vicc9w8usEYS1WVFIVFVCYTSQTatkUNGVc4irLCGct6ueD6cs3Y9cQI15fXPH7jBmM1x27HOJ5omhplHMPoObYdeQicupHdoeXF9oEX2wf244TLmeYMlFYUKmfIM88xIkpynoUSUZqyqlmuVtR1zeQHjscDbdvOMndZ0jRL6mbBoq5RStGPE9M4kVJEa0VZ1Djn0Mq+FqCMsRRFQV2V1Isaaw05B8ZpoB8mhqEjZk9VlThdsFgsyOvMfrPkdNgzjYGmLqjLEmUU/VQwThMhCuM0H1onTepHHvYHtvsj2/2RfT8w5IxFMFpjlcYgSMrnrgZGKYUSRcrnAUkUiJBywvtAPwy0bUtK8/dlWVG4kqZZMXnPbn9ke39PjJFm2bDZWMrSIGhCiIzjyDD0xOixdi6xxaKmqgq0Of/vmBj6AZUEWUNdlOisWJQOlSJjd+KgNArwMfJy+8Cxb1ktK5xyLMslJgrjsePufs/2Yc+p75nyfEzNrDloORPu9EoYAiPMH+KcEbP01HWIJIL35AQpZcZpJCEsxwmUwrqCEDJdN/Dydss0jWz6ERGNiKYoEt57Docd2+09x+OemDyLquLq6pI3njzi+voK6wxaGXIEPwbCFMkhQUjEcaI/ntjf3tFuD+xebmn7ied3D3TTxONHF6yKhptmgwvQ7o/sHvYcTy0+RNR55jVKo9WsGUhKCJksszJmMq96gCblTN8PHA5HIGGtpixLvJ8Yp5F+GDidTvR9z+QDPkbGcaLtOtpT+1oJHoaRonAE79ntH7i9fcnDwxykunKcTgeUgqoqWZsVRluMtqQI3allK/d0p47ty3tOD3va7QFJQqeOdP3I8dgzAYM2jNsj3cUBNwa6w5Hh1OMnDyJorZCY0UqhRBBA0nxwkVmZMjFFyKBESCnR9z2Hg0Fr4eJiTdM0IELb93SHI4fDke12R1k15JhIKSMIPgR2D3v6fmC73VOVlkyi6zr2uweOx44YIKeB06mj7Tr6fmCxWGC0xdmKYei4e7nl9sNbTvs9zz98Trc7whjQUWEkUE/ClRiSUlxg0KeB4eUDp8WAHyfwfpbc5OMvpWajRXGW40hIzigyJsRZoBQRUs6Mw8hRgXOG1WqJcQUVQlU3tN2AD5HD8US92822ltJUdU3b9xwOB46nE0rtcE5hrCKGOUtSBm0+dnPIavYJfETr2Tke+on99oHD9oHTfs9w6khjYGEqnNK4ZNCl4qYCZRVFVVBMnuFuh+oGRAn2zBm0ktf0XZSg1XxGcoKckXk0xKScENEoJa9tbfrE8WRpjg22KBCtqOuGi4sMKLSxs00mCucsy9WScZro+5627YjJ0w+zECEydxytBGsNZVlRVTWuqNDKEkNmmkYO+yN3d1u2L29pd3viOOJEs6qXOCxqzIjPWJkJmisMaCGFyHg4In6aeYdSlMZg1SyzIWcgUArUGf/y/DYIBpkjIwLkTEqzLHU8tCh1yxQCTdPgipJHjxqstRhjMMbwStquqwXL5cQwzAyt63pijMRv82GUgDGGoiipqgWLuqEoKmLMPDzs+PCDD3j5/CXj6YhFWFYNm7qhKSt0gP4wzBNdzqAF7QyZxDh4QghIThTWoqzGisIoQcusPIsWsoYkZ43wTKsRwcjrAJx/eMaCrpsNibYbuLq+4o033uDiYsOirsnMt+Z9mEdIM5fBxeUF2mja04m+7xiHgXGKpDxngtJ69gHKiqqscaZgGAfubh949933uH+5pdDCk8tLri6uuFqtKJRh6ieG3jNKIoRADBCDAiKjn0gxYqOZDRcz37zOGS2QFIia5fcoc0fL87dkEQzyqvXL/Iuzj4lPnmkMeB9RSrNYLFku1xRlCTnjfWCcZj8wpoQxhvVmTV3X9H3H6XDkcNhxOJwYx3DW5RRaG6y2KFGEEOnant3Dnvu7PbvjxEU1t0VnSwTN5CPtOHKaRlo/MQbPMCZ6EkYyyfuzyJ9JOSMxQ0zzGD/f5+shKn3b1ytraG6Dco4SgkqQcn7N4kIKnE4t9/f3iChO7QljDCnNQ5EPszBaOEdVVywWC5pmQVWUKKWIMZNyOxP18yvGyDCMgHDYH2lPHeMYiUCMME2J46lj6HqGbqDre7q2px9HphBRfsKOI06BU0JtLSkzzys+kEKAlFDkc4sHJJ2DkObhLM+Xbl7FIssZGM7loEQT89ziJu+5v9/SDwP1oqauKow1xBTwZ4msriu00ZRFgbMWLYqYIpOfCMHjp3F2ItKcPW3bMg7DnCFTQIlgz8DUjxN3D3v8OHA8nhh9IOX5ACFDmjJahFIplqXFGUMCQpwHthgikvKZ+TFz/5RB0nkGmDsfOc++QCaTzw7CK44sotBiziWRabuOYRzouo5FU1MWBSknxmkg5cQw1Of7zTSLxWxbNw193zMOHR1pnhyVmrvN5JnyxDD0pBDRymDEk1F0o2fykb7tOI4D/gzmRsl80DQrzjFFbJy3ykIWYjqfJeUZB+QVFchITgiKV07Qq/dM5lXKp9c3lM69QniVFnOAYoxM04TuhRj86xuOKTD0I9M4MfQtV5dXrNdrXGFpmgVdtyClhLMWZy1KKXJKxBgJYTZLz2sEhBjpxwmlFGNMeOb1DlFCMposieTnbbEoQgB8mvcOfEpnxWdOby0KmIM1X3BGnRFAAJkzYAaPnGdGmF/Xf54lJFEoJWjRiGZWVFJimjwpB2IMhOgZB0/f9WerPGCsZrlcUlUli2ZmjVqr89KDEFMmxEiM8wdSMn/AkCJDCGiliSKz/gBkq8hakXJEckbHPJMbdTZsE4SUUMyE7hXK5fPhU55HftJcAjq/boOcQSG90s7n6MiZKsh8aH22xmawhJwTCBijQfKcESFyOvbsq8Nscy8bitLRLGqIkZwSomTWFzLEEIgxzkE/o3VKmZhmjwEgq1eFPBsn82ece7wRwYiaL+ecvSFnfIyElIkZkkAUiHLuA2cmmLOgs2BEcso5q3xOeTmn22sqLQmtFNZqtNGghJRmkqOUxtrZWxHp6duRnMGHwOQ9Kc9pXy/quXVOHpjZpiKS0qsSmINzBm1Ezqk8K7XzbkvS87wSEyrNfd4ooVAGpzX6/LMQw4wvIeITZK3wAkYg5jRfdAKTFU5pDDlHATVH5VXqnPnAuVqMURijKauCDPNonCNGa6qqmuUxrUkx4sO8kBXCXB6qcJRlgWQYzYgfp3nTM4XXOBDPQ1U+16YiYyQjav48USARiXEGZBXBChSiKLSiOAsdKUYm7xm9Z/SRMSZSFrKKxDwhKRN9hAhOLE4rTM78JiJfgJzIr9Sij9doEhkTA84o6qok5UwIE2OK5KxxzlJVFaKEYRxI3bnPpvlmBcE5N4uoWjMqxTiMxBAIKZ3LKb+ysc9tC6zk10NNZE7rKSVSnql9KVAqwSk11zF55ibBn4MQGNK8zTJEjxE/X+pcuTgihcRsyOq/ReQLSshJ0nesEH3cMqzVlM7h43xzfvQIChGhLByQKcti5gU5E0LAT3MQjDYUhcNoPSszSuPHkTHDqD6m4vPR5lsolKJxBUVhyTnTjz1dGgkz26WymsrNtzhjRyTGgA8eHwIxp5lYnQFy+o4zBTIxT2IkyrOY40+JYM9k8BV3mpmSgmZRURZunhh9IviA9wFtzOwPmLm1NYt6DgAwjRNd11K4AtVoCldgjOGVBGfO09o0TTOS5xmIdQaroLaOzWJBXRbkFGklY9IslztjZqfYVfNIzswJRj8xBU8koUUo4HXffyWIML+XJWdRcGsC4ddJ/J/A9xpLKgqnyqKkLEoK53BW45xBa02Igb7rmaZATvMf1UowVuOUZblczfsBZ7Fju90j6NnvLyq0MaQ4EyKcgzxvhYjM9DjmubbrouCiWXK1mq2vFDyWhE6B7DKLqqJZrLCmmPXEcaRrJ8bJM4UZaKvSUjiLdg5rHNYYjJ67RQwhe+9lGMb/wQCdgmda8b11odN6uVCbzeW8orpcv7aw9/s9L+/uOB6PDJNHmL0BozXGzKuxCMQQ8VOgPbWMwwRZKKuaerFARBHS3Pa01uiyoCxLrDWvb8cqxaKqWS1XrJsVC2cJ0wh+Qod5MFutViyXa7Sx9P1ATJmUuzP4ecQomqZgebFhtVnTLJYsqprSFQCMwyjd4RAO3fGvmKdPn+pf+IVnf2NZFP/+crko1+tNvry8lOvLGzbrDUpr9vv9fPC+p217QsxoBVrPwKaVpnAOrRTj4Dnsj0zT3I5AqBc1VVlSVSU5RiQzm6tKE3ygaRbUdUGOEWc01lqUGCQrchJU1jhVkE2cV3BNiVX2LORoRBQxc+7/Cas0TV3wxtWSNx7fcH1xxWa1YuGqOQDdwHF/UPvd7j8zz549i08///n/63bJ/1aVxR+yrkh13UhVWJSa0dxP0zzb9yMhfoySM6ApjDZnB8hSFAPWzkvQMWQOh5a72/t5XF6uKApLXZQURUFhHQL0fcfQdzMuhIgPidNpQEeFdw4LZC/oZMkp0R8Hxj6StSLkxOjDTICYN9qsgtJqVlXBzaLiyXrB1bKhKSoUmVA6GSsr3ar+fvPP/9iX/mpVun/y0phPzLWYVAiJME0cprmlPOz2tKeW4L9t/f7MyJRojDYYZSBHtGiMcTjnGPqRGBIPDzuUUoTJs1mvcGZeidFnHnF5dUXOicIVdLsjoQ8cTi1hCEyuZGEtTkCiEHyiPR5n09QabFUQNaA1GE1KHtTcKQoyRU5UIVBNExUzxigBXRfkRZHMG4+u//SirmZldxxz1/X5OHZqGAYm7xmGidPxyDgMcN77id8WBBGFEj0zwHN3UKKo6wUhxFkm84H9bj9LURmMNlhl5pS3hqZZYK1hUdfsygeOd3tCOzCFQI/HMlNufR5hp2liCAGrFYuywFQl2RnaODKmkVn1TRACaejxxwOD93NpGY2xhrKocKVVpixcJCWJPuQwjDoMo/hhyMkHySHBWfbW5/al5v4IzIcRFCQhTJGhGxn6CVAsFkuMsXRdx9B1hBA5Hk6QmZWgU8uyrtlsVlxcbLi+uuJiveFiueGhvuW03RP7EXMWVJXKWJkF2WRqShEWFxdcv/EIV5fcHXb0oaMfjjPfTwFCwHcdpxSRriU5RyoLclEgwROCxUQ/6a7vydPE8dTtpylsY8yfQSSXzokxlpyZM8G1aDUvHMmrwSnJ/CCTj4zDxDR5RBSLekGzaFjU/ewvnlr8NLHfHelOPVurWS0qxuERRVGwWW/YrDes64ZVUXJoFoxtS55GxE+YGLFK0MqxUEvsoubi5hHXjx+B0cgLxYvtR5h7QcWMSnMQpnFgPw6MSuWpLFNoaj36ktPQAwnTtm3qj0fxw/DXc0r/UddNK2PM/2RcVTpXZCdKMkLXDxSFwypBQvq4BJhdYyUfkyetNUUxr9FUZYk1Bi2Kw35P182miADt6TirSYuGZbOicAW2sCw3K6yB0FfEcSAOHXkc0JLn3cFqQb3esLm6YrFaMfoJUTJPqIlzZjIPYGHCT54uZ5HotU8xL8ogWitSDJj21EY/DON09/Lfevar39gD/LP/xA/8XFXYn1JGB7Q2IVrKwlIWDmc06lUAmIVUbTTGWsqypJwmYowYozFGY835KZGciSEwDAPpvPVxGgPbhz1l/RJtLcM4sqgqnJqV5nLZoJqSOBTEoYMYsNZRLZaUTUMyimN/4mG358XtLfv9iWmK1FZh9MxOE5JjijKOvteZ/6ZO+Ss+pmSdU0rA9H0/SMoLe3H9K3/qh693gtpm+L6UU9aS9SspqnCWuiyoKocbPTHPRkpKcV6YcIbFop5lsnGcbyPPrK+uSpRA8BN91zIFP4uYQNuPPH95xzgF7rc71suG1aJitahY1hWVc6jqLIVNAxiDEiF6j38YOB4OvHx5y/sffMjt3R7vM7osZgfKWpSSpK3VXUh/+T/52jf+3F/8wd/zwhj773gxsSpsNiHEv22V/NPGmi/MFrKcH36MxDBlUTEpSaoqLMvlgmO74NgOtNPMvbuhYxx7qtpRVg5RDcOgGYZxHoSU4KzFakWYlnTdiWka6acwa4Mh8rA70PYDD/s9y6bhYr3icrPiar2iqSuUJMIwMo0jihEzRJCWU9dxd3fL7YsXbO/3DEOgMoJzBdYVoE1SWmkf4otlXf7MV0GNevyZh8H98aWR7xmzeWmUqF9DyR/2MW58DPek9JsglRL5/TmnQmstGZXLqpA1S/px5HBs6aeWYRjZ73bsVgtcoVk0S+q6xBqFVoKfJrQ+zxJGUS8qmmXDMI7ktmccJ0KMEANTFxgnTz9O9P1A23bsjycWVYkWiH7EjwOZuY1m4Nh2PGwfODzsGX2iEChLR1UXGGfn54xEEZQZV9889L/xFHn27FsPf/4Hv/dPHcbwSzYFa4BHQI4pv2ui/yP/1d/++rtvv/22edMOn8lxeCsG/WdcWT7V1iZjGjVMnu3+wKHtGXzgcNhxd++wTqOUYrFocNaQCociv9YUM4JzlkVdMzQjISaCj3MAXo2ocX5GaJw8x66j2u8orEUkk6InTp6UM+ps4ExjYBwnYkgYgaq0LJqKqnJZaZn3HmNOSus3b99afPHZM37lJ7/82eJnf/HX/+c/8wd/35e05yvyz3zpD/4enfNfQPgbz/77r/2t7xibefpDv/8zVbP89WrZlKIND/ujvPv+h7z3rQ95OPSgMqt1w9XNDTfXN2wuLigK97E+r+S8gZIZxonj8chut2e7feDhYU83jGcp/qwF5VfejaC1oJSaxbE0q0bptbE5vwxQak1TWDZNyeWy5GpVc72scdqgRaIWpScff1FEfvIv/fLXf2t+OGSWfr/9b/HlL/+B1SbyR7Xm/b/+i1/7OwA/9vb3bZqq/u1Fs9yIMbkfJrm9u+fD5y+4vTvQ9j2IzA88bpZcXGxYLpcURTk/EWbtPKyk2dfruoHD4cD93T3b7QOntptF0LMUl//Bn3tGgFVRsG5qlmVBU+q8qazUzt5eN+UvOaP/BUHyvBMhIjCGmH/m537l6//xV99+2/zGo0dZAHn69Kn6/Oc/n//er/zCzxqlflKJpJziX8OYn1Mp/kmt7U9r68RYp+ZH2Xq2Dzte3j1wd7fj2PbELFS1Zb1Zsd5saJYr6kWDcwW8XsHJBD+PytuHLXe3W47HA9NZRQI5G1dnT0/N5SM5v/YrzvwLASpjeHS54Wq9ZFHY7CTnWjFoHX/0UzeXH2Qf/o88C9gSI1GUVjGm/3W7Hf/Qs9/4jQmQ/xuYlokIXt/QiQAAAABJRU5ErkJggg==">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <style>
-  :root{
-    --blood:#e5232b;
-    --blood-bright:#ff4d54;
-    --toxic:#8bff5a;
-    --toxic-dim:#4a7d33;
-    --gold:#ffcf4d;
-    --bg0:#07090a;
-    --bg1:#0e1412;
-    --panel:rgba(10,14,13,.94);
-    --ink:#e8efe9;
-    --ink-dim:#8a9a90;
-    --line:rgba(139,255,90,.16);
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg0);
-    font-family:"Segoe UI",system-ui,-apple-system,"Malgun Gothic",sans-serif;
-    color:var(--ink);user-select:none;-webkit-user-select:none;}
-  #game{position:fixed;inset:0;}
-  canvas{display:block;width:100%;height:100%;background:var(--bg0);touch-action:none;}
-  /* 아래: 3D 장면(WebGL) / 위: 화면 UI 전용 2D 캔버스 */
-  #game canvas{position:absolute;inset:0;}
-  #cv3{z-index:0;}
-  #cv{z-index:1;background:transparent;}
+/* ============================================================================
+   UNDEAD RUSH — 디자인 시스템
 
-  /* ---------- shared overlay ---------- */
-  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-    z-index:20;padding:16px;touch-action:auto;}
-  .overlay.show{display:flex;}
-  .veil{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(20,4,4,.55),rgba(3,4,4,.92));backdrop-filter:blur(2px);}
-  .card{position:relative;width:min(560px,94vw);max-height:92vh;overflow-y:auto;
-    background:linear-gradient(180deg,rgba(20,26,24,.9),rgba(9,13,12,.95));border:1px solid rgba(255,255,255,.075);border-radius:22px;
-    backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15);
-    box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 40px 110px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);
-    padding:28px 24px;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
-  #menu .veil{background:
-    radial-gradient(130% 95% at 50% -12%, rgba(229,35,43,.20), transparent 52%),
-    radial-gradient(130% 95% at 50% 112%, rgba(139,255,90,.11), transparent 52%),
-    radial-gradient(circle at 50% 42%, rgba(9,13,12,.62), rgba(3,5,5,.95));backdrop-filter:blur(3px);overflow:hidden;}
-  #menu .veil::after{content:"";position:absolute;left:50%;top:8%;width:76vw;max-width:560px;height:360px;
-    transform:translateX(-50%);pointer-events:none;filter:blur(34px);
-    background:radial-gradient(ellipse at center, rgba(229,35,43,.24), rgba(255,120,60,.08) 45%, transparent 72%);
-    animation:menuGlow 6.5s ease-in-out infinite;}
-  @keyframes menuGlow{0%,100%{opacity:.5;transform:translateX(-50%) scale(1);}50%{opacity:.9;transform:translateX(-50%) scale(1.14);}}
-  @media(prefers-reduced-motion:reduce){#menu .veil::after{animation:none;}}
-  #menu .card::before{content:"";position:absolute;top:0;left:22px;right:22px;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,120,120,.55),rgba(255,207,77,.5),transparent);}
-  .cta{position:sticky;bottom:-26px;margin:0 -24px -26px;padding:14px 24px 22px;
-    background:linear-gradient(180deg,rgba(12,17,16,0),var(--panel) 20px);
-    box-shadow:0 -12px 24px 8px var(--panel);}
-  .brand{font-weight:900;letter-spacing:.14em;font-size:13px;color:var(--toxic);
-    text-transform:uppercase;display:flex;align-items:center;gap:8px;}
-  .brand::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blood);
-    box-shadow:0 0 10px var(--blood);animation:pulse 1.4s infinite;}
-  @keyframes pulse{50%{opacity:.35;}}
-  h1.title{font-size:clamp(40px,9.6vw,68px);line-height:.88;margin:12px 0 6px;font-weight:900;
-    letter-spacing:.04em;background:linear-gradient(180deg,#ffffff 0%,#ffe0c4 26%,#ff7b80 60%,#c8151c 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 4px 26px rgba(229,35,43,.42));}
-  .tag{color:var(--ink-dim);font-size:13.5px;margin-bottom:22px;letter-spacing:.03em;line-height:1.5;}
+   원칙
+   · UI 는 조용하게, 게임 월드는 선명하게
+   · 모든 것에 상자를 두르지 않는다
+   · 색에는 반드시 뜻이 있다 (초록=성장 / 청록=정보 / 금=진화·희귀 / 적=위험)
+   · 발광은 레벨업·진화·보스·선택 같은 특별한 순간에만
+   · 기준 화면은 390×844 세로 휴대폰
+   ========================================================================== */
+:root{
+  /* 바탕 */
+  --bg:#070A09; --bg-deep:#050706;
+  --panel:#0D1311; --panel-2:#121A17; --panel-3:#18221D;
 
+  /* 뜻이 있는 색 */
+  --green:#8DFF5A;      /* 성장·정상·선택 가능·경험치 */
+  --cyan:#6EE7FF;       /* 정보·보조 시스템 */
+  --gold:#FFD45A;       /* 진화·희귀·전설 */
+  --red:#FF4D5A;        /* 위험·피해·보스 */
+  --heal:#6DFF8A;       /* 회복 */
+
+  /* 글자 */
+  --tx:#F2F5F3; --tx-2:#A7B0AB; --tx-3:#68716C;
+
+  /* 선 — 평상시엔 거의 보이지 않는다 */
+  --line:rgba(255,255,255,.06);
+  --line-2:rgba(255,255,255,.10);
+  --line-hover:rgba(141,255,90,.30);
+  --line-on:rgba(141,255,90,.75);
+
+  /* 모서리 */
+  --r-s:8px; --r-m:12px; --r-l:16px; --r-pill:999px;
+
+  /* 여백 */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+
+  /* 글자 크기 */
+  --f-display:clamp(30px,9vw,44px);
+  --f-h1:clamp(17px,4.4vw,21px);
+  --f-h2:15px; --f-body:13px; --f-meta:11px; --f-micro:10px;
+
+  /* 움직임 */
+  --t1:120ms; --t2:200ms; --t3:340ms;
+  --ease:cubic-bezier(.2,.7,.3,1);
+
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;
+  font-size:var(--f-body);line-height:1.5;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  user-select:none;-webkit-user-select:none;overscroll-behavior:none;}
+
+/* ---------- 화면 층 ---------- */
+#game{position:fixed;inset:0;}
+canvas{display:block;width:100%;height:100%;touch-action:none;}
+#game canvas{position:absolute;inset:0;}
+#cv3{z-index:0;background:var(--bg);}   /* 3D 장면 */
+#cv{z-index:1;background:transparent;}  /* 화면 UI 전용 2D */
+
+/* ---------- 글자 층위 ---------- */
+.t-label{font-size:var(--f-meta);font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-3);}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
+
+/* ---------- 아이콘 ---------- */
+.ic{width:1em;height:1em;display:block;flex:none;fill:currentColor;}
+
+/* ---------- 오버레이 · 카드 ---------- */
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  z-index:20;padding:var(--s4);padding-top:calc(var(--s4) + var(--safe-t));
+  padding-bottom:calc(var(--s4) + var(--safe-b));touch-action:auto;}
+.overlay.show{display:flex;}
+.veil{position:absolute;inset:0;background:rgba(5,7,6,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+.card{position:relative;width:min(520px,100%);max-height:100%;overflow-y:auto;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-l);
+  padding:var(--s5) var(--s4);scrollbar-width:thin;}
+.card.center{text-align:center;}
+.card::-webkit-scrollbar{width:4px;}
+.card::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:2px;}
+
+.brand{display:flex;align-items:center;gap:var(--s2);
+  font-size:var(--f-meta);font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--tx-3);margin-bottom:var(--s3);}
+.brand .ic{font-size:14px;color:var(--tx-2);}
+h1.title{margin:0 0 var(--s2);font-size:var(--f-display);font-weight:900;line-height:.94;
+  letter-spacing:-.02em;color:var(--tx);}
+.tag{color:var(--tx-2);font-size:var(--f-body);margin-bottom:var(--s5);}
+.small{color:var(--tx-3);font-size:var(--f-micro);margin-top:var(--s3);text-align:center;}
+.muted{color:var(--tx-2);}
+.center{text-align:center;}
+.help{color:var(--tx-2);font-size:var(--f-body);line-height:1.75;}
+.help b{color:var(--tx);font-weight:600;}
+
+/* ---------- 버튼 ---------- */
+.btn{appearance:none;width:100%;display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  min-height:48px;padding:0 var(--s4);border-radius:var(--r-s);cursor:pointer;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--tx);
+  font:600 var(--f-h2)/1 inherit;font-family:inherit;letter-spacing:.01em;
+  transition:background var(--t1) var(--ease),border-color var(--t1) var(--ease),transform var(--t1) var(--ease);}
+.btn:hover{background:var(--panel-3);border-color:var(--line-hover);}
+.btn:active{transform:scale(.98);}
+.btn .ic{font-size:17px;}
+
+/* 화면에서 단 하나만 강하게 — 출격 */
+.btn.primary{background:linear-gradient(180deg,rgba(141,255,90,.16),rgba(141,255,90,.06));
+  border-color:rgba(141,255,90,.42);color:var(--green);font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;box-shadow:0 0 0 1px rgba(141,255,90,.06) inset;}
+.btn.primary:hover{background:linear-gradient(180deg,rgba(141,255,90,.24),rgba(141,255,90,.10));
+  border-color:rgba(141,255,90,.62);}
+.btn.ghost{background:rgba(255,255,255,.025);border-color:var(--line);color:var(--tx-2);
+  font-weight:500;font-size:var(--f-body);min-height:42px;text-transform:none;}
+.btn.ghost:hover{color:var(--tx);border-color:var(--line-2);background:rgba(255,255,255,.02);}
+.row{display:flex;gap:var(--s2);}
+.row .btn{flex:1;}
+
+.iconbtn{appearance:none;background:transparent;border:0;cursor:pointer;color:var(--tx-2);
+  width:44px;height:44px;display:grid;place-items:center;border-radius:var(--r-s);
+  transition:color var(--t1) var(--ease),background var(--t1) var(--ease);}
+.iconbtn .ic{font-size:19px;}
+.iconbtn:hover{color:var(--tx);background:rgba(255,255,255,.05);}
+.iconbtn:active{transform:scale(.92);}
+.iconbtn.off{color:var(--tx-3);}
+
+/* ---------- 로비 ---------- */
+#menu .veil{background:linear-gradient(180deg,rgba(5,7,6,.55) 0%,rgba(5,7,6,.86) 55%,rgba(5,7,6,.96) 100%);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+#menu .card{background:linear-gradient(180deg,rgba(13,19,17,.92),rgba(7,10,9,.96));
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+
+/* 기록 4칸 — 상자 대신 얇은 구획선 */
+.metabar{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:var(--s5);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.pill{padding:var(--s3) var(--s1);text-align:center;position:relative;}
+.pill+.pill::before{content:'';position:absolute;left:0;top:22%;bottom:22%;width:1px;background:var(--line);}
+.pill .k{font-size:var(--f-micro);font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tx-3);margin-bottom:var(--s1);white-space:nowrap;}
+.pill .v{font-size:var(--f-h2);font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;}
+.pill.blood .v{color:var(--tx);}
+.pill.tox .v{color:var(--tx);}
+.pill.tier .v{color:var(--gold);}
+
+.cta{margin-top:var(--s5);}
+.cta .row{margin-top:var(--s2);}
+
+/* 캐릭터 선택 */
+.charsel{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);margin-bottom:var(--s5);}
+.char{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-m);
+  padding:var(--s3) var(--s2);text-align:center;cursor:pointer;
+  transition:border-color var(--t1) var(--ease),background var(--t1) var(--ease);}
+.char:hover{border-color:var(--line-hover);}
+.char.on{border-color:var(--line-on);background:rgba(141,255,90,.06);}
+.char .cvpx{width:38px;height:42px;margin:0 auto var(--s2);image-rendering:pixelated;display:block;}
+.char .cnm{font-size:var(--f-body);font-weight:600;color:var(--tx-2);}
+.char.on .cnm{color:var(--green);}
+.char .ctt{font-size:var(--f-micro);color:var(--tx-3);margin-top:2px;}
+.char .cds{display:none;}
+
+/* 영구 강화 */
+.armory{display:flex;flex-direction:column;}
+.up{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;
+  border-bottom:1px solid var(--line);}
+.armory .up:last-child{border-bottom:0;}
+.up .icon{width:36px;height:36px;flex:none;border-radius:var(--r-s);display:grid;place-items:center;
+  background:var(--panel-2);color:var(--tx-2);}
+.up .icon .ic{font-size:19px;}
+.up .meta{flex:1;min-width:0;}
+.up .nm{font-size:var(--f-body);font-weight:600;color:var(--tx);}
+.up .ds{font-size:var(--f-meta);color:var(--tx-3);margin-top:1px;}
+.lvdots{display:flex;gap:3px;margin-top:6px;}
+.lvdots i{width:12px;height:3px;border-radius:2px;background:var(--line-2);}
+.lvdots i.on{background:var(--green);}
+.buy{flex:none;min-width:62px;min-height:34px;padding:0 var(--s3);border-radius:var(--r-s);
+  display:grid;place-items:center;font-size:var(--f-meta);font-weight:700;
+  border:1px solid var(--line);color:var(--gold);cursor:pointer;
+  transition:border-color var(--t1) var(--ease),background var(--t1) var(--ease);}
+.buy .c{font-variant-numeric:tabular-nums;}
+.buy:not(.max):not(.cant):hover{border-color:rgba(255,212,90,.45);background:rgba(255,212,90,.08);}
+.buy.max{color:var(--tx-3);border-color:transparent;cursor:default;}
+.buy.cant{color:var(--tx-3);opacity:.45;cursor:not-allowed;}
+
+/* ---------- 언어 선택 ---------- */
+#langWrap{position:absolute;top:calc(var(--s3) + var(--safe-t));left:var(--s3);z-index:6;}
+#langBtn{appearance:none;display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;
+  background:rgba(13,19,17,.8);border:1px solid var(--line);border-radius:var(--r-s);
+  color:var(--tx-2);font:600 var(--f-meta)/1 inherit;cursor:pointer;backdrop-filter:blur(8px);}
+#langBtn:active{transform:scale(.96);}
+#langBtn .lg-flag{font-size:14px;}
+#langBtn .lg-caret{font-size:9px;color:var(--tx-3);transition:transform var(--t2) var(--ease);}
+#langWrap.open #langBtn .lg-caret{transform:rotate(180deg);}
+#langList{position:absolute;top:42px;left:0;min-width:150px;padding:var(--s1);
+  background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r-m);
+  opacity:0;visibility:hidden;transform:translateY(-4px);
+  transition:opacity var(--t2) var(--ease),transform var(--t2) var(--ease),visibility var(--t2);}
+#langWrap.open #langList{opacity:1;visibility:visible;transform:none;}
+.lg-item{display:flex;align-items:center;gap:var(--s2);min-height:38px;padding:0 var(--s2);
+  border-radius:var(--r-s);color:var(--tx-2);font-size:var(--f-body);cursor:pointer;}
+.lg-item .lg-flag{font-size:15px;}
+.lg-item:hover{background:var(--panel-2);color:var(--tx);}
+.lg-item.on{color:var(--green);}
+
+#gearBtn{position:absolute;top:calc(var(--s3) + var(--safe-t));right:var(--s3);z-index:6;
+  appearance:none;width:36px;height:36px;display:grid;place-items:center;
+  background:rgba(13,19,17,.8);border:1px solid var(--line);border-radius:var(--r-s);
+  color:var(--tx-2);cursor:pointer;backdrop-filter:blur(8px);}
+#gearBtn .ic{font-size:17px;}
+#gearBtn:hover{color:var(--tx);border-color:var(--line-2);}
+#gearBtn:active{transform:scale(.94);}
+
+/* ---------- 설정 ---------- */
+.set-rows{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s5);}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  padding:var(--s3) 0;border-bottom:1px solid var(--line);font-size:var(--f-body);color:var(--tx-2);}
+.set-row:last-child{border-bottom:0;}
+.toggle{appearance:none;width:46px;height:27px;flex:none;border-radius:var(--r-pill);cursor:pointer;
+  background:var(--panel-3);border:1px solid var(--line-2);position:relative;
+  transition:background var(--t2) var(--ease),border-color var(--t2) var(--ease);}
+.toggle .knob{position:absolute;top:2px;left:2px;width:21px;height:21px;border-radius:50%;
+  background:var(--tx-3);transition:transform var(--t2) var(--ease),background var(--t2) var(--ease);}
+.toggle[aria-checked="true"]{background:rgba(141,255,90,.18);border-color:rgba(141,255,90,.45);}
+.toggle[aria-checked="true"] .knob{transform:translateX(19px);background:var(--green);}
+
+/* ---------- 가드 터렛 패널 ---------- */
+.tr-pts{font-size:var(--f-meta);color:var(--tx-3);margin-bottom:var(--s3);letter-spacing:.06em;}
+.tr-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line);}
+.tr-row:last-of-type{border-bottom:0;}
+.tr-info{flex:1;min-width:0;text-align:left;font-size:var(--f-body);color:var(--tx-2);}
+.tr-bar{display:flex;gap:3px;margin-top:6px;}
+.tr-bar i{width:9px;height:3px;border-radius:2px;background:var(--line-2);}
+.tr-bar i.on{background:var(--cyan);}
+.tr-up{appearance:none;flex:none;min-width:40px;min-height:36px;border-radius:var(--r-s);
+  background:var(--panel-2);border:1px solid var(--line);color:var(--cyan);
+  font:700 var(--f-h2)/1 inherit;cursor:pointer;}
+.tr-up:active{transform:scale(.94);}
+
+/* ---------- 가이드 도감 ---------- */
+#guide .card{width:min(600px,100%);}
+.gd-hint{font-size:var(--f-meta);color:var(--tx-3);margin-bottom:var(--s4);}
+.gd-sec{display:flex;align-items:baseline;gap:var(--s2);margin:var(--s5) 0 var(--s3);
+  padding-top:var(--s4);border-top:1px solid var(--line);}
+.gd-sec:first-of-type{margin-top:0;padding-top:0;border-top:0;}
+.gd-sec .n{font-size:var(--f-micro);font-weight:700;color:var(--tx-3);letter-spacing:.1em;}
+.gd-sec h3{margin:0;font-size:var(--f-h2);font-weight:700;color:var(--tx);letter-spacing:.02em;}
+.gd-lead{font-size:var(--f-body);color:var(--tx-2);margin-bottom:var(--s3);line-height:1.7;}
+.gd-lead b{color:var(--tx);font-weight:600;}
+.gd-card{padding:var(--s3) 0;border-bottom:1px solid var(--line);}
+.gd-row{display:flex;gap:var(--s3);align-items:flex-start;}
+.gd-ico{width:34px;height:34px;flex:none;border-radius:var(--r-s);display:grid;place-items:center;
+  background:var(--panel-2);color:var(--tx-2);}
+.gd-ico .ic{font-size:18px;}
+.gd-spr{width:34px;height:38px;flex:none;image-rendering:pixelated;}
+.gd-spr.sm{width:26px;height:29px;}
+.gd-boss .gd-spr{width:44px;height:49px;}
+.gd-nm{font-size:var(--f-body);font-weight:600;color:var(--tx);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.gd-ds{font-size:var(--f-meta);color:var(--tx-2);margin-top:2px;line-height:1.65;}
+.gd-badge{font-size:var(--f-micro);font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 6px;border-radius:4px;border:1px solid var(--line);color:var(--tx-3);}
+.gd-badge.on{color:var(--cyan);border-color:rgba(110,231,255,.3);}
+.gd-evo{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);
+  font-size:var(--f-meta);color:var(--tx-3);line-height:1.65;}
+.gd-evo b{color:var(--gold);font-weight:600;}
+.gd-stats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.gd-stat{font-size:var(--f-micro);color:var(--tx-3);padding:2px 6px;border-radius:4px;background:var(--panel-2);}
+.gd-stat b{color:var(--tx-2);font-weight:600;}
+.gd-boss .gd-nm{color:var(--red);}
+table.gd-tier{width:100%;border-collapse:collapse;margin-top:var(--s2);font-size:var(--f-meta);}
+table.gd-tier th,table.gd-tier td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;color:var(--tx-2);}
+table.gd-tier th{color:var(--tx-3);font-weight:600;font-size:var(--f-micro);text-transform:uppercase;letter-spacing:.08em;}
+table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
+.gd-tips li{font-size:var(--f-meta);color:var(--tx-2);margin-bottom:6px;line-height:1.65;}
+.gd-reward{margin-top:var(--s4);padding:var(--s3);border-radius:var(--r-m);
+  border:1px dashed rgba(255,212,90,.3);color:var(--gold);font-size:var(--f-meta);text-align:center;}
+.gd-reward.done{border-color:var(--line);color:var(--tx-3);}
+.gd-toast{position:fixed;left:50%;bottom:calc(76px + var(--safe-b));transform:translate(-50%,10px);
+  padding:10px var(--s4);border-radius:var(--r-s);z-index:40;
+  background:var(--panel);border:1px solid rgba(255,212,90,.35);color:var(--gold);
+  font-size:var(--f-meta);font-weight:600;opacity:0;pointer-events:none;
+  transition:opacity var(--t2) var(--ease),transform var(--t2) var(--ease);}
+.gd-toast.show{opacity:1;transform:translate(-50%,0);}
+
+/* ---------- 출격 스테이지 선택 ---------- */
+.stage-lead{font-size:var(--f-body);color:var(--tx-2);margin-bottom:var(--s4);}
+.stagesel{display:flex;flex-direction:column;gap:var(--s2);margin-bottom:var(--s4);}
+.stagesel .sp{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  min-height:52px;padding:0 var(--s4);border-radius:var(--r-m);cursor:pointer;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--tx);
+  font-size:var(--f-h2);font-weight:600;
+  transition:border-color var(--t1) var(--ease),background var(--t1) var(--ease);}
+.stagesel .sp:hover{border-color:var(--line-hover);}
+.stagesel .sp.top{border-color:rgba(255,212,90,.4);color:var(--gold);}
+.stagesel .sp:active{transform:scale(.99);}
+
+/* ============================================================================
+   레벨업 — 이 게임에서 가장 중요한 화면
+   ========================================================================== */
+#levelup .veil{background:rgba(5,7,6,.72);backdrop-filter:blur(14px) saturate(.9);
+  -webkit-backdrop-filter:blur(14px) saturate(.9);}
+#levelup .card{background:transparent;border:0;padding:0;width:min(560px,100%);overflow:visible;}
+
+.lvhead{text-align:center;margin-bottom:var(--s5);}
+.lvhead .lu{display:inline-block;font-size:var(--f-meta);font-weight:700;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--green);margin-bottom:var(--s3);
+  animation:luIn var(--t3) var(--ease) both;}
+.lvjump{display:flex;align-items:baseline;justify-content:center;gap:var(--s3);
+  margin-bottom:var(--s2);animation:luIn var(--t3) 60ms var(--ease) both;}
+.lvjump .from{font-size:var(--f-h1);font-weight:600;color:var(--tx-3);font-variant-numeric:tabular-nums;}
+.lvjump .arw{font-size:var(--f-h2);color:var(--tx-3);}
+.lvjump .to{font-size:var(--f-display);font-weight:900;letter-spacing:-.02em;color:var(--green);
+  font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(141,255,90,.45);}
+.lvhead h2{margin:0;font-size:var(--f-body);font-weight:400;color:var(--tx-2);
+  animation:luIn var(--t3) 120ms var(--ease) both;}
+.lvhead .heal{margin-top:6px;font-size:var(--f-micro);color:var(--tx-3);}
+@keyframes luIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+.choices{display:flex;flex-direction:column;gap:var(--s2);}
+.choice{position:relative;display:flex;align-items:center;gap:var(--s4);
+  padding:var(--s4);border-radius:var(--r-m);cursor:pointer;overflow:hidden;
+  background:var(--panel);border:1px solid var(--line);
+  --accent:var(--green);
+  animation:cardIn var(--t3) var(--ease) both;
+  transition:border-color var(--t1) var(--ease),background var(--t1) var(--ease),transform var(--t1) var(--ease);}
+.choice:nth-child(1){animation-delay:170ms;}
+.choice:nth-child(2){animation-delay:230ms;}
+.choice:nth-child(3){animation-delay:290ms;}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+/* 왼쪽 세로 악센트 선 — 카드 전체를 색으로 도배하지 않는다 */
+.choice::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--accent);opacity:.5;}
+.choice:hover{border-color:var(--line-2);
+  border-color:color-mix(in srgb,var(--accent) 34%,transparent);
+  background:var(--panel-2);transform:scale(1.015);}
+.choice:active{transform:scale(.985);}
+.choice.picked{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 32px -6px var(--accent);}
+.choices.resolving .choice:not(.picked){opacity:.35;}
+
+.choice .cico{width:48px;height:48px;flex:none;border-radius:var(--r-m);display:grid;place-items:center;
+  background:rgba(255,255,255,.05);                                   /* color-mix 미지원 대비 */
+  background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);}
+.choice .cico .ic{font-size:26px;}
+.choice .cbody{flex:1;min-width:0;}
+.choice .badge{display:block;font-size:var(--f-micro);font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:3px;}
+.choice .cnm{font-size:var(--f-h2);font-weight:700;color:var(--tx);line-height:1.25;}
+.choice .clv{font-size:var(--f-meta);color:var(--tx-3);margin-top:2px;font-variant-numeric:tabular-nums;}
+.choice .cds{margin-top:6px;}
+.choice .cds-txt{font-size:var(--f-meta);color:var(--tx-2);line-height:1.55;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* 갈래별 색 — 아이콘·라벨·악센트 선에만 쓴다 */
+.choice.c-new{--accent:var(--green);}
+.choice.c-up{--accent:var(--cyan);}
+.choice.c-evoB,.choice.evo{--accent:var(--gold);}
+.choice.evo{border-color:rgba(255,212,90,.22);}
+.choice.evo::before{opacity:.9;}
+.choice.evo .cico{box-shadow:0 0 22px -6px var(--gold);}
+
+/* 오른 수치 칩 */
+.sulist{display:flex;flex-wrap:wrap;gap:4px;}
+.su{display:inline-flex;align-items:center;gap:4px;font-size:var(--f-micro);font-weight:600;
+  color:var(--tx-2);background:var(--panel-2);border-radius:4px;padding:3px 6px;}
+.su .ic{font-size:11px;color:var(--accent);}
+.su.tot{color:var(--tx);background:rgba(255,255,255,.06);
+  background:color-mix(in srgb,var(--accent) 10%,transparent);}
+
+/* ============================================================================
+   플레이 중 HUD — 조용하고 얇게
+   ========================================================================== */
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none;display:none;}
+#hud.show{display:block;}
+
+.hud-top{position:absolute;top:calc(var(--s2) + var(--safe-t));left:var(--s3);right:var(--s3);
+  display:flex;align-items:flex-start;gap:var(--s3);}
+.hud-read{flex:1;min-width:0;}
+.hud-line{display:flex;align-items:baseline;gap:var(--s3);}
+.hud-lv{font-size:15px;font-weight:800;letter-spacing:.06em;color:var(--tx);
+  font-variant-numeric:tabular-nums;text-transform:uppercase;
+  text-shadow:0 1px 6px rgba(0,0,0,.8);}
+.hud-stage{font-size:var(--f-micro);font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--tx-3);}
+.hud-time{margin-left:auto;font-size:15px;font-weight:700;color:var(--tx-2);
+  font-variant-numeric:tabular-nums;text-shadow:0 1px 6px rgba(0,0,0,.8);}
+
+.bar{position:relative;height:2px;margin-top:7px;border-radius:2px;
+  background:rgba(255,255,255,.08);overflow:hidden;}
+.bar .fill{display:block;height:100%;width:0;border-radius:2px;
+  transition:width var(--t2) linear;}
+.bar.xp .fill{background:var(--green);opacity:.55;}     /* 경험치: 조용하게 */
+/* 체력은 한 줄을 차지하고 숫자를 옆에 둔다(바 안에 넣으면 잘린다) */
+.hud-hp{display:flex;align-items:center;gap:var(--s2);margin-top:6px;}
+.hud-hp .bar{flex:1;height:6px;margin-top:0;}
+.bar.hp .fill{background:linear-gradient(90deg,#5BE07A,#8DFF5A);}
+.bar-val{flex:none;min-width:34px;text-align:right;font-size:var(--f-micro);font-weight:700;
+  color:var(--tx-2);font-variant-numeric:tabular-nums;}
+/* 위험할 때만 강하게 알린다 */
+.bar.hp.low .fill{background:linear-gradient(90deg,#FF4D5A,#FF8A6A);}
+.bar.hp.low{animation:hpPulse 900ms ease-in-out infinite;}
+@keyframes hpPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,90,0);}50%{box-shadow:0 0 12px 0 rgba(255,77,90,.55);}}
+
+.hud-meta{margin-top:var(--s3);gap:var(--s4);}
+.hud-stat{display:inline-flex;align-items:center;gap:5px;font-size:var(--f-meta);font-weight:600;
+  color:var(--tx-3);font-variant-numeric:tabular-nums;}
+.hud-stat .ic{font-size:12px;opacity:.75;}
+.hud-stat b{font-weight:700;color:var(--tx-2);}
+.hud-stat.sh{color:var(--cyan);}
+.hud-stat.sh b{color:var(--cyan);}
+
+.hud-btns{display:flex;gap:2px;pointer-events:auto;margin-top:-6px;}
+
+/* 보스 */
+.bossbar{position:absolute;left:50%;transform:translateX(-50%);
+  top:calc(96px + var(--safe-t));width:min(440px,74vw);display:none;}
+.bossbar.show{display:block;animation:bossIn 420ms var(--ease) both;}
+@keyframes bossIn{from{opacity:0;transform:translateX(-50%) translateY(-8px);}to{opacity:1;transform:translateX(-50%);}}
+.bossbar .nm{text-align:center;font-size:var(--f-meta);font-weight:800;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--red);margin-bottom:6px;
+  text-shadow:0 0 18px rgba(255,77,90,.55);}
+.bossbar .track{height:5px;border-radius:3px;background:rgba(255,77,90,.14);
+  border:1px solid rgba(255,77,90,.22);overflow:hidden;}
+.bossbar .fill{height:100%;width:100%;background:linear-gradient(90deg,#FF2F44,#FF7A5A);
+  transition:width var(--t2) linear;}
+
+/* 무기 · 패시브 슬롯 */
+.loadout{position:absolute;left:var(--s3);bottom:calc(var(--s3) + var(--safe-b));
+  display:flex;flex-wrap:wrap;gap:6px;max-width:74vw;}
+.slot{position:relative;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(13,19,17,.72);border:1px solid var(--line);color:var(--tx-2);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.slot .ic{font-size:18px;}
+.slot.psv{border-radius:var(--r-pill);color:var(--tx-3);}
+.slot.psv .ic{font-size:15px;}
+.slot.evo{border-color:rgba(255,212,90,.45);color:var(--gold);
+  box-shadow:0 0 14px -4px rgba(255,212,90,.7);}
+.slot .lv{position:absolute;right:-2px;bottom:-3px;min-width:13px;height:13px;padding:0 3px;
+  border-radius:7px;background:var(--bg-deep);border:1px solid var(--line-2);
+  font-size:9px;font-weight:700;line-height:11px;text-align:center;color:var(--tx-2);
+  font-variant-numeric:tabular-nums;}
+.slot.evo .lv{color:var(--gold);border-color:rgba(255,212,90,.4);}
+
+#hint{position:absolute;left:50%;bottom:calc(64px + var(--safe-b));transform:translateX(-50%);
+  font-size:var(--f-meta);color:var(--tx-3);text-align:center;white-space:nowrap;
+  transition:opacity 600ms var(--ease);}
+
+/* ---------- 결과 ---------- */
+.result-mark{width:56px;height:56px;margin:0 auto var(--s4);border-radius:var(--r-m);
+  display:grid;place-items:center;background:var(--panel-2);color:var(--tx-3);}
+.result-mark .ic{font-size:30px;}
+.result-mark.win{color:var(--gold);background:rgba(255,212,90,.1);box-shadow:0 0 30px -8px var(--gold);}
+.result-mark.lose{color:var(--red);background:rgba(255,77,90,.08);}
+h2.res{margin:0 0 var(--s5);font-size:var(--f-h1);font-weight:900;letter-spacing:.2em;
+  text-transform:uppercase;}
+h2.res.win{color:var(--gold);}
+h2.res.lose{color:var(--red);}
+.kv{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  padding:var(--s3) 0;border-bottom:1px solid var(--line);
+  font-size:var(--f-body);color:var(--tx-3);}
+.kv:last-of-type{border-bottom:0;}
+.kv .v{font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;}
+.res-reward{margin-top:var(--s4);padding:var(--s3);border-radius:var(--r-m);
+  border:1px solid rgba(255,212,90,.3);background:rgba(255,212,90,.06);
+  color:var(--gold);font-size:var(--f-meta);font-weight:600;text-align:center;
+  animation:rewardPop 420ms var(--ease) both;}
+@keyframes rewardPop{from{opacity:0;transform:scale(.94);}to{opacity:1;transform:none;}}
+
+/* 로비 보정 */
+#menu .card{padding-top:62px;                         /* 좌상단 언어 · 우상단 설정 버튼 자리 */
+  background:linear-gradient(180deg,rgba(13,19,17,.86),rgba(7,10,9,.94));}
+/* 출격 버튼은 항상 손에 닿아야 한다 — 카드 아래에 붙여 둔다 */
+#menu .cta{position:sticky;bottom:calc(var(--s4) * -1);margin-top:var(--s5);
+  padding:var(--s3) 0 var(--s4);background:#0A0F0D;}
+#menu .cta::before{content:'';position:absolute;left:0;right:0;top:-22px;height:22px;
+  background:linear-gradient(180deg,rgba(10,15,13,0),#0A0F0D);pointer-events:none;}
+#menu .cta .row .btn{font-size:var(--f-meta);padding:0 var(--s2);line-height:1.25;}
+.buy .c{display:flex;align-items:center;gap:4px;}
+.buy .c .ic{font-size:11px;opacity:.85;}
+
+#result .card,#pause .card{text-align:center;}
+#result .kv,#pause .kv{text-align:left;}
+#result .btn,#pause .btn{margin-top:var(--s3);}
+
+/* 가이드 닫기 버튼은 아래에 붙어 있다 — 뒤 내용이 비쳐 보이지 않게 불투명 바탕을 깐다 */
+#guideClose{background:linear-gradient(180deg,rgba(141,255,90,.16),rgba(141,255,90,.06)),#0D1311;
+  box-shadow:0 -14px 20px -10px rgba(13,19,17,.98);}
+#guideClose:hover{background:linear-gradient(180deg,rgba(141,255,90,.24),rgba(141,255,90,.10)),#0D1311;}
+#guideBody{padding-bottom:var(--s2);}
+
+#pause h1.title,#settings h1.title,#how h1.title{font-size:var(--f-h1);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:var(--s3);}
+#pause #pauseStats{font-size:var(--f-meta);color:var(--tx-3);margin-bottom:var(--s5);}
+
+/* ---------- 좁은 화면 ---------- */
+@media (max-width:560px){
+  .card{padding:var(--s4) var(--s3);}
+  .metabar{grid-template-columns:repeat(2,1fr);}
+  .pill:nth-child(3)::before,.pill:nth-child(1)::before{display:none;}
+  .pill:nth-child(3),.pill:nth-child(4){border-top:1px solid var(--line);}
+  .choice{gap:var(--s3);padding:var(--s3);}
+  .choice .cico{width:42px;height:42px;}
+  .choice .cico .ic{font-size:23px;}
+}
+/* 세로로 짧은 기기: 레벨업 카드가 절대 스크롤되지 않게 더 납작하게 */
+@media (max-height:700px){
+  .lvhead{margin-bottom:var(--s3);}
+  .lvhead .lu{margin-bottom:var(--s2);}
+  .choice{padding:var(--s3);gap:var(--s3);}
+  .choice .cico{width:40px;height:40px;}
+  .choice .cico .ic{font-size:22px;}
+  .choice .cds{margin-top:3px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;}
+}
+
+/* ---------- 오프닝(로고·타이틀) — 기존 연출 유지 ---------- */
   /* ---------- 스플래시 (퍼블리셔 로고 오프닝) — 전체화면 순검정, 시네마틱 등장→유지→페이드아웃 ---------- */
   #splash{cursor:pointer;background:#000;}
   #splash .veil{background:#000;backdrop-filter:none;}
@@ -176,305 +633,6 @@
     #titleScreen .veil,#titleScreen .veil::before,#titleScreen .veil::after,.title-logo,.title-logo.portrait,.title-flames span{animation:none;}
     .title-logo,.title-logo.portrait{opacity:1;}
   }
-
-  .btn{appearance:none;border:1px solid rgba(255,255,255,.09);
-    background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
-    color:var(--ink);font-weight:800;font-size:16px;padding:15px 18px;border-radius:14px;cursor:pointer;
-    width:100%;letter-spacing:.02em;transition:transform .08s ease,border-color .2s,box-shadow .2s,background .2s;}
-  .btn:hover{border-color:rgba(139,255,90,.5);box-shadow:0 8px 26px rgba(0,0,0,.35);
-    background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));}
-  .btn:active{transform:translateY(1px) scale(.995);}
-  .btn.primary{position:relative;overflow:hidden;border:1px solid rgba(255,150,150,.55);color:#fff;
-    background:linear-gradient(180deg,#ff5a61,#d81c24 68%,#b3121a);
-    box-shadow:0 12px 36px rgba(229,35,43,.42),0 1px 0 rgba(255,255,255,.28) inset;text-shadow:0 1px 2px rgba(0,0,0,.35);}
-  .btn.primary::after{content:"";position:absolute;top:0;left:0;right:0;height:46%;pointer-events:none;
-    background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0));}
-  .btn.primary:hover{box-shadow:0 16px 46px rgba(229,35,43,.58),0 1px 0 rgba(255,255,255,.32) inset;}
-  .btn.ghost{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.006));}
-  .row{display:flex;gap:12px;}
-  .row .btn{flex:1;}
-
-  /* stat pill row on menu */
-  .metabar{display:flex;gap:10px;margin:8px 0 20px;flex-wrap:wrap;}
-  .pill{flex:1;min-width:120px;border-radius:14px;padding:11px 13px;
-    background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.075);
-    box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 6px 16px rgba(0,0,0,.28);}
-  .pill .k{font-size:10.5px;color:var(--ink-dim);letter-spacing:.1em;text-transform:uppercase;}
-  .pill .v{font-size:21px;font-weight:900;color:var(--gold);letter-spacing:.01em;}
-  .pill.blood .v{color:var(--blood-bright);}
-  .pill.tox .v{color:var(--toxic);}
-
-  /* ---------- 언어 선택 드롭다운 (로비 우측 상단) ---------- */
-  #langWrap{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 60px);
-    z-index:40;font-family:inherit;}
-  /* 환경설정 톱니 버튼 (우측 상단) */
-  #gearBtn{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 12px);
-    z-index:41;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;cursor:pointer;
-    background:rgba(10,15,13,.82);border:1px solid var(--line);color:var(--ink);font-size:19px;
-    backdrop-filter:blur(4px);box-shadow:0 4px 14px rgba(0,0,0,.4);-webkit-tap-highlight-color:transparent;
-    transition:transform .12s,border-color .2s;}
-  #gearBtn:hover{border-color:rgba(139,255,90,.5);}
-  #gearBtn:active{transform:scale(.92);}
-  #gearBtn:hover{transform:rotate(35deg);}
-  /* 설정 토글 스위치 */
-  .set-rows{display:flex;flex-direction:column;gap:14px;margin:8px 0 4px;}
-  .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;
-    background:#0b100e;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-weight:800;font-size:15px;}
-  .toggle{position:relative;width:56px;height:30px;border-radius:999px;border:1px solid var(--line);
-    background:#241417;cursor:pointer;transition:background .2s,border-color .2s;flex:0 0 auto;-webkit-tap-highlight-color:transparent;}
-  .toggle .knob{position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;
-    background:#e8ece9;box-shadow:0 2px 5px rgba(0,0,0,.5);transition:left .18s ease;}
-  .toggle[aria-checked="true"]{background:linear-gradient(180deg,#5fd66a,#2fa03d);border-color:#6fe07a;}
-  .toggle[aria-checked="true"] .knob{left:28px;}
-  /* 가드 터렛 업그레이드 패널 */
-  .tr-pts{font-size:14px;color:var(--ink);margin:6px 0 14px;} .tr-pts b{color:var(--gold);font-size:18px;}
-  .tr-row{display:flex;align-items:center;gap:12px;background:#0b100e;border:1px solid var(--line);
-    border-radius:12px;padding:12px 14px;margin-bottom:12px;}
-  .tr-info{flex:1;text-align:left;} .tr-nm{font-size:14px;font-weight:800;margin-bottom:6px;} .tr-nm b{color:var(--toxic);}
-  .tr-bar{height:8px;border-radius:6px;background:#1b2420;overflow:hidden;}
-  .tr-bar i{display:block;height:100%;background:linear-gradient(90deg,#6fd6ff,#3a9fd6);}
-  .tr-up{flex:0 0 auto;width:48px;height:44px;border-radius:11px;border:1px solid #6fe07a;cursor:pointer;
-    background:linear-gradient(180deg,#5fd66a,#2fa03d);color:#08110a;font-size:20px;font-weight:900;
-    -webkit-tap-highlight-color:transparent;}
-  .tr-up:active{transform:scale(.94);} .tr-up.off{background:#241417;border-color:var(--line);color:var(--ink-dim);cursor:default;}
-  /* 가이드 도감 */
-  #guide .card{width:min(680px,96vw);}
-  .gd-hint{font-size:11.5px;color:var(--gold);text-align:center;margin:4px 0 12px;letter-spacing:.02em;}
-  .gd-sec{margin:20px 0 10px;padding-left:11px;border-left:4px solid var(--toxic);}
-  .gd-sec h3{font-size:16px;font-weight:900;margin:0;} .gd-sec .n{font-size:10px;color:var(--toxic);font-weight:800;letter-spacing:.16em;}
-  .gd-lead{font-size:11.5px;color:var(--ink-dim);margin:8px 0 12px;line-height:1.55;}
-  .gd-lead b{color:var(--ink);}
-  .gd-card{background:#0b100e;border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:9px;text-align:left;}
-  .gd-row{display:flex;gap:10px;align-items:flex-start;}
-  .gd-ico{font-size:22px;flex:0 0 auto;width:30px;text-align:center;}
-  .gd-spr{image-rendering:pixelated;flex:0 0 auto;width:46px;height:auto;align-self:center;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5));}
-  .gd-spr.sm{width:44px;}
-  .gd-boss .gd-spr{width:52px;}
-  /* 출격 스테이지 선택 팝업 */
-  .stage-lead{font-size:12.5px;color:var(--ink-dim);text-align:center;margin:2px 0 14px;}
-  .stagesel{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:14px;}
-  .stagesel .sp{padding:12px 20px;border-radius:12px;border:1px solid var(--line);background:#0e1512;color:var(--ink);
-    font-weight:800;font-size:15px;cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:96px;
-    box-shadow:0 3px 10px rgba(0,0,0,.35);transition:transform .08s;}
-  .stagesel .sp.top{background:linear-gradient(180deg,#d4af37,#a8811f);color:#1a1206;border-color:#d4af37;}
-  .stagesel .sp:active{transform:scale(.94);}
-  .gd-nm{font-size:13.5px;font-weight:800;} .gd-ds{font-size:11px;color:var(--ink-dim);margin-top:3px;line-height:1.5;}
-  .gd-badge{font-size:9px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:middle;}
-  .gd-badge.on{color:#08110a;background:var(--toxic);} .gd-badge.off{color:var(--ink-dim);border:1px solid var(--line);}
-  .gd-evo{font-size:10.5px;color:var(--gold);margin-top:5px;} .gd-evo b{color:var(--gold);}
-  .gd-stats{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
-  .gd-stat{font-size:9.5px;background:#0a100d;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--ink-dim);}
-  .gd-stat b{color:var(--toxic);}
-  .gd-boss .gd-nm{color:var(--blood2,#ff5a5f);letter-spacing:.02em;}
-  table.gd-tier{width:100%;border-collapse:collapse;margin-top:8px;}
-  table.gd-tier th,table.gd-tier td{border:1px solid var(--line);padding:6px 7px;font-size:10.5px;text-align:center;}
-  table.gd-tier th{background:#0e1512;color:var(--toxic);font-weight:800;}
-  table.gd-tier td:first-child{color:var(--gold);font-weight:800;}
-  .gd-tips li{font-size:11.5px;color:var(--ink-dim);margin:6px 0 6px 16px;line-height:1.5;} .gd-tips li b{color:var(--ink);}
-  .gd-reward{margin-top:16px;border-radius:12px;padding:14px;text-align:center;font-size:12.5px;font-weight:700;
-    border:1px dashed var(--gold);background:linear-gradient(180deg,rgba(212,175,55,.12),rgba(212,175,55,.03));color:var(--gold);}
-  .gd-reward.done{border-style:solid;border-color:var(--toxic);color:var(--toxic);
-    background:linear-gradient(180deg,rgba(139,255,90,.10),rgba(139,255,90,.02));}
-  .gd-toast{position:fixed;left:50%;top:16%;transform:translateX(-50%) translateY(-14px);z-index:60;
-    background:linear-gradient(180deg,#1a2417,#0e1611);border:1px solid var(--gold);color:var(--gold);
-    font-weight:900;font-size:15px;padding:12px 22px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);
-    opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;}
-  .gd-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  #langBtn{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:11px;cursor:pointer;
-    background:rgba(10,15,13,.82);border:1px solid var(--line);color:var(--ink);font-weight:800;
-    font-size:13px;letter-spacing:.02em;backdrop-filter:blur(4px);box-shadow:0 4px 14px rgba(0,0,0,.4);
-    -webkit-tap-highlight-color:transparent;user-select:none;}
-  #langBtn:active{transform:scale(.96);}
-  #langBtn .lg-flag{font-size:17px;line-height:1;}
-  #langBtn .lg-caret{font-size:9px;opacity:.7;margin-left:1px;transition:transform .2s;}
-  #langWrap.open #langBtn .lg-caret{transform:rotate(180deg);}
-  #langList{position:absolute;top:calc(100% + 6px);right:0;min-width:172px;display:none;flex-direction:column;
-    background:rgba(12,17,15,.97);border:1px solid var(--line);border-radius:12px;overflow:hidden;
-    box-shadow:0 12px 30px rgba(0,0,0,.55);backdrop-filter:blur(6px);}
-  #langWrap.open #langList{display:flex;}
-  .lg-item{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:transparent;
-    border:0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--ink);font-size:14px;font-weight:700;
-    text-align:left;width:100%;-webkit-tap-highlight-color:transparent;}
-  .lg-item:last-child{border-bottom:0;}
-  .lg-item .lg-flag{font-size:19px;line-height:1;}
-  .lg-item:hover{background:rgba(139,255,90,.08);}
-  .lg-item.on{background:rgba(139,255,90,.14);color:var(--toxic);}
-  @media (max-width:560px){
-    #langBtn{padding:7px 10px;font-size:12px;}
-    #langBtn .lg-txt{max-width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    #langList{min-width:158px;}
-  }
-
-  /* character select */
-  .charsel{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:8px 0 20px;}
-  .char{cursor:pointer;border-radius:16px;padding:13px 8px 11px;text-align:center;
-    background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.07);
-    transition:transform .12s,border-color .2s,box-shadow .2s,background .2s;}
-  .char:hover{transform:translateY(-3px);border-color:rgba(139,255,90,.45);box-shadow:0 10px 26px rgba(0,0,0,.4);}
-  .char.on{border-color:var(--toxic);box-shadow:0 0 0 1px var(--toxic),0 12px 30px rgba(139,255,90,.2);
-    background:linear-gradient(180deg,rgba(139,255,90,.14),rgba(139,255,90,.02));}
-  .char .cvpx{width:52px;height:58px;margin:0 auto 6px;image-rendering:pixelated;}
-  .char .cnm{font-weight:900;font-size:14px;}
-  .char .ctt{font-size:10px;font-weight:800;letter-spacing:.06em;color:var(--toxic);text-transform:uppercase;margin-top:1px;}
-  .char .cds{font-size:10.5px;color:var(--ink-dim);line-height:1.35;margin-top:6px;min-height:44px;}
-  .char.on .cnm{color:var(--toxic);}
-
-  /* armory list */
-  .armory{display:flex;flex-direction:column;gap:10px;margin:8px 0 20px;}
-  .up{display:flex;align-items:center;gap:12px;border-radius:16px;padding:12px;
-    background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.006));border:1px solid rgba(255,255,255,.06);
-    transition:border-color .2s,background .2s;}
-  .up:hover{border-color:rgba(139,255,90,.28);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.012));}
-  .up .icon{width:46px;height:46px;flex:none;border-radius:12px;display:grid;place-items:center;
-    font-size:23px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08);
-    box-shadow:0 1px 0 rgba(255,255,255,.06) inset;}
-  .up .meta{flex:1;min-width:0;}
-  .up .nm{font-weight:800;font-size:15px;}
-  .up .ds{font-size:12px;color:var(--ink-dim);margin-top:1px;}
-  .lvdots{display:flex;gap:3px;margin-top:6px;}
-  .lvdots i{width:16px;height:5px;border-radius:3px;background:#26332a;}
-  .lvdots i.on{background:var(--toxic);box-shadow:0 0 6px rgba(139,255,90,.6);}
-  .buy{flex:none;min-width:92px;text-align:center;border:1px solid var(--line);border-radius:10px;
-    padding:9px 10px;font-weight:800;font-size:13px;background:#141b17;cursor:pointer;}
-  .buy .c{color:var(--gold);}
-  .buy.max{color:var(--toxic);border-color:rgba(139,255,90,.4);cursor:default;}
-  .buy.cant{opacity:.45;cursor:not-allowed;}
-  .buy:not(.max):not(.cant):hover{border-color:rgba(139,255,90,.5);}
-
-  /* level up choices */
-  #levelup .card{width:min(720px,96vw);}
-  .lvhead{text-align:center;margin-bottom:18px;}
-  .lvhead .lu{display:inline-block;font-size:11px;letter-spacing:.28em;color:var(--gold);font-weight:900;
-    padding:3px 13px;border-radius:20px;background:rgba(255,207,77,.12);border:1px solid rgba(255,207,77,.32);}
-  .lvjump{display:flex;align-items:center;justify-content:center;gap:11px;margin:12px 0 2px;font-weight:900;line-height:1;}
-  .lvjump .from{font-size:20px;color:var(--ink-dim);}
-  .lvjump .arw{font-size:20px;color:var(--gold);}
-  .lvjump .to{font-size:36px;background:linear-gradient(180deg,#fff,var(--toxic));
-    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 12px rgba(139,255,90,.55));}
-  .lvhead h2{margin:8px 0 0;font-size:18px;font-weight:800;letter-spacing:.03em;color:var(--ink);}
-  .lvhead .heal{color:var(--blood-bright);font-size:13px;margin-top:7px;font-weight:800;}
-  .choices{display:grid;grid-template-columns:1fr;gap:12px;}
-  @media(min-width:560px){.choices{grid-template-columns:1fr 1fr 1fr;}}
-  .choice{cursor:pointer;background:linear-gradient(180deg,#141c17,#0b100e);border:1px solid var(--line);
-    border-radius:16px;padding:16px 14px;text-align:center;transition:transform .08s,border-color .2s,box-shadow .2s;}
-  .choice:hover{transform:translateY(-3px);border-color:rgba(139,255,90,.55);box-shadow:0 12px 30px rgba(0,0,0,.5);}
-  .choice.evo{border-color:rgba(255,207,77,.55);background:linear-gradient(180deg,#1e1a10,#120f08);}
-  .choice.evo:hover{box-shadow:0 12px 34px rgba(255,207,77,.2);}
-  .choice .cico{font-size:38px;line-height:1;margin-bottom:8px;}
-  .choice .cnm{font-weight:900;font-size:16px;}
-  .choice .clv{display:inline-block;font-size:12px;font-weight:800;margin:4px 0 9px;color:var(--toxic);
-    padding:2px 9px;border-radius:8px;background:rgba(139,255,90,.1);border:1px solid rgba(139,255,90,.22);}
-  .choice.evo .clv{color:var(--gold);background:rgba(255,207,77,.12);border-color:rgba(255,207,77,.3);}
-  .choice .cds{font-size:12px;color:var(--ink-dim);line-height:1.4;}
-  .choice .cds-txt{font-size:11.5px;color:var(--ink-dim);line-height:1.45;margin-top:2px;}
-  .sulist{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:3px;}
-  .su{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:9px;
-    background:rgba(139,255,90,.12);color:#c3f5a2;border:1px solid rgba(139,255,90,.22);}
-  .su.tot{background:rgba(255,207,77,.14);color:#ffe08a;border-color:rgba(255,207,77,.32);}
-  .choice .badge{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.1em;
-    padding:2px 8px;border-radius:20px;margin-bottom:8px;text-transform:uppercase;}
-  .badge.new{background:rgba(139,255,90,.14);color:var(--toxic);}
-  .badge.up{background:rgba(120,180,255,.14);color:#8fb8ff;}
-  .badge.evoB{background:rgba(255,207,77,.16);color:var(--gold);}
-
-  /* ---------- in-game HUD ---------- */
-  #hud{position:fixed;inset:0;z-index:10;pointer-events:none;display:none;}
-  #hud.show{display:block;}
-  .topbar{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;
-    display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,rgba(4,6,6,.75),transparent);}
-  .xpwrap{height:8px;border-radius:6px;background:#10160f;border:1px solid var(--line);overflow:hidden;}
-  .xpfill{height:100%;width:0%;background:linear-gradient(90deg,var(--toxic-dim),var(--toxic));
-    box-shadow:0 0 12px rgba(139,255,90,.5);transition:width .12s linear;}
-  .toprow{display:flex;align-items:center;gap:10px;font-weight:900;font-size:13px;}
-  .hpwrap{flex:1;height:22px;border-radius:11px;background:linear-gradient(180deg,#0a0304,#1c0c0d);
-    border:1px solid rgba(229,35,43,.4);position:relative;overflow:hidden;
-    box-shadow:inset 0 2px 5px rgba(0,0,0,.75), inset 0 -1px 1px rgba(255,255,255,.06), 0 1px 0 rgba(255,255,255,.05);}
-  .hpfill{position:absolute;top:0;bottom:0;left:0;width:100%;border-radius:11px;
-    background:linear-gradient(180deg,#ff676d 0%,#e5232b 48%,#8a1216 100%);
-    box-shadow:inset 0 6px 7px -4px rgba(255,255,255,.6), inset 0 -7px 9px -4px rgba(0,0,0,.55), 0 0 14px rgba(229,35,43,.45);
-    transition:width .15s ease;}
-  .hpfill::after{content:"";position:absolute;left:5px;right:5px;top:2px;height:36%;pointer-events:none;
-    border-radius:9px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0));}
-  .hptext{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    font-size:12px;text-shadow:0 1px 2px #000,0 0 3px #000;letter-spacing:.03em;z-index:2;}
-  .chip{display:flex;align-items:center;gap:4px;background:rgba(8,12,10,.7);border:1px solid var(--line);
-    border-radius:8px;padding:4px 9px;font-size:13px;}
-  .chip.time{font-variant-numeric:tabular-nums;color:#fff;}
-  .chip.kill{color:var(--blood-bright);}
-  .chip.coin{color:var(--gold);}
-  .chip.tier{color:var(--gold);border-color:rgba(212,175,55,.5);font-weight:800;}
-  /* 3차 클리어 보상 배너 */
-  .res-reward{margin-top:16px;padding:13px 15px;border-radius:12px;
-    background:linear-gradient(180deg,rgba(212,175,55,.18),rgba(212,175,55,.05));
-    border:1px solid rgba(212,175,55,.55);color:#ffe9a8;font-size:13.5px;font-weight:800;line-height:1.5;
-    box-shadow:0 0 22px rgba(212,175,55,.18);animation:rewardPop .5s ease;}
-  @keyframes rewardPop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:none;}}
-  .chip.shield{color:#6fd6ff;border-color:rgba(111,214,255,.45);font-variant-numeric:tabular-nums;
-    box-shadow:0 0 14px rgba(111,214,255,.25);}
-  #soundBtn,#pauseBtn{pointer-events:auto;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
-    background:rgba(8,12,10,.7);border:1px solid var(--line);cursor:pointer;font-size:16px;color:var(--ink);}
-  #soundBtn:active,#pauseBtn:active{transform:scale(.94);}
-  #soundBtn.off{opacity:.55;}
-
-  .loadout{position:absolute;left:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
-    display:flex;gap:6px;flex-wrap:wrap;max-width:60vw;}
-  .slot{width:34px;height:34px;border-radius:9px;background:rgba(8,12,10,.72);border:1px solid var(--line);
-    display:grid;place-items:center;font-size:17px;position:relative;}
-  .slot.evo{border-color:rgba(255,207,77,.6);box-shadow:0 0 10px rgba(255,207,77,.2);}
-  .slot .lv{position:absolute;right:-3px;bottom:-4px;font-size:9px;font-weight:900;background:#0c110f;
-    border:1px solid var(--line);border-radius:6px;padding:0 3px;color:var(--toxic);}
-  .slot.psv .lv{color:#8fb8ff;}
-
-  .bossbar{position:absolute;left:50%;transform:translateX(-50%);top:64px;width:min(560px,86vw);display:none;}
-  .bossbar.show{display:block;}
-  .bossbar .nm{text-align:center;font-weight:900;letter-spacing:.16em;font-size:12px;color:var(--blood-bright);
-    text-transform:uppercase;margin-bottom:4px;text-shadow:0 0 12px rgba(229,35,43,.5);}
-  .bossbar .track{height:17px;border-radius:9px;background:linear-gradient(180deg,#070203,#1a0809);
-    border:1px solid rgba(229,35,43,.55);overflow:hidden;position:relative;
-    box-shadow:inset 0 2px 6px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.05);}
-  .bossbar .fill{height:100%;width:100%;border-radius:9px;position:relative;
-    background:linear-gradient(180deg,#ff787d 0%,#ff2d34 46%,#7c0f12 100%);
-    box-shadow:inset 0 7px 8px -4px rgba(255,255,255,.6), inset 0 -8px 10px -4px rgba(0,0,0,.55), 0 0 16px rgba(229,35,43,.55);
-    transition:width .12s linear;}
-  .bossbar .fill::after{content:"";position:absolute;left:6px;right:6px;top:2px;height:38%;pointer-events:none;
-    border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));}
-
-  #hint{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
-    transform:translateX(-50%);font-size:12px;color:var(--ink-dim);text-align:center;
-    background:rgba(6,9,8,.6);padding:6px 12px;border-radius:20px;border:1px solid var(--line);
-    opacity:1;transition:opacity .7s ease;pointer-events:none;}
-
-  .kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);}
-  .kv .v{font-weight:800;}
-  .center{text-align:center;}
-  .muted{color:var(--ink-dim);font-size:13px;line-height:1.5;}
-  .result-emoji{font-size:56px;line-height:1;text-align:center;margin-bottom:4px;}
-  h2.res{text-align:center;font-size:34px;font-weight:900;margin:2px 0 14px;letter-spacing:.02em;}
-  h2.res.win{color:var(--toxic);}
-  h2.res.lose{color:var(--blood-bright);}
-  .small{font-size:11px;color:var(--ink-dim);text-align:center;margin-top:14px;letter-spacing:.02em;}
-  .help{font-size:12.5px;color:var(--ink-dim);line-height:1.65;}
-  .help b{color:var(--ink);}
-
-  /* ---------- 모바일(좁은 화면) 대응 ---------- */
-  @media (max-width:560px){
-    /* 상단 HUD: 칩이 빽빽해 HP % 텍스트가 잘리지 않도록 여백·폰트 축소 + HP바 최소폭 확보 */
-    .toprow{gap:5px;font-size:11px;}
-    .chip{padding:3px 6px;font-size:11px;gap:3px;}
-    .hpwrap{height:18px;min-width:52px;}
-    .hptext{font-size:11px;}
-    #soundBtn,#pauseBtn{width:32px;height:32px;font-size:14px;}
-    /* 로비: 하단 고정 버튼이 캐릭터 카드를 덜 가리도록 카드/타이틀 컴팩트화 */
-    .card{padding:20px 18px;}
-    h1.title{font-size:clamp(30px,10vw,44px);}
-    .metabar .v{font-size:17px;}
-    .pill{padding:8px 10px;min-width:96px;}
-    .char{padding:9px 5px 8px;}
-    .char .cvpx{width:42px;height:47px;}
-    .char .cnm{font-size:12px;}
-    .char .ctt{font-size:9px;}
-    .char .cds{font-size:9.5px;line-height:1.3;min-height:0;margin-top:4px;}
-  }
 </style>
 </head>
 <body>
@@ -482,18 +640,24 @@
 
 <!-- HUD -->
 <div id="hud">
-  <div class="topbar">
-    <div class="xpwrap"><div class="xpfill" id="xpfill"></div></div>
-    <div class="toprow">
-      <span class="chip" id="lvChip">Lv 1</span>
-      <div class="hpwrap"><div class="hpfill" id="hpfill"></div><div class="hptext" id="hptext">100%</div></div>
-      <span class="chip tier" id="tierChip">1차</span>
-      <span class="chip time" id="timeChip">00:00</span>
-      <span class="chip kill" id="killChip">☠ 0</span>
-      <span class="chip coin" id="coinChip">◈ 0</span>
-      <span class="chip shield" id="shieldChip" style="display:none">🛡 8.0s</span>
-      <div id="soundBtn" title="사운드 켜기/끄기">🔊</div>
-      <div id="pauseBtn" title="일시정지">⏸</div>
+  <div class="hud-top">
+    <div class="hud-read">
+      <div class="hud-line">
+        <span class="hud-lv" id="lvChip">LV 1</span>
+        <span class="hud-stage" id="tierChip">STAGE 1</span>
+        <span class="hud-time" id="timeChip">00:00</span>
+      </div>
+      <div class="bar xp"><i class="fill" id="xpfill"></i></div>
+      <div class="hud-hp"><div class="bar hp" id="hpbar"><i class="fill" id="hpfill"></i></div><span class="bar-val" id="hptext">100%</span></div>
+      <div class="hud-line hud-meta">
+        <span class="hud-stat" data-ic="skull"><b id="killChip">0</b></span>
+        <span class="hud-stat" data-ic="gem"><b id="coinChip">0</b></span>
+        <span class="hud-stat sh" id="shieldChip" data-ic="shield" style="display:none"><b id="shieldVal">0s</b></span>
+      </div>
+    </div>
+    <div class="hud-btns">
+      <button class="iconbtn" id="soundBtn" type="button" aria-label="sound"></button>
+      <button class="iconbtn" id="pauseBtn" type="button" aria-label="pause"></button>
     </div>
   </div>
   <div class="bossbar" id="bossbar">
@@ -532,7 +696,7 @@
     </button>
     <div id="langList" role="menu"></div>
   </div>
-  <button id="gearBtn" type="button" title="환경설정" aria-label="환경설정">⚙️</button>
+  <button id="gearBtn" type="button" title="환경설정" aria-label="환경설정"></button>
   <div class="card">
     <div class="brand" data-i18n="menu.brand">Undead Rush · 로그라이트 서바이벌</div>
     <h1 class="title">UNDEAD<br>RUSH</h1>
@@ -570,7 +734,7 @@
       <p><b>이동 (PC)</b> — WASD 또는 방향키로 8방향 이동. <b>Esc / P</b> 로 일시정지.</p>
       <p><b>이동 (모바일)</b> — 화면을 터치·드래그하면 그 자리에 가상 조이스틱이 생깁니다.</p>
       <p><b>전투</b> — 모든 무기는 <b>자동</b>으로 조준·발사됩니다. 당신은 이동에만 집중하세요.</p>
-      <p><b>성장</b> — 좀비가 떨어뜨리는 <span style="color:var(--toxic)">젬</span>을 모아 레벨업. 레벨업 때 능력 1개를 고르고 체력의 30%가 즉시 회복됩니다.</p>
+      <p><b>성장</b> — 좀비가 떨어뜨리는 <span style="color:var(--green)">젬</span>을 모아 레벨업. 레벨업 때 능력 1개를 고르고 체력의 30%가 즉시 회복됩니다.</p>
       <p><b>초월 진화</b> — 무기를 8레벨까지 키우고 짝이 되는 패시브를 1레벨 이상 보유하면, 레벨업 선택지에 황금빛 <span style="color:var(--gold)">진화</span>가 등장합니다.</p>
       <p><b>목표</b> — 2:30 미니보스, 5:00 최종 보스. 최종 보스를 처치하면 승리! 판당 모은 <span style="color:var(--gold)">코인</span>으로 로비에서 영구 강화를 구매하세요.</p>
     </div>
@@ -628,8 +792,7 @@
 <div class="overlay" id="pause">
   <div class="veil"></div>
   <div class="card center">
-    <div class="brand" style="justify-content:center;" data-i18n="pause.brand">일시정지</div>
-    <h1 class="title" style="font-size:40px;" data-i18n="pause.title">멈춤</h1>
+    <h1 class="title" data-i18n="pause.title">멈춤</h1>
     <div id="pauseStats" class="muted" style="margin-bottom:16px;"></div>
     <button class="btn primary" id="resumeBtn" data-i18n="pause.resume">계속하기</button>
     <button class="btn ghost" id="saveExitBtn" style="margin-top:10px;" data-i18n="pause.save">저장하고 나가기</button>
@@ -655,7 +818,7 @@
 <div class="overlay" id="result">
   <div class="veil"></div>
   <div class="card">
-    <div class="result-emoji" id="resEmoji">☠️</div>
+    <div class="result-mark" id="resEmoji"></div>
     <h2 class="res" id="resTitle">전멸</h2>
     <div id="resStats"></div>
     <div id="resReward" class="res-reward" style="display:none;"></div>
@@ -1098,7 +1261,7 @@ const el = {
   loadout:$('loadout'), choices:$('choices'), hint:$('hint'), luHeal:$('luHeal'),
   bossbar:$('bossbar'), bossName:$('bossName'), bossFill:$('bossFill'),
   bankCoins:$('bankCoins'), bestTime:$('bestTime'), totalKills:$('totalKills'),
-  armory:$('armory'), resEmoji:$('resEmoji'), resTitle:$('resTitle'), resStats:$('resStats'), resNext:$('resNext'), resReward:$('resReward'),
+  armory:$('armory'), shieldVal:$('shieldVal'), hpbar:$('hpbar'), resEmoji:$('resEmoji'), resTitle:$('resTitle'), resStats:$('resStats'), resNext:$('resNext'), resReward:$('resReward'),
   pauseStats:$('pauseStats'), charsel:$('charsel'),
 };
 
@@ -1198,84 +1361,279 @@ function getMoveVector() {
    ========================================================================== */
 
 /* 무기 8종 — 설계서 3장. stats(level, mods) 는 실효 수치를 반환 */
+/* ============================================================================
+   아이콘 세트 — UNDEAD RUSH
+
+   하나의 미술 언어로 통일한다.
+   · 24×24 격자, 굵은 실루엣, currentColor 로만 칠한다(색은 CSS 가 정한다)
+   · 선을 쓸 때는 굵기 2, 둥근 끝으로 고정한다
+   · 작게 줄여도 무엇인지 바로 읽히는 형태를 우선한다
+   ========================================================================== */
+const ICONS = {
+  /* ---- 무기 ---- */
+  pistol:
+    '<path d="M2 6.2h16.6v4.4H2z"/>'
+    + '<path d="M4.6 10.6h5l-2.1 10.6H2.6z"/>'
+    + '<path d="M14.8 10.6h2.6v2.6h-2.6z" opacity=".55"/>',
+  shotgun:
+    '<path d="M2 9.6h5.4v4.8H2z"/>'
+    + '<g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">'
+    + '<path d="M9 12h3.4M9.4 9.6l3 -2.1M9.4 14.4l3 2.1"/></g>'
+    + '<circle cx="16.4" cy="12" r="1.9"/><circle cx="18.6" cy="6.3" r="1.6"/><circle cx="18.6" cy="17.7" r="1.6"/>',
+  flamethrower:
+    '<path d="M13 1.8c.6 3.3 2.6 4.6 4 6.6a7.2 7.2 0 1 1-12 4.9c0-3 1.3-4.7 2.6-6.4.2 1.7.9 2.6 1.8 3 .5-3.2 1.5-5.6 3.6-8.1z"/>'
+    + '<path opacity=".45" d="M12.3 12c.3 1.7 1.5 2.4 1.5 4a2.6 2.6 0 1 1-5.2 0c0-1.7 1.2-2.6 2.1-4.3.1 1 .4 1.4 1.6 1.7z"/>',
+  machete:
+    '<path d="M12 2.4a9.6 9.6 0 0 1 9.6 9.6h-3.3A6.3 6.3 0 0 0 12 5.7z"/>'
+    + '<path d="M21.6 12 17 15.4 17 8.6z"/>'
+    + '<path d="M12 21.6A9.6 9.6 0 0 1 2.4 12h3.3A6.3 6.3 0 0 0 12 18.3z"/>'
+    + '<path d="M2.4 12 7 8.6V15.4z"/>'
+    + '<circle cx="12" cy="12" r="1.9" opacity=".5"/>',
+  grenade:
+    '<path d="M10.8 6.9a7.1 7.1 0 1 1-7.1 7.1 7.1 7.1 0 0 1 7.1-7.1z"/>'
+    + '<path d="M14.6 4.1 17 6.5l1.6-1.6 1.7 1.7-1.6 1.6 1 1-2.1 2.1a9.4 9.4 0 0 0-3.4-3.4z"/>'
+    + '<path opacity=".45" d="M7.4 11.2a4.6 4.6 0 0 1 3.4-1.9v2.3a2.4 2.4 0 0 0-1.7 1z"/>',
+  taser:
+    '<path d="M13.6 1.8 4.2 13.4h5.3L8.1 22.2l10-12.1h-5.4z"/>',
+  axe:
+    '<g transform="rotate(38 12 12)">'
+    + '<path d="M4.8 2.6h14.4l-3.7 9H8.5z"/>'
+    + '<path d="M10.4 11.6h3.2v9.8h-3.2z"/>'
+    + '<path d="M7.8 5.2h8.4l-1.8 4.2H9.6z" fill="#000" opacity=".3"/>'
+    + '</g>',
+  sentry:
+    '<path d="M12 5a5.8 5.8 0 0 1 5.8 5.8v2.4H6.2v-2.4A5.8 5.8 0 0 1 12 5z"/>'
+    + '<path d="M16.8 9.4h6v2.8h-6z"/>'
+    + '<path d="M3.4 14h17.2v2.6H3.4z"/>'
+    + '<path d="M6 17.6h12l-1.3 3.6H7.3z" opacity=".55"/>',
+  scythe:
+    '<path d="M18.2 1.4 20.2 3 6.6 22.2l-2.2-1.4z"/>'
+    + '<path d="M19.4 1.8C12 1.5 5.4 5.1 2.6 11l3.2 1.4C8 7.8 12.9 5 19.4 5.2z"/>'
+    + '<path opacity=".45" d="M16.6 2.6C11.4 3.1 7.2 5.8 5 10l1.8.8C8.8 7.2 12.2 5 16.6 5z"/>',
+  frostwand:
+    '<path d="M4.2 21.6 2.4 19.8 13.6 8.6l1.8 1.8z"/>'
+    + '<path d="M17.4 1.6 22.4 7.4 17.4 13.2 12.4 7.4z"/>'
+    + '<path d="M17.4 4.6 19.8 7.4 17.4 10.2 15 7.4z" fill="#000" opacity=".3"/>'
+    + '<path d="M7.6 2.6l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" opacity=".6"/>',
+  gatling:
+    '<path d="M1.8 9.4h5v5.2h-5z"/>'
+    + '<g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity=".9">'
+    + '<path d="M8.4 12h3M8.6 9.3l2.8-1.9M8.6 14.7l2.8 1.9M9.4 6.6 11.8 4M9.4 17.4 11.8 20"/></g>'
+    + '<circle cx="15.4" cy="12" r="1.8"/><circle cx="16.6" cy="6.6" r="1.5"/><circle cx="16.6" cy="17.4" r="1.5"/>'
+    + '<circle cx="19.8" cy="3.2" r="1.2" opacity=".6"/><circle cx="19.8" cy="20.8" r="1.2" opacity=".6"/>',
+  inferno:
+    '<path d="M13.4 1.4c.7 3.6 3 5 4.4 7.3a7.7 7.7 0 1 1-13-1.2c.4 2 1.4 3 2.6 3.4C7.8 6.5 10.3 4.3 13.4 1.4z"/>'
+    + '<path opacity=".5" d="M12.4 11.4c.3 1.9 1.7 2.7 1.7 4.5a2.9 2.9 0 1 1-5.8 0c0-1.9 1.4-2.9 2.4-4.8.1 1.1.4 1.6 1.7 2z"/>'
+    + '<path opacity=".6" d="M19.4 12.6c.9 1.3 2.2 2 2.2 3.6a2.3 2.3 0 1 1-4.6 0c0-1.5 1.2-2.4 2.4-3.6z"/>',
+  buzzsaw:
+    '<path d="m12 1.6 2.3 2.1 3-.9.9 3 3 .9-2.1 2.3 2.1 2.3-3 .9-.9 3-3-.9L12 16.4 9.7 14.3l-3 .9-.9-3-3-.9L4.9 9 2.8 6.7l3-.9.9-3 3 .9z" transform="translate(0 3)"/>'
+    + '<circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="2"/>',
+  cluster:
+    '<circle cx="12" cy="12" r="3.6"/>'
+    + '<g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">'
+    + '<path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4M4.8 4.8 7.2 7.2M16.8 16.8l2.4 2.4M19.2 4.8 16.8 7.2M7.2 16.8l-2.4 2.4"/></g>'
+    + '<circle cx="4.6" cy="12" r="1.4" opacity=".55"/><circle cx="19.4" cy="12" r="1.4" opacity=".55"/>',
+  chainstorm:
+    '<path d="M12.4 1.6 4.6 11.6h4.3l-1.1 7 7.6-9.8h-4.3z"/>'
+    + '<path opacity=".6" d="M19.4 8.4 15 13.9h2.4l-.6 4.3 4.3-5.7h-2.4z"/>',
+  executioner:
+    '<path d="M12 2.2c4.7 0 8.2 3.3 8.2 7.8 0 2.7-1.2 4.5-2.8 5.6v3.1a1.6 1.6 0 0 1-1.6 1.6H8.2a1.6 1.6 0 0 1-1.6-1.6v-3.1C5 14.5 3.8 12.7 3.8 10 3.8 5.5 7.3 2.2 12 2.2z"/>'
+    + '<circle cx="8.9" cy="9.9" r="2.2" fill="#000" opacity=".55"/><circle cx="15.1" cy="9.9" r="2.2" fill="#000" opacity=".55"/>'
+    + '<path d="M10.6 14.2h2.8l-1.4 2.6z" fill="#000" opacity=".55"/>',
+  minigun:
+    '<path d="M12 4.4a5.8 5.8 0 0 1 5.8 5.8v3H6.2v-3A5.8 5.8 0 0 1 12 4.4z"/>'
+    + '<path d="M16.8 6.4h6.4v2.2h-6.4zM16.8 9.8h6.8v2.2h-6.8zM16.8 13.2h6.4v2.2h-6.4z"/>'
+    + '<path d="M3 14.4h17.2V17H3z"/>'
+    + '<path d="M5.6 18h12l-1.3 3.6H6.9z" opacity=".55"/>',
+  soulreaper:
+    '<path d="M18.6 1.2 20.6 2.8 8.8 19.4l-2.1-1.4z"/>'
+    + '<path d="M20 1.6C12.4 1.3 5.6 5 2.8 11l3.2 1.4C8.2 7.8 13.3 5 20 5.2z"/>'
+    + '<path d="M7.4 15.4a4.2 4.2 0 0 1 4.2 4.2v1.6a1 1 0 0 1-1 1H4.2a1 1 0 0 1-1-1v-1.6a4.2 4.2 0 0 1 4.2-4.2z"/>'
+    + '<circle cx="5.7" cy="19.2" r="1.1" fill="#000" opacity=".6"/><circle cx="9.1" cy="19.2" r="1.1" fill="#000" opacity=".6"/>',
+  blizzard:
+    '<path d="M11 1.4h2v21.2h-2z"/>'
+    + '<path d="M2 6.4 3 4.7l18 10.4-1 1.7zM3 19.3l-1-1.7 18-10.4 1 1.7z"/>'
+    + '<path d="M12 5 9.2 7.8 8 6.6 12 2.6l4 4-1.2 1.2zM12 19 14.8 16.2l1.2 1.2-4 4-4-4 1.2-1.2z" opacity=".55"/>'
+    + '<circle cx="12" cy="12" r="2.4"/>',
+
+  /* ---- 패시브 ---- */
+  dmg:
+    '<path d="M12 1.4 15 6v10h-6V6z"/>'
+    + '<path d="M6.8 16h10.4v2.4H6.8z"/>'
+    + '<path d="M10.8 18.4h2.4v4.2h-2.4z"/>',
+  speed:
+    '<path d="M12 3.6a9 9 0 1 1-9 9 9 9 0 0 1 9-9zm0 2.6a6.4 6.4 0 1 0 6.4 6.4A6.4 6.4 0 0 0 12 6.2z"/>'
+    + '<path d="M11 7.6h2v5.6l3.4 2-1 1.8-4.4-2.6z"/>'
+    + '<path d="M9 .8h6v2.2H9z"/>',
+  proj:
+    '<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none">'
+    + '<path d="M3 12h11M3 6.4h7.6M3 17.6h7.6"/></g>'
+    + '<path d="m16 12 5 0-2.4-2.8zM13.2 6.4h4.4l-2.1-2.4zM13.2 17.6h4.4l-2.1 2.4z" opacity=".85"/>'
+    + '<path d="m15.6 8.8 5.6 3.2-5.6 3.2z"/>',
+  range:
+    '<circle cx="12" cy="12" r="2.6"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="2">'
+    + '<path d="M6.2 6.2a8.2 8.2 0 0 0 0 11.6" opacity=".8"/><path d="M17.8 17.8a8.2 8.2 0 0 0 0-11.6" opacity=".8"/>'
+    + '<path d="M2.8 2.8a13 13 0 0 0 0 18.4" opacity=".4"/><path d="M21.2 21.2a13 13 0 0 0 0-18.4" opacity=".4"/></g>',
+  movespeed:
+    '<path d="M3.4 3.8 12.6 12l-9.2 8.2-2.2-2.5L8.2 12 1.2 6.3z"/>'
+    + '<path d="M13.4 3.8 22.6 12l-9.2 8.2-2.2-2.5L18.2 12l-7-5.7z" opacity=".65"/>',
+  maxhp:
+    '<path d="M12 21.2 3.3 12.2A5.4 5.4 0 1 1 11 4.7l1 1 1-1a5.4 5.4 0 1 1 7.7 7.5z"/>',
+  regen:
+    '<path d="M9.6 2.6h4.8v7h7v4.8h-7v7H9.6v-7h-7V9.6h7z"/>',
+  magnet:
+    '<path d="M3.2 10.6A8.8 8.8 0 0 1 12 1.8a8.8 8.8 0 0 1 8.8 8.8v1.8h-5.2v-1.8A3.6 3.6 0 0 0 12 7a3.6 3.6 0 0 0-3.6 3.6v1.8H3.2z"/>'
+    + '<path d="M3.2 14.2h5.2V20H3.2zM15.6 14.2h5.2V20h-5.2z" opacity=".55"/>',
+  crit:
+    '<path d="M12 2.4a9.6 9.6 0 1 1-9.6 9.6A9.6 9.6 0 0 1 12 2.4zm0 2.8A6.8 6.8 0 1 0 18.8 12 6.8 6.8 0 0 0 12 5.2z"/>'
+    + '<circle cx="12" cy="12" r="2.8"/>'
+    + '<path d="M11 .4h2v4h-2zM11 19.6h2v4h-2zM.4 11h4v2h-4zM19.6 11h4v2h-4z"/>',
+
+  /* ---- 캐릭터 ---- */
+  blood:
+    '<path d="M12 1.8c3.6 4.7 7 8 7 11.8a7 7 0 0 1-14 0c0-3.8 3.4-7.1 7-11.8z"/>'
+    + '<path opacity=".45" d="M9.2 13.8a2.8 2.8 0 0 0 2.8 4.2 4.6 4.6 0 0 1-4.4-4.2z"/>',
+
+  /* ---- 영구 강화 ---- */
+  coin:
+    '<path d="M12 2.4a9.6 9.6 0 1 1-9.6 9.6A9.6 9.6 0 0 1 12 2.4zm0 2.6A7 7 0 1 0 19 12 7 7 0 0 0 12 5z"/>'
+    + '<path d="m12 6.8 1.7 3.5 3.9.5-2.8 2.7.7 3.8-3.5-1.8-3.5 1.8.7-3.8-2.8-2.7 3.9-.5z"/>',
+  bonus:
+    '<path d="M2.8 10.6h18.4v3.2H2.8z"/>'
+    + '<path d="M4.4 14.6h15.2v7H4.4z" opacity=".75"/>'
+    + '<path d="M10.4 10.6h3.2v11h-3.2z" fill="#000" opacity=".35"/>'
+    + '<path d="M12 9.4C10.2 6 8.4 4.6 6.6 5.3 5 6 5.1 8.3 7 9.4zM12 9.4c1.8-3.4 3.6-4.8 5.4-4.1 1.6.7 1.5 3-.4 4.1z"/>',
+  revive:
+    '<path d="M13.8 1.6h2.6v6.2h-2.6z" transform="rotate(45 15.1 4.7)"/>'
+    + '<path d="M9.4 7.8 16.2 14.6l-2.6 2.6a3.4 3.4 0 0 1-4.8 0l-2-2a3.4 3.4 0 0 1 0-4.8z"/>'
+    + '<path d="m7.6 16.4 1.8 1.8-4.8 4.8-1.8-1.8z"/>'
+    + '<g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity=".6">'
+    + '<path d="M17.4 3.6 21 7.2"/></g>',
+
+  /* ---- 화면 UI ---- */
+  skull:
+    '<path d="M12 2.6c4.4 0 7.6 3.1 7.6 7.3 0 2.5-1.1 4.2-2.6 5.2v2.9a1.5 1.5 0 0 1-1.5 1.5H8.5A1.5 1.5 0 0 1 7 18v-2.9c-1.5-1-2.6-2.7-2.6-5.2 0-4.2 3.2-7.3 7.6-7.3z"/>'
+    + '<circle cx="9.1" cy="10.1" r="2" fill="#000" opacity=".6"/><circle cx="14.9" cy="10.1" r="2" fill="#000" opacity=".6"/>',
+  gem:
+    '<path d="M12 1.8 22.2 12 12 22.2 1.8 12z"/>'
+    + '<path d="M12 5.8 18.2 12 12 18.2 5.8 12z" fill="#000" opacity=".28"/>',
+  shield:
+    '<path d="M12 1.8 20.6 5v6.6c0 4.6-3.3 8.6-8.6 10.6-5.3-2-8.6-6-8.6-10.6V5z"/>'
+    + '<path d="M12 4.8v14.4c-3.7-1.7-6-4.6-6-8.1V6.6z" fill="#000" opacity=".25"/>',
+  clock:
+    '<path d="M12 2.8a9.2 9.2 0 1 1-9.2 9.2A9.2 9.2 0 0 1 12 2.8zm0 2.6a6.6 6.6 0 1 0 6.6 6.6A6.6 6.6 0 0 0 12 5.4z"/>'
+    + '<path d="M11 7h2v5.4l3.4 2-1 1.8-4.4-2.6z"/>',
+  pause:
+    '<path d="M6.4 3.6h4v16.8h-4zM13.6 3.6h4v16.8h-4z"/>',
+  sound:
+    '<path d="M4 9h3.6L13 4.2v15.6L7.6 15H4z"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'
+    + '<path d="M16.2 8.6a4.8 4.8 0 0 1 0 6.8"/><path d="M19 5.8a8.8 8.8 0 0 1 0 12.4" opacity=".55"/></g>',
+  mute:
+    '<path d="M4 9h3.6L13 4.2v15.6L7.6 15H4z"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'
+    + '<path d="m16.4 9.6 5 4.8M21.4 9.6l-5 4.8"/></g>',
+  gear:
+    '<path d="M9.9 1.8h4.2l.5 2.6a8 8 0 0 1 1.9 1.1l2.5-.9 2.1 3.6-2 1.7a8 8 0 0 1 0 2.2l2 1.7-2.1 3.6-2.5-.9a8 8 0 0 1-1.9 1.1l-.5 2.6H9.9l-.5-2.6a8 8 0 0 1-1.9-1.1l-2.5.9-2.1-3.6 2-1.7a8 8 0 0 1 0-2.2l-2-1.7 2.1-3.6 2.5.9a8 8 0 0 1 1.9-1.1z"/>'
+    + '<circle cx="12" cy="12" r="3.2" fill="#000" opacity=".45"/>',
+  book:
+    '<path d="M3.4 3.2h7.4a2.6 2.6 0 0 1 2.6 2.6v14.4a2.2 2.2 0 0 0-2.2-2.2H3.4z"/>'
+    + '<path d="M20.6 3.2h-7.4a2.6 2.6 0 0 0-2.6 2.6v14.4a2.2 2.2 0 0 1 2.2-2.2h7.8z" opacity=".55"/>',
+  close:
+    '<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">'
+    + '<path d="M5.4 5.4 18.6 18.6M18.6 5.4 5.4 18.6"/></g>',
+  trophy:
+    '<path d="M7 2.6h10v6.2a5 5 0 0 1-10 0z"/>'
+    + '<path d="M10.6 13.4h2.8v4.2h-2.8zM6.8 19h10.4v2.4H6.8z"/>'
+    + '<path d="M7 4.2H4.2v2A3.4 3.4 0 0 0 7 9.5zM17 4.2h2.8v2A3.4 3.4 0 0 1 17 9.5z" opacity=".55"/>',
+};
+
+/* 아이콘 하나를 SVG 로 만들어 준다. 색은 CSS(currentColor)가 정한다. */
+function ico(key, cls) {
+  const d = ICONS[key];
+  if (!d) return '';
+  return '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' + d + '</svg>';
+}
+
 const WEAPONS = {
-  pistol:{ name:'데드샷', icon:'🔫', aim:'nearest', pair:'speed', evo:'machinegun',
+  pistol:{ name:'데드샷', icon:'pistol', aim:'nearest', pair:'speed', evo:'machinegun',
     desc:'가장 가까운 좀비를 자동 조준하는 안정적 단발 화력.',
     stats:l=>({ dmg:7+(l-1)*3, cd:Math.max(16,40-(l-1)*2.5), proj:1+Math.floor((l-1)/3), spd:9 }) },
-  shotgun:{ name:'스프레드 샷', icon:'💥', aim:'move', pair:'proj', evo:'gatling',
+  shotgun:{ name:'스프레드 샷', icon:'shotgun', aim:'move', pair:'proj', evo:'gatling',
     desc:'이동 방향으로 부채꼴 다중 탄환을 발사.',
     stats:l=>({ dmg:5+(l-1)*2, cd:Math.max(38,72-(l-1)*4), pellets:3+Math.floor((l-1)/2), spread:0.55, spd:8 }) },
-  flamethrower:{ name:'플레임 제트', icon:'🔥', aim:'move', pair:'range', evo:'inferno',
+  flamethrower:{ name:'플레임 제트', icon:'flamethrower', aim:'move', pair:'range', evo:'inferno',
     desc:'이동 방향 원뿔에 지속 화염 데미지.',
     stats:l=>({ dmg:2.6+(l-1)*1.1, cd:8, range:96+(l-1)*8, arc:0.85 }) },
-  machete:{ name:'스핀 블레이드', icon:'🌀', aim:'orbit', pair:'range', evo:'buzzsaw', melee:true,
+  machete:{ name:'스핀 블레이드', icon:'machete', aim:'orbit', pair:'range', evo:'buzzsaw', melee:true,
     desc:'플레이어 주위를 도는 근접 방어막.',
     stats:l=>({ dmg:8+(l-1)*3, blades:2+Math.floor((l-1)/2), radius:64, speed:0.05 }) },
-  grenade:{ name:'붐 샷', icon:'💣', aim:'nearest', pair:'dmg', evo:'cluster',
+  grenade:{ name:'붐 샷', icon:'grenade', aim:'nearest', pair:'dmg', evo:'cluster',
     desc:'타깃 지점에 투척, 반경 폭발.',
     stats:l=>({ dmg:22+(l-1)*8, cd:Math.max(50,96-(l-1)*5), radius:62+(l-1)*5, spd:4.2 }) },
-  taser:{ name:'썬더 볼트', icon:'⚡', aim:'nearest', pair:'proj', evo:'chainstorm',
+  taser:{ name:'썬더 볼트', icon:'taser', aim:'nearest', pair:'proj', evo:'chainstorm',
     desc:'체인 라이트닝으로 주변 적에게 전이.',
     stats:l=>({ dmg:10+(l-1)*4, cd:Math.max(30,58-(l-1)*3), chain:2+Math.floor(l/2), jump:130 }) },
-  axe:{ name:'부메랑 액스', icon:'🪓', aim:'nearest', pair:'dmg', evo:'executioner', melee:true,
+  axe:{ name:'부메랑 액스', icon:'axe', aim:'nearest', pair:'dmg', evo:'executioner', melee:true,
     desc:'직선 관통 후 플레이어에게 복귀.',
     stats:l=>({ dmg:14+(l-1)*5, cd:Math.max(46,80-(l-1)*4), spd:6, reach:230, spin:0.3 }) },
-  sentry:{ name:'가드 터렛', icon:'🛡️', aim:'deploy', pair:'speed', evo:'minigun',
+  sentry:{ name:'가드 터렛', icon:'sentry', aim:'deploy', pair:'speed', evo:'minigun',
     desc:'적을 따라다니며 자동 사격하는 자율 포탑. 탭하면 능력을 레벨업할 수 있다.',
     stats:l=>({ dmg:5+(l-1)*2.2, cd:Math.max(120,180-(l-1)*8), fireCd:Math.max(8,20-(l-1)), life:360+(l-1)*30, rng:200 }) },
-  scythe:{ name:'블러드 사이드', icon:'🩸', aim:'move', pair:'regen', evo:'soulreaper', melee:true,
+  scythe:{ name:'블러드 사이드', icon:'scythe', aim:'move', pair:'regen', evo:'soulreaper', melee:true,
     desc:'이동 방향 부채꼴을 베어 피해를 주고, 준 피해의 일부만큼 체력을 회복.',
     stats:l=>({ dmg:12+(l-1)*4.2, cd:Math.max(30,60-(l-1)*3.5), range:78+(l-1)*5, arc:0.72, lifesteal:0.10+(l-1)*0.01 }) },
-  frostwand:{ name:'프로스트 완드', icon:'❄️', aim:'nearest', pair:'speed', evo:'blizzard',
+  frostwand:{ name:'프로스트 완드', icon:'frostwand', aim:'nearest', pair:'speed', evo:'blizzard',
     desc:'냉기 탄을 발사, 맞은 적의 이동을 느리게 만든다. 레벨업마다 둔화가 강해진다.',
     stats:l=>({ dmg:8+(l-1)*2, cd:Math.max(26,44-(l-1)*2), spd:8, chill:110+(l-1)*26, chillPow:Math.max(0.22, 0.5-(l-1)*0.035) }) },
 };
 /* 진화 무기 — 설계서 5장 */
 const EVOS = {
-  machinegun:{ name:'불릿 스톰', icon:'🔩', base:'pistol', desc:'초고속 연사 점사.',
+  machinegun:{ name:'불릿 스톰', icon:'machinegun', base:'pistol', desc:'초고속 연사 점사.',
     stats:()=>({ dmg:14, cd:5, proj:1, spd:12, burst:1 }) },
-  gatling:{ name:'불릿 레인', icon:'🌪️', base:'shotgun', desc:'전방을 덮는 부채꼴 탄막.',
+  gatling:{ name:'불릿 레인', icon:'gatling', base:'shotgun', desc:'전방을 덮는 부채꼴 탄막.',
     stats:()=>({ dmg:9, cd:14, pellets:12, spread:0.95, spd:9 }) },
-  inferno:{ name:'파이어 스톰', icon:'🌋', base:'flamethrower', desc:'경로에 잔존하는 화염 기둥.',
+  inferno:{ name:'파이어 스톰', icon:'inferno', base:'flamethrower', desc:'경로에 잔존하는 화염 기둥.',
     stats:()=>({ dmg:5, cd:7, range:150, arc:0.95, pool:true }) },
-  buzzsaw:{ name:'블레이드 스톰', icon:'⚙️', base:'machete', desc:'상시 맹렬히 회전하는 대형 톱날.',
+  buzzsaw:{ name:'블레이드 스톰', icon:'buzzsaw', base:'machete', desc:'상시 맹렬히 회전하는 대형 톱날.',
     stats:()=>({ dmg:22, blades:5, radius:96, speed:0.09 }) },
-  cluster:{ name:'클러스터 붐', icon:'🎆', base:'grenade', desc:'2차 연쇄 폭발.',
+  cluster:{ name:'클러스터 붐', icon:'cluster', base:'grenade', desc:'2차 연쇄 폭발.',
     stats:()=>({ dmg:34, cd:64, radius:80, spd:4.2, cluster:5 }) },
-  chainstorm:{ name:'체인 스톰', icon:'🌩️', base:'taser', desc:'최대 7명 초고속 체이닝.',
+  chainstorm:{ name:'체인 스톰', icon:'chainstorm', base:'taser', desc:'최대 7명 초고속 체이닝.',
     stats:()=>({ dmg:20, cd:26, chain:7, jump:170 }) },
-  executioner:{ name:'데스 액스', icon:'☠️', base:'axe', desc:'경로상 모든 적을 즉사급 절단.',
+  executioner:{ name:'데스 액스', icon:'executioner', base:'axe', desc:'경로상 모든 적을 즉사급 절단.',
     stats:()=>({ dmg:60, cd:52, spd:7, reach:300, spin:0.5 }) },
-  minigun:{ name:'미니건', icon:'🏗️', base:'sentry', desc:'폭풍 사격을 퍼붓는 화력 거점.',
+  minigun:{ name:'미니건', icon:'minigun', base:'sentry', desc:'폭풍 사격을 퍼붓는 화력 거점.',
     stats:()=>({ dmg:15, cd:120, fireCd:3, life:480, rng:260 }) },
-  soulreaper:{ name:'소울 리퍼', icon:'🌑', base:'scythe', desc:'광역 베기와 강화된 흡혈로 전장을 정화.',
+  soulreaper:{ name:'소울 리퍼', icon:'soulreaper', base:'scythe', desc:'광역 베기와 강화된 흡혈로 전장을 정화.',
     stats:()=>({ dmg:36, cd:38, range:132, arc:1.05, lifesteal:0.24 }) },
-  blizzard:{ name:'블리자드', icon:'🌨️', base:'frostwand', desc:'광역 눈보라로 다수의 적을 강하게 둔화.',
+  blizzard:{ name:'블리자드', icon:'blizzard', base:'frostwand', desc:'광역 눈보라로 다수의 적을 강하게 둔화.',
     stats:()=>({ dmg:14, cd:30, spd:9, chill:240, chillPow:0.18, proj:3, blizzard:true }) },
 };
 
 /* 패시브 9종 — 설계서 4장 (레벨 1~5) */
 const PASSIVES = {
-  dmg:{ name:'파워 업', icon:'🗡️', desc:'모든 무기 피해 +10%' },
-  speed:{ name:'래피드', icon:'⏱️', desc:'재장전 대기 -10%' },
-  proj:{ name:'멀티 샷', icon:'➕', desc:'투사체 +1개' },
-  range:{ name:'와이드', icon:'📐', desc:'폭발·화염·도끼 +15%' },
-  movespeed:{ name:'스피드', icon:'👟', desc:'이동력 +8%' },
-  maxhp:{ name:'라이프 업', icon:'❤️', desc:'최대 생명력 +20%' },
-  regen:{ name:'리커버리', icon:'✚', desc:'초당 체력 +0.5' },
-  magnet:{ name:'마그넷', icon:'🧲', desc:'흡입 범위 +30%' },
-  crit:{ name:'크리티컬', icon:'🎯', desc:'치명타 확률 +8% (2배 피해)' },
+  dmg:{ name:'파워 업', icon:'dmg', desc:'모든 무기 피해 +10%' },
+  speed:{ name:'래피드', icon:'speed', desc:'재장전 대기 -10%' },
+  proj:{ name:'멀티 샷', icon:'proj', desc:'투사체 +1개' },
+  range:{ name:'와이드', icon:'range', desc:'폭발·화염·도끼 +15%' },
+  movespeed:{ name:'스피드', icon:'movespeed', desc:'이동력 +8%' },
+  maxhp:{ name:'라이프 업', icon:'maxhp', desc:'최대 생명력 +20%' },
+  regen:{ name:'리커버리', icon:'regen', desc:'초당 체력 +0.5' },
+  magnet:{ name:'마그넷', icon:'magnet', desc:'흡입 범위 +30%' },
+  crit:{ name:'크리티컬', icon:'crit', desc:'치명타 확률 +8% (2배 피해)' },
 };
 
 /* 시작 캐릭터 3종 — 각자 시작 무기 + 그 무기의 짝 패시브 1레벨을 갖고 출발 */
 const CHARACTERS = {
-  hunter:{ name:'사냥꾼', title:'균형형', icon:'🗡️', weapon:'pistol', sprite:'player',
+  hunter:{ name:'사냥꾼', title:'균형형', icon:'dmg', weapon:'pistol', sprite:'player',
     mods:{ dmgMul:0.9, coinMul:1.2 },
     desc:'코인 획득 +20% · 공격력 -10%. 무난한 올라운더, 입문용.' },
-  berserker:{ name:'광전사', title:'근접 흡혈형', icon:'🩸', weapon:'scythe', sprite:'player_berserker',
+  berserker:{ name:'광전사', title:'근접 흡혈형', icon:'blood', weapon:'scythe', sprite:'player_berserker',
     mods:{ mvMul:1.15, meleeDmgMul:1.15, hpMul:0.85 },
     desc:'이동속도 +15% · 근접 피해 +15% · 최대 체력 -15%. 닥돌 흡혈 탱커.' },
-  pyromancer:{ name:'화염술사', title:'광역 거점형', icon:'🔥', weapon:'flamethrower', sprite:'player_pyromancer',
+  pyromancer:{ name:'화염술사', title:'광역 거점형', icon:'flamethrower', weapon:'flamethrower', sprite:'player_pyromancer',
     mods:{ rangeMul:1.2, mvMul:0.9 },
     desc:'사거리·범위 +20% · 이동속도 -10%. 거점 방어형, 기동성이 낮음.' },
 };
@@ -1303,13 +1661,13 @@ const ENEMIES = {
 
 /* 메타 아머리 — 설계서 9장 */
 const METAS = {
-  vitality:{ name:'헬스 부스트', icon:'❤️', desc:'시작 최대 체력 +20', max:8, cost:l=>60+l*55, val:l=>l*20 },
-  firepower:{ name:'데미지 부스트', icon:'🔥', desc:'모든 피해 +5%', max:8, cost:l=>80+l*70, val:l=>l*5 },
-  greed:{ name:'골드 부스트', icon:'💰', desc:'획득 코인 +12%', max:6, cost:l=>90+l*80, val:l=>l*12 },
-  mobility:{ name:'스피드 부스트', icon:'👟', desc:'이동속도 +5%', max:6, cost:l=>70+l*60, val:l=>l*5 },
-  bonus:{ name:'스타트 부스트', icon:'🎁', desc:'시작 시 경험치 +1레벨분', max:5, cost:l=>120+l*90, val:l=>l },
-  revive:{ name:'리바이브', icon:'💉', desc:'1회 부활 (체력 50%)', max:1, cost:()=>400, val:l=>l },
-  precision:{ name:'크리티컬 부스트', icon:'🎯', desc:'시작 치명타 확률 +2%', max:5, cost:l=>100+l*85, val:l=>l*2 },
+  vitality:{ name:'헬스 부스트', icon:'maxhp', desc:'시작 최대 체력 +20', max:8, cost:l=>60+l*55, val:l=>l*20 },
+  firepower:{ name:'데미지 부스트', icon:'flamethrower', desc:'모든 피해 +5%', max:8, cost:l=>80+l*70, val:l=>l*5 },
+  greed:{ name:'골드 부스트', icon:'coin', desc:'획득 코인 +12%', max:6, cost:l=>90+l*80, val:l=>l*12 },
+  mobility:{ name:'스피드 부스트', icon:'movespeed', desc:'이동속도 +5%', max:6, cost:l=>70+l*60, val:l=>l*5 },
+  bonus:{ name:'스타트 부스트', icon:'bonus', desc:'시작 시 경험치 +1레벨분', max:5, cost:l=>120+l*90, val:l=>l },
+  revive:{ name:'리바이브', icon:'revive', desc:'1회 부활 (체력 50%)', max:1, cost:()=>400, val:l=>l },
+  precision:{ name:'크리티컬 부스트', icon:'crit', desc:'시작 치명타 확률 +2%', max:5, cost:l=>100+l*85, val:l=>l*2 },
 };
 
 /* ---------------- 인게임 가이드 도감(다국어) ---------------- */
@@ -1318,7 +1676,7 @@ const GUIDE_MS = ['pistol','shotgun','grenade','axe','sentry'];   // 멀티샷�
 const GUIDE_BOSSES = ['mini','boss','boss2','boss3','boss4','boss5'];
 const GUIDE_STR = {
   ko:{ title:'게임 가이드 & 도감', close:'닫기', hint:'끝까지 읽으면 보상이 있어요 ↓',
-    toast:'📖 가이드 완독! 코인 +100', rewardWait:'🎉 여기까지 정독하면 <b>완독 보상 코인 +100</b> (최초 1회)',
+    toast:'가이드 완독! 코인 +100', rewardWait:'여기까지 정독하면 <b>완독 보상 코인 +100</b> (최초 1회)',
     rewardDone:'✓ 완독 보상(코인 100)을 이미 받았습니다.',
     s_intro:'게임 소개', s_char:'출격 대원', s_weapon:'무기 도감', s_passive:'패시브 스킬',
     s_enemy:'몬스터 도감', s_boss:'보스 도감', s_item:'아이템', s_meta:'메타 아머리 · 영구 강화',
@@ -1330,11 +1688,11 @@ const GUIDE_STR = {
     msOn:'멀티샷 ○', msOff:'멀티샷 ✕', evo:'진화', pair:'진화 조건 · Lv8 +',
     st_hp:'HP', st_spd:'속도', st_dmg:'접촉', st_exp:'EXP',
     bosses:[['변이 거수','미니보스 · 2:30 등장 · 체력 900×배수. 처치 시 하트·방어막·코인 대량 확정 드랍.'],['NECRO TYRANT','스테이지 1 보스 · 5:00 · 사방 산성 탄막(노바) + 잡몹 소환.'],['PLAGUE COLOSSUS','스테이지 2 보스 · 독성 콜로서스 · 산성 노바 + 소환.'],['FROST REVENANT','스테이지 3 보스 · 서리 망령 기사 · 산성 노바 + 소환.'],['INFERNO FIEND','스테이지 4 보스 · 지옥불 마귀 · 산성 노바 + 소환.'],['VOID SOVEREIGN','스테이지 5+ 보스 · 공허의 군주 · 산성 노바 + 소환.']],
-    items:[['💎','젬','좀비가 떨어뜨리는 경험치. 모으면 레벨업.'],['◈','코인','판이 끝나면 정산되어 영구 강화 구매에 쓰인다.'],['❤️','하트','최대 체력의 25% 회복.'],['🛡️','방어막 오브','8초간 모든 피해 무효. 매우 희귀(미니보스 확정).'],['🧲','슈퍼 자석','맵의 모든 젬·코인·하트를 즉시 흡수.']],
+    items:[['','젬','좀비가 떨어뜨리는 경험치. 모으면 레벨업.'],['','코인','판이 끝나면 정산되어 영구 강화 구매에 쓰인다.'],['','하트','최대 체력의 25% 회복.'],['','방어막 오브','8초간 모든 피해 무효. 매우 희귀(미니보스 확정).'],['','슈퍼 자석','맵의 모든 젬·코인·하트를 즉시 흡수.']],
     tierHead:['항목','스테이지당','S2','S5'], tierRows:[['적 체력','+60%','×1.6','×3.4'],['적 공격력','+35%','×1.35','×2.4'],['적 이동속도','+6%','×1.06','×1.24'],['스폰 밀도','+22%','×1.22','×1.88']],
     tips:['<b>이동이 곧 생존.</b> 무리를 원을 그리며 유인·정리하세요.','<b>진화를 목표로.</b> 주력 무기 1개를 Lv8 + 짝 패시브로 빠르게 진화시키면 판이 쉬워집니다.','<b>멀티샷은 총알형 무기에.</b> 데드샷·스프레드샷·붐샷·부메랑 액스·가드 터렛에만 적용됩니다.','<b>하울러·스피터 우선 처치.</b> 하울러는 무리를 가속, 스피터는 원거리에서 갉아먹습니다.','<b>봄버는 거리 유지.</b> 접근을 허용하면 큰 자폭 피해를 입습니다.','<b>방어막은 위기 탈출용.</b> 8초 무적, 미니보스로 확정 확보 가능.'] },
   en:{ title:'Game Guide & Codex', close:'Close', hint:'Read to the very bottom for a reward ↓',
-    toast:'📖 Guide finished! +100 coins', rewardWait:'🎉 Read this far to earn a <b>+100 coin completion reward</b> (once only)',
+    toast:'Guide finished! +100 coins', rewardWait:'Read this far to earn a <b>+100 coin completion reward</b> (once only)',
     rewardDone:'✓ You already claimed the completion reward (100 coins).',
     s_intro:'Overview', s_char:'Operatives', s_weapon:'Weapons', s_passive:'Passive Skills',
     s_enemy:'Bestiary', s_boss:'Bosses', s_item:'Items', s_meta:'Meta Armory · Permanent Upgrades',
@@ -1346,11 +1704,11 @@ const GUIDE_STR = {
     msOn:'Multishot ○', msOff:'Multishot ✕', evo:'Evolution', pair:'Evolves · Lv8 +',
     st_hp:'HP', st_spd:'Speed', st_dmg:'Contact', st_exp:'EXP',
     bosses:[['MUTANT BEHEMOTH','Mini-boss · 2:30 · 900×HP. Guaranteed heart, shield & coins on kill.'],['NECRO TYRANT','Stage 1 boss · 5:00 · radial acid nova + summons minions.'],['PLAGUE COLOSSUS','Stage 2 boss · toxic colossus · acid nova + summons.'],['FROST REVENANT','Stage 3 boss · frost revenant knight · acid nova + summons.'],['INFERNO FIEND','Stage 4 boss · hellfire fiend · acid nova + summons.'],['VOID SOVEREIGN','Stage 5+ boss · void sovereign · acid nova + summons.']],
-    items:[['💎','Gem','XP dropped by zombies. Collect to level up.'],['◈','Coin','Banked at run end to buy permanent upgrades.'],['❤️','Heart','Restores 25% of max HP.'],['🛡️','Shield Orb','8s full immunity. Very rare (guaranteed from mini-boss).'],['🧲','Super Magnet','Instantly pulls in every gem, coin and heart.']],
+    items:[['','Gem','XP dropped by zombies. Collect to level up.'],['','Coin','Banked at run end to buy permanent upgrades.'],['','Heart','Restores 25% of max HP.'],['','Shield Orb','8s full immunity. Very rare (guaranteed from mini-boss).'],['','Super Magnet','Instantly pulls in every gem, coin and heart.']],
     tierHead:['Stat','Per stage','S2','S5'], tierRows:[['Enemy HP','+60%','×1.6','×3.4'],['Enemy DMG','+35%','×1.35','×2.4'],['Enemy Speed','+6%','×1.06','×1.24'],['Spawn density','+22%','×1.22','×1.88']],
     tips:['<b>Movement is survival.</b> Kite the horde in circles to thin it out.','<b>Aim for evolution.</b> Rush one main weapon to Lv8 + its pair to make runs far easier.','<b>Multishot is for bullet weapons.</b> Only Deadshot, Spread Shot, Boom Shot, Boomerang Axe and Guard Turret.','<b>Kill Howlers & Spitters first.</b> Howlers speed up the horde; Spitters chip from range.','<b>Keep distance from Bombers.</b> Letting them close deals heavy self-destruct damage.','<b>Shield = escape.</b> 8s of invulnerability; guaranteed from the mini-boss.'] },
   zh:{ title:'游戏指南 & 图鉴', close:'关闭', hint:'读到最底部有奖励 ↓',
-    toast:'📖 读完指南！金币 +100', rewardWait:'🎉 读到这里即可获得 <b>通读奖励 金币 +100</b>（仅一次）',
+    toast:'读完指南！金币 +100', rewardWait:'读到这里即可获得 <b>通读奖励 金币 +100</b>（仅一次）',
     rewardDone:'✓ 你已领取通读奖励（100 金币）。',
     s_intro:'游戏介绍', s_char:'出击队员', s_weapon:'武器图鉴', s_passive:'被动技能',
     s_enemy:'怪物图鉴', s_boss:'首领', s_item:'道具', s_meta:'元库 · 永久强化',
@@ -1362,11 +1720,11 @@ const GUIDE_STR = {
     msOn:'多重 ○', msOff:'多重 ✕', evo:'进化', pair:'进化条件 · Lv8 +',
     st_hp:'HP', st_spd:'速度', st_dmg:'接触', st_exp:'EXP',
     bosses:[['变异巨兽','迷你首领 · 2:30 出现，必掉爱心与护盾'],['NECRO TYRANT','第 1 层最终首领 · 5:00'],['PLAGUE COLOSSUS','第 2 层最终首领'],['FROST REVENANT','第 3 层最终首领'],['INFERNO FIEND','第 4 层最终首领'],['VOID SOVEREIGN','第 5 层+ 最终首领']],
-    items:[['💎','宝石','僵尸掉落的经验。收集可升级。'],['◈','金币','对局结束结算，用于购买永久强化。'],['❤️','爱心','恢复最大生命的 25%。'],['🛡️','护盾球','8 秒全免伤。极稀有（迷你首领必掉）。'],['🧲','超级磁铁','立即吸取全场宝石·金币·爱心。']],
+    items:[['','宝石','僵尸掉落的经验。收集可升级。'],['','金币','对局结束结算，用于购买永久强化。'],['','爱心','恢复最大生命的 25%。'],['','护盾球','8 秒全免伤。极稀有（迷你首领必掉）。'],['','超级磁铁','立即吸取全场宝石·金币·爱心。']],
     tierHead:['属性','每层','2层','5层'], tierRows:[['敌人生命','+60%','×1.6','×3.4'],['敌人攻击','+35%','×1.35','×2.4'],['敌人移速','+6%','×1.06','×1.24'],['刷怪密度','+22%','×1.22','×1.88']],
     tips:['<b>走位即生存。</b> 绕圈风筝怪群逐步清理。','<b>以进化为目标。</b> 优先把一把主武器堆到 Lv8 + 配对被动，对局会轻松许多。','<b>多重射击给弹道武器。</b> 仅对速射枪·散射·爆破弹·回旋斧·守卫炮台生效。','<b>优先击杀嚎叫者与吐酸者。</b> 嚎叫者加速怪群，吐酸者远程消耗。','<b>与爆破者保持距离。</b> 靠近会受到巨大自爆伤害。','<b>护盾用于脱困。</b> 8 秒无敌，可从迷你首领必得。'] },
   th:{ title:'คู่มือเกม & สารานุกรม', close:'ปิด', hint:'อ่านจนสุดด้านล่างเพื่อรับรางวัล ↓',
-    toast:'📖 อ่านคู่มือจบ! เหรียญ +100', rewardWait:'🎉 อ่านมาถึงตรงนี้รับ <b>รางวัลอ่านจบ เหรียญ +100</b> (ครั้งเดียว)',
+    toast:'อ่านคู่มือจบ! เหรียญ +100', rewardWait:'อ่านมาถึงตรงนี้รับ <b>รางวัลอ่านจบ เหรียญ +100</b> (ครั้งเดียว)',
     rewardDone:'✓ คุณรับรางวัลอ่านจบ (100 เหรียญ) ไปแล้ว',
     s_intro:'แนะนำเกม', s_char:'หน่วยรบ', s_weapon:'อาวุธ', s_passive:'สกิลติดตัว',
     s_enemy:'สารานุกรมมอนสเตอร์', s_boss:'บอส', s_item:'ไอเทม', s_meta:'คลังเมตา · อัปเกรดถาวร',
@@ -1378,11 +1736,11 @@ const GUIDE_STR = {
     msOn:'มัลติ ○', msOff:'มัลติ ✕', evo:'วิวัฒน์', pair:'เงื่อนไข · Lv8 +',
     st_hp:'HP', st_spd:'ความเร็ว', st_dmg:'สัมผัส', st_exp:'EXP',
     bosses:[['MUTANT BEHEMOTH','มินิบอส · โผล่ 2:30 ดรอปหัวใจ+โล่แน่นอน'],['NECRO TYRANT','บอสสุดท้ายระดับ 1 · 5:00'],['PLAGUE COLOSSUS','บอสสุดท้ายระดับ 2'],['FROST REVENANT','บอสสุดท้ายระดับ 3'],['INFERNO FIEND','บอสสุดท้ายระดับ 4'],['VOID SOVEREIGN','บอสสุดท้ายระดับ 5+']],
-    items:[['💎','เจม','EXP ที่ซอมบี้ทิ้ง เก็บเพื่อเลเวลอัป'],['◈','เหรียญ','สรุปเมื่อจบรอบ ใช้ซื้ออัปเกรดถาวร'],['❤️','หัวใจ','ฟื้น HP สูงสุด 25%'],['🛡️','ลูกแก้วโล่','อมตะ 8 วินาที หายากมาก (มินิบอสดรอปแน่นอน)'],['🧲','แม่เหล็กยักษ์','ดูดเจม·เหรียญ·หัวใจทั้งแมพทันที']],
+    items:[['','เจม','EXP ที่ซอมบี้ทิ้ง เก็บเพื่อเลเวลอัป'],['','เหรียญ','สรุปเมื่อจบรอบ ใช้ซื้ออัปเกรดถาวร'],['','หัวใจ','ฟื้น HP สูงสุด 25%'],['','ลูกแก้วโล่','อมตะ 8 วินาที หายากมาก (มินิบอสดรอปแน่นอน)'],['','แม่เหล็กยักษ์','ดูดเจม·เหรียญ·หัวใจทั้งแมพทันที']],
     tierHead:['ค่า','ต่อระดับ','ระดับ2','ระดับ5'], tierRows:[['HP ศัตรู','+60%','×1.6','×3.4'],['ดาเมจศัตรู','+35%','×1.35','×2.4'],['ความเร็วศัตรู','+6%','×1.06','×1.24'],['ความหนาแน่น','+22%','×1.22','×1.88']],
     tips:['<b>การเคลื่อนที่คือการอยู่รอด</b> ล่อฝูงเป็นวงกลมแล้วค่อยเก็บ','<b>ตั้งเป้าที่การวิวัฒน์</b> ดันอาวุธหลักหนึ่งชิ้นให้ถึง Lv8 + พาสซีฟคู่','<b>มัลติช็อตสำหรับอาวุธกระสุน</b> ใช้ได้กับ Deadshot, Spread, Boom, Axe, Turret เท่านั้น','<b>เก็บ Howler/Spitter ก่อน</b> Howler เร่งฝูง Spitter ยิงระยะไกล','<b>อยู่ห่าง Bomber</b> เข้าใกล้จะโดนระเบิดหนัก','<b>โล่ไว้หนีตาย</b> อมตะ 8 วินาที ได้แน่จากมินิบอส'] },
   vi:{ title:'Hướng dẫn & Bách khoa', close:'Đóng', hint:'Đọc tới tận cuối để nhận thưởng ↓',
-    toast:'📖 Đọc xong hướng dẫn! +100 xu', rewardWait:'🎉 Đọc tới đây để nhận <b>thưởng đọc hết +100 xu</b> (một lần)',
+    toast:'Đọc xong hướng dẫn! +100 xu', rewardWait:'Đọc tới đây để nhận <b>thưởng đọc hết +100 xu</b> (một lần)',
     rewardDone:'✓ Bạn đã nhận thưởng đọc hết (100 xu).',
     s_intro:'Giới thiệu', s_char:'Đặc vụ', s_weapon:'Vũ khí', s_passive:'Kỹ năng bị động',
     s_enemy:'Bách khoa quái', s_boss:'Trùm', s_item:'Vật phẩm', s_meta:'Kho Meta · Nâng cấp vĩnh viễn',
@@ -1394,11 +1752,11 @@ const GUIDE_STR = {
     msOn:'Đa đạn ○', msOff:'Đa đạn ✕', evo:'Tiến hóa', pair:'Tiến hóa · Lv8 +',
     st_hp:'HP', st_spd:'Tốc độ', st_dmg:'Va chạm', st_exp:'EXP',
     bosses:[['MUTANT BEHEMOTH','Mini-boss · xuất hiện 2:30, chắc chắn rơi tim & khiên'],['NECRO TYRANT','Trùm cuối Cấp 1 · 5:00'],['PLAGUE COLOSSUS','Trùm cuối Cấp 2'],['FROST REVENANT','Trùm cuối Cấp 3'],['INFERNO FIEND','Trùm cuối Cấp 4'],['VOID SOVEREIGN','Trùm cuối Cấp 5+']],
-    items:[['💎','Ngọc','EXP zombie rơi ra. Thu thập để lên cấp.'],['◈','Xu','Kết toán cuối ván để mua nâng cấp vĩnh viễn.'],['❤️','Tim','Hồi 25% HP tối đa.'],['🛡️','Cầu Khiên','Miễn thương 8 giây. Rất hiếm (mini-boss chắc chắn rơi).'],['🧲','Nam châm lớn','Hút ngay mọi ngọc·xu·tim trên bản đồ.']],
+    items:[['','Ngọc','EXP zombie rơi ra. Thu thập để lên cấp.'],['','Xu','Kết toán cuối ván để mua nâng cấp vĩnh viễn.'],['','Tim','Hồi 25% HP tối đa.'],['','Cầu Khiên','Miễn thương 8 giây. Rất hiếm (mini-boss chắc chắn rơi).'],['','Nam châm lớn','Hút ngay mọi ngọc·xu·tim trên bản đồ.']],
     tierHead:['Chỉ số','Mỗi cấp','C2','C5'], tierRows:[['HP địch','+60%','×1.6','×3.4'],['ST địch','+35%','×1.35','×2.4'],['Tốc độ địch','+6%','×1.06','×1.24'],['Mật độ spawn','+22%','×1.22','×1.88']],
     tips:['<b>Di chuyển là sống còn.</b> Dụ bầy quái theo vòng tròn để tỉa dần.','<b>Nhắm tới tiến hóa.</b> Dồn một vũ khí chính lên Lv8 + bị động ghép để ván dễ hơn nhiều.','<b>Đa đạn cho vũ khí đạn.</b> Chỉ Deadshot, Spread, Boom, Axe và Guard Turret.','<b>Giết Howler & Spitter trước.</b> Howler tăng tốc bầy; Spitter gặm từ xa.','<b>Giữ khoảng cách với Bomber.</b> Để chúng lại gần sẽ nhận sát thương tự nổ lớn.','<b>Khiên để thoát hiểm.</b> 8 giây bất tử; chắc chắn nhận từ mini-boss.'] },
   es:{ title:'Guía & Codex', close:'Cerrar', hint:'Lee hasta el final para una recompensa ↓',
-    toast:'📖 ¡Guía completada! +100 monedas', rewardWait:'🎉 Lee hasta aquí para ganar <b>+100 monedas por completar</b> (una vez)',
+    toast:'¡Guía completada! +100 monedas', rewardWait:'Lee hasta aquí para ganar <b>+100 monedas por completar</b> (una vez)',
     rewardDone:'✓ Ya reclamaste la recompensa por completar (100 monedas).',
     s_intro:'Introducción', s_char:'Operativos', s_weapon:'Armas', s_passive:'Habilidades pasivas',
     s_enemy:'Bestiario', s_boss:'Jefes', s_item:'Objetos', s_meta:'Armería Meta · Mejoras permanentes',
@@ -1410,7 +1768,7 @@ const GUIDE_STR = {
     msOn:'Multi ○', msOff:'Multi ✕', evo:'Evolución', pair:'Evoluciona · Lv8 +',
     st_hp:'HP', st_spd:'Vel.', st_dmg:'Contacto', st_exp:'EXP',
     bosses:[['MUTANT BEHEMOTH','Mini-jefe · aparece a las 2:30, corazón y escudo garantizados'],['NECRO TYRANT','Jefe final Nivel 1 · 5:00'],['PLAGUE COLOSSUS','Jefe final Nivel 2'],['FROST REVENANT','Jefe final Nivel 3'],['INFERNO FIEND','Jefe final Nivel 4'],['VOID SOVEREIGN','Jefe final Nivel 5+']],
-    items:[['💎','Gema','EXP que sueltan los zombis. Reúnela para subir de nivel.'],['◈','Moneda','Se cobra al final para comprar mejoras permanentes.'],['❤️','Corazón','Restaura el 25% de la vida máxima.'],['🛡️','Orbe Escudo','8 s de inmunidad total. Muy raro (garantizado del mini-jefe).'],['🧲','Imán Súper','Atrae al instante toda gema, moneda y corazón.']],
+    items:[['','Gema','EXP que sueltan los zombis. Reúnela para subir de nivel.'],['','Moneda','Se cobra al final para comprar mejoras permanentes.'],['','Corazón','Restaura el 25% de la vida máxima.'],['','Orbe Escudo','8 s de inmunidad total. Muy raro (garantizado del mini-jefe).'],['','Imán Súper','Atrae al instante toda gema, moneda y corazón.']],
     tierHead:['Stat','Por nivel','N2','N5'], tierRows:[['Vida enemiga','+60%','×1.6','×3.4'],['Daño enemigo','+35%','×1.35','×2.4'],['Vel. enemiga','+6%','×1.06','×1.24'],['Densidad','+22%','×1.22','×1.88']],
     tips:['<b>Moverse es sobrevivir.</b> Atrae a la horda en círculos para reducirla.','<b>Apunta a evolucionar.</b> Lleva un arma principal a Lv8 + su pasiva para facilitar la partida.','<b>Multidisparo es para armas de bala.</b> Solo Deadshot, Spread, Boom, Hacha y Torreta.','<b>Mata Howlers y Spitters primero.</b> Los Howler aceleran la horda; los Spitter desgastan a distancia.','<b>Mantén distancia de los Bombers.</b> Dejar que se acerquen causa gran daño por autodestrucción.','<b>El escudo es para escapar.</b> 8 s de invulnerabilidad; garantizado del mini-jefe.'] },
 };
@@ -1490,7 +1848,7 @@ const UI = {
     'btn.start':'출격하기', 'btn.how':'조작법', 'btn.guide':'가이드 도감', 'btn.reset':'데이터 초기화',
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
     'how.brand':'조작법 & 규칙', 'how.title':'플레이 방법', 'how.close':'알겠어요',
-    'how.body':'<p><b>이동 (PC)</b> — WASD 또는 방향키로 8방향 이동. <b>Esc / P</b> 로 일시정지.</p><p><b>이동 (모바일)</b> — 화면을 터치·드래그하면 그 자리에 가상 조이스틱이 생깁니다.</p><p><b>전투</b> — 모든 무기는 <b>자동</b>으로 조준·발사됩니다. 당신은 이동에만 집중하세요.</p><p><b>성장</b> — 좀비가 떨어뜨리는 <span style="color:var(--toxic)">젬</span>을 모아 레벨업. 레벨업 때 능력 1개를 고르고 체력의 30%가 즉시 회복됩니다.</p><p><b>초월 진화</b> — 무기를 8레벨까지 키우고 짝이 되는 패시브를 1레벨 이상 보유하면, 레벨업 선택지에 황금빛 <span style="color:var(--gold)">진화</span>가 등장합니다.</p><p><b>목표</b> — 2:30 미니보스, 5:00 최종 보스. 최종 보스를 처치하면 승리! 판당 모은 <span style="color:var(--gold)">코인</span>으로 로비에서 영구 강화를 구매하세요.</p>',
+    'how.body':'<p><b>이동 (PC)</b> — WASD 또는 방향키로 8방향 이동. <b>Esc / P</b> 로 일시정지.</p><p><b>이동 (모바일)</b> — 화면을 터치·드래그하면 그 자리에 가상 조이스틱이 생깁니다.</p><p><b>전투</b> — 모든 무기는 <b>자동</b>으로 조준·발사됩니다. 당신은 이동에만 집중하세요.</p><p><b>성장</b> — 좀비가 떨어뜨리는 <span style="color:var(--green)">젬</span>을 모아 레벨업. 레벨업 때 능력 1개를 고르고 체력의 30%가 즉시 회복됩니다.</p><p><b>초월 진화</b> — 무기를 8레벨까지 키우고 짝이 되는 패시브를 1레벨 이상 보유하면, 레벨업 선택지에 황금빛 <span style="color:var(--gold)">진화</span>가 등장합니다.</p><p><b>목표</b> — 2:30 미니보스, 5:00 최종 보스. 최종 보스를 처치하면 승리! 판당 모은 <span style="color:var(--gold)">코인</span>으로 로비에서 영구 강화를 구매하세요.</p>',
     'pause.brand':'일시정지', 'pause.title':'멈춤', 'pause.resume':'계속하기', 'pause.save':'저장하고 나가기', 'pause.exit':'피난처로 대피 (종료)',
     'btn.continue':'이어하기 · {n}차 Lv{lv} ({t})',
     'pause.stats':'생존 {t} · 처치 {k} · 코인 {c}',
@@ -1503,7 +1861,7 @@ const UI = {
     'res.win':'생존 성공!', 'res.lose':'전멸', 'res.time':'생존 시간', 'res.kills':'처치 수',
     'res.level':'최종 레벨', 'res.coins':'획득 코인', 'res.again':'로비로 돌아가기',
     'res.tier':'도달 스테이지', 'res.pending':'획득 예정 코인', 'res.clear':'스테이지 {n} 클리어!', 'res.next':'▶ 다음 스테이지 {n} 도전',
-    'reward.p3':'🎉 축하합니다! 스테이지 3 클리어 보상으로<br>패시브 스킬 슬롯이 하나 늘어났습니다! (최대 6 → 7개)',
+    'reward.p3':'축하합니다! 스테이지 3 클리어 보상으로<br>패시브 스킬 슬롯이 하나 늘어났습니다! (최대 6 → 7개)',
     'hud.tierLabel':'스테이지 {n}', 'menu.tier':'최고 스테이지', 'revive.pop':'부활!', 'tier.banner':'스테이지 {n} 시작! 더 강해진 적들을 버텨라',
     'hint.touch':'화면을 드래그해 이동하세요', 'hint.pc':'WASD / 방향키로 이동 · P 로 일시정지',
     'reset.confirm':'모든 진행 상황(코인·강화·기록)을 삭제할까요?',
@@ -1522,7 +1880,7 @@ const UI = {
     'btn.start':'Deploy', 'btn.how':'How to Play', 'btn.guide':'Guide & Codex', 'btn.reset':'Reset Data',
     'menu.autosave':'Progress is saved automatically in this browser.',
     'how.brand':'Controls & Rules', 'how.title':'How to Play', 'how.close':'Got it',
-    'how.body':'<p><b>Move (PC)</b> — WASD or arrow keys for 8-way movement. <b>Esc / P</b> to pause.</p><p><b>Move (Mobile)</b> — Touch and drag anywhere to spawn a virtual joystick there.</p><p><b>Combat</b> — All weapons aim and fire <b>automatically</b>. Just focus on moving.</p><p><b>Growth</b> — Collect the <span style="color:var(--toxic)">gems</span> zombies drop to level up. On level-up, pick one ability and instantly heal 30% HP.</p><p><b>Evolution</b> — Raise a weapon to level 8 while holding its paired passive at level 1+, and a golden <span style="color:var(--gold)">Evolution</span> appears in your level-up picks.</p><p><b>Goal</b> — Mini-boss at 2:30, final boss at 5:00. Beat the final boss to win! Spend the <span style="color:var(--gold)">coins</span> you earn on permanent upgrades in the lobby.</p>',
+    'how.body':'<p><b>Move (PC)</b> — WASD or arrow keys for 8-way movement. <b>Esc / P</b> to pause.</p><p><b>Move (Mobile)</b> — Touch and drag anywhere to spawn a virtual joystick there.</p><p><b>Combat</b> — All weapons aim and fire <b>automatically</b>. Just focus on moving.</p><p><b>Growth</b> — Collect the <span style="color:var(--green)">gems</span> zombies drop to level up. On level-up, pick one ability and instantly heal 30% HP.</p><p><b>Evolution</b> — Raise a weapon to level 8 while holding its paired passive at level 1+, and a golden <span style="color:var(--gold)">Evolution</span> appears in your level-up picks.</p><p><b>Goal</b> — Mini-boss at 2:30, final boss at 5:00. Beat the final boss to win! Spend the <span style="color:var(--gold)">coins</span> you earn on permanent upgrades in the lobby.</p>',
     'pause.brand':'Paused', 'pause.title':'Paused', 'pause.resume':'Resume', 'pause.save':'Save & Exit', 'pause.exit':'Retreat to Shelter (Quit)',
     'btn.continue':'Continue · Tier {n} Lv{lv} ({t})',
     'pause.stats':'Survived {t} · Kills {k} · Coins {c}',
@@ -1535,7 +1893,7 @@ const UI = {
     'res.win':'You Survived!', 'res.lose':'Wiped Out', 'res.time':'Survival Time', 'res.kills':'Kills',
     'res.level':'Final Level', 'res.coins':'Coins Earned', 'res.again':'Back to Lobby',
     'res.tier':'Stage', 'res.pending':'Coins to bank', 'res.clear':'Stage {n} Cleared!', 'res.next':'▶ Challenge Stage {n}',
-    'reward.p3':'🎉 Congratulations! Clearing Stage 3 grants you<br>one more passive skill slot! (max 6 → 7)',
+    'reward.p3':'Congratulations! Clearing Stage 3 grants you<br>one more passive skill slot! (max 6 → 7)',
     'hud.tierLabel':'Stage {n}', 'menu.tier':'Best Stage', 'revive.pop':'REVIVE!', 'tier.banner':'Stage {n} begins! Tougher foes ahead',
     'hint.touch':'Drag the screen to move', 'hint.pc':'WASD / Arrow keys to move · P to pause',
     'reset.confirm':'Delete all progress (coins, upgrades, records)?',
@@ -1554,7 +1912,7 @@ const UI = {
     'btn.start':'出击', 'btn.how':'玩法说明', 'btn.guide':'指南图鉴', 'btn.reset':'重置数据',
     'menu.autosave':'进度会自动保存在此浏览器中。',
     'how.brand':'操作与规则', 'how.title':'玩法说明', 'how.close':'知道了',
-    'how.body':'<p><b>移动（PC）</b> — WASD 或方向键进行8方向移动。<b>Esc / P</b> 暂停。</p><p><b>移动（手机）</b> — 触摸并拖动屏幕，会在该处生成虚拟摇杆。</p><p><b>战斗</b> — 所有武器都会<b>自动</b>瞄准并射击，你只需专注移动。</p><p><b>成长</b> — 收集僵尸掉落的<span style="color:var(--toxic)">宝石</span>升级。升级时选择一项能力，并立即恢复30%生命。</p><p><b>进化</b> — 将武器升到8级并持有其对应被动1级以上，升级选项中会出现金色的<span style="color:var(--gold)">进化</span>。</p><p><b>目标</b> — 2:30 出现小首领，5:00 出现最终首领。击败最终首领即获胜！用获得的<span style="color:var(--gold)">金币</span>在大厅购买永久强化。</p>',
+    'how.body':'<p><b>移动（PC）</b> — WASD 或方向键进行8方向移动。<b>Esc / P</b> 暂停。</p><p><b>移动（手机）</b> — 触摸并拖动屏幕，会在该处生成虚拟摇杆。</p><p><b>战斗</b> — 所有武器都会<b>自动</b>瞄准并射击，你只需专注移动。</p><p><b>成长</b> — 收集僵尸掉落的<span style="color:var(--green)">宝石</span>升级。升级时选择一项能力，并立即恢复30%生命。</p><p><b>进化</b> — 将武器升到8级并持有其对应被动1级以上，升级选项中会出现金色的<span style="color:var(--gold)">进化</span>。</p><p><b>目标</b> — 2:30 出现小首领，5:00 出现最终首领。击败最终首领即获胜！用获得的<span style="color:var(--gold)">金币</span>在大厅购买永久强化。</p>',
     'pause.brand':'暂停', 'pause.title':'暂停', 'pause.resume':'继续', 'pause.save':'保存并退出', 'pause.exit':'撤回避难所（退出）',
     'btn.continue':'继续 · 第{n}层 Lv{lv} ({t})',
     'pause.stats':'生存 {t} · 击杀 {k} · 金币 {c}',
@@ -1567,7 +1925,7 @@ const UI = {
     'res.win':'生存成功！', 'res.lose':'全军覆没', 'res.time':'生存时间', 'res.kills':'击杀数',
     'res.level':'最终等级', 'res.coins':'获得金币', 'res.again':'返回大厅',
     'res.tier':'轮次', 'res.pending':'待入账金币', 'res.clear':'第{n}轮通关！', 'res.next':'▶ 挑战第{n}轮',
-    'reward.p3':'🎉 恭喜！通关第3轮的奖励，<br>被动技能栏位增加了一个！(上限 6 → 7)',
+    'reward.p3':'恭喜！通关第3轮的奖励，<br>被动技能栏位增加了一个！(上限 6 → 7)',
     'hud.tierLabel':'第{n}轮', 'menu.tier':'最高轮次', 'revive.pop':'复活！', 'tier.banner':'第{n}轮开始！迎战更强的敌人',
     'hint.touch':'拖动屏幕移动', 'hint.pc':'WASD / 方向键移动 · P 暂停',
     'reset.confirm':'删除所有进度（金币、强化、记录）？',
@@ -1586,7 +1944,7 @@ const UI = {
     'btn.start':'ออกรบ', 'btn.how':'วิธีเล่น', 'btn.guide':'คู่มือ', 'btn.reset':'ล้างข้อมูล',
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
     'how.brand':'การควบคุมและกติกา', 'how.title':'วิธีเล่น', 'how.close':'เข้าใจแล้ว',
-    'how.body':'<p><b>เคลื่อนที่ (PC)</b> — WASD หรือปุ่มลูกศรเพื่อเคลื่อนที่ 8 ทิศ กด <b>Esc / P</b> เพื่อหยุด</p><p><b>เคลื่อนที่ (มือถือ)</b> — แตะแล้วลากบนหน้าจอเพื่อสร้างจอยสติ๊กเสมือน ณ จุดนั้น</p><p><b>การต่อสู้</b> — อาวุธทุกชิ้นเล็งและยิง<b>อัตโนมัติ</b> คุณเพียงโฟกัสที่การเคลื่อนที่</p><p><b>การเติบโต</b> — เก็บ<span style="color:var(--toxic)">อัญมณี</span>ที่ซอมบี้ทิ้งไว้เพื่อเลเวลอัป เมื่อเลเวลอัปให้เลือกความสามารถ 1 อย่างและฟื้นพลังชีวิต 30% ทันที</p><p><b>วิวัฒนาการ</b> — อัปอาวุธถึงเลเวล 8 พร้อมถือพาสซีฟคู่ของมันตั้งแต่เลเวล 1 ขึ้นไป จะมี<span style="color:var(--gold)">วิวัฒนาการ</span>สีทองปรากฏในตัวเลือกเลเวลอัป</p><p><b>เป้าหมาย</b> — มินิบอสที่ 2:30 บอสสุดท้ายที่ 5:00 กำจัดบอสสุดท้ายเพื่อชนะ! ใช้<span style="color:var(--gold)">เหรียญ</span>ที่ได้ซื้ออัปเกรดถาวรในล็อบบี้</p>',
+    'how.body':'<p><b>เคลื่อนที่ (PC)</b> — WASD หรือปุ่มลูกศรเพื่อเคลื่อนที่ 8 ทิศ กด <b>Esc / P</b> เพื่อหยุด</p><p><b>เคลื่อนที่ (มือถือ)</b> — แตะแล้วลากบนหน้าจอเพื่อสร้างจอยสติ๊กเสมือน ณ จุดนั้น</p><p><b>การต่อสู้</b> — อาวุธทุกชิ้นเล็งและยิง<b>อัตโนมัติ</b> คุณเพียงโฟกัสที่การเคลื่อนที่</p><p><b>การเติบโต</b> — เก็บ<span style="color:var(--green)">อัญมณี</span>ที่ซอมบี้ทิ้งไว้เพื่อเลเวลอัป เมื่อเลเวลอัปให้เลือกความสามารถ 1 อย่างและฟื้นพลังชีวิต 30% ทันที</p><p><b>วิวัฒนาการ</b> — อัปอาวุธถึงเลเวล 8 พร้อมถือพาสซีฟคู่ของมันตั้งแต่เลเวล 1 ขึ้นไป จะมี<span style="color:var(--gold)">วิวัฒนาการ</span>สีทองปรากฏในตัวเลือกเลเวลอัป</p><p><b>เป้าหมาย</b> — มินิบอสที่ 2:30 บอสสุดท้ายที่ 5:00 กำจัดบอสสุดท้ายเพื่อชนะ! ใช้<span style="color:var(--gold)">เหรียญ</span>ที่ได้ซื้ออัปเกรดถาวรในล็อบบี้</p>',
     'pause.brand':'หยุดชั่วคราว', 'pause.title':'หยุด', 'pause.resume':'เล่นต่อ', 'pause.save':'บันทึกแล้วออก', 'pause.exit':'ถอยกลับที่หลบภัย (ออก)',
     'btn.continue':'เล่นต่อ · ระดับ{n} Lv{lv} ({t})',
     'pause.stats':'รอด {t} · สังหาร {k} · เหรียญ {c}',
@@ -1599,7 +1957,7 @@ const UI = {
     'res.win':'คุณรอดชีวิต!', 'res.lose':'ถูกกวาดล้าง', 'res.time':'เวลาที่รอด', 'res.kills':'สังหาร',
     'res.level':'เลเวลสุดท้าย', 'res.coins':'เหรียญที่ได้', 'res.again':'กลับสู่ล็อบบี้',
     'res.tier':'รอบ', 'res.pending':'เหรียญที่จะได้รับ', 'res.clear':'ผ่านรอบ {n}!', 'res.next':'▶ ท้าทายรอบ {n}',
-    'reward.p3':'🎉 ยินดีด้วย! รางวัลผ่านรอบ 3<br>เพิ่มช่องสกิลพาสซีฟอีกหนึ่งช่อง! (สูงสุด 6 → 7)',
+    'reward.p3':'ยินดีด้วย! รางวัลผ่านรอบ 3<br>เพิ่มช่องสกิลพาสซีฟอีกหนึ่งช่อง! (สูงสุด 6 → 7)',
     'hud.tierLabel':'รอบ {n}', 'menu.tier':'รอบสูงสุด', 'revive.pop':'ฟื้นคืนชีพ!', 'tier.banner':'เริ่มรอบ {n}! ศัตรูแข็งแกร่งขึ้น',
     'hint.touch':'ลากหน้าจอเพื่อเคลื่อนที่', 'hint.pc':'WASD / ปุ่มลูกศรเพื่อเคลื่อนที่ · P เพื่อหยุด',
     'reset.confirm':'ลบความคืบหน้าทั้งหมด (เหรียญ, อัปเกรด, สถิติ) หรือไม่?',
@@ -1618,7 +1976,7 @@ const UI = {
     'btn.start':'Xuất kích', 'btn.how':'Cách chơi', 'btn.guide':'Hướng dẫn', 'btn.reset':'Đặt lại dữ liệu',
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
     'how.brand':'Điều khiển & Luật', 'how.title':'Cách chơi', 'how.close':'Đã hiểu',
-    'how.body':'<p><b>Di chuyển (PC)</b> — WASD hoặc phím mũi tên để di chuyển 8 hướng. <b>Esc / P</b> để tạm dừng.</p><p><b>Di chuyển (Điện thoại)</b> — Chạm và kéo bất kỳ đâu để tạo cần điều khiển ảo tại đó.</p><p><b>Chiến đấu</b> — Mọi vũ khí tự động ngắm và bắn. Bạn chỉ cần tập trung di chuyển.</p><p><b>Phát triển</b> — Nhặt <span style="color:var(--toxic)">ngọc</span> zombie rơi ra để lên cấp. Khi lên cấp, chọn một kỹ năng và hồi ngay 30% máu.</p><p><b>Tiến hóa</b> — Nâng vũ khí lên cấp 8 và giữ bị động ghép đôi của nó từ cấp 1 trở lên, một <span style="color:var(--gold)">Tiến hóa</span> vàng sẽ xuất hiện trong lựa chọn lên cấp.</p><p><b>Mục tiêu</b> — Trùm nhỏ ở 2:30, trùm cuối ở 5:00. Hạ trùm cuối để thắng! Dùng <span style="color:var(--gold)">xu</span> kiếm được để mua nâng cấp vĩnh viễn ở sảnh.</p>',
+    'how.body':'<p><b>Di chuyển (PC)</b> — WASD hoặc phím mũi tên để di chuyển 8 hướng. <b>Esc / P</b> để tạm dừng.</p><p><b>Di chuyển (Điện thoại)</b> — Chạm và kéo bất kỳ đâu để tạo cần điều khiển ảo tại đó.</p><p><b>Chiến đấu</b> — Mọi vũ khí tự động ngắm và bắn. Bạn chỉ cần tập trung di chuyển.</p><p><b>Phát triển</b> — Nhặt <span style="color:var(--green)">ngọc</span> zombie rơi ra để lên cấp. Khi lên cấp, chọn một kỹ năng và hồi ngay 30% máu.</p><p><b>Tiến hóa</b> — Nâng vũ khí lên cấp 8 và giữ bị động ghép đôi của nó từ cấp 1 trở lên, một <span style="color:var(--gold)">Tiến hóa</span> vàng sẽ xuất hiện trong lựa chọn lên cấp.</p><p><b>Mục tiêu</b> — Trùm nhỏ ở 2:30, trùm cuối ở 5:00. Hạ trùm cuối để thắng! Dùng <span style="color:var(--gold)">xu</span> kiếm được để mua nâng cấp vĩnh viễn ở sảnh.</p>',
     'pause.brand':'Tạm dừng', 'pause.title':'Tạm dừng', 'pause.resume':'Tiếp tục', 'pause.save':'Lưu & Thoát', 'pause.exit':'Rút về nơi trú ẩn (Thoát)',
     'btn.continue':'Tiếp tục · Cấp {n} Lv{lv} ({t})',
     'pause.stats':'Sống sót {t} · Hạ gục {k} · Xu {c}',
@@ -1631,7 +1989,7 @@ const UI = {
     'res.win':'Bạn đã sống sót!', 'res.lose':'Bị xóa sổ', 'res.time':'Thời gian sống sót', 'res.kills':'Hạ gục',
     'res.level':'Cấp cuối', 'res.coins':'Xu kiếm được', 'res.again':'Về sảnh',
     'res.tier':'Vòng', 'res.pending':'Xu sẽ nhận', 'res.clear':'Hoàn thành Vòng {n}!', 'res.next':'▶ Thử thách Vòng {n}',
-    'reward.p3':'🎉 Chúc mừng! Phần thưởng hoàn thành Vòng 3:<br>bạn được thêm một ô kỹ năng bị động! (tối đa 6 → 7)',
+    'reward.p3':'Chúc mừng! Phần thưởng hoàn thành Vòng 3:<br>bạn được thêm một ô kỹ năng bị động! (tối đa 6 → 7)',
     'hud.tierLabel':'Vòng {n}', 'menu.tier':'Vòng cao nhất', 'revive.pop':'HỒI SINH!', 'tier.banner':'Vòng {n} bắt đầu! Kẻ địch mạnh hơn',
     'hint.touch':'Kéo màn hình để di chuyển', 'hint.pc':'WASD / phím mũi tên để di chuyển · P để tạm dừng',
     'reset.confirm':'Xóa toàn bộ tiến trình (xu, nâng cấp, kỷ lục)?',
@@ -1650,7 +2008,7 @@ const UI = {
     'btn.start':'Desplegar', 'btn.how':'Cómo jugar', 'btn.guide':'Guía', 'btn.reset':'Borrar datos',
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
     'how.brand':'Controles y reglas', 'how.title':'Cómo jugar', 'how.close':'Entendido',
-    'how.body':'<p><b>Mover (PC)</b> — WASD o flechas para moverte en 8 direcciones. <b>Esc / P</b> para pausar.</p><p><b>Mover (Móvil)</b> — Toca y arrastra en cualquier lugar para crear un joystick virtual ahí.</p><p><b>Combate</b> — Todas las armas apuntan y disparan <b>automáticamente</b>. Tú solo concéntrate en moverte.</p><p><b>Crecimiento</b> — Recoge las <span style="color:var(--toxic)">gemas</span> que sueltan los zombis para subir de nivel. Al subir, elige una habilidad y recupera al instante el 30% de vida.</p><p><b>Evolución</b> — Sube un arma al nivel 8 con su pasiva emparejada en nivel 1 o más, y aparecerá una <span style="color:var(--gold)">Evolución</span> dorada en tus opciones de nivel.</p><p><b>Objetivo</b> — Minijefe a las 2:30, jefe final a las 5:00. ¡Vence al jefe final para ganar! Gasta las <span style="color:var(--gold)">monedas</span> que ganes en mejoras permanentes en el vestíbulo.</p>',
+    'how.body':'<p><b>Mover (PC)</b> — WASD o flechas para moverte en 8 direcciones. <b>Esc / P</b> para pausar.</p><p><b>Mover (Móvil)</b> — Toca y arrastra en cualquier lugar para crear un joystick virtual ahí.</p><p><b>Combate</b> — Todas las armas apuntan y disparan <b>automáticamente</b>. Tú solo concéntrate en moverte.</p><p><b>Crecimiento</b> — Recoge las <span style="color:var(--green)">gemas</span> que sueltan los zombis para subir de nivel. Al subir, elige una habilidad y recupera al instante el 30% de vida.</p><p><b>Evolución</b> — Sube un arma al nivel 8 con su pasiva emparejada en nivel 1 o más, y aparecerá una <span style="color:var(--gold)">Evolución</span> dorada en tus opciones de nivel.</p><p><b>Objetivo</b> — Minijefe a las 2:30, jefe final a las 5:00. ¡Vence al jefe final para ganar! Gasta las <span style="color:var(--gold)">monedas</span> que ganes en mejoras permanentes en el vestíbulo.</p>',
     'pause.brand':'Pausa', 'pause.title':'Pausa', 'pause.resume':'Continuar', 'pause.save':'Guardar y salir', 'pause.exit':'Retirarse al refugio (Salir)',
     'btn.continue':'Continuar · Nivel {n} Lv{lv} ({t})',
     'pause.stats':'Sobrevivió {t} · Bajas {k} · Monedas {c}',
@@ -1663,7 +2021,7 @@ const UI = {
     'res.win':'¡Sobreviviste!', 'res.lose':'Aniquilado', 'res.time':'Tiempo de supervivencia', 'res.kills':'Bajas',
     'res.level':'Nivel final', 'res.coins':'Monedas ganadas', 'res.again':'Volver al vestíbulo',
     'res.tier':'Ronda', 'res.pending':'Monedas por cobrar', 'res.clear':'¡Ronda {n} superada!', 'res.next':'▶ Desafiar Ronda {n}',
-    'reward.p3':'🎉 ¡Felicidades! Por superar la Ronda 3<br>ganas una ranura de habilidad pasiva más. (máx. 6 → 7)',
+    'reward.p3':'¡Felicidades! Por superar la Ronda 3<br>ganas una ranura de habilidad pasiva más. (máx. 6 → 7)',
     'hud.tierLabel':'Ronda {n}', 'menu.tier':'Mejor ronda', 'revive.pop':'¡REVIVIR!', 'tier.banner':'¡Ronda {n}! Enemigos más fuertes',
     'hint.touch':'Arrastra la pantalla para moverte', 'hint.pc':'WASD / flechas para moverte · P para pausar',
     'reset.confirm':'¿Borrar todo el progreso (monedas, mejoras, registros)?',
@@ -2615,7 +2973,7 @@ function beginStageClear() {
   for (const g of G.gems) g.mag = true;
   for (const h of G.hearts) h.mag = true;
   G.screenShake = Math.max(G.screenShake, 6); Audio.S.magnet();
-  floatText(P().x, P().y - 40, '🧲', '#ffd24d');
+  
   // 3) 3초 뒤 스테이지 클리어
   setTimeout(() => { G.clearing = false; if (G.state !== 'menu' && G.state !== 'result') winRound(); }, 3000);
 }
@@ -2786,7 +3144,7 @@ function handleDeath() {
     for (const e of G.enemies) if (!e.dead && !e.boss && !e.mini && dist2(e.x,e.y,p.x,p.y) < 220*220) { e.dead = true; G.kills++; spark(e.x,e.y,'#8bff5a',5,3,18); }
     ring(p.x, p.y, 220, '#8bff5a', 50); ring(p.x, p.y, 120, '#dfffcf', 40);
     spark(p.x, p.y, '#8bff5a', 22, 4.5, 44); G.screenShake = 16;
-    floatText(p.x, p.y - 42, '💉 ' + t('revive.pop'), '#8bff5a');
+    floatText(p.x, p.y - 42, t('revive.pop'), '#8bff5a');
     Audio.S.levelup(); return;
   }
   endRun(false);
@@ -2997,30 +3355,30 @@ function buildChoices() {
   return chosen;
 }
 const round1 = n => Math.round(n * 10) / 10;
-const suChip = (emoji, txt) => `<span class="su">${emoji} ${txt}</span>`;
+const suChip = (iconKey, txt) => `<span class="su">${ico(iconKey)}<span>${txt}</span></span>`;
 function statDeltaDesc(key, lvl) {
   const a = WEAPONS[key].stats(lvl), b = WEAPONS[key].stats(lvl + 1), parts = [];
-  if (a.dmg != null && b.dmg > a.dmg) parts.push(suChip('💥', t('f.dmg') + round1(b.dmg - a.dmg)));
-  if (a.proj != null && b.proj > a.proj) parts.push(suChip('➕', t('f.proj') + (b.proj - a.proj) + t('f.projU')));
-  if (a.pellets != null && b.pellets > a.pellets) parts.push(suChip('➕', t('f.pellets') + (b.pellets - a.pellets) + t('f.pelletsU')));
-  if (a.blades != null && b.blades > a.blades) parts.push(suChip('🌀', t('f.blades') + (b.blades - a.blades) + t('f.bladesU')));
-  if (a.chain != null && b.chain > a.chain) parts.push(suChip('⚡', t('f.chain') + (b.chain - a.chain) + t('f.chainU')));
-  if (a.radius != null && b.radius > a.radius) parts.push(suChip('💣', t('f.radius') + Math.round(b.radius - a.radius)));
-  if (a.range != null && b.range > a.range) parts.push(suChip('📏', t('f.range') + Math.round(b.range - a.range)));
-  if (a.reach != null && b.reach > a.reach) parts.push(suChip('📏', t('f.reach') + Math.round(b.reach - a.reach)));
-  if (a.life != null && b.life > a.life) parts.push(suChip('⏳', t('f.life') + round1((b.life - a.life) / 60) + 's'));
-  if (a.lifesteal != null && b.lifesteal > a.lifesteal) parts.push(suChip('🩸', t('f.lifesteal') + Math.round((b.lifesteal - a.lifesteal) * 100) + '%'));
-  if (a.chill != null && b.chill > a.chill) parts.push(suChip('❄️', t('f.chilldur') + round1((b.chill - a.chill) / 60) + 's'));
-  if (a.chillPow != null && b.chillPow < a.chillPow) parts.push(suChip('❄️', t('f.chillpow')));
-  if (a.cd != null && b.cd < a.cd) parts.push(suChip('⏱️', t('f.cdup')));
-  if (a.fireCd != null && b.fireCd < a.fireCd) parts.push(suChip('🔥', t('f.firecdup')));
+  if (a.dmg != null && b.dmg > a.dmg) parts.push(suChip('dmg', t('f.dmg') + round1(b.dmg - a.dmg)));
+  if (a.proj != null && b.proj > a.proj) parts.push(suChip('proj', t('f.proj') + (b.proj - a.proj) + t('f.projU')));
+  if (a.pellets != null && b.pellets > a.pellets) parts.push(suChip('proj', t('f.pellets') + (b.pellets - a.pellets) + t('f.pelletsU')));
+  if (a.blades != null && b.blades > a.blades) parts.push(suChip('machete', t('f.blades') + (b.blades - a.blades) + t('f.bladesU')));
+  if (a.chain != null && b.chain > a.chain) parts.push(suChip('taser', t('f.chain') + (b.chain - a.chain) + t('f.chainU')));
+  if (a.radius != null && b.radius > a.radius) parts.push(suChip('grenade', t('f.radius') + Math.round(b.radius - a.radius)));
+  if (a.range != null && b.range > a.range) parts.push(suChip('range', t('f.range') + Math.round(b.range - a.range)));
+  if (a.reach != null && b.reach > a.reach) parts.push(suChip('range', t('f.reach') + Math.round(b.reach - a.reach)));
+  if (a.life != null && b.life > a.life) parts.push(suChip('clock', t('f.life') + round1((b.life - a.life) / 60) + 's'));
+  if (a.lifesteal != null && b.lifesteal > a.lifesteal) parts.push(suChip('blood', t('f.lifesteal') + Math.round((b.lifesteal - a.lifesteal) * 100) + '%'));
+  if (a.chill != null && b.chill > a.chill) parts.push(suChip('frostwand', t('f.chilldur') + round1((b.chill - a.chill) / 60) + 's'));
+  if (a.chillPow != null && b.chillPow < a.chillPow) parts.push(suChip('frostwand', t('f.chillpow')));
+  if (a.cd != null && b.cd < a.cd) parts.push(suChip('speed', t('f.cdup')));
+  if (a.fireCd != null && b.fireCd < a.fireCd) parts.push(suChip('flamethrower', t('f.firecdup')));
   return parts.length ? `<div class="sulist">${parts.join('')}</div>` : `<div class="cds-txt">${trDesc('weapon', key)}</div>`;
 }
 function passiveDeltaDesc(id, lvl) {
   const n = lvl + 1;
   const total = { dmg:'+'+10*n+'%', speed:'-'+10*n+'%', proj:'+'+n, range:'+'+15*n+'%', movespeed:'+'+8*n+'%', maxhp:'+'+20*n+'%', regen:'+'+(0.5*n)+'/s', magnet:'+'+30*n+'%', crit:'+'+8*n+'%' };
-  const emo = { dmg:'💥', speed:'⏱️', proj:'➕', range:'📐', movespeed:'👟', maxhp:'❤️', regen:'✚', magnet:'🧲', crit:'🎯' };
-  return `<div class="cds-txt">${trDesc('passive', id)}</div><div class="sulist"><span class="su tot">${emo[id]||'⭐'} ${t('cum')} ${total[id]}</span></div>`;
+  const emo = { dmg:'dmg', speed:'speed', proj:'proj', range:'range', movespeed:'movespeed', maxhp:'maxhp', regen:'regen', magnet:'magnet', crit:'crit' };
+  return `<div class="cds-txt">${trDesc('passive', id)}</div><div class="sulist"><span class="su tot">${ico(emo[id]||'dmg')}<span>${t('cum')} ${total[id]}</span></span></div>`;
 }
 function choiceInfo(o) {
   const p = P();
@@ -3029,8 +3387,8 @@ function choiceInfo(o) {
   if (o.type === 'pup') { const d = PASSIVES[o.id]; return { ico:d.icon, nm:trName('passive',o.id), lv:`Lv ${p.passives[o.id]} → ${p.passives[o.id]+1}`, ds:passiveDeltaDesc(o.id, p.passives[o.id]), badge:'up' }; }
   if (o.type === 'wnew') { const d = WEAPONS[o.key]; return { ico:d.icon, nm:trName('weapon',o.key), lv:t('lv.wnew'), ds:trDesc('weapon',o.key), badge:'new' }; }
   if (o.type === 'pnew') { const d = PASSIVES[o.id]; return { ico:d.icon, nm:trName('passive',o.id), lv:t('lv.pnew'), ds:trDesc('passive',o.id), badge:'new' }; }
-  if (o.type === 'heal') return { ico:'❤️', nm:t('heal.nm'), lv:t('heal.lv'), ds:t('heal.ds'), badge:'new' };
-  return { ico:'◈', nm:t('coin.nm'), lv:t('coin.lv'), ds:t('coin.ds'), badge:'new' };
+  if (o.type === 'heal') return { ico:'maxhp', nm:t('heal.nm'), lv:t('heal.lv'), ds:t('heal.ds'), badge:'new' };
+  return { ico:'coin', nm:t('coin.nm'), lv:t('coin.lv'), ds:t('coin.ds'), badge:'new' };
 }
 function applyChoice(o) {
   const p = P();
@@ -3065,14 +3423,23 @@ function enterLevelUp() {
   el.luHeal.style.display = G.frame > 1 ? 'block' : 'none';
   list.forEach(o => {
     const info = choiceInfo(o);
-    const div = document.createElement('div');
-    div.className = 'choice' + (o.type === 'evo' ? ' evo' : '');
     const bl = info.badge === 'evo' ? 'evoB' : info.badge;
+    const div = document.createElement('div');
+    div.className = 'choice c-' + bl + (o.type === 'evo' ? ' evo' : '');
     const bt = info.badge === 'evo' ? t('b.evo') : info.badge === 'up' ? t('b.up') : t('b.new');
-    div.innerHTML = `<span class="badge ${bl}">${bt}</span>
-      <div class="cico">${info.ico}</div><div class="cnm">${info.nm}</div>
-      <div class="clv">${info.lv}</div><div class="cds">${info.ds}</div>`;
-    div.onclick = () => { applyChoice(o); pickResolved(); };
+    // 배지와 아래 줄이 같은 말을 반복하지 않게 한다.
+    // 신규·진화는 더 구체적인 문구를 배지로 올리고 레벨 줄은 생략한다.
+    const spec = (o.type === 'wnew' || o.type === 'pnew' || o.type === 'evo');
+    const badgeText = spec ? info.lv : bt;
+    const lvHtml = spec ? '' : `<div class="clv">${info.lv}</div>`;
+    div.innerHTML = `<div class="cico">${ico(info.ico)}</div><div class="cbody">
+      <span class="badge">${badgeText}</span><div class="cnm">${info.nm}</div>
+      ${lvHtml}<div class="cds">${info.ds}</div></div>`;
+    div.onclick = () => {
+      if (el.choices.classList.contains('resolving')) return;   // 연타 방지
+      el.choices.classList.add('resolving'); div.classList.add('picked');
+      setTimeout(() => { el.choices.classList.remove('resolving'); applyChoice(o); pickResolved(); }, 150);
+    };
     el.choices.appendChild(div);
   });
   el.levelup.classList.add('show');
@@ -3357,6 +3724,7 @@ window.R3 = (() => {
     playerGrp = new T.Group(); scene.add(playerGrp);
 
     aimBeam = new T.Mesh(new T.CylinderGeometry(0.5, 2.0, 26, 6), glowMat(0x8bff5a, 0.9));
+    aimBeam.material.depthTest = false; aimBeam.renderOrder = 11;
     playerGrp.add(aimBeam);
 
     shieldMesh = new T.Mesh(new T.SphereGeometry(27, 16, 12),
@@ -3366,9 +3734,15 @@ window.R3 = (() => {
 
     hpRing = new T.Mesh(new T.RingGeometry(17, 21, 44, 1, Math.PI / 2, -Math.PI * 2),
       new T.MeshBasicMaterial({ color: 0x8bff5a, transparent: true, opacity: 0.95,
-        side: T.DoubleSide, depthWrite: false }));
+        side: T.DoubleSide, depthWrite: false, depthTest: false }));
     hpRing.rotation.x = -Math.PI / 2; hpRing.position.y = 1.6;
+    hpRing.renderOrder = 10;        // 몬스터가 겹쳐도 내 위치는 항상 보인다
     playerGrp.add(hpRing);
+    // 발밑에 깔리는 옅은 원 — 플레이어가 군중에 묻히지 않게 한다
+    const footGlow = new T.Mesh(new T.CircleGeometry(23, 32), glowMat(0x8bff5a, 0.07));
+    footGlow.rotation.x = -Math.PI / 2; footGlow.position.y = 0.8;
+    footGlow.renderOrder = 9;
+    playerGrp.add(footGlow);
 
     gemMesh   = mkInst(new T.OctahedronGeometry(5.5, 0), glowMat(0x8bff5a, 0.95), 600);
     coinMesh  = mkInst(new T.CylinderGeometry(5.5, 5.5, 1.8, 12), glowMat(0xffcf4d, 0.95), 600);
@@ -3856,7 +4230,7 @@ function drawOrbIcons() {
     if (o.life < 120 && G.frame % 12 < 5) continue;
     const a = R3.project(o.x, o.y, 20);
     if (!a.vis) continue;
-    ctx.fillText(o.kind === 'magnet' ? '🧲' : '🛡', a.x, a.y);
+
   }
   ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic';
 }
@@ -3950,7 +4324,7 @@ function buildGuide() {
   // 01 캐릭터
   h += `<div class="gd-sec"><span class="n">01</span><h3>${gt('s_char')}</h3></div>`;
   for (const id in CHARACTERS) { const c = CHARACTERS[id];
-    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${c.icon}</span><div>
+    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${ico(c.icon)}</span><div>
       <div class="gd-nm">${trName('char',id)} <span class="gd-stat" style="margin-left:4px">${trField('char',id,'title')}</span></div>
       <div class="gd-ds">${trDesc('char',id)}</div></div></div></div>`; }
   // 02 무기
@@ -3960,13 +4334,13 @@ function buildGuide() {
     const ms = GUIDE_MS.includes(id);
     const badge = ms ? `<span class="gd-badge on">${gt('msOn')}</span>` : `<span class="gd-badge off">${gt('msOff')}</span>`;
     const ev = w.evo ? `<div class="gd-evo"><b>${gt('evo')} → ${trName('evo',w.evo)}</b> · ${trDesc('evo',w.evo)}<br>${gt('pair')} 「${trName('passive',w.pair)}」</div>` : '';
-    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${w.icon}</span><div>
+    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${ico(w.icon)}</span><div>
       <div class="gd-nm">${trName('weapon',id)} ${badge}</div>
       <div class="gd-ds">${trDesc('weapon',id)}</div>${ev}</div></div></div>`; }
   // 03 패시브
   h += `<div class="gd-sec"><span class="n">03</span><h3>${gt('s_passive')}</h3></div>`;
   for (const id in PASSIVES) { const p = PASSIVES[id];
-    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${p.icon}</span><div>
+    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${ico(p.icon)}</span><div>
       <div class="gd-nm">${trName('passive',id)}</div><div class="gd-ds">${trDesc('passive',id)}</div></div></div></div>`; }
   // 04 몬스터
   h += `<div class="gd-sec"><span class="n">04</span><h3>${gt('s_enemy')}</h3></div>`;
@@ -3986,13 +4360,14 @@ function buildGuide() {
       <div class="gd-nm">${b[0]}</div><div class="gd-ds">${b[1]}</div></div></div></div>`; });
   // 06 아이템
   h += `<div class="gd-sec"><span class="n">06</span><h3>${gt('s_item')}</h3></div>`;
-  gt('items').forEach(it => {
-    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${it[0]}</span><div>
+  const ITEM_ICONS = ['gem','coin','maxhp','shield','magnet'];
+  gt('items').forEach((it, ii) => {
+    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${ico(ITEM_ICONS[ii] || 'gem')}</span><div>
       <div class="gd-nm">${it[1]}</div><div class="gd-ds">${it[2]}</div></div></div></div>`; });
   // 07 메타 아머리
   h += `<div class="gd-sec"><span class="n">07</span><h3>${gt('s_meta')}</h3></div>`;
   for (const id in METAS) { const m = METAS[id];
-    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${m.icon}</span><div>
+    h += `<div class="gd-card"><div class="gd-row"><span class="gd-ico">${ico(m.icon)}</span><div>
       <div class="gd-nm">${trName('meta',id)} <span class="gd-stat" style="margin-left:4px">MAX ${m.max}</span></div>
       <div class="gd-ds">${trDesc('meta',id)}</div></div></div></div>`; }
   // 08 차수 시스템
@@ -4052,7 +4427,7 @@ function renderTurretPanel() {
       <button class="tr-up ${can?'':'off'}" data-k="${kind}">${max ? t('turret.max') : '＋'}</button></div>`;
   };
   el.turretPanel.querySelector('.card').innerHTML =
-    `<div class="brand" style="justify-content:center;">🛡️ ${t('turret.title')} · Lv ${s.level}</div>
+    `<div class="brand" style="justify-content:center;">${ico('sentry')} ${t('turret.title')} · Lv ${s.level}</div>
      <div class="tr-pts">${t('turret.points')} : <b>${s.points}</b></div>
      ${rowHtml('atk', s.atkLv, t('turret.atk'))}
      ${rowHtml('spd', s.spdLv, t('turret.spd'))}
@@ -4078,14 +4453,16 @@ function updateHUD() {
   hudSet(el.xpfill, 'xp', (clamp(p.xp / p.xpNext, 0, 1) * 100).toFixed(1) + '%', 'w');
   hudSet(el.lvChip, 'lv', 'Lv ' + p.level);
   hudSet(el.hpfill, 'hpw', (clamp(p.hp / p.maxhp, 0, 1) * 100).toFixed(1) + '%', 'w');
+  const lowHp = (p.hp / p.maxhp) < 0.3;
+  if (hudCache.low !== lowHp) { hudCache.low = lowHp; el.hpbar.classList.toggle('low', lowHp); }
   hudSet(el.hptext, 'hpt', Math.max(0, Math.round(clamp(p.hp / p.maxhp, 0, 1) * 100)) + '%');
   hudSet(el.tierChip, 'tier', t('hud.tierLabel').replace('{n}', G.tier));
   hudSet(el.timeChip, 'time', fmtTime(G.time));
-  hudSet(el.killChip, 'kill', '☠ ' + G.kills);
-  hudSet(el.coinChip, 'coin', '◈ ' + G.runCoins);
+  hudSet(el.killChip, 'kill', String(G.kills));
+  hudSet(el.coinChip, 'coin', String(G.runCoins));
   if (G.boss) hudSet(el.bossFill, 'boss', (clamp(G.boss.hp / G.boss.maxhp, 0, 1) * 100).toFixed(1) + '%', 'w');
   if (p.shield > 0) {
-    hudSet(el.shieldChip, 'shieldTxt', '🛡 ' + (p.shield / 60).toFixed(1) + 's');
+    hudSet(el.shieldVal, 'shieldTxt', (p.shield / 60).toFixed(1) + 's');
     if (hudCache.shieldShown !== 1) { hudCache.shieldShown = 1; el.shieldChip.style.display = ''; }
   } else if (hudCache.shieldShown !== 0) { hudCache.shieldShown = 0; el.shieldChip.style.display = 'none'; }
   if (el.hint.dataset.hidden !== '1' && G.time > 10) { el.hint.style.opacity = '0'; el.hint.dataset.hidden = '1'; }
@@ -4100,12 +4477,12 @@ function renderLoadout() {
   for (const w of p.weapons) {
     const def = wdef(w);
     const d = document.createElement('div'); d.className = 'slot' + (w.evolved ? ' evo' : '');
-    d.innerHTML = `${def.icon}<span class="lv">${w.evolved ? 'MAX' : w.level}</span>`;
+    d.innerHTML = `${ico(def.icon)}<span class="lv">${w.evolved ? 'MAX' : w.level}</span>`;
     el.loadout.appendChild(d);
   }
   for (const id in p.passives) {
     const d = document.createElement('div'); d.className = 'slot psv';
-    d.innerHTML = `${PASSIVES[id].icon}<span class="lv">${p.passives[id]}</span>`;
+    d.innerHTML = `${ico(PASSIVES[id].icon)}<span class="lv">${p.passives[id]}</span>`;
     el.loadout.appendChild(d);
   }
 }
@@ -4143,15 +4520,15 @@ function endRun(win) {
   if (G.state === 'result') return;
   G.state = 'result';
   const { earned, bonusMul } = cashOutRun();
-  el.resEmoji.textContent = win ? '🏆' : '☠️';
+  el.resEmoji.innerHTML = ico(win ? 'trophy' : 'skull'); el.resEmoji.className = 'result-mark ' + (win ? 'win' : 'lose');
   el.resTitle.textContent = win ? t('res.win') : t('res.lose');
   el.resTitle.className = 'res ' + (win ? 'win' : 'lose');
   el.resStats.innerHTML =
     `<div class="kv"><span>${t('res.tier')}</span><span class="v" style="color:var(--gold)">${t('hud.tierLabel').replace('{n}', G.tier)}</span></div>
      <div class="kv"><span>${t('res.time')}</span><span class="v">${fmtTime(G.time)}</span></div>
-     <div class="kv"><span>${t('res.kills')}</span><span class="v" style="color:var(--blood-bright)">${G.kills}</span></div>
-     <div class="kv"><span>${t('res.level')}</span><span class="v" style="color:var(--toxic)">Lv ${P().level}</span></div>
-     <div class="kv"><span>${t('res.coins')}</span><span class="v" style="color:var(--gold)">◈ ${earned}${bonusMul>1?` (＋${Math.round((bonusMul-1)*100)}%)`:''}</span></div>`;
+     <div class="kv"><span>${t('res.kills')}</span><span class="v">${G.kills}</span></div>
+     <div class="kv"><span>${t('res.level')}</span><span class="v">Lv ${P().level}</span></div>
+     <div class="kv"><span>${t('res.coins')}</span><span class="v" style="color:var(--gold)">${earned}${bonusMul>1?` (＋${Math.round((bonusMul-1)*100)}%)`:''}</span></div>`;
   win ? Audio.S.win() : Audio.S.lose();
   Audio.startMusic('title');
   el.resNext.style.display = 'none';
@@ -4173,15 +4550,15 @@ function winRound() {
   Store.save(G.save);
   const bonusMul = 1.5 * (1 + metaVal('greed') / 100) * (charMods().coinMul || 1);
   const pending = Math.round(G.runCoins * bonusMul);
-  el.resEmoji.textContent = '🏆';
+  el.resEmoji.innerHTML = ico('trophy'); el.resEmoji.className = 'result-mark win';
   el.resTitle.textContent = t('res.clear').replace('{n}', G.tier);
   el.resTitle.className = 'res win';
   el.resStats.innerHTML =
     `<div class="kv"><span>${t('res.tier')}</span><span class="v" style="color:var(--gold)">${t('hud.tierLabel').replace('{n}', G.tier)} ✔</span></div>
      <div class="kv"><span>${t('res.time')}</span><span class="v">${fmtTime(G.time)}</span></div>
-     <div class="kv"><span>${t('res.kills')}</span><span class="v" style="color:var(--blood-bright)">${G.kills}</span></div>
-     <div class="kv"><span>${t('res.level')}</span><span class="v" style="color:var(--toxic)">Lv ${P().level}</span></div>
-     <div class="kv"><span>${t('res.pending')}</span><span class="v" style="color:var(--gold)">◈ ${pending}</span></div>`;
+     <div class="kv"><span>${t('res.kills')}</span><span class="v">${G.kills}</span></div>
+     <div class="kv"><span>${t('res.level')}</span><span class="v">Lv ${P().level}</span></div>
+     <div class="kv"><span>${t('res.pending')}</span><span class="v" style="color:var(--gold)">${pending}</span></div>`;
   Audio.S.win(); Audio.startMusic('title');
   if (p3reward) { el.resReward.innerHTML = t('reward.p3'); el.resReward.style.display = ''; }
   else el.resReward.style.display = 'none';
@@ -4375,9 +4752,9 @@ function renderArmory() {
     const row = document.createElement('div'); row.className = 'up';
     let dots = ''; for (let i = 0; i < m.max; i++) dots += `<i class="${i < lv ? 'on' : ''}"></i>`;
     row.innerHTML = `
-      <div class="icon">${m.icon}</div>
+      <div class="icon">${ico(m.icon)}</div>
       <div class="meta"><div class="nm">${trName('meta',id)}</div><div class="ds">${trDesc('meta',id)}</div><div class="lvdots">${dots}</div></div>
-      <div class="buy ${isMax ? 'max' : can ? '' : 'cant'}">${isMax ? 'MAX' : `<span class="c">◈ ${cost}</span>`}</div>`;
+      <div class="buy ${isMax ? 'max' : can ? '' : 'cant'}">${isMax ? 'MAX' : `<span class="c">${ico('coin')}${cost}</span>`}</div>`;
     if (!isMax && can) row.querySelector('.buy').onclick = () => {
       G.save.coins -= cost; meta[id] = lv + 1; Store.save(G.save);
       Audio.ensure(); Audio.S.coin(); refreshMenu();
@@ -4416,10 +4793,19 @@ function drawPerf() {
   for (let i = 0; i < lines.length; i++) ctx.fillText(lines[i], 15, 84 + i * 16);
   ctx.restore();
 }
+/* 마크업에 고정으로 박히는 아이콘들을 한 번에 채운다(이모지 대신 SVG). */
+function paintStaticIcons() {
+  const btns = { pauseBtn:'pause', gearBtn:'gear', resumeIco:'pause' };
+  for (const id in btns) { const e = $(id); if (e && !e.querySelector('svg')) e.insertAdjacentHTML('afterbegin', ico(btns[id])); }
+  document.querySelectorAll('[data-ic]').forEach(e => {
+    if (e.querySelector('svg')) return;
+    e.insertAdjacentHTML('afterbegin', ico(e.dataset.ic));
+  });
+}
 function updateSoundBtn() {
   const b = $('soundBtn'); if (!b) return;
   const m = Audio.isMuted();
-  b.textContent = m ? '🔇' : '🔊';
+  b.innerHTML = ico(m ? 'mute' : 'sound');
   b.classList.toggle('off', m);
 }
 function syncSettingsUI() {
@@ -4479,6 +4865,7 @@ function init() {
   $('resAgain').onclick = () => lobbyFromResult();
   $('resNext').onclick = () => continueTier();
   // 3D 장면 준비. 실패하면 검은 화면만 보이므로 이유를 알려 준다.
+  paintStaticIcons();
   if (!R3.init()) {
     console.warn('WebGL 을 쓸 수 없어 3D 장면을 켜지 못했습니다.');
     const w = document.createElement('div');
