@@ -2922,7 +2922,7 @@ function raiseDead(e) {
   const B = ENEMY_BAL.necro;
   if (--e.spT > 0) return false;
   e.spT = randInt(B.cd[0], B.cd[1]);
-  if (!G.corpses.length || G.enemies.length > 240) return false;
+  if (!G.corpses.length || G.popN > SPAWN_CAP.derived) return false;
   let n = 0;
   for (let i = G.corpses.length - 1; i >= 0 && n < B.max; i--) {
     const c = G.corpses[i];
@@ -3010,9 +3010,9 @@ function mutationDesc(id) { return id ? t('mut.' + id + '.d') : ''; }
 function applyMutationOnKill(e) {                           // 사망 시 반응하는 변이
   const m = G.mutation; if (!m || e.boss || e.mini || e.child) return;
   const B = MUTATION_BALANCE[m];
-  if (m === 'bloodmoon' && Math.random() < B.chance && G.enemies.length < B.cap) {
+  if (m === 'bloodmoon' && Math.random() < B.chance && G.popN < B.cap) {
     const c = spawnEnemy('runner', e.x, e.y); if (c) { c.child = true; spark(e.x, e.y, '#FF4D5A', 5, 2.6, 16); }
-  } else if (m === 'graverising' && Math.random() < B.chance && G.enemies.length < B.cap) {
+  } else if (m === 'graverising' && Math.random() < B.chance && G.popN < B.cap) {
     const c = spawnEnemy(e.key, e.x, e.y); if (c) { c.child = true; ring(e.x, e.y, 26, '#B46AFF', 16); }
   }
 }
@@ -3038,35 +3038,80 @@ function updateMutation() {                                 // 주기적으로 �
 
 /* ---------------- 위협 예산 ----------------
    "시간이 지나면 적이 많아진다"가 아니라 "더 위험한 조합이 나온다".
-   기존 spawnTimer 흐름은 그대로 두고, 무엇을 뽑을지만 예산으로 정한다. */
+
+   스폰 경로는 두 갈래뿐이다. 이 구분을 흐리지 않는다.
+   · 일반 웨이브 스폰 : spawnDirector() → spawnThreatWave() → spawnEnemy()
+                        위협 예산을 쓰는 유일한 경로. 권위 있는 진입점이다.
+   · 파생 스폰        : 슬라임 분열 · 네크로맨서 소환 · 시체 부활 · 변이 반응 ·
+                        전조 존 소환. 예산을 쓰지 않고 상황에서 생겨난다.
+   둘 다 spawnEnemy() 를 거치므로 개체 상한은 한 곳에서만 지켜진다. */
+
+/* 개체 상한 — 보스는 상한 밖이다(보스가 일반 적 자리를 빼앗지 않는다) */
+const SPAWN_CAP = {
+  normal: 300,        // 보스/미니보스를 제외한 적 수 상한. 파생 스폰도 여기에 포함된다
+  derived: 240,       // 파생 스폰(소환·부활·분열)은 이보다 붐비면 스스로 멈춘다
+};
+
 const ENEMY_THREAT_COST = {
-  walker:1, runner:2, slimeling:1, slime:5, spitter:4, archer:4, bomber:5,
-  brute:7, armorwalker:7, howler:8, firedemon:9, necromancer:10, lich:10,
-  reaper:11, stonegolem:12,
+  /* 비용은 "예산으로 이 적을 몇 마리 살 수 있는가"다. 체력이 아니라 플레이어가
+     실제로 치러야 하는 대응 비용에 맞춘다. 근거는 각 적의 행동 코드다. */
+  walker:1,           // 특수 행동 없음 · 속도 0.72
+  runner:3,           // 속도 1.7 = 플레이어의 63%. 이동 압박의 주축
+  slimeling:1,
+  slime:5,            // 사망 후 분열 — 위험이 죽은 뒤에 온다
+  spitter:4,          // 거리를 벌려도 피해가 들어오는 최저가 원거리
+  archer:4,           // 지속 원거리 위협
+  bomber:6,           // 피해 30(최고) + 전조 회피 강제
+  brute:5,            // ENEMY_BEHAVIORS 에 없음 = 직선 추격만. 속도 0.5
+  armorwalker:7,      // 정면 피해 55% 감소 — 측면으로 파고들어야 한다
+  howler:8,           // 반경 260 아군 가속 — 방치하면 다른 적이 전부 빨라진다
+  firedemon:9,
+  necromancer:10,     // 소환 + 시체 부활
+  lich:10,
+  reaper:11,          // 예고 후 측면 점멸
+  stonegolem:10,      // 전조 충격파는 있으나 속도 0.4 · 사거리 420 밖이면 무행동
 };
 const THREAT_BALANCE = {
-  window: 600,              // 10초 단위로 예산을 다시 잡는다
-  base: 6, perSec: 0.26,    // 초반 밀도는 기존과 같게 맞춘 값 (batch ≈ 1 + t/22)
+  window: 600,              // 10초 단위로 기본 예산을 다시 잡는다
+  base: 6, perSec: 0.26,    // 시간에 따른 증가
   tierMul: 0.20,            // 스테이지마다 예산 +20%
   bossCut: 0.45,            // 보스전에는 압박을 낮춰 패턴을 읽을 공간을 준다
   miniCut: 0.7,
-  hardCap: 300,             // 검증된 성능 범위. 여기를 넘기지 않는다.
-  perTick: 0.16,            // 한 번의 스폰이 쓰는 예산 비율
+  hardCap: SPAWN_CAP.normal,
+  perTick: 0.135,           // 한 번의 스폰이 쓰는 예산 비율
+                            // (0.16 → 0.135: 소진율이 80%→95% 로 오른 만큼 상쇄해
+                            //  실제 전달되는 압박은 수정 전과 같게 둔다)
 };
-/* 시간대별 구성 — 완전 랜덤이 아니라 설계된 무작위 */
+/* 스폰 리듬 — 차수 차이가 런 내내 살아 있도록 하한까지 차수로 나눈다 */
+const SPAWN_TUNE = {
+  baseFrames: 55, decay: 0.85,   // 간격 = (55 - 0.85t) / dens
+  minFrames: 6,                  // Tier 1 기준 하한. 상위 차수는 dens 로 나뉜다
+  densPerTier: 0.22,
+  softFrom: 0.62,   // 필드 점유율이 여기를 넘으면 압박을 줄이기 시작한다
+  budgetFloor: 0.25,// 상한에 붙었을 때 남기는 예산 비율(0 이 아니다 — 끊기지 않게)
+  slowMax: 2.6,     // 상한 근처에서 스폰 주기를 최대 몇 배로 늘리는가
+  maxPerWave: 8,    // 한 번에 쏟아지는 수 제한 — 갑작스러운 폭발을 막는다
+  carryMax: 1.5,    // 이월 상한 = 한 wave 할당량의 배수
+  carryUse: 0.5,    // 한 wave 가 이월분에서 끌어 쓸 수 있는 비율
+};
+
+/* 시간대별 구성 — 완전 랜덤이 아니라 설계된 무작위.
+   core  : 차수와 무관하게 항상 나온다. 후반에도 행동 패턴이 최소 4종 유지되는 근거다.
+   extra : roleUnlocked() 로 차수·시간이 걸러내는 적.
+   숫자는 가중치(뽑기 슬롯 수)다. */
 const WAVE_COMPOSITION = [
-  { from:0,   roles:['walker','walker','walker','runner'] },
-  { from:30,  roles:['walker','walker','runner','runner','brute'] },
-  { from:60,  roles:['walker','runner','runner','bomber','brute','armorwalker'] },
-  { from:100, roles:['walker','runner','bomber','spitter','armorwalker','slime','brute'] },
-  { from:150, roles:['runner','bomber','spitter','armorwalker','howler','reaper','brute'] },
-  { from:200, roles:['runner','spitter','howler','reaper','necromancer','stonegolem','armorwalker'] },
-  { from:250, roles:['runner','reaper','howler','necromancer','stonegolem','firedemon','lich','spitter'] },
+  { from:0,   core:{ walker:3, runner:1 },                                              extra:{} },
+  { from:30,  core:{ walker:3, runner:2, brute:1 },                                     extra:{} },
+  { from:60,  core:{ walker:3, runner:2, bomber:1, brute:1 },                           extra:{ armorwalker:2 } },
+  { from:120, core:{ walker:2, runner:2, bomber:2, spitter:1, brute:1 },                extra:{ armorwalker:2, slime:2, howler:1 } },
+  { from:180, core:{ walker:2, runner:2, bomber:2, spitter:2, brute:1 },                extra:{ armorwalker:2, slime:1, reaper:2, howler:1 } },
+  { from:210, core:{ walker:2, runner:2, bomber:2, spitter:2, archer:1, brute:1 },      extra:{ armorwalker:2, slime:1, reaper:2, howler:1, necromancer:1, stonegolem:1 } },
+  { from:240, core:{ walker:1, runner:2, bomber:2, spitter:2, archer:2, brute:1 },      extra:{ armorwalker:2, slime:1, reaper:2, howler:2, necromancer:2, stonegolem:2, firedemon:2, lich:2 } },
 ];
-function waveRolesFor(t) {
+function waveBandFor(t) {
   let w = WAVE_COMPOSITION[0];
   for (const c of WAVE_COMPOSITION) if (t >= c.from) w = c;
-  return w.roles;
+  return w;
 }
 /* 아직 해금되지 않은 적은 걸러낸다(기존 등장 조건 유지) */
 function roleUnlocked(key, t) {
@@ -3078,28 +3123,77 @@ function roleUnlocked(key, t) {
   if (['lich','firedemon'].includes(key)) return G.tier >= 5;
   return true;
 }
+/* 가중치 표 → 뽑기 배열. core 는 무조건, extra 는 해금된 것만 담는다.
+   10초에 한 번(예산 갱신 때)만 만든다 — 웨이브마다 배열을 새로 만들지 않는다. */
+function waveRolesFor(t) {
+  const band = waveBandFor(t), out = [];
+  for (const k in band.core) for (let i = 0; i < band.core[k]; i++) out.push(k);
+  for (const k in band.extra) {
+    if (!roleUnlocked(k, t)) continue;
+    for (let i = 0; i < band.extra[k]; i++) out.push(k);
+  }
+  return out.length ? out : ['walker','runner'];
+}
+
+/* 필드 점유율 — 일반 적만 센다(보스는 상한 밖) */
+function popFill() { return clamp((G.popN || 0) / SPAWN_CAP.normal, 0, 1); }
+/* 붐빌수록 한 웨이브가 쓰는 예산을 줄인다. 상한에서 0 이 아니라 25% 를 남겨
+   스폰이 뚝 끊기는 대신 서서히 얇아지게 한다. */
+function popEase() {
+  const f = popFill(), T = SPAWN_TUNE;
+  if (f <= T.softFrom) return 1;
+  return 1 - (1 - T.budgetFloor) * (f - T.softFrom) / (1 - T.softFrom);
+}
+/* 붐빌수록 스폰 주기 자체도 늘린다 — 상한에 부딪혀 예산을 버리기 전에 먼저 감속한다 */
+function popSlow() {
+  const f = popFill(), T = SPAWN_TUNE;
+  if (f <= T.softFrom) return 1;
+  return 1 + (T.slowMax - 1) * (f - T.softFrom) / (1 - T.softFrom);
+}
+
 function refreshThreatBudget() {
   const T = THREAT_BALANCE, t = G.time;
   let b = (T.base + t * T.perSec) * (1 + (G.tier - 1) * T.tierMul);
   if (G.boss && !G.boss.dead) b *= T.bossCut;
   else if (G.enemies.some(e => e.mini && !e.dead)) b *= T.miniCut;
   G.threatBudget = b;
-  G.threatRoles = waveRolesFor(t).filter(k => roleUnlocked(k, t));
-  if (!G.threatRoles.length) G.threatRoles = ['walker','runner'];
+  G.threatRoles = waveRolesFor(t);
+  let min = Infinity;
+  for (const k of G.threatRoles) { const c = ENEMY_THREAT_COST[k] || 2; if (c < min) min = c; }
+  G.threatMinCost = min;                      // 이보다 예산이 적으면 더 뽑을 수 없다
 }
-/* 한 번의 스폰에서 예산만큼 적 조합을 만든다 */
+
+/* 한 번의 스폰에서 예산만큼 적 조합을 만든다.
+   예산이 남는 이유는 두 가지이고, 둘을 다르게 다룬다.
+   · 비싼 적만 걸려 못 쓴 예산 → 다음 웨이브로 이월(상한 있음)
+   · 개체 상한에 막혀 못 쓴 예산 → 버린다. 이월하면 자리가 비는 순간 폭발한다. */
 function spawnThreatWave() {
-  const T = THREAT_BALANCE;
-  let spend = G.threatBudget * T.perTick;
+  const T = THREAT_BALANCE, S = SPAWN_TUNE;
+  const alloc = G.threatBudget * T.perTick * popEase();
+  const draw = clamp(G.threatCarry || 0, -alloc * 0.5, alloc * S.carryUse);
+  G.threatCarry = (G.threatCarry || 0) - draw;
+  let spend = alloc + draw;
   const roles = G.threatRoles;
-  let guard = 0;
-  while (spend > 0 && guard++ < 24 && G.enemies.length < T.hardCap) {
+  let guard = 0, made = 0, capped = false;
+  while (spend > 0 && guard++ < 24 && made < S.maxPerWave) {
+    if (G.popN >= SPAWN_CAP.normal) { capped = true; break; }
     const key = roles[(Math.random() * roles.length) | 0];
     const cost = ENEMY_THREAT_COST[key] || 2;
-    if (cost > spend && guard > 1) break;
-    spawnEnemy(key);
+    if (guard > 1 && cost > spend) {
+      // 남은 예산으로 싼 적을 골라 채우지 않는다 — 그러면 구성 가중치가 망가진다.
+      // 절반 이상 남았으면 이 적을 한 마리만 넘겨 쓰고 끝낸다. 초과분은 빚으로 남는다.
+      if (spend >= cost * 0.5) { if (spawnEnemy(key)) { made++; spend -= cost; } else capped = true; }
+      break;
+    }
+    if (!spawnEnemy(key)) { capped = true; break; }
+    made++;
     spend -= cost;
   }
+  // 상한 때문에 못 쓴 예산은 버린다 — 이월하면 자리가 비는 순간 폭발한다.
+  // 그 외에는 남은 예산(또는 넘겨 쓴 빚)을 그대로 이월해 장기 총량이 어긋나지 않게 한다.
+  if (capped) G.threatCarry = 0;
+  else G.threatCarry = clamp((G.threatCarry || 0) + spend, -alloc * 0.5, alloc * S.carryMax);
+  return made;
 }
 
 /* ---------------- 런 성과 분석 ----------------
@@ -4189,6 +4283,7 @@ const G = {
   runCoins:0, kills:0, camX:0, camY:0, syn:{}, synTags:{}, synMul:{}, markN:0,
   corpses:[], moveDir:{x:0,y:0},
   mutation:null, mutT:0, threatBudget:0, threatRoles:[], threatT:0,
+  threatMinCost:1, threatCarry:0, popN:0, bossN:0,   // popN = 보스를 뺀 살아있는 적 수
   screenShake:0, uid:1, tier:1, _cashed:false, bossKilled:false, clearing:false,
 };
 const pool = { enemy:[], bullet:[], part:[], gem:[], acid:[] };
@@ -4309,6 +4404,7 @@ function startRun(){
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
   G.zones = []; G.luMode = null;
   G.mutation = mutationForTier(G.tier); G.mutT = 90;
+  G.popN = 0; G.bossN = 0; G.threatCarry = 0;
   G.threatT = 0; refreshThreatBudget();
   resetStats();
   recomputeSynergy();
@@ -4641,7 +4737,7 @@ function killEnemy(e) {
   spawnGem(e.x, e.y, e.def.xp);
   if (Math.random() < (e.def.coin || 0) * (1 + rMod('coinDrop'))) spawnCoin(e.x, e.y, 6);
   if (Math.random() < ((G.tier <= 2) ? 0.015 : 0.01)) spawnHeart(e.x, e.y);   // 하트 드랍(스테이지 1~2는 1.5배)
-  if (e.def.split && !e.child && G.enemies.length < 260) {   // 슬라임: 죽으면 작은 슬라임 2마리로 분열
+  if (e.def.split && !e.child && G.popN < SPAWN_CAP.derived) {   // 슬라임: 죽으면 작은 슬라임 2마리로 분열
     for (let i = 0; i < 2; i++) { const a = Math.random()*TAU; const c = spawnEnemy('slimeling', e.x + Math.cos(a)*14, e.y + Math.sin(a)*14); if (c) c.child = true; }
   }
   // 특수 드롭
@@ -4695,8 +4791,10 @@ function updateOrbs() {
 /* ============================================================================
    적 스폰
    ========================================================================== */
+/* 모든 적 생성의 유일한 관문 — 일반 웨이브든 파생 스폰이든 여기를 지난다.
+   보스는 spawnBoss() 로 따로 들어오며 이 상한에 걸리지 않는다. */
 function spawnEnemy(typeKey, ox, oy) {
-  if (G.enemies.length >= THREAT_BALANCE.hardCap) return null;   // 검증된 성능 범위를 넘기지 않는다
+  if (G.popN >= SPAWN_CAP.normal) return null;   // 검증된 성능 범위를 넘기지 않는다
   const def = ENEMIES[typeKey];
   const e = takeEnemy();
   // 3D 시야는 2D 때보다 멀리까지 보이므로, 실제 보이는 반경 밖에서 나타나게 한다
@@ -4710,17 +4808,21 @@ function spawnEnemy(typeKey, ox, oy) {
   e.howlT = randInt(140, 220); e.hasteT = 0; e.chill = 0; e.chillPow = 1; e.pullT = 0; e.facing = 1; e.id = G.uid++;
   e.summonT = randInt(160, 300); e.fireT = randInt(20, 45); e.child = false;   // 네크로맨서 소환 / 파이어데몬 화염 / 슬라임 분열체
   e.spT = randInt(90, 200); e.blinkT = 0; e.armorA = null; e.mark = 0; e.dashHit = 0; e.bombT = 0;
-  G.enemies.push(e); return e;
+  G.enemies.push(e); G.popN++; return e;
 }
 
 function spawnDirector() {
   if (G.clearing) return;                 // 스테이지 클리어 연출 중엔 스폰 정지
   if (--G.threatT <= 0) { G.threatT = THREAT_BALANCE.window; refreshThreatBudget(); }
   G.spawnTimer--;
-  if (G.spawnTimer <= 0 && G.enemies.length < THREAT_BALANCE.hardCap) {
-    const t = G.time;
-    const dens = 1 + (G.tier - 1) * 0.22;   // 차수마다 스폰 밀도 증가
-    G.spawnTimer = Math.max(6, (55 - t * 0.85) / dens);
+  if (G.spawnTimer <= 0 && G.popN < SPAWN_CAP.normal) {
+    const t = G.time, S = SPAWN_TUNE;
+    const dens = 1 + (G.tier - 1) * S.densPerTier;   // 차수마다 스폰 밀도 증가
+    // 하한까지 차수로 나눈다 — 후반에도 차수별 리듬 차이가 살아 있게
+    const iv = Math.max(S.minFrames, S.baseFrames - t * S.decay) / dens;
+    // 보스전 압박은 간격이 아니라 예산(bossCut 45% / miniCut 70%)으로만 낮춘다.
+    // 여기서 간격까지 늘리면 두 번 깎여 설계치보다 훨씬 조용해진다.
+    G.spawnTimer = iv * popSlow();          // 붐비면 주기를 늘려 상한에 부딪히기 전에 감속
     spawnThreatWave();
   }
   if (!G.miniSpawned && G.time >= 150) { G.miniSpawned = true; spawnBoss('mini'); }
@@ -4733,27 +4835,9 @@ function spawnDirector() {
     spawnHeart(hx, hy); ring(hx, hy, 40, '#ff4d54', 40);
   }
 }
-function rollEnemyType(t) {
-  const r = Math.random();
-  let type;
-  if (t < 20) type = r < 0.85 ? 'walker' : 'runner';
-  else if (t < 40) type = r < 0.55 ? 'walker' : r < 0.85 ? 'runner' : 'brute';
-  else if (t < 70) type = r < 0.4 ? 'walker' : r < 0.68 ? 'runner' : r < 0.85 ? 'bomber' : 'brute';
-  else if (t < 120) type = r < 0.28 ? 'walker' : r < 0.52 ? 'runner' : r < 0.68 ? 'bomber' : r < 0.8 ? 'spitter' : r < 0.9 ? 'howler' : 'brute';
-  else type = r < 0.22 ? 'walker' : r < 0.44 ? 'runner' : r < 0.6 ? 'bomber' : r < 0.74 ? 'spitter' : r < 0.87 ? 'howler' : 'brute';
-  if (type === 'howler' && G.tier < 4) type = 'spitter';   // 하울러(보라·둔화)는 4차부터 등장
-  // 신규 몬스터 8종: 차수별 누적 등장 (2차부터, 초반 25초 이후)
-  if (t >= 25 && G.tier >= 2) {
-    const extras = ['armorwalker'];
-    if (t >= 210) extras.push('archer');              // 스켈레톤 아처는 3분 30초 이후 등장
-    if (G.tier >= 3) extras.push('reaper', 'slime');
-    if (G.tier >= 4) extras.push('necromancer', 'stonegolem');
-    if (G.tier >= 5) extras.push('lich', 'firedemon');
-    if (Math.random() < 0.42) type = extras[(Math.random() * extras.length) | 0];
-  }
-  return type;
-}
-
+/* 적 종류 추첨은 spawnThreatWave() 의 WAVE_COMPOSITION 한 곳에서만 한다.
+   여기 있던 rollEnemyType() 은 호출 지점이 없는 죽은 코드였고,
+   그 안에만 있던 스켈레톤 아처의 210초 등장 조건은 WAVE_COMPOSITION 으로 옮겼다. */
 /* 차수별 최종 보스 — 도트 스프라이트/이름/색상 (5차 이후는 5차 보스 유지) */
 const BOSS_TIERS = [
   { key:'boss',  name:'NECRO TYRANT',    col:'#e5232b', dark:'#4a0d0d' },
@@ -4783,7 +4867,8 @@ function spawnBoss(kind) {
     G.boss = e; e.phase = 1; el.bossbar.classList.add('show'); el.bossbar.dataset.ph = 1;
     el.bossName.textContent = bt.name;
   }
-  G.enemies.push(e); G.screenShake = 16; Audio.S.boss();
+  G.enemies.push(e); G.bossN++;    // 보스는 일반 적 상한을 쓰지 않는다
+  G.screenShake = 16; Audio.S.boss();
 }
 function onBossDown(e) {
   if (e === G.boss) {
@@ -4924,7 +5009,14 @@ function updateEnemies() {
       if (p.iframe <= 0) hurtPlayer(e.def.dmg || 8);
     }
   }
-  for (let i = list.length - 1; i >= 0; i--) if (list[i].dead) { pool.enemy.push(list[i]); list.splice(i, 1); }
+  // 죽은 개체 정리 + 개체 수 재집계(보스는 따로 센다)
+  let n = 0, nb = 0;
+  for (let i = list.length - 1; i >= 0; i--) {
+    const e = list[i];
+    if (e.dead) { pool.enemy.push(e); list.splice(i, 1); continue; }
+    if (e.boss || e.mini) nb++; else n++;
+  }
+  G.popN = n; G.bossN = nb;
 }
 
 /* ============================================================================
@@ -5191,7 +5283,7 @@ function spitAcid(e, p, off) {
 }
 function necroSummon(e) {   // 네크로맨서: 주변에 언데드 소환
   ring(e.x, e.y, 44, '#9a4fff', 28); if (Audio.S.howl) Audio.S.howl();
-  if (G.enemies.length > 240) return;
+  if (G.popN > SPAWN_CAP.derived) return;
   for (let i = 0; i < 2; i++) { const a = Math.random()*TAU, r = e.r + 34; spawnEnemy('walker', e.x + Math.cos(a)*r, e.y + Math.sin(a)*r); }
 }
 function dropFire(e) {   // 파이어 데몬: 바닥에 화염 장판(지속 피해)
@@ -7201,6 +7293,7 @@ function continueTier() {
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
   G.zones = []; G.luMode = null;
   G.mutation = mutationForTier(G.tier); G.mutT = 90;
+  G.popN = 0; G.bossN = 0; G.threatCarry = 0;
   G.threatT = 0; refreshThreatBudget();
   resetStats();
   recomputeSynergy();
@@ -7294,6 +7387,7 @@ function resumeRun() {
   G.player = p;
   G.zones = []; G.corpses = []; G.markN = 0; G.luMode = null;
   G.mutation = mutationForTier(G.tier); G.mutT = 90;
+  G.popN = 0; G.bossN = 0; G.threatCarry = 0;
   G.threatT = 0; refreshThreatBudget();
   resetStats();
   recomputeSynergy();
