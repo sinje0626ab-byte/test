@@ -510,6 +510,8 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
 .gd-reward{margin-top:var(--s4);padding:var(--s3);border-radius:var(--r-m);
   border:1px dashed rgba(255,212,90,.3);color:var(--gold);font-size:var(--f-meta);text-align:center;}
 .gd-reward.done{border-color:var(--line);color:var(--tx-3);}
+/* 숨겨진 보상을 누르고 있는 동안만 아주 옅게 밝아진다 — 눈에 띄면 숨긴 의미가 없다 */
+.gd-reward.holding{color:var(--tx-2);border-color:rgba(255,212,90,.22);transition:color 9s linear,border-color 9s linear;}
 .gd-toast{position:fixed;left:50%;bottom:calc(76px + var(--safe-b));transform:translate(-50%,10px);
   padding:10px var(--s4);border-radius:var(--r-s);z-index:40;
   background:var(--panel);border:1px solid rgba(255,212,90,.35);color:var(--gold);
@@ -3399,6 +3401,7 @@ const GUIDE_STR = {
   ko:{ title:'게임 가이드 & 도감', close:'닫기', hint:'끝까지 읽으면 보상이 있어요 ↓',
     toast:'가이드 완독! 코인 +100', rewardWait:'여기까지 정독하면 <b>완독 보상 코인 +100</b> (최초 1회)',
     rewardDone:'✓ 완독 보상(코인 100)을 이미 받았습니다.',
+    secret:'🪙 숨겨진 보상 발견! 코인 +1000',
     s_intro:'게임 소개', s_char:'출격 대원', s_weapon:'무기 도감', s_passive:'패시브 스킬',
     s_enemy:'몬스터 도감', s_boss:'보스 도감', s_item:'아이템', s_meta:'메타 아머리 · 영구 강화',
     s_tier:'스테이지(난이도) 시스템', s_tip:'전략 & 팁',
@@ -3415,6 +3418,7 @@ const GUIDE_STR = {
   en:{ title:'Game Guide & Codex', close:'Close', hint:'Read to the very bottom for a reward ↓',
     toast:'Guide finished! +100 coins', rewardWait:'Read this far to earn a <b>+100 coin completion reward</b> (once only)',
     rewardDone:'✓ You already claimed the completion reward (100 coins).',
+    secret:'🪙 Hidden reward found! +1000 coins',
     s_intro:'Overview', s_char:'Operatives', s_weapon:'Weapons', s_passive:'Passive Skills',
     s_enemy:'Bestiary', s_boss:'Bosses', s_item:'Items', s_meta:'Meta Armory · Permanent Upgrades',
     s_tier:'Stage (Difficulty) System', s_tip:'Strategy & Tips',
@@ -3431,6 +3435,7 @@ const GUIDE_STR = {
   zh:{ title:'游戏指南 & 图鉴', close:'关闭', hint:'读到最底部有奖励 ↓',
     toast:'读完指南！金币 +100', rewardWait:'读到这里即可获得 <b>通读奖励 金币 +100</b>（仅一次）',
     rewardDone:'✓ 你已领取通读奖励（100 金币）。',
+    secret:'🪙 发现隐藏奖励！金币 +1000',
     s_intro:'游戏介绍', s_char:'出击队员', s_weapon:'武器图鉴', s_passive:'被动技能',
     s_enemy:'怪物图鉴', s_boss:'首领', s_item:'道具', s_meta:'元库 · 永久强化',
     s_tier:'层级（难度）系统', s_tip:'策略 & 提示',
@@ -3447,6 +3452,7 @@ const GUIDE_STR = {
   th:{ title:'คู่มือเกม & สารานุกรม', close:'ปิด', hint:'อ่านจนสุดด้านล่างเพื่อรับรางวัล ↓',
     toast:'อ่านคู่มือจบ! เหรียญ +100', rewardWait:'อ่านมาถึงตรงนี้รับ <b>รางวัลอ่านจบ เหรียญ +100</b> (ครั้งเดียว)',
     rewardDone:'✓ คุณรับรางวัลอ่านจบ (100 เหรียญ) ไปแล้ว',
+    secret:'🪙 พบรางวัลลับ! +1000 เหรียญ',
     s_intro:'แนะนำเกม', s_char:'หน่วยรบ', s_weapon:'อาวุธ', s_passive:'สกิลติดตัว',
     s_enemy:'สารานุกรมมอนสเตอร์', s_boss:'บอส', s_item:'ไอเทม', s_meta:'คลังเมตา · อัปเกรดถาวร',
     s_tier:'ระบบระดับ (ความยาก)', s_tip:'กลยุทธ์ & เคล็ดลับ',
@@ -3463,6 +3469,7 @@ const GUIDE_STR = {
   vi:{ title:'Hướng dẫn & Bách khoa', close:'Đóng', hint:'Đọc tới tận cuối để nhận thưởng ↓',
     toast:'Đọc xong hướng dẫn! +100 xu', rewardWait:'Đọc tới đây để nhận <b>thưởng đọc hết +100 xu</b> (một lần)',
     rewardDone:'✓ Bạn đã nhận thưởng đọc hết (100 xu).',
+    secret:'🪙 Tìm thấy phần thưởng ẩn! +1000 xu',
     s_intro:'Giới thiệu', s_char:'Đặc vụ', s_weapon:'Vũ khí', s_passive:'Kỹ năng bị động',
     s_enemy:'Bách khoa quái', s_boss:'Trùm', s_item:'Vật phẩm', s_meta:'Kho Meta · Nâng cấp vĩnh viễn',
     s_tier:'Hệ thống cấp (độ khó)', s_tip:'Chiến thuật & Mẹo',
@@ -3479,6 +3486,7 @@ const GUIDE_STR = {
   es:{ title:'Guía & Codex', close:'Cerrar', hint:'Lee hasta el final para una recompensa ↓',
     toast:'¡Guía completada! +100 monedas', rewardWait:'Lee hasta aquí para ganar <b>+100 monedas por completar</b> (una vez)',
     rewardDone:'✓ Ya reclamaste la recompensa por completar (100 monedas).',
+    secret:'🪙 ¡Recompensa oculta encontrada! +1000 monedas',
     s_intro:'Introducción', s_char:'Operativos', s_weapon:'Armas', s_passive:'Habilidades pasivas',
     s_enemy:'Bestiario', s_boss:'Jefes', s_item:'Objetos', s_meta:'Armería Meta · Mejoras permanentes',
     s_tier:'Sistema de niveles (dificultad)', s_tip:'Estrategia & Consejos',
@@ -7005,18 +7013,53 @@ function buildGuide() {
   const done = !!(G.save && G.save.guideReward);
   h += `<div class="gd-reward${done?' done':''}" id="gdRewardBanner">${done?gt('rewardDone'):gt('rewardWait')}</div>`;
   el.guideBody.innerHTML = h;
+  bindSecretHold();
 }
 let _gdToastT = null;
+function gdToast(msg) {                                   // 도감 하단 토스트 + 코인 소리
+  const toast = document.getElementById('gdToast');
+  if (!toast) return;
+  toast.textContent = msg; toast.classList.add('show');
+  Audio.S && Audio.S.coin && Audio.S.coin();
+  clearTimeout(_gdToastT); _gdToastT = setTimeout(() => toast.classList.remove('show'), 2600);
+}
 function grantGuideReward() {
   if (!G.save || G.save.guideReward) return;
   G.save.guideReward = true; G.save.coins += 100; Store.save(G.save);
   refreshMenu();
   const banner = document.getElementById('gdRewardBanner');
   if (banner) { banner.className = 'gd-reward done'; banner.innerHTML = gt('rewardDone'); }
-  const toast = document.getElementById('gdToast');
-  if (toast) { toast.textContent = gt('toast'); toast.classList.add('show');
-    Audio.S && Audio.S.coin && Audio.S.coin();
-    clearTimeout(_gdToastT); _gdToastT = setTimeout(() => toast.classList.remove('show'), 2600); }
+  gdToast(gt('toast'));
+  bindSecretHold();                                       // 이제 '이미 받았다' 문구가 되었으니 길게 누르기 활성화
+}
+/* 숨겨진 보상 — '완독 보상을 이미 받았습니다' 문구를 10초 이상 누르고 있으면 코인 +1000.
+   찾아낸 사람에게만 주는 것이라 안내하지 않는다. 배너가 다시 그려질 때마다 새로 건다. */
+const SECRET_HOLD_MS = 10000;
+let _secretT = null;
+function bindSecretHold() {
+  const banner = document.getElementById('gdRewardBanner');
+  if (!banner || !(G.save && G.save.guideReward)) return; // 아직 완독 전이면 걸지 않는다
+  if (banner.dataset.secret) return;                      // 중복 바인딩 방지
+  banner.dataset.secret = '1';
+  banner.style.userSelect = 'none';
+  banner.style.webkitUserSelect = 'none';
+  banner.style.webkitTouchCallout = 'none';
+  const stop = () => { clearTimeout(_secretT); _secretT = null; banner.classList.remove('holding'); };
+  const start = (e) => {
+    if (_secretT) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    banner.classList.add('holding');                      // 누르는 동안만 아주 옅게 빛난다
+    _secretT = setTimeout(() => {
+      _secretT = null; banner.classList.remove('holding');
+      if (!G.save) return;
+      G.save.coins += 1000; Store.save(G.save); refreshMenu();
+      gdToast(gt('secret'));
+      if (G.screenShake != null) G.screenShake = Math.max(G.screenShake, 6);
+    }, SECRET_HOLD_MS);
+  };
+  banner.addEventListener('pointerdown', start);
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) banner.addEventListener(ev, stop);
+  banner.addEventListener('contextmenu', e => e.preventDefault());
 }
 function onGuideScroll() {
   const c = el.guideCard;
