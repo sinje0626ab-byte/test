@@ -40,7 +40,7 @@
   --line-on:rgba(141,255,90,.75);
 
   /* 모서리 */
-  --r-s:8px; --r-m:12px; --r-l:16px; --r-pill:999px;
+  --r-s:6px; --r-m:10px; --r-l:12px; --r-pill:999px;
 
   /* 여백 */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
@@ -163,10 +163,10 @@ h1.title{margin:0 0 var(--s2);font-size:var(--f-display);font-weight:900;line-he
 
 .lobby{position:relative;z-index:2;display:flex;flex-direction:column;
   width:100%;height:100%;min-height:0;text-align:center;overflow:hidden;
-  padding:calc(var(--s5) + 34px + var(--safe-t)) var(--s5) calc(var(--s4) + var(--safe-b));}
+  padding:calc(var(--s5) + 38px + var(--safe-t)) var(--s5) calc(var(--s4) + var(--safe-b));}
 
 /* 화면 네 귀퉁이의 얇은 조준 마크 — 눈에 띄면 실패인 장식 */
-.lb-marks{position:absolute;inset:calc(var(--s3) + var(--safe-t) + 46px) var(--s4)
+.lb-marks{position:absolute;inset:calc(var(--s3) + var(--safe-t) + 50px) var(--s4)
   calc(var(--s3) + var(--safe-b)) var(--s4);pointer-events:none;}
 .lb-marks i{position:absolute;width:13px;height:13px;border:1px solid rgba(255,255,255,.10);}
 .lb-marks i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0;}
@@ -186,8 +186,13 @@ h1.title{margin:0 0 var(--s2);font-size:var(--f-display);font-weight:900;line-he
   font-size:clamp(38px,13.5vw,66px);
   text-shadow:0 1px 0 rgba(255,255,255,.10),0 4px 24px rgba(0,0,0,.85),
               0 0 42px rgba(141,255,90,.13);}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .lb-title{background:linear-gradient(177deg,#FFFFFF 0%,#EFF4F0 38%,#C9D6CD 78%,#AFC0B5 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:none;
+    filter:drop-shadow(0 4px 22px rgba(0,0,0,.9)) drop-shadow(0 0 34px rgba(141,255,90,.14));}
+}
 .lb-title span{display:block;}
-.lb-title span+span{color:#E8EFE9;}
 /* 타이틀 아래 얇은 구획 — 가운데 작은 마름모 하나 */
 .lb-under{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:var(--s3);}
 .lb-under i{display:block;width:38px;height:1px;
@@ -230,7 +235,7 @@ html:lang(th) .lb-deploy .lb-dep-t{text-indent:.1em;}
 .lb-deploy:active{transform:scale(.988);}
 /* 이어하기 — 상자 없는 조용한 한 줄 */
 .lb-continue{appearance:none;background:none;border:0;cursor:pointer;
-  min-height:38px;padding:0 var(--s3);color:var(--tx-3);
+  min-height:44px;padding:0 var(--s3);color:var(--tx-3);
   font:500 var(--f-body)/1.25 inherit;font-family:inherit;
   text-shadow:0 2px 10px rgba(0,0,0,.9);
   transition:color var(--t1) var(--ease);}
@@ -280,7 +285,7 @@ html:lang(ko) .lb-strip,html:lang(zh) .lb-strip,html:lang(th) .lb-strip{letter-s
 }
 /* ---- 세로로 짧은 기기 ---- */
 @media (max-height:700px){
-  .lobby{padding-top:calc(var(--s4) + 34px + var(--safe-t));padding-bottom:calc(var(--s3) + var(--safe-b));}
+  .lobby{padding-top:calc(var(--s4) + 38px + var(--safe-t));padding-bottom:calc(var(--s3) + var(--safe-b));}
   .lb-hero{padding-top:5vh;}
   .lb-title{font-size:clamp(32px,11vw,48px);}
   .lb-deploy{min-height:52px;}
@@ -305,6 +310,21 @@ html:lang(ko) .lb-strip,html:lang(zh) .lb-strip,html:lang(th) .lb-strip{letter-s
   .lb-nav{max-width:640px;width:100%;margin:0 auto;justify-content:center;gap:var(--s6);}
   .lb-navitem{flex:0 0 auto;min-width:96px;}
 }
+
+/* ---------- 키보드 포커스 ----------
+   마우스·터치에는 보이지 않고, 탭으로 이동할 때만 초록 테두리가 드러난다. */
+.lb-deploy:focus-visible{outline:none;border-color:rgba(141,255,90,.85);
+  box-shadow:0 0 0 2px rgba(141,255,90,.28),0 0 30px -14px rgba(141,255,90,.8);}
+.lb-continue:focus-visible{outline:none;color:var(--tx);
+  box-shadow:0 0 0 2px rgba(141,255,90,.28);border-radius:3px;}
+.lb-navitem:focus-visible{outline:2px solid rgba(141,255,90,.5);outline-offset:-4px;
+  border-radius:4px;color:var(--tx);}
+.lb-navitem:focus-visible .ic{opacity:1;}
+.lb-navitem:focus-visible::after{transform:translateX(-50%) scaleX(1);}
+.btn:focus-visible,.sh-x:focus-visible,#gearBtn:focus-visible,#langBtn:focus-visible,
+.lg-item:focus-visible,.toggle:focus-visible,.char:focus-visible,.buy:focus-visible,
+.stagesel .sp:focus-visible{outline:2px solid rgba(141,255,90,.6);outline-offset:2px;}
+.char:focus-visible,.buy:focus-visible{border-color:transparent;}
 
 /* ---------- 로비 하위 화면 (대원 · 아머리 · 기록) ---------- */
 .sheet .card{display:flex;flex-direction:column;overflow:hidden;
@@ -391,14 +411,15 @@ html:lang(ko) .lb-strip,html:lang(zh) .lb-strip,html:lang(th) .lb-strip{letter-s
 
 /* ---------- 언어 선택 ---------- */
 #langWrap{position:absolute;top:calc(var(--s3) + var(--safe-t));left:var(--s3);z-index:6;}
-#langBtn{appearance:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 10px;
+#langBtn{appearance:none;display:flex;align-items:center;gap:5px;height:44px;padding:0 10px;
   background:transparent;border:1px solid transparent;border-radius:var(--r-s);
   color:var(--tx-3);font:600 var(--f-meta)/1 inherit;cursor:pointer;
   transition:color var(--t1) var(--ease),background var(--t1) var(--ease),border-color var(--t1) var(--ease);}
 #langBtn:hover,#langWrap.open #langBtn{color:var(--tx-2);
   background:rgba(13,19,17,.8);border-color:var(--line);backdrop-filter:blur(8px);}
 #langBtn:active{transform:scale(.96);}
-#langBtn .lg-flag{font-size:14px;}
+#langBtn .lg-flag{display:none;}          /* 어두운 화면에서 국기만 색이 튄다 — 목록에는 그대로 둔다 */
+#langBtn .lg-txt{font-size:var(--f-micro);letter-spacing:.06em;}
 #langBtn .lg-caret{font-size:9px;color:var(--tx-3);transition:transform var(--t2) var(--ease);}
 #langWrap.open #langBtn .lg-caret{transform:rotate(180deg);}
 #langList{position:absolute;top:42px;left:0;min-width:150px;padding:var(--s1);
@@ -413,7 +434,7 @@ html:lang(ko) .lb-strip,html:lang(zh) .lb-strip,html:lang(th) .lb-strip{letter-s
 .lg-item.on{color:var(--green);}
 
 #gearBtn{position:absolute;top:calc(var(--s3) + var(--safe-t));right:var(--s3);z-index:6;
-  appearance:none;width:40px;height:40px;display:grid;place-items:center;
+  appearance:none;width:44px;height:44px;display:grid;place-items:center;
   background:transparent;border:1px solid transparent;border-radius:var(--r-s);
   color:var(--tx-3);cursor:pointer;
   transition:color var(--t1) var(--ease),background var(--t1) var(--ease),border-color var(--t1) var(--ease);}
@@ -771,7 +792,7 @@ h2.res.lose{color:var(--red);}
     .title-wrap{padding:0;}
     .title-logo.landscape{display:none;}
     .title-logo.portrait{display:block;width:100%;height:100%;max-width:none;max-height:none;
-      object-fit:cover;object-position:center top;border-radius:0;box-shadow:none;transform-origin:50% 12%;
+      object-fit:contain;object-position:center center;border-radius:0;box-shadow:none;transform-origin:50% 50%;
       -webkit-mask-image:none;mask-image:none;
       animation:titleLogoIn .7s ease forwards, titlePulseCover 2.6s ease-in-out infinite;}
     .title-flames{display:block;position:absolute;left:0;right:0;bottom:0;height:42%;pointer-events:none;
@@ -785,7 +806,7 @@ h2.res.lose{color:var(--red);}
     .title-flames span:nth-child(4){left:8%;width:84%;height:70%;filter:blur(12px);opacity:.7;animation-delay:.25s;}
   }
   /* 제목 커졌다 작아졌다(전체화면 cover라 최소 1.0으로 유지해 빈틈 방지, 제목 잘림 최소화) */
-  @keyframes titlePulseCover{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+  @keyframes titlePulseCover{0%,100%{transform:scale(1);}50%{transform:scale(1.018);}}
   /* 화염이 위로 솟구쳤다 잦아드는 이펙트 */
   @keyframes fireSurge{
     0%,100%{transform:scaleY(.7) translateY(8%);opacity:.5;}
@@ -802,7 +823,8 @@ h2.res.lose{color:var(--red);}
   #splash.fadeout{opacity:0;transition:opacity 1s ease;}                                /* 버튼 누르면 살며시 화면 꺼짐 */
   #titleScreen.show{animation:screenFadeIn .9s ease both;}                              /* 로고 다음 화면 부드럽게 등장 */
   @keyframes screenFadeIn{from{opacity:0;}to{opacity:1;}}
-  .press-prompt{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 5%);
+  .press-prompt{display:none;                                     /* 타이틀 카드는 스스로 넘어간다 */
+    position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 5%);
     text-align:center;font-size:clamp(16px,2.6vw,20px);font-weight:800;letter-spacing:.1em;color:#fff;z-index:2;
     animation:pressBlink 1.25s ease-in-out infinite;}
   /* 밝게 켜졌다가 은은히 흐려지는 깜빡임 + 글로우 맥동 */
@@ -5014,10 +5036,14 @@ window.R3 = (() => {
     }
   }
 
+  const lessMotion = (() => { try {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch (e) { return false; } })();
+
   function frameLobby() {
     buildLobby();
     lobbyMode(true);
-    const t = G.frame * 0.001;
+    const t = lessMotion ? 0.9 : G.frame * 0.001;   // 움직임 줄이기: 장면을 한 순간에 멈춰 세운다
 
     // 선택한 대원을 세운다
     const ck = CHARACTERS[G.character || 'hunter'].sprite;
@@ -5034,6 +5060,8 @@ window.R3 = (() => {
     lbChar.position.y = Math.sin(t * 1.7) * 1.4;    // 아주 얕은 호흡
     // 세로 화면에선 중앙 가까이, 가로 화면에선 가운데 버튼을 피해 옆으로
     lbCharGrp.position.x = (W / H < 0.9) ? 58 : (W / H > 1.7 ? 290 : 215);
+    // 세로가 짧은 기기는 UI 가 위로 모여 대원의 발이 출격 버튼에 가린다 — 뒤로 물린다
+    lbCharGrp.position.z = H < 720 ? -330 : -155;
 
     // 경고등 — 서로 다른 박자로 느리게 숨 쉰다
     for (const b of lbBeacons) {
@@ -5052,17 +5080,22 @@ window.R3 = (() => {
     }
 
     // 먼지
-    const mx = new T.Matrix4(), q = new T.Quaternion(), sv = new T.Vector3();
-    lbCam.getWorldQuaternion(q);
-    for (let i = 0; i < lbDustP.length; i++) {
-      const d = lbDustP[i];
-      d.y += d.vy; d.x += d.vx + Math.sin(t * 2 + d.ph) * 0.12;
-      if (d.y > 360) { d.y = -10; d.x = (Math.random() - 0.5) * 1100; }
-      sv.set(d.s, d.s, d.s);
-      mx.compose(tmpV.set(d.x, d.y, d.z), q, sv);
-      lbDust.setMatrixAt(i, mx);
+    if (!lessMotion || !lbDust.userData.placed) {
+      const mx = new T.Matrix4(), q = new T.Quaternion(), sv = new T.Vector3();
+      lbCam.getWorldQuaternion(q);
+      for (let i = 0; i < lbDustP.length; i++) {
+        const d = lbDustP[i];
+        if (!lessMotion) {
+          d.y += d.vy; d.x += d.vx + Math.sin(t * 2 + d.ph) * 0.12;
+          if (d.y > 360) { d.y = -10; d.x = (Math.random() - 0.5) * 1100; }
+        }
+        sv.set(d.s, d.s, d.s);
+        mx.compose(tmpV.set(d.x, d.y, d.z), q, sv);
+        lbDust.setMatrixAt(i, mx);
+      }
+      lbDust.instanceMatrix.needsUpdate = true;
+      lbDust.userData.placed = true;
     }
-    lbDust.instanceMatrix.needsUpdate = true;
 
     // 카메라 — 숨 쉬듯 아주 느린 패럴랙스
     lbCam.position.set(Math.sin(t * 0.34) * 26, 118 + Math.sin(t * 0.23) * 5, 540);
@@ -5599,6 +5632,14 @@ function openStagePick(maxS) {
   }
   el.stagePick.classList.add('show');
 }
+/* div 로 만든 컨트롤(대원 카드·구매 버튼)도 탭·엔터로 쓸 수 있게 한다 — 동작은 클릭과 같다 */
+function keyable(elm, label) {
+  elm.tabIndex = 0; elm.setAttribute('role', 'button');
+  if (label) elm.setAttribute('aria-label', label);
+  elm.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); elm.click(); }
+  });
+}
 function renderCharSelect() {
   el.charsel.innerHTML = '';
   for (const id in CHARACTERS) {
@@ -5616,6 +5657,7 @@ function renderCharSelect() {
       G.character = id; G.save.character = id; G.meta = curMeta(); Store.save(G.save);
       Audio.ensure(); Audio.S.pickup(); refreshMenu();   // 대원별 아머리로 갱신
     };
+    keyable(card, trName('char', id));
     el.charsel.appendChild(card);
   }
 }
@@ -5636,6 +5678,8 @@ function renderArmory() {
       G.save.coins -= cost; meta[id] = lv + 1; Store.save(G.save);
       Audio.ensure(); Audio.S.coin(); refreshMenu();
     };
+    const bb = row.querySelector('.buy');
+    if (bb && !isMax && can) keyable(bb, trName('meta', id));
     el.armory.appendChild(row);
   }
 }
@@ -5785,17 +5829,20 @@ function bootSequence() {
       el.splash.classList.remove('show', 'fadeout');
       el.titleScreen.classList.add('show');             // 다음 화면 부드럽게 등장
       Audio.startMusic('title');                        // 로비 앰비언트
+      let entered = false;
       const start = () => {
+        if (entered) return; entered = true;
         el.titleScreen.classList.remove('show');
         el.menu.classList.add('show');
         Audio.ensure(); Audio.resume();
         window.removeEventListener('keydown', start);
         window.removeEventListener('pointerdown', start);
       };
-      setTimeout(() => {
+      setTimeout(() => {                       // 눌러서 건너뛸 수는 있다
         window.addEventListener('keydown', start, { once:true });
         window.addEventListener('pointerdown', start, { once:true });
       }, 60);
+      setTimeout(start, 1900);                 // 기다리게 하지 않는다 — 스스로 로비로 넘어간다
     }, 1000);
   }
   // 로드시 자동재생 시도(브라우저가 허용하면 로고 화면에서 바로 로고송 재생 — 페이드인)
