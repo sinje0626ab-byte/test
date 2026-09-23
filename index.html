@@ -549,6 +549,18 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
 .lvhead h2{margin:0;font-size:var(--f-body);font-weight:400;color:var(--tx-2);
   animation:luIn var(--t3) 120ms var(--ease) both;}
 .lvhead .heal{margin-top:6px;font-size:var(--f-micro);color:var(--tx-3);}
+/* 남은 칸 — 새로 고를 수 있는 무기/기술이 몇 개 남았는지 조용히 알려 준다 */
+.lu-slots{display:flex;justify-content:center;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap;}
+.lu-slot{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;
+  background:var(--panel-2);border:1px solid var(--line);
+  font-size:var(--f-micro);color:var(--tx-3);line-height:1;}
+.lu-slot .ic{width:12px;height:12px;color:var(--tx-2);}
+.lu-slot>span{color:var(--tx-2);}
+.lu-slot b{font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;}
+.lu-slot i{font-style:normal;color:var(--green);}
+.lu-slot.full{opacity:.62;}
+.lu-slot.full .ic,.lu-slot.full b{color:var(--tx-3);}
+.lu-slot.full i{color:var(--tx-3);}
 @keyframes luIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 
 .choices{display:flex;flex-direction:column;gap:var(--s2);}
@@ -1272,6 +1284,7 @@ h2.res.lose{color:var(--red);}
       <div class="lvjump" id="luLevel"><span class="from">Lv 1</span><span class="arw">→</span><span class="to">Lv 2</span></div>
       <h2 id="luTitle" data-i18n="lu.title">능력 선택</h2>
       <div class="heal" id="luHeal" data-i18n="lu.heal">＋ 긴급 치유 발동</div>
+      <div class="lu-slots" id="luSlots"></div>
       <div class="sulist lu-syn" id="luSyn" style="display:none;"></div>
     </div>
     <div class="choices" id="choices"></div>
@@ -3644,7 +3657,7 @@ const UI = {
     'btn.continue':'이어하기 · {n}차 Lv{lv} ({t})',
     'pause.stats':'생존 {t} · 처치 {k} · 코인 {c}',
     'title.press':'아무 버튼이나 눌러주세요', 'splash.start':'아무 버튼이나 눌러주세요',
-    'lu.label':'LEVEL UP', 'lu.title':'능력 선택', 'lu.heal':'＋ 긴급 치유 발동',
+    'lu.slotW':'무기', 'lu.slotP':'기술', 'lu.slotLeft':'+{n} 더', 'lu.slotFull':'가득', 'lu.label':'LEVEL UP', 'lu.title':'능력 선택', 'lu.heal':'＋ 긴급 치유 발동',
     'b.evo':'진화', 'b.up':'강화', 'b.new':'신규',
     'lv.evo':'초월 진화', 'lv.wnew':'신규 무기', 'lv.pnew':'신규 패시브',
     'heal.nm':'전열 정비', 'heal.lv':'회복', 'heal.ds':'체력을 완전히 회복합니다.',
@@ -3681,7 +3694,7 @@ const UI = {
     'btn.continue':'Continue · Tier {n} Lv{lv} ({t})',
     'pause.stats':'Survived {t} · Kills {k} · Coins {c}',
     'title.press':'Press any button', 'splash.start':'Press any button',
-    'lu.label':'Level Up', 'lu.title':'Choose an ability', 'lu.heal':'＋ Emergency heal triggered',
+    'lu.slotW':'Weapons', 'lu.slotP':'Skills', 'lu.slotLeft':'+{n} more', 'lu.slotFull':'full', 'lu.label':'Level Up', 'lu.title':'Choose an ability', 'lu.heal':'＋ Emergency heal triggered',
     'b.evo':'EVO', 'b.up':'UP', 'b.new':'NEW',
     'lv.evo':'Transcendent Evolution', 'lv.wnew':'New Weapon', 'lv.pnew':'New Passive',
     'heal.nm':'Regroup', 'heal.lv':'Heal', 'heal.ds':'Fully restores your HP.',
@@ -3718,7 +3731,7 @@ const UI = {
     'btn.continue':'继续 · 第{n}层 Lv{lv} ({t})',
     'pause.stats':'生存 {t} · 击杀 {k} · 金币 {c}',
     'title.press':'请按任意键', 'splash.start':'请按任意键',
-    'lu.label':'Level Up', 'lu.title':'选择一项能力', 'lu.heal':'＋ 紧急治疗已触发',
+    'lu.slotW':'武器', 'lu.slotP':'技能', 'lu.slotLeft':'还可 +{n}', 'lu.slotFull':'已满', 'lu.label':'Level Up', 'lu.title':'选择一项能力', 'lu.heal':'＋ 紧急治疗已触发',
     'b.evo':'进化', 'b.up':'强化', 'b.new':'新',
     'lv.evo':'超越进化', 'lv.wnew':'新武器', 'lv.pnew':'新被动',
     'heal.nm':'整顿', 'heal.lv':'治疗', 'heal.ds':'完全恢复生命值。',
@@ -3755,7 +3768,7 @@ const UI = {
     'btn.continue':'เล่นต่อ · ระดับ{n} Lv{lv} ({t})',
     'pause.stats':'รอด {t} · สังหาร {k} · เหรียญ {c}',
     'title.press':'กดปุ่มใดก็ได้', 'splash.start':'กดปุ่มใดก็ได้',
-    'lu.label':'Level Up', 'lu.title':'เลือกความสามารถ', 'lu.heal':'＋ ฟื้นฟูฉุกเฉินทำงาน',
+    'lu.slotW':'อาวุธ', 'lu.slotP':'สกิล', 'lu.slotLeft':'+{n} ได้อีก', 'lu.slotFull':'เต็ม', 'lu.label':'Level Up', 'lu.title':'เลือกความสามารถ', 'lu.heal':'＋ ฟื้นฟูฉุกเฉินทำงาน',
     'b.evo':'วิวัฒน์', 'b.up':'อัป', 'b.new':'ใหม่',
     'lv.evo':'วิวัฒนาการขั้นสูง', 'lv.wnew':'อาวุธใหม่', 'lv.pnew':'พาสซีฟใหม่',
     'heal.nm':'จัดทัพใหม่', 'heal.lv':'ฟื้นฟู', 'heal.ds':'ฟื้นพลังชีวิตเต็ม',
@@ -3792,7 +3805,7 @@ const UI = {
     'btn.continue':'Tiếp tục · Cấp {n} Lv{lv} ({t})',
     'pause.stats':'Sống sót {t} · Hạ gục {k} · Xu {c}',
     'title.press':'Nhấn phím bất kỳ', 'splash.start':'Nhấn nút bất kỳ',
-    'lu.label':'Level Up', 'lu.title':'Chọn một kỹ năng', 'lu.heal':'＋ Hồi máu khẩn cấp kích hoạt',
+    'lu.slotW':'Vũ khí', 'lu.slotP':'Kỹ năng', 'lu.slotLeft':'+{n} nữa', 'lu.slotFull':'đầy', 'lu.label':'Level Up', 'lu.title':'Chọn một kỹ năng', 'lu.heal':'＋ Hồi máu khẩn cấp kích hoạt',
     'b.evo':'TIẾN HÓA', 'b.up':'NÂNG', 'b.new':'MỚI',
     'lv.evo':'Tiến hóa siêu việt', 'lv.wnew':'Vũ khí mới', 'lv.pnew':'Bị động mới',
     'heal.nm':'Tập hợp lại', 'heal.lv':'Hồi máu', 'heal.ds':'Hồi đầy máu.',
@@ -3829,7 +3842,7 @@ const UI = {
     'btn.continue':'Continuar · Nivel {n} Lv{lv} ({t})',
     'pause.stats':'Sobrevivió {t} · Bajas {k} · Monedas {c}',
     'title.press':'Pulsa cualquier botón', 'splash.start':'Pulsa cualquier botón',
-    'lu.label':'Level Up', 'lu.title':'Elige una habilidad', 'lu.heal':'＋ Curación de emergencia activada',
+    'lu.slotW':'Armas', 'lu.slotP':'Habilidades', 'lu.slotLeft':'+{n} más', 'lu.slotFull':'lleno', 'lu.label':'Level Up', 'lu.title':'Elige una habilidad', 'lu.heal':'＋ Curación de emergencia activada',
     'b.evo':'EVO', 'b.up':'MEJORA', 'b.new':'NUEVO',
     'lv.evo':'Evolución trascendente', 'lv.wnew':'Arma nueva', 'lv.pnew':'Pasiva nueva',
     'heal.nm':'Reagruparse', 'heal.lv':'Curar', 'heal.ds':'Restaura toda tu vida.',
@@ -4814,7 +4827,7 @@ function spawnEnemy(typeKey, ox, oy) {
 function spawnDirector() {
   if (G.clearing) return;                 // 스테이지 클리어 연출 중엔 스폰 정지
   if (--G.threatT <= 0) { G.threatT = THREAT_BALANCE.window; refreshThreatBudget(); }
-  G.spawnTimer--;
+  if (G.spawnTimer > -SPAWN_TUNE.baseFrames) G.spawnTimer--;   // 밀린 빚이 무한정 쌓이지 않게
   if (G.spawnTimer <= 0 && G.popN < SPAWN_CAP.normal) {
     const t = G.time, S = SPAWN_TUNE;
     const dens = 1 + (G.tier - 1) * S.densPerTier;   // 차수마다 스폰 밀도 증가
@@ -4822,7 +4835,11 @@ function spawnDirector() {
     const iv = Math.max(S.minFrames, S.baseFrames - t * S.decay) / dens;
     // 보스전 압박은 간격이 아니라 예산(bossCut 45% / miniCut 70%)으로만 낮춘다.
     // 여기서 간격까지 늘리면 두 번 깎여 설계치보다 훨씬 조용해진다.
-    G.spawnTimer = iv * popSlow();          // 붐비면 주기를 늘려 상한에 부딪히기 전에 감속
+    const step = iv * popSlow();            // 붐비면 주기를 늘려 상한에 부딪히기 전에 감속
+    // 타이머를 새 값으로 덮어쓰면 소수점 나머지가 매 주기 버려져 실제 간격이 올림값이 된다.
+    // (4.17프레임 → 실제 5프레임) 그래서 남은 값에 더해 나머지를 다음 주기로 넘긴다.
+    // 다만 상한에 막혀 오래 밀렸을 때는 빚을 갚느라 매 프레임 터지므로, 한 주기를 넘는 빚은 끊는다.
+    G.spawnTimer = (G.spawnTimer > -step) ? G.spawnTimer + step : step;
     spawnThreatWave();
   }
   if (!G.miniSpawned && G.time >= 150) { G.miniSpawned = true; spawnBoss('mini'); }
@@ -5528,6 +5545,7 @@ function gainXP(n) {
    레벨업 선택
    ========================================================================== */
 const optKey = o => o.type + ':' + (o.key || o.id || '');
+const WEAPON_SLOTS = 6;        // 무기 칸 수 (기존 값 그대로)
 function buildChoices() {
   const p = P(), opts = [], evoOpts = [];
   for (const w of p.weapons) {
@@ -5536,7 +5554,7 @@ function buildChoices() {
   }
   for (const w of p.weapons) if (!w.evolved && w.level < 8) opts.push({ type:'wup', key:w.key });
   for (const id in p.passives) if (p.passives[id] < 5) opts.push({ type:'pup', id });
-  if (p.weapons.length < 6) for (const k in WEAPONS) if (!ownWeapon(k)) opts.push({ type:'wnew', key:k });
+  if (p.weapons.length < WEAPON_SLOTS) for (const k in WEAPONS) if (!ownWeapon(k)) opts.push({ type:'wnew', key:k });
   if (Object.keys(p.passives).length < (G.save.passiveSlots || 6)) for (const k in PASSIVES) if (!(k in p.passives)) opts.push({ type:'pnew', id:k });
   const ban = p.banned || [];
   const keep = o => ban.indexOf(optKey(o)) < 0;
@@ -5634,6 +5652,7 @@ function enterLevelUp() {
   const to = Math.max(2, p.level - p.pendingLevels + 1);
   const lvEl = $('luLevel');
   if (lvEl) lvEl.innerHTML = `<span class="from">Lv ${to-1}</span><span class="arw">→</span><span class="to">Lv ${to}</span>`;
+  renderSlotRow();
   renderSynergyRow();
   const list = buildChoices();
   G.luList = list;
@@ -5670,6 +5689,25 @@ function enterLevelUp() {
 
 /* ---------------- 레벨업 RNG 제어 — 다시 뽑기 · 제외 · 고정 ----------------
    무작위를 없애지 않는다. 원하는 빌드를 만들 기회조차 없는 판을 줄일 뿐이다. */
+/* 새로 고를 수 있는 칸이 몇 개 남았는지 — 이미 가진 것 말고 '새 무기/새 기술'을
+   앞으로 몇 개나 더 고를 수 있는가. 남은 칸이 0 이면 강화만 나온다는 뜻이다. */
+function renderSlotRow() {
+  const box = $('luSlots'); if (!box) return;
+  const p = P();
+  const wMax = WEAPON_SLOTS, pMax = G.save.passiveSlots || 6;
+  const wUsed = p.weapons.length, pUsed = Object.keys(p.passives).length;
+  // 남은 칸이 있어도 더 고를 종류가 없으면 실제로는 못 고른다 — 둘 중 작은 쪽을 쓴다
+  const wPool = Object.keys(WEAPONS).filter(k => !ownWeapon(k)).length;
+  const pPool = Object.keys(PASSIVES).filter(k => !(k in p.passives)).length;
+  const wLeft = Math.min(wMax - wUsed, wPool);
+  const pLeft = Math.min(pMax - pUsed, pPool);
+  const cell = (icon, label, used, max, left) =>
+    `<span class="lu-slot${left > 0 ? '' : ' full'}">${ico(icon)}<span>${label}</span>` +
+    `<b>${used}/${max}</b>` +
+    `<i>${left > 0 ? t('lu.slotLeft').replace('{n}', left) : t('lu.slotFull')}</i></span>`;
+  box.innerHTML = cell('crate', t('lu.slotW'), wUsed, wMax, wLeft)
+                + cell('dmg',   t('lu.slotP'), pUsed, pMax, pLeft);
+}
 function renderSynergyRow() {
   const row = $('luSyn'); if (!row) return;
   const ids = Object.keys(G.syn || {});
