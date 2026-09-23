@@ -758,6 +758,47 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
 .lu-tool.ticket b{color:var(--gold);}
 .lu-tool.ticket:hover:not(:disabled){color:var(--gold);border-color:rgba(255,212,90,.5);}
 .ticket-row .tk-have{color:var(--gold);font-weight:700;}
+
+/* ---------- 무기 숙련 · 유물 ---------- */
+.am-tabs{flex:none;display:flex;gap:2px;margin:var(--s2) 0 0;padding:3px;border-radius:var(--r-s);
+  background:var(--panel-2);}
+.am-tab{flex:1;min-height:40px;padding:10px 4px;border:0;border-radius:4px;background:transparent;
+  color:var(--tx-3);font:inherit;font-size:var(--f-meta);font-weight:600;cursor:pointer;
+  transition:color var(--t1) var(--ease),background var(--t1) var(--ease);}
+.am-tab:hover{color:var(--tx-2);}
+.am-tab.on{background:rgba(141,255,90,.10);color:var(--green);}
+.am-tab:focus-visible{outline:2px solid var(--green);outline-offset:1px;}
+.am-note{padding:var(--s3) 0 var(--s2);font-size:var(--f-meta);color:var(--tx-3);
+  border-bottom:1px solid var(--line);}
+.up.mast .mx-lv{margin-left:5px;font-size:var(--f-micro);font-weight:700;color:var(--green);
+  letter-spacing:.06em;}
+.up.mast.max .mx-lv{color:var(--gold);}
+.up.mast .lvdots{margin:5px 0;}
+.mx-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden;margin:5px 0 3px;}
+.mx-bar i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),#6EE7FF);}
+.mx-next{margin-top:3px;font-size:var(--f-micro);color:var(--tx-3);opacity:.85;}
+.sh-coin[hidden]{display:none;}
+.up.relic .buy{color:var(--tx-2);}
+.up.relic .buy:hover{color:var(--green);border-color:var(--line-on);}
+.up.relic.on{background:rgba(141,255,90,.05);}
+.up.relic.on .buy{color:var(--green);}
+.up.relic.on .icon{color:var(--green);}
+.up.relic.lock .icon,.up.relic.lock .nm,.up.relic.lock .ds{color:var(--tx-3);}
+/* 결과 화면: 이번 판에서 오른 숙련 */
+.mx{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--line);text-align:left;}
+.mx-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px;}
+.mx-row .mx-ic{display:grid;place-items:center;width:16px;height:16px;color:var(--tx-2);flex:none;}
+.mx-row .mx-ic .ic{width:14px;height:14px;}
+.mx-nm{flex:1;min-width:0;font-size:var(--f-body);color:var(--tx-2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mx-up{font-size:var(--f-micro);font-weight:700;color:var(--green);letter-spacing:.04em;}
+.mx-xp{font-size:var(--f-meta);font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;}
+.mx-row .mx-bar{flex-basis:100%;margin:0;}
+/* 런 시작 배너에 붙는 유물 한 줄 */
+.mut-banner .r{display:flex;justify-content:center;gap:var(--s2);margin-top:8px;}
+.mut-banner .r[hidden]{display:none;}
+.mut-banner .r span{font-size:var(--f-meta);font-weight:600;color:var(--tx-2);}
+.mut-banner .r .ic{width:13px;height:13px;margin-right:4px;vertical-align:-2px;color:var(--green);}
 .bossbar{position:absolute;left:50%;transform:translateX(-50%);
   top:calc(96px + var(--safe-t));width:min(440px,74vw);display:none;}
 .bossbar.show{display:block;animation:bossIn 420ms var(--ease) both;}
@@ -830,7 +871,9 @@ h2.res.lose{color:var(--red);}
 /* 성과가 길어도 다음 행동 버튼은 항상 손에 닿는다 */
 #result #resNext,#result #resAgain{position:sticky;bottom:0;}
 #result #resNext{background:linear-gradient(180deg,rgba(141,255,90,.16),rgba(141,255,90,.06)),#0D1311;}
-#result #resAgain{background:rgba(13,19,17,.96);}
+/* 성과·숙련이 길어지면서 버튼 뒤로 글자가 비쳐 보이던 것을 막는다 */
+#result #resAgain{background:#0D1311;box-shadow:0 -14px 20px -10px rgba(13,19,17,.98);}
+#result #resNext{box-shadow:0 -14px 20px -10px rgba(13,19,17,.98);}
 
 /* 가이드 닫기 버튼은 아래에 붙어 있다 — 뒤 내용이 비쳐 보이지 않게 불투명 바탕을 깐다 */
 #guideClose{background:linear-gradient(180deg,rgba(141,255,90,.16),rgba(141,255,90,.06)),#0D1311;
@@ -1021,6 +1064,7 @@ h2.res.lose{color:var(--red);}
     <div class="l" id="mutBannerL">MUTATION</div>
     <div class="n" id="mutBannerN"></div>
     <div class="d" id="mutBannerD"></div>
+    <div class="r" id="mutBannerR" hidden></div>
   </div>
   <div class="bossbar" id="bossbar">
     <div class="nm" id="bossName">BOSS</div>
@@ -1109,10 +1153,15 @@ h2.res.lose{color:var(--red);}
   <div class="veil"></div>
   <div class="card">
     <div class="sh-head">
-      <div class="brand" data-i18n="sheet.armory">영구 강화</div>
+      <div class="brand" data-i18n="nav.armory">아머리</div>
       <button class="sh-x" id="amClose" type="button" data-ic="close" aria-label="close"></button>
     </div>
     <div class="sh-coin"><span class="k" data-i18n="menu.coins">보유 코인</span><span class="v" id="bankCoins">0</span></div>
+    <div class="am-tabs" id="amTabs" role="tablist">
+      <button class="am-tab on" type="button" data-am="meta" data-i18n="am.meta">영구 강화</button>
+      <button class="am-tab" type="button" data-am="mastery" data-i18n="am.mastery">무기 숙련</button>
+      <button class="am-tab" type="button" data-am="relic" data-i18n="am.relic">유물</button>
+    </div>
     <div class="sh-body">
       <div class="armory" id="armory"></div>
     </div>
@@ -1239,6 +1288,7 @@ h2.res.lose{color:var(--red);}
     <h2 class="res" id="resTitle">전멸</h2>
     <div id="resStats"></div>
     <div id="resPerf" class="pf" style="display:none;"></div>
+    <div id="resMast" class="mx" style="display:none;"></div>
     <div id="resReward" class="res-reward" style="display:none;"></div>
     <button class="btn primary" id="resNext" style="margin-top:18px;display:none;">▶ 다음 차수 도전</button>
     <button class="btn ghost" id="resAgain" style="margin-top:10px;" data-i18n="res.again">로비로 돌아가기</button>
@@ -1281,7 +1331,7 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1)
 const Store = (() => {
   const KEY = 'undead_rush_save_v1';
   let mem = null;
-  const def = () => ({ saveVersion: 3, coins: 0, bestTime: 0, totalKills: 0, meta: {}, metaByChar: {}, character: 'hunter', lang: '', maxTier: 1, passiveSlots: 6, sfxOn: true, bgmOn: true, guideReward: false, chanceChangeTickets: 0, runState: null });
+  const def = () => ({ saveVersion: 4, coins: 0, bestTime: 0, totalKills: 0, meta: {}, metaByChar: {}, character: 'hunter', lang: '', maxTier: 1, passiveSlots: 6, sfxOn: true, bgmOn: true, guideReward: false, chanceChangeTickets: 0, mastery: {}, relics: [], runState: null });
   const CHARS3 = ['hunter', 'berserker', 'pyromancer'];
   function normalize(d) {
     if (!d.metaByChar || typeof d.metaByChar !== 'object') d.metaByChar = {};
@@ -1299,7 +1349,12 @@ const Store = (() => {
     if (d.runState === undefined) d.runState = null;
     // v2 → v3: 기회변경 티켓. 기존 세이브는 0 장으로 시작한다.
     if (typeof d.chanceChangeTickets !== 'number' || !(d.chanceChangeTickets >= 0)) d.chanceChangeTickets = 0;
-    d.saveVersion = 3;
+    // v3 → v4: 무기 숙련 · 유물. 기존 세이브는 숙련 0 / 장착 없음으로 시작한다(기존 값은 하나도 건드리지 않는다).
+    if (!d.mastery || typeof d.mastery !== 'object' || Array.isArray(d.mastery)) d.mastery = {};
+    for (const k in d.mastery) { const v = +d.mastery[k]; d.mastery[k] = (v >= 0) ? v : 0; }
+    if (!Array.isArray(d.relics)) d.relics = [];
+    d.relics = d.relics.filter(x => typeof x === 'string').slice(0, 2);
+    d.saveVersion = 4;
     return d;
   }
   function load() {
@@ -2270,6 +2325,9 @@ const ICONS = {
   clock:
     '<path d="M12 2.8a9.2 9.2 0 1 1-9.2 9.2A9.2 9.2 0 0 1 12 2.8zm0 2.6a6.6 6.6 0 1 0 6.6 6.6A6.6 6.6 0 0 0 12 5.4z"/>'
     + '<path d="M11 7h2v5.4l3.4 2-1 1.8-4.4-2.6z"/>',
+  lock:
+    '<path d="M12 2.4a4.9 4.9 0 0 1 4.9 4.9V10h-2.6V7.3a2.3 2.3 0 0 0-4.6 0V10H7.1V7.3A4.9 4.9 0 0 1 12 2.4z"/>'
+    + '<path d="M5.4 10h13.2v11.2H5.4z"/>',
   pause:
     '<path d="M6.4 3.6h4v16.8h-4zM13.6 3.6h4v16.8h-4z"/>',
   sound:
@@ -2722,6 +2780,7 @@ function updateCharacter() {
   const p = G.player; if (!p) return;
   if (p.skCd > 0) p.skCd--;
   if (p.calm > 0) p.calm--;
+  if (p.hurtSpdT > 0) p.hurtSpdT--;
   updateDash();
 
   if (G.character === 'berserker') {
@@ -2902,6 +2961,16 @@ function updateEnemyBehavior(e, p, dx, dy, d) {
     setStage(n){ G.tier = n; return G.tier; },
     state(){ const p=P(); return { ch:G.character, rage:p&&p.rage, heat:p&&p.heat, skCd:p&&p.skCd,
       marks:G.markN, corpses:G.corpses.length, zones:G.zones.length, syn:Object.keys(G.syn) }; },
+    // 무기 숙련 · 유물 (PHASE K)
+    setMastery(key, xp){ if(!G.save.mastery) G.save.mastery={}; G.save.mastery[key]=xp; Store.save(G.save);
+      buildMasteryMods(); return masteryLv(key); },
+    setRelics(ids){ G.save.relics = ids.slice(); Store.save(G.save); buildRelicMods(); return equippedRelics(); },
+    mastery(){ const o={}; for(const k of MASTERY_ORDER) o[k]={lv:masteryLv(k), xp:masteryXp(k)};
+      return { weapons:o, score:masteryScore(), slots:relicSlots(), equipped:equippedRelics(), mods:G.relicMods }; },
+    wstat(key){ const w=P().weapons.find(x=>x.key===key); return w?wstats(w):null; },
+    grantNow(){ return grantMasteryXP(); },
+    stat(){ return { dmg:Object.assign({},STAT.dmg), kills:Object.assign({},STAT.kills),
+      bossDmg:Object.assign({},STAT.bossDmg), total:STAT.total }; },
   };
 })();
 /* ============================================================================
@@ -3110,6 +3179,189 @@ function renderRunReport() {
      ${G.mutation ? `<div class="pf-mut">${ico(MUTATIONS[G.mutation].icon)}<span>${mutationName(G.mutation)}</span></div>` : ''}`;
 }
 
+/* ============================================================================
+   무기 숙련 & 유물 — 한 판에서 끝나지 않는 성장층
+
+   원칙
+   · 숙련은 "쓴 만큼" 오른다. 코인으로 사는 것이 아니다.
+   · 보상은 +50% 같은 도약이 아니라, 그 무기를 쓰는 느낌을 다듬는 작은 개선이다.
+   · 유물은 숫자를 올리는 물건이 아니라 판단을 바꾸는 물건이다. 처음엔 한 칸만 쓴다.
+   · 숙련도 유물도 없어도 게임은 그대로 성립한다. 있으면 조금 더 내 것이 된다.
+   ========================================================================== */
+
+/* ---------------- 숙련 수치 ---------------- */
+const MASTERY_BAL = {
+  maxLv: 5,
+  need: [0, 900, 2700, 6000, 12000],   // 누적 XP (index = 레벨-1)
+  capPerRun: 2500,                     // 한 판에서 한 무기가 얻을 수 있는 상한
+  perKill: 3, perBossDmg: 1/500, perDmg: 1/2000,
+};
+/* 레벨 2~5에서 하나씩 열리는 보상. 값은 전부 여기서만 만진다.
+   키는 각 무기의 stats() 가 실제로 내놓는 필드 이름과 같다 — 무기별 분기를 만들지 않기 위해서다. */
+const WEAPON_MASTERY_DATA = {
+  pistol:      [ { cd:-0.06 }, { spd:0.15 },      { dmg:0.07 },      { proj:1 } ],
+  shotgun:     [ { dmg:0.06 }, { spread:-0.10 },  { pellets:1 },     { cd:-0.07 } ],
+  flamethrower:[ { range:0.08 }, { dmg:0.07 },    { arc:0.10 },      { range:0.10 } ],
+  machete:     [ { radius:0.08 }, { dmg:0.07 },   { speed:0.18 },    { blades:1 } ],
+  grenade:     [ { radius:0.08 }, { cd:-0.07 },   { dmg:0.08 },      { radius:0.10 } ],
+  taser:       [ { jump:0.10 }, { dmg:0.07 },     { chain:1 },       { cd:-0.08 } ],
+  axe:         [ { reach:0.08 }, { spd:0.12 },    { dmg:0.08 },      { cd:-0.08 } ],
+  sentry:      [ { rng:0.10 }, { fireCd:-0.10 },  { dmg:0.08 },      { rng:0.12 } ],
+  scythe:      [ { range:0.08 }, { lifesteal:0.02 }, { dmg:0.07 },   { arc:0.12 } ],
+  frostwand:   [ { chill:0.12 }, { dmg:0.07 },    { chillPow:0.04 }, { spd:0.12 } ],
+};
+const MASTERY_ORDER = ['pistol','shotgun','flamethrower','machete','grenade','taser','axe','sentry','scythe','frostwand'];
+/* 값을 더하는 키 / 낮출수록 강해지는 키. 나머지는 전부 배수(+%)로 적용된다. */
+const MASTERY_ADD_KEYS = { proj:1, pellets:1, chain:1, blades:1, lifesteal:1 };
+const MASTERY_SUB_KEYS = { chillPow:1 };
+
+function masteryLvFromXp(xp) {
+  const N = MASTERY_BAL.need;
+  let lv = 1;
+  for (let i = 1; i < N.length; i++) if (xp >= N[i]) lv = i + 1;
+  return lv;
+}
+function masteryXp(key) { return (G.save && G.save.mastery && G.save.mastery[key]) || 0; }
+function masteryLv(key) { return masteryLvFromXp(masteryXp(key)); }
+/* 다음 레벨까지의 진행도 — 만렙이면 null */
+function masteryProgress(key) {
+  const xp = masteryXp(key), lv = masteryLvFromXp(xp);
+  if (lv >= MASTERY_BAL.maxLv) return null;
+  const a = MASTERY_BAL.need[lv - 1], b = MASTERY_BAL.need[lv];
+  return { cur: xp - a, need: b - a, pct: clamp((xp - a) / (b - a), 0, 1) * 100 };
+}
+/* 모든 무기의 숙련 레벨 합(초과분). 유물 해금의 기준이 된다. */
+function masteryScore() {
+  let n = 0;
+  for (const k of MASTERY_ORDER) n += masteryLv(k) - 1;
+  return n;
+}
+/* 판 시작 때 한 번만 계산해 둔다 — 매 프레임 세이브를 뒤지지 않는다 */
+function buildMasteryMods() {
+  const out = {};
+  for (const key of MASTERY_ORDER) {
+    const lv = masteryLv(key); if (lv < 2) continue;
+    const rows = WEAPON_MASTERY_DATA[key], m = {};
+    for (let i = 0; i < lv - 1 && i < rows.length; i++)
+      for (const k in rows[i]) m[k] = (m[k] || 0) + rows[i][k];
+    out[key] = m;
+  }
+  G.mastMods = out;
+}
+/* wstats() 안에서 기본 수치에 바로 얹는다. 진화해도 같은 숙련이 이어진다. */
+function applyMastery(w, s) {
+  const m = G.mastMods && G.mastMods[w.key]; if (!m) return;
+  for (const k in m) {
+    const v = m[k];
+    if (MASTERY_ADD_KEYS[k]) s[k] = (s[k] || 0) + v;
+    else if (MASTERY_SUB_KEYS[k]) { if (s[k] != null) s[k] = Math.max(0.12, s[k] - v); }
+    else if (s[k] != null) s[k] *= (1 + v);
+  }
+}
+
+/* 판이 끝날 때 딱 한 번. PHASE III 의 실제 피해 집계(STAT)를 그대로 재사용한다 —
+   오버킬과 환경 피해는 이미 빠져 있으므로 숙련도 실제 기여만 반영한다. */
+function grantMasteryXP() {
+  if (G._mastGranted) return G.lastMastery || [];
+  G._mastGranted = true;
+  const baseOf = id => (EVOS[id] ? EVOS[id].base : id);
+  const gain = {};
+  const add = (id, v) => {
+    const k = baseOf(id);
+    if (!WEAPON_MASTERY_DATA[k] || !(v > 0)) return;
+    gain[k] = (gain[k] || 0) + v;
+  };
+  for (const id in STAT.dmg)     add(id, STAT.dmg[id] * MASTERY_BAL.perDmg);
+  for (const id in STAT.bossDmg) add(id, STAT.bossDmg[id] * MASTERY_BAL.perBossDmg);
+  for (const id in STAT.kills)   add(id, STAT.kills[id] * MASTERY_BAL.perKill);
+
+  if (!G.save.mastery) G.save.mastery = {};
+  const out = [];
+  for (const k in gain) {
+    const v = Math.min(MASTERY_BAL.capPerRun, Math.round(gain[k]));
+    if (v <= 0) continue;
+    const before = masteryXp(k), lvB = masteryLvFromXp(before);
+    G.save.mastery[k] = before + v;
+    out.push({ key:k, xp:v, lvB, lvA: masteryLvFromXp(before + v) });
+  }
+  out.sort((a, b) => b.xp - a.xp);
+  if (out.length) Store.save(G.save);
+  G.lastMastery = out;
+  return out;
+}
+
+/* ---------------- 유물 ----------------
+   전부 "숫자 조금"이 아니라 "다르게 움직이게" 하는 것들이다.
+   mods 의 키만 게임 곳곳의 훅이 읽는다 — 유물 id 로 분기하는 코드는 만들지 않는다. */
+const RELIC_DATA = {
+  magnetcore:    { icon:'magnet',     need:0,
+    name:'자기 코어',   desc:'흡입 범위 +75% · 코인 드랍 확률 +50%. 주우러 다니지 않아도 된다.',
+    mods:{ magnet:0.75, coinDrop:0.50 } },
+  gamblersigil:  { icon:'crit',       need:2,
+    name:'도박꾼의 인장', desc:'레벨업 다시뽑기 +2회 · 제외 +1회. 빌드를 원하는 쪽으로 몰아붙인다.',
+    mods:{ rerolls:2, banishes:1 } },
+  bulwark:       { icon:'maxhp',      need:5,
+    name:'방벽 코어',   desc:'최대 체력 +18% · 피격 후 2초간 이동속도 +25%. 맞고 빠져나온다.',
+    mods:{ hp:0.18, hurtSpd:0.25 } },
+  overclock:     { icon:'speed',      need:8,
+    name:'과부하 회로', desc:'모든 무기 재장전 -12% · 최대 체력 -10%. 맞지 않을 자신이 있을 때.',
+    mods:{ cd:-0.12, hp:-0.10 } },
+  vampirecharm:  { icon:'blood',      need:11,
+    name:'흡혈 부적',   desc:'무기 종류와 무관하게 준 피해의 2%를 회복한다.',
+    mods:{ lifesteal:0.02 } },
+  executionorder:{ icon:'scythe',     need:14,
+    name:'처형 명령',   desc:'체력 30% 이하인 적에게 주는 피해 +25%. 마무리가 빨라진다.',
+    mods:{ execLow:0.25 } },
+  turretdoctrine:{ icon:'sentry',     need:17,
+    name:'포탑 교리',   desc:'가드 터렛 배치 한도 +1 · 터렛 피해 +15%.',
+    mods:{ turretMax:1, turretDmg:0.15 } },
+  frostpact:     { icon:'frostwand',  need:20,
+    name:'서리 서약',   desc:'모든 공격이 약하게 둔화시키고, 둔화된 적에게 주는 피해 +18%.',
+    mods:{ chillAll:1, vsChilled:0.18 } },
+  echostrike:    { icon:'taser',      need:24,
+    name:'메아리 일격', desc:'치명타가 터지면 주변에 그 피해의 40%가 퍼진다.',
+    mods:{ critWave:0.40 } },
+  firstblood:    { icon:'axe',        need:28,
+    name:'선제 타격',   desc:'각 적에게 처음 넣는 한 방의 피해 +60%. 넓게 뿌릴수록 강하다.',
+    mods:{ firstHit:0.60 } },
+};
+const RELIC_ORDER = ['magnetcore','gamblersigil','bulwark','overclock','vampirecharm',
+                     'executionorder','turretdoctrine','frostpact','echostrike','firstblood'];
+const RELIC_SLOT2_NEED = 32;     // 두 번째 칸은 한참 뒤에 열린다
+
+function relicUnlocked(id) { return masteryScore() >= (RELIC_DATA[id] ? RELIC_DATA[id].need : 999); }
+function relicSlots() { return masteryScore() >= RELIC_SLOT2_NEED ? 2 : 1; }
+/* 저장된 장착 목록에서 실제로 유효한 것만 (해금 여부·칸 수 변화에 안전하게) */
+function equippedRelics() {
+  const arr = (G.save && G.save.relics) || [];
+  const out = [];
+  for (const id of arr) {
+    if (!RELIC_DATA[id] || !relicUnlocked(id) || out.indexOf(id) >= 0) continue;
+    out.push(id);
+    if (out.length >= relicSlots()) break;
+  }
+  return out;
+}
+function toggleRelic(id) {
+  if (!RELIC_DATA[id] || !relicUnlocked(id)) return false;
+  const cur = equippedRelics(), i = cur.indexOf(id);
+  if (i >= 0) cur.splice(i, 1);
+  else { cur.push(id); while (cur.length > relicSlots()) cur.shift(); }   // 칸이 차면 가장 오래된 것이 빠진다
+  G.save.relics = cur; Store.save(G.save);
+  return true;
+}
+/* 판 시작 때 한 번만 합산한다 — 전투 중에는 이 객체만 읽는다 */
+function buildRelicMods() {
+  const m = {};
+  for (const id of equippedRelics()) {
+    const r = RELIC_DATA[id];
+    for (const k in r.mods) m[k] = (m[k] || 0) + r.mods[k];
+  }
+  G.relicMods = m;
+}
+const rMod = k => (G.relicMods && G.relicMods[k]) || 0;
+let CRITWAVE = false;   // 메아리 일격이 스스로를 다시 부르지 않게 하는 빗장
+
 /* ---------------- 인게임 가이드 도감(다국어) ---------------- */
 const GUIDE_WPN_ORDER = ['pistol','shotgun','flamethrower','machete','grenade','taser','axe','sentry','scythe','frostwand'];
 const GUIDE_MS = ['pistol','shotgun','grenade','axe','sentry'];   // 멀티샷이 적용되는 무기
@@ -3288,7 +3540,7 @@ const UI = {
     'btn.start':'출격', 'btn.how':'조작법', 'btn.guide':'가이드 도감', 'btn.reset':'데이터 초기화',
     'menu.sub':'감염 구역에서 살아남아라', 'nav.squad':'대원', 'nav.armory':'아머리', 'nav.records':'기록',
     'sheet.squad':'대원 선택', 'sheet.armory':'영구 강화',
-    'mut.label':'스테이지 변이', 'mut.bloodmoon':'블러드 문', 'mut.bloodmoon.d':'적이 죽으면 러너가 튀어나온다.', 'mut.toxicrain':'독성 강우', 'mut.toxicrain.d':'주기적으로 독 지대가 생긴다.', 'mut.frozenground':'결빙 지대', 'mut.frozenground.d':'얼어붙은 땅에서는 느려진다.', 'mut.graverising':'무덤 기상', 'mut.graverising.d':'쓰러진 적 일부가 다시 일어선다.', 'mut.firestorm':'화염 폭풍', 'mut.firestorm.d':'불길이 곳곳에 떨어진다.', 'stat.title':'런 성과', 'stat.top':'최대 기여', 'stat.total':'총 피해', 'stat.boss':'보스 피해', 'stat.kills':'처치', 'stat.ability':'대원 기술', 'stat.other':'기타', 'lu.ticket':'기회변경 ', 'ticket.name':'기회변경 티켓', 'ticket.desc':'레벨업 1회를 통째로 넘긴다. 이번 보상은 받지 않는다.', 'ticket.poor':'코인이 부족합니다.',
+    'mut.label':'스테이지 변이', 'mut.bloodmoon':'블러드 문', 'mut.bloodmoon.d':'적이 죽으면 러너가 튀어나온다.', 'mut.toxicrain':'독성 강우', 'mut.toxicrain.d':'주기적으로 독 지대가 생긴다.', 'mut.frozenground':'결빙 지대', 'mut.frozenground.d':'얼어붙은 땅에서는 느려진다.', 'mut.graverising':'무덤 기상', 'mut.graverising.d':'쓰러진 적 일부가 다시 일어선다.', 'mut.firestorm':'화염 폭풍', 'mut.firestorm.d':'불길이 곳곳에 떨어진다.', 'stat.title':'런 성과', 'stat.top':'최대 기여', 'stat.total':'총 피해', 'stat.boss':'보스 피해', 'stat.kills':'처치', 'stat.ability':'대원 기술', 'stat.other':'기타', 'lu.ticket':'기회변경 ', 'ticket.name':'기회변경 티켓', 'ticket.desc':'레벨업 1회를 통째로 넘긴다. 이번 보상은 받지 않는다.', 'ticket.poor':'코인이 부족합니다.', 'am.meta':'영구 강화', 'am.mastery':'무기 숙련', 'am.relic':'유물', 'mast.note':'무기는 실제로 쓴 만큼 숙련이 오른다. 코인은 들지 않는다.', 'mast.next':'다음:', 'mast.max':'숙련 완성', 'mast.gain':'무기 숙련', 'relic.label':'유물', 'relic.note':'유물 칸 {n} · 숙련 합계 {s}', 'relic.slot2':'숙련 합계 {n}에서 두 번째 칸이 열린다', 'relic.locked':'미해금', 'relic.needs':'숙련 합계 {n} 필요', 'relic.on':'장착 중', 'relic.off':'장착', 'mf.dmg':'피해', 'mf.cd':'재장전', 'mf.spd':'탄속', 'mf.proj':'탄환', 'mf.pellets':'탄환', 'mf.spread':'탄착군', 'mf.range':'사거리', 'mf.arc':'범위각', 'mf.radius':'폭발 반경', 'mf.speed':'회전 속도', 'mf.blades':'칼날', 'mf.chain':'전이', 'mf.jump':'전이 거리', 'mf.reach':'비행 거리', 'mf.rng':'사거리', 'mf.fireCd':'점사 간격', 'mf.lifesteal':'흡혈', 'mf.chill':'둔화 시간', 'mf.chillPow':'둔화 강도',
     'menu.sector':'감염구역 07 · 격리', 'menu.bestShort':'최고',
     'lu.reroll':'다시 뽑기 ', 'lu.banish':'제외 ', 'lu.lock':'고정 ', 'lu.pick.banish':'이번 판에서 뺄 항목을 고르세요', 'lu.pick.lock':'다음에도 남길 항목을 고르세요', 'syn.burn':'연소 숙련', 'syn.ballistic':'탄도 숙련', 'syn.bloodpact':'피의 계약', 'syn.cryo':'빙결장', 'syn.deadeye':'데드아이', 'syn.storm':'폭풍 회로', 'syn.demolition':'폭파 공학', 'syn.warden':'수호 포대',
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
@@ -3325,7 +3577,7 @@ const UI = {
     'btn.start':'Deploy', 'btn.how':'How to Play', 'btn.guide':'Guide & Codex', 'btn.reset':'Reset Data',
     'menu.sub':'Survive the Outbreak', 'nav.squad':'Squad', 'nav.armory':'Armory', 'nav.records':'Records',
     'sheet.squad':'Choose Operative', 'sheet.armory':'Permanent Upgrades',
-    'mut.label':'Stage Mutation', 'mut.bloodmoon':'Blood Moon', 'mut.bloodmoon.d':'Slain enemies may spawn Runners.', 'mut.toxicrain':'Toxic Rain', 'mut.toxicrain.d':'Poison zones appear periodically.', 'mut.frozenground':'Frozen Ground', 'mut.frozenground.d':'Iced ground slows you down.', 'mut.graverising':'Grave Rising', 'mut.graverising.d':'Some fallen enemies rise again.', 'mut.firestorm':'Firestorm', 'mut.firestorm.d':'Flames fall across the field.', 'stat.title':'Run Performance', 'stat.top':'Top Source', 'stat.total':'Total Damage', 'stat.boss':'Boss Damage', 'stat.kills':'Kills', 'stat.ability':'Ability', 'stat.other':'Other', 'lu.ticket':'Chance ', 'ticket.name':'Chance Change Ticket', 'ticket.desc':'Skip one level-up entirely. You get no reward this time.', 'ticket.poor':'Not enough coins.',
+    'mut.label':'Stage Mutation', 'mut.bloodmoon':'Blood Moon', 'mut.bloodmoon.d':'Slain enemies may spawn Runners.', 'mut.toxicrain':'Toxic Rain', 'mut.toxicrain.d':'Poison zones appear periodically.', 'mut.frozenground':'Frozen Ground', 'mut.frozenground.d':'Iced ground slows you down.', 'mut.graverising':'Grave Rising', 'mut.graverising.d':'Some fallen enemies rise again.', 'mut.firestorm':'Firestorm', 'mut.firestorm.d':'Flames fall across the field.', 'stat.title':'Run Performance', 'stat.top':'Top Source', 'stat.total':'Total Damage', 'stat.boss':'Boss Damage', 'stat.kills':'Kills', 'stat.ability':'Ability', 'stat.other':'Other', 'lu.ticket':'Chance ', 'ticket.name':'Chance Change Ticket', 'ticket.desc':'Skip one level-up entirely. You get no reward this time.', 'ticket.poor':'Not enough coins.', 'am.meta':'Upgrades', 'am.mastery':'Mastery', 'am.relic':'Relics', 'mast.note':'Weapons level up from actual use. No coins needed.', 'mast.next':'Next:', 'mast.max':'Mastery complete', 'mast.gain':'Weapon Mastery', 'relic.label':'Relic', 'relic.note':'Relic slots {n} · Mastery total {s}', 'relic.slot2':'2nd slot opens at mastery total {n}', 'relic.locked':'Locked', 'relic.needs':'Needs mastery total {n}', 'relic.on':'Equipped', 'relic.off':'Equip', 'mf.dmg':'Damage', 'mf.cd':'Reload', 'mf.spd':'Projectile speed', 'mf.proj':'Projectiles', 'mf.pellets':'Pellets', 'mf.spread':'Spread', 'mf.range':'Range', 'mf.arc':'Arc', 'mf.radius':'Blast radius', 'mf.speed':'Spin speed', 'mf.blades':'Blades', 'mf.chain':'Chains', 'mf.jump':'Chain range', 'mf.reach':'Throw range', 'mf.rng':'Range', 'mf.fireCd':'Burst interval', 'mf.lifesteal':'Lifesteal', 'mf.chill':'Slow duration', 'mf.chillPow':'Slow strength',
     'menu.sector':'Sector 07 · Quarantine', 'menu.bestShort':'Best',
     'lu.reroll':'Reroll ', 'lu.banish':'Banish ', 'lu.lock':'Lock ', 'lu.pick.banish':'Pick one to remove for this run', 'lu.pick.lock':'Pick one to keep next time', 'syn.burn':'Burn Mastery', 'syn.ballistic':'Ballistic Mastery', 'syn.bloodpact':'Blood Pact', 'syn.cryo':'Cryo Field', 'syn.deadeye':'Deadeye', 'syn.storm':'Storm Circuit', 'syn.demolition':'Demolition', 'syn.warden':'Warden Battery',
     'menu.autosave':'Progress is saved automatically in this browser.',
@@ -3362,7 +3614,7 @@ const UI = {
     'btn.start':'出击', 'btn.how':'玩法说明', 'btn.guide':'指南图鉴', 'btn.reset':'重置数据',
     'menu.sub':'在疫区活下去', 'nav.squad':'干员', 'nav.armory':'武库', 'nav.records':'记录',
     'sheet.squad':'选择干员', 'sheet.armory':'永久强化',
-    'mut.label':'关卡变异', 'mut.bloodmoon':'血月', 'mut.bloodmoon.d':'敌人死亡时可能生成疾行者。', 'mut.toxicrain':'毒雨', 'mut.toxicrain.d':'周期性出现毒区。', 'mut.frozenground':'冰封地面', 'mut.frozenground.d':'结冰区域会减速。', 'mut.graverising':'亡者复起', 'mut.graverising.d':'部分倒下的敌人会再站起。', 'mut.firestorm':'火焰风暴', 'mut.firestorm.d':'火焰不断落下。', 'stat.title':'本局表现', 'stat.top':'最大贡献', 'stat.total':'总伤害', 'stat.boss':'首领伤害', 'stat.kills':'击杀', 'stat.ability':'干员技能', 'stat.other':'其他', 'lu.ticket':'改机 ', 'ticket.name':'改机票', 'ticket.desc':'跳过一次升级。本次不获得奖励。', 'ticket.poor':'金币不足。',
+    'mut.label':'关卡变异', 'mut.bloodmoon':'血月', 'mut.bloodmoon.d':'敌人死亡时可能生成疾行者。', 'mut.toxicrain':'毒雨', 'mut.toxicrain.d':'周期性出现毒区。', 'mut.frozenground':'冰封地面', 'mut.frozenground.d':'结冰区域会减速。', 'mut.graverising':'亡者复起', 'mut.graverising.d':'部分倒下的敌人会再站起。', 'mut.firestorm':'火焰风暴', 'mut.firestorm.d':'火焰不断落下。', 'stat.title':'本局表现', 'stat.top':'最大贡献', 'stat.total':'总伤害', 'stat.boss':'首领伤害', 'stat.kills':'击杀', 'stat.ability':'干员技能', 'stat.other':'其他', 'lu.ticket':'改机 ', 'ticket.name':'改机票', 'ticket.desc':'跳过一次升级。本次不获得奖励。', 'ticket.poor':'金币不足。', 'am.meta':'永久强化', 'am.mastery':'武器熟练', 'am.relic':'遗物', 'mast.note':'武器按实际使用量提升熟练，不消耗金币。', 'mast.next':'下一级：', 'mast.max':'熟练已满', 'mast.gain':'武器熟练', 'relic.label':'遗物', 'relic.note':'遗物槽 {n} · 熟练合计 {s}', 'relic.slot2':'熟练合计 {n} 时开启第二个槽', 'relic.locked':'未解锁', 'relic.needs':'需要熟练合计 {n}', 'relic.on':'已装备', 'relic.off':'装备', 'mf.dmg':'伤害', 'mf.cd':'装填', 'mf.spd':'弹速', 'mf.proj':'弹数', 'mf.pellets':'弹丸', 'mf.spread':'散布', 'mf.range':'射程', 'mf.arc':'范围角', 'mf.radius':'爆炸半径', 'mf.speed':'旋转速度', 'mf.blades':'刀刃', 'mf.chain':'连锁', 'mf.jump':'连锁距离', 'mf.reach':'飞行距离', 'mf.rng':'射程', 'mf.fireCd':'点射间隔', 'mf.lifesteal':'吸血', 'mf.chill':'减速时间', 'mf.chillPow':'减速强度',
     'menu.sector':'感染区 07 · 隔离', 'menu.bestShort':'最佳',
     'lu.reroll':'重抽 ', 'lu.banish':'排除 ', 'lu.lock':'锁定 ', 'lu.pick.banish':'选择本局要移除的项目', 'lu.pick.lock':'选择下次保留的项目', 'syn.burn':'燃烧精通', 'syn.ballistic':'弹道精通', 'syn.bloodpact':'血之契约', 'syn.cryo':'冰冻力场', 'syn.deadeye':'神射手', 'syn.storm':'风暴回路', 'syn.demolition':'爆破工程', 'syn.warden':'守卫炮台',
     'menu.autosave':'进度会自动保存在此浏览器中。',
@@ -3399,7 +3651,7 @@ const UI = {
     'btn.start':'ออกรบ', 'btn.how':'วิธีเล่น', 'btn.guide':'คู่มือ', 'btn.reset':'ล้างข้อมูล',
     'menu.sub':'รอดจากการระบาด', 'nav.squad':'ทีม', 'nav.armory':'คลังอาวุธ', 'nav.records':'สถิติ',
     'sheet.squad':'เลือกตัวละคร', 'sheet.armory':'อัปเกรดถาวร',
-    'mut.label':'การกลายพันธุ์ด่าน', 'mut.bloodmoon':'จันทร์เลือด', 'mut.bloodmoon.d':'ศัตรูที่ตายอาจเกิดตัววิ่ง', 'mut.toxicrain':'ฝนพิษ', 'mut.toxicrain.d':'เขตพิษเกิดขึ้นเป็นระยะ', 'mut.frozenground':'พื้นเยือกแข็ง', 'mut.frozenground.d':'พื้นน้ำแข็งทำให้ช้าลง', 'mut.graverising':'สุสานตื่น', 'mut.graverising.d':'ศัตรูบางตัวลุกขึ้นใหม่', 'mut.firestorm':'พายุเพลิง', 'mut.firestorm.d':'เปลวไฟตกลงทั่วสนาม', 'stat.title':'ผลการเล่น', 'stat.top':'สร้างมากสุด', 'stat.total':'ดาเมจรวม', 'stat.boss':'ดาเมจบอส', 'stat.kills':'สังหาร', 'stat.ability':'สกิลตัวละคร', 'stat.other':'อื่น ๆ', 'lu.ticket':'เปลี่ยนโอกาส ', 'ticket.name':'ตั๋วเปลี่ยนโอกาส', 'ticket.desc':'ข้ามการเลเวลอัปหนึ่งครั้ง ไม่ได้รางวัลรอบนี้', 'ticket.poor':'เหรียญไม่พอ',
+    'mut.label':'การกลายพันธุ์ด่าน', 'mut.bloodmoon':'จันทร์เลือด', 'mut.bloodmoon.d':'ศัตรูที่ตายอาจเกิดตัววิ่ง', 'mut.toxicrain':'ฝนพิษ', 'mut.toxicrain.d':'เขตพิษเกิดขึ้นเป็นระยะ', 'mut.frozenground':'พื้นเยือกแข็ง', 'mut.frozenground.d':'พื้นน้ำแข็งทำให้ช้าลง', 'mut.graverising':'สุสานตื่น', 'mut.graverising.d':'ศัตรูบางตัวลุกขึ้นใหม่', 'mut.firestorm':'พายุเพลิง', 'mut.firestorm.d':'เปลวไฟตกลงทั่วสนาม', 'stat.title':'ผลการเล่น', 'stat.top':'สร้างมากสุด', 'stat.total':'ดาเมจรวม', 'stat.boss':'ดาเมจบอส', 'stat.kills':'สังหาร', 'stat.ability':'สกิลตัวละคร', 'stat.other':'อื่น ๆ', 'lu.ticket':'เปลี่ยนโอกาส ', 'ticket.name':'ตั๋วเปลี่ยนโอกาส', 'ticket.desc':'ข้ามการเลเวลอัปหนึ่งครั้ง ไม่ได้รางวัลรอบนี้', 'ticket.poor':'เหรียญไม่พอ', 'am.meta':'อัปเกรดถาวร', 'am.mastery':'ความชำนาญ', 'am.relic':'วัตถุโบราณ', 'mast.note':'อาวุธเก่งขึ้นตามการใช้งานจริง ไม่ใช้เหรียญ', 'mast.next':'ถัดไป:', 'mast.max':'ชำนาญเต็ม', 'mast.gain':'ความชำนาญอาวุธ', 'relic.label':'วัตถุโบราณ', 'relic.note':'ช่อง {n} · ความชำนาญรวม {s}', 'relic.slot2':'ช่องที่ 2 เปิดที่ความชำนาญรวม {n}', 'relic.locked':'ยังไม่ปลดล็อก', 'relic.needs':'ต้องมีความชำนาญรวม {n}', 'relic.on':'สวมใส่อยู่', 'relic.off':'สวมใส่', 'mf.dmg':'ดาเมจ', 'mf.cd':'บรรจุกระสุน', 'mf.spd':'ความเร็วกระสุน', 'mf.proj':'กระสุน', 'mf.pellets':'ลูกปราย', 'mf.spread':'การกระจาย', 'mf.range':'ระยะ', 'mf.arc':'มุมกว้าง', 'mf.radius':'รัศมีระเบิด', 'mf.speed':'ความเร็วหมุน', 'mf.blades':'ใบมีด', 'mf.chain':'ต่อเนื่อง', 'mf.jump':'ระยะต่อเนื่อง', 'mf.reach':'ระยะขว้าง', 'mf.rng':'ระยะ', 'mf.fireCd':'จังหวะยิงชุด', 'mf.lifesteal':'ดูดเลือด', 'mf.chill':'เวลาชะลอ', 'mf.chillPow':'ความแรงชะลอ',
     'menu.sector':'เขต 07 · กักกัน', 'menu.bestShort':'ดีสุด',
     'lu.reroll':'สุ่มใหม่ ', 'lu.banish':'ตัดออก ', 'lu.lock':'ล็อก ', 'lu.pick.banish':'เลือกสิ่งที่จะตัดออกในรอบนี้', 'lu.pick.lock':'เลือกสิ่งที่จะเก็บไว้ครั้งหน้า', 'syn.burn':'เชี่ยวชาญเพลิง', 'syn.ballistic':'เชี่ยวชาญกระสุน', 'syn.bloodpact':'พันธะเลือด', 'syn.cryo':'สนามเยือกแข็ง', 'syn.deadeye':'เดดอาย', 'syn.storm':'วงจรพายุ', 'syn.demolition':'วิศวกรรมระเบิด', 'syn.warden':'ป้อมผู้พิทักษ์',
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
@@ -3436,7 +3688,7 @@ const UI = {
     'btn.start':'Xuất kích', 'btn.how':'Cách chơi', 'btn.guide':'Hướng dẫn', 'btn.reset':'Đặt lại dữ liệu',
     'menu.sub':'Sống sót qua đại dịch', 'nav.squad':'Đặc vụ', 'nav.armory':'Kho vũ khí', 'nav.records':'Hồ sơ',
     'sheet.squad':'Chọn đặc vụ', 'sheet.armory':'Nâng cấp vĩnh viễn',
-    'mut.label':'Biến dị ải', 'mut.bloodmoon':'Trăng Máu', 'mut.bloodmoon.d':'Kẻ địch chết có thể sinh ra Runner.', 'mut.toxicrain':'Mưa Độc', 'mut.toxicrain.d':'Vùng độc xuất hiện định kỳ.', 'mut.frozenground':'Đất Băng', 'mut.frozenground.d':'Mặt băng làm bạn chậm lại.', 'mut.graverising':'Mộ Phần Trỗi Dậy', 'mut.graverising.d':'Một số kẻ ngã xuống sẽ đứng lên lại.', 'mut.firestorm':'Bão Lửa', 'mut.firestorm.d':'Lửa rơi khắp chiến trường.', 'stat.title':'Thành tích ván', 'stat.top':'Đóng góp nhất', 'stat.total':'Tổng sát thương', 'stat.boss':'Sát thương trùm', 'stat.kills':'Tiêu diệt', 'stat.ability':'Kỹ năng', 'stat.other':'Khác', 'lu.ticket':'Đổi cơ hội ', 'ticket.name':'Vé Đổi Cơ Hội', 'ticket.desc':'Bỏ qua trọn một lần lên cấp. Lần này không nhận thưởng.', 'ticket.poor':'Không đủ xu.',
+    'mut.label':'Biến dị ải', 'mut.bloodmoon':'Trăng Máu', 'mut.bloodmoon.d':'Kẻ địch chết có thể sinh ra Runner.', 'mut.toxicrain':'Mưa Độc', 'mut.toxicrain.d':'Vùng độc xuất hiện định kỳ.', 'mut.frozenground':'Đất Băng', 'mut.frozenground.d':'Mặt băng làm bạn chậm lại.', 'mut.graverising':'Mộ Phần Trỗi Dậy', 'mut.graverising.d':'Một số kẻ ngã xuống sẽ đứng lên lại.', 'mut.firestorm':'Bão Lửa', 'mut.firestorm.d':'Lửa rơi khắp chiến trường.', 'stat.title':'Thành tích ván', 'stat.top':'Đóng góp nhất', 'stat.total':'Tổng sát thương', 'stat.boss':'Sát thương trùm', 'stat.kills':'Tiêu diệt', 'stat.ability':'Kỹ năng', 'stat.other':'Khác', 'lu.ticket':'Đổi cơ hội ', 'ticket.name':'Vé Đổi Cơ Hội', 'ticket.desc':'Bỏ qua trọn một lần lên cấp. Lần này không nhận thưởng.', 'ticket.poor':'Không đủ xu.', 'am.meta':'Nâng cấp', 'am.mastery':'Thuần thục', 'am.relic':'Cổ vật', 'mast.note':'Vũ khí lên thuần thục theo mức dùng thật. Không tốn xu.', 'mast.next':'Kế tiếp:', 'mast.max':'Thuần thục tối đa', 'mast.gain':'Thuần thục vũ khí', 'relic.label':'Cổ vật', 'relic.note':'Ô cổ vật {n} · Tổng thuần thục {s}', 'relic.slot2':'Ô thứ 2 mở ở tổng thuần thục {n}', 'relic.locked':'Chưa mở', 'relic.needs':'Cần tổng thuần thục {n}', 'relic.on':'Đang trang bị', 'relic.off':'Trang bị', 'mf.dmg':'Sát thương', 'mf.cd':'Nạp đạn', 'mf.spd':'Tốc đạn', 'mf.proj':'Đạn', 'mf.pellets':'Mảnh đạn', 'mf.spread':'Độ tản', 'mf.range':'Tầm', 'mf.arc':'Góc quét', 'mf.radius':'Bán kính nổ', 'mf.speed':'Tốc xoay', 'mf.blades':'Lưỡi', 'mf.chain':'Lan truyền', 'mf.jump':'Tầm lan', 'mf.reach':'Tầm ném', 'mf.rng':'Tầm', 'mf.fireCd':'Nhịp bắn loạt', 'mf.lifesteal':'Hút máu', 'mf.chill':'Thời gian làm chậm', 'mf.chillPow':'Độ làm chậm',
     'menu.sector':'Khu 07 · Cách ly', 'menu.bestShort':'Tốt nhất',
     'lu.reroll':'Quay lại ', 'lu.banish':'Loại bỏ ', 'lu.lock':'Khóa ', 'lu.pick.banish':'Chọn một mục để loại khỏi ván này', 'lu.pick.lock':'Chọn một mục để giữ lần sau', 'syn.burn':'Tinh thông Thiêu đốt', 'syn.ballistic':'Tinh thông Đạn đạo', 'syn.bloodpact':'Khế ước Máu', 'syn.cryo':'Trường Băng giá', 'syn.deadeye':'Mắt Thần', 'syn.storm':'Mạch Bão tố', 'syn.demolition':'Kỹ thuật Phá hủy', 'syn.warden':'Pháo đài Hộ vệ',
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
@@ -3473,7 +3725,7 @@ const UI = {
     'btn.start':'Desplegar', 'btn.how':'Cómo jugar', 'btn.guide':'Guía', 'btn.reset':'Borrar datos',
     'menu.sub':'Sobrevive al brote', 'nav.squad':'Escuadrón', 'nav.armory':'Arsenal', 'nav.records':'Registros',
     'sheet.squad':'Elegir operativo', 'sheet.armory':'Mejoras permanentes',
-    'mut.label':'Mutación de Nivel', 'mut.bloodmoon':'Luna de Sangre', 'mut.bloodmoon.d':'Los enemigos muertos pueden generar Corredores.', 'mut.toxicrain':'Lluvia Tóxica', 'mut.toxicrain.d':'Aparecen zonas venenosas periódicamente.', 'mut.frozenground':'Suelo Helado', 'mut.frozenground.d':'El hielo te ralentiza.', 'mut.graverising':'Alzamiento', 'mut.graverising.d':'Algunos caídos vuelven a levantarse.', 'mut.firestorm':'Tormenta Ígnea', 'mut.firestorm.d':'Caen llamas por todo el campo.', 'stat.title':'Rendimiento', 'stat.top':'Mayor Aporte', 'stat.total':'Daño Total', 'stat.boss':'Daño al Jefe', 'stat.kills':'Bajas', 'stat.ability':'Habilidad', 'stat.other':'Otros', 'lu.ticket':'Cambio ', 'ticket.name':'Ticket de Cambio', 'ticket.desc':'Salta una subida de nivel entera. No recibes recompensa esta vez.', 'ticket.poor':'Monedas insuficientes.',
+    'mut.label':'Mutación de Nivel', 'mut.bloodmoon':'Luna de Sangre', 'mut.bloodmoon.d':'Los enemigos muertos pueden generar Corredores.', 'mut.toxicrain':'Lluvia Tóxica', 'mut.toxicrain.d':'Aparecen zonas venenosas periódicamente.', 'mut.frozenground':'Suelo Helado', 'mut.frozenground.d':'El hielo te ralentiza.', 'mut.graverising':'Alzamiento', 'mut.graverising.d':'Algunos caídos vuelven a levantarse.', 'mut.firestorm':'Tormenta Ígnea', 'mut.firestorm.d':'Caen llamas por todo el campo.', 'stat.title':'Rendimiento', 'stat.top':'Mayor Aporte', 'stat.total':'Daño Total', 'stat.boss':'Daño al Jefe', 'stat.kills':'Bajas', 'stat.ability':'Habilidad', 'stat.other':'Otros', 'lu.ticket':'Cambio ', 'ticket.name':'Ticket de Cambio', 'ticket.desc':'Salta una subida de nivel entera. No recibes recompensa esta vez.', 'ticket.poor':'Monedas insuficientes.', 'am.meta':'Mejoras', 'am.mastery':'Maestría', 'am.relic':'Reliquias', 'mast.note':'Las armas suben de maestría según el uso real. No cuestan monedas.', 'mast.next':'Siguiente:', 'mast.max':'Maestría completa', 'mast.gain':'Maestría de armas', 'relic.label':'Reliquia', 'relic.note':'Ranuras {n} · Maestría total {s}', 'relic.slot2':'La 2ª ranura se abre con maestría total {n}', 'relic.locked':'Bloqueada', 'relic.needs':'Requiere maestría total {n}', 'relic.on':'Equipada', 'relic.off':'Equipar', 'mf.dmg':'Daño', 'mf.cd':'Recarga', 'mf.spd':'Velocidad del proyectil', 'mf.proj':'Proyectiles', 'mf.pellets':'Perdigones', 'mf.spread':'Dispersión', 'mf.range':'Alcance', 'mf.arc':'Ángulo', 'mf.radius':'Radio de explosión', 'mf.speed':'Velocidad de giro', 'mf.blades':'Cuchillas', 'mf.chain':'Cadenas', 'mf.jump':'Alcance de cadena', 'mf.reach':'Alcance de lanzamiento', 'mf.rng':'Alcance', 'mf.fireCd':'Intervalo de ráfaga', 'mf.lifesteal':'Robo de vida', 'mf.chill':'Duración de ralentización', 'mf.chillPow':'Fuerza de ralentización',
     'menu.sector':'Sector 07 · Cuarentena', 'menu.bestShort':'Mejor',
     'lu.reroll':'Rerodar ', 'lu.banish':'Descartar ', 'lu.lock':'Fijar ', 'lu.pick.banish':'Elige uno para quitar en esta partida', 'lu.pick.lock':'Elige uno para conservar la próxima vez', 'syn.burn':'Maestría Ígnea', 'syn.ballistic':'Maestría Balística', 'syn.bloodpact':'Pacto de Sangre', 'syn.cryo':'Campo Criogénico', 'syn.deadeye':'Ojo Certero', 'syn.storm':'Circuito Tormenta', 'syn.demolition':'Demolición', 'syn.warden':'Batería Guardiana',
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
@@ -3529,6 +3781,16 @@ const TR = {
       greed:{name:'Greed',desc:'Coins earned +12%'}, mobility:{name:'Mobility',desc:'Move speed +5%'},
       bonus:{name:'Head Start',desc:'Start with +1 level of XP'}, revive:{name:'Auto-Revive',desc:'Revive once (50% HP)'},
       precision:{name:'Precision',desc:'Starting crit chance +2%'} },
+    relic:{ magnetcore:{name:'Magnet Core',desc:'Pickup range +75% · coin drop rate +50%. Stop walking around to collect.'},
+      gamblersigil:{name:"Gambler's Sigil",desc:'Level-up rerolls +2 · banishes +1. Push the build where you want it.'},
+      bulwark:{name:'Bulwark Core',desc:'Max HP +18% · move speed +25% for 2s after being hit. Take it and get out.'},
+      overclock:{name:'Overclock Circuit',desc:'All weapon reload -12% · max HP -10%. For when you trust your dodging.'},
+      vampirecharm:{name:'Vampire Charm',desc:'Heal for 2% of all damage dealt, whatever the weapon.'},
+      executionorder:{name:'Execution Order',desc:'+25% damage to enemies below 30% HP. Finishing gets faster.'},
+      turretdoctrine:{name:'Turret Doctrine',desc:'Guard Turret limit +1 · turret damage +15%.'},
+      frostpact:{name:'Frost Pact',desc:'Every attack chills lightly, and chilled enemies take +18% damage.'},
+      echostrike:{name:'Echo Strike',desc:'Crits spread 40% of their damage to nearby enemies.'},
+      firstblood:{name:'First Blood',desc:'+60% damage on the first hit against each enemy. The wider you spread, the better.'} },
     char:{ hunter:{name:'Hunter',title:'Balanced',desc:'Coin gain +20% · damage -10%. An easy all-rounder for beginners.'},
       berserker:{name:'Berserker',title:'Melee Lifesteal',desc:'Move speed +15% · melee damage +15% · max HP -15%. A charge-in lifesteal tank.'},
       pyromancer:{name:'Pyromancer',title:'Zone Control',desc:'Range · area +20% · move speed -10%. A defensive zone-holder with low mobility.'} },
@@ -3551,6 +3813,16 @@ const TR = {
       greed:{name:'财富策略',desc:'获得金币 +12%'}, mobility:{name:'机动装置',desc:'移动速度 +5%'},
       bonus:{name:'起始奖励',desc:'开局获得 +1 级经验'}, revive:{name:'自动复苏',desc:'复活一次（50%生命）'},
       precision:{name:'精准瞄准',desc:'初始暴击率 +2%'} },
+    relic:{ magnetcore:{name:'磁力核心',desc:'拾取范围 +75% · 金币掉落率 +50%。不必到处捡。'},
+      gamblersigil:{name:'赌徒印记',desc:'升级重抽 +2 次 · 排除 +1 次。把流派推向你想要的方向。'},
+      bulwark:{name:'壁垒核心',desc:'最大生命 +18% · 受击后 2 秒移速 +25%。挨一下就撤。'},
+      overclock:{name:'超频电路',desc:'所有武器装填 -12% · 最大生命 -10%。有把握不挨打时用。'},
+      vampirecharm:{name:'吸血护符',desc:'无论武器种类，造成伤害的 2% 转为治疗。'},
+      executionorder:{name:'处决令',desc:'对生命低于 30% 的敌人伤害 +25%。收尾更快。'},
+      turretdoctrine:{name:'炮塔教条',desc:'守卫炮塔上限 +1 · 炮塔伤害 +15%。'},
+      frostpact:{name:'霜之誓约',desc:'所有攻击附带轻微减速，对被减速的敌人伤害 +18%。'},
+      echostrike:{name:'回响一击',desc:'暴击会把该伤害的 40% 扩散到周围。'},
+      firstblood:{name:'先制打击',desc:'对每个敌人的第一击伤害 +60%。打得越散越强。'} },
     char:{ hunter:{name:'猎人',title:'均衡型',desc:'金币获取 +20% · 攻击力 -10%。稳健的全能手，适合入门。'},
       berserker:{name:'狂战士',title:'近战吸血型',desc:'移动速度 +15% · 近战伤害 +15% · 最大生命 -15%。冲锋吸血的坦克。'},
       pyromancer:{name:'火焰法师',title:'范围据点型',desc:'射程·范围 +20% · 移动速度 -10%。防守据点型，机动性较低。'} },
@@ -3573,6 +3845,16 @@ const TR = {
       greed:{name:'กลยุทธ์ทรัพย์สิน',desc:'เหรียญที่ได้ +12%'}, mobility:{name:'เกียร์เคลื่อนที่',desc:'ความเร็วเคลื่อนที่ +5%'},
       bonus:{name:'โบนัสเริ่มต้น',desc:'เริ่มด้วยค่าประสบการณ์ +1 เลเวล'}, revive:{name:'ชุบชีวิตอัตโนมัติ',desc:'ฟื้นคืนชีพ 1 ครั้ง (50% พลังชีวิต)'},
       precision:{name:'เล็งแม่นยำ',desc:'โอกาสคริติคอลเริ่มต้น +2%'} },
+    relic:{ magnetcore:{name:'แกนแม่เหล็ก',desc:'ระยะเก็บของ +75% · โอกาสดรอปเหรียญ +50% ไม่ต้องเดินเก็บ'},
+      gamblersigil:{name:'ตราของนักพนัน',desc:'สุ่มใหม่ +2 ครั้ง · ตัดทิ้ง +1 ครั้ง ดันบิลด์ไปทางที่ต้องการ'},
+      bulwark:{name:'แกนปราการ',desc:'พลังชีวิตสูงสุด +18% · หลังโดนตี 2 วินาที ความเร็ว +25%'},
+      overclock:{name:'วงจรโอเวอร์คล็อก',desc:'บรรจุกระสุนทุกอาวุธ -12% · พลังชีวิตสูงสุด -10%'},
+      vampirecharm:{name:'เครื่องรางดูดเลือด',desc:'ฟื้นฟู 2% ของดาเมจที่ทำได้ ไม่ว่าอาวุธใด'},
+      executionorder:{name:'คำสั่งประหาร',desc:'ดาเมจ +25% ต่อศัตรูที่เลือดต่ำกว่า 30%'},
+      turretdoctrine:{name:'หลักป้อมปืน',desc:'ป้อมปืนสูงสุด +1 · ดาเมจป้อม +15%'},
+      frostpact:{name:'พันธะน้ำแข็ง',desc:'ทุกการโจมตีชะลอเล็กน้อย และดาเมจต่อศัตรูที่ถูกชะลอ +18%'},
+      echostrike:{name:'หมัดสะท้อน',desc:'คริติคอลกระจาย 40% ของดาเมจไปรอบ ๆ'},
+      firstblood:{name:'ชิงลงมือก่อน',desc:'ดาเมจครั้งแรกต่อศัตรูแต่ละตัว +60% ยิ่งกระจายยิ่งแรง'} },
     char:{ hunter:{name:'นักล่า',title:'สมดุล',desc:'ได้เหรียญ +20% · ความเสียหาย -10% ตัวเอนกประสงค์ที่เล่นง่าย เหมาะผู้เริ่มต้น'},
       berserker:{name:'นักรบคลั่ง',title:'ประชิดดูดเลือด',desc:'ความเร็ว +15% · ความเสียหายประชิด +15% · พลังชีวิตสูงสุด -15% แทงค์บุกดูดเลือด'},
       pyromancer:{name:'นักเวทไฟ',title:'คุมพื้นที่',desc:'ระยะ·พื้นที่ +20% · ความเร็ว -10% ตั้งรับคุมพื้นที่ เคลื่อนที่ช้า'} },
@@ -3595,6 +3877,16 @@ const TR = {
       greed:{name:'Tham lam',desc:'Xu kiếm được +12%'}, mobility:{name:'Cơ động',desc:'Tốc độ di chuyển +5%'},
       bonus:{name:'Khởi đầu sớm',desc:'Bắt đầu với +1 cấp kinh nghiệm'}, revive:{name:'Tự hồi sinh',desc:'Hồi sinh một lần (50% máu)'},
       precision:{name:'Chính xác',desc:'Tỉ lệ chí mạng ban đầu +2%'} },
+    relic:{ magnetcore:{name:'Lõi Từ Tính',desc:'Tầm nhặt +75% · tỉ lệ rơi xu +50%. Khỏi phải đi nhặt.'},
+      gamblersigil:{name:'Ấn Của Con Bạc',desc:'Đổi lựa chọn +2 · loại bỏ +1. Đẩy build theo ý bạn.'},
+      bulwark:{name:'Lõi Thành Lũy',desc:'HP tối đa +18% · sau khi trúng đòn, tốc chạy +25% trong 2 giây.'},
+      overclock:{name:'Mạch Ép Xung',desc:'Nạp đạn mọi vũ khí -12% · HP tối đa -10%.'},
+      vampirecharm:{name:'Bùa Hút Máu',desc:'Hồi 2% sát thương gây ra, bất kể vũ khí nào.'},
+      executionorder:{name:'Lệnh Hành Quyết',desc:'+25% sát thương lên kẻ địch dưới 30% HP.'},
+      turretdoctrine:{name:'Học Thuyết Tháp Pháo',desc:'Giới hạn tháp pháo +1 · sát thương tháp +15%.'},
+      frostpact:{name:'Giao Ước Băng Giá',desc:'Mọi đòn đánh làm chậm nhẹ, và kẻ bị làm chậm nhận +18% sát thương.'},
+      echostrike:{name:'Đòn Vọng Âm',desc:'Chí mạng lan 40% sát thương ra xung quanh.'},
+      firstblood:{name:'Ra Đòn Trước',desc:'+60% sát thương cho đòn đầu tiên lên mỗi kẻ địch.'} },
     char:{ hunter:{name:'Thợ săn',title:'Cân bằng',desc:'Nhận xu +20% · sát thương -10%. Toàn diện dễ chơi, hợp người mới.'},
       berserker:{name:'Cuồng chiến',title:'Cận chiến hút máu',desc:'Tốc độ +15% · sát thương cận chiến +15% · máu tối đa -15%. Tank lao vào hút máu.'},
       pyromancer:{name:'Pháp sư lửa',title:'Kiểm soát vùng',desc:'Tầm·vùng +20% · tốc độ -10%. Phòng thủ giữ vùng, cơ động thấp.'} },
@@ -3617,6 +3909,16 @@ const TR = {
       greed:{name:'Avaricia',desc:'Monedas ganadas +12%'}, mobility:{name:'Movilidad',desc:'Velocidad de movimiento +5%'},
       bonus:{name:'Ventaja inicial',desc:'Empieza con +1 nivel de EXP'}, revive:{name:'Autorrevivir',desc:'Revive una vez (50% de vida)'},
       precision:{name:'Precisión',desc:'Prob. de crítico inicial +2%'} },
+    relic:{ magnetcore:{name:'Núcleo Magnético',desc:'Rango de recogida +75% · prob. de moneda +50%. Deja de ir a recoger.'},
+      gamblersigil:{name:'Sigilo del Apostador',desc:'Retiradas +2 · descartes +1. Lleva la build a donde quieras.'},
+      bulwark:{name:'Núcleo Baluarte',desc:'Vida máxima +18% · velocidad +25% durante 2 s tras recibir daño.'},
+      overclock:{name:'Circuito Sobrecargado',desc:'Recarga de todas las armas -12% · vida máxima -10%.'},
+      vampirecharm:{name:'Amuleto Vampírico',desc:'Cura el 2% del daño infligido, con cualquier arma.'},
+      executionorder:{name:'Orden de Ejecución',desc:'+25% de daño a enemigos por debajo del 30% de vida.'},
+      turretdoctrine:{name:'Doctrina de Torretas',desc:'Límite de torretas +1 · daño de torreta +15%.'},
+      frostpact:{name:'Pacto de Escarcha',desc:'Todo ataque ralentiza un poco, y los ralentizados reciben +18% de daño.'},
+      echostrike:{name:'Golpe de Eco',desc:'Los críticos propagan el 40% de su daño alrededor.'},
+      firstblood:{name:'Primera Sangre',desc:'+60% de daño en el primer impacto contra cada enemigo.'} },
     char:{ hunter:{name:'Cazador',title:'Equilibrado',desc:'Ganancia de monedas +20% · daño -10%. Un todoterreno fácil para principiantes.'},
       berserker:{name:'Berserker',title:'Robo de vida cuerpo a cuerpo',desc:'Velocidad +15% · daño cuerpo a cuerpo +15% · vida máxima -15%. Un tanque que embiste y roba vida.'},
       pyromancer:{name:'Piromántico',title:'Control de zona',desc:'Alcance·área +20% · velocidad -10%. Defensivo que domina la zona, con poca movilidad.'} },
@@ -3633,7 +3935,7 @@ for (const lang of ['en','zh','th','vi','es']) {
   }
 }
 
-const SRC = { weapon:WEAPONS, evo:EVOS, passive:PASSIVES, meta:METAS, char:CHARACTERS };
+const SRC = { weapon:WEAPONS, evo:EVOS, passive:PASSIVES, meta:METAS, char:CHARACTERS, relic:RELIC_DATA };
 function t(k){ const o = UI[curLang]; return (o && o[k] != null) ? o[k] : (UI.ko[k] != null ? UI.ko[k] : k); }
 function trField(cat, id, f){
   if (curLang === 'ko') return SRC[cat][id][f];
@@ -3907,11 +4209,11 @@ function curMeta() {
 }
 const metaVal = id => METAS[id].val((G.meta && G.meta[id]) || 0);
 const pDmgMult = () => (1 + 0.1 * (P().passives.dmg || 0)) * (1 + metaVal('firepower') / 100) * (charMods().dmgMul || 1);
-const pCdMult = () => clamp((1 - 0.1 * (P().passives.speed || 0)) * charAtkSpdMul(), 0.2, 1);
+const pCdMult = () => clamp((1 - 0.1 * (P().passives.speed || 0)) * charAtkSpdMul() * (1 + rMod('cd')), 0.2, 1);
 const pRangeMult = () => (1 + 0.15 * (P().passives.range || 0)) * (charMods().rangeMul || 1) * charFireRangeMul();
 const pProjBonus = () => (P().passives.proj || 0);
-const pMoveSpd = () => P().baseSpd * (1 + 0.08 * (P().passives.movespeed || 0)) * (1 + metaVal('mobility') / 100) * (P().slowT > 0 ? 0.55 : 1) * (charMods().mvMul || 1);
-const pMagnet = () => 82 * (1 + 0.3 * (P().passives.magnet || 0));
+const pMoveSpd = () => P().baseSpd * (1 + 0.08 * (P().passives.movespeed || 0)) * (1 + metaVal('mobility') / 100) * (P().slowT > 0 ? 0.55 : 1) * (charMods().mvMul || 1) * (1 + (P().hurtSpdT > 0 ? rMod('hurtSpd') : 0));
+const pMagnet = () => 82 * (1 + 0.3 * (P().passives.magnet || 0)) * (1 + rMod('magnet'));
 const pRegen = () => 0.5 * (P().passives.regen || 0);
 const pCritChance = () => clamp(0.08 * (P().passives.crit || 0) + metaVal('precision') / 100, 0, 0.75);
 /* 차수(루프) 난이도 배수 — 차수가 오를수록 체력·공격력·속도·스폰이 가중된다 */
@@ -3924,6 +4226,7 @@ const xpForLevel = lv => Math.floor(4 + lv * 3 + lv * lv * 0.4);
 function wdef(w){ return w.evolved ? EVOS[WEAPONS[w.key].evo] : WEAPONS[w.key]; }
 function wstats(w){
   const s = wdef(w).stats(w.level);
+  applyMastery(w, s);                                      // 무기 숙련 — 기본 수치 위에 먼저 얹는다
   s.dmg = (s.dmg || 0) * pDmgMult() * synWeaponMul(w);     // 빌드 시너지
   const ht = weaponHitTag(w);
   if (ht === 1) s.dmg *= charMeleeMul();                   // 광전사: 분노만큼 근접 피해
@@ -3938,7 +4241,7 @@ function wstats(w){
 function hasPassive(id){ return (P().passives[id] || 0) > 0; }
 function ownWeapon(key){ return P().weapons.find(w => w.key === key); }
 function calcMaxHP(mhpLv){
-  return (100 + metaVal('vitality')) * (1 + 0.2 * mhpLv) * (charMods().hpMul || 1);
+  return (100 + metaVal('vitality')) * (1 + 0.2 * mhpLv) * (charMods().hpMul || 1) * (1 + rMod('hp'));
 }
 function recomputeMaxHP(){
   const p = P();
@@ -3982,8 +4285,8 @@ function makePlayer(){
   return { x:0, y:0, hp:maxhp, maxhp, baseSpd:2.7, level:1, xp:0, xpNext:xpForLevel(1),
     weapons:[], passives:{}, lastAngle:-Math.PI/2, iframe:0, revived:false, hurtFlash:0,
     pendingLevels:0, regenAcc:0, shield:0, slowT:0, facing:1,
-    rerolls:BAL.run.rerolls, banishes:BAL.run.banishes, locks:BAL.run.locks,
-    banned:[], lockedOpt:null,
+    rerolls:BAL.run.rerolls + rMod('rerolls'), banishes:BAL.run.banishes + rMod('banishes'), locks:BAL.run.locks,
+    banned:[], lockedOpt:null, hurtSpdT:0,
     rage:0, heat:0, calm:0, skCd:0, frenzyT:0, overT:0, overTick:0,
     rageFull:false, dashT:0, dashA:0 };
 }
@@ -3993,6 +4296,7 @@ const isTouch = () => ('ontouchstart' in window) || navigator.maxTouchPoints > 0
 function startRun(){
   Audio.ensure(); Audio.resume(); Audio.startMusic('game');   // 게임 BGM
   clearSavedRun();                                            // 새 판 시작 → 이전 중간저장 폐기
+  buildMasteryMods(); buildRelicMods(); G._mastGranted = false; G.lastMastery = null;
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], corpses:[], spawnTimer:0, heartTimer:0,
@@ -4120,9 +4424,9 @@ function fireWeapon(w) {
   const p = P(), s = wstats(w), key = w.key;
   if (key === 'machete') return; // 지속형
   if (key === 'sentry') {
-    const maxT = 2;                          // 가드 터렛 최대 2개
+    const maxT = 2 + rMod('turretMax');      // 가드 터렛 최대 2개 (포탑 교리: +1)
     if (G.sentries.length >= maxT) return;   // 지속형 터렛 상한 (레벨업 누적을 위해)
-    G.sentries.push({ x:p.x, y:p.y, dmg:s.dmg, fireCd:s.fireCd, fireT:0, rng:s.rng, evolved:w.evolved, dead:false });
+    G.sentries.push({ x:p.x, y:p.y, dmg:s.dmg * (1 + rMod('turretDmg')), fireCd:s.fireCd, fireT:0, rng:s.rng, evolved:w.evolved, dead:false });
     Audio.S.deploy(); return;
   }
   if (key === 'flamethrower') {
@@ -4280,11 +4584,35 @@ function damageEnemy(e, amt, sx, sy) {
   if (crit) amt *= 2 + synVal('critMul');                  // 데드아이: 치명타 피해 상승
   amt *= markMul(e);                                       // 헌터: 표식 대상은 더 아프다
   amt *= enemyArmorMul(e, sx, sy);                          // 아머 워커: 정면은 덜 아프다
+  const rm = G.relicMods;                                   // 유물 — 피해가 정해지는 마지막 지점에서 한 번에
+  if (rm) {
+    if (rm.firstHit && !e.fbHit) { e.fbHit = 1; amt *= 1 + rm.firstHit; }          // 선제 타격
+    if (rm.execLow && e.hp < e.maxhp * 0.3) amt *= 1 + rm.execLow;                 // 처형 명령
+    if (rm.vsChilled && e.chill > 0) amt *= 1 + rm.vsChilled;                      // 서리 서약
+  }
   if (crit && G.character === 'hunter') markEnemy(e);      // 치명타가 표식을 남긴다
   if (HITTAG === 1) addRage(CHAR_BAL.berserker.gainHit);
   else if (HITTAG === 2) addHeat(CHAR_BAL.pyromancer.gainHit);
   recordDamage(e, Math.min(amt, Math.max(0, e.hp)));       // 실제로 들어간 만큼만 집계
   e.hp -= amt;
+  if (rm) {
+    if (rm.lifesteal) {                                     // 흡혈 부적: 무기를 가리지 않는다
+      const pl = G.player;
+      if (pl && pl.hp < pl.maxhp) pl.hp = Math.min(pl.maxhp, pl.hp + amt * rm.lifesteal);
+    }
+    if (rm.chillAll && !e.boss) {                           // 서리 서약: 모든 공격이 약하게 얼린다
+      e.chill = Math.max(e.chill || 0, 42); e.chillPow = Math.min(e.chillPow || 1, 0.82);
+    }
+    if (crit && rm.critWave && !CRITWAVE) {                 // 메아리 일격: 한 겹만, 스스로 되돌지 않는다
+      CRITWAVE = true;
+      const wd = amt * rm.critWave, R = 72;
+      forEachNearbyEnemy(e.x, e.y, R, o => {
+        if (!o.dead && o !== e && dist2(o.x, o.y, e.x, e.y) < R * R) damageEnemy(o, wd, e.x, e.y);
+      });
+      ring(e.x, e.y, R, '#ffcf4d', 12);
+      CRITWAVE = false;
+    }
+  }
   e.flash = 5;                       // 3D 모델을 잠깐 붉게 — 맞았다는 표시
   if (e.boss) Audio.S.bossHit(); else if (Math.random() < 0.3) Audio.S.hit();
   if (crit) { spark(e.x, e.y, '#ffcf4d', 3, 3, 12); if (Math.random() < 0.5) floatText(e.x, e.y - e.r - 6, Math.round(amt), '#ffcf4d'); }
@@ -4311,7 +4639,7 @@ function killEnemy(e) {
   spark(e.x, e.y, e.def.dark || '#7a3', 8, 3, 22);
   if (e.boss) { onBossDown(e); return; }   // 차수별 보스(boss~boss5) 모두 처리
   spawnGem(e.x, e.y, e.def.xp);
-  if (Math.random() < (e.def.coin || 0)) spawnCoin(e.x, e.y, 6);
+  if (Math.random() < (e.def.coin || 0) * (1 + rMod('coinDrop'))) spawnCoin(e.x, e.y, 6);
   if (Math.random() < ((G.tier <= 2) ? 0.015 : 0.01)) spawnHeart(e.x, e.y);   // 하트 드랍(스테이지 1~2는 1.5배)
   if (e.def.split && !e.child && G.enemies.length < 260) {   // 슬라임: 죽으면 작은 슬라임 2마리로 분열
     for (let i = 0; i < 2; i++) { const a = Math.random()*TAU; const c = spawnEnemy('slimeling', e.x + Math.cos(a)*14, e.y + Math.sin(a)*14); if (c) c.child = true; }
@@ -4890,6 +5218,7 @@ function hurtPlayer(amt) {
     return;
   }
   p.hp -= amt; p.iframe = 28; p.hurtFlash = 12; G.screenShake = Math.max(G.screenShake, 6);
+  if (rMod('hurtSpd')) p.hurtSpdT = 120;      // 방벽 코어: 맞은 직후 2초간 빠져나올 시간을 준다
   // 피 튀김 + 피해 수치 (직관적 피드백)
   spark(p.x, p.y, '#b0121a', 9, 3.2, 26);
   spark(p.x, p.y, '#e5232b', 5, 2.4, 22);
@@ -6670,7 +6999,18 @@ let skSig = '';
 function showMutationBanner() {
   const id = G.mutation, b = $('mutBanner');
   if (!b) return;
-  if (!id) { b.classList.remove('show'); return; }
+  const rl = equippedRelics(), rbox = $('mutBannerR');
+  if (rbox) {
+    rbox.innerHTML = rl.map(r => ico(RELIC_DATA[r].icon) + '<span>' + trName('relic', r) + '</span>').join('');
+    rbox.hidden = !rl.length;
+  }
+  if (!id) {                                   // 변이가 없어도 유물이 있으면 그것만 알린다
+    if (!rl.length) { b.classList.remove('show'); return; }
+    $('mutBannerL').textContent = t('relic.label');
+    $('mutBannerN').textContent = ''; $('mutBannerD').textContent = '';
+    b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+    return;
+  }
   $('mutBannerL').textContent = t('mut.label');
   $('mutBannerN').textContent = mutationName(id);
   $('mutBannerN').style.color = MUTATIONS[id].col;
@@ -6807,6 +7147,7 @@ function endRun(win) {
   el.resNext.style.display = 'none';
   el.resReward.style.display = 'none';
   renderRunReport();
+  renderMasteryGain();
   hud.classList.remove('show'); el.bossbar.classList.remove('show');
   el.result.classList.add('show');
 }
@@ -6839,6 +7180,7 @@ function winRound() {
   el.resNext.style.display = '';
   el.resNext.textContent = t('res.next').replace('{n}', G.tier + 1);
   renderRunReport();
+  renderMasteryGain();
   hud.classList.remove('show'); el.bossbar.classList.remove('show');
   el.result.classList.add('show');
 }
@@ -6846,6 +7188,7 @@ function winRound() {
 function continueTier() {
   G.tier++;
   G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier); Store.save(G.save);
+  buildMasteryMods(); buildRelicMods(); G._mastGranted = false; G.lastMastery = null;
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
     particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], corpses:[], spawnTimer:0, heartTimer:0,
@@ -6927,6 +7270,7 @@ function resumeRun() {
   if (!rs || !rs.player) { startRun(); return; }
   Audio.ensure(); Audio.resume(); Audio.startMusic('game');
   G.character = rs.character || 'hunter'; G.save.character = G.character;
+  buildMasteryMods(); buildRelicMods(); G._mastGranted = false; G.lastMastery = null;
   Object.assign(G, {
     time: rs.time || 0, frame: rs.frame || 0, enemies: [], bullets: [], acids: [], gems: [], coins: [], hearts: [],
     particles: [], blades: [], sentries: [], hazards: [], orbs: [], spawnTimer: 0, heartTimer: rs.heartTimer || 0,
@@ -7080,6 +7424,13 @@ function renderCharSelect() {
 }
 function renderArmory() {
   el.armory.innerHTML = '';
+  const tab = G.amTab || 'meta';
+  document.querySelectorAll('#amTabs .am-tab').forEach(b => b.classList.toggle('on', b.dataset.am === tab));
+  el.armory.dataset.tab = tab;
+  const coinRow = el.amSheet.querySelector('.sh-coin');
+  if (coinRow) coinRow.hidden = (tab !== 'meta');     // 숙련·유물은 코인을 쓰지 않는다
+  if (tab === 'mastery') return renderMasteryList();
+  if (tab === 'relic') return renderRelicList();
   renderTicketRow();
   for (const id in METAS) {
     const meta = curMeta();
@@ -7100,6 +7451,88 @@ function renderArmory() {
     if (bb && !isMax && can) keyable(bb, trName('meta', id));
     el.armory.appendChild(row);
   }
+}
+
+/* 무기 숙련 목록 — 파는 물건이 아니다. 얼마나 썼는지를 보여줄 뿐이다. */
+function renderMasteryList() {
+  const head = document.createElement('div');
+  head.className = 'am-note';
+  head.textContent = t('mast.note');
+  el.armory.appendChild(head);
+  for (const key of MASTERY_ORDER) {
+    const lv = masteryLv(key), pr = masteryProgress(key), rows = WEAPON_MASTERY_DATA[key];
+    const row = document.createElement('div'); row.className = 'up mast' + (lv >= MASTERY_BAL.maxLv ? ' max' : '');
+    let dots = ''; for (let i = 1; i < MASTERY_BAL.maxLv; i++) dots += `<i class="${i < lv ? 'on' : ''}"></i>`;
+    const nextTxt = (lv < MASTERY_BAL.maxLv)
+      ? `<div class="mx-next">${t('mast.next')} ${masteryRewardText(rows[lv - 1])}</div>` : '';
+    row.innerHTML = `
+      <div class="icon">${ico(WEAPONS[key].icon)}</div>
+      <div class="meta">
+        <div class="nm">${trName('weapon', key)} <span class="mx-lv">Lv ${lv}</span></div>
+        <div class="lvdots">${dots}</div>
+        ${pr ? `<div class="mx-bar"><i style="width:${pr.pct.toFixed(1)}%"></i></div>
+                <div class="ds">${fmtNum(pr.cur)} / ${fmtNum(pr.need)} XP</div>`
+             : `<div class="ds">${t('mast.max')}</div>`}
+        ${nextTxt}
+      </div>`;
+    el.armory.appendChild(row);
+  }
+}
+/* 보상 한 줄 설명 — 데이터에서 바로 만든다(무기별 문구를 따로 쓰지 않는다) */
+function masteryRewardText(mod) {
+  if (!mod) return '';
+  const out = [];
+  for (const k in mod) {
+    const v = mod[k], nm = t('mf.' + k) || k;
+    if (MASTERY_ADD_KEYS[k]) out.push(`${nm} +${v}`);
+    else if (MASTERY_SUB_KEYS[k]) out.push(`${nm} ↑`);
+    else out.push(`${nm} ${v > 0 ? '+' : ''}${Math.round(v * 100)}%`);
+  }
+  return out.join(' · ');
+}
+/* 유물 목록 — 한 칸(나중에 두 칸)만 쓴다. 코인으로 사지 않는다. */
+function renderRelicList() {
+  const sc = masteryScore(), slots = relicSlots(), eq = equippedRelics();
+  const head = document.createElement('div');
+  head.className = 'am-note';
+  head.textContent = t('relic.note').replace('{n}', slots).replace('{s}', sc)
+    + (slots < 2 ? ' · ' + t('relic.slot2').replace('{n}', RELIC_SLOT2_NEED) : '');
+  el.armory.appendChild(head);
+  for (const id of RELIC_ORDER) {
+    const r = RELIC_DATA[id], open = relicUnlocked(id), on = eq.indexOf(id) >= 0;
+    const row = document.createElement('div');
+    row.className = 'up relic' + (on ? ' on' : '') + (open ? '' : ' lock');
+    row.innerHTML = `
+      <div class="icon">${ico(open ? r.icon : 'lock')}</div>
+      <div class="meta"><div class="nm">${trName('relic', id)}</div>
+        <div class="ds">${open ? trDesc('relic', id) : t('relic.needs').replace('{n}', r.need)}</div></div>
+      <div class="buy ${on ? 'max' : open ? '' : 'cant'}">${on ? t('relic.on') : open ? t('relic.off') : `${sc}/${r.need}`}</div>`;
+    if (open) {
+      const btn = row.querySelector('.buy');
+      btn.onclick = () => { if (toggleRelic(id)) { Audio.ensure(); Audio.S.pickup(); renderArmory(); } };
+      keyable(btn, trName('relic', id));
+    }
+    el.armory.appendChild(row);
+  }
+}
+/* 결과 화면: 이번 판에서 오른 숙련 */
+function renderMasteryGain() {
+  const box = $('resMast'); if (!box) return;
+  const list = grantMasteryXP();
+  if (!list.length) { box.style.display = 'none'; return; }
+  box.style.display = '';
+  const rows = list.slice(0, 4).map(r => {
+    const pr = masteryProgress(r.key);
+    const up = r.lvA > r.lvB ? `<span class="mx-up">Lv ${r.lvB} → ${r.lvA}</span>` : '';
+    return `<div class="mx-row">
+      <span class="mx-ic">${ico(WEAPONS[r.key].icon)}</span>
+      <span class="mx-nm">${trName('weapon', r.key)}</span>
+      ${up}
+      <span class="mx-xp">+${fmtNum(r.xp)} XP</span>
+      <div class="mx-bar"><i style="width:${pr ? pr.pct.toFixed(1) : 100}%"></i></div>
+    </div>`;
+  }).join('');
+  box.innerHTML = `<div class="pf-title">${t('mast.gain')}</div>${rows}`;
 }
 
 /* ============================================================================
@@ -7188,6 +7621,9 @@ function init() {
       const v = el[sheet].querySelector('.veil');
       if (v) v.addEventListener('pointerdown', () => el[sheet].classList.remove('show'));
     });
+  document.querySelectorAll('#amTabs .am-tab').forEach(b => {
+    b.onclick = () => { G.amTab = b.dataset.am; Audio.ensure(); Audio.S.pickup(); renderArmory(); };
+  });
   $('stagePickClose').onclick = () => el.stagePick.classList.remove('show');
   $('continueBtn').onclick = () => { Audio.ensure(); Audio.resume(); G.meta = curMeta(); resumeRun(); };
   $('howBtn').onclick = () => el.how.classList.add('show');
