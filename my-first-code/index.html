@@ -1572,12 +1572,19 @@ const Audio = (() => {
       glass(R(1500, 1900), 0.22, 0.045, t0, 0.35);
       release('weapon', 240);
     },
-    zap() {                                  // 썬더 볼트 — 짧은 전기
+    zap() {                                  // 썬더 볼트 — 지지직거리는 전기 스파크
       if (!gate('weapon', 'zap', 55)) return;
       const t0 = T();
-      nz({ f: 3200, f2: 1100, dur: 0.07, vol: 0.06, q: 1.2, t: t0 });
-      for (let i = 0; i < 3; i++) v({ f: R(1800, 3000), dur: 0.02, vol: 0.03, type: 'square', atk: 0.001, t: t0 + i * 0.022 });
-      v({ f: 120, f2: 60, dur: 0.12, vol: 0.04, type: 'sine', atk: 0.003, t: t0 });
+      // 1) 몸통: 거칠게 찌그러진 톱니 버즈 — '지-' 하는 전류음
+      v({ f: 78, f2: 54, dur: 0.15, vol: 0.055, type: 'sawtooth', atk: 0.001, hp: 420, q: 3.4, t: t0 });
+      v({ f: 157, f2: 109, dur: 0.13, vol: 0.03, type: 'square', atk: 0.001, hp: 900, q: 2.6, t: t0 });
+      // 2) 알갱이: 아주 짧은 노이즈 조각을 불규칙하게 흩뿌려 '지직직' 끊기는 느낌을 만든다
+      for (let i = 0; i < 9; i++) {
+        const dt = t0 + i * 0.013 + R(0, 0.007);
+        nz({ f: R(2200, 6800), dur: R(0.006, 0.016), vol: R(0.02, 0.05), q: R(4, 11), t: dt });
+      }
+      // 3) 꼬리: 잦아드는 잡음
+      nz({ f: 3000, f2: 700, dur: 0.1, vol: 0.026, q: 1.6, t: t0 + 0.05 });
       release('weapon', 180);
     },
     sentry() {                               // 가드 터렛 — 기계적인 짧은 사격
@@ -2375,13 +2382,13 @@ const PASSIVES = {
 
 /* 시작 캐릭터 3종 — 각자 시작 무기 + 그 무기의 짝 패시브 1레벨을 갖고 출발 */
 const CHARACTERS = {
-  hunter:{ name:'사냥꾼', title:'균형형', icon:'dmg', weapon:'pistol', sprite:'player',
+  hunter:{ name:'NOMAD', title:'균형형', icon:'dmg', weapon:'pistol', sprite:'player',
     mods:{ dmgMul:0.9, coinMul:1.2 },
     desc:'코인 획득 +20% · 공격력 -10%. 무난한 올라운더, 입문용.' },
-  berserker:{ name:'광전사', title:'근접 흡혈형', icon:'blood', weapon:'scythe', sprite:'player_berserker',
+  berserker:{ name:'REAVER', title:'근접 흡혈형', icon:'blood', weapon:'scythe', sprite:'player_berserker',
     mods:{ mvMul:1.15, meleeDmgMul:1.15, hpMul:0.85 },
     desc:'이동속도 +15% · 근접 피해 +15% · 최대 체력 -15%. 닥돌 흡혈 탱커.' },
-  pyromancer:{ name:'화염술사', title:'광역 거점형', icon:'flamethrower', weapon:'flamethrower', sprite:'player_pyromancer',
+  pyromancer:{ name:'INFERNO', title:'광역 거점형', icon:'flamethrower', weapon:'flamethrower', sprite:'player_pyromancer',
     mods:{ rangeMul:1.2, mvMul:0.9 },
     desc:'사거리·범위 +20% · 이동속도 -10%. 거점 방어형, 기동성이 낮음.' },
 };
@@ -3546,13 +3553,12 @@ function spriteImg(key, cls) {
    다국어(i18n) — 한국어/English/中文/ไทย/Tiếng Việt/Español
    기술 고유명(무기·진화·패시브)은 한국어=한글 표기, 그 외 언어=영문 고유명.
    ========================================================================== */
+/* 고를 수 있는 언어는 한국어·영어 두 가지다.
+   나머지 언어의 문자열 표는 그대로 남겨 두었다 — 여기 목록에 다시 넣으면 바로 살아난다.
+   저장된 언어가 목록에 없으면 init 에서 detectLang() 으로 되돌린다. */
 const LANGS = [
   { code:'ko', flag:'🇰🇷', label:'한국어' },
   { code:'en', flag:'🇺🇸', label:'English' },
-  { code:'zh', flag:'🇨🇳', label:'中文' },
-  { code:'th', flag:'🇹🇭', label:'ไทย' },
-  { code:'vi', flag:'🇻🇳', label:'Tiếng Việt' },
-  { code:'es', flag:'🇪🇸', label:'Español' },
 ];
 let curLang = 'ko';
 
@@ -3828,9 +3834,9 @@ const TR = {
       frostpact:{name:'Frost Pact',desc:'Every attack chills lightly, and chilled enemies take +18% damage.'},
       echostrike:{name:'Echo Strike',desc:'Crits spread 40% of their damage to nearby enemies.'},
       firstblood:{name:'First Blood',desc:'+60% damage on the first hit against each enemy. The wider you spread, the better.'} },
-    char:{ hunter:{name:'Hunter',title:'Balanced',desc:'Coin gain +20% · damage -10%. An easy all-rounder for beginners.'},
-      berserker:{name:'Berserker',title:'Melee Lifesteal',desc:'Move speed +15% · melee damage +15% · max HP -15%. A charge-in lifesteal tank.'},
-      pyromancer:{name:'Pyromancer',title:'Zone Control',desc:'Range · area +20% · move speed -10%. A defensive zone-holder with low mobility.'} },
+    char:{ hunter:{name:'NOMAD',title:'Balanced',desc:'Coin gain +20% · damage -10%. An easy all-rounder for beginners.'},
+      berserker:{name:'REAVER',title:'Melee Lifesteal',desc:'Move speed +15% · melee damage +15% · max HP -15%. A charge-in lifesteal tank.'},
+      pyromancer:{name:'INFERNO',title:'Zone Control',desc:'Range · area +20% · move speed -10%. A defensive zone-holder with low mobility.'} },
   },
   zh:{
     weapon:{ pistol:{desc:'自动瞄准最近的僵尸，稳定的单发火力。'}, shotgun:{desc:'朝移动方向发射扇形多发弹丸。'},
@@ -3860,9 +3866,9 @@ const TR = {
       frostpact:{name:'霜之誓约',desc:'所有攻击附带轻微减速，对被减速的敌人伤害 +18%。'},
       echostrike:{name:'回响一击',desc:'暴击会把该伤害的 40% 扩散到周围。'},
       firstblood:{name:'先制打击',desc:'对每个敌人的第一击伤害 +60%。打得越散越强。'} },
-    char:{ hunter:{name:'猎人',title:'均衡型',desc:'金币获取 +20% · 攻击力 -10%。稳健的全能手，适合入门。'},
-      berserker:{name:'狂战士',title:'近战吸血型',desc:'移动速度 +15% · 近战伤害 +15% · 最大生命 -15%。冲锋吸血的坦克。'},
-      pyromancer:{name:'火焰法师',title:'范围据点型',desc:'射程·范围 +20% · 移动速度 -10%。防守据点型，机动性较低。'} },
+    char:{ hunter:{name:'NOMAD',title:'均衡型',desc:'金币获取 +20% · 攻击力 -10%。稳健的全能手，适合入门。'},
+      berserker:{name:'REAVER',title:'近战吸血型',desc:'移动速度 +15% · 近战伤害 +15% · 最大生命 -15%。冲锋吸血的坦克。'},
+      pyromancer:{name:'INFERNO',title:'范围据点型',desc:'射程·范围 +20% · 移动速度 -10%。防守据点型，机动性较低。'} },
   },
   th:{
     weapon:{ pistol:{desc:'เล็งซอมบี้ที่ใกล้ที่สุดอัตโนมัติ ยิงทีละนัดอย่างมั่นคง'}, shotgun:{desc:'ยิงกระสุนรูปพัดไปตามทิศที่เคลื่อนที่'},
@@ -3892,9 +3898,9 @@ const TR = {
       frostpact:{name:'พันธะน้ำแข็ง',desc:'ทุกการโจมตีชะลอเล็กน้อย และดาเมจต่อศัตรูที่ถูกชะลอ +18%'},
       echostrike:{name:'หมัดสะท้อน',desc:'คริติคอลกระจาย 40% ของดาเมจไปรอบ ๆ'},
       firstblood:{name:'ชิงลงมือก่อน',desc:'ดาเมจครั้งแรกต่อศัตรูแต่ละตัว +60% ยิ่งกระจายยิ่งแรง'} },
-    char:{ hunter:{name:'นักล่า',title:'สมดุล',desc:'ได้เหรียญ +20% · ความเสียหาย -10% ตัวเอนกประสงค์ที่เล่นง่าย เหมาะผู้เริ่มต้น'},
-      berserker:{name:'นักรบคลั่ง',title:'ประชิดดูดเลือด',desc:'ความเร็ว +15% · ความเสียหายประชิด +15% · พลังชีวิตสูงสุด -15% แทงค์บุกดูดเลือด'},
-      pyromancer:{name:'นักเวทไฟ',title:'คุมพื้นที่',desc:'ระยะ·พื้นที่ +20% · ความเร็ว -10% ตั้งรับคุมพื้นที่ เคลื่อนที่ช้า'} },
+    char:{ hunter:{name:'NOMAD',title:'สมดุล',desc:'ได้เหรียญ +20% · ความเสียหาย -10% ตัวเอนกประสงค์ที่เล่นง่าย เหมาะผู้เริ่มต้น'},
+      berserker:{name:'REAVER',title:'ประชิดดูดเลือด',desc:'ความเร็ว +15% · ความเสียหายประชิด +15% · พลังชีวิตสูงสุด -15% แทงค์บุกดูดเลือด'},
+      pyromancer:{name:'INFERNO',title:'คุมพื้นที่',desc:'ระยะ·พื้นที่ +20% · ความเร็ว -10% ตั้งรับคุมพื้นที่ เคลื่อนที่ช้า'} },
   },
   vi:{
     weapon:{ pistol:{desc:'Tự động ngắm zombie gần nhất với phát bắn đơn ổn định.'}, shotgun:{desc:'Bắn một loạt đạn hình quạt theo hướng di chuyển.'},
@@ -3924,9 +3930,9 @@ const TR = {
       frostpact:{name:'Giao Ước Băng Giá',desc:'Mọi đòn đánh làm chậm nhẹ, và kẻ bị làm chậm nhận +18% sát thương.'},
       echostrike:{name:'Đòn Vọng Âm',desc:'Chí mạng lan 40% sát thương ra xung quanh.'},
       firstblood:{name:'Ra Đòn Trước',desc:'+60% sát thương cho đòn đầu tiên lên mỗi kẻ địch.'} },
-    char:{ hunter:{name:'Thợ săn',title:'Cân bằng',desc:'Nhận xu +20% · sát thương -10%. Toàn diện dễ chơi, hợp người mới.'},
-      berserker:{name:'Cuồng chiến',title:'Cận chiến hút máu',desc:'Tốc độ +15% · sát thương cận chiến +15% · máu tối đa -15%. Tank lao vào hút máu.'},
-      pyromancer:{name:'Pháp sư lửa',title:'Kiểm soát vùng',desc:'Tầm·vùng +20% · tốc độ -10%. Phòng thủ giữ vùng, cơ động thấp.'} },
+    char:{ hunter:{name:'NOMAD',title:'Cân bằng',desc:'Nhận xu +20% · sát thương -10%. Toàn diện dễ chơi, hợp người mới.'},
+      berserker:{name:'REAVER',title:'Cận chiến hút máu',desc:'Tốc độ +15% · sát thương cận chiến +15% · máu tối đa -15%. Tank lao vào hút máu.'},
+      pyromancer:{name:'INFERNO',title:'Kiểm soát vùng',desc:'Tầm·vùng +20% · tốc độ -10%. Phòng thủ giữ vùng, cơ động thấp.'} },
   },
   es:{
     weapon:{ pistol:{desc:'Apunta solo al zombi más cercano con disparos únicos estables.'}, shotgun:{desc:'Dispara un abanico de perdigones en tu dirección de avance.'},
@@ -3956,9 +3962,9 @@ const TR = {
       frostpact:{name:'Pacto de Escarcha',desc:'Todo ataque ralentiza un poco, y los ralentizados reciben +18% de daño.'},
       echostrike:{name:'Golpe de Eco',desc:'Los críticos propagan el 40% de su daño alrededor.'},
       firstblood:{name:'Primera Sangre',desc:'+60% de daño en el primer impacto contra cada enemigo.'} },
-    char:{ hunter:{name:'Cazador',title:'Equilibrado',desc:'Ganancia de monedas +20% · daño -10%. Un todoterreno fácil para principiantes.'},
-      berserker:{name:'Berserker',title:'Robo de vida cuerpo a cuerpo',desc:'Velocidad +15% · daño cuerpo a cuerpo +15% · vida máxima -15%. Un tanque que embiste y roba vida.'},
-      pyromancer:{name:'Piromántico',title:'Control de zona',desc:'Alcance·área +20% · velocidad -10%. Defensivo que domina la zona, con poca movilidad.'} },
+    char:{ hunter:{name:'NOMAD',title:'Equilibrado',desc:'Ganancia de monedas +20% · daño -10%. Un todoterreno fácil para principiantes.'},
+      berserker:{name:'REAVER',title:'Robo de vida cuerpo a cuerpo',desc:'Velocidad +15% · daño cuerpo a cuerpo +15% · vida máxima -15%. Un tanque que embiste y roba vida.'},
+      pyromancer:{name:'INFERNO',title:'Control de zona',desc:'Alcance·área +20% · velocidad -10%. Defensivo que domina la zona, con poca movilidad.'} },
   },
 };
 
@@ -4267,8 +4273,8 @@ function wstats(w){
   applyMastery(w, s);                                      // 무기 숙련 — 기본 수치 위에 먼저 얹는다
   s.dmg = (s.dmg || 0) * pDmgMult() * synWeaponMul(w);     // 빌드 시너지
   const ht = weaponHitTag(w);
-  if (ht === 1) s.dmg *= charMeleeMul();                   // 광전사: 분노만큼 근접 피해
-  if (ht === 2) s.dmg *= charFireMul();                    // 화염술사: 열만큼 화염 피해
+  if (ht === 1) s.dmg *= charMeleeMul();                   // REAVER: 분노만큼 근접 피해
+  if (ht === 2) s.dmg *= charFireMul();                    // INFERNO: 열만큼 화염 피해
   if (s.lifesteal != null) s.lifesteal += synVal('lifesteal') + charLifesteal();
   if (s.chain != null) s.chain += synVal('chain');
   if (s.chillPow != null) s.chillPow = Math.max(0.12, s.chillPow - synVal('chillPow'));
@@ -7044,22 +7050,44 @@ function bindSecretHold() {
   banner.style.userSelect = 'none';
   banner.style.webkitUserSelect = 'none';
   banner.style.webkitTouchCallout = 'none';
-  const stop = () => { clearTimeout(_secretT); _secretT = null; banner.classList.remove('holding'); };
+  // 터치에서 브라우저가 이 제스처를 스크롤로 가져가 버리면 pointercancel 이 나서 도중에 끊긴다.
+  // touch-action:none 으로 제스처를 이 요소가 쥐고, 포인터도 캡처해 손가락이 조금 움직여도 유지한다.
+  banner.style.touchAction = 'none';
+
+  let sx = 0, sy = 0, pid = null;
+  const stop = () => {
+    clearTimeout(_secretT); _secretT = null;
+    banner.classList.remove('holding');
+    if (pid != null) { try { banner.releasePointerCapture(pid); } catch (e) {} pid = null; }
+  };
+  const grant = () => {
+    _secretT = null; banner.classList.remove('holding');
+    if (!G.save) return;
+    G.save.coins += 1000; Store.save(G.save); refreshMenu();
+    gdToast(gt('secret'));
+    if (G.screenShake != null) G.screenShake = Math.max(G.screenShake, 6);
+  };
   const start = (e) => {
     if (_secretT) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+    sx = e.clientX; sy = e.clientY; pid = e.pointerId;
+    try { banner.setPointerCapture(pid); } catch (err) { pid = null; }
     banner.classList.add('holding');                      // 누르는 동안만 아주 옅게 빛난다
-    _secretT = setTimeout(() => {
-      _secretT = null; banner.classList.remove('holding');
-      if (!G.save) return;
-      G.save.coins += 1000; Store.save(G.save); refreshMenu();
-      gdToast(gt('secret'));
-      if (G.screenShake != null) G.screenShake = Math.max(G.screenShake, 6);
-    }, SECRET_HOLD_MS);
+    _secretT = setTimeout(grant, SECRET_HOLD_MS);
+  };
+  // 손가락이 흔들리는 정도는 봐준다. 크게 끌었을 때만 취소.
+  const move = (e) => {
+    if (!_secretT) return;
+    if (Math.abs(e.clientX - sx) > 40 || Math.abs(e.clientY - sy) > 40) stop();
   };
   banner.addEventListener('pointerdown', start);
-  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) banner.addEventListener(ev, stop);
+  banner.addEventListener('pointermove', move);
+  banner.addEventListener('pointerup', stop);
+  banner.addEventListener('pointercancel', stop);
   banner.addEventListener('contextmenu', e => e.preventDefault());
+  // 터치 기본 동작(길게 눌러 선택/확대)도 막는다
+  banner.addEventListener('touchstart', e => e.preventDefault(), { passive:false });
 }
 function onGuideScroll() {
   const c = el.guideCard;
