@@ -705,6 +705,59 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
 @media (pointer:coarse){ .skkey{display:none;} }   /* 터치 기기엔 키 힌트가 필요 없다 */
 @media (max-height:700px){ .skbtn{width:52px;height:52px;} }
 /* 표식이 붙은 적 — 3D 위에 작은 표시 */
+
+/* ---------- 런 성과 · 변이 · 티켓 ---------- */
+.pf{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--line);text-align:left;}
+.pf-title{font-size:var(--f-micro);font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--tx-3);margin-bottom:var(--s2);}
+.pf-top{display:flex;align-items:baseline;gap:var(--s2);margin-bottom:var(--s2);
+  padding:6px var(--s3);border-radius:4px;background:rgba(141,255,90,.07);}
+.pf-top-l{font-size:var(--f-micro);color:var(--tx-3);letter-spacing:.1em;text-transform:uppercase;}
+.pf-top b{flex:1;font-size:var(--f-h2);color:var(--green);font-weight:700;}
+.pf-top-p{font-size:var(--f-h2);font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;}
+.pf-nums{display:flex;gap:var(--s2);margin-bottom:var(--s2);}
+.pf-num{flex:1;padding:5px var(--s3);border-radius:4px;background:rgba(255,255,255,.03);}
+.pf-num span{display:block;font-size:var(--f-micro);color:var(--tx-3);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:2px;}
+.pf-num b{font-size:var(--f-body);color:var(--tx);font-variant-numeric:tabular-nums;}
+.pf-row{margin-bottom:9px;}
+.pf-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2);}
+.pf-nm{font-size:var(--f-body);color:var(--tx-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pf-pc{font-size:var(--f-body);font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;}
+.pf-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:5px;}
+.pf-bar i{display:block;height:100%;width:0;border-radius:2px;
+  background:linear-gradient(90deg,var(--green),#6EE7FF);
+  animation:pfGrow 520ms var(--ease) forwards;}
+@keyframes pfGrow{to{width:var(--w);}}
+.pf-row:nth-child(n+4) .pf-bar i{background:linear-gradient(90deg,var(--tx-3),var(--tx-2));}
+.pf-sub{font-size:var(--f-micro);color:var(--tx-3);margin-top:2px;}
+.pf-mut{display:inline-flex;align-items:center;gap:5px;margin-top:var(--s2);
+  font-size:var(--f-micro);font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-3);}
+.pf-mut .ic{width:12px;height:12px;}
+@media (prefers-reduced-motion:reduce){ .pf-bar i{animation:none;width:var(--w);} }
+
+/* 변이 표시 — HUD 는 작게 한 줄, 스테이지 시작에만 크게 한 번 */
+.hud-mut{display:inline-flex;align-items:center;gap:4px;font-size:var(--f-micro);
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tx-3);}
+.hud-mut .ic{width:11px;height:11px;}
+.hud-mut[hidden]{display:none;}
+.mut-banner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
+  text-align:center;pointer-events:none;z-index:6;opacity:0;}
+.mut-banner.show{animation:mutIn 2600ms var(--ease) forwards;}
+.mut-banner .l{font-size:var(--f-micro);font-weight:700;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--tx-3);margin-bottom:6px;}
+.mut-banner .n{font-size:var(--f-h1);font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  text-shadow:0 2px 18px rgba(0,0,0,.9);}
+.mut-banner .d{margin-top:6px;font-size:var(--f-meta);color:var(--tx-2);}
+@keyframes mutIn{0%{opacity:0;transform:translate(-50%,-50%) translateY(8px);}
+  16%{opacity:1;transform:translate(-50%,-50%);}78%{opacity:1;}100%{opacity:0;}}
+@media (prefers-reduced-motion:reduce){ .mut-banner.show{animation:none;opacity:0;} }
+
+/* 레벨업 도구 — 기회변경 티켓 */
+.lu-tool.ticket{border-color:rgba(255,212,90,.28);color:var(--tx-3);}
+.lu-tool.ticket b{color:var(--gold);}
+.lu-tool.ticket:hover:not(:disabled){color:var(--gold);border-color:rgba(255,212,90,.5);}
+.ticket-row .tk-have{color:var(--gold);font-weight:700;}
 .bossbar{position:absolute;left:50%;transform:translateX(-50%);
   top:calc(96px + var(--safe-t));width:min(440px,74vw);display:none;}
 .bossbar.show{display:block;animation:bossIn 420ms var(--ease) both;}
@@ -774,6 +827,10 @@ h2.res.lose{color:var(--red);}
 #result .card,#pause .card{text-align:center;}
 #result .kv,#pause .kv{text-align:left;}
 #result .btn,#pause .btn{margin-top:var(--s3);}
+/* 성과가 길어도 다음 행동 버튼은 항상 손에 닿는다 */
+#result #resNext,#result #resAgain{position:sticky;bottom:0;}
+#result #resNext{background:linear-gradient(180deg,rgba(141,255,90,.16),rgba(141,255,90,.06)),#0D1311;}
+#result #resAgain{background:rgba(13,19,17,.96);}
 
 /* 가이드 닫기 버튼은 아래에 붙어 있다 — 뒤 내용이 비쳐 보이지 않게 불투명 바탕을 깐다 */
 #guideClose{background:linear-gradient(180deg,rgba(141,255,90,.16),rgba(141,255,90,.06)),#0D1311;
@@ -934,6 +991,7 @@ h2.res.lose{color:var(--red);}
       <div class="hud-line">
         <span class="hud-lv" id="lvChip">LV 1</span>
         <span class="hud-stage" id="tierChip">STAGE 1</span>
+        <span class="hud-mut" id="mutChip" hidden></span>
         <span class="hud-time" id="timeChip">00:00</span>
       </div>
       <div class="bar xp"><i class="fill" id="xpfill"></i></div>
@@ -958,6 +1016,11 @@ h2.res.lose{color:var(--red);}
       </svg>
       <span class="skkey" id="skKey">SPACE</span>
     </button>
+  </div>
+  <div class="mut-banner" id="mutBanner" aria-hidden="true">
+    <div class="l" id="mutBannerL">MUTATION</div>
+    <div class="n" id="mutBannerN"></div>
+    <div class="d" id="mutBannerD"></div>
   </div>
   <div class="bossbar" id="bossbar">
     <div class="nm" id="bossName">BOSS</div>
@@ -1175,6 +1238,7 @@ h2.res.lose{color:var(--red);}
     <div class="result-mark" id="resEmoji"></div>
     <h2 class="res" id="resTitle">전멸</h2>
     <div id="resStats"></div>
+    <div id="resPerf" class="pf" style="display:none;"></div>
     <div id="resReward" class="res-reward" style="display:none;"></div>
     <button class="btn primary" id="resNext" style="margin-top:18px;display:none;">▶ 다음 차수 도전</button>
     <button class="btn ghost" id="resAgain" style="margin-top:10px;" data-i18n="res.again">로비로 돌아가기</button>
@@ -1217,7 +1281,7 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1)
 const Store = (() => {
   const KEY = 'undead_rush_save_v1';
   let mem = null;
-  const def = () => ({ coins: 0, bestTime: 0, totalKills: 0, meta: {}, metaByChar: {}, character: 'hunter', lang: '', maxTier: 1, passiveSlots: 6, sfxOn: true, bgmOn: true, guideReward: false, runState: null });
+  const def = () => ({ saveVersion: 3, coins: 0, bestTime: 0, totalKills: 0, meta: {}, metaByChar: {}, character: 'hunter', lang: '', maxTier: 1, passiveSlots: 6, sfxOn: true, bgmOn: true, guideReward: false, chanceChangeTickets: 0, runState: null });
   const CHARS3 = ['hunter', 'berserker', 'pyromancer'];
   function normalize(d) {
     if (!d.metaByChar || typeof d.metaByChar !== 'object') d.metaByChar = {};
@@ -1233,6 +1297,9 @@ const Store = (() => {
     if (typeof d.bgmOn !== 'boolean') d.bgmOn = true;
     if (typeof d.guideReward !== 'boolean') d.guideReward = false;
     if (d.runState === undefined) d.runState = null;
+    // v2 → v3: 기회변경 티켓. 기존 세이브는 0 장으로 시작한다.
+    if (typeof d.chanceChangeTickets !== 'number' || !(d.chanceChangeTickets >= 0)) d.chanceChangeTickets = 0;
+    d.saveVersion = 3;
     return d;
   }
   function load() {
@@ -2591,7 +2658,8 @@ function useActive() {
   const p = G.player;
   if (!p || G.state !== 'play' || !activeReady()) return false;
   const sys = charSys();
-  p.skCd = sys.cd();
+  p.skCd = sys.cd(); STAT.actives++;
+  DMGSRC = 'ability';
   if (sys.active === 'dash') doDash();
   else if (sys.active === 'frenzy') doFrenzy();
   else if (sys.active === 'inferno') doInferno();
@@ -2619,6 +2687,7 @@ function updateDash() {
     if (dist2(e.x, e.y, p.x, p.y) > 34 * 34) return;
     e.dashHit = G.frame;
     markEnemy(e);
+    DMGSRC = 'ability';
     damageEnemy(e, H.dashDmg, p.x, p.y);
   });
 }
@@ -2641,7 +2710,7 @@ function doInferno() {
     if (!e.dead && dist2(e.x, e.y, p.x, p.y) < r * r) damageEnemy(e, dmg, p.x, p.y);
   });
   if (G.hazards.length < 100)
-    G.hazards.push({ x:p.x, y:p.y, r:r * 0.6, life:180, dmg:Math.round(dmg * 0.12), tick:0, col:'#ff7a2a' });
+    G.hazards.push({ x:p.x, y:p.y, r:r * 0.6, life:180, dmg:Math.round(dmg * 0.12), tick:0, col:'#ff7a2a', src:'ability' });
   ring(p.x, p.y, r, '#FF8A3A', 30); spark(p.x, p.y, '#ffb35a', 18, 4.4, 28);
   G.screenShake = Math.max(G.screenShake, 9);
   Audio.S.explode();
@@ -2667,6 +2736,7 @@ function updateCharacter() {
       if (--p.overTick <= 0) {                  // 과열 중: 주위로 작은 화염 폭발
         p.overTick = B.overTick;
         const dmg = B.overDmgTick * pDmgMult() * charFireMul();
+        DMGSRC = 'ability'; HITTAG = 0;
         forEachNearbyEnemy(p.x, p.y, B.overR + 30, e => {
           if (!e.dead && dist2(e.x, e.y, p.x, p.y) < B.overR * B.overR) damageEnemy(e, dmg, p.x, p.y);
         });
@@ -2834,6 +2904,212 @@ function updateEnemyBehavior(e, p, dx, dy, d) {
       marks:G.markN, corpses:G.corpses.length, zones:G.zones.length, syn:Object.keys(G.syn) }; },
   };
 })();
+/* ============================================================================
+   스테이지 변이 · 위협 예산 · 런 성과 분석 · 기회변경 티켓
+   기존 전투 시스템(캐릭터·빌드·몬스터·보스) 위에 얹는 층이다. 아래를 고치지 않는다.
+   ========================================================================== */
+
+/* ---------------- 기회변경 티켓 ---------------- */
+const CHANCE_CHANGE_TICKET_PRICE = 500;
+
+/* ---------------- 스테이지 변이 ----------------
+   숫자만 올리는 변이는 만들지 않는다. 각 변이는 이동·우선순위·빌드 중
+   최소 하나의 판단을 바꾼다. 스테이지 내내 유지되고 중간에 바뀌지 않는다. */
+const MUTATIONS = {
+  bloodmoon:   { icon:'blood',        col:'#FF4D5A' },
+  toxicrain:   { icon:'spitter',      col:'#8CE04A' },
+  frozenground:{ icon:'frostwand',    col:'#8FD8FF' },
+  graverising: { icon:'skull',        col:'#B46AFF' },
+  firestorm:   { icon:'flamethrower', col:'#FF8A3A' },
+};
+const MUTATION_BALANCE = {
+  bloodmoon:   { chance:0.13, cap:280 },                   // 사망 시 러너 생성
+  toxicrain:   { every:400, n:3, r:88, warn:72, dmg:16 },   // 주기적 독 영역
+  frozenground:{ every:560, n:4, r:155, life:420 },         // 둔화 지대
+  graverising: { chance:0.09, cap:280 },                    // 일부 사망 적 재생성
+  firestorm:   { every:320, n:2, r:80, warn:66, dmg:18 },   // 화염 영역
+};
+/* 스테이지마다 고정된 순서로 돈다 — 매번 달라지면 배울 수가 없다 */
+const MUTATION_ORDER = ['bloodmoon','toxicrain','frozenground','graverising','firestorm'];
+function mutationForTier(tier) {
+  if (tier < 2) return null;                                // 1스테이지는 순수 기본 규칙
+  return MUTATION_ORDER[(tier - 2) % MUTATION_ORDER.length];
+}
+function mutationName(id) { return id ? t('mut.' + id) : ''; }
+function mutationDesc(id) { return id ? t('mut.' + id + '.d') : ''; }
+
+function applyMutationOnKill(e) {                           // 사망 시 반응하는 변이
+  const m = G.mutation; if (!m || e.boss || e.mini || e.child) return;
+  const B = MUTATION_BALANCE[m];
+  if (m === 'bloodmoon' && Math.random() < B.chance && G.enemies.length < B.cap) {
+    const c = spawnEnemy('runner', e.x, e.y); if (c) { c.child = true; spark(e.x, e.y, '#FF4D5A', 5, 2.6, 16); }
+  } else if (m === 'graverising' && Math.random() < B.chance && G.enemies.length < B.cap) {
+    const c = spawnEnemy(e.key, e.x, e.y); if (c) { c.child = true; ring(e.x, e.y, 26, '#B46AFF', 16); }
+  }
+}
+function updateMutation() {                                 // 주기적으로 환경을 바꾸는 변이
+  const m = G.mutation; if (!m) return;
+  const B = MUTATION_BALANCE[m];
+  if (m !== 'toxicrain' && m !== 'frozenground' && m !== 'firestorm') return;
+  if (--G.mutT > 0) return;
+  G.mutT = B.every;
+  const p = P(), R = 420;
+  for (let i = 0; i < B.n; i++) {
+    const a = Math.random() * TAU, r = rand(90, R);
+    const x = p.x + Math.cos(a) * r, y = p.y + Math.sin(a) * r;
+    if (m === 'frozenground') {                             // 예고 없이 서서히 깔리는 둔화 지대
+      if (G.hazards.length < 100)
+        G.hazards.push({ x, y, r:B.r, life:B.life, dmg:0, tick:0, col:'#8FD8FF', chill:true });
+    } else {
+      addZone({ x, y, r:B.r, warn:B.warn, col:MUTATIONS[m].col,
+                kind:(m === 'firestorm' ? 'fire' : 'poison'), dmg:B.dmg });
+    }
+  }
+}
+
+/* ---------------- 위협 예산 ----------------
+   "시간이 지나면 적이 많아진다"가 아니라 "더 위험한 조합이 나온다".
+   기존 spawnTimer 흐름은 그대로 두고, 무엇을 뽑을지만 예산으로 정한다. */
+const ENEMY_THREAT_COST = {
+  walker:1, runner:2, slimeling:1, slime:5, spitter:4, archer:4, bomber:5,
+  brute:7, armorwalker:7, howler:8, firedemon:9, necromancer:10, lich:10,
+  reaper:11, stonegolem:12,
+};
+const THREAT_BALANCE = {
+  window: 600,              // 10초 단위로 예산을 다시 잡는다
+  base: 6, perSec: 0.26,    // 초반 밀도는 기존과 같게 맞춘 값 (batch ≈ 1 + t/22)
+  tierMul: 0.20,            // 스테이지마다 예산 +20%
+  bossCut: 0.45,            // 보스전에는 압박을 낮춰 패턴을 읽을 공간을 준다
+  miniCut: 0.7,
+  hardCap: 300,             // 검증된 성능 범위. 여기를 넘기지 않는다.
+  perTick: 0.16,            // 한 번의 스폰이 쓰는 예산 비율
+};
+/* 시간대별 구성 — 완전 랜덤이 아니라 설계된 무작위 */
+const WAVE_COMPOSITION = [
+  { from:0,   roles:['walker','walker','walker','runner'] },
+  { from:30,  roles:['walker','walker','runner','runner','brute'] },
+  { from:60,  roles:['walker','runner','runner','bomber','brute','armorwalker'] },
+  { from:100, roles:['walker','runner','bomber','spitter','armorwalker','slime','brute'] },
+  { from:150, roles:['runner','bomber','spitter','armorwalker','howler','reaper','brute'] },
+  { from:200, roles:['runner','spitter','howler','reaper','necromancer','stonegolem','armorwalker'] },
+  { from:250, roles:['runner','reaper','howler','necromancer','stonegolem','firedemon','lich','spitter'] },
+];
+function waveRolesFor(t) {
+  let w = WAVE_COMPOSITION[0];
+  for (const c of WAVE_COMPOSITION) if (t >= c.from) w = c;
+  return w.roles;
+}
+/* 아직 해금되지 않은 적은 걸러낸다(기존 등장 조건 유지) */
+function roleUnlocked(key, t) {
+  if (key === 'howler') return G.tier >= 4;
+  if (key === 'archer') return t >= 210;
+  if (['armorwalker'].includes(key)) return G.tier >= 2 && t >= 25;
+  if (['reaper','slime'].includes(key)) return G.tier >= 3;
+  if (['necromancer','stonegolem'].includes(key)) return G.tier >= 4;
+  if (['lich','firedemon'].includes(key)) return G.tier >= 5;
+  return true;
+}
+function refreshThreatBudget() {
+  const T = THREAT_BALANCE, t = G.time;
+  let b = (T.base + t * T.perSec) * (1 + (G.tier - 1) * T.tierMul);
+  if (G.boss && !G.boss.dead) b *= T.bossCut;
+  else if (G.enemies.some(e => e.mini && !e.dead)) b *= T.miniCut;
+  G.threatBudget = b;
+  G.threatRoles = waveRolesFor(t).filter(k => roleUnlocked(k, t));
+  if (!G.threatRoles.length) G.threatRoles = ['walker','runner'];
+}
+/* 한 번의 스폰에서 예산만큼 적 조합을 만든다 */
+function spawnThreatWave() {
+  const T = THREAT_BALANCE;
+  let spend = G.threatBudget * T.perTick;
+  const roles = G.threatRoles;
+  let guard = 0;
+  while (spend > 0 && guard++ < 24 && G.enemies.length < T.hardCap) {
+    const key = roles[(Math.random() * roles.length) | 0];
+    const cost = ENEMY_THREAT_COST[key] || 2;
+    if (cost > spend && guard > 1) break;
+    spawnEnemy(key);
+    spend -= cost;
+  }
+}
+
+/* ---------------- 런 성과 분석 ----------------
+   추정하지 않는다. 실제로 들어간 피해만 센다(오버킬 제외).
+   이벤트마다 DOM 을 건드리지 않고 숫자만 누적한다. */
+let DMGSRC = 'other';
+const STAT = {
+  dmg:{}, kills:{}, bossDmg:{}, total:0, bossTotal:0, killTotal:0,
+  ticketsUsed:0, rerolls:0, banishes:0, locks:0, actives:0,
+};
+function resetStats() {
+  STAT.dmg = {}; STAT.kills = {}; STAT.bossDmg = {};
+  STAT.total = 0; STAT.bossTotal = 0; STAT.killTotal = 0;
+  STAT.ticketsUsed = 0; STAT.rerolls = 0; STAT.banishes = 0; STAT.locks = 0; STAT.actives = 0;
+}
+/* 무기 하나의 집계 키 — 진화했으면 진화 무기 이름으로 잡힌다 */
+function srcOfWeapon(w) { return w.evolved ? WEAPONS[w.key].evo : w.key; }
+function srcLabel(id) {
+  if (EVOS[id]) return trName('evo', id);
+  if (WEAPONS[id]) return trName('weapon', id);
+  if (id === 'ability') return t('stat.ability');
+  return t('stat.other');
+}
+function recordDamage(e, eff) {
+  if (eff <= 0) return;
+  const s = DMGSRC || 'other';
+  if (s === 'env') return;                  // 보스·변이가 만든 장판은 플레이어 기여가 아니다
+  STAT.dmg[s] = (STAT.dmg[s] || 0) + eff;
+  STAT.total += eff;
+  if (e.boss || e.mini) { STAT.bossDmg[s] = (STAT.bossDmg[s] || 0) + eff; STAT.bossTotal += eff; }
+  e.lastSrc = s;
+}
+function recordKill(e) {
+  const s = e.lastSrc || 'other';
+  STAT.kills[s] = (STAT.kills[s] || 0) + 1;
+  STAT.killTotal++;
+}
+/* 결과 화면에서 한 번만 계산한다 */
+function buildRunReport() {
+  const rows = Object.keys(STAT.dmg)
+    .map(k => ({ id:k, name:srcLabel(k), dmg:STAT.dmg[k],
+                 pct: STAT.total > 0 ? STAT.dmg[k] / STAT.total * 100 : 0,
+                 kills: STAT.kills[k] || 0,
+                 kpct: STAT.killTotal > 0 ? (STAT.kills[k] || 0) / STAT.killTotal * 100 : 0 }))
+    .sort((a, b) => b.dmg - a.dmg);
+  // 2% 미만은 '기타'로 묶어 한 화면에 들어오게
+  const main = [], rest = { id:'other', name:t('stat.other'), dmg:0, pct:0, kills:0, kpct:0 };
+  for (const r of rows) {
+    if (r.id !== 'other' && main.length < 5 && r.pct >= 2) main.push(r);
+    else { rest.dmg += r.dmg; rest.pct += r.pct; rest.kills += r.kills; rest.kpct += r.kpct; }
+  }
+  if (rest.dmg > 0) main.push(rest);
+  return { rows:main, top:main[0] || null, total:STAT.total, bossTotal:STAT.bossTotal,
+           kills:STAT.killTotal };
+}
+const fmtNum = n => Math.round(n).toLocaleString('en-US');
+function renderRunReport() {
+  const box = $('resPerf'); if (!box) return;
+  const rep = buildRunReport();
+  if (!rep.total) { box.style.display = 'none'; return; }
+  box.style.display = '';
+  const bars = rep.rows.map((r, i) => `
+    <div class="pf-row">
+      <div class="pf-head"><span class="pf-nm">${r.name}</span><span class="pf-pc">${r.pct.toFixed(1)}%</span></div>
+      <div class="pf-bar"><i style="--w:${r.pct.toFixed(1)}%;animation-delay:${i * 60}ms"></i></div>
+      <div class="pf-sub">${t('stat.kills')} ${r.kills} · ${r.kpct.toFixed(0)}%</div>
+    </div>`).join('');
+  box.innerHTML =
+    `<div class="pf-title">${t('stat.title')}</div>
+     ${rep.top ? `<div class="pf-top"><span class="pf-top-l">${t('stat.top')}</span>
+       <b>${rep.top.name}</b><span class="pf-top-p">${rep.top.pct.toFixed(1)}%</span></div>` : ''}
+     <div class="pf-nums">
+       <div class="pf-num"><span>${t('stat.total')}</span><b>${fmtNum(rep.total)}</b></div>
+       <div class="pf-num"><span>${t('stat.boss')}</span><b>${fmtNum(rep.bossTotal)}</b></div>
+     </div>
+     ${bars}
+     ${G.mutation ? `<div class="pf-mut">${ico(MUTATIONS[G.mutation].icon)}<span>${mutationName(G.mutation)}</span></div>` : ''}`;
+}
+
 /* ---------------- 인게임 가이드 도감(다국어) ---------------- */
 const GUIDE_WPN_ORDER = ['pistol','shotgun','flamethrower','machete','grenade','taser','axe','sentry','scythe','frostwand'];
 const GUIDE_MS = ['pistol','shotgun','grenade','axe','sentry'];   // 멀티샷이 적용되는 무기
@@ -3012,6 +3288,7 @@ const UI = {
     'btn.start':'출격', 'btn.how':'조작법', 'btn.guide':'가이드 도감', 'btn.reset':'데이터 초기화',
     'menu.sub':'감염 구역에서 살아남아라', 'nav.squad':'대원', 'nav.armory':'아머리', 'nav.records':'기록',
     'sheet.squad':'대원 선택', 'sheet.armory':'영구 강화',
+    'mut.label':'스테이지 변이', 'mut.bloodmoon':'블러드 문', 'mut.bloodmoon.d':'적이 죽으면 러너가 튀어나온다.', 'mut.toxicrain':'독성 강우', 'mut.toxicrain.d':'주기적으로 독 지대가 생긴다.', 'mut.frozenground':'결빙 지대', 'mut.frozenground.d':'얼어붙은 땅에서는 느려진다.', 'mut.graverising':'무덤 기상', 'mut.graverising.d':'쓰러진 적 일부가 다시 일어선다.', 'mut.firestorm':'화염 폭풍', 'mut.firestorm.d':'불길이 곳곳에 떨어진다.', 'stat.title':'런 성과', 'stat.top':'최대 기여', 'stat.total':'총 피해', 'stat.boss':'보스 피해', 'stat.kills':'처치', 'stat.ability':'대원 기술', 'stat.other':'기타', 'lu.ticket':'기회변경 ', 'ticket.name':'기회변경 티켓', 'ticket.desc':'레벨업 1회를 통째로 넘긴다. 이번 보상은 받지 않는다.', 'ticket.poor':'코인이 부족합니다.',
     'menu.sector':'감염구역 07 · 격리', 'menu.bestShort':'최고',
     'lu.reroll':'다시 뽑기 ', 'lu.banish':'제외 ', 'lu.lock':'고정 ', 'lu.pick.banish':'이번 판에서 뺄 항목을 고르세요', 'lu.pick.lock':'다음에도 남길 항목을 고르세요', 'syn.burn':'연소 숙련', 'syn.ballistic':'탄도 숙련', 'syn.bloodpact':'피의 계약', 'syn.cryo':'빙결장', 'syn.deadeye':'데드아이', 'syn.storm':'폭풍 회로', 'syn.demolition':'폭파 공학', 'syn.warden':'수호 포대',
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
@@ -3048,6 +3325,7 @@ const UI = {
     'btn.start':'Deploy', 'btn.how':'How to Play', 'btn.guide':'Guide & Codex', 'btn.reset':'Reset Data',
     'menu.sub':'Survive the Outbreak', 'nav.squad':'Squad', 'nav.armory':'Armory', 'nav.records':'Records',
     'sheet.squad':'Choose Operative', 'sheet.armory':'Permanent Upgrades',
+    'mut.label':'Stage Mutation', 'mut.bloodmoon':'Blood Moon', 'mut.bloodmoon.d':'Slain enemies may spawn Runners.', 'mut.toxicrain':'Toxic Rain', 'mut.toxicrain.d':'Poison zones appear periodically.', 'mut.frozenground':'Frozen Ground', 'mut.frozenground.d':'Iced ground slows you down.', 'mut.graverising':'Grave Rising', 'mut.graverising.d':'Some fallen enemies rise again.', 'mut.firestorm':'Firestorm', 'mut.firestorm.d':'Flames fall across the field.', 'stat.title':'Run Performance', 'stat.top':'Top Source', 'stat.total':'Total Damage', 'stat.boss':'Boss Damage', 'stat.kills':'Kills', 'stat.ability':'Ability', 'stat.other':'Other', 'lu.ticket':'Chance ', 'ticket.name':'Chance Change Ticket', 'ticket.desc':'Skip one level-up entirely. You get no reward this time.', 'ticket.poor':'Not enough coins.',
     'menu.sector':'Sector 07 · Quarantine', 'menu.bestShort':'Best',
     'lu.reroll':'Reroll ', 'lu.banish':'Banish ', 'lu.lock':'Lock ', 'lu.pick.banish':'Pick one to remove for this run', 'lu.pick.lock':'Pick one to keep next time', 'syn.burn':'Burn Mastery', 'syn.ballistic':'Ballistic Mastery', 'syn.bloodpact':'Blood Pact', 'syn.cryo':'Cryo Field', 'syn.deadeye':'Deadeye', 'syn.storm':'Storm Circuit', 'syn.demolition':'Demolition', 'syn.warden':'Warden Battery',
     'menu.autosave':'Progress is saved automatically in this browser.',
@@ -3084,6 +3362,7 @@ const UI = {
     'btn.start':'出击', 'btn.how':'玩法说明', 'btn.guide':'指南图鉴', 'btn.reset':'重置数据',
     'menu.sub':'在疫区活下去', 'nav.squad':'干员', 'nav.armory':'武库', 'nav.records':'记录',
     'sheet.squad':'选择干员', 'sheet.armory':'永久强化',
+    'mut.label':'关卡变异', 'mut.bloodmoon':'血月', 'mut.bloodmoon.d':'敌人死亡时可能生成疾行者。', 'mut.toxicrain':'毒雨', 'mut.toxicrain.d':'周期性出现毒区。', 'mut.frozenground':'冰封地面', 'mut.frozenground.d':'结冰区域会减速。', 'mut.graverising':'亡者复起', 'mut.graverising.d':'部分倒下的敌人会再站起。', 'mut.firestorm':'火焰风暴', 'mut.firestorm.d':'火焰不断落下。', 'stat.title':'本局表现', 'stat.top':'最大贡献', 'stat.total':'总伤害', 'stat.boss':'首领伤害', 'stat.kills':'击杀', 'stat.ability':'干员技能', 'stat.other':'其他', 'lu.ticket':'改机 ', 'ticket.name':'改机票', 'ticket.desc':'跳过一次升级。本次不获得奖励。', 'ticket.poor':'金币不足。',
     'menu.sector':'感染区 07 · 隔离', 'menu.bestShort':'最佳',
     'lu.reroll':'重抽 ', 'lu.banish':'排除 ', 'lu.lock':'锁定 ', 'lu.pick.banish':'选择本局要移除的项目', 'lu.pick.lock':'选择下次保留的项目', 'syn.burn':'燃烧精通', 'syn.ballistic':'弹道精通', 'syn.bloodpact':'血之契约', 'syn.cryo':'冰冻力场', 'syn.deadeye':'神射手', 'syn.storm':'风暴回路', 'syn.demolition':'爆破工程', 'syn.warden':'守卫炮台',
     'menu.autosave':'进度会自动保存在此浏览器中。',
@@ -3120,6 +3399,7 @@ const UI = {
     'btn.start':'ออกรบ', 'btn.how':'วิธีเล่น', 'btn.guide':'คู่มือ', 'btn.reset':'ล้างข้อมูล',
     'menu.sub':'รอดจากการระบาด', 'nav.squad':'ทีม', 'nav.armory':'คลังอาวุธ', 'nav.records':'สถิติ',
     'sheet.squad':'เลือกตัวละคร', 'sheet.armory':'อัปเกรดถาวร',
+    'mut.label':'การกลายพันธุ์ด่าน', 'mut.bloodmoon':'จันทร์เลือด', 'mut.bloodmoon.d':'ศัตรูที่ตายอาจเกิดตัววิ่ง', 'mut.toxicrain':'ฝนพิษ', 'mut.toxicrain.d':'เขตพิษเกิดขึ้นเป็นระยะ', 'mut.frozenground':'พื้นเยือกแข็ง', 'mut.frozenground.d':'พื้นน้ำแข็งทำให้ช้าลง', 'mut.graverising':'สุสานตื่น', 'mut.graverising.d':'ศัตรูบางตัวลุกขึ้นใหม่', 'mut.firestorm':'พายุเพลิง', 'mut.firestorm.d':'เปลวไฟตกลงทั่วสนาม', 'stat.title':'ผลการเล่น', 'stat.top':'สร้างมากสุด', 'stat.total':'ดาเมจรวม', 'stat.boss':'ดาเมจบอส', 'stat.kills':'สังหาร', 'stat.ability':'สกิลตัวละคร', 'stat.other':'อื่น ๆ', 'lu.ticket':'เปลี่ยนโอกาส ', 'ticket.name':'ตั๋วเปลี่ยนโอกาส', 'ticket.desc':'ข้ามการเลเวลอัปหนึ่งครั้ง ไม่ได้รางวัลรอบนี้', 'ticket.poor':'เหรียญไม่พอ',
     'menu.sector':'เขต 07 · กักกัน', 'menu.bestShort':'ดีสุด',
     'lu.reroll':'สุ่มใหม่ ', 'lu.banish':'ตัดออก ', 'lu.lock':'ล็อก ', 'lu.pick.banish':'เลือกสิ่งที่จะตัดออกในรอบนี้', 'lu.pick.lock':'เลือกสิ่งที่จะเก็บไว้ครั้งหน้า', 'syn.burn':'เชี่ยวชาญเพลิง', 'syn.ballistic':'เชี่ยวชาญกระสุน', 'syn.bloodpact':'พันธะเลือด', 'syn.cryo':'สนามเยือกแข็ง', 'syn.deadeye':'เดดอาย', 'syn.storm':'วงจรพายุ', 'syn.demolition':'วิศวกรรมระเบิด', 'syn.warden':'ป้อมผู้พิทักษ์',
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
@@ -3156,6 +3436,7 @@ const UI = {
     'btn.start':'Xuất kích', 'btn.how':'Cách chơi', 'btn.guide':'Hướng dẫn', 'btn.reset':'Đặt lại dữ liệu',
     'menu.sub':'Sống sót qua đại dịch', 'nav.squad':'Đặc vụ', 'nav.armory':'Kho vũ khí', 'nav.records':'Hồ sơ',
     'sheet.squad':'Chọn đặc vụ', 'sheet.armory':'Nâng cấp vĩnh viễn',
+    'mut.label':'Biến dị ải', 'mut.bloodmoon':'Trăng Máu', 'mut.bloodmoon.d':'Kẻ địch chết có thể sinh ra Runner.', 'mut.toxicrain':'Mưa Độc', 'mut.toxicrain.d':'Vùng độc xuất hiện định kỳ.', 'mut.frozenground':'Đất Băng', 'mut.frozenground.d':'Mặt băng làm bạn chậm lại.', 'mut.graverising':'Mộ Phần Trỗi Dậy', 'mut.graverising.d':'Một số kẻ ngã xuống sẽ đứng lên lại.', 'mut.firestorm':'Bão Lửa', 'mut.firestorm.d':'Lửa rơi khắp chiến trường.', 'stat.title':'Thành tích ván', 'stat.top':'Đóng góp nhất', 'stat.total':'Tổng sát thương', 'stat.boss':'Sát thương trùm', 'stat.kills':'Tiêu diệt', 'stat.ability':'Kỹ năng', 'stat.other':'Khác', 'lu.ticket':'Đổi cơ hội ', 'ticket.name':'Vé Đổi Cơ Hội', 'ticket.desc':'Bỏ qua trọn một lần lên cấp. Lần này không nhận thưởng.', 'ticket.poor':'Không đủ xu.',
     'menu.sector':'Khu 07 · Cách ly', 'menu.bestShort':'Tốt nhất',
     'lu.reroll':'Quay lại ', 'lu.banish':'Loại bỏ ', 'lu.lock':'Khóa ', 'lu.pick.banish':'Chọn một mục để loại khỏi ván này', 'lu.pick.lock':'Chọn một mục để giữ lần sau', 'syn.burn':'Tinh thông Thiêu đốt', 'syn.ballistic':'Tinh thông Đạn đạo', 'syn.bloodpact':'Khế ước Máu', 'syn.cryo':'Trường Băng giá', 'syn.deadeye':'Mắt Thần', 'syn.storm':'Mạch Bão tố', 'syn.demolition':'Kỹ thuật Phá hủy', 'syn.warden':'Pháo đài Hộ vệ',
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
@@ -3192,6 +3473,7 @@ const UI = {
     'btn.start':'Desplegar', 'btn.how':'Cómo jugar', 'btn.guide':'Guía', 'btn.reset':'Borrar datos',
     'menu.sub':'Sobrevive al brote', 'nav.squad':'Escuadrón', 'nav.armory':'Arsenal', 'nav.records':'Registros',
     'sheet.squad':'Elegir operativo', 'sheet.armory':'Mejoras permanentes',
+    'mut.label':'Mutación de Nivel', 'mut.bloodmoon':'Luna de Sangre', 'mut.bloodmoon.d':'Los enemigos muertos pueden generar Corredores.', 'mut.toxicrain':'Lluvia Tóxica', 'mut.toxicrain.d':'Aparecen zonas venenosas periódicamente.', 'mut.frozenground':'Suelo Helado', 'mut.frozenground.d':'El hielo te ralentiza.', 'mut.graverising':'Alzamiento', 'mut.graverising.d':'Algunos caídos vuelven a levantarse.', 'mut.firestorm':'Tormenta Ígnea', 'mut.firestorm.d':'Caen llamas por todo el campo.', 'stat.title':'Rendimiento', 'stat.top':'Mayor Aporte', 'stat.total':'Daño Total', 'stat.boss':'Daño al Jefe', 'stat.kills':'Bajas', 'stat.ability':'Habilidad', 'stat.other':'Otros', 'lu.ticket':'Cambio ', 'ticket.name':'Ticket de Cambio', 'ticket.desc':'Salta una subida de nivel entera. No recibes recompensa esta vez.', 'ticket.poor':'Monedas insuficientes.',
     'menu.sector':'Sector 07 · Cuarentena', 'menu.bestShort':'Mejor',
     'lu.reroll':'Rerodar ', 'lu.banish':'Descartar ', 'lu.lock':'Fijar ', 'lu.pick.banish':'Elige uno para quitar en esta partida', 'lu.pick.lock':'Elige uno para conservar la próxima vez', 'syn.burn':'Maestría Ígnea', 'syn.ballistic':'Maestría Balística', 'syn.bloodpact':'Pacto de Sangre', 'syn.cryo':'Campo Criogénico', 'syn.deadeye':'Ojo Certero', 'syn.storm':'Circuito Tormenta', 'syn.demolition':'Demolición', 'syn.warden':'Batería Guardiana',
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
@@ -3604,6 +3886,7 @@ const G = {
   miniSpawned:false, bossSpawned:false, boss:null,
   runCoins:0, kills:0, camX:0, camY:0, syn:{}, synTags:{}, synMul:{}, markN:0,
   corpses:[], moveDir:{x:0,y:0},
+  mutation:null, mutT:0, threatBudget:0, threatRoles:[], threatT:0,
   screenShake:0, uid:1, tier:1, _cashed:false, bossKilled:false, clearing:false,
 };
 const pool = { enemy:[], bullet:[], part:[], gem:[], acid:[] };
@@ -3721,7 +4004,11 @@ function startRun(){
   G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
   G.zones = []; G.luMode = null;
+  G.mutation = mutationForTier(G.tier); G.mutT = 90;
+  G.threatT = 0; refreshThreatBudget();
+  resetStats();
   recomputeSynergy();
+  mutSig = '__'; showMutationBanner();
   rebuildBlades();
   G.camX = 0; G.camY = 0; moveSmooth.x = 0; moveSmooth.y = 0;
   hideAllOverlays(); hud.classList.add('show');
@@ -3810,7 +4097,7 @@ function fireBullet(x, y, ang, dmg, spd, opt = {}) {
   b.col = opt.col || '#ffe08a'; b.type = opt.type || 'bullet'; b.owner = opt.owner || 'p';
   b.tx = opt.tx; b.ty = opt.ty; b.radius = opt.radius; b.mode = opt.mode; b.spin = 0;
   b.startX = x; b.startY = y; b.reach = opt.reach; b.cluster = opt.cluster || 0;
-  b.trail = opt.trail; b.chill = opt.chill || 0; b.chillPow = opt.chillPow || 0.42; b.tag = HITTAG; b.dead = false; b.id = G.uid++;
+  b.trail = opt.trail; b.chill = opt.chill || 0; b.chillPow = opt.chillPow || 0.42; b.tag = HITTAG; b.src = DMGSRC; b.dead = false; b.id = G.uid++;
   G.bullets.push(b); return b;
 }
 
@@ -3829,7 +4116,7 @@ function aimAngle(w) {
 }
 
 function fireWeapon(w) {
-  HITTAG = weaponHitTag(w);
+  HITTAG = weaponHitTag(w); DMGSRC = srcOfWeapon(w);
   const p = P(), s = wstats(w), key = w.key;
   if (key === 'machete') return; // 지속형
   if (key === 'sentry') {
@@ -3869,7 +4156,7 @@ function fireWeapon(w) {
     }
     if (w.evolved) {
       const r = range * 0.6, hx = p.x + Math.cos(ang) * r, hy = p.y + Math.sin(ang) * r;
-      G.hazards.push({ x:hx, y:hy, r:34, life:120, dmg:s.dmg*0.5, tick:0 });
+      G.hazards.push({ x:hx, y:hy, r:34, life:120, dmg:s.dmg*0.5, tick:0, src:DMGSRC });
     }
     Audio.S.flame(); return;
   }
@@ -3996,6 +4283,7 @@ function damageEnemy(e, amt, sx, sy) {
   if (crit && G.character === 'hunter') markEnemy(e);      // 치명타가 표식을 남긴다
   if (HITTAG === 1) addRage(CHAR_BAL.berserker.gainHit);
   else if (HITTAG === 2) addHeat(CHAR_BAL.pyromancer.gainHit);
+  recordDamage(e, Math.min(amt, Math.max(0, e.hp)));       // 실제로 들어간 만큼만 집계
   e.hp -= amt;
   e.flash = 5;                       // 3D 모델을 잠깐 붉게 — 맞았다는 표시
   if (e.boss) Audio.S.bossHit(); else if (Math.random() < 0.3) Audio.S.hit();
@@ -4018,7 +4306,7 @@ function killEnemy(e) {
   e.dead = true; G.kills++;
   if (HITTAG === 1) addRage(CHAR_BAL.berserker.gainKill);
   if (e.mark) { e.mark = 0; G.markN = Math.max(0, G.markN - 1); spawnGem(e.x, e.y, 1); }   // 표식 처치 보상
-  addCorpse(e);
+  addCorpse(e); recordKill(e); applyMutationOnKill(e);
   if (e.boss) Audio.S.bossDeath(); else Audio.S.death();
   spark(e.x, e.y, e.def.dark || '#7a3', 8, 3, 22);
   if (e.boss) { onBossDown(e); return; }   // 차수별 보스(boss~boss5) 모두 처리
@@ -4080,6 +4368,7 @@ function updateOrbs() {
    적 스폰
    ========================================================================== */
 function spawnEnemy(typeKey, ox, oy) {
+  if (G.enemies.length >= THREAT_BALANCE.hardCap) return null;   // 검증된 성능 범위를 넘기지 않는다
   const def = ENEMIES[typeKey];
   const e = takeEnemy();
   // 3D 시야는 2D 때보다 멀리까지 보이므로, 실제 보이는 반경 밖에서 나타나게 한다
@@ -4098,13 +4387,13 @@ function spawnEnemy(typeKey, ox, oy) {
 
 function spawnDirector() {
   if (G.clearing) return;                 // 스테이지 클리어 연출 중엔 스폰 정지
+  if (--G.threatT <= 0) { G.threatT = THREAT_BALANCE.window; refreshThreatBudget(); }
   G.spawnTimer--;
-  if (G.spawnTimer <= 0 && G.enemies.length < 300) {
+  if (G.spawnTimer <= 0 && G.enemies.length < THREAT_BALANCE.hardCap) {
     const t = G.time;
     const dens = 1 + (G.tier - 1) * 0.22;   // 차수마다 스폰 밀도 증가
     G.spawnTimer = Math.max(6, (55 - t * 0.85) / dens);
-    const batch = Math.min(Math.round((1 + Math.floor(t / 22)) * dens), 12);
-    for (let i = 0; i < batch; i++) spawnEnemy(rollEnemyType(t));
+    spawnThreatWave();
   }
   if (!G.miniSpawned && G.time >= 150) { G.miniSpawned = true; spawnBoss('mini'); }
   if (!G.bossSpawned && G.time >= 300) { G.bossSpawned = true; spawnBoss('final'); }
@@ -4238,9 +4527,10 @@ function update() {
   updateAcids();
   updateBlades();
   updateSentries();
-  HITTAG = 0;
+  HITTAG = 0; DMGSRC = 'other';
   updateCharacter();
   updateCorpses();
+  updateMutation();
   updateHazards();
   updateZones();
   updatePickups();
@@ -4340,7 +4630,7 @@ function resolveZone(z) {
   // 남는 장판
   if ((z.kind === 'poison' || z.kind === 'fire' || z.kind === 'wall') && G.hazards.length < 100)
     G.hazards.push({ x:z.x, y:z.y, r:z.r, life:(z.kind === 'wall' ? 160 : 230),
-                     dmg:(z.kind === 'fire' ? 7 : 5), tick:0, col:z.col });
+                     dmg:(z.kind === 'fire' ? 7 : 5), tick:0, col:z.col, src:'env' });
   // 무덤에서 솟아오르는 언데드
   if (z.spawn) for (let i = 0; i < z.spawnN; i++) {
     const a = Math.random() * TAU;
@@ -4410,7 +4700,7 @@ const BOSS_AI = {
     if (--e.t1 <= 0) {                                 // 지나간 자리가 오염된다
       e.t1 = 30 - ph * 5;
       if (G.hazards.length < 90)
-        G.hazards.push({ x:e.x, y:e.y, r:40, life:250, dmg:4 + ph * 2, tick:0, col:'#7ad14a' });
+        G.hazards.push({ x:e.x, y:e.y, r:40, life:250, dmg:4 + ph * 2, tick:0, col:'#7ad14a', src:'env' });
     }
     if (--e.t2 <= 0) {                                 // 독구름 투척
       e.t2 = ph === 3 ? 130 : ph === 2 ? 185 : 235;
@@ -4461,7 +4751,7 @@ const BOSS_AI = {
       if (--e.fireT <= 0) {
         e.fireT = 4;
         if (G.hazards.length < 90)
-          G.hazards.push({ x:e.x, y:e.y, r:44, life:210, dmg:6 + ph * 2, tick:0, col:'#ff7a2a' });
+          G.hazards.push({ x:e.x, y:e.y, r:44, life:210, dmg:6 + ph * 2, tick:0, col:'#ff7a2a', src:'env' });
       }
       if (dist2(e.x, e.y, p.x, p.y) < (e.r + 16) * (e.r + 16) && p.iframe <= 0) hurtPlayer(26);
       return;
@@ -4561,6 +4851,7 @@ function bomberExplode(e) {
   ring(e.x, e.y, R, '#ff7a3a', 24); spark(e.x, e.y, '#ff9a4a', 14, 4, 26);
   Audio.S.explode(); G.screenShake = Math.max(G.screenShake, 8);
   if (dist2(e.x, e.y, p.x, p.y) < pr*pr && p.iframe <= 0) hurtPlayer(e.def.dmg);
+  DMGSRC = 'other'; HITTAG = 0;                    // 적의 자폭은 플레이어 기여가 아니다
   forEachNearbyEnemy(e.x, e.y, R + 40, o => { if (o !== e && dist2(e.x,e.y,o.x,o.y) < R2) damageEnemy(o, 12); });
   e.dead = true;
 }
@@ -4636,7 +4927,8 @@ function updateBullets() {
       forEachNearbyEnemy(b.x, b.y, b.r + 60, e => {
         if (e.axeCd > 0) return;
         const rr = b.r + e.r;
-        if (dist2(b.x,b.y,e.x,e.y) < rr*rr) { damageEnemy(e, b.dmg); e.axeCd = 12; }
+        if (dist2(b.x,b.y,e.x,e.y) < rr*rr) { HITTAG = b.tag || 0; DMGSRC = b.src || 'other';
+          damageEnemy(e, b.dmg, b.x, b.y); e.axeCd = 12; }
       });
       b.life--; if (b.life <= 0) b.dead = true;
     } else {
@@ -4646,7 +4938,7 @@ function updateBullets() {
         if (hit && b.pierce <= 0) return;
         const rr = b.r + e.r;
         if (dist2(b.x, b.y, e.x, e.y) < rr*rr) {
-          HITTAG = b.tag || 0;
+          HITTAG = b.tag || 0; DMGSRC = b.src || 'other';
           damageEnemy(e, b.dmg, b.x, b.y); hit = true; if (b.pierce > 0) b.pierce--;
           if (b.chill && !e.boss) { e.chill = Math.max(e.chill || 0, b.chill); e.chillPow = Math.min(e.chillPow || 1, b.chillPow); }   // 냉기 둔화(강할수록 낮은 값)
         }
@@ -4660,7 +4952,8 @@ function explodeNade(b) {
   ring(b.x, b.y, b.radius, '#c8ff8a', 22); spark(b.x, b.y, '#e0ff9a', 12, 4, 24);
   Audio.S.explode(); G.screenShake = Math.max(G.screenShake, 6);
   const R2 = b.radius * b.radius;
-  forEachNearbyEnemy(b.x, b.y, b.radius + 40, e => { if (dist2(b.x,b.y,e.x,e.y) < R2) damageEnemy(e, b.dmg); });
+  DMGSRC = b.src || 'other';                       // 폭발은 던진 무기에 귀속
+  forEachNearbyEnemy(b.x, b.y, b.radius + 40, e => { if (dist2(b.x,b.y,e.x,e.y) < R2) damageEnemy(e, b.dmg, b.x, b.y); });
   if (b.cluster > 0) for (let i = 0; i < b.cluster; i++) {
     const a = (i/b.cluster)*TAU + rand(-0.3,0.3), r = b.radius*0.7;
     fireBullet(b.x, b.y, a, b.dmg*0.5, 3.4, { type:'nade', tx:b.x+Math.cos(a)*r, ty:b.y+Math.sin(a)*r, r:5, col:'#ffb84d', radius:b.radius*0.6, cluster:0, life:60 });
@@ -4688,7 +4981,9 @@ function updateBlades() {
     forEachNearbyEnemy(bl.px, bl.py, bl.r + 60, e => {
       if (e.bladeCd > 0) return;
       const rr = bl.r + e.r;
-      if (dist2(bl.px, bl.py, e.x, e.y) < rr*rr) { HITTAG = 1; damageEnemy(e, bl.dmg, p.x, p.y); HITTAG = 0; e.bladeCd = 14; }
+      if (dist2(bl.px, bl.py, e.x, e.y) < rr*rr) {
+        HITTAG = 1; DMGSRC = bl.evolved ? 'buzzsaw' : 'machete';
+        damageEnemy(e, bl.dmg, p.x, p.y); HITTAG = 0; e.bladeCd = 14; }
     });
   }
 }
@@ -4730,6 +5025,7 @@ function updateSentries() {
         const base = Math.atan2(e.y - s.y, e.x - s.x);
         const n = 1 + pProjBonus();                    // 멀티 샷: 터렛 연사 탄환 증가(부채꼴)
         const dmg = s.dmg, spd = 7;                        // 수치는 무기 레벨(레벨업 선택)에서만 온다
+        DMGSRC = s.evolved ? 'minigun' : 'sentry';
         for (let k = 0; k < n; k++) {
           const a = base + (n === 1 ? 0 : lerp(-0.16, 0.16, k / (n - 1)));
           fireBullet(s.x, s.y, a, dmg, spd, { r:3, col:'#9fe0ff', life:50 });
@@ -4743,13 +5039,18 @@ function updateSentries() {
 }
 
 function updateHazards() {
-  const list = G.hazards;
+  const list = G.hazards, pl = G.player;
   for (let i = 0; i < list.length; i++) {
     const h = list[i]; h.life--; h.tick--;
+    // 빙결 지대(변이): 안에 있으면 느려진다 — 적에겐 피해를 주지 않는다
+    if (h.chill && pl && dist2(h.x, h.y, pl.x, pl.y) < h.r * h.r) pl.slowT = Math.max(pl.slowT, 16);
     if (h.tick <= 0) {
       h.tick = 12;
       const r2 = h.r * h.r;
-      forEachNearbyEnemy(h.x, h.y, h.r + 60, e => { if (dist2(h.x,h.y,e.x,e.y) < r2) damageEnemy(e, h.dmg); });
+      if (h.dmg > 0) {
+        DMGSRC = h.src || 'other';
+        forEachNearbyEnemy(h.x, h.y, h.r + 60, e => { if (dist2(h.x,h.y,e.x,e.y) < r2) damageEnemy(e, h.dmg); });
+      }
     }
   }
   for (let i = list.length - 1; i >= 0; i--) if (list[i].life <= 0) list.splice(i, 1);
@@ -4963,12 +5264,16 @@ function renderLuTools() {
   const btn = (mode, n, label) =>
     `<button class="lu-tool${G.luMode === mode ? ' on' : ''}" data-m="${mode}"${n > 0 ? '' : ' disabled'}>` +
     `${label}<b>${n}</b></button>`;
+  const tk = G.save.chanceChangeTickets || 0;
   box.innerHTML = btn('reroll', p.rerolls || 0, t('lu.reroll'))
                 + btn('banish', p.banishes || 0, t('lu.banish'))
-                + btn('lock',   p.locks || 0,    t('lu.lock'));
+                + btn('lock',   p.locks || 0,    t('lu.lock'))
+                + `<button class="lu-tool ticket" data-m="ticket"${tk > 0 ? '' : ' disabled'}>`
+                + `${t('lu.ticket')}<b>${tk}</b></button>`;
   box.querySelectorAll('.lu-tool').forEach(b => b.onclick = () => {
     const m = b.dataset.m;
     if (m === 'reroll') { doReroll(); return; }
+    if (m === 'ticket') { useChanceChange(); return; }
     G.luMode = (G.luMode === m) ? null : m;
     renderLuTools(); syncLuHint();
   });
@@ -4981,20 +5286,39 @@ function syncLuHint() {
   el.choices.classList.toggle('marking', !!G.luMode);
 }
 function relistChoices() { G.luMode = null; el.levelup.classList.remove('show'); enterLevelUp(); }
+/* 기회변경 티켓 — 이번 레벨업을 통째로 넘긴다.
+   리롤과 다르다: 즉시 새 선택지를 띄우지 않고, 이번 보상 없이 다음 레벨업을 기다린다. */
+function useChanceChange() {
+  if ((G.save.chanceChangeTickets || 0) <= 0) return false;
+  if (G.luBusy) return false;
+  G.luBusy = true;
+  G.save.chanceChangeTickets--;
+  Store.save(G.save);
+  STAT.ticketsUsed++;
+  const p = P();
+  p.lockedOpt = null;                       // 고정해 둔 것도 함께 폐기된다
+  G.luMode = null; G.luList = null;
+  Audio.S.ui();
+  el.choices.innerHTML = '';
+  el.levelup.classList.remove('show');
+  pickResolved();                           // 레벨은 유지, 이번 보상만 포기
+  G.luBusy = false;
+  return true;
+}
 function doReroll() {
   const p = P(); if ((p.rerolls || 0) <= 0) return;
-  p.rerolls--; Audio.S.ui(); relistChoices();
+  p.rerolls--; STAT.rerolls++; Audio.S.ui(); relistChoices();
 }
 function doBanish(o) {
   const p = P(); if ((p.banishes || 0) <= 0) return;
-  p.banishes--;
+  p.banishes--; STAT.banishes++;
   p.banned = p.banned || []; p.banned.push(optKey(o));
   if (p.lockedOpt === optKey(o)) p.lockedOpt = null;
   Audio.S.ui(); relistChoices();
 }
 function doLock(o) {
   const p = P(); if ((p.locks || 0) <= 0) return;
-  p.locks--; p.lockedOpt = optKey(o);
+  p.locks--; STAT.locks++; p.lockedOpt = optKey(o);
   Audio.S.pickup(); G.luMode = null;
   renderLuTools(); enterLevelUpRefreshLock();
 }
@@ -6343,6 +6667,27 @@ function hudSet(elm, key, val, prop) {
 function hudReset(){ for (const k in hudCache) delete hudCache[k]; }
 /* 액티브 스킬 · 시그니처 게이지 — 숫자를 늘어놓지 않는다 */
 let skSig = '';
+function showMutationBanner() {
+  const id = G.mutation, b = $('mutBanner');
+  if (!b) return;
+  if (!id) { b.classList.remove('show'); return; }
+  $('mutBannerL').textContent = t('mut.label');
+  $('mutBannerN').textContent = mutationName(id);
+  $('mutBannerN').style.color = MUTATIONS[id].col;
+  $('mutBannerD').textContent = mutationDesc(id);
+  b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+}
+let mutSig = '';
+function updateMutationChip() {
+  const c = $('mutChip'); if (!c) return;
+  const id = G.mutation || '';
+  if (id === mutSig) return;
+  mutSig = id;
+  if (!id) { c.hidden = true; c.innerHTML = ''; return; }
+  c.hidden = false;
+  c.innerHTML = ico(MUTATIONS[id].icon) + '<span>' + mutationName(id) + '</span>';
+  c.style.color = MUTATIONS[id].col;
+}
 function updateSkillHUD() {
   const p = G.player, w = el.skWrap; if (!p || !w) return;
   const sys = charSys();
@@ -6363,6 +6708,7 @@ function updateSkillHUD() {
 }
 function updateHUD() {
   updateSkillHUD();
+  updateMutationChip();
   const p = P();
   hudSet(el.xpfill, 'xp', (clamp(p.xp / p.xpNext, 0, 1) * 100).toFixed(1) + '%', 'w');
   hudSet(el.lvChip, 'lv', 'Lv ' + p.level);
@@ -6460,6 +6806,7 @@ function endRun(win) {
   Audio.startMusic('title');
   el.resNext.style.display = 'none';
   el.resReward.style.display = 'none';
+  renderRunReport();
   hud.classList.remove('show'); el.bossbar.classList.remove('show');
   el.result.classList.add('show');
 }
@@ -6491,6 +6838,7 @@ function winRound() {
   else el.resReward.style.display = 'none';
   el.resNext.style.display = '';
   el.resNext.textContent = t('res.next').replace('{n}', G.tier + 1);
+  renderRunReport();
   hud.classList.remove('show'); el.bossbar.classList.remove('show');
   el.result.classList.add('show');
 }
@@ -6509,7 +6857,11 @@ function continueTier() {
   G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
   G.zones = []; G.luMode = null;
+  G.mutation = mutationForTier(G.tier); G.mutT = 90;
+  G.threatT = 0; refreshThreatBudget();
+  resetStats();
   recomputeSynergy();
+  mutSig = '__'; showMutationBanner();
   rebuildBlades();
   G.camX = 0; G.camY = 0; moveSmooth.x = 0; moveSmooth.y = 0;
   hudReset(); loadoutSig = '';
@@ -6597,7 +6949,11 @@ function resumeRun() {
   p.frenzyT = 0; p.overT = 0; p.overTick = 0; p.rageFull = false; p.dashT = 0;
   G.player = p;
   G.zones = []; G.corpses = []; G.markN = 0; G.luMode = null;
+  G.mutation = mutationForTier(G.tier); G.mutT = 90;
+  G.threatT = 0; refreshThreatBudget();
+  resetStats();
   recomputeSynergy();
+  mutSig = '__'; showMutationBanner();
   const sl = rs.sentries || [];
   sl.forEach((s, i) => {
     const ang = (i / Math.max(1, sl.length)) * TAU;
@@ -6673,6 +7029,34 @@ function keyable(elm, label) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); elm.click(); }
   });
 }
+/* 아머리 안의 소모품 한 줄 — 기회변경 티켓 */
+function renderTicketRow() {
+  const have = G.save.chanceChangeTickets || 0;
+  const cost = CHANCE_CHANGE_TICKET_PRICE;
+  const can = G.save.coins >= cost;
+  const row = document.createElement('div'); row.className = 'up ticket-row';
+  row.innerHTML = `
+    <div class="icon">${ico('clock')}</div>
+    <div class="meta"><div class="nm">${t('ticket.name')} <span class="tk-have">× ${have}</span></div>
+      <div class="ds">${t('ticket.desc')}</div></div>
+    <div class="buy ${can ? '' : 'cant'}"><span class="c">${ico('coin')}${cost}</span></div>`;
+  const btn = row.querySelector('.buy');
+  if (can) {
+    keyable(btn, t('ticket.name'));
+    btn.onclick = () => {
+      if (btn.dataset.busy) return;                       // 연타로 중복 결제되지 않게
+      if (G.save.coins < cost) return;
+      btn.dataset.busy = '1';
+      G.save.coins -= cost;                               // 코인 차감과 티켓 지급은 한 덩어리
+      G.save.chanceChangeTickets = (G.save.chanceChangeTickets || 0) + 1;
+      Store.save(G.save);
+      Audio.ensure(); Audio.S.coin(); refreshMenu();
+    };
+  } else {
+    btn.title = t('ticket.poor');
+  }
+  el.armory.appendChild(row);
+}
 function renderCharSelect() {
   el.charsel.innerHTML = '';
   for (const id in CHARACTERS) {
@@ -6696,6 +7080,7 @@ function renderCharSelect() {
 }
 function renderArmory() {
   el.armory.innerHTML = '';
+  renderTicketRow();
   for (const id in METAS) {
     const meta = curMeta();
     const m = METAS[id], lv = meta[id] || 0, isMax = lv >= m.max;
