@@ -672,6 +672,39 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
 .hud-btns{display:flex;gap:2px;pointer-events:auto;margin-top:-6px;}
 
 /* 보스 */
+
+/* ---------- 대원 액티브 · 시그니처 게이지 ----------
+   새 패널을 만들지 않는다. 오른쪽 아래 작은 버튼 하나와 얇은 게이지가 전부다. */
+.skwrap{position:absolute;right:calc(var(--s4) + var(--safe-r,0px));
+  bottom:calc(var(--s5) + var(--safe-b));display:none;flex-direction:column;
+  align-items:center;gap:7px;z-index:4;}
+#hud.show .skwrap{display:flex;}
+.skgauge{width:54px;height:3px;border-radius:2px;background:rgba(255,255,255,.10);overflow:hidden;}
+.skgauge .fill{display:block;height:100%;width:0%;background:var(--green);
+  transition:width 120ms linear;}
+.skwrap[data-g="none"] .skgauge{display:none;}
+.skbtn{appearance:none;position:relative;width:58px;height:58px;border-radius:50%;
+  pointer-events:auto;                      /* #hud 는 pointer-events:none 이라 여기서 되살린다 */
+  background:rgba(10,16,13,.72);border:1px solid var(--line-2);cursor:pointer;
+  display:grid;place-items:center;color:var(--tx-3);padding:0;
+  transition:border-color var(--t1) var(--ease),background var(--t1) var(--ease);}
+.skbtn .ic{width:22px;height:22px;}
+.skcd{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.skcd circle{fill:none;stroke-width:2.5;}
+.skcd-t{stroke:rgba(255,255,255,.07);}
+.skcd-p{stroke:var(--green);stroke-dasharray:106.8;stroke-dashoffset:106.8;
+  transition:stroke-dashoffset 120ms linear;}
+.skkey{position:absolute;bottom:-14px;font-size:8px;font-weight:700;letter-spacing:.1em;
+  color:var(--tx-3);opacity:.7;}
+.skwrap.ready .skbtn{color:var(--green);border-color:rgba(141,255,90,.5);
+  background:rgba(141,255,90,.10);animation:skPulse 1.8s ease-in-out infinite;}
+@keyframes skPulse{0%,100%{box-shadow:0 0 0 0 rgba(141,255,90,0);}
+  50%{box-shadow:0 0 0 4px rgba(141,255,90,.10);}}
+.skbtn:active{transform:scale(.94);}
+.skbtn:focus-visible{outline:2px solid rgba(141,255,90,.6);outline-offset:2px;}
+@media (pointer:coarse){ .skkey{display:none;} }   /* 터치 기기엔 키 힌트가 필요 없다 */
+@media (max-height:700px){ .skbtn{width:52px;height:52px;} }
+/* 표식이 붙은 적 — 3D 위에 작은 표시 */
 .bossbar{position:absolute;left:50%;transform:translateX(-50%);
   top:calc(96px + var(--safe-t));width:min(440px,74vw);display:none;}
 .bossbar.show{display:block;animation:bossIn 420ms var(--ease) both;}
@@ -915,6 +948,16 @@ h2.res.lose{color:var(--red);}
       <button class="iconbtn" id="soundBtn" type="button" aria-label="sound"></button>
       <button class="iconbtn" id="pauseBtn" type="button" aria-label="pause"></button>
     </div>
+  </div>
+  <div class="skwrap" id="skWrap">
+    <div class="skgauge" id="skGauge"><i class="fill" id="skFill"></i></div>
+    <button class="skbtn" id="skBtn" type="button" aria-label="skill">
+      <svg class="skcd" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="skcd-t" cx="20" cy="20" r="17"></circle>
+        <circle class="skcd-p" id="skArc" cx="20" cy="20" r="17"></circle>
+      </svg>
+      <span class="skkey" id="skKey">SPACE</span>
+    </button>
   </div>
   <div class="bossbar" id="bossbar">
     <div class="nm" id="bossName">BOSS</div>
@@ -1896,6 +1939,7 @@ const el = {
   xpfill:$('xpfill'), lvChip:$('lvChip'), hpfill:$('hpfill'), hptext:$('hptext'),
   timeChip:$('timeChip'), killChip:$('killChip'), coinChip:$('coinChip'), shieldChip:$('shieldChip'), tierChip:$('tierChip'),
   loadout:$('loadout'), choices:$('choices'), hint:$('hint'), luHeal:$('luHeal'),
+  skWrap:$('skWrap'), skBtn:$('skBtn'), skFill:$('skFill'), skArc:$('skArc'), skKey:$('skKey'),
   bossbar:$('bossbar'), bossName:$('bossName'), bossFill:$('bossFill'),
   bankCoins:$('bankCoins'), bestTime:$('bestTime'), totalKills:$('totalKills'),
   armory:$('armory'), shieldVal:$('shieldVal'), hpbar:$('hpbar'), resEmoji:$('resEmoji'), resTitle:$('resTitle'), resStats:$('resStats'), resNext:$('resNext'), resReward:$('resReward'),
@@ -1935,6 +1979,7 @@ window.addEventListener('keydown', e => {
   keys[e.key.toLowerCase()] = true;
   if (['arrowup','arrowdown','arrowleft','arrowright',' '].includes(e.key.toLowerCase())) e.preventDefault();
   if (e.key.toLowerCase() === 'f') PERF.on = !PERF.on;   // 성능 오버레이 토글
+  if (e.key === ' ' && G.state === 'play') useActive();  // 대원 액티브 스킬
   if ((e.key === 'Escape' || e.key.toLowerCase() === 'p') && G.state === 'play') togglePause();
   else if ((e.key === 'Escape' || e.key.toLowerCase() === 'p') && G.state === 'pause') togglePause();
 });
@@ -2408,6 +2453,387 @@ function synWeaponMul(w) {
   return m;
 }
 
+/* ============================================================================
+   대원 정체성 — 스탯 보너스가 아니라 플레이 방식이 달라진다.
+   각 대원은 고유 게이지(또는 표식) + 그것과 맞물린 액티브 스킬을 갖는다.
+   모든 수치는 CHAR_BAL 한 곳에서만 만진다.
+   ========================================================================== */
+const CHAR_BAL = {
+  hunter: {
+    markT: 300,          // 표식 지속 5초
+    markMax: 8,          // 동시에 표식을 붙일 수 있는 수
+    markDmg: 0.25,       // 표식 대상이 받는 피해 +25%
+    markBossMul: 0.4,    // 보스·미니보스는 효과 40% 만
+    markCrit: 0.12,      // 표식 대상 치명타 확률 +12%
+    dashDist: 168, dashF: 11, dashIframe: 26, dashDmg: 18, dashCd: 360,
+  },
+  berserker: {
+    max: 100,
+    gainHit: 1.2, gainKill: 6, gainHurt: 10,
+    decay: 0.28, calmT: 120,          // 2초 동안 전투가 없으면 식는다
+    lowHp1: 0.5, lowHp2: 0.25, lowMul1: 1.5, lowMul2: 2.0,
+    atkSpd: 0.20, meleeDmg: 0.25, lifesteal: 0.06,   // 게이지 가득일 때의 최대치
+    frenzyT: 360, frenzyAtk: 0.25, frenzyDmg: 0.30, frenzyLs: 0.08, frenzyCd: 900,
+  },
+  pyromancer: {
+    max: 100,
+    gainHit: 1.0, decay: 0.42, calmT: 90,
+    fireDmg: 0.25, fireRange: 0.15,                  // 게이지 가득일 때의 최대치
+    overT: 300, overDmg: 0.40, overRange: 0.25, overTick: 30, overDmgTick: 26, overR: 130,
+    infernoCd: 780, infernoR: 120, infernoRMax: 300, infernoDmg: 40, infernoDmgMax: 170,
+  },
+};
+const CHAR_SYS = {
+  hunter:     { gauge:null,   active:'dash',    icon:'movespeed', cd:() => CHAR_BAL.hunter.dashCd },
+  berserker:  { gauge:'rage', active:'frenzy',  icon:'blood',     cd:() => CHAR_BAL.berserker.frenzyCd,
+                col:'#FF4D5A' },
+  pyromancer: { gauge:'heat', active:'inferno', icon:'flamethrower', cd:() => CHAR_BAL.pyromancer.infernoCd,
+                col:'#FF8A3A' },
+};
+const charSys = () => CHAR_SYS[G.character || 'hunter'] || CHAR_SYS.hunter;
+
+/* 이번 피해가 어떤 성질인지 — 근접(1) / 화염(2). 무기 발동 직전에 세팅된다. */
+let HITTAG = 0;
+function weaponHitTag(w) {
+  const d = WEAPONS[w.key];
+  if (d && d.melee) return 1;
+  return (weaponTags(w).indexOf('FIRE') >= 0) ? 2 : 0;
+}
+
+/* ---------------- 게이지 ---------------- */
+function charGaugeRatio() {
+  const p = G.player; if (!p) return 0;
+  const g = charSys().gauge;
+  if (g === 'rage') return clamp(p.rage / CHAR_BAL.berserker.max, 0, 1);
+  if (g === 'heat') return clamp(p.heat / CHAR_BAL.pyromancer.max, 0, 1);
+  return 0;
+}
+function addRage(n) {
+  const p = G.player; if (!p || G.character !== 'berserker') return;
+  const B = CHAR_BAL.berserker, r = p.hp / p.maxhp;
+  let m = 1;
+  if (r <= B.lowHp2) m = B.lowMul2; else if (r <= B.lowHp1) m = B.lowMul1;   // 위험할수록 빨리 달아오른다
+  p.rage = clamp(p.rage + n * m, 0, B.max);
+  p.calm = B.calmT;
+  if (p.rage >= B.max && !p.rageFull) { p.rageFull = true; ring(p.x, p.y, 70, '#FF4D5A', 24); Audio.S.pickup(); }
+  if (p.rage < B.max) p.rageFull = false;
+}
+function addHeat(n) {
+  const p = G.player; if (!p || G.character !== 'pyromancer') return;
+  const B = CHAR_BAL.pyromancer;
+  if (p.overT > 0) return;                      // 과열 중엔 더 쌓이지 않는다
+  p.heat = clamp(p.heat + n, 0, B.max);
+  p.calm = B.calmT;
+  if (p.heat >= B.max) startOverheat();         // 가득 차면 스스로 터진다
+}
+function startOverheat() {
+  const p = G.player, B = CHAR_BAL.pyromancer;
+  p.overT = B.overT; p.heat = 0; p.overTick = 0;
+  ring(p.x, p.y, 150, '#FF8A3A', 30); spark(p.x, p.y, '#ffb35a', 16, 4, 28);
+  G.screenShake = Math.max(G.screenShake, 8);
+  Audio.S.evolve();
+}
+
+/* ---------------- 성장 보정 — 기존 스탯 파이프라인에 얹는다 ---------------- */
+function charAtkSpdMul() {                      // 재장전 배수(작을수록 빠름)
+  const p = G.player; if (!p) return 1;
+  if (G.character !== 'berserker') return 1;
+  const B = CHAR_BAL.berserker;
+  let v = B.atkSpd * charGaugeRatio();
+  if (p.frenzyT > 0) v += B.frenzyAtk;
+  return 1 / (1 + v);
+}
+function charMeleeMul() {
+  const p = G.player; if (!p || G.character !== 'berserker') return 1;
+  const B = CHAR_BAL.berserker;
+  let v = B.meleeDmg * charGaugeRatio();
+  if (p.frenzyT > 0) v += B.frenzyDmg;
+  return 1 + v;
+}
+function charLifesteal() {
+  const p = G.player; if (!p || G.character !== 'berserker') return 0;
+  const B = CHAR_BAL.berserker;
+  let v = B.lifesteal * charGaugeRatio();
+  if (p.frenzyT > 0) v += B.frenzyLs;
+  return v;
+}
+function charFireMul() {
+  const p = G.player; if (!p || G.character !== 'pyromancer') return 1;
+  const B = CHAR_BAL.pyromancer;
+  return 1 + (p.overT > 0 ? B.overDmg : B.fireDmg * charGaugeRatio());
+}
+function charFireRangeMul() {
+  const p = G.player; if (!p || G.character !== 'pyromancer') return 1;
+  const B = CHAR_BAL.pyromancer;
+  return 1 + (p.overT > 0 ? B.overRange : B.fireRange * charGaugeRatio());
+}
+
+/* ---------------- 표식(헌터) ---------------- */
+function markEnemy(e) {
+  const H = CHAR_BAL.hunter;
+  if (!e || e.dead) return;
+  if (!e.mark) {
+    if (G.markN >= H.markMax) return;           // 동시에 붙는 표식 수 제한
+    G.markN++;
+  }
+  e.mark = H.markT;
+  spark(e.x, e.y - e.r, '#8DFF5A', 3, 2.2, 14);
+}
+function markMul(e) {
+  if (!e.mark) return 1;
+  const H = CHAR_BAL.hunter;
+  return 1 + H.markDmg * ((e.boss || e.mini) ? H.markBossMul : 1);
+}
+
+/* ---------------- 액티브 ---------------- */
+function activeReady() { const p = G.player; return !!p && (p.skCd || 0) <= 0; }
+function useActive() {
+  const p = G.player;
+  if (!p || G.state !== 'play' || !activeReady()) return false;
+  const sys = charSys();
+  p.skCd = sys.cd();
+  if (sys.active === 'dash') doDash();
+  else if (sys.active === 'frenzy') doFrenzy();
+  else if (sys.active === 'inferno') doInferno();
+  return true;
+}
+/* 전술 대시 — 이동기가 아니라 공격적인 회피기. 지나간 적에게 표식을 남긴다. */
+function doDash() {
+  const p = P(), H = CHAR_BAL.hunter;
+  const mv = getMoveVector();
+  const a = (mv.mag > 0.05) ? Math.atan2(mv.my, mv.mx) : p.lastAngle;
+  p.dashA = a; p.dashT = H.dashF;
+  p.iframe = Math.max(p.iframe, H.dashIframe);
+  ring(p.x, p.y, 44, '#8DFF5A', 18);
+  Audio.S.deploy();
+}
+function updateDash() {
+  const p = P(), H = CHAR_BAL.hunter;
+  if (!p.dashT || p.dashT <= 0) return;
+  p.dashT--;
+  const step = H.dashDist / H.dashF;
+  p.x += Math.cos(p.dashA) * step; p.y += Math.sin(p.dashA) * step;
+  spark(p.x, p.y, '#8DFF5A', 1, 1.6, 10);
+  forEachNearbyEnemy(p.x, p.y, 34, e => {       // 통과한 적: 표식 + 소량 피해
+    if (e.dead || e.dashHit === G.frame) return;
+    if (dist2(e.x, e.y, p.x, p.y) > 34 * 34) return;
+    e.dashHit = G.frame;
+    markEnemy(e);
+    damageEnemy(e, H.dashDmg, p.x, p.y);
+  });
+}
+/* 블러드 프렌지 — "지금 들어갈 것인가"를 묻는 버튼 */
+function doFrenzy() {
+  const p = P(), B = CHAR_BAL.berserker;
+  p.rage = B.max; p.rageFull = true; p.frenzyT = B.frenzyT;
+  ring(p.x, p.y, 110, '#FF4D5A', 30); spark(p.x, p.y, '#ff6a72', 14, 3.6, 26);
+  G.screenShake = Math.max(G.screenShake, 8);
+  Audio.S.evolve();
+}
+/* 인페르노 — 쌓인 열을 한 번에 쏟아낸다. 가득 찼으면 과열로 이어진다. */
+function doInferno() {
+  const p = P(), B = CHAR_BAL.pyromancer;
+  const k = charGaugeRatio();
+  const r = B.infernoR + (B.infernoRMax - B.infernoR) * k;
+  const dmg = (B.infernoDmg + (B.infernoDmgMax - B.infernoDmg) * k) * pDmgMult() * charFireMul();
+  const full = p.heat >= B.max - 0.01;
+  forEachNearbyEnemy(p.x, p.y, r + 40, e => {
+    if (!e.dead && dist2(e.x, e.y, p.x, p.y) < r * r) damageEnemy(e, dmg, p.x, p.y);
+  });
+  if (G.hazards.length < 100)
+    G.hazards.push({ x:p.x, y:p.y, r:r * 0.6, life:180, dmg:Math.round(dmg * 0.12), tick:0, col:'#ff7a2a' });
+  ring(p.x, p.y, r, '#FF8A3A', 30); spark(p.x, p.y, '#ffb35a', 18, 4.4, 28);
+  G.screenShake = Math.max(G.screenShake, 9);
+  Audio.S.explode();
+  if (full) startOverheat(); else p.heat = 0;
+}
+
+/* ---------------- 매 프레임 ---------------- */
+function updateCharacter() {
+  const p = G.player; if (!p) return;
+  if (p.skCd > 0) p.skCd--;
+  if (p.calm > 0) p.calm--;
+  updateDash();
+
+  if (G.character === 'berserker') {
+    const B = CHAR_BAL.berserker;
+    if (p.frenzyT > 0) { p.frenzyT--; if (p.frenzyT === 0) p.rage = 0; }
+    else if (p.calm <= 0 && p.rage > 0) p.rage = Math.max(0, p.rage - B.decay);
+  }
+  if (G.character === 'pyromancer') {
+    const B = CHAR_BAL.pyromancer;
+    if (p.overT > 0) {
+      p.overT--;
+      if (--p.overTick <= 0) {                  // 과열 중: 주위로 작은 화염 폭발
+        p.overTick = B.overTick;
+        const dmg = B.overDmgTick * pDmgMult() * charFireMul();
+        forEachNearbyEnemy(p.x, p.y, B.overR + 30, e => {
+          if (!e.dead && dist2(e.x, e.y, p.x, p.y) < B.overR * B.overR) damageEnemy(e, dmg, p.x, p.y);
+        });
+        ring(p.x, p.y, B.overR, '#FF8A3A', 16);
+      }
+    } else if (p.calm <= 0 && p.heat > 0) p.heat = Math.max(0, p.heat - B.decay);
+  }
+  // 표식 만료
+  if (G.character === 'hunter') {
+    let n = 0;
+    for (const e of G.enemies) {
+      if (e.dead || !e.mark) continue;
+      if (--e.mark <= 0) { e.mark = 0; continue; }
+      n++;
+    }
+    G.markN = n;
+  }
+}
+
+/* ============================================================================
+   몬스터 행동 — "HP 가 많은 적"이 아니라 "판단을 요구하는 적"
+   PHASE B 에서 만든 전조(addZone)를 그대로 재사용한다. 새 엔진을 또 만들지 않는다.
+   각 몬스터는 기억에 남는 행동 하나와, 그에 대한 대응 수단 하나를 갖는다.
+   ========================================================================== */
+const telegraphCircle = (x, y, r, warn, col, o) => addZone(Object.assign({ x, y, r, warn, col }, o || {}));
+const telegraphLine   = (x, y, ang, len, r, warn, col, o) =>
+  addZone(Object.assign({ shape:'line', x, y, ang, len, r, warn, col }, o || {}));
+
+const ENEMY_BAL = {
+  armor:   { front:1.22, reduce:0.55, turn:0.028 },   // 정면 ±70°, 피해 45% 만 받음, 조준 회전이 느리다
+  reaper:  { cd:[240, 340], warn:36, dist:150, dmg:20 },
+  golem:   { cd:[300, 380], warn:70, r:190, dmg:26 },
+  necro:   { cd:[270, 360], warn:62, r:80, max:2 },
+  demon:   { cd:[70, 110], warn:40, r:64, lead:46 },
+  spitter: { twinChance:0.35, spread:0.22 },
+  bomber:  { warn:34, r:78 },
+};
+/* 적의 역할 — 내부 데이터로 명확히 둔다 (우선순위 판단의 근거) */
+const ENEMY_ROLE = {
+  walker:'chaser', runner:'chaser', slimeling:'chaser',
+  brute:'tank', armorwalker:'tank', stonegolem:'tank',
+  spitter:'ranged', archer:'ranged', lich:'ranged',
+  firedemon:'area', slime:'area',
+  howler:'support', necromancer:'support',
+  reaper:'assassin', bomber:'suicide',
+};
+
+/* 아머 워커: 장갑판이 향한 쪽에서 온 피해를 깎는다.
+   장갑은 플레이어를 천천히 따라 돌기 때문에, 빠르게 옆으로 돌면 측면을 때릴 수 있다. */
+function enemyArmorMul(e, sx, sy) {
+  if (!e.armorA && e.armorA !== 0) return 1;
+  const p = G.player; if (!p) return 1;
+  const ax = (sx != null) ? sx : p.x, ay = (sy != null) ? sy : p.y;
+  let da = Math.atan2(ay - e.y, ax - e.x) - e.armorA;
+  da = Math.atan2(Math.sin(da), Math.cos(da));
+  return (Math.abs(da) < ENEMY_BAL.armor.front) ? (1 - ENEMY_BAL.armor.reduce) : 1;
+}
+
+/* 시체 — 네크로맨서/리치가 되살릴 대상. 무한 부활을 막기 위해 한 구당 한 번만. */
+function addCorpse(e) {
+  if (e.boss || e.mini || e.child || (e.def && e.def.elite)) return;   // 엘리트·보스는 부활 대상이 아니다
+  if (G.corpses.length > 40) G.corpses.shift();
+  G.corpses.push({ x:e.x, y:e.y, key:e.key, t:480 });
+}
+function updateCorpses() {
+  const l = G.corpses;
+  for (let i = l.length - 1; i >= 0; i--) if (--l[i].t <= 0) l.splice(i, 1);
+}
+
+/* ---------------- 행동표 ----------------
+   각 함수는 "특수 행동"만 담당한다. 이동은 기존 updateEnemies 가 그대로 처리한다.
+   반환값 true 면 이번 프레임은 특수 행동이 이동을 대신한다. */
+const ENEMY_BEHAVIORS = {
+  /* 아머 워커 — 장갑이 플레이어를 천천히 따라 돈다 */
+  armorwalker(e, p, dx, dy, d) {
+    if (e.armorA == null) e.armorA = Math.atan2(dy, dx);
+    let da = Math.atan2(dy, dx) - e.armorA;
+    da = Math.atan2(Math.sin(da), Math.cos(da));
+    e.armorA += clamp(da, -ENEMY_BAL.armor.turn, ENEMY_BAL.armor.turn);
+    return false;
+  },
+  /* 리퍼 — 예고 → 측면으로 점멸 → 찌르기. 예고가 없으면 절대 순간이동하지 않는다. */
+  reaper(e, p, dx, dy, d) {
+    const B = ENEMY_BAL.reaper;
+    if (e.blinkT > 0) { e.blinkT--; if (e.blinkT === 0 && !e.dead) { e.x = e.bx; e.y = e.by; ring(e.x, e.y, 30, '#a06ad0', 16); } return true; }
+    if (--e.spT > 0) return false;
+    e.spT = randInt(B.cd[0], B.cd[1]);
+    if (d > 460) return false;
+    const side = Math.atan2(dy, dx) + (Math.random() < 0.5 ? 1.5 : -1.5);
+    e.bx = p.x + Math.cos(side) * B.dist; e.by = p.y + Math.sin(side) * B.dist;
+    e.blinkT = B.warn;
+    telegraphCircle(e.bx, e.by, 40, B.warn, '#a06ad0', { kind:'blink', dmg:0 });
+    return true;
+  },
+  /* 스톤 골렘 — 작게 → 크게 세 번 예고한 뒤 지면 충격파 */
+  stonegolem(e, p, dx, dy, d) {
+    const B = ENEMY_BAL.golem;
+    if (--e.spT > 0) return false;
+    e.spT = randInt(B.cd[0], B.cd[1]);
+    if (d > 420) return false;
+    telegraphCircle(e.x, e.y, B.r * 0.45, B.warn * 0.45, '#b6a882', { dmg:0 });
+    telegraphCircle(e.x, e.y, B.r * 0.75, B.warn * 0.72, '#b6a882', { dmg:0 });
+    telegraphCircle(e.x, e.y, B.r, B.warn, '#c9b98d', { kind:'slam', dmg:B.dmg });
+    return false;
+  },
+  /* 네크로맨서 / 리치 — 주변 시체를 되살린다. 한 구당 한 번, 한 번에 최대 2구. */
+  necromancer(e, p, dx, dy, d) { return raiseDead(e); },
+  lich(e, p, dx, dy, d) { return raiseDead(e); },
+  /* 파이어 데몬 — 플레이어가 갈 곳을 읽고 미리 태운다 */
+  firedemon(e, p, dx, dy, d) {
+    const B = ENEMY_BAL.demon;
+    if (--e.spT > 0) return false;
+    e.spT = randInt(B.cd[0], B.cd[1]);
+    if (d > 420) return false;
+    const mv = G.moveDir || { x:0, y:0 };
+    const tx = p.x + mv.x * B.lead, ty = p.y + mv.y * B.lead;
+    telegraphCircle(tx, ty, B.r, B.warn, '#ff7a2a', { kind:'fire', dmg:14 });
+    return false;
+  },
+};
+
+/* 되살리기 — 무한 부활 금지: 시체는 목록에서 즉시 제거된다 */
+function raiseDead(e) {
+  const B = ENEMY_BAL.necro;
+  if (--e.spT > 0) return false;
+  e.spT = randInt(B.cd[0], B.cd[1]);
+  if (!G.corpses.length || G.enemies.length > 240) return false;
+  let n = 0;
+  for (let i = G.corpses.length - 1; i >= 0 && n < B.max; i--) {
+    const c = G.corpses[i];
+    if (dist2(c.x, c.y, e.x, e.y) > 260 * 260) continue;
+    G.corpses.splice(i, 1); n++;
+    telegraphCircle(c.x, c.y, B.r * 0.6, B.warn, '#9a4fff', { kind:'raise', spawn:c.key, spawnN:1 });
+  }
+  if (n) { ring(e.x, e.y, 90, '#9a4fff', 22); }
+  return false;
+}
+
+/* 몬스터 특수 행동 디스패처 — updateEnemies 안에 특수 코드를 계속 붙이지 않는다.
+   멀리 있는 적은 갱신 빈도를 낮춰 300마리 상황에서도 비용이 커지지 않게 한다. */
+function updateEnemyBehavior(e, p, dx, dy, d) {
+  const fn = ENEMY_BEHAVIORS[e.key];
+  if (!fn) return false;
+  if (d > 760 && (G.frame + e.id) % 4 !== 0) return false;   // 화면 밖: 4프레임마다
+  return fn(e, p, dx, dy, d);
+}
+
+
+/* ---------------- 테스트 보조 (production 비활성) ----------------
+   URL 에 ?debug 를 붙였을 때만 window 에 붙는다. 일반 플레이에는 존재하지 않는다. */
+(function attachDebug(){
+  try { if (!/[?&]debug\b/.test(location.search)) return; } catch (e) { return; }
+  window.DBG = {
+    forceCharacter(id){ if (CHARACTERS[id]) { G.character = id; G.save.character = id; G.meta = curMeta(); } return G.character; },
+    forceMark(n){ let k=0; for (const e of G.enemies){ if(e.dead) continue; markEnemy(e); if(++k>=(n||5)) break; } return G.markN; },
+    forceRage(v){ const p=P(); p.rage = clamp(v, 0, CHAR_BAL.berserker.max); return p.rage; },
+    forceHeat(v){ const p=P(); p.heat = clamp(v, 0, CHAR_BAL.pyromancer.max); return p.heat; },
+    forceActive(){ const p=P(); p.skCd = 0; return useActive(); },
+    forceEnemy(key, n){ const out=[]; for(let i=0;i<(n||1);i++){ const a=Math.random()*TAU;
+      out.push(spawnEnemy(key, P().x+Math.cos(a)*160, P().y+Math.sin(a)*160)); } return out.length; },
+    forceBoss(kind){ spawnBoss(kind||'final'); return !!G.boss; },
+    setTime(t){ G.time = t; return G.time; },
+    setStage(n){ G.tier = n; return G.tier; },
+    state(){ const p=P(); return { ch:G.character, rage:p&&p.rage, heat:p&&p.heat, skCd:p&&p.skCd,
+      marks:G.markN, corpses:G.corpses.length, zones:G.zones.length, syn:Object.keys(G.syn) }; },
+  };
+})();
 /* ---------------- 인게임 가이드 도감(다국어) ---------------- */
 const GUIDE_WPN_ORDER = ['pistol','shotgun','flamethrower','machete','grenade','taser','axe','sentry','scythe','frostwand'];
 const GUIDE_MS = ['pistol','shotgun','grenade','axe','sentry'];   // 멀티샷이 적용되는 무기
@@ -3176,7 +3602,8 @@ const G = {
   blades:[], sentries:[], hazards:[], orbs:[], zones:[],
   spawnTimer:0, heartTimer:0,
   miniSpawned:false, bossSpawned:false, boss:null,
-  runCoins:0, kills:0, camX:0, camY:0, syn:{}, synTags:{}, synMul:{},
+  runCoins:0, kills:0, camX:0, camY:0, syn:{}, synTags:{}, synMul:{}, markN:0,
+  corpses:[], moveDir:{x:0,y:0},
   screenShake:0, uid:1, tier:1, _cashed:false, bossKilled:false, clearing:false,
 };
 const pool = { enemy:[], bullet:[], part:[], gem:[], acid:[] };
@@ -3197,8 +3624,8 @@ function curMeta() {
 }
 const metaVal = id => METAS[id].val((G.meta && G.meta[id]) || 0);
 const pDmgMult = () => (1 + 0.1 * (P().passives.dmg || 0)) * (1 + metaVal('firepower') / 100) * (charMods().dmgMul || 1);
-const pCdMult = () => clamp(1 - 0.1 * (P().passives.speed || 0), 0.3, 1);
-const pRangeMult = () => (1 + 0.15 * (P().passives.range || 0)) * (charMods().rangeMul || 1);
+const pCdMult = () => clamp((1 - 0.1 * (P().passives.speed || 0)) * charAtkSpdMul(), 0.2, 1);
+const pRangeMult = () => (1 + 0.15 * (P().passives.range || 0)) * (charMods().rangeMul || 1) * charFireRangeMul();
 const pProjBonus = () => (P().passives.proj || 0);
 const pMoveSpd = () => P().baseSpd * (1 + 0.08 * (P().passives.movespeed || 0)) * (1 + metaVal('mobility') / 100) * (P().slowT > 0 ? 0.55 : 1) * (charMods().mvMul || 1);
 const pMagnet = () => 82 * (1 + 0.3 * (P().passives.magnet || 0));
@@ -3215,7 +3642,10 @@ function wdef(w){ return w.evolved ? EVOS[WEAPONS[w.key].evo] : WEAPONS[w.key]; 
 function wstats(w){
   const s = wdef(w).stats(w.level);
   s.dmg = (s.dmg || 0) * pDmgMult() * synWeaponMul(w);     // 빌드 시너지
-  if (s.lifesteal != null) s.lifesteal += synVal('lifesteal');
+  const ht = weaponHitTag(w);
+  if (ht === 1) s.dmg *= charMeleeMul();                   // 광전사: 분노만큼 근접 피해
+  if (ht === 2) s.dmg *= charFireMul();                    // 화염술사: 열만큼 화염 피해
+  if (s.lifesteal != null) s.lifesteal += synVal('lifesteal') + charLifesteal();
   if (s.chain != null) s.chain += synVal('chain');
   if (s.chillPow != null) s.chillPow = Math.max(0.12, s.chillPow - synVal('chillPow'));
   if (WEAPONS[w.key].melee) s.dmg *= (charMods().meleeDmgMul || 1);
@@ -3270,7 +3700,9 @@ function makePlayer(){
     weapons:[], passives:{}, lastAngle:-Math.PI/2, iframe:0, revived:false, hurtFlash:0,
     pendingLevels:0, regenAcc:0, shield:0, slowT:0, facing:1,
     rerolls:BAL.run.rerolls, banishes:BAL.run.banishes, locks:BAL.run.locks,
-    banned:[], lockedOpt:null };
+    banned:[], lockedOpt:null,
+    rage:0, heat:0, calm:0, skCd:0, frenzyT:0, overT:0, overTick:0,
+    rageFull:false, dashT:0, dashA:0 };
 }
 
 const isTouch = () => ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
@@ -3280,7 +3712,7 @@ function startRun(){
   clearSavedRun();                                            // 새 판 시작 → 이전 중간저장 폐기
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
-    particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], spawnTimer:0, heartTimer:0,
+    particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], corpses:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, runCoins:0, kills:0, screenShake:0,
     tier: Math.max(1, Math.min(G.save.maxTier || 1, G.startStage || G.save.maxTier || 1)), _cashed:false, bossKilled:false, clearing:false,   // 선택한 출격 스테이지부터 시작
   });
@@ -3378,7 +3810,7 @@ function fireBullet(x, y, ang, dmg, spd, opt = {}) {
   b.col = opt.col || '#ffe08a'; b.type = opt.type || 'bullet'; b.owner = opt.owner || 'p';
   b.tx = opt.tx; b.ty = opt.ty; b.radius = opt.radius; b.mode = opt.mode; b.spin = 0;
   b.startX = x; b.startY = y; b.reach = opt.reach; b.cluster = opt.cluster || 0;
-  b.trail = opt.trail; b.chill = opt.chill || 0; b.chillPow = opt.chillPow || 0.42; b.dead = false; b.id = G.uid++;
+  b.trail = opt.trail; b.chill = opt.chill || 0; b.chillPow = opt.chillPow || 0.42; b.tag = HITTAG; b.dead = false; b.id = G.uid++;
   G.bullets.push(b); return b;
 }
 
@@ -3397,6 +3829,7 @@ function aimAngle(w) {
 }
 
 function fireWeapon(w) {
+  HITTAG = weaponHitTag(w);
   const p = P(), s = wstats(w), key = w.key;
   if (key === 'machete') return; // 지속형
   if (key === 'sentry') {
@@ -3554,10 +3987,15 @@ function rebuildBlades(){
 /* ============================================================================
    데미지 / 처치
    ========================================================================== */
-function damageEnemy(e, amt) {
+function damageEnemy(e, amt, sx, sy) {
   if (e.dead) return;
-  const crit = Math.random() < pCritChance();
+  const crit = Math.random() < (pCritChance() + (e.mark ? CHAR_BAL.hunter.markCrit : 0));
   if (crit) amt *= 2 + synVal('critMul');                  // 데드아이: 치명타 피해 상승
+  amt *= markMul(e);                                       // 헌터: 표식 대상은 더 아프다
+  amt *= enemyArmorMul(e, sx, sy);                          // 아머 워커: 정면은 덜 아프다
+  if (crit && G.character === 'hunter') markEnemy(e);      // 치명타가 표식을 남긴다
+  if (HITTAG === 1) addRage(CHAR_BAL.berserker.gainHit);
+  else if (HITTAG === 2) addHeat(CHAR_BAL.pyromancer.gainHit);
   e.hp -= amt;
   e.flash = 5;                       // 3D 모델을 잠깐 붉게 — 맞았다는 표시
   if (e.boss) Audio.S.bossHit(); else if (Math.random() < 0.3) Audio.S.hit();
@@ -3578,6 +4016,9 @@ function spawnCoin(x, y, spread) {
 function killEnemy(e) {
   if (e.dead) return;
   e.dead = true; G.kills++;
+  if (HITTAG === 1) addRage(CHAR_BAL.berserker.gainKill);
+  if (e.mark) { e.mark = 0; G.markN = Math.max(0, G.markN - 1); spawnGem(e.x, e.y, 1); }   // 표식 처치 보상
+  addCorpse(e);
   if (e.boss) Audio.S.bossDeath(); else Audio.S.death();
   spark(e.x, e.y, e.def.dark || '#7a3', 8, 3, 22);
   if (e.boss) { onBossDown(e); return; }   // 차수별 보스(boss~boss5) 모두 처리
@@ -3651,6 +4092,7 @@ function spawnEnemy(typeKey, ox, oy) {
   e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140);
   e.howlT = randInt(140, 220); e.hasteT = 0; e.chill = 0; e.chillPow = 1; e.pullT = 0; e.facing = 1; e.id = G.uid++;
   e.summonT = randInt(160, 300); e.fireT = randInt(20, 45); e.child = false;   // 네크로맨서 소환 / 파이어데몬 화염 / 슬라임 분열체
+  e.spT = randInt(90, 200); e.blinkT = 0; e.armorA = null; e.mark = 0; e.dashHit = 0; e.bombT = 0;
   G.enemies.push(e); return e;
 }
 
@@ -3772,6 +4214,7 @@ function update() {
     const sp = pMoveSpd();
     p.x += mv.mx * sp; p.y += mv.my * sp;
     p.lastAngle = Math.atan2(mv.my, mv.mx);
+    G.moveDir.x = mv.mx; G.moveDir.y = mv.my;
     if (Math.abs(mv.mx) > 0.15) p.facing = mv.mx < 0 ? -1 : 1;
   }
   G.camX = p.x; G.camY = p.y;
@@ -3795,6 +4238,9 @@ function update() {
   updateAcids();
   updateBlades();
   updateSentries();
+  HITTAG = 0;
+  updateCharacter();
+  updateCorpses();
   updateHazards();
   updateZones();
   updatePickups();
@@ -3821,15 +4267,21 @@ function updateEnemies() {
     if (e.pullT > 0) { e.pullT--; e.x += dx/d * 6.5; e.y += dy/d * 6.5; }   // 체인 훅: 강제 견인
     else if (e.boss) bossAI(e, dx, dy, d);
     else if (e.mini) miniAI(e, p, dx, dy, d);
+    else if (updateEnemyBehavior(e, p, dx, dy, d)) { /* 특수 행동이 이동을 대신한 프레임 */ }
     else if (e.def.spit) {
       if (d > 220) { e.x += dx/d*spd; e.y += dy/d*spd; }
       else if (d < 170) { e.x -= dx/d*spd*0.6; e.y -= dy/d*spd*0.6; }
-      e.spitT--; if (e.spitT <= 0) { spitAcid(e, p); e.spitT = randInt(90,160); }
+      e.spitT--;
+      if (e.spitT <= 0) {
+        spitAcid(e, p);
+        if (Math.random() < ENEMY_BAL.spitter.twinChance) spitAcid(e, p, ENEMY_BAL.spitter.spread);
+        e.spitT = randInt(90,160);
+      }
     }
     else if (e.def.howl) {
-      if (d > 200) { e.x += dx/d*spd; e.y += dy/d*spd; }
-      else if (d < 150) { e.x -= dx/d*spd*0.5; e.y -= dy/d*spd*0.5; }
-      e.howlT--; if (e.howlT <= 0) { howl(e); e.howlT = randInt(220, 320); }
+      if (d > 165) { e.x += dx/d*spd; e.y += dy/d*spd; }
+      else if (d < 125) { e.x -= dx/d*spd*0.5; e.y -= dy/d*spd*0.5; }
+      e.howlT--; if (e.howlT <= 0) { howl(e); e.howlT = randInt(180, 260); }
     }
     else if (e.def.summon) {                                   // 네크로맨서: 거리 유지 + 언데드 소환
       if (d > 240) { e.x += dx/d*spd; e.y += dy/d*spd; }
@@ -3842,10 +4294,15 @@ function updateEnemies() {
     }
     else { e.x += dx/d*spd; e.y += dy/d*spd; }
 
+    if (e.bombT > 0 && --e.bombT === 0) { bomberExplode(e); continue; }
     e.wob += 0.15;
     const rr = e.r + 15;
     if (d < rr) {
-      if (e.def.bomb) { bomberExplode(e); continue; }
+      if (e.def.bomb) {                       // 봄버: 예고 → 폭발. 거리를 벌릴 시간을 준다
+        if (!e.bombT) { e.bombT = ENEMY_BAL.bomber.warn;
+          telegraphCircle(e.x, e.y, ENEMY_BAL.bomber.r, ENEMY_BAL.bomber.warn, '#ff7a3a', { dmg:0 }); }
+        continue;
+      }
       if (p.iframe <= 0) hurtPlayer(e.def.dmg || 8);
     }
   }
@@ -4107,8 +4564,8 @@ function bomberExplode(e) {
   forEachNearbyEnemy(e.x, e.y, R + 40, o => { if (o !== e && dist2(e.x,e.y,o.x,o.y) < R2) damageEnemy(o, 12); });
   e.dead = true;
 }
-function spitAcid(e, p) {
-  const a = Math.atan2(p.y - e.y, p.x - e.x);
+function spitAcid(e, p, off) {
+  const a = Math.atan2(p.y - e.y, p.x - e.x) + (off || 0);
   const ac = takeAcid(); ac.x=e.x; ac.y=e.y; ac.vx=Math.cos(a)*3.2; ac.vy=Math.sin(a)*3.2; ac.life=130; ac.dmg=e.def.dmg; ac.r=7; ac.dead=false;
   ac.col = e.def.projCol || null;   // 아처/리치 등 투사체 색상
   G.acids.push(ac);
@@ -4123,8 +4580,9 @@ function dropFire(e) {   // 파이어 데몬: 바닥에 화염 장판(지속 피
   G.acids.push(ac);
 }
 function howl(e) {
-  ring(e.x, e.y, 150, '#b23a9e', 32); Audio.S.howl();
-  forEachNearbyEnemy(e.x, e.y, 150, o => { if (o !== e && !o.boss && !o.mini && dist2(e.x,e.y,o.x,o.y) < 150*150) o.hasteT = 180; });
+  const R = 260;                                   // 지원형답게 넓게 — 먼저 잡을 이유를 만든다
+  ring(e.x, e.y, R, '#b23a9e', 32); ring(e.x, e.y, R * 0.6, '#e06ac8', 26); Audio.S.howl();
+  forEachNearbyEnemy(e.x, e.y, R, o => { if (o !== e && !o.boss && !o.mini && dist2(e.x,e.y,o.x,o.y) < R*R) o.hasteT = 240; });
   const p = P();
   if (dist2(e.x, e.y, p.x, p.y) < 150 * 150) {
     p.slowT = Math.max(p.slowT, 90);
@@ -4134,6 +4592,7 @@ function howl(e) {
 
 function hurtPlayer(amt) {
   const p = P();
+  addRage(CHAR_BAL.berserker.gainHurt);       // 맞을수록 달아오른다
   amt *= tierDmgMul();                    // 차수(루프) 난이도: 받는 피해 가중
   if (p.shield > 0) {                    // 방어막이 피해 흡수
     spark(p.x, p.y, '#6fd6ff', 4, 2.6, 12);
@@ -4187,7 +4646,8 @@ function updateBullets() {
         if (hit && b.pierce <= 0) return;
         const rr = b.r + e.r;
         if (dist2(b.x, b.y, e.x, e.y) < rr*rr) {
-          damageEnemy(e, b.dmg); hit = true; if (b.pierce > 0) b.pierce--;
+          HITTAG = b.tag || 0;
+          damageEnemy(e, b.dmg, b.x, b.y); hit = true; if (b.pierce > 0) b.pierce--;
           if (b.chill && !e.boss) { e.chill = Math.max(e.chill || 0, b.chill); e.chillPow = Math.min(e.chillPow || 1, b.chillPow); }   // 냉기 둔화(강할수록 낮은 값)
         }
       });
@@ -4228,7 +4688,7 @@ function updateBlades() {
     forEachNearbyEnemy(bl.px, bl.py, bl.r + 60, e => {
       if (e.bladeCd > 0) return;
       const rr = bl.r + e.r;
-      if (dist2(bl.px, bl.py, e.x, e.y) < rr*rr) { damageEnemy(e, bl.dmg); e.bladeCd = 14; }
+      if (dist2(bl.px, bl.py, e.x, e.y) < rr*rr) { HITTAG = 1; damageEnemy(e, bl.dmg, p.x, p.y); HITTAG = 0; e.bladeCd = 14; }
     });
   }
 }
@@ -5881,7 +6341,28 @@ function hudSet(elm, key, val, prop) {
   if (prop === 'w') elm.style.width = val; else elm.textContent = val;
 }
 function hudReset(){ for (const k in hudCache) delete hudCache[k]; }
+/* 액티브 스킬 · 시그니처 게이지 — 숫자를 늘어놓지 않는다 */
+let skSig = '';
+function updateSkillHUD() {
+  const p = G.player, w = el.skWrap; if (!p || !w) return;
+  const sys = charSys();
+  const sig = G.character + '|' + (sys.gauge || 'none');
+  if (sig !== skSig) {                      // 대원이 바뀔 때만 다시 그린다
+    skSig = sig;
+    el.skBtn.innerHTML = el.skBtn.innerHTML.replace(/<svg class="ic[\s\S]*?<\/svg>/, '');
+    if (!el.skBtn.querySelector('svg.ic')) el.skBtn.insertAdjacentHTML('afterbegin', ico(sys.icon));
+    w.dataset.g = sys.gauge || 'none';
+    el.skFill.style.background = sys.col || 'var(--green)';
+
+  }
+  const cdMax = sys.cd(), cd = p.skCd || 0;
+  const ready = cd <= 0;
+  w.classList.toggle('ready', ready);
+  el.skArc.style.strokeDashoffset = (106.8 * (cd / cdMax)).toFixed(1);
+  if (sys.gauge) el.skFill.style.width = (charGaugeRatio() * 100).toFixed(0) + '%';
+}
 function updateHUD() {
+  updateSkillHUD();
   const p = P();
   hudSet(el.xpfill, 'xp', (clamp(p.xp / p.xpNext, 0, 1) * 100).toFixed(1) + '%', 'w');
   hudSet(el.lvChip, 'lv', 'Lv ' + p.level);
@@ -6019,7 +6500,7 @@ function continueTier() {
   G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier); Store.save(G.save);
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
-    particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], spawnTimer:0, heartTimer:0,
+    particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], corpses:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, screenShake:0, clearing:false,
   });
   // 처음 상태로 재시작: 새 플레이어 + 시작 무기/짝 패시브 1레벨
@@ -6112,8 +6593,10 @@ function resumeRun() {
   p.banishes = P0.banishes != null ? P0.banishes : BAL.run.banishes;
   p.locks    = P0.locks    != null ? P0.locks    : BAL.run.locks;
   p.banned = (P0.banned || []).slice(); p.lockedOpt = P0.lockedOpt || null;
+  p.rage = 0; p.heat = 0; p.calm = 0; p.skCd = 0;      // 시그니처 상태는 체크포인트에서 초기화
+  p.frenzyT = 0; p.overT = 0; p.overTick = 0; p.rageFull = false; p.dashT = 0;
   G.player = p;
-  G.zones = []; G.luMode = null;
+  G.zones = []; G.corpses = []; G.markN = 0; G.luMode = null;
   recomputeSynergy();
   const sl = rs.sentries || [];
   sl.forEach((s, i) => {
@@ -6339,6 +6822,8 @@ function init() {
       G.save = { coins:0, bestTime:0, totalKills:0, meta:{}, metaByChar:{}, character:'hunter', lang:curLang, maxTier:1, passiveSlots:6, sfxOn:true, bgmOn:true, guideReward:false, runState:null }; G.character = 'hunter'; G.meta = curMeta(); Store.save(G.save); refreshMenu();
     }
   };
+  $('skBtn').onclick = (ev) => { ev.preventDefault(); ev.stopPropagation(); useActive(); };
+  $('skBtn').addEventListener('pointerdown', ev => ev.stopPropagation());   // 조이스틱과 겹치지 않게
   $('pauseBtn').onclick = () => togglePause();
   $('resumeBtn').onclick = () => togglePause();
   $('saveExitBtn').onclick = () => saveAndExit();
