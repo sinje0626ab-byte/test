@@ -601,6 +601,32 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
 .su.tot{color:var(--tx);background:rgba(255,255,255,.06);
   background:color-mix(in srgb,var(--accent) 10%,transparent);}
 
+/* ---------- 레벨업: 시너지 · RNG 제어 ----------
+   정보를 늘리지 않는다. 성립한 시너지만 한 줄, 도구는 작은 버튼 세 개. */
+.lu-syn{justify-content:center;margin-top:var(--s3);}
+.su.syn{color:var(--green);background:rgba(141,255,90,.09);}
+.su.syn .ic{color:var(--green);}
+.lu-hint{margin-top:var(--s3);text-align:center;font-size:var(--f-meta);color:var(--green);
+  letter-spacing:.04em;}
+.lu-tools{display:flex;justify-content:center;gap:var(--s2);margin-top:var(--s3);}
+.lu-tool{appearance:none;display:inline-flex;align-items:center;gap:5px;
+  min-height:38px;padding:0 var(--s3);border-radius:4px;cursor:pointer;
+  background:transparent;border:1px solid var(--line);color:var(--tx-3);
+  font:600 var(--f-meta)/1 inherit;font-family:inherit;
+  transition:color var(--t1) var(--ease),border-color var(--t1) var(--ease),background var(--t1) var(--ease);}
+.lu-tool b{font-weight:700;color:var(--tx-2);font-variant-numeric:tabular-nums;}
+.lu-tool:hover:not(:disabled){color:var(--tx-2);border-color:var(--line-2);}
+.lu-tool.on{color:var(--green);border-color:rgba(141,255,90,.45);background:rgba(141,255,90,.07);}
+.lu-tool.on b{color:var(--green);}
+.lu-tool:disabled{opacity:.32;cursor:default;}
+.lu-tool:focus-visible{outline:2px solid rgba(141,255,90,.6);outline-offset:2px;}
+/* 제외·고정 모드: 어떤 카드를 고르는지 분명하게 */
+.choices.marking .choice{border-style:dashed;}
+.choices.marking .choice:hover{border-color:rgba(141,255,90,.6);}
+.choice.locked{border-color:rgba(141,255,90,.55);}
+.choice.locked::after{content:'';position:absolute;top:8px;right:8px;width:5px;height:5px;
+  border-radius:50%;background:var(--green);}
+
 /* ============================================================================
    플레이 중 HUD — 조용하고 얇게
    ========================================================================== */
@@ -656,7 +682,16 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
 .bossbar .track{height:5px;border-radius:3px;background:rgba(255,77,90,.14);
   border:1px solid rgba(255,77,90,.22);overflow:hidden;}
 .bossbar .fill{height:100%;width:100%;background:linear-gradient(90deg,#FF2F44,#FF7A5A);
-  transition:width var(--t2) linear;}
+  transition:width var(--t2) linear,background var(--t3) var(--ease);}
+/* 페이즈 경계(60% · 30%)를 눈금으로 — 다음 패턴이 언제 바뀌는지 읽을 수 있다 */
+.bossbar .track{position:relative;}
+.bossbar .track::before,.bossbar .track::after{content:'';position:absolute;top:0;bottom:0;
+  width:1px;background:rgba(0,0,0,.55);}
+.bossbar .track::before{left:60%;} .bossbar .track::after{left:30%;}
+.bossbar[data-ph="2"] .fill{background:linear-gradient(90deg,#FF8A2F,#FFC15A);}
+.bossbar[data-ph="3"] .fill{background:linear-gradient(90deg,#FF2F44,#FF2F44);
+  animation:bossEnrage 640ms ease-in-out infinite;}
+@keyframes bossEnrage{0%,100%{filter:none;}50%{filter:brightness(1.55);}}
 
 /* 무기 · 패시브 슬롯 */
 .loadout{position:absolute;left:var(--s3);bottom:calc(var(--s3) + var(--safe-b));
@@ -1082,8 +1117,11 @@ h2.res.lose{color:var(--red);}
       <div class="lvjump" id="luLevel"><span class="from">Lv 1</span><span class="arw">→</span><span class="to">Lv 2</span></div>
       <h2 id="luTitle" data-i18n="lu.title">능력 선택</h2>
       <div class="heal" id="luHeal" data-i18n="lu.heal">＋ 긴급 치유 발동</div>
+      <div class="sulist lu-syn" id="luSyn" style="display:none;"></div>
     </div>
     <div class="choices" id="choices"></div>
+    <div class="lu-hint" id="luHint" style="display:none;"></div>
+    <div class="lu-tools" id="luTools"></div>
   </div>
 </div>
 
@@ -2275,6 +2313,101 @@ const METAS = {
   precision:{ name:'크리티컬 부스트', icon:'crit', desc:'시작 치명타 확률 +2%', max:5, cost:l=>100+l*85, val:l=>l*2 },
 };
 
+/* ============================================================================
+   빌드 태그 & 시너지 — "좋아 보이는 스탯 하나"가 아니라 "만들고 싶은 방향"을 고르게 한다.
+   태그는 화면에 나열하지 않는다. 성립한 시너지만 레벨업 화면 위에 한 줄로 보여준다.
+   ========================================================================== */
+/* ---------------- 중앙 밸런스 테이블 ----------------
+   숫자를 여기저기 흩어 두지 않는다. 조정은 이 표에서만 한다. */
+const BAL = {
+  run:  { rerolls:2, banishes:1, locks:1 },
+  boss: { phase2:0.6, phase3:0.3 },
+};
+
+const WEAPON_TAGS = {
+  pistol:      ['PROJECTILE','PRECISION'],
+  shotgun:     ['PROJECTILE','MULTI'],
+  flamethrower:['FIRE','AREA'],
+  machete:     ['MELEE','ROTATION'],
+  grenade:     ['EXPLOSION','AREA'],
+  taser:       ['LIGHTNING','CHAIN','CONTROL'],
+  axe:         ['MELEE','PROJECTILE'],
+  sentry:      ['PROJECTILE','TURRET'],
+  scythe:      ['MELEE','LIFESTEAL'],
+  frostwand:   ['FROST','CONTROL'],
+};
+/* 진화하면 태그가 한 겹 더 붙는다 — 진화가 빌드 방향을 굳히는 역할을 한다 */
+const EVO_TAGS = {
+  machinegun:['MULTI'], gatling:['MULTI'], inferno:['FIRE'], buzzsaw:['AREA'],
+  cluster:['EXPLOSION'], chainstorm:['CHAIN'], executioner:['PRECISION'],
+  minigun:['TURRET'], soulreaper:['LIFESTEAL'], blizzard:['FROST','AREA'],
+};
+const PASSIVE_TAGS = {
+  dmg:['DAMAGE'], speed:['ATTACK_SPEED'], proj:['PROJECTILE','MULTI'],
+  range:['AREA'], movespeed:['MOBILITY'], maxhp:['DEFENSE'],
+  regen:['SUSTAIN'], magnet:['UTILITY'], crit:['CRITICAL','PRECISION'],
+};
+
+/* 시너지 8종. 기본 성능을 대체하지 않고 보완하는 정도(+10~20%)로 시작한다. */
+const SYNERGIES = [
+  { id:'burn',       need:{ FIRE:2 },                         icon:'flamethrower' },
+  { id:'ballistic',  need:{ PROJECTILE:3 },                   icon:'pistol' },
+  { id:'bloodpact',  need:{ MELEE:1, LIFESTEAL:1 },           icon:'blood' },
+  { id:'cryo',       need:{ FROST:1, CONTROL:2 },             icon:'frostwand' },
+  { id:'deadeye',    need:{ CRITICAL:1, PRECISION:2 },        icon:'crit' },
+  { id:'storm',      need:{ LIGHTNING:1, CHAIN:1, MULTI:1 },  icon:'taser' },
+  { id:'demolition', need:{ EXPLOSION:1, AREA:2 },            icon:'grenade' },
+  { id:'warden',     need:{ TURRET:1, DEFENSE:1 },            icon:'sentry' },
+];
+/* 시너지가 주는 실제 값 — 한 곳에서만 만진다 (SYNERGY_BALANCE) */
+const SYNERGY_BALANCE = {
+  burn:       { tagMul:{ FIRE:0.20 } },
+  ballistic:  { tagMul:{ PROJECTILE:0.12 } },
+  bloodpact:  { lifesteal:0.08 },
+  cryo:       { chillPow:0.18 },
+  deadeye:    { critMul:0.40 },
+  storm:      { chain:1, tagMul:{ LIGHTNING:0.10 } },
+  demolition: { tagMul:{ EXPLOSION:0.15, AREA:0.10 } },
+  warden:     { tagMul:{ TURRET:0.20 } },
+};
+
+function weaponTags(w) {
+  const base = WEAPON_TAGS[w.key] || [];
+  if (!w.evolved) return base;
+  const evo = WEAPONS[w.key] && WEAPONS[w.key].evo;
+  return base.concat(EVO_TAGS[evo] || []);
+}
+/* 보유한 무기·패시브의 태그를 세어 성립한 시너지를 구한다 */
+function recomputeSynergy() {
+  const p = G.player;
+  G.synTags = {}; G.syn = {}; G.synMul = {};
+  if (!p) return;
+  const c = G.synTags;
+  const add = tag => { c[tag] = (c[tag] || 0) + 1; };
+  for (const w of p.weapons) weaponTags(w).forEach(add);
+  for (const id in p.passives) if (p.passives[id] > 0) (PASSIVE_TAGS[id] || []).forEach(add);
+  for (const s of SYNERGIES) {
+    let ok = true;
+    for (const tag in s.need) if ((c[tag] || 0) < s.need[tag]) { ok = false; break; }
+    if (!ok) continue;
+    G.syn[s.id] = true;
+    const b = SYNERGY_BALANCE[s.id] || {};
+    for (const tag in (b.tagMul || {})) G.synMul[tag] = (G.synMul[tag] || 0) + b.tagMul[tag];
+  }
+}
+function synVal(key) {                       // 태그가 아닌 단일 값 보너스의 합
+  let v = 0;
+  for (const id in G.syn) { const b = SYNERGY_BALANCE[id]; if (b && b[key]) v += b[key]; }
+  return v;
+}
+/* 무기 하나가 시너지로 받는 피해 배수 */
+function synWeaponMul(w) {
+  let m = 1;
+  const mul = G.synMul || {};
+  for (const tag of weaponTags(w)) m += (mul[tag] || 0);
+  return m;
+}
+
 /* ---------------- 인게임 가이드 도감(다국어) ---------------- */
 const GUIDE_WPN_ORDER = ['pistol','shotgun','flamethrower','machete','grenade','taser','axe','sentry','scythe','frostwand'];
 const GUIDE_MS = ['pistol','shotgun','grenade','axe','sentry'];   // 멀티샷이 적용되는 무기
@@ -2454,6 +2587,7 @@ const UI = {
     'menu.sub':'감염 구역에서 살아남아라', 'nav.squad':'대원', 'nav.armory':'아머리', 'nav.records':'기록',
     'sheet.squad':'대원 선택', 'sheet.armory':'영구 강화',
     'menu.sector':'감염구역 07 · 격리', 'menu.bestShort':'최고',
+    'lu.reroll':'다시 뽑기 ', 'lu.banish':'제외 ', 'lu.lock':'고정 ', 'lu.pick.banish':'이번 판에서 뺄 항목을 고르세요', 'lu.pick.lock':'다음에도 남길 항목을 고르세요', 'syn.burn':'연소 숙련', 'syn.ballistic':'탄도 숙련', 'syn.bloodpact':'피의 계약', 'syn.cryo':'빙결장', 'syn.deadeye':'데드아이', 'syn.storm':'폭풍 회로', 'syn.demolition':'폭파 공학', 'syn.warden':'수호 포대',
     'menu.autosave':'진행 상황은 이 브라우저에 자동 저장됩니다.',
     'how.brand':'조작법 & 규칙', 'how.title':'플레이 방법', 'how.close':'알겠어요',
     'how.body':'<p><b>이동 (PC)</b> — WASD 또는 방향키로 8방향 이동. <b>Esc / P</b> 로 일시정지.</p><p><b>이동 (모바일)</b> — 화면을 터치·드래그하면 그 자리에 가상 조이스틱이 생깁니다.</p><p><b>전투</b> — 모든 무기는 <b>자동</b>으로 조준·발사됩니다. 당신은 이동에만 집중하세요.</p><p><b>성장</b> — 좀비가 떨어뜨리는 <span style="color:var(--green)">젬</span>을 모아 레벨업. 레벨업 때 능력 1개를 고르고 체력의 30%가 즉시 회복됩니다.</p><p><b>초월 진화</b> — 무기를 8레벨까지 키우고 짝이 되는 패시브를 1레벨 이상 보유하면, 레벨업 선택지에 황금빛 <span style="color:var(--gold)">진화</span>가 등장합니다.</p><p><b>목표</b> — 2:30 미니보스, 5:00 최종 보스. 최종 보스를 처치하면 승리! 판당 모은 <span style="color:var(--gold)">코인</span>으로 로비에서 영구 강화를 구매하세요.</p>',
@@ -2489,6 +2623,7 @@ const UI = {
     'menu.sub':'Survive the Outbreak', 'nav.squad':'Squad', 'nav.armory':'Armory', 'nav.records':'Records',
     'sheet.squad':'Choose Operative', 'sheet.armory':'Permanent Upgrades',
     'menu.sector':'Sector 07 · Quarantine', 'menu.bestShort':'Best',
+    'lu.reroll':'Reroll ', 'lu.banish':'Banish ', 'lu.lock':'Lock ', 'lu.pick.banish':'Pick one to remove for this run', 'lu.pick.lock':'Pick one to keep next time', 'syn.burn':'Burn Mastery', 'syn.ballistic':'Ballistic Mastery', 'syn.bloodpact':'Blood Pact', 'syn.cryo':'Cryo Field', 'syn.deadeye':'Deadeye', 'syn.storm':'Storm Circuit', 'syn.demolition':'Demolition', 'syn.warden':'Warden Battery',
     'menu.autosave':'Progress is saved automatically in this browser.',
     'how.brand':'Controls & Rules', 'how.title':'How to Play', 'how.close':'Got it',
     'how.body':'<p><b>Move (PC)</b> — WASD or arrow keys for 8-way movement. <b>Esc / P</b> to pause.</p><p><b>Move (Mobile)</b> — Touch and drag anywhere to spawn a virtual joystick there.</p><p><b>Combat</b> — All weapons aim and fire <b>automatically</b>. Just focus on moving.</p><p><b>Growth</b> — Collect the <span style="color:var(--green)">gems</span> zombies drop to level up. On level-up, pick one ability and instantly heal 30% HP.</p><p><b>Evolution</b> — Raise a weapon to level 8 while holding its paired passive at level 1+, and a golden <span style="color:var(--gold)">Evolution</span> appears in your level-up picks.</p><p><b>Goal</b> — Mini-boss at 2:30, final boss at 5:00. Beat the final boss to win! Spend the <span style="color:var(--gold)">coins</span> you earn on permanent upgrades in the lobby.</p>',
@@ -2524,6 +2659,7 @@ const UI = {
     'menu.sub':'在疫区活下去', 'nav.squad':'干员', 'nav.armory':'武库', 'nav.records':'记录',
     'sheet.squad':'选择干员', 'sheet.armory':'永久强化',
     'menu.sector':'感染区 07 · 隔离', 'menu.bestShort':'最佳',
+    'lu.reroll':'重抽 ', 'lu.banish':'排除 ', 'lu.lock':'锁定 ', 'lu.pick.banish':'选择本局要移除的项目', 'lu.pick.lock':'选择下次保留的项目', 'syn.burn':'燃烧精通', 'syn.ballistic':'弹道精通', 'syn.bloodpact':'血之契约', 'syn.cryo':'冰冻力场', 'syn.deadeye':'神射手', 'syn.storm':'风暴回路', 'syn.demolition':'爆破工程', 'syn.warden':'守卫炮台',
     'menu.autosave':'进度会自动保存在此浏览器中。',
     'how.brand':'操作与规则', 'how.title':'玩法说明', 'how.close':'知道了',
     'how.body':'<p><b>移动（PC）</b> — WASD 或方向键进行8方向移动。<b>Esc / P</b> 暂停。</p><p><b>移动（手机）</b> — 触摸并拖动屏幕，会在该处生成虚拟摇杆。</p><p><b>战斗</b> — 所有武器都会<b>自动</b>瞄准并射击，你只需专注移动。</p><p><b>成长</b> — 收集僵尸掉落的<span style="color:var(--green)">宝石</span>升级。升级时选择一项能力，并立即恢复30%生命。</p><p><b>进化</b> — 将武器升到8级并持有其对应被动1级以上，升级选项中会出现金色的<span style="color:var(--gold)">进化</span>。</p><p><b>目标</b> — 2:30 出现小首领，5:00 出现最终首领。击败最终首领即获胜！用获得的<span style="color:var(--gold)">金币</span>在大厅购买永久强化。</p>',
@@ -2559,6 +2695,7 @@ const UI = {
     'menu.sub':'รอดจากการระบาด', 'nav.squad':'ทีม', 'nav.armory':'คลังอาวุธ', 'nav.records':'สถิติ',
     'sheet.squad':'เลือกตัวละคร', 'sheet.armory':'อัปเกรดถาวร',
     'menu.sector':'เขต 07 · กักกัน', 'menu.bestShort':'ดีสุด',
+    'lu.reroll':'สุ่มใหม่ ', 'lu.banish':'ตัดออก ', 'lu.lock':'ล็อก ', 'lu.pick.banish':'เลือกสิ่งที่จะตัดออกในรอบนี้', 'lu.pick.lock':'เลือกสิ่งที่จะเก็บไว้ครั้งหน้า', 'syn.burn':'เชี่ยวชาญเพลิง', 'syn.ballistic':'เชี่ยวชาญกระสุน', 'syn.bloodpact':'พันธะเลือด', 'syn.cryo':'สนามเยือกแข็ง', 'syn.deadeye':'เดดอาย', 'syn.storm':'วงจรพายุ', 'syn.demolition':'วิศวกรรมระเบิด', 'syn.warden':'ป้อมผู้พิทักษ์',
     'menu.autosave':'ความคืบหน้าจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้',
     'how.brand':'การควบคุมและกติกา', 'how.title':'วิธีเล่น', 'how.close':'เข้าใจแล้ว',
     'how.body':'<p><b>เคลื่อนที่ (PC)</b> — WASD หรือปุ่มลูกศรเพื่อเคลื่อนที่ 8 ทิศ กด <b>Esc / P</b> เพื่อหยุด</p><p><b>เคลื่อนที่ (มือถือ)</b> — แตะแล้วลากบนหน้าจอเพื่อสร้างจอยสติ๊กเสมือน ณ จุดนั้น</p><p><b>การต่อสู้</b> — อาวุธทุกชิ้นเล็งและยิง<b>อัตโนมัติ</b> คุณเพียงโฟกัสที่การเคลื่อนที่</p><p><b>การเติบโต</b> — เก็บ<span style="color:var(--green)">อัญมณี</span>ที่ซอมบี้ทิ้งไว้เพื่อเลเวลอัป เมื่อเลเวลอัปให้เลือกความสามารถ 1 อย่างและฟื้นพลังชีวิต 30% ทันที</p><p><b>วิวัฒนาการ</b> — อัปอาวุธถึงเลเวล 8 พร้อมถือพาสซีฟคู่ของมันตั้งแต่เลเวล 1 ขึ้นไป จะมี<span style="color:var(--gold)">วิวัฒนาการ</span>สีทองปรากฏในตัวเลือกเลเวลอัป</p><p><b>เป้าหมาย</b> — มินิบอสที่ 2:30 บอสสุดท้ายที่ 5:00 กำจัดบอสสุดท้ายเพื่อชนะ! ใช้<span style="color:var(--gold)">เหรียญ</span>ที่ได้ซื้ออัปเกรดถาวรในล็อบบี้</p>',
@@ -2594,6 +2731,7 @@ const UI = {
     'menu.sub':'Sống sót qua đại dịch', 'nav.squad':'Đặc vụ', 'nav.armory':'Kho vũ khí', 'nav.records':'Hồ sơ',
     'sheet.squad':'Chọn đặc vụ', 'sheet.armory':'Nâng cấp vĩnh viễn',
     'menu.sector':'Khu 07 · Cách ly', 'menu.bestShort':'Tốt nhất',
+    'lu.reroll':'Quay lại ', 'lu.banish':'Loại bỏ ', 'lu.lock':'Khóa ', 'lu.pick.banish':'Chọn một mục để loại khỏi ván này', 'lu.pick.lock':'Chọn một mục để giữ lần sau', 'syn.burn':'Tinh thông Thiêu đốt', 'syn.ballistic':'Tinh thông Đạn đạo', 'syn.bloodpact':'Khế ước Máu', 'syn.cryo':'Trường Băng giá', 'syn.deadeye':'Mắt Thần', 'syn.storm':'Mạch Bão tố', 'syn.demolition':'Kỹ thuật Phá hủy', 'syn.warden':'Pháo đài Hộ vệ',
     'menu.autosave':'Tiến trình được tự động lưu trong trình duyệt này.',
     'how.brand':'Điều khiển & Luật', 'how.title':'Cách chơi', 'how.close':'Đã hiểu',
     'how.body':'<p><b>Di chuyển (PC)</b> — WASD hoặc phím mũi tên để di chuyển 8 hướng. <b>Esc / P</b> để tạm dừng.</p><p><b>Di chuyển (Điện thoại)</b> — Chạm và kéo bất kỳ đâu để tạo cần điều khiển ảo tại đó.</p><p><b>Chiến đấu</b> — Mọi vũ khí tự động ngắm và bắn. Bạn chỉ cần tập trung di chuyển.</p><p><b>Phát triển</b> — Nhặt <span style="color:var(--green)">ngọc</span> zombie rơi ra để lên cấp. Khi lên cấp, chọn một kỹ năng và hồi ngay 30% máu.</p><p><b>Tiến hóa</b> — Nâng vũ khí lên cấp 8 và giữ bị động ghép đôi của nó từ cấp 1 trở lên, một <span style="color:var(--gold)">Tiến hóa</span> vàng sẽ xuất hiện trong lựa chọn lên cấp.</p><p><b>Mục tiêu</b> — Trùm nhỏ ở 2:30, trùm cuối ở 5:00. Hạ trùm cuối để thắng! Dùng <span style="color:var(--gold)">xu</span> kiếm được để mua nâng cấp vĩnh viễn ở sảnh.</p>',
@@ -2629,6 +2767,7 @@ const UI = {
     'menu.sub':'Sobrevive al brote', 'nav.squad':'Escuadrón', 'nav.armory':'Arsenal', 'nav.records':'Registros',
     'sheet.squad':'Elegir operativo', 'sheet.armory':'Mejoras permanentes',
     'menu.sector':'Sector 07 · Cuarentena', 'menu.bestShort':'Mejor',
+    'lu.reroll':'Rerodar ', 'lu.banish':'Descartar ', 'lu.lock':'Fijar ', 'lu.pick.banish':'Elige uno para quitar en esta partida', 'lu.pick.lock':'Elige uno para conservar la próxima vez', 'syn.burn':'Maestría Ígnea', 'syn.ballistic':'Maestría Balística', 'syn.bloodpact':'Pacto de Sangre', 'syn.cryo':'Campo Criogénico', 'syn.deadeye':'Ojo Certero', 'syn.storm':'Circuito Tormenta', 'syn.demolition':'Demolición', 'syn.warden':'Batería Guardiana',
     'menu.autosave':'El progreso se guarda automáticamente en este navegador.',
     'how.brand':'Controles y reglas', 'how.title':'Cómo jugar', 'how.close':'Entendido',
     'how.body':'<p><b>Mover (PC)</b> — WASD o flechas para moverte en 8 direcciones. <b>Esc / P</b> para pausar.</p><p><b>Mover (Móvil)</b> — Toca y arrastra en cualquier lugar para crear un joystick virtual ahí.</p><p><b>Combate</b> — Todas las armas apuntan y disparan <b>automáticamente</b>. Tú solo concéntrate en moverte.</p><p><b>Crecimiento</b> — Recoge las <span style="color:var(--green)">gemas</span> que sueltan los zombis para subir de nivel. Al subir, elige una habilidad y recupera al instante el 30% de vida.</p><p><b>Evolución</b> — Sube un arma al nivel 8 con su pasiva emparejada en nivel 1 o más, y aparecerá una <span style="color:var(--gold)">Evolución</span> dorada en tus opciones de nivel.</p><p><b>Objetivo</b> — Minijefe a las 2:30, jefe final a las 5:00. ¡Vence al jefe final para ganar! Gasta las <span style="color:var(--gold)">monedas</span> que ganes en mejoras permanentes en el vestíbulo.</p>',
@@ -3034,10 +3173,10 @@ const G = {
   time:0, frame:0,
   player:null,
   enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[], particles:[],
-  blades:[], sentries:[], hazards:[], orbs:[],
+  blades:[], sentries:[], hazards:[], orbs:[], zones:[],
   spawnTimer:0, heartTimer:0,
   miniSpawned:false, bossSpawned:false, boss:null,
-  runCoins:0, kills:0, camX:0, camY:0,
+  runCoins:0, kills:0, camX:0, camY:0, syn:{}, synTags:{}, synMul:{},
   screenShake:0, uid:1, tier:1, _cashed:false, bossKilled:false, clearing:false,
 };
 const pool = { enemy:[], bullet:[], part:[], gem:[], acid:[] };
@@ -3075,7 +3214,10 @@ const xpForLevel = lv => Math.floor(4 + lv * 3 + lv * lv * 0.4);
 function wdef(w){ return w.evolved ? EVOS[WEAPONS[w.key].evo] : WEAPONS[w.key]; }
 function wstats(w){
   const s = wdef(w).stats(w.level);
-  s.dmg = (s.dmg || 0) * pDmgMult();
+  s.dmg = (s.dmg || 0) * pDmgMult() * synWeaponMul(w);     // 빌드 시너지
+  if (s.lifesteal != null) s.lifesteal += synVal('lifesteal');
+  if (s.chain != null) s.chain += synVal('chain');
+  if (s.chillPow != null) s.chillPow = Math.max(0.12, s.chillPow - synVal('chillPow'));
   if (WEAPONS[w.key].melee) s.dmg *= (charMods().meleeDmgMul || 1);
   s.cd  = Math.max(3, (s.cd || 30) * pCdMult());
   return s;
@@ -3126,7 +3268,9 @@ function makePlayer(){
   const maxhp = calcMaxHP(0);
   return { x:0, y:0, hp:maxhp, maxhp, baseSpd:2.7, level:1, xp:0, xpNext:xpForLevel(1),
     weapons:[], passives:{}, lastAngle:-Math.PI/2, iframe:0, revived:false, hurtFlash:0,
-    pendingLevels:0, regenAcc:0, shield:0, slowT:0, facing:1 };
+    pendingLevels:0, regenAcc:0, shield:0, slowT:0, facing:1,
+    rerolls:BAL.run.rerolls, banishes:BAL.run.banishes, locks:BAL.run.locks,
+    banned:[], lockedOpt:null };
 }
 
 const isTouch = () => ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
@@ -3136,7 +3280,7 @@ function startRun(){
   clearSavedRun();                                            // 새 판 시작 → 이전 중간저장 폐기
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
-    particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
+    particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, runCoins:0, kills:0, screenShake:0,
     tier: Math.max(1, Math.min(G.save.maxTier || 1, G.startStage || G.save.maxTier || 1)), _cashed:false, bossKilled:false, clearing:false,   // 선택한 출격 스테이지부터 시작
   });
@@ -3144,6 +3288,8 @@ function startRun(){
   const char = CHARACTERS[G.character || 'hunter'];
   G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
+  G.zones = []; G.luMode = null;
+  recomputeSynergy();
   rebuildBlades();
   G.camX = 0; G.camY = 0; moveSmooth.x = 0; moveSmooth.y = 0;
   hideAllOverlays(); hud.classList.add('show');
@@ -3411,7 +3557,7 @@ function rebuildBlades(){
 function damageEnemy(e, amt) {
   if (e.dead) return;
   const crit = Math.random() < pCritChance();
-  if (crit) amt *= 2;
+  if (crit) amt *= 2 + synVal('critMul');                  // 데드아이: 치명타 피해 상승
   e.hp -= amt;
   e.flash = 5;                       // 3D 모델을 잠깐 붉게 — 맞았다는 표시
   if (e.boss) Audio.S.bossHit(); else if (Math.random() < 0.3) Audio.S.hit();
@@ -3563,16 +3709,20 @@ function spawnBoss(kind) {
   const e = takeEnemy();
   e.x = p.x + Math.cos(ang) * rad; e.y = p.y + Math.sin(ang) * rad;
   e.dead = false; e.boss = true; e.wob = 0; e.bladeCd = 0; e.axeCd = 0; e.chill = 0; e.pullT = 0; e.hasteT = 0; e.facing = 1; e.id = G.uid++;
+  e.t1 = 90; e.t2 = 150; e.t3 = 210; e.dash = 0; e.dashA = 0; e.dashS = 0;
+  e.stun = 0; e.vanish = 0; e.hidden = false; e.fireT = 0; e.pat = 0; e.phase = 0;
   if (kind === 'mini') {
     e.def = { name:'변이 거수', dark:'#3a1d3f', col:'#9a4fa8', xp:30, coin:0 };
     e.mini = true; e.boss = false;
     e.maxhp = 900 * hpMul(); e.hp = e.maxhp; e.r = 34; e.spd = 0.6 * tierSpdMul(); e.key = 'mini';
+    e.t1 = 120;
   } else {
     const bi = Math.min(G.tier, BOSS_TIERS.length) - 1, bt = BOSS_TIERS[bi];
     e.def = { name:bt.name, dark:bt.dark, col:bt.col, xp:0, coin:0 };
     e.maxhp = 4200 * hpMul(); e.hp = e.maxhp; e.r = 52; e.spd = 0.55 * tierSpdMul(); e.key = bt.key;
     e.patternT = 130; e.summonT = 260; e.mini = false;
-    G.boss = e; el.bossbar.classList.add('show'); el.bossName.textContent = bt.name;
+    G.boss = e; e.phase = 1; el.bossbar.classList.add('show'); el.bossbar.dataset.ph = 1;
+    el.bossName.textContent = bt.name;
   }
   G.enemies.push(e); G.screenShake = 16; Audio.S.boss();
 }
@@ -3646,6 +3796,7 @@ function update() {
   updateBlades();
   updateSentries();
   updateHazards();
+  updateZones();
   updatePickups();
   updateOrbs();
   updateParticles();
@@ -3669,6 +3820,7 @@ function updateEnemies() {
 
     if (e.pullT > 0) { e.pullT--; e.x += dx/d * 6.5; e.y += dy/d * 6.5; }   // 체인 훅: 강제 견인
     else if (e.boss) bossAI(e, dx, dy, d);
+    else if (e.mini) miniAI(e, p, dx, dy, d);
     else if (e.def.spit) {
       if (d > 220) { e.x += dx/d*spd; e.y += dy/d*spd; }
       else if (d < 170) { e.x -= dx/d*spd*0.6; e.y -= dy/d*spd*0.6; }
@@ -3700,23 +3852,249 @@ function updateEnemies() {
   for (let i = list.length - 1; i >= 0; i--) if (list[i].dead) { pool.enemy.push(list[i]); list.splice(i, 1); }
 }
 
+/* ============================================================================
+   전조(텔레그래프) — 경고 → 준비 → 실행
+   강한 공격은 반드시 바닥에 먼저 그려지고, 플레이어에게 피할 시간을 준다.
+   "갑자기 죽는 보스"를 만들지 않기 위한 공통 장치다.
+   ========================================================================== */
+function addZone(o) {
+  if (G.zones.length > 70) return null;
+  const z = { x:0, y:0, r:60, warn:54, t:0, hold:14, dmg:0, col:'#ff4d5a',
+              kind:'burst', shape:'circle', ang:0, len:0, done:false,
+              spawn:null, spawnN:2, boss:null, dashF:0, dashS:0 };
+  Object.assign(z, o); z.t = z.warn;
+  G.zones.push(z);
+  return z;
+}
+function zoneHits(z, p) {
+  const pad = 14;
+  if (z.shape === 'line') {
+    const c = Math.cos(z.ang), sn = Math.sin(z.ang);
+    const t = clamp((p.x - z.x) * c + (p.y - z.y) * sn, 0, z.len);
+    return dist2(z.x + c * t, z.y + sn * t, p.x, p.y) < (z.r + pad) * (z.r + pad);
+  }
+  return dist2(z.x, z.y, p.x, p.y) < (z.r + pad) * (z.r + pad);
+}
+function resolveZone(z) {
+  const p = P();
+  const hit = zoneHits(z, p);
+  if (z.dmg > 0 && hit && p.iframe <= 0) hurtPlayer(z.dmg);
+  if (hit && (z.kind === 'freeze' || z.kind === 'wall')) p.slowT = Math.max(p.slowT, 120);
+  // 남는 장판
+  if ((z.kind === 'poison' || z.kind === 'fire' || z.kind === 'wall') && G.hazards.length < 100)
+    G.hazards.push({ x:z.x, y:z.y, r:z.r, life:(z.kind === 'wall' ? 160 : 230),
+                     dmg:(z.kind === 'fire' ? 7 : 5), tick:0, col:z.col });
+  // 무덤에서 솟아오르는 언데드
+  if (z.spawn) for (let i = 0; i < z.spawnN; i++) {
+    const a = Math.random() * TAU;
+    spawnEnemy(z.spawn, z.x + Math.cos(a) * 24, z.y + Math.sin(a) * 24);
+  }
+  // 돌진 신호
+  if (z.boss && !z.boss.dead) {
+    z.boss.dash = z.dashF || 34; z.boss.dashS = z.dashS || 9;
+    z.boss.dashA = z.ang; z.boss.stun = 0;
+  }
+  ring(z.x, z.y, z.r, z.col, 22);
+  spark(z.x, z.y, z.col, 8, 3.2, 22);
+  if (z.dmg > 0) { G.screenShake = Math.max(G.screenShake, 7); Audio.S.explode(); }
+}
+function updateZones() {
+  const p = P(), list = G.zones;
+  for (let i = 0; i < list.length; i++) {
+    const z = list[i];
+    z.t--;
+    if (z.t > 0) {
+      if (z.kind === 'hole') {                       // 블랙홀은 예고 중에 끌어당긴다
+        const dx = z.x - p.x, dy = z.y - p.y, d = Math.hypot(dx, dy) || 1;
+        if (d < z.r * 1.6) { p.x += dx / d * 1.5; p.y += dy / d * 1.5; }
+      }
+      continue;
+    }
+    if (!z.done) { z.done = true; resolveZone(z); }
+  }
+  for (let i = list.length - 1; i >= 0; i--) if (list[i].t <= -list[i].hold) list.splice(i, 1);
+}
+
+/* ============================================================================
+   보스 — 이름만 다른 같은 보스가 아니라, 다섯이 전부 다르게 싸운다.
+   각 보스는 체력 100~60% / 60~30% / 30~0% 의 3페이즈를 가지며,
+   페이즈마다 패턴이 늘거나 바뀐다(공격속도만 올리지 않는다).
+   ========================================================================== */
+function bossPhase(e) { const r = e.hp / e.maxhp; return r > 0.6 ? 1 : r > 0.3 ? 2 : 3; }
+const chaseTo = (e, dx, dy, d, m) => { e.x += dx / d * e.spd * m; e.y += dy / d * e.spd * m; };
+
+const BOSS_AI = {
+  /* NECRO TYRANT — 소환 · 부활. 싸울수록 전장이 언데드로 좁아진다. */
+  boss(e, p, dx, dy, d, ph) {
+    chaseTo(e, dx, dy, d, ph === 3 ? 1.4 : 1);
+    if (--e.t1 <= 0) {                                 // 바닥에 소환진이 열린다
+      e.t1 = ph === 3 ? 110 : ph === 2 ? 170 : 225;
+      for (let i = 0; i < ph + 1; i++) {
+        const a = Math.random() * TAU, r = rand(80, 210);
+        addZone({ x:p.x + Math.cos(a) * r, y:p.y + Math.sin(a) * r, r:46, warn:62,
+                  col:'#9a4fff', kind:'raise',
+                  spawn:(ph === 3 ? 'runner' : (Math.random() < 0.5 ? 'runner' : 'walker')) });
+      }
+    }
+    if (ph >= 2 && --e.t2 <= 0) {                      // 발밑에 열리는 무덤
+      e.t2 = ph === 3 ? 150 : 215;
+      addZone({ x:p.x, y:p.y, r:98, warn:74, col:'#c46aff', kind:'grave',
+                dmg:26, spawn:'walker', spawnN:3 });
+    }
+    if (ph === 3 && --e.t3 <= 0) {                     // 광폭: 주변 언데드를 가속시킨다
+      e.t3 = 270; ring(e.x, e.y, 280, '#c46aff', 30); Audio.S.howl();
+      forEachNearbyEnemy(e.x, e.y, 340, o => { if (o !== e && !o.boss) o.hasteT = 260; });
+    }
+  },
+
+  /* PLAGUE COLOSSUS — 독으로 설 자리를 지운다. 가만히 있으면 진다. */
+  boss2(e, p, dx, dy, d, ph) {
+    chaseTo(e, dx, dy, d, 0.92);
+    if (--e.t1 <= 0) {                                 // 지나간 자리가 오염된다
+      e.t1 = 30 - ph * 5;
+      if (G.hazards.length < 90)
+        G.hazards.push({ x:e.x, y:e.y, r:40, life:250, dmg:4 + ph * 2, tick:0, col:'#7ad14a' });
+    }
+    if (--e.t2 <= 0) {                                 // 독구름 투척
+      e.t2 = ph === 3 ? 130 : ph === 2 ? 185 : 235;
+      for (let i = 0; i < ph; i++) {
+        const a = Math.random() * TAU, r = i ? rand(70, 190) : 0;
+        addZone({ x:p.x + Math.cos(a) * r, y:p.y + Math.sin(a) * r, r:78, warn:68,
+                  col:'#8ce04a', kind:'poison', dmg:24 });
+      }
+    }
+    if (ph === 3 && --e.t3 <= 0) {                     // 안전지대 축소 — 바깥을 독으로 두른다
+      e.t3 = 340;
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * TAU;
+        addZone({ x:p.x + Math.cos(a) * 310, y:p.y + Math.sin(a) * 310, r:86, warn:92,
+                  col:'#8ce04a', kind:'poison', dmg:20 });
+      }
+    }
+  },
+
+  /* FROST REVENANT — 거리를 두고 길을 얼려 막는다. 붙어야 이긴다. */
+  boss3(e, p, dx, dy, d, ph) {
+    chaseTo(e, dx, dy, d, d > 270 ? 1.3 : 0.32);
+    if (--e.t1 <= 0) {                                 // 직선 빙결
+      e.t1 = ph === 3 ? 82 : ph === 2 ? 115 : 155;
+      addZone({ shape:'line', x:e.x, y:e.y, ang:Math.atan2(dy, dx), len:560, r:34, warn:56,
+                col:'#8fd8ff', kind:'freeze', dmg:26 });
+    }
+    if (ph >= 2 && --e.t2 <= 0) {                      // 얼음 벽으로 퇴로를 막는다
+      e.t2 = 225;
+      const base = Math.atan2(dy, dx) + Math.PI;
+      for (let i = -2; i <= 2; i++) {
+        const a = base + i * 0.34;
+        addZone({ x:p.x + Math.cos(a) * 195, y:p.y + Math.sin(a) * 195, r:56, warn:72,
+                  col:'#bfe8ff', kind:'wall', dmg:14 });
+      }
+    }
+    if (ph === 3 && --e.t3 <= 0) {                     // 빙결 폭발
+      e.t3 = 265;
+      addZone({ x:e.x, y:e.y, r:310, warn:84, col:'#8fd8ff', kind:'freeze', dmg:34 });
+    }
+  },
+
+  /* INFERNO FIEND — 멈춰 서서 겨냥한 뒤 들이받고, 지나간 자리를 태운다. */
+  boss4(e, p, dx, dy, d, ph) {
+    if (e.dash > 0) {
+      e.dash--;
+      e.x += Math.cos(e.dashA) * e.dashS; e.y += Math.sin(e.dashA) * e.dashS;
+      if (--e.fireT <= 0) {
+        e.fireT = 4;
+        if (G.hazards.length < 90)
+          G.hazards.push({ x:e.x, y:e.y, r:44, life:210, dmg:6 + ph * 2, tick:0, col:'#ff7a2a' });
+      }
+      if (dist2(e.x, e.y, p.x, p.y) < (e.r + 16) * (e.r + 16) && p.iframe <= 0) hurtPlayer(26);
+      return;
+    }
+    if (e.stun > 0) { e.stun--; return; }              // 겨냥 중엔 멈춘다 — 피할 틈
+    chaseTo(e, dx, dy, d, 0.85);
+    if (--e.t1 <= 0) {
+      e.t1 = ph === 3 ? 115 : ph === 2 ? 155 : 205;
+      e.stun = 60;
+      addZone({ shape:'line', x:e.x, y:e.y, ang:Math.atan2(dy, dx), len:580, r:44, warn:58,
+                col:'#ff8a3a', kind:'charge', boss:e, dashF:36, dashS:9.5 });
+    }
+    if (--e.t2 <= 0) {                                 // 화염 장판
+      e.t2 = ph === 3 ? 95 : 145;
+      addZone({ x:p.x, y:p.y, r:74, warn:62, col:'#ff6a2a', kind:'fire', dmg:22 });
+    }
+  },
+
+  /* VOID SOVEREIGN — 사라지고, 끌어당기고, 다른 곳에서 나타난다. */
+  boss5(e, p, dx, dy, d, ph) {
+    if (e.vanish > 0) {
+      e.vanish--; e.hidden = true;
+      if (e.vanish === 0) {
+        e.hidden = false;
+        const a = Math.random() * TAU, r = rand(140, 220);
+        e.x = p.x + Math.cos(a) * r; e.y = p.y + Math.sin(a) * r;
+        ring(e.x, e.y, 96, '#c46aff', 26);
+        addZone({ x:e.x, y:e.y, r:155, warn:48, col:'#c46aff', kind:'void', dmg:30 });
+      }
+      return;
+    }
+    chaseTo(e, dx, dy, d, 0.58);
+    if (--e.t1 <= 0) {                                 // 서 있던 자리를 노린다
+      e.t1 = ph === 3 ? 96 : ph === 2 ? 132 : 175;
+      addZone({ x:p.x, y:p.y, r:92, warn:ph === 3 ? 46 : 60, col:'#b46aff', kind:'void', dmg:28 });
+    }
+    if (ph >= 2 && --e.t2 <= 0) {                      // 블랙홀 — 예고 중에 끌려간다
+      e.t2 = 250;
+      addZone({ x:p.x, y:p.y, r:215, warn:104, col:'#8a3ab0', kind:'hole', dmg:22 });
+    }
+    if (ph === 3 && --e.t3 <= 0) {                     // 소멸 후 기습
+      e.t3 = 225; e.vanish = 72; ring(e.x, e.y, 130, '#c46aff', 26); Audio.S.boss();
+    }
+  },
+};
+
+/* 미니보스 — 돌진 · 내려찍기 · 소환을 번갈아 쓴다. 전부 예고가 붙는다.
+   체력만 많은 적이 아니라, 패턴을 읽고 피해야 하는 상대다. */
+function miniAI(e, p, dx, dy, d) {
+  if (e.dash > 0) {
+    e.dash--;
+    e.x += Math.cos(e.dashA) * e.dashS; e.y += Math.sin(e.dashA) * e.dashS;
+    if (dist2(e.x, e.y, p.x, p.y) < (e.r + 16) * (e.r + 16) && p.iframe <= 0) hurtPlayer(24);
+    return;
+  }
+  if (e.stun > 0) { e.stun--; return; }
+  chaseTo(e, dx, dy, d, 1);
+  if (--e.t1 <= 0) {
+    e.t1 = 210; e.pat = ((e.pat || 0) + 1) % 3;
+    if (e.pat === 0) {                                 // 돌진
+      e.stun = 46;
+      addZone({ shape:'line', x:e.x, y:e.y, ang:Math.atan2(dy, dx), len:440, r:38, warn:46,
+                col:'#c06ad0', kind:'charge', boss:e, dashF:30, dashS:8.5 });
+    } else if (e.pat === 1) {                          // 내려찍기
+      e.stun = 56;
+      addZone({ x:e.x, y:e.y, r:195, warn:54, col:'#c06ad0', kind:'slam', dmg:26 });
+    } else {                                           // 소환
+      e.stun = 38;
+      for (let i = 0; i < 3; i++) {
+        const a = Math.random() * TAU;
+        addZone({ x:e.x + Math.cos(a) * 130, y:e.y + Math.sin(a) * 130, r:52, warn:58,
+                  col:'#9a4fa8', kind:'raise', spawn:'runner' });
+      }
+    }
+  }
+}
+
 function bossAI(e, dx, dy, d) {
   const p = P();
-  e.x += dx/d*e.spd; e.y += dy/d*e.spd;
-  e.patternT--; e.summonT--;
-  if (e.patternT <= 0) {
-    e.patternT = 150; const n = 14;
-    for (let i = 0; i < n; i++) {
-      const a = (i/n)*TAU;
-      const ac = takeAcid(); ac.x=e.x; ac.y=e.y; ac.vx=Math.cos(a)*2.4; ac.vy=Math.sin(a)*2.4; ac.life=150; ac.dmg=22; ac.r=8; ac.dead=false; ac.col=null;
-      G.acids.push(ac);
-    }
+  const ph = bossPhase(e);
+  if (ph !== e.phase) {                                // 페이즈 전환 — 보고 알 수 있게
+    e.phase = ph;
+    ring(e.x, e.y, 170, (e.def && e.def.col) || '#ff4d5a', 34);
+    spark(e.x, e.y, (e.def && e.def.col) || '#ff4d5a', 18, 4.2, 30);
+    G.screenShake = Math.max(G.screenShake, 14);
     Audio.S.boss();
+    e.t1 = 40; e.t2 = 70; e.t3 = 100;
+    if (el.bossbar) el.bossbar.dataset.ph = ph;
   }
-  if (e.summonT <= 0) {
-    e.summonT = 300;
-    for (let i = 0; i < 3; i++) { const a=Math.random()*TAU, r=e.r+40; spawnEnemy(Math.random()<0.5?'runner':'walker', e.x+Math.cos(a)*r, e.y+Math.sin(a)*r); }
-  }
+  (BOSS_AI[e.key] || BOSS_AI.boss)(e, p, dx, dy, d, ph);
   if (d < e.r + 15 && p.iframe <= 0) hurtPlayer(30);
 }
 
@@ -3967,6 +4345,7 @@ function gainXP(n) {
 /* ============================================================================
    레벨업 선택
    ========================================================================== */
+const optKey = o => o.type + ':' + (o.key || o.id || '');
 function buildChoices() {
   const p = P(), opts = [], evoOpts = [];
   for (const w of p.weapons) {
@@ -3977,11 +4356,20 @@ function buildChoices() {
   for (const id in p.passives) if (p.passives[id] < 5) opts.push({ type:'pup', id });
   if (p.weapons.length < 6) for (const k in WEAPONS) if (!ownWeapon(k)) opts.push({ type:'wnew', key:k });
   if (Object.keys(p.passives).length < (G.save.passiveSlots || 6)) for (const k in PASSIVES) if (!(k in p.passives)) opts.push({ type:'pnew', id:k });
-  shuffle(opts);
-  shuffle(evoOpts);            // 진화 후보가 3개보다 많을 때 특정 무기(붐샷 등)가 계속 밀려나 진화 못하는 문제 방지
+  const ban = p.banned || [];
+  const keep = o => ban.indexOf(optKey(o)) < 0;
+  const pool = opts.filter(keep), evoPool = evoOpts.filter(keep);
+  shuffle(pool);
+  shuffle(evoPool);            // 진화 후보가 3개보다 많을 때 특정 무기(붐샷 등)가 계속 밀려나 진화 못하는 문제 방지
   const chosen = [];
-  for (const e of evoOpts) if (chosen.length < 3) chosen.push(e);
-  for (const o of opts) { if (chosen.length >= 3) break; chosen.push(o); }
+  // 고정해 둔 선택지는 이번에도 그대로 나온다
+  if (p.lockedOpt) {
+    const all = evoPool.concat(pool);
+    const hit = all.find(o => optKey(o) === p.lockedOpt);
+    if (hit) chosen.push(hit); else p.lockedOpt = null;
+  }
+  for (const e of evoPool) if (chosen.length < 3 && chosen.indexOf(e) < 0) chosen.push(e);
+  for (const o of pool) { if (chosen.length >= 3) break; if (chosen.indexOf(o) < 0) chosen.push(o); }
   if (chosen.length === 0) chosen.push({ type:'heal' }, { type:'coins' });
   return chosen;
 }
@@ -4040,13 +4428,17 @@ function applyChoice(o) {
   }
   else if (o.type === 'wup') { ownWeapon(o.key).level++; if (o.key === 'machete') rebuildBlades();
     if (o.key === 'sentry') refreshSentries('#9fe0ff'); }
+  else if (o.type === '__never__') {}
   else if (o.type === 'pup') { p.passives[o.id]++; afterPassive(o.id); }
   else if (o.type === 'wnew') { p.weapons.push({ key:o.key, level:1, timer:0, evolved:false }); if (o.key === 'machete') rebuildBlades(); }
   else if (o.type === 'pnew') { p.passives[o.id] = 1; afterPassive(o.id); }
   else if (o.type === 'heal') p.hp = p.maxhp;
   else if (o.type === 'coins') G.runCoins += 40;
+  recomputeSynergy();                                      // 빌드가 바뀌면 시너지를 다시 센다
+  if (o.type === 'evo' || o.type === 'wup') { if (ownWeapon('machete')) rebuildBlades(); }
 }
 function afterPassive(id) {
+  recomputeSynergy();
   if (id === 'maxhp') recomputeMaxHP();
   // 마체테/버즈쏘 블레이드는 생성 시점의 수치를 저장하므로 관련 패시브 습득 시 재생성
   if (id === 'range' || id === 'dmg' || id === 'speed') rebuildBlades();
@@ -4060,7 +4452,9 @@ function enterLevelUp() {
   const to = Math.max(2, p.level - p.pendingLevels + 1);
   const lvEl = $('luLevel');
   if (lvEl) lvEl.innerHTML = `<span class="from">Lv ${to-1}</span><span class="arw">→</span><span class="to">Lv ${to}</span>`;
+  renderSynergyRow();
   const list = buildChoices();
+  G.luList = list;
   el.choices.innerHTML = '';
   el.luHeal.style.display = G.frame > 1 ? 'block' : 'none';
   list.forEach(o => {
@@ -4077,18 +4471,83 @@ function enterLevelUp() {
     div.innerHTML = `<div class="cico">${ico(info.ico)}</div><div class="cbody">
       <span class="badge">${badgeText}</span><div class="cnm">${info.nm}</div>
       ${lvHtml}<div class="cds">${info.ds}</div></div>`;
+    if (p.lockedOpt === optKey(o)) div.classList.add('locked');
     div.onclick = () => {
       if (el.choices.classList.contains('resolving')) return;   // 연타 방지
+      if (G.luMode === 'banish') { doBanish(o); return; }       // 제외 모드
+      if (G.luMode === 'lock')   { doLock(o);   return; }       // 고정 모드
       Audio.S.uiConfirm();
       el.choices.classList.add('resolving'); div.classList.add('picked');
       setTimeout(() => { el.choices.classList.remove('resolving'); applyChoice(o); pickResolved(); }, 150);
     };
     el.choices.appendChild(div);
   });
+  renderLuTools();
   el.levelup.classList.add('show');
 }
+
+/* ---------------- 레벨업 RNG 제어 — 다시 뽑기 · 제외 · 고정 ----------------
+   무작위를 없애지 않는다. 원하는 빌드를 만들 기회조차 없는 판을 줄일 뿐이다. */
+function renderSynergyRow() {
+  const row = $('luSyn'); if (!row) return;
+  const ids = Object.keys(G.syn || {});
+  row.innerHTML = ids.map(id => {
+    const d = SYNERGIES.find(x => x.id === id);
+    return `<span class="su syn">${ico((d && d.icon) || 'dmg')}<span>${t('syn.' + id)}</span></span>`;
+  }).join('');
+  row.style.display = ids.length ? '' : 'none';
+}
+function renderLuTools() {
+  const box = $('luTools'); if (!box) return;
+  const p = P();
+  const btn = (mode, n, label) =>
+    `<button class="lu-tool${G.luMode === mode ? ' on' : ''}" data-m="${mode}"${n > 0 ? '' : ' disabled'}>` +
+    `${label}<b>${n}</b></button>`;
+  box.innerHTML = btn('reroll', p.rerolls || 0, t('lu.reroll'))
+                + btn('banish', p.banishes || 0, t('lu.banish'))
+                + btn('lock',   p.locks || 0,    t('lu.lock'));
+  box.querySelectorAll('.lu-tool').forEach(b => b.onclick = () => {
+    const m = b.dataset.m;
+    if (m === 'reroll') { doReroll(); return; }
+    G.luMode = (G.luMode === m) ? null : m;
+    renderLuTools(); syncLuHint();
+  });
+  syncLuHint();
+}
+function syncLuHint() {
+  const h = $('luHint'); if (!h) return;
+  h.textContent = G.luMode ? t('lu.pick.' + G.luMode) : '';
+  h.style.display = G.luMode ? '' : 'none';
+  el.choices.classList.toggle('marking', !!G.luMode);
+}
+function relistChoices() { G.luMode = null; el.levelup.classList.remove('show'); enterLevelUp(); }
+function doReroll() {
+  const p = P(); if ((p.rerolls || 0) <= 0) return;
+  p.rerolls--; Audio.S.ui(); relistChoices();
+}
+function doBanish(o) {
+  const p = P(); if ((p.banishes || 0) <= 0) return;
+  p.banishes--;
+  p.banned = p.banned || []; p.banned.push(optKey(o));
+  if (p.lockedOpt === optKey(o)) p.lockedOpt = null;
+  Audio.S.ui(); relistChoices();
+}
+function doLock(o) {
+  const p = P(); if ((p.locks || 0) <= 0) return;
+  p.locks--; p.lockedOpt = optKey(o);
+  Audio.S.pickup(); G.luMode = null;
+  renderLuTools(); enterLevelUpRefreshLock();
+}
+function enterLevelUpRefreshLock() {
+  document.querySelectorAll('#choices .choice').forEach((d, i) => {
+    const o = G.luList && G.luList[i];
+    d.classList.toggle('locked', !!o && P().lockedOpt === optKey(o));
+  });
+}
 function pickResolved() {
-  const p = P(); p.pendingLevels = Math.max(0, p.pendingLevels - 1);
+  const p = P();
+  G.luMode = null; p.lockedOpt = null;
+  p.pendingLevels = Math.max(0, p.pendingLevels - 1);
   Audio.S.pickup();
   if (p.pendingLevels > 0) enterLevelUp();
   else { el.levelup.classList.remove('show'); G.state = 'play'; }
@@ -4484,6 +4943,7 @@ window.R3 = (() => {
       flush(gemMesh, 0); flush(coinMesh, 0); flush(heartMesh, 0); flush(bulletMesh, 0); flush(orbMesh, 0);
       hideFrom(ringPool, 0); hideFrom(arcPool, 0); hideFrom(hazardPool, 0);
       hideFrom(bladePool, 0); hideFrom(sentryPool, 0);
+      hideFrom(zoneCPool, 0); hideFrom(zoneLPool, 0);
       ground.position.set(0, 0, 0);
       groundTex.offset.set(0, 0);
       sun.position.set(-520, 560, -720); sun.target.position.set(0, 0, 0);
@@ -4516,6 +4976,7 @@ window.R3 = (() => {
       drawBullets3d();
       drawPickups3d();
       drawHazards3d();
+      drawZones3d();
       drawBlades3d();
       drawParticles3d();
     }
@@ -4571,7 +5032,7 @@ window.R3 = (() => {
   function drawEnemies3d(p) {
     for (const k in enemyPools) poolN[k] = 0;
     for (const e of G.enemies) {
-      if (e.dead || !onScreen(e.x, e.y, e.r + 60)) continue;
+      if (e.dead || e.hidden || !onScreen(e.x, e.y, e.r + 60)) continue;   // 보이드 소버린: 소멸 중엔 안 보인다
       const key = SPRITES[e.key] && SPRITES[e.key].grid ? e.key : 'walker';
       const pool = enemyPool(key); if (!pool) continue;
       const n = poolN[key] || 0;
@@ -4700,12 +5161,66 @@ window.R3 = (() => {
       }
       o.visible = true;
       o.position.set(h.x, 1.2, h.y);
+      o.material.color.set(h.col || '#ff5a14');
       const r = h.r * (1 + Math.sin(G.frame * 0.2) * 0.06);
       o.scale.set(r, r, 1);
       o.material.opacity = 0.42 * clamp(h.life / 30, 0, 1);
       i++;
     }
     hideFrom(hazardPool, i);
+  }
+
+  /* ---------------- 전조(텔레그래프) ---------------- */
+  const zoneCPool = [], zoneLPool = [];
+  function drawZones3d() {
+    let ci = 0, li = 0;
+    for (const z of G.zones) {
+      const k = clamp(1 - z.t / z.warn, 0, 1);          // 0 = 막 생김, 1 = 터지기 직전
+      const fade = z.t < 0 ? clamp(1 + z.t / z.hold, 0, 1) : 1;
+      if (z.shape === 'line') {
+        let o = zoneLPool[li];
+        if (!o) {
+          o = new T.Group();
+          const fill = new T.Mesh(new T.PlaneGeometry(1, 1), glowMat(0xffffff, 0.16));
+          const edge = new T.Mesh(new T.PlaneGeometry(1, 1), glowMat(0xffffff, 0.30));
+          fill.rotation.x = -Math.PI / 2; edge.rotation.x = -Math.PI / 2;
+          o.add(edge); o.add(fill);
+          o.userData = { fill, edge };
+          scene.add(o); zoneLPool[li] = o;
+        }
+        o.visible = true;
+        o.position.set(z.x + Math.cos(z.ang) * z.len / 2, 1.5, z.y + Math.sin(z.ang) * z.len / 2);
+        o.rotation.y = -z.ang;
+        const ed = o.userData.edge, fl = o.userData.fill;
+        ed.scale.set(z.len, z.r * 2, 1); ed.material.color.set(z.col);
+        ed.material.opacity = 0.10 * fade;
+        fl.scale.set(z.len * k, z.r * 2, 1); fl.position.x = -z.len * (1 - k) / 2;
+        fl.material.color.set(z.col);
+        fl.material.opacity = (0.16 + k * 0.30) * fade;
+        li++;
+      } else {
+        let o = zoneCPool[ci];
+        if (!o) {
+          o = new T.Group();
+          const fill = new T.Mesh(new T.CircleGeometry(1, 30), glowMat(0xffffff, 0.2));
+          const edge = new T.Mesh(new T.RingGeometry(0.93, 1, 34), glowMat(0xffffff, 0.5));
+          fill.rotation.x = -Math.PI / 2; edge.rotation.x = -Math.PI / 2;
+          o.add(edge); o.add(fill);
+          o.userData = { fill, edge };
+          scene.add(o); zoneCPool[ci] = o;
+        }
+        o.visible = true;
+        o.position.set(z.x, 1.5, z.y);
+        const ed = o.userData.edge, fl = o.userData.fill;
+        ed.scale.set(z.r, z.r, 1); ed.material.color.set(z.col);
+        ed.material.opacity = (0.45 + Math.sin(G.frame * 0.3) * 0.12) * fade;
+        const rr = Math.max(0.001, z.r * k);
+        fl.scale.set(rr, rr, 1); fl.material.color.set(z.col);
+        fl.material.opacity = (0.12 + k * 0.26) * fade;
+        ci++;
+      }
+    }
+    hideFrom(zoneCPool, ci); hideFrom(zoneLPool, li);
   }
 
   /* ---------------- 회전 칼날 ---------------- */
@@ -5504,7 +6019,7 @@ function continueTier() {
   G.save.maxTier = Math.max(G.save.maxTier || 1, G.tier); Store.save(G.save);
   Object.assign(G, {
     time:0, frame:0, enemies:[], bullets:[], acids:[], gems:[], coins:[], hearts:[],
-    particles:[], blades:[], sentries:[], hazards:[], orbs:[], spawnTimer:0, heartTimer:0,
+    particles:[], blades:[], sentries:[], hazards:[], orbs:[], zones:[], spawnTimer:0, heartTimer:0,
     miniSpawned:false, bossSpawned:false, boss:null, screenShake:0, clearing:false,
   });
   // 처음 상태로 재시작: 새 플레이어 + 시작 무기/짝 패시브 1레벨
@@ -5512,6 +6027,8 @@ function continueTier() {
   const char = CHARACTERS[G.character || 'hunter'];
   G.player.weapons.push({ key:char.weapon, level:1, timer:0, evolved:false });
   G.player.passives[WEAPONS[char.weapon].pair] = 1;
+  G.zones = []; G.luMode = null;
+  recomputeSynergy();
   rebuildBlades();
   G.camX = 0; G.camY = 0; moveSmooth.x = 0; moveSmooth.y = 0;
   hudReset(); loadoutSig = '';
@@ -5532,7 +6049,7 @@ function serializeRun() {
   const p = P(); if (!p) return null;
   const miniAlive = G.enemies.some(e => e.mini && !e.dead);
   return {
-    v: 1, character: G.character || 'hunter',
+    v: 2, character: G.character || 'hunter',
     tier: G.tier, time: G.time, frame: G.frame,
     runCoins: G.runCoins, kills: G.kills, bossKilled: !!G.bossKilled,
     miniSpawned: !!G.miniSpawned, bossSpawned: !!G.bossSpawned,
@@ -5544,6 +6061,8 @@ function serializeRun() {
       pendingLevels: p.pendingLevels || 0, regenAcc: p.regenAcc || 0, facing: p.facing || 1,
       weapons: p.weapons.map(w => ({ key: w.key, level: w.level, evolved: !!w.evolved })),
       passives: Object.assign({}, p.passives),
+      rerolls: p.rerolls || 0, banishes: p.banishes || 0, locks: p.locks || 0,
+      banned: (p.banned || []).slice(), lockedOpt: p.lockedOpt || null,
     },
     sentries: G.sentries.map(s => ({ evolved: !!s.evolved, dmg: s.dmg, rng: s.rng, fireCd: s.fireCd })),
     // 요약(메뉴 '이어하기' 버튼에 표시)
@@ -5588,7 +6107,14 @@ function resumeRun() {
   p.pendingLevels = P0.pendingLevels || 0; p.regenAcc = P0.regenAcc || 0; p.facing = P0.facing || 1;
   p.weapons = (P0.weapons || []).map(w => ({ key: w.key, level: w.level, timer: 0, evolved: !!w.evolved }));
   p.passives = Object.assign({}, P0.passives);
+  // v1 세이브에는 없는 값들 — 안전한 기본값으로 채운다 (save migration)
+  p.rerolls  = P0.rerolls  != null ? P0.rerolls  : BAL.run.rerolls;
+  p.banishes = P0.banishes != null ? P0.banishes : BAL.run.banishes;
+  p.locks    = P0.locks    != null ? P0.locks    : BAL.run.locks;
+  p.banned = (P0.banned || []).slice(); p.lockedOpt = P0.lockedOpt || null;
   G.player = p;
+  G.zones = []; G.luMode = null;
+  recomputeSynergy();
   const sl = rs.sentries || [];
   sl.forEach((s, i) => {
     const ang = (i / Math.max(1, sl.length)) * TAU;
