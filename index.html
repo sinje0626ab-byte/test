@@ -409,29 +409,46 @@ html:lang(ko) .lb-strip,html:lang(zh) .lb-strip,html:lang(th) .lb-strip{letter-s
 .buy.max{color:var(--tx-3);border-color:transparent;cursor:default;}
 .buy.cant{color:var(--tx-3);opacity:.45;cursor:not-allowed;}
 
-/* ---------- 언어 선택 ---------- */
+/* ---------- 언어 선택 ----------
+   게임 안의 작은 HUD 팝업이지 브라우저 기본 메뉴가 아니다.
+   .lg-item 은 <button> 이라 초기화하지 않으면 OS 기본 회색 칩으로 그려진다. */
 #langWrap{position:absolute;top:calc(var(--s3) + var(--safe-t));left:var(--s3);z-index:6;}
 #langBtn{appearance:none;display:flex;align-items:center;gap:5px;height:44px;padding:0 10px;
   background:transparent;border:1px solid transparent;border-radius:var(--r-s);
-  color:var(--tx-3);font:600 var(--f-meta)/1 inherit;cursor:pointer;
+  color:var(--tx-3);font:600 var(--f-meta)/1 inherit;font-family:inherit;cursor:pointer;
   transition:color var(--t1) var(--ease),background var(--t1) var(--ease),border-color var(--t1) var(--ease);}
-#langBtn:hover,#langWrap.open #langBtn{color:var(--tx-2);
-  background:rgba(13,19,17,.8);border-color:var(--line);backdrop-filter:blur(8px);}
+#langBtn:hover{color:var(--tx-2);background:rgba(10,16,13,.82);border-color:var(--line);}
+#langWrap.open #langBtn{color:var(--tx-2);background:rgba(10,16,13,.96);
+  border-color:rgba(141,255,90,.28);border-bottom-color:transparent;
+  border-bottom-left-radius:0;border-bottom-right-radius:0;}
 #langBtn:active{transform:scale(.96);}
 #langBtn .lg-flag{display:none;}          /* 어두운 화면에서 국기만 색이 튄다 — 목록에는 그대로 둔다 */
 #langBtn .lg-txt{font-size:var(--f-micro);letter-spacing:.06em;}
-#langBtn .lg-caret{font-size:9px;color:var(--tx-3);transition:transform var(--t2) var(--ease);}
-#langWrap.open #langBtn .lg-caret{transform:rotate(180deg);}
-#langList{position:absolute;top:42px;left:0;min-width:150px;padding:var(--s1);
-  background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r-m);
-  opacity:0;visibility:hidden;transform:translateY(-4px);
-  transition:opacity var(--t2) var(--ease),transform var(--t2) var(--ease),visibility var(--t2);}
+#langBtn .lg-caret{width:11px;height:11px;flex:none;color:var(--tx-3);opacity:.8;
+  transition:transform var(--t2) var(--ease);}
+#langWrap.open #langBtn .lg-caret{transform:rotate(180deg);color:var(--green);opacity:1;}
+
+#langList{position:absolute;top:calc(100% - 1px);left:0;min-width:178px;padding:5px;
+  background:rgba(10,16,13,.96);border:1px solid rgba(255,255,255,.09);
+  border-radius:0 var(--r-m) var(--r-m) var(--r-m);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 14px 35px rgba(0,0,0,.45),0 4px 12px rgba(0,0,0,.25);
+  opacity:0;visibility:hidden;transform:translateY(-3px);
+  transition:opacity 140ms var(--ease),transform 140ms var(--ease),visibility 140ms;}
 #langWrap.open #langList{opacity:1;visibility:visible;transform:none;}
-.lg-item{display:flex;align-items:center;gap:var(--s2);min-height:38px;padding:0 var(--s2);
-  border-radius:var(--r-s);color:var(--tx-2);font-size:var(--f-body);cursor:pointer;}
-.lg-item .lg-flag{font-size:15px;}
-.lg-item:hover{background:var(--panel-2);color:var(--tx);}
-.lg-item.on{color:var(--green);}
+
+.lg-item{appearance:none;width:100%;display:flex;align-items:center;gap:var(--s2);
+  min-height:40px;padding:0 var(--s2);background:transparent;border:0;border-radius:4px;
+  color:var(--tx-2);font:500 var(--f-body)/1 inherit;font-family:inherit;text-align:left;cursor:pointer;
+  transition:background var(--t1) var(--ease),color var(--t1) var(--ease);}
+.lg-item .lg-flag{font-size:15px;line-height:1;flex:none;filter:saturate(.72) brightness(.92);}
+.lg-item .lg-txt{flex:1;min-width:0;}
+.lg-item .lg-ck{width:13px;height:13px;flex:none;color:var(--green);}
+.lg-item:hover{background:rgba(255,255,255,.045);color:var(--tx);}
+.lg-item:hover .lg-flag{filter:none;}
+.lg-item.on{color:var(--green);font-weight:600;background:rgba(141,255,90,.035);}
+.lg-item.on .lg-flag{filter:none;}
+.lg-item:active{background:rgba(141,255,90,.10);}
 
 #gearBtn{position:absolute;top:calc(var(--s3) + var(--safe-t));right:var(--s3);z-index:6;
   appearance:none;width:44px;height:44px;display:grid;place-items:center;
@@ -896,7 +913,9 @@ h2.res.lose{color:var(--red);}
   <div class="veil"></div>
   <div id="langWrap">
     <button id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
-      <span class="lg-flag">🇰🇷</span><span class="lg-txt">한국어</span><span class="lg-caret">▼</span>
+      <span class="lg-flag">🇰🇷</span><span class="lg-txt">한국어</span>
+      <svg class="lg-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+           stroke-linecap="square" aria-hidden="true"><path d="m6 9.5 6 6 6-6"/></svg>
     </button>
     <div id="langList" role="menu"></div>
   </div>
@@ -2120,6 +2139,8 @@ const ICONS = {
   close:
     '<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">'
     + '<path d="M5.4 5.4 18.6 18.6M18.6 5.4 5.4 18.6"/></g>',
+  check:
+    '<path d="M20.3 6.3 9.6 17 3.7 11.1l1.8-1.8 4.1 4.1 8.9-8.9z"/>',
   squad:
     '<path d="M9 3.2a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 0 1 0-7.2zM1.9 20.6c0-3.9 3.2-7 7.1-7s7.1 3.1 7.1 7z"/>'
     + '<path d="M16.4 4.4a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM17 12.9c2.9.3 5.1 2.7 5.1 5.7v2h-3.6v-2.2c0-2-.6-3.8-1.5-5.5z" opacity=".55"/>',
@@ -2793,14 +2814,17 @@ function renderLangMenu(){
   LANGS.forEach(l => {
     const it = document.createElement('button');
     it.className = 'lg-item' + (l.code === curLang ? ' on' : '');
-    it.innerHTML = `<span class="lg-flag">${l.flag}</span><span class="lg-txt">${l.label}</span>`;
+    it.innerHTML = `<span class="lg-flag">${l.flag}</span><span class="lg-txt">${l.label}</span>`
+      + (l.code === curLang ? ico('check', 'lg-ck') : '');
     it.onclick = (e) => { e.stopPropagation(); setLang(l.code); closeLangMenu(); };
     list.appendChild(it);
   });
 }
-function openLangMenu(){ const w = document.getElementById('langWrap'); if (w) w.classList.add('open'); }
-function closeLangMenu(){ const w = document.getElementById('langWrap'); if (w) w.classList.remove('open'); }
-function toggleLangMenu(){ const w = document.getElementById('langWrap'); if (w) w.classList.toggle('open'); }
+function syncLangAria(){ const w = document.getElementById('langWrap'), b = document.getElementById('langBtn');
+  if (w && b) b.setAttribute('aria-expanded', String(w.classList.contains('open'))); }
+function openLangMenu(){ const w = document.getElementById('langWrap'); if (w) w.classList.add('open'); syncLangAria(); }
+function closeLangMenu(){ const w = document.getElementById('langWrap'); if (w) w.classList.remove('open'); syncLangAria(); }
+function toggleLangMenu(){ const w = document.getElementById('langWrap'); if (w) w.classList.toggle('open'); syncLangAria(); }
 
 function setLang(code){
   if (!LANGS.some(l => l.code === code)) code = 'ko';
@@ -5754,6 +5778,11 @@ function init() {
   $('langBtn').onclick = (e) => { e.stopPropagation(); toggleLangMenu();
     $('langBtn').setAttribute('aria-expanded', document.getElementById('langWrap').classList.contains('open')); };
   document.addEventListener('click', (e) => { const w = document.getElementById('langWrap'); if (w && !w.contains(e.target)) closeLangMenu(); });
+  document.addEventListener('keydown', (e) => {                       // ESC 로 닫기
+    if (e.key !== 'Escape') return;
+    const w = document.getElementById('langWrap');
+    if (w && w.classList.contains('open')) { e.stopPropagation(); closeLangMenu(); $('langBtn').focus(); }
+  }, true);
   refreshMenu();
   $('soundBtn').onclick = () => { Audio.ensure(); const m = Audio.toggle(); if (!m) Audio.resume(); G.save.sfxOn = !m; Store.save(G.save); updateSoundBtn(); syncSettingsUI(); };
   $('startBtn').onclick = () => deploy();
