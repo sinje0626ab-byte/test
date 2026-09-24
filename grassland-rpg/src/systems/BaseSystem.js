@@ -20,6 +20,7 @@ export class BaseSystem {
     });
 
     bus.on('base:travel', ({ baseId }) => this.travel(baseId));
+    bus.on('base:upgrade', ({ baseId }) => this.upgrade(baseId));
 
     // 아침마다 텐트는 다시 멀쩡해진다.
     bus.on('time:day', () => {
@@ -60,6 +61,27 @@ export class BaseSystem {
     this.ctx.bases.push(base);
     this.ctx.structures.push(base.tent);
     return base;
+  }
+
+  // 재료를 써서 다음 단계로 (텐트 → 움막 → 집 → 요새)
+  upgrade(baseId) {
+    const { bases, bus } = this.ctx;
+    const base = bases.find((b) => b.id === baseId);
+    const next = base && this.levelDef(base.level + 1);
+    if (!next) return;
+    const spend = { items: next.cost, ok: false };
+    bus.emit('inventory:spend', spend);
+    if (!spend.ok) {
+      bus.emit('notify', { text: '재료가 부족합니다', kind: 'warn' });
+      return;
+    }
+    base.level += 1;
+    base.name = next.name;
+    base.areaRadius = next.areaRadius;
+    base.maxTurrets = next.maxTurrets;
+    base.tent.setLevel(next);
+    bus.emit('base:upgraded', { base, level: base.level });
+    bus.emit('notify', { text: `${base.label}이(가) ${next.name}(으)로 커졌습니다!`, kind: 'item' });
   }
 
   // 텐트 문 앞 (부활·빠른 이동 도착 지점)

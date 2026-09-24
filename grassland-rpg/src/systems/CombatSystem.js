@@ -10,6 +10,7 @@ export class CombatSystem {
     ctx.bus.on('player:attack', (a) => this.onPlayerAttack(a));
     ctx.bus.on('monster:attack', (a) => this.onMonsterAttack(a));
     ctx.bus.on('projectile:hit', (a) => this.onProjectileHit(a));
+    ctx.bus.on('projectile:explode', (a) => this.onExplode(a));
   }
 
   calcDamage(attack, defense, critChance = 0, critMultiplier = 1) {
@@ -48,6 +49,18 @@ export class CombatSystem {
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
     this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster' });
     if (killed) this.ctx.bus.emit('monster:killed', { type: monster.type, position: monster.position.clone() });
+  }
+
+  // 대포: 떨어진 곳 둘레 모두. 가장자리일수록 약하다.
+  onExplode({ position, radius, minFactor, damage }) {
+    for (const m of this.ctx.monsters) {
+      if (!m.alive) continue;
+      const d = Math.hypot(m.position.x - position.x, m.position.z - position.z);
+      if (d > radius + m.radius) continue;
+      const k = 1 - (1 - minFactor) * Math.min(1, d / radius);
+      const dir = new THREE.Vector3(m.position.x - position.x, 0, m.position.z - position.z).normalize();
+      this.onProjectileHit({ monster: m, damage: damage * k, dir: dir.multiplyScalar(2) });
+    }
   }
 
   // 포탑·텐트를 때릴 때

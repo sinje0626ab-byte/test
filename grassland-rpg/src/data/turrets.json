@@ -2,6 +2,8 @@
   "wood_bow": {
     "name": "나무 활 포탑",
     "description": "싸고 약한 활 포탑. 한 번에 한 마리를 쏜다.",
+    "model": "bow",
+    "projectile": "arrow",
     "unlockBaseLevel": 1,
     "cost": 30,
     "hp": 80,
@@ -12,6 +14,96 @@
     "projectileSpeed": 20,
     "priority": "nearest",
     "color": "#c58b4f",
-    "xp": 10
+    "xp": 10,
+    "upgradeCosts": [
+      40,
+      80
+    ],
+    "repairCostPerHp": 0.25,
+    "damagePerLevel": 0.35,
+    "rangePerLevel": 0.5,
+    "hpPerLevel": 0.3,
+    "maxLevel": 3
+  },
+  "crossbow": {
+    "name": "석궁 포탑",
+    "description": "데미지가 높지만 느리다. 체력 낮은 적부터 노린다.",
+    "model": "crossbow",
+    "projectile": "bolt",
+    "unlockBaseLevel": 2,
+    "cost": 60,
+    "hp": 110,
+    "radius": 0.7,
+    "range": 11,
+    "fireRate": 0.5,
+    "damage": 24,
+    "projectileSpeed": 28,
+    "priority": "lowestHp",
+    "color": "#8a6440",
+    "xp": 15,
+    "upgradeCosts": [
+      70,
+      140
+    ],
+    "repairCostPerHp": 0.3,
+    "damagePerLevel": 0.35,
+    "rangePerLevel": 0.5,
+    "hpPerLevel": 0.3,
+    "maxLevel": 3
+  },
+  "gun": {
+    "name": "총 포탑",
+    "description": "빠르게 연사한다. 한 발은 약하다.",
+    "model": "gun",
+    "projectile": "bullet",
+    "unlockBaseLevel": 3,
+    "cost": 100,
+    "hp": 130,
+    "radius": 0.7,
+    "range": 8.5,
+    "fireRate": 4,
+    "damage": 5,
+    "projectileSpeed": 42,
+    "priority": "nearest",
+    "color": "#6f7d8c",
+    "xp": 20,
+    "upgradeCosts": [
+      110,
+      220
+    ],
+    "repairCostPerHp": 0.35,
+    "damagePerLevel": 0.35,
+    "rangePerLevel": 0.5,
+    "hpPerLevel": 0.3,
+    "maxLevel": 3
+  },
+  "cannon": {
+    "name": "대포 포탑",
+    "description": "느리지만 포탄이 떨어진 곳 주변을 모두 날려 버린다.",
+    "model": "cannon",
+    "projectile": "ball",
+    "unlockBaseLevel": 4,
+    "cost": 160,
+    "hp": 180,
+    "radius": 0.85,
+    "range": 12,
+    "fireRate": 0.35,
+    "damage": 30,
+    "projectileSpeed": 14,
+    "splashRadius": 2.8,
+    "splashMinFactor": 0.4,
+    "aoeFactor": 2.2,
+    "priority": "nearest",
+    "color": "#4a4f5a",
+    "xp": 30,
+    "upgradeCosts": [
+      170,
+      340
+    ],
+    "repairCostPerHp": 0.4,
+    "damagePerLevel": 0.35,
+    "rangePerLevel": 0.5,
+    "hpPerLevel": 0.3,
+    "maxLevel": 3
   }
 }

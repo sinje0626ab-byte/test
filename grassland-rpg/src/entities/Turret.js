@@ -1,20 +1,22 @@
 import * as THREE from 'three';
 import { HpBar } from './HpBar.js';
+import { createTurretModel } from './TurretModels.js';
+import { turretMaxHp } from '../utils/build.js';
 
-const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.85 });
-
-// 포탑 모양·체력·조준 상태. 조준 대상 고르기와 발사는 TurretSystem이 한다.
+// 포탑 모양·체력·레벨·조준 상태. 조준 대상 고르기와 발사는 TurretSystem이 한다.
 export class Turret {
-  constructor(ctx, type, baseId, position, { hp, level = 1 } = {}) {
+  constructor(ctx, type, baseId, position, { hp, level = 1, priority } = {}) {
     this.ctx = ctx;
     this.kind = 'turret';
     this.type = type;
     this.def = ctx.data.turrets[type];
     this.baseId = baseId;
     this.level = level;
+    this.priority = priority ?? this.def.priority;
     this.position = position.clone();
     this.radius = this.def.radius;
-    this.stats = { maxHp: this.def.hp, hp: hp ?? this.def.hp };
+    const maxHp = turretMaxHp(this.def, level);
+    this.stats = { maxHp, hp: Math.min(maxHp, hp ?? maxHp) };
     this.alive = this.stats.hp > 0;
     this.cooldown = 0;
     this.yaw = 0;
@@ -23,50 +25,37 @@ export class Turret {
     this.hpTimer = 0;
     this.recoil = 0;
     this.buildMesh();
-    this.applyBroken();
+    this.applyLook();
   }
 
   static createMesh(def) {
-    const g = new THREE.Group();
-    const legs = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.6, 0.9, 6), flat('#9a6a45'));
-    legs.position.y = 0.45;
-    const deck = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.18, 6), flat('#b88452'));
-    deck.position.y = 0.98;
-    const head = new THREE.Group();
-    head.position.y = 1.2;
-    const stock = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.9), flat(def.color));
-    const bow = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.045, 4, 10, Math.PI), flat('#6b4a36'));
-    bow.position.z = 0.3;
-    bow.rotation.set(Math.PI / 2, 0, 0);
-    const arrow = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.7), flat('#e8e8e8'));
-    arrow.position.set(0, 0.1, 0.15);
-    head.add(stock, bow, arrow);
-    g.add(legs, deck, head);
-    g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-    return { group: g, head, parts: [legs, deck, stock, bow] };
+    return createTurretModel(def);
   }
 
   buildMesh() {
-    const { group, head, parts } = Turret.createMesh(this.def);
+    const { group, head, parts, stars } = createTurretModel(this.def);
     this.head = head;
+    this.stars = stars;
     this.mats = parts.map((p) => p.material);
+    this.baseColors = this.mats.map((m) => m.color.clone());
     this.hpBar = new HpBar(1, 0x7cc67a);
-    this.hpBar.group.position.y = 2;
+    this.hpBar.group.position.y = 2.1;
     group.add(this.hpBar.group);
     group.position.copy(this.position);
     this.mesh = group;
     this.ctx.scene.add(group);
   }
 
-  // 부서진 포탑은 머리가 떨어지고 거무스름한 잔해가 된다 (수리는 Phase 6).
-  applyBroken() {
+  // 부서진 포탑은 머리가 떨어지고 거무스름한 잔해가 된다. 레벨은 금색 띠로 보인다.
+  applyLook() {
     this.head.visible = this.alive;
     this.mesh.rotation.z = this.alive ? 0 : 0.25;
-    for (const m of this.mats) m.color.multiplyScalar(this.alive ? 1 : 0.55);
+    this.mats.forEach((m, i) => m.color.copy(this.baseColors[i]).multiplyScalar(this.alive ? 1 : 0.55));
+    this.stars.forEach((s, i) => { s.visible = this.level >= i + 2; });
   }
 
   get muzzle() {
-    return new THREE.Vector3(this.position.x, 1.3, this.position.z);
+    return new THREE.Vector3(this.position.x, this.head.position.y + 0.15, this.position.z);
   }
 
   takeDamage(amount) {
@@ -76,10 +65,24 @@ export class Turret {
     this.hpTimer = 4;
     if (this.stats.hp <= 0) {
       this.alive = false;
-      this.applyBroken();
+      this.applyLook();
       return true;
     }
     return false;
+  }
+
+  repair() {
+    this.stats.hp = this.stats.maxHp;
+    this.alive = true;
+    this.applyLook();
+  }
+
+  levelUp() {
+    const ratio = this.stats.hp / this.stats.maxHp;
+    this.level += 1;
+    this.stats.maxHp = turretMaxHp(this.def, this.level);
+    this.stats.hp = Math.round(this.stats.maxHp * ratio);
+    this.applyLook();
   }
 
   update(dt) {
@@ -90,12 +93,11 @@ export class Turret {
     diff = Math.atan2(Math.sin(diff), Math.cos(diff));
     this.yaw += diff * Math.min(1, dt * 12);
     this.head.rotation.y = this.yaw;
-    this.head.position.z = 0;
     this.head.scale.z = 1 - this.recoil * 0.15;
     const e = this.flash > 0 ? 0.6 : 0;
     for (const m of this.mats) m.emissive.setRGB(e, e * 0.3, e * 0.3);
     const s = this.stats;
-    this.hpBar.update(s.hp / s.maxHp, this.ctx.camera, this.alive && this.hpTimer > 0);
+    this.hpBar.update(s.hp / s.maxHp, this.ctx.camera, this.alive && (this.hpTimer > 0 || s.hp < s.maxHp));
   }
 
   dispose() {

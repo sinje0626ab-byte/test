@@ -77,7 +77,7 @@ export class RaidSystem {
     const c = this.cfg;
     const stats = this.ctx.player.stats;
     const turrets = this.ctx.structures.filter((s) => s.kind === 'turret' && s.baseId === raid.base.id && s.alive);
-    const dps = turrets.reduce((sum, t) => sum + turretDamage(t.def, stats) * t.def.fireRate, 0);
+    const dps = turrets.reduce((sum, t) => sum + turretDamage(t.def, stats, t.level) * t.def.fireRate * (t.def.aoeFactor ?? 1), 0);
     const mdef = this.ctx.data.monsters[raid.base.region.raidMonster];
     const waveHp = raid.total * mdef.hp * this.statScale(raid);
     const ratio = waveHp > 0 ? (dps * c.remoteFightSeconds) / waveHp : 1;

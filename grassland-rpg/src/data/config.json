@@ -103,5 +103,12 @@
     "cellSize": 6,
     "revealRadius": 22,
     "revealInterval": 0.25
+  },
+  "turret": {
+    "demolishRefund": 0.5,
+    "gravity": 18
+  },
+  "interact": {
+    "range": 2.8
   }
 }

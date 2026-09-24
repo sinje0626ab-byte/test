@@ -67,8 +67,10 @@ src/
     RaidMonster.js     # 밤 습격 몬스터 AI
     Drop.js            # 바닥에 떨어진 골드·아이템 (줍기)
     Projectile.js      # 화살, 총알, 포탄
-    Building.js
+    Building.js        # 기지 중심 건물 (텐트~요새)
+    BaseModels.js      # 기지 단계별 모양
     Turret.js
+    TurretModels.js    # 포탑 종류별 모양
     ResourceNode.js    # 나무, 바위, 풀 등 채집물
   systems/
     CombatSystem.js
@@ -81,7 +83,8 @@ src/
     SkillSystem.js
     BuildSystem.js     # 건설 모드, 배치 검증
     BaseSystem.js      # 기지 목록, 기지 레벨, 빠른 이동
-    TurretSystem.js    # 타겟팅, 발사
+    TurretSystem.js    # 타겟팅, 발사, 업그레이드·수리·철거
+    InteractionSystem.js # E 상호작용 대상 찾기 (포탑·기지)
     RaidSystem.js      # 밤 습격 (실시간 + 원격 계산)
     EconomySystem.js   # 골드, 상점
     SaveSystem.js
@@ -92,6 +95,7 @@ src/
     CharacterWindow.js
     SkillWindow.js
     BuildMenu.js
+    TurretWindow.js    # 포탑 관리 (E)
     ShopWindow.js
     MapWindow.js
     Tooltip.js
@@ -156,7 +160,7 @@ src/
     "inventory": { "slots": [ { "id": "slime_jelly", "count": 3 }, null, ... ] },
     "time": { "day": 1, "clock": 120.5 },
     "bases": [ { "id": 1, "level": 1, "position": [x, z], "hp": 300 } ],
-    "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1 } ],
+    "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1, "priority": "nearest" } ],
     "stats": { "level": 1, "xp": 0, "skillPoints": 0 },
     "equipment": { "slots": { "weapon": "twig_sword", "head": null, ... } },
     "skills": { "ranks": { "power": 2 } },
@@ -166,6 +170,7 @@ src/
 - v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
 - v2 → v3: `stats`·`equipment`·`skills` 추가 (레벨 1부터)
 - v3 → v4: `exploration` 추가 (빈 값 → 불러온 뒤 플레이어·기지 주변부터 다시 밝힌다)
+- v4 → v5: 포탑마다 `priority` 추가 (기본값은 그 포탑 종류의 `priority`)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
@@ -212,6 +217,12 @@ src/
 - 숲 버섯 몬스터는 낮은 확률로 텐트 키트를 떨어뜨린다 → 두 번째 기지의 재료
 - 지역 경계를 넘으면 지역 이름 알림 (처음 가 본 지역은 큰 배너)
 
+### 4-5-2. 기지 업그레이드 (Phase 6)
+- 텐트(Lv1) → 움막(Lv2) → 집(Lv3) → 요새(Lv4). 단계별 수치와 비용은 `buildings.json`의 `baseLevels`
+- 비용은 **재료** (경제 원칙: 재료 = 건설). 다음 단계의 `cost`에 적힌 재료를 가방에서 쓴다
+- 올리면: 영역 반경·포탑 설치 수·중심 건물 체력이 늘고, 모양이 바뀌고, 새 포탑이 해금된다. 경험치도 받는다
+- 건설 창(B)의 건물 탭에서 올린다. 기지 중심 건물 앞에서 E를 눌러도 건설 창이 열린다
+
 ### 4-6. 멀티 기지
 - 새 기지는 "텐트 키트"를 다른 지역에 설치해서 생성
 - 기지 간 최소 거리 제한 (겹침 방지)
@@ -232,7 +243,15 @@ src/
 - 체력 있음, 파괴되면 수리비(골드) 필요
 - 모든 수치는 `data/turrets.json`
 - 설치 수 제한: 기지 레벨의 `maxTurrets`
-- 부서진 포탑은 잔해로 남아 동작하지 않는다 (수리는 Phase 6)
+- 해금: 나무 활(Lv1 텐트) · 석궁(Lv2 움막) · 총(Lv3 집) · 대포(Lv4 요새)
+- 대포는 포물선으로 날아가 땅에 닿으면 `splashRadius` 안의 적 모두에게 피해 (가장자리일수록 약하게, 최소 `splashMinFactor`)
+- 부서진 포탑은 잔해로 남아 동작하지 않는다. 골드로 수리해야 다시 동작
+- 포탑 관리 창: 포탑 앞에서 E
+  - 업그레이드: 골드, `upgradeCosts`[현재 레벨-1]. 레벨마다 데미지 +`damagePerLevel`, 사거리 +`rangePerLevel`, 체력 +`hpPerLevel` (비율)
+  - 수리: 골드 = 잃은 체력 × `repairCostPerHp` (올림)
+  - 우선순위 바꾸기: 가장 가까운 적 ↔ 체력 낮은 적 (포탑마다 저장)
+  - 철거: 설치비+업그레이드비의 `demolishRefund` 비율을 돌려받는다 (자리 제한 때문에 약한 포탑을 바꿀 수 있게)
+- 원격 습격 계산에서 대포 같은 범위 포탑은 `aoeFactor`배 화력으로 친다
 
 ### 4-8. 밤 습격
 - 밤이 되면 각 기지에 습격 웨이브 발생
@@ -329,8 +348,8 @@ src/
 - [x] 원격 기지 습격 계산 처리
 
 ### Phase 6 — 확장
-- [ ] 기지 레벨 업그레이드 (움막·집·요새)
-- [ ] 포탑 추가 종류, 업그레이드, 수리
+- [x] 기지 레벨 업그레이드 (움막·집·요새)
+- [x] 포탑 추가 종류, 업그레이드, 수리
 - [ ] 상점, 제작
 - [ ] 새 지역 (사막·설원), 보스
 
@@ -384,6 +403,13 @@ src/
 | `map:explored` | ExplorationSystem | MapWindow |
 | `base:travel` | MapWindow | BaseSystem |
 | `player:teleport` | BaseSystem | Player, Game (카메라) |
+| `interact:hint` | InteractionSystem | HUD (E 안내) |
+| `interact:turret` / `interact:base` | InteractionSystem | TurretWindow / BuildMenu |
+| `base:upgrade` → `base:upgraded` | BuildMenu → BaseSystem | StatsSystem(경험치), HUD |
+| `inventory:spend` | BaseSystem | InventorySystem (재료가 다 있으면 빼고 `ok`) |
+| `turret:upgrade` / `turret:repair` / `turret:priority` / `turret:demolish` | TurretWindow | TurretSystem |
+| `turret:changed` | TurretSystem | TurretWindow |
+| `projectile:explode` | TurretSystem | CombatSystem (범위 피해) |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

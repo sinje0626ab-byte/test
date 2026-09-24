@@ -10,6 +10,12 @@ export class InventorySystem {
     bus.on('inventory:move', ({ from, to }) => this.move(from, to));
     bus.on('inventory:use', ({ slot }) => this.use(slot));
     bus.on('inventory:consume', ({ item, count }) => this.remove(item, count));
+    // 건설 비용: 전부 있을 때만 한꺼번에 뺀다.
+    bus.on('inventory:spend', (e) => {
+      if (!e.items.every((it) => this.countOf(it.id) >= it.count)) return;
+      for (const it of e.items) this.remove(it.id, it.count);
+      e.ok = true;
+    });
     // 장비 장착: 그 칸을 원래 끼던 장비(없으면 빈칸)로 바꾼다.
     bus.on('inventory:replace-slot', ({ slot, item }) => {
       this.slots[slot] = item ? { id: item, count: 1 } : null;

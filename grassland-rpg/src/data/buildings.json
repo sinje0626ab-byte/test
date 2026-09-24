@@ -2,11 +2,69 @@
   "baseLevels": {
     "1": {
       "name": "텐트",
+      "model": "tent",
       "areaRadius": 11,
       "maxTurrets": 3,
       "hp": 300,
       "radius": 1.3,
       "xp": 20
+    },
+    "2": {
+      "name": "움막",
+      "model": "hut",
+      "areaRadius": 13,
+      "maxTurrets": 4,
+      "hp": 450,
+      "radius": 1.6,
+      "xp": 40,
+      "cost": [
+        {
+          "id": "slime_jelly",
+          "count": 12
+        },
+        {
+          "id": "mushroom_cap",
+          "count": 4
+        }
+      ]
+    },
+    "3": {
+      "name": "집",
+      "model": "house",
+      "areaRadius": 15,
+      "maxTurrets": 5,
+      "hp": 650,
+      "radius": 2.0,
+      "xp": 60,
+      "cost": [
+        {
+          "id": "slime_jelly",
+          "count": 25
+        },
+        {
+          "id": "mushroom_cap",
+          "count": 15
+        }
+      ]
+    },
+    "4": {
+      "name": "요새",
+      "model": "fort",
+      "areaRadius": 18,
+      "maxTurrets": 6,
+      "hp": 900,
+      "radius": 2.6,
+      "xp": 100,
+      "cost": [
+        {
+          "id": "slime_jelly",
+          "count": 45
+        },
+        {
+          "id": "mushroom_cap",
+          "count": 35
+        }
+      ]
     }
   },
   "buildings": {}

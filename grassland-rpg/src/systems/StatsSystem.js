@@ -16,6 +16,7 @@ export class StatsSystem {
       const xp = kind === 'tent' ? data.buildings.baseLevels['1'].xp : data.turrets[type]?.xp;
       this.gain(xp ?? 0);
     });
+    bus.on('base:upgraded', ({ level }) => this.gain(data.buildings.baseLevels[String(level)]?.xp ?? 0));
     bus.on('equipment:changed', ({ bonus }) => { this.equipBonus = bonus; this.recalc(); });
     bus.on('skills:changed', ({ effects }) => { this.skillEffects = effects; this.recalc(); });
     bus.on('stats:spend-point', (e) => {

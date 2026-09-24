@@ -29,6 +29,7 @@ export class HUD {
       <div class="hud-float" data-float></div>
       <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
       <div class="hud-banner" data-banner hidden></div>
+      <div class="hud-interact" data-interact hidden></div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
     `;
@@ -38,7 +39,7 @@ export class HUD {
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
-      help: $('[data-help]'), banner: $('[data-banner]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
+      help: $('[data-help]'), banner: $('[data-banner]'), interact: $('[data-interact]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
     const { bus } = ctx;
@@ -55,6 +56,10 @@ export class HUD {
       this.el.sp.textContent = `스킬 +${skillPoints} (K)`;
     });
     bus.on('xp:gain', ({ amount, position }) => this.floatText({ position, amount: `+${amount} XP`, target: 'xp' }));
+    bus.on('interact:hint', ({ text }) => {
+      this.el.interact.hidden = !text;
+      this.el.interact.textContent = text;
+    });
     bus.on('region:entered', ({ name, first }) => {
       if (first) this.banner(`${name}`, '처음 와 보는 곳이에요', 'day');
       else this.notify({ text: `${name}에 들어섰습니다`, kind: 'info' });

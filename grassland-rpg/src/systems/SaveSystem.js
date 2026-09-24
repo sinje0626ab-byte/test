@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -22,6 +22,8 @@ const migrations = {
   }),
   // v3 → v4: 탐험 기록 추가 (빈 값이면 불러온 뒤 주변부터 다시 밝힌다)
   3: (s) => ({ ...s, saveVersion: 4, exploration: null }),
+  // v4 → v5: 포탑 우선순위 (그때까진 나무 활뿐이라 기본값 nearest)
+  4: (s) => ({ ...s, saveVersion: 5, turrets: (s.turrets ?? []).map((t) => ({ ...t, priority: t.priority ?? 'nearest' })) }),
 };
 
 export class SaveSystem {
