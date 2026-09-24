@@ -1,0 +1,22 @@
+{
+  "grades": {
+    "common":   { "name": "일반", "color": "#e8e8e8" },
+    "uncommon": { "name": "고급", "color": "#6fd46f" },
+    "rare":     { "name": "희귀", "color": "#5ea8ff" },
+    "epic":     { "name": "영웅", "color": "#c07bff" }
+  },
+  "items": {
+    "gold": {
+      "name": "골드",
+      "category": "currency",
+      "color": "#ffd23f"
+    },
+    "slime_jelly": {
+      "name": "슬라임 젤리",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "color": "#8ee08a"
+    }
+  }
+}

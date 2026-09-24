@@ -1,0 +1,42 @@
+{
+  "world": {
+    "size": 180,
+    "seed": 20260924,
+    "spawnPoint": [0, 0],
+    "clearRadius": 7,
+    "trees": 140,
+    "roundTrees": 90,
+    "rocks": 70,
+    "bushes": 80,
+    "flowers": 700,
+    "grassTufts": 1400
+  },
+  "camera": {
+    "fov": 42,
+    "offset": [0, 17, 13],
+    "lookHeight": 0.8,
+    "followSharpness": 6
+  },
+  "spawner": {
+    "maxMonsters": 12,
+    "interval": 2.5,
+    "minDistance": 13,
+    "maxDistance": 32,
+    "despawnDistance": 60,
+    "monsterTypes": ["slime"]
+  },
+  "combat": {
+    "minDamage": 1,
+    "variance": 0.15
+  },
+  "loot": {
+    "pickupDelay": 0.45,
+    "lifetime": 120,
+    "scatter": 2.2,
+    "popMin": 5,
+    "popMax": 7
+  },
+  "time": {
+    "maxDelta": 0.05
+  }
+}

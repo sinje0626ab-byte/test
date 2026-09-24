@@ -1,0 +1,31 @@
+{
+  "slime": {
+    "name": "초원 슬라임",
+    "hp": 34,
+    "attack": 8,
+    "defense": 0,
+    "radius": 0.55,
+    "moveSpeed": 1.4,
+    "chaseSpeed": 3.1,
+    "fleeSpeed": 3.8,
+    "detectRange": 8,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#57c95a",
+    "xp": 5,
+    "drops": [
+      { "item": "gold", "min": 2, "max": 6, "chance": 1 },
+      { "item": "slime_jelly", "min": 1, "max": 2, "chance": 0.7 }
+    ]
+  }
+}
