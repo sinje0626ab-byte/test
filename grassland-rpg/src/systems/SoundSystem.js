@@ -24,6 +24,8 @@ export class SoundSystem {
     bus.on('monster:killed', (e) => this.play('kill', at(e), { pitch: Math.min(1.6, Math.max(0.45, 0.6 / (e.radius ?? 0.6))) }));
     bus.on('loot:picked', ({ item }) => this.play(ctx.data.items.items[item]?.category === 'currency' ? 'coin' : 'pickup'));
     bus.on('stats:levelup', () => this.play('levelup'));
+    bus.on('gather:hit', (e) => this.play(e.sound, e.position));
+    bus.on('gather:done', (e) => this.play('gathered', e.position));
     bus.on('player:damaged', () => this.play('hurt'));
     bus.on('player:roll', () => this.play('roll'));
     bus.on('turret:fired', (e) => this.play(ctx.data.turrets[e.type]?.model ?? 'bow', at(e), { gain: 0.8 }));

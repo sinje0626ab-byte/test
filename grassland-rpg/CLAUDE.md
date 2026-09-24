@@ -78,12 +78,13 @@ src/
     TurretModels.js    # 포탑 종류별 모양
     Facility.js        # 부속 건물 (작업대·창고·상점)
     FacilityModels.js  # 부속 건물 모양
-    ResourceNode.js    # 나무, 바위, 풀 등 채집물
+    ResourceNode.js    # 나무, 바위, 풀 등 채집물 (모양·흔들림·캔 모습)
   systems/
     CombatSystem.js
     MonsterSpawner.js
     ExplorationSystem.js # 탐험한 칸(지도 안개), 지역 진입 알림
     BossSystem.js      # 보스 등장·재등장, 보스 투사체
+    GatherSystem.js    # 채집 노드 배치·타격·드롭·복구
     FeedbackSystem.js  # 타격 연출 (히트스톱·화면 흔들림·파티클). 게임 로직은 건드리지 않는다
     SoundSystem.js     # 효과음 (이벤트 → 합성음)
     MusicSystem.js     # 배경음 (지역·낮밤·습격·보스에 따라 합성 루프)
@@ -139,6 +140,7 @@ src/
     recipes.json       # 제작법
     bosses.json        # 보스 둥지·패턴·재등장
     sounds.json        # 효과음 합성 정의, 배경음 음계·템포
+    nodes.json         # 채집 노드 종류·드롭·복구일, 지역별 밀도
     shop.json          # 상점 판매 목록
 ```
 
@@ -173,6 +175,29 @@ src/
 - 같은 효과음은 한 프레임에 1번만, 동시 재생 최대 `maxVoices`, 플레이어에서 `maxDistance` m 넘으면 무음 (가까울수록 크게)
 - 배경음: 펜타토닉 음계를 느린 템포로 합성하는 루프. 지역·낮밤마다 조성·음높이·템포가 다르고(초원 낮 = 밝은 장조, 밤 = 단조·저음), 습격 중엔 북 리듬, 보스전은 빠른 템포
 - 브라우저 정책상 첫 클릭/터치(타이틀 화면) 때 AudioContext를 시작한다
+
+### 4-1-4. 채집 (Phase 8)
+- 채집 노드는 장식과 따로, 시드 난수로 자리가 고정된다 (`nodes.json`의 `density`, 지역별 1000㎡당 개수)
+- 노드는 장식보다 살짝 크고, 가까이(`gather.sparkleRange`) 가면 반짝인다
+- **공격으로 캔다** (도구 없음). 칼 부채꼴 안에 들어오면 타격. 한 번에 `gather.damage` × (1 + 손놀림) 피해, 타격마다 흔들림·조각
+- 체력이 0이 되면 재료가 바닥에 떨어진다 (드롭 테이블은 몬스터와 같은 형식, `chanceByRegion`으로 지역별 확률). 경험치도 받는다
+- 캔 노드는 그루터기·부서진 바위(풀·약초는 새싹)로 바뀌고, `respawnDays`일 뒤 아침에 되살아난다
+- 모바일 공격 버튼은 가까운 적이 없으면 가까운 채집 노드를 겨눈다
+- 멀리(`gather.visibleRange` 밖) 있는 노드는 숨긴다
+- 세이브: 캔 노드 id와 캔 날짜
+
+| 노드 | 이름 | 지역 | 체력 | 드롭 | 복구(일) |
+|---|---|---|---|---|---|
+| tree_node | 둥근 나무 | 초원·숲 | 30 | 나무 토막 2~3, 사과 0~1(30%) | 2 |
+| pine_node | 전나무 | 숲·설원 | 40 | 나무 토막 2~4, 송진 0~1(25%) | 2 |
+| rock_node | 바위 | 전 지역 | 45 | 돌멩이 2~3, 철광석 0~1(초원 15%, 그 밖 35%) | 3 |
+| herb_node | 약초 덤불 | 초원·숲 | 10 | 약초 1~2 | 1 |
+| fiber_node | 긴 풀 | 초원 | 8 | 풀 섬유 1~3 | 1 |
+| cactus_node | 큰 선인장 | 사막 | 35 | 선인장 과육 1~2, 선인장 가시 0~1 | 2 |
+| sandstone_node | 사암 | 사막 | 55 | 사암 2~3, 태양 수정 0~1(8%) | 3 |
+| ice_node | 얼음 기둥 | 설원 | 60 | 얼음 조각 1~2, 서리 수정 0~1(8%) | 3 |
+
+- 새 재료: 나무 토막·돌멩이·풀 섬유·약초·송진·철광석·선인장 과육·사암·태양 수정·서리 수정. 소모품 사과(HP 15)
 
 ### 4-2. 몬스터
 - 필드 몬스터: 지역별로 스폰, 기지 안전지대 안에는 스폰 안 됨
@@ -225,7 +250,8 @@ src/
     "exploration": { "cells": "0011100…", "visited": ["grassland"] },
     "facilities": [ { "type": "workbench", "baseId": 1, "position": [x, z], "hp": 120 } ],
     "storages": { "1": [ { "id": "slime_jelly", "count": 30 }, null, ... ] },
-    "bosses": { "cactus_king": { "defeatedDay": 4 } }
+    "bosses": { "cactus_king": { "defeatedDay": 4 } },
+    "gather": { "depleted": { "rock_node-12": 3 } }
   }
   ```
 - v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
@@ -234,6 +260,7 @@ src/
 - v4 → v5: 포탑마다 `priority` 추가 (기본값은 그 포탑 종류의 `priority`)
 - v5 → v6: `facilities`·`storages` 추가 (빈 값)
 - v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
+- v7 → v8: `gather` 추가 (빈 값 = 모든 노드 살아 있음)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
@@ -253,7 +280,7 @@ src/
 - 최종 능력치 = 기본(`player.json`) + 레벨 보너스 + 장비 보너스 + 스킬 효과. StatsSystem이 계산해서 `ctx.player.stats`에 넣고, 다른 시스템은 그 값을 읽는다
   - 포탑 데미지·사거리·비용·설치 수 같은 건축 스킬 효과도 `ctx.player.stats`에 들어 있다
 - 스킬은 한 번에 1랭크씩, 찍기 전 확인 창을 띄운다. 초기화 기능은 아직 없다
-- 채집 속도·채집량 스킬은 찍을 수 있지만, 채집(ResourceNode)이 추가된 뒤부터 효과가 난다
+- 손놀림(`gatherSpeed`) = 채집 노드에 주는 피해 증가, 알뜰 채집(`gatherAmount`) = 노드의 주 드롭 +1 (랭크당)
 
 ### 4-4-1. 장비
 - 슬롯: 무기, 머리, 몸, 신발, 장신구 2
@@ -288,11 +315,17 @@ src/
 ### 4-5-2. 기지 업그레이드 (Phase 6)
 - 텐트(Lv1) → 움막(Lv2) → 집(Lv3) → 요새(Lv4). 단계별 수치와 비용은 `buildings.json`의 `baseLevels`
 - 비용은 **재료** (경제 원칙: 재료 = 건설). 다음 단계의 `cost`에 적힌 재료를 가방에서 쓴다
+- 상위 단계일수록 다른 지역 재료가 필요하다 (멀티 기지 동기, Phase 8)
+  - 움막: 나무 20, 돌멩이 10, 슬라임 젤리 8
+  - 집: 나무 40, 돌멩이 25, 송진 6, 버섯 갓 10
+  - 요새: 나무 60, 사암 30, 철광석 12, 선인장 가시 15, 얼음 조각 10
+  - 이미 올린 기지는 그대로 둔다
 - 올리면: 영역 반경·포탑 설치 수·중심 건물 체력이 늘고, 모양이 바뀌고, 새 포탑이 해금된다. 경험치도 받는다
 - 건설 창(B)의 건물 탭에서 올린다. 기지 중심 건물 앞에서 E를 눌러도 건설 창이 열린다
 
 ### 4-5-3. 부속 건물 (Phase 6)
 - 작업대(텐트부터) · 창고(움막부터) · 상점(움막부터). 기지마다 종류별로 하나씩
+- 비용 (Phase 8): 작업대 나무 8·슬라임 젤리 4 / 창고 나무 15·돌멩이 8 / 상점 나무 12·풀 섬유 10·돌멩이 6
 - 비용은 재료. 건설 창(B) 건물 탭에서 고르고, 포탑처럼 배치 미리보기로 기지 영역 안에 놓는다
 - 체력이 있어 습격 몬스터가 부술 수 있다. 부서지면 아침까지 못 쓰고, 아침마다 기지 건물과 함께 회복된다
 - 건물 앞에서 E: 작업대 → 제작 창, 창고 → 창고 창, 상점 → 상점 창
@@ -465,7 +498,7 @@ src/
 
 ### 2차 업데이트 (`docs/UPDATE_GUIDE2.pdf`)
 - [x] Phase 7 — 손맛과 사운드 (타격 피드백 · 구르기 · 합성 사운드·배경음 · 설정)
-- [ ] Phase 8 — 채집 (채집 노드 · 새 재료 · 건설비 재조정)
+- [x] Phase 8 — 채집 (채집 노드 · 새 재료 · 건설비 재조정)
 - [ ] Phase 9 — 무기 종류와 장비 확장 (무기 4종 · 등급 전설 · 세트 효과 · 소모품·버프)
 - [ ] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
 - [ ] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
@@ -551,6 +584,9 @@ src/
 | `ui:open` / `ui:close` | UIManager | SoundSystem |
 | `settings:changed` | Settings | SoundSystem, MusicSystem, FeedbackSystem, HUD, Game(그림자), World(장식 밀도) |
 | `raid:end` | RaidSystem (아침 정산) | MusicSystem |
+| `gather:hit` | GatherSystem | FeedbackSystem (조각), SoundSystem |
+| `gather:done` | GatherSystem | StatsSystem (경험치), FeedbackSystem, SoundSystem |
+| `loot:spawn` | GatherSystem | LootSystem (바닥에 드롭) |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

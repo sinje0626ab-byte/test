@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -28,6 +28,8 @@ const migrations = {
   5: (s) => ({ ...s, saveVersion: 6, facilities: [], storages: {} }),
   // v6 → v7: 보스 처치 기록 (빈 값 = 모두 살아 있음)
   6: (s) => ({ ...s, saveVersion: 7, bosses: {} }),
+  // v7 → v8: 채집 노드 (빈 값 = 모든 노드 살아 있음)
+  7: (s) => ({ ...s, saveVersion: 8, gather: { depleted: {} } }),
 };
 
 export class SaveSystem {

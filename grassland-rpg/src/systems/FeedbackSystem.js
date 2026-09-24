@@ -39,6 +39,12 @@ export class FeedbackSystem {
       if (e.boss) this.stop(H.bossKill);
     });
     bus.on('stats:levelup', () => this.levelUp());
+    bus.on('gather:hit', (e) => {
+      this.particles.burst(e.position, { color: [e.color, '#e0c38a'], count: 5, speed: 2.6, up: 3, life: 0.45, size: 0.08 });
+    });
+    bus.on('gather:done', (e) => {
+      this.particles.burst(e.position.clone().setY(0.8), { color: [e.color, '#ffffff'], count: 12, speed: 3.5, up: 4, life: 0.6, size: 0.1 });
+    });
     bus.on('turret:fired', (e) => {
       this.particles.burst(e.muzzle, { color: ['#fff3a6', '#ffcf5c'], count: P.muzzle, speed: 2, up: 1, gravity: 0, life: 0.15, size: 0.08, drag: 6 });
     });

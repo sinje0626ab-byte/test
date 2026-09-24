@@ -148,5 +148,12 @@
     },
     "deathSquash": 0.15,
     "dustInterval": 0.12
+  },
+  "gather": {
+    "seed": 9137,
+    "damage": 10,
+    "sparkleRange": 3.5,
+    "visibleRange": 110,
+    "autoAimRange": 2.6
   }
 }

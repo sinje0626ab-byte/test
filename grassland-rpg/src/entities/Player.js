@@ -198,16 +198,20 @@ export class Player {
     if (this.swingTime >= b.attackDuration) this.swingTime = -1;
   }
 
+  // 터치 자동 조준: 가까운 적, 없으면 가까운 채집 노드
   nearestEnemy() {
-    const range = this.ctx.data.config.touch.autoAimRange;
-    let best = null;
-    let bestD = range;
-    for (const m of this.ctx.monsters) {
-      if (!m.alive) continue;
-      const d = m.position.distanceTo(this.position) - m.radius;
-      if (d < bestD) { bestD = d; best = m; }
-    }
-    return best;
+    const pick = (list, range) => {
+      let best = null;
+      let bestD = range;
+      for (const m of list) {
+        if (!m.alive) continue;
+        const d = m.position.distanceTo(this.position) - m.radius;
+        if (d < bestD) { bestD = d; best = m; }
+      }
+      return best;
+    };
+    const { config } = this.ctx.data;
+    return pick(this.ctx.monsters, config.touch.autoAimRange) ?? pick(this.ctx.nodes ?? [], config.gather.autoAimRange);
   }
 
   takeDamage(amount, knockDir) {
