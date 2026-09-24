@@ -1,6 +1,7 @@
 import { CharacterCreator } from './CharacterCreator.js';
 // 타이틀 화면: 로고 · 이어하기 / 새 게임 / 조작 방법, 새 게임 환영 안내 카드
-const LOGO = [['초', 'g'], ['원', 'g'], [' ', ''], ['기', 'o'], ['지', 'o']];
+// 게임 이름: Meadow Pioneers (초원 개척단). 단어마다 줄바꿈될 수 있게 나눈다
+const LOGO = [['Meadow', 'g'], ['Pioneers', 'o']];
 
 // 조작 방법 표 (타이틀·게임 메뉴 공용)
 export function helpHtml() {
@@ -64,13 +65,16 @@ export class TitleScreen {
       <div class="title-center">
         <div class="logo-wrap">
           <i class="sprout" aria-hidden="true"><b></b><b></b></i>
-          <h1 class="logo">${LOGO.map(([ch, c], i) => `<span class="${c}" style="--i:${i}">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('')}</h1>
-          <span class="logo-badge">RPG</span>
+          <h1 class="logo">${(() => {
+            let i = 0;
+            return LOGO.map(([word, c]) => `<span class="word">${[...word].map((ch) => `<span class="${c}" style="--i:${i++}">${ch}</span>`).join('')}</span>`).join('');
+          })()}</h1>
+          <span class="logo-badge">초원 개척단</span>
         </div>
         <p class="logo-sub">작은 텐트 하나로 시작하는 초원 모험</p>
         <div class="title-menu" data-menu></div>
       </div>
-      <footer class="title-foot">저장은 이 브라우저에 자동으로 돼요 · v0.7</footer>
+      <footer class="title-foot">저장은 이 브라우저에 자동으로 돼요 · v1.0</footer>
       <div class="t-dialog" data-dialog hidden><div class="t-card" data-card></div></div>`;
     document.body.appendChild(el);
     this.el = el;
@@ -86,13 +90,21 @@ export class TitleScreen {
   }
 
   renderMenu() {
-    const info = this.game.save.peek();
+    const save = this.game.save;
+    const info = save.peek();
+    // 저장 슬롯 3개
+    const slots = [1, 2, 3].map((n) => {
+      const p = save.peek(n);
+      const text = !p ? '비어 있음' : p.broken ? '읽을 수 없음' : `${p.name ? `${p.name} · ` : ''}${p.day}일차 Lv${p.level}`;
+      return `<button type="button" class="t-slot${save.slot === n ? ' on' : ''}" data-act="slot-${n}"><b>슬롯 ${n}</b><small>${text}</small></button>`;
+    }).join('');
     const has = info && !info.broken;
     const summary = has
       ? `${info.day}일차 · Lv ${info.level} · 골드 ${info.gold.toLocaleString()} · 기지 ${info.bases}곳 · ${agoText(info.savedAt)}`
       : '';
     this.hasSave = !!info;
     this.menu.innerHTML = `
+      <div class="t-slots">${slots}</div>
       ${has ? `<button type="button" class="t-menu-btn primary" data-act="continue">이어하기<small>${summary}</small></button>` : ''}
       ${info?.broken ? `<p class="t-warn">${info.newer ? '더 새로운 버전에서 만든 저장이 있어요' : '저장을 읽지 못했어요'}</p>` : ''}
       <button type="button" class="t-menu-btn${has ? '' : ' primary'}" data-act="new">새 게임</button>
@@ -101,6 +113,11 @@ export class TitleScreen {
   }
 
   act(act) {
+    if (act.startsWith('slot-')) {
+      this.game.save.setSlot(Number(act.slice(5)));
+      this.renderMenu();
+      return;
+    }
     switch (act) {
       case 'continue':
         this.close();
@@ -121,7 +138,7 @@ export class TitleScreen {
         break;
       case 'settings':
         this.dialog.hidden = false;
-        this.game.settingsPanel.render(this.card, () => { this.dialog.hidden = true; });
+        this.game.settingsPanel.render(this.card, () => { this.dialog.hidden = true; this.renderMenu(); });
         break;
       case 'next':
         this.step += 1;

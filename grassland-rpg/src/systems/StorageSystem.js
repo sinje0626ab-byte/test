@@ -10,6 +10,10 @@ export class StorageSystem {
     bus.on('storage:deposit', ({ baseId, slot }) => this.deposit(baseId, slot));
     bus.on('storage:withdraw', ({ baseId, slot }) => this.withdraw(baseId, slot));
     bus.on('storage:request', ({ baseId }) => this.changed(baseId));
+    // 가방의 재료만 한꺼번에 창고로
+    bus.on('storage:deposit-materials', ({ baseId, slots }) => {
+      slots.forEach((s, i) => { if (s && ctx.data.items.items[s.id].category === 'material') this.deposit(baseId, i); });
+    });
     // 택배(하늘): 한 칸 꺼내기 / 넣기 (못 넣은 개수는 left)
     bus.on('storage:take', (e) => {
       const slots = this.get(e.baseId);

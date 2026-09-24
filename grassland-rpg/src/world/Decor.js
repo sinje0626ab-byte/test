@@ -62,7 +62,7 @@ export function buildDecor(world) {
         const x = r.range(bounds.minX - 4, bounds.maxX + 4);
         const z = r.range(z0, z1) + r.range(-6, 6);
         if (regions.at(x, z) !== reg && z > bounds.minZ && z < bounds.maxZ) continue;
-        if (world.nearSpawn(x, z)) continue;
+        if (world.nearSpawn(x, z) || world.inPond(x, z, 1)) continue;
         if (gap && world.isBlocked(x, z, gap)) continue;
         return [x, z];
       }

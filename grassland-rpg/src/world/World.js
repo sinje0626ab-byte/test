@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createRandom } from '../utils/random.js';
 import { Regions } from './Regions.js';
 import { buildDecor } from './Decor.js';
+import { buildPonds } from './Ponds.js';
 
 // 월드: 지면·조명·충돌·경계. 장식 배치는 Decor.js, 지역 찾기는 Regions.js.
 // 청크 로딩은 월드가 더 커지는 Phase 6(사막·설원)에서 Chunk.js로 나눈다.
@@ -29,6 +30,9 @@ export class World {
 
     this.buildLights();
     this.buildGround();
+    this.ponds = ctx.data.config.ponds;
+    for (const p of this.ponds) this.addCollider(p.x, p.z, p.r - 0.4); // 물에는 들어가지 않는다
+    buildPonds(this);
     this.chunks = buildDecor(this);
     // 설정의 장식 밀도 (나무·바위처럼 부딪히는 건 줄이지 않는다)
     ctx.bus.on('settings:changed', ({ key, value }) => {
@@ -161,6 +165,11 @@ export class World {
     pos.z = Math.max(b.minZ + 1, Math.min(b.maxZ - 1, pos.z));
   }
 
+  // 연못 위(또는 가장자리 margin 안)인가 — 장식을 물에 두지 않게
+  inPond(x, z, margin = 0) {
+    return this.ponds.some((p) => Math.hypot(x - p.x, z - p.z) < p.r + margin);
+  }
+
   isInside(x, z, margin = 2) {
     const b = this.bounds;
     return x > b.minX + margin && x < b.maxX - margin && z > b.minZ + margin && z < b.maxZ - margin;
@@ -170,11 +179,14 @@ export class World {
   applyDaylight(daylight) {
     const lord = this.ctx.nightLord;
     // 해돋이 연출(ctx.sunrise 0~1)이 있으면 그만큼 밝게
-    const d = Math.max(lord ? 0 : daylight, this.ctx.sunrise ?? 0);
+    const w = this.ctx.weatherFx; // 비·모래바람·눈: 조금 어둡고 시야가 짧다
+    const d = Math.max(lord ? 0 : daylight * (w?.dim ?? 1), this.ctx.sunrise ?? 0);
     const blood = this.ctx.bloodMoon;
     this.skyColor.copy(lord ? this.lordSky : blood ? this.bloodSky : this.nightSky).lerp(this.daySky, d);
+    if (w?.fogColor) this.skyColor.lerp(w.fogColor, 0.6 * d);
     this.ctx.scene.background.copy(this.skyColor);
     this.ctx.scene.fog.color.copy(this.skyColor);
+    this.ctx.scene.fog.far = w?.fogFar ?? 115;
     this.hemi.intensity = 0.45 + 0.8 * d;
     this.sun.intensity = 0.45 + 1.45 * d;
     this.sun.color.copy(blood ? this.bloodMoon : this.moonColor).lerp(this.sunColor, d);
@@ -182,6 +194,9 @@ export class World {
 
   update(dt, focus) {
     this.applyDaylight(this.ctx.time.daylight);
+    // 연못 가장자리 반짝임
+    const t = performance.now() * 0.002;
+    this.pondRims?.forEach((r, i) => { r.material.opacity = 0.35 + 0.3 * Math.sin(t + i * 1.7); });
     for (const c of this.chunks) c.setVisible(focus.z, this.cfg.chunkViewDistance);
     // 그림자 범위를 좁게 유지하려고 태양이 플레이어를 따라다닌다.
     this.sun.target.position.copy(focus);

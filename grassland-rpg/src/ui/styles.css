@@ -205,3 +205,28 @@ html, body {
 .quest-tracker.ready { border-color: #7cc67a; }
 .quest-tracker.ready span { color: #4f9a4a; font-weight: 700; }
 .quest-tracker[hidden] { display: none; }
+
+/* 미니맵 (골드 아래) */
+.minimap {
+  position: absolute; right: 16px; top: 108px; border-radius: 50%; pointer-events: auto; cursor: pointer;
+  border: 3px solid #fffaf0; box-shadow: 0 3px 0 rgba(120, 100, 60, 0.25), 0 0 0 2px var(--panel-edge);
+}
+.minimap canvas { display: block; border-radius: 50%; }
+.mm-n { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #fff; background: #e0645a; border-radius: 6px; padding: 0 4px; }
+.hud-notify { top: 252px; }
+
+/* 획득 로그 (왼쪽 아래) */
+.loot-log { position: absolute; left: 16px; bottom: 76px; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; pointer-events: none; }
+.loot-row {
+  display: flex; align-items: center; gap: 6px; padding: 3px 10px 3px 5px; border-radius: 999px; font-size: 13px;
+  background: rgba(255, 250, 240, 0.88); box-shadow: 0 2px 0 rgba(120, 100, 60, 0.15);
+}
+.loot-row .item-icon { width: 18px; height: 18px; }
+.loot-row b { color: #4f9a4a; }
+.loot-row.bump { animation: pulse 0.25s; }
+.new-dot { position: absolute; right: 4px; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; box-shadow: 0 0 0 2px #fff; }
+.inv-sort { margin-left: 8px; padding: 4px 10px; border-radius: 10px; border: 2px solid var(--panel-edge); background: #fff6e0; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.tt-cmp-head { margin-top: 6px; font-size: 11px; color: #cfc6ae; }
+.tt-cmp { font-size: 12px; }
+.tt-cmp.up { color: #8fe08a; }
+.tt-cmp.down { color: #ff8f8f; }

@@ -13,7 +13,24 @@ export function bonusLines(items, bonus) {
     .join('');
 }
 
-export function itemTooltip(data, id, { count, hint, plus = 0 } = {}) {
+const LOWER_BETTER = ['damageTaken', 'rollStaminaPct']; // 낮을수록 좋은 능력치
+
+// 장비 비교: 지금 낀 장비와 능력치 차이 (초록 ▲ / 빨강 ▼)
+export function compareLines(data, def, plus, cur, curPlus) {
+  const items = data.items;
+  const a = enhancedBonus(data, def.bonus, plus);
+  const b = cur ? enhancedBonus(data, cur.bonus, curPlus) : {};
+  const keys = [...new Set([...Object.keys(a), ...Object.keys(b)])];
+  const rows = keys.map((k) => {
+    const d = (a[k] ?? 0) - (b[k] ?? 0);
+    if (Math.abs(d) < 1e-6) return '';
+    const up = LOWER_BETTER.includes(k) ? d < 0 : d > 0;
+    return `<div class="tt-cmp ${up ? 'up' : 'down'}">${items.statLabels[k] ?? k} ${up ? '▲' : '▼'} ${formatStat(items, k, Math.abs(d), false)}</div>`;
+  }).join('');
+  return `<div class="tt-cmp-head">${cur ? `${cur.name}${curPlus ? ` +${curPlus}` : ''}와(과) 비교` : '지금 빈 칸'}</div>${rows || '<div class="tt-cmp">차이 없음</div>'}`;
+}
+
+export function itemTooltip(data, id, { count, hint, plus = 0, compare } = {}) {
   const { grades, categories } = data.items;
   const def = data.items.items[id];
   const grade = grades[def.grade];
@@ -29,5 +46,6 @@ export function itemTooltip(data, id, { count, hint, plus = 0 } = {}) {
     ${set ? `<div class="tt-meta">${set.name} (3부위: ${Object.entries(set.bonus).map(([k, v]) => `${data.items.statLabels[k]} ${formatStat(data.items, k, v)}`).join(', ')})</div>` : ''}
     ${def.description ? `<p class="tt-desc">${def.description}</p>` : ''}
     ${count != null && max ? `<div class="tt-meta">수량 ${count} / ${max}</div>` : ''}
+    ${compare ?? ''}
     ${hint ? `<div class="tt-hint">${hint}</div>` : ''}`;
 }

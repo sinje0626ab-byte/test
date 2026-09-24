@@ -12,14 +12,15 @@ export class EconomySystem {
       if (data.items.items[item]?.category !== 'currency') return;
       e.taken += count;
       this.change(count);
-      bus.emit('notify', { text: `골드 +${count}`, kind: 'gold' });
+      bus.emit('loot:gained', { item: 'gold', count });
     });
 
-    bus.on('player:died', () => {
+    bus.on('player:died', ({ position }) => {
       const loss = Math.floor(this.gold * data.player.deathGoldLossRatio);
+      bus.emit('economy:death-loss', { amount: loss, position }); // 묘비 (절반을 되찾을 수 있다)
       if (loss <= 0) return;
       this.change(-loss);
-      bus.emit('notify', { text: `쓰러져서 골드 ${loss}을(를) 잃었습니다`, kind: 'warn' });
+      bus.emit('notify', { text: `쓰러져서 골드 ${loss}을(를) 잃었습니다. 묘비에서 절반을 되찾을 수 있어요`, kind: 'warn' });
     });
 
     // 포탑 설치 등: 골드가 충분하면 빼고 ok = true

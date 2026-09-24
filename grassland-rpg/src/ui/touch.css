@@ -36,7 +36,8 @@ body.touch .hud-help.bad { display: block; left: 50%; transform: translateX(-50%
 body.touch .quickbar { bottom: 168px; }
 body.touch .qslot { width: 42px; height: 42px; }
 body.touch .hud-interact { bottom: 214px; font-size: 12px; }
-body.touch .hud-notify { top: 112px; right: 84px; }
+body.touch .hud-notify { top: 112px; right: 160px; }
+body.touch .t-menu { top: 250px; }
 body.touch .note { font-size: 12px; padding: 4px 10px; }
 body.touch .window { max-height: 80vh; overflow: auto; max-width: calc(100vw - 16px); }
 @media (max-width: 600px) {
@@ -61,3 +62,10 @@ body.touch .quickbar { left: 12px; transform: none; }
 body.touch .window.win-dialogue { left: 50%; top: auto; bottom: 270px; transform: translateX(-50%); animation-name: dlg-in; }
 @media (max-width: 600px) { body.touch .quest-tracker { max-width: 200px; } }
 body.in-intro .touch-ui, body.in-intro .quickbar, body.in-intro .skillbar { display: none; }
+/* 미니맵이 오른쪽 위에 들어가니 메뉴 버튼·알림을 그 아래로 */
+@media (max-width: 600px) {
+  body.touch .minimap { right: 10px; top: 104px; }
+  body.touch .t-menu { top: 200px; }
+  body.touch .hud-notify { top: 104px; right: 104px; }
+}
+body.touch .loot-log { left: 12px; bottom: 226px; }

@@ -106,6 +106,7 @@ export class NpcSystem {
     else if (performance.now() - this.lastLevelUp < this.cfg.levelUpWindow * 1000 && L.levelUp) pool = L.levelUp;
     else if (this.lastBossDay === t.day && L.bossDefeated) pool = L.bossDefeated;
     else if (!t.isNight && t.clock > t.cfg.dayLength - t.cfg.nightWarning * 2 && L.raidEve) pool = L.raidEve;
+    else if (this.ctx.weather === 'rain' && L.rain && Math.random() < 0.6) pool = L.rain;
     return rand.pick(pool).replaceAll('{name}', this.ctx.player.appearance.name);
   }
 
