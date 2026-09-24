@@ -16,6 +16,7 @@ export class FacilitySystem {
     bus.on('time:day', () => {
       for (const f of this.list) f.repairFull();
     });
+    bus.on('stats:changed', () => { for (const f of this.list) f.refreshMaxHp(); }); // 석공 스킬
     bus.on('save:collect', (save) => {
       save.facilities = this.list.map((f) => ({ type: f.type, baseId: f.baseId, position: [f.position.x, f.position.z], hp: f.stats.hp }));
     });

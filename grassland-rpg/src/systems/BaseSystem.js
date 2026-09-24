@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Building } from '../entities/Building.js';
 import { baseAt, nearestBase } from '../utils/bases.js';
+import { materialCost } from '../utils/build.js';
 
 // 기지 목록(ctx.bases)과 기지 중심 텐트. 빠른 이동·기지 레벨업은 이후 Phase.
 export class BaseSystem {
@@ -21,6 +22,7 @@ export class BaseSystem {
 
     bus.on('base:travel', ({ baseId }) => this.travel(baseId));
     bus.on('base:upgrade', ({ baseId }) => this.upgrade(baseId));
+    bus.on('stats:changed', () => { for (const b of ctx.bases) b.tent.refreshMaxHp(); }); // 석공 스킬
     // 귀환 두루마리: 가장 가까운 기지로 (영역 밖에서도)
     bus.on('item:use', (e) => {
       if (!ctx.data.items.items[e.item]?.use?.returnHome) return;
@@ -81,7 +83,7 @@ export class BaseSystem {
     const base = bases.find((b) => b.id === baseId);
     const next = base && this.levelDef(base.level + 1);
     if (!next) return;
-    const spend = { items: next.cost, ok: false };
+    const spend = { items: materialCost(next.cost, this.ctx.player.stats), ok: false };
     bus.emit('inventory:spend', spend);
     if (!spend.ok) {
       bus.emit('notify', { text: '재료가 부족합니다', kind: 'warn' });

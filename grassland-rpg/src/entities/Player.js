@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { nearestBase, baseAt } from '../utils/bases.js';
 import { createPlayerModel, applyAppearance, DEFAULT_BLADE } from './PlayerModel.js';
 import { PlayerRoll } from './PlayerRoll.js';
+import { PlayerDash } from './PlayerDash.js';
 import { PlayerAttack } from './PlayerAttack.js';
 
 // 플레이어: 이동·달리기·근접 공격·피격·사망/부활.
@@ -33,6 +34,7 @@ export class Player {
     this.flash = 0;
 
     this.roll = new PlayerRoll(this);
+    this.dash = new PlayerDash(this);
     this.runTick = 0;
     const model = createPlayerModel(b);
     Object.assign(this, model);
@@ -54,7 +56,8 @@ export class Player {
     });
     // 소모품 효과
     ctx.bus.on('item:use', (e) => {
-      const heal = ctx.data.items.items[e.item]?.use?.heal;
+      const baseHeal = ctx.data.items.items[e.item]?.use?.heal;
+      const heal = baseHeal && baseHeal * (1 + (this.stats.healPct ?? 0)); // 약초꾼
       const s = this.stats;
       if (!heal || !this.alive || s.hp >= s.maxHp) return;
       const amount = Math.min(heal, s.maxHp - s.hp);
@@ -120,7 +123,7 @@ export class Player {
     const moving = mv.amount > 0;
     if (moving) dir.normalize();
 
-    if (this.roll.update(dt, input, dir)) {
+    if (this.dash.update(dt) || this.roll.update(dt, input, dir)) {
       this.regen(dt);
       this.syncMesh(dt);
       return;
@@ -163,6 +166,11 @@ export class Player {
     s.hp = Math.min(s.maxHp, s.hp + s.hpRegen * (inBase ? 1 + s.baseRegenMult : 1) * dt);
   }
 
+  // 돌진 베기 (ActiveSkillSystem)
+  startDash(dir, def, hit) {
+    return this.alive && this.dash.start(dir, def, hit);
+  }
+
   // 터치 자동 조준: 가까운 적, 없으면 가까운 채집 노드 (range를 주면 적만 그 거리까지)
   nearestEnemy(range) {
     const pick = (list, range) => {
@@ -181,7 +189,7 @@ export class Player {
   }
 
   takeDamage(amount, knockDir) {
-    if (!this.alive || this.invuln > 0 || this.roll.invulnerable) return false;
+    if (!this.alive || this.invuln > 0 || this.roll.invulnerable || this.dash.active) return false;
     const s = this.stats;
     // 받는 피해 감소 (설원 세트 등)
     const dmg = Math.max(1, Math.round(amount * (1 + (s.damageTaken ?? 0))));
@@ -205,6 +213,7 @@ export class Player {
 
   die() {
     this.alive = false;
+    this.dash.time = -1;
     this.attack.cancel();
     this.deathTimer = this.base.respawnDelay;
     this.ctx.bus.emit('player:died', { position: this.position.clone() });

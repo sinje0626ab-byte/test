@@ -1,5 +1,5 @@
 import { baseAt } from '../utils/bases.js';
-import { turretCost, maxTurrets, turretDamage, turretRange } from '../utils/build.js';
+import { turretCost, maxTurrets, turretDamage, turretRange, materialCost, structureHp } from '../utils/build.js';
 
 // 건설 창 (B): 기지 영역 안에서만 열린다. 건물/포탑 탭, 비용 표시.
 export class BuildMenu {
@@ -116,8 +116,9 @@ export class BuildMenu {
     return Object.entries(buildings.buildings).map(([id, f]) => {
       const built = this.ctx.structures.some((s) => s.kind === 'facility' && s.type === id && s.baseId === base.id);
       const locked = base.level < f.unlockBaseLevel;
-      const enough = f.cost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
-      const cost = f.cost.map((c) => `${items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}`).join(' · ');
+      const fcost = materialCost(f.cost, this.ctx.player.stats);
+      const enough = fcost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
+      const cost = fcost.map((c) => `${items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}`).join(' · ');
       const why = built ? '이미 있음' : locked ? `${buildings.baseLevels[String(f.unlockBaseLevel)].name} 필요` : enough ? '클릭해서 배치' : '재료 부족';
       return `
         <button type="button" class="build-card${built || locked || !enough ? ' disabled' : ''}" data-facility="${id}">
@@ -134,9 +135,11 @@ export class BuildMenu {
     const next = buildings.baseLevels[String(base.level + 1)];
     if (!next) return `<p class="empty">${base.label}은(는) 이미 최고 단계(${base.name})예요.</p>`;
     const cur = buildings.baseLevels[String(base.level)];
-    const enough = next.cost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
+    const stats = this.ctx.player.stats;
+    const ncost = materialCost(next.cost, stats);
+    const enough = ncost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
     const unlocks = Object.values(turrets).filter((t) => t.unlockBaseLevel === base.level + 1).map((t) => t.name);
-    const cost = next.cost.map((c) => {
+    const cost = ncost.map((c) => {
       const have = this.counts[c.id] ?? 0;
       return `<li class="${have >= c.count ? 'ok' : 'bad'}"><i class="item-icon" style="--c:${items.items[c.id].color}"></i>${items.items[c.id].name} <b>${have}/${c.count}</b></li>`;
     }).join('');
@@ -146,7 +149,7 @@ export class BuildMenu {
         <ul class="base-up-eff">
           <li>기지 영역 ${cur.areaRadius}m → ${next.areaRadius}m</li>
           <li>포탑 설치 수 ${cur.maxTurrets} → ${next.maxTurrets}</li>
-          <li>건물 체력 ${cur.hp} → ${next.hp}</li>
+          <li>건물 체력 ${structureHp(cur.hp, stats)} → ${structureHp(next.hp, stats)}</li>
           ${unlocks.length ? `<li>새 포탑: ${unlocks.join(', ')}</li>` : ''}
         </ul>
         <ul class="base-up-cost">${cost}</ul>

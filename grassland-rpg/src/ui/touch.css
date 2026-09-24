@@ -48,3 +48,13 @@ body.touch .window { max-height: 80vh; overflow: auto; max-width: calc(100vw - 1
   .hud-banner b { font-size: 22px; }
 }
 
+
+/* 모바일: 스킬 버튼은 공격 버튼 위, E 버튼은 구르기 위 */
+body.touch .skillbar { display: contents; }
+body.touch .sslot { position: absolute; right: 30px; width: 58px; height: 58px; }
+body.touch .sslot[data-slot="0"] { bottom: 134px; }
+body.touch .sslot[data-slot="1"] { bottom: 202px; }
+body.touch .sslot.empty { display: none; }
+body.touch .sslot kbd { display: none; }
+body.touch .t-use { right: 104px; bottom: 106px; width: 56px; height: 56px; }
+body.touch .quickbar { left: 12px; transform: none; }

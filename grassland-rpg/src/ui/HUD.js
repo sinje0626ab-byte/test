@@ -28,7 +28,7 @@ export class HUD {
       </div>
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
-      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · Space 구르기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
+      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · Space 구르기 · 좌클릭 공격 · Q·R 스킬 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-interact" data-interact hidden></div>
       <div class="quickbar" data-quick></div>

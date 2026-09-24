@@ -85,6 +85,20 @@ export class FeedbackSystem {
       this.shake(S.bossAoe);
       this.particles.burst(boss.position.clone().setY(1), { color: boss.def.color, count: P.blast, speed: 6, up: 5, life: 0.7, size: 0.16 });
     });
+    // 액티브 스킬 (Phase 11)
+    bus.on('player:dash', ({ position }) => this.dust(position, 8));
+    bus.on('player:sweep', (e) => {
+      for (let i = 0; i <= 4; i++) {
+        const at = e.from.clone().lerp(e.to, i / 4).setY(0.9);
+        this.particles.burst(at, { color: ['#ffffff', '#ffe08a'], count: 3, speed: 2, up: 1, gravity: 0, life: 0.3, size: 0.09, drag: 4 });
+      }
+    });
+    bus.on('skill:used', ({ id, position }) => {
+      if (id === 'first_aid') this.particles.burst(position.clone().setY(1), { color: ['#7cd67a', '#ffffff'], count: 12, speed: 1.5, up: 2.5, gravity: -1, life: 0.9, size: 0.1 });
+    });
+    bus.on('turret:overclock', ({ turrets }) => {
+      for (const t of turrets) this.particles.burst(t.position.clone().setY(1.6), { color: ['#fff27a', '#8fd0ff'], count: 10, speed: 2.5, up: 3, life: 0.6, size: 0.09 });
+    });
     bus.on('player:roll', ({ position }) => this.dust(position, 6));
     bus.on('player:running', ({ position }) => {
       this.dustTimer -= 1;

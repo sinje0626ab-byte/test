@@ -1,3 +1,4 @@
+import { structureHp, setMaxHp } from '../utils/build.js';
 import { HpBar } from './HpBar.js';
 import { createFacilityModel } from './FacilityModels.js';
 
@@ -11,7 +12,8 @@ export class Facility {
     this.baseId = baseId;
     this.position = position.clone();
     this.radius = this.def.radius;
-    this.stats = { maxHp: this.def.hp, hp: Math.min(this.def.hp, hp ?? this.def.hp) };
+    const max = structureHp(this.def.hp, ctx.player.stats);
+    this.stats = { maxHp: max, hp: hp ?? max }; // 넘치면 석공 스킬 반영 때 맞춘다
     this.alive = this.stats.hp > 0;
     this.flash = 0;
     this.hpTimer = 0;
@@ -35,6 +37,11 @@ export class Facility {
   applyLook() {
     this.mesh.rotation.z = this.alive ? 0 : 0.15;
     this.mats.forEach((m, i) => m.color.copy(this.baseColors[i]).multiplyScalar(this.alive ? 1 : 0.55));
+  }
+
+  // 석공 스킬이 바뀌면 (FacilitySystem)
+  refreshMaxHp() {
+    setMaxHp(this, structureHp(this.def.hp, this.ctx.player.stats));
   }
 
   takeDamage(amount) {
