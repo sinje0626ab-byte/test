@@ -77,6 +77,33 @@ export class SaveSystem {
     return true;
   }
 
+  // 타이틀의 "이어하기"에 보여 줄 요약. 저장이 없으면 null
+  peek() {
+    let raw;
+    try {
+      raw = localStorage.getItem(this.cfg.key);
+    } catch {
+      return null;
+    }
+    if (!raw) return null;
+    try {
+      const s = this.migrate(JSON.parse(raw));
+      return {
+        day: s.time?.day ?? 1,
+        level: s.stats?.level ?? 1,
+        gold: s.economy?.gold ?? 0,
+        bases: s.bases?.length ?? 0,
+        savedAt: s.savedAt,
+      };
+    } catch (err) {
+      return { broken: true, newer: !!err.newer };
+    }
+  }
+
+  clear() {
+    try { localStorage.removeItem(this.cfg.key); } catch { /* 무시 */ }
+  }
+
   migrate(save) {
     if (typeof save?.saveVersion !== 'number') throw new Error('saveVersion 없음');
     if (save.saveVersion > SAVE_VERSION) {

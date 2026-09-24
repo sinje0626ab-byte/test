@@ -1,4 +1,7 @@
 import './ui/styles.css';
+import './ui/windows.css';
+import './ui/touch.css';
+import './ui/title.css';
 import config from './data/config.json';
 import player from './data/player.json';
 import monsters from './data/monsters.json';

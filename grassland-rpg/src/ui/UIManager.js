@@ -76,6 +76,10 @@ export class UIManager {
     for (const win of this.windows.values()) {
       if (win.key && input.wasPressed(win.key)) this.toggle(win.id);
     }
-    if (input.wasPressed('Escape') && this.stack.length && this.ctx.mode !== 'build') this.close(this.stack.at(-1).id);
+    if (input.wasPressed('Escape') && this.ctx.mode !== 'build') {
+      // 열린 창이 있으면 맨 위 창을 닫고, 없으면 게임 메뉴
+      if (this.stack.length) this.close(this.stack.at(-1).id);
+      else this.ctx.bus.emit('pause:open');
+    }
   }
 }

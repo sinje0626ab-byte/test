@@ -98,6 +98,8 @@ src/
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
     TouchControls.js   # 모바일 터치 조작 (조이스틱·버튼)
+    TitleScreen.js     # 타이틀·새 게임/이어하기·조작 방법·새 게임 안내
+    PauseMenu.js       # 게임 중 메뉴 (☰ / ESC)
     HUD.js
     InventoryWindow.js
     CharacterWindow.js
@@ -109,7 +111,10 @@ src/
     StorageWindow.js
     MapWindow.js
     Tooltip.js
-    styles.css
+    styles.css         # 기본 HUD
+    windows.css        # 창
+    touch.css          # 모바일 터치 조작
+    title.css          # 타이틀·게임 메뉴
   utils/
     random.js          # 시드 난수 (월드 배치 재현용)
     slots.js           # 칸 목록에 넣기·빼기·세기 (가방·창고 공용)
@@ -356,6 +361,17 @@ src/
 | M | 지도 | 탐험한 지역(안 가 본 곳은 안개), 기지 위치, 플레이어 위치, 기지 목록과 빠른 이동 버튼 |
 | (상점 건물에서 E) | 상점 | 구매/판매 탭 |
 
+### 5-0. 타이틀과 메뉴
+- 페이지를 열면 **타이틀 화면**부터. 뒤에는 게임 월드가 천천히 돌며 보이고, 로고 글자가 하나씩 통통 튀어나온 뒤 메뉴가 올라온다
+- 메뉴
+  - **이어하기**: 저장이 있을 때만. 날짜·레벨·골드·기지 수·마지막 저장 시각을 보여 준다
+  - **새 게임**: 저장이 있으면 "지우고 새로 시작할까요?" 확인
+  - **조작 방법**: PC / 모바일 조작표
+- 타이틀에 있는 동안에는 게임 시간이 흐르지 않고 **저장도 하지 않는다** (탭을 닫아도 기존 저장을 덮어쓰지 않게)
+- 새 게임을 시작하면 환영 안내 카드 3장(이동·공격 → 첫 기지 → 밤 습격). 기기에 맞는 조작으로 설명. 카드가 떠 있는 동안 게임은 멈춘다
+- **게임 중 메뉴**: 오른쪽 위 ☰ 버튼 또는 ESC(열린 창이 없을 때). 계속하기 · 저장하기 · 조작 방법 · 타이틀로(저장 후 돌아감). 메뉴가 떠 있으면 게임이 멈춘다
+- 게임 상태 `ctx.state`: 'title' | 'play' | 'paused'
+
 ### 5-1. 모바일 터치 조작
 터치 기기(`pointer: coarse`)에서만 보인다. 키보드·마우스 입력과 같은 Input을 거치므로 게임 로직은 따로 두지 않는다.
 - 왼쪽 아래 **가상 조이스틱**: 이동. 끝까지 밀면(`touch.runThreshold` 이상) 달리기
@@ -485,6 +501,7 @@ src/
 | `enemy:hit-player` | BossSystem | CombatSystem |
 | `boss:engaged` / `boss:disengaged` | Boss | HUD (보스 체력바) |
 | `boss:status` | BossSystem | MapWindow (둥지 표시) |
+| `pause:open` | UIManager (ESC), HUD (☰) | PauseMenu |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

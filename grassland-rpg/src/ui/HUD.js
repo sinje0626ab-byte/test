@@ -21,7 +21,7 @@ export class HUD {
         <div class="bar xp"><div class="fill" data-xp></div></div>
       </div>
       <div class="hud-tr">
-        <div class="clock" data-clock><i class="sun" data-sun></i><b data-day>1일차</b><span data-until></span></div>
+        <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">☰</button><div class="clock" data-clock><i class="sun" data-sun></i><b data-day>1일차</b><span data-until></span></div></div>
         <div class="gold"><i class="coin"></i><b data-gold>0</b></div>
         <div class="saved" data-saved>저장됨</div>
       </div>
@@ -62,6 +62,7 @@ export class HUD {
     // 퀵슬롯: 가방에 있는 소모품 종류를 순서대로 최대 N개
     this.quick = [];
     bus.on('inventory:changed', ({ slots }) => this.renderQuick(slots));
+    root.querySelector('[data-menu]').addEventListener('click', () => bus.emit('pause:open'));
     // 퀵슬롯 탭/클릭으로도 사용
     this.el.quick.addEventListener('pointerdown', (e) => {
       const i = [...this.el.quick.children].indexOf(e.target.closest('.qslot'));
