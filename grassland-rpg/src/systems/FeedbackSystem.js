@@ -99,6 +99,20 @@ export class FeedbackSystem {
     bus.on('turret:overclock', ({ turrets }) => {
       for (const t of turrets) this.particles.burst(t.position.clone().setY(1.6), { color: ['#fff27a', '#8fd0ff'], count: 10, speed: 2.5, up: 3, life: 0.6, size: 0.09 });
     });
+    // 밤의 군주 (Phase 13)
+    bus.on('fx:stars', ({ position }) => {
+      this.particles.burst(position, { color: ['#ffffff', '#fff27a', '#d6b3ff'], count: 2, speed: 0.4, up: -6, gravity: 4, life: 1.4, size: 0.1 });
+    });
+    bus.on('turret:slept', ({ turret }) => {
+      this.particles.burst(turret.position.clone().setY(1.6), { color: ['#8a6cf0', '#d6b3ff'], count: 16, speed: 1.2, up: 1, gravity: -0.5, life: 1.6, size: 0.18, grow: true, drag: 2 });
+    });
+    bus.on('boss:wave-ring', ({ position, radius }) => {
+      this.shake(0.12);
+      for (let i = 0; i < 16; i++) {
+        const a = (i / 16) * Math.PI * 2;
+        this.particles.burst(position.clone().add({ x: Math.cos(a) * radius, y: 0.3, z: Math.sin(a) * radius }), { color: ['#8a6cf0', '#1b1230'], count: 2, speed: 1.5, up: 3, life: 0.5, size: 0.12 });
+      }
+    });
     bus.on('player:roll', ({ position }) => this.dust(position, 6));
     bus.on('player:running', ({ position }) => {
       this.dustTimer -= 1;

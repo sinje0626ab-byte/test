@@ -68,7 +68,7 @@ export class Boss extends Monster {
         move.set(this.lair.x - this.position.x, 0, this.lair.z - this.position.z);
         speed = d.moveSpeed * 2;
         if (fromLair < 1) {
-          this.stats.hp = this.stats.maxHp; // 둥지에 돌아오면 회복
+          if (!b.noHeal) this.stats.hp = this.stats.maxHp; // 둥지에 돌아오면 회복 (밤의 군주는 안 함)
           this.setState('idle');
         }
         break;
@@ -78,7 +78,7 @@ export class Boss extends Monster {
 
   startCast(p) {
     const pp = this.ctx.player.position;
-    this.cast = { p, target: new THREE.Vector3(pp.x, 0, pp.z) };
+    this.cast = { p, target: new THREE.Vector3(pp.x, 0, pp.z), shots: 0 };
     this.setState('cast');
     PATTERNS[p.kind].start?.(this, p, this.cast);
   }
@@ -86,31 +86,52 @@ export class Boss extends Monster {
   updateCast() {
     const c = this.cast;
     const pat = PATTERNS[c.p.kind];
-    const t = Math.min(1, this.stateTime / (c.p.windup / this.cdSpeed));
+    const t = Math.min(1, this.stateTime / (this.windupOf(c) / this.cdSpeed));
     tmp.set(c.target.x - this.position.x, 0, c.target.z - this.position.z);
     if (tmp.lengthSq() > 1e-4) this.facing.copy(tmp.normalize());
     pat.during?.(this, c.p, c, t);
     if (t < 1) return;
     pat.fire(this, c.p, c);
+    // 연속 패턴 (밤의 군주 그림자 창 3연속): 플레이어 자리를 다시 겨눠 짧게 한 번 더
+    c.shots += 1;
+    if (c.p.repeat && c.shots < c.p.repeat && this.ctx.player.alive) {
+      const pp = this.ctx.player.position;
+      c.target = new THREE.Vector3(pp.x, 0, pp.z);
+      this.setState('cast');
+      pat.start?.(this, c.p, c);
+      return;
+    }
     c.p.cd = c.p.cooldown;
     this.cast = null;
     this.setState('chase');
+  }
+
+  windupOf(c) {
+    return c.shots > 0 && c.p.repeatWindup ? c.p.repeatWindup : c.p.windup;
   }
 
   animate(dt, speed) {
     super.animate(dt, speed);
     this.hpBar.group.visible = false; // 보스 체력은 화면 위 막대로
     if (this.state === 'cast') {
-      const t = Math.min(1, this.stateTime / (this.cast.p.windup / this.cdSpeed));
+      const t = Math.min(1, this.stateTime / (this.windupOf(this.cast) / this.cdSpeed));
       this.body.scale.set(1 + t * 0.12, 1 - t * 0.2, 1 + t * 0.12); // 힘 모으기
     }
     this.body.position.y += this.jumpHeight;
   }
 
-  // 페이즈 넘어가기: 분열·분노
+  // 페이즈 넘어가기: 분열·분노·패턴 추가(phases)
   checkPhase() {
     const b = this.bdef;
     const ratio = this.stats.hp / this.stats.maxHp;
+    (b.phases ?? []).forEach((ph, i) => {
+      this.phaseDone ??= new Set();
+      if (this.phaseDone.has(i) || ratio > ph.at) return;
+      this.phaseDone.add(i);
+      ph.add.forEach((p, j) => this.patterns.push({ ...p, cd: 1 + j * 1.5 }));
+      this.ctx.bus.emit('notify', { text: ph.text, kind: 'warn' });
+      this.ctx.bus.emit('boss:phase', { boss: this, phase: i + 2 });
+    });
     if (b.split && !this.part && !this.splitDone && ratio <= b.split.at) {
       this.splitDone = true;
       this.clearCast();
@@ -146,6 +167,14 @@ export class Boss extends Monster {
     // 부모는 맞으면 추적·도주로 바꾸지만 보스는 하던 일을 계속한다.
     if (this.alive && (this.state === 'idle' || this.state === 'wander' || this.state === 'flee')) this.setState('chase');
     return false;
+  }
+
+  // 습격으로 온 보스(밤의 군주)는 아침이 되면 물러간다
+  retreat() {
+    this.setEngaged(false);
+    this.clearCast();
+    this.alive = false;
+    this.done = true;
   }
 
   dispose() {

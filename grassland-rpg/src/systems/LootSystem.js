@@ -25,7 +25,9 @@ export class LootSystem {
     for (const entry of drops) {
       const item = entry.oneOf ? rand.pick(entry.oneOf) : entry.item;
       const equip = !!items[item]?.equipSlot;
-      const chance = entry.chance * (elite && equip ? elite.dropBonus : 1);
+      // 박사의 돋보기: 골드 말고 나머지 드롭 확률 ↑
+      const luck = item === 'gold' ? 1 : 1 + (this.ctx.player.stats.dropRate ?? 0);
+      const chance = entry.chance * (elite && equip ? elite.dropBonus : 1) * luck;
       if (Math.random() >= chance) continue;
       let count = entry.oneOf ? 1 : rand.int(entry.min, entry.max);
       if (elite && item === 'gold') count = Math.round(count * elite.gold);

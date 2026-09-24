@@ -59,9 +59,32 @@ export function createPlayerModel(base) {
   const hair = new THREE.Mesh(new THREE.SphereGeometry(0.36, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), addMat(flat('#7a4b2a')));
   hair.position.y = 1.22;
   hair.rotation.x = -0.25;
+  // 머리 장식 (캐릭터 만들기): 새싹 잎 / 꽃 / 리본 / 없음
   const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.25, 4), addMat(flat('#63c96b')));
   leaf.position.set(0.05, 1.6, 0);
   leaf.rotation.z = -0.5;
+  const flower = new THREE.Group();
+  const petalMat = addMat(flat('#ff8fab'));
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2;
+    const petal = new THREE.Mesh(new THREE.SphereGeometry(0.065, 5, 4), petalMat);
+    petal.position.set(Math.cos(a) * 0.08, 0, Math.sin(a) * 0.08);
+    flower.add(petal);
+  }
+  flower.add(new THREE.Mesh(new THREE.SphereGeometry(0.05, 5, 4), addMat(flat('#ffe08a'))));
+  flower.position.set(0.22, 1.48, 0.12);
+  flower.rotation.set(0.3, 0, -0.6);
+  const ribbon = new THREE.Group();
+  const ribbonMat = addMat(flat('#e0645a'));
+  for (const x of [-0.09, 0.09]) {
+    const loop = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.16, 4).rotateZ(x > 0 ? -Math.PI / 2 : Math.PI / 2), ribbonMat);
+    loop.position.x = x;
+    ribbon.add(loop);
+  }
+  ribbon.add(new THREE.Mesh(new THREE.SphereGeometry(0.04, 5, 4), ribbonMat));
+  ribbon.position.set(0, 1.5, -0.2);
+  ribbon.rotation.x = -0.4;
+  const accessories = { sprout: leaf, flower, ribbon };
   const eyeMat = flat('#2b2b33');
   const eyeGeo = new THREE.SphereGeometry(0.045, 6, 4);
   const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
@@ -93,7 +116,7 @@ export function createPlayerModel(base) {
   swordPivot.add(weapon);
 
   const inner = new THREE.Group();
-  inner.add(body, head, hair, leaf, eyeL, eyeR, footL, footR, hat, swordPivot);
+  inner.add(body, head, hair, leaf, flower, ribbon, eyeL, eyeR, footL, footR, hat, swordPivot);
   inner.traverse((o) => { if (o.isMesh) o.castShadow = true; });
   g.add(inner);
 
@@ -107,16 +130,18 @@ export function createPlayerModel(base) {
   spinTrail.position.y = 0.45;
   g.add(spinTrail);
 
-  return { group: g, inner, bodyMats, footL, footR, swordPivot, weapon, trail, spinTrail, bodyMat, footMat, hatMat, hat, hair, leaf };
+  return { group: g, inner, bodyMats, footL, footR, swordPivot, weapon, trail, spinTrail, bodyMat, footMat, hatMat, hat, hair, leaf, accessories };
 }
 
-// 장비 외형: 모자·옷·신발 색 (없으면 기본)
-export function applyAppearance(model, items) {
+// 외형: 장비(모자·옷·신발 색)가 있으면 장비 색, 없으면 캐릭터 만들기에서 고른 색·장식
+// look = { hair, clothes, accessory }
+export function applyAppearance(model, items, look = {}) {
   const { head, body, feet } = items;
   model.hat.visible = !!head;
-  model.leaf.visible = !head;
+  for (const [id, m] of Object.entries(model.accessories)) m.visible = !head && id === (look.accessory ?? 'sprout');
   if (head) model.hatMat.color.set(head.color);
-  model.bodyMat.color.set(body?.color ?? DEFAULT.body);
+  model.hair.material.color.set(look.hair ?? '#7a4b2a');
+  model.bodyMat.color.set(body?.color ?? look.clothes ?? DEFAULT.body);
   model.footMat.color.set(feet?.color ?? DEFAULT.feet);
 }
 

@@ -21,7 +21,6 @@ export class FacilitySystem {
     bus.on('garden:harvest', ({ facility }) => this.harvest(facility));
     bus.on('interact:facility', ({ facility }) => {
       if (facility.type === 'campfire') bus.emit('notify', { text: '따뜻하다… 불 곁에 있으면 HP가 빨리 차요', kind: 'item' });
-      if (facility.type === 'board') bus.emit('notify', { text: '아직 붙은 의뢰가 없어요. 곧 동네 사람들이 부탁을 붙일 거예요', kind: 'item' });
     });
     this.aura = 0;
     bus.on('save:collect', (save) => {

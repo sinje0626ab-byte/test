@@ -188,4 +188,22 @@ export const SHAPES = {
     k.eyes(1.35, 0.72, 0.22, 0xfff2b0);
     return k;
   },
+
+  // 밤의 군주: 큰 보라 망토 실루엣, 초승달 뿔, 빛나는 눈 (떠다닌다)
+  nightlord(def) {
+    const k = kit(def);
+    const { add, mat, other } = k;
+    add(new THREE.ConeGeometry(k.r * 0.95, k.r * 2.1, 7, 1, true), mat, 0, 0.9, 0);
+    const inner = other('#1b1230');
+    add(new THREE.SphereGeometry(k.r * 0.55, 8, 6), inner, 0, 1.95, 0.05);
+    const moon = other('#f4efc0', { emissive: new THREE.Color('#8a7a30') });
+    for (const s of [-1, 1]) {
+      const horn = add(new THREE.TorusGeometry(k.r * 0.35, k.r * 0.07, 4, 10, Math.PI * 0.9), moon, s * 0.35, 2.35, 0);
+      horn.rotation.set(0, 0, s > 0 ? -0.3 : Math.PI + 0.3);
+    }
+    k.eyes(2.0, 0.5, 0.2, 0xd6b3ff);
+    const trim = other('#8a6cf0', { emissive: new THREE.Color('#3a2070') });
+    add(new THREE.TorusGeometry(k.r * 0.95, k.r * 0.05, 4, 16), trim, 0, -0.15, 0).rotation.x = Math.PI / 2;
+    return k;
+  },
 };

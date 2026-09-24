@@ -188,7 +188,8 @@
         "color": "#ffb35c",
         "intensity": 2.2,
         "distance": 12
-      }
+      },
+      "unlock": "campfire"
     },
     "garden": {
       "name": "텃밭",
@@ -230,11 +231,12 @@
       "radius": 1.3,
       "xp": 25,
       "color": "#5a5147",
-      "verb": "장비 강화"
+      "verb": "장비 강화",
+      "unlock": "forge"
     },
     "board": {
       "name": "게시판",
-      "description": "현상금 의뢰가 붙는 게시판. (의뢰는 곧 붙어요)",
+      "description": "매일 아침 현상금 의뢰 3개가 붙는다. 해내면 골드와 가끔 수정.",
       "model": "board",
       "unlockBaseLevel": 2,
       "cost": [

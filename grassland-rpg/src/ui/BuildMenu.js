@@ -123,11 +123,12 @@ export class BuildMenu {
     const { buildings, items } = this.ctx.data;
     return Object.entries(buildings.buildings).map(([id, f]) => {
       const built = this.ctx.structures.some((s) => s.kind === 'facility' && s.type === id && s.baseId === base.id);
-      const locked = base.level < f.unlockBaseLevel;
+      const noPlan = f.unlock && !this.ctx.unlocks?.has(f.unlock); // 부엉 박사의 설계도
+      const locked = base.level < f.unlockBaseLevel || noPlan;
       const fcost = materialCost(f.cost, this.ctx.player.stats);
       const enough = fcost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
       const cost = fcost.map((c) => `${items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}`).join(' · ');
-      const why = built ? '이미 있음' : locked ? `${buildings.baseLevels[String(f.unlockBaseLevel)].name} 필요` : enough ? '클릭해서 배치' : '재료 부족';
+      const why = built ? '이미 있음' : noPlan ? '설계도 필요 (퀘스트)' : locked ? `${buildings.baseLevels[String(f.unlockBaseLevel)].name} 필요` : enough ? '클릭해서 배치' : '재료 부족';
       return `
         <button type="button" class="build-card${built || locked || !enough ? ' disabled' : ''}" data-facility="${id}">
           <i class="build-icon" style="--c:${f.color}"></i>

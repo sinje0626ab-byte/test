@@ -59,6 +59,8 @@ export class RaidSystem {
       this.raids.push(raid);
       if (near) bus.emit('raid:wave', { base, wave: 1, waves: waves.length, bloodMoon: blood });
     }
+    // 밤의 군주가 이번 습격 하나를 고를 수 있다 (NightLordSystem, raid.nightLord)
+    bus.emit('raid:planning', { raids: this.raids, day, bloodMoon: blood });
     const live = this.raids.filter((r) => !r.remote);
     const remote = this.raids.length - live.length;
     if (live.length) bus.emit('raid:start', { day, count: live.reduce((n, r) => n + r.total, 0), bloodMoon: blood });
@@ -185,7 +187,8 @@ export class RaidSystem {
           raid.timer = c.spawnInterval;
         }
         if (raid.toSpawn <= 0) {
-          if (last && raid.bloodMoon) this.spawnShadowBoss(raid);
+          if (last && raid.nightLord) this.ctx.bus.emit('nightlord:spawn', { raid, spot: this.spawnSpot(raid.base) });
+          else if (last && raid.bloodMoon) this.spawnShadowBoss(raid);
           raid.phase = 'fight';
           raid.fight = 0;
         }

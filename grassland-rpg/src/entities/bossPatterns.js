@@ -125,4 +125,40 @@ export const PATTERNS = {
       b.ctx.bus.emit('boss:leafstorm', { boss: b, count: p.count, damage: p.damage, duration: p.duration, maxRadius: p.maxRadius });
     },
   },
+
+  // 밤의 군주 2페이즈: 포탑 하나를 잠재운다 (TurretSystem)
+  sleep: {
+    ready: (b, p, dist) => dist < p.range,
+    fire(b, p) {
+      b.ctx.bus.emit('turret:sleep', { position: b.position.clone(), radius: p.radius, duration: p.duration });
+    },
+  },
+
+  // 순간이동 후 내려찍기: 예고 원 → 흐려졌다가 그 자리에 나타난다
+  blink: {
+    ready: (b, p, dist) => dist < p.range,
+    start(b, p, c) {
+      p.marks ??= [sceneMark(b, markCircle(p.radius))];
+      p.marks[0].position.set(c.target.x, 0.05, c.target.z);
+      p.marks[0].visible = true;
+    },
+    during(b, p, c, t) {
+      fade(p.marks, t);
+      b.setOpacity(0.95 * (1 - t * 0.9));
+    },
+    fire(b, p, c) {
+      hide(p.marks);
+      b.position.copy(c.target);
+      b.setOpacity(0.95);
+      b.ctx.bus.emit('boss:aoe', { position: c.target.clone(), radius: p.radius, damage: p.damage, boss: b });
+    },
+  },
+
+  // 3페이즈: 원형 파도가 차례로 퍼진다 (NightLordSystem)
+  wave: {
+    ready: (b, p, dist) => dist < p.range,
+    fire(b, p) {
+      b.ctx.bus.emit('boss:wave', { origin: b.position.clone(), rings: p.rings, spacing: p.spacing, interval: p.interval, width: p.width, damage: p.damage });
+    },
+  },
 };

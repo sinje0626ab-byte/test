@@ -74,7 +74,7 @@ src/
     MonsterModel.js    # 몬스터 모양 (슬라임 / 버섯 / 선인장 / 골렘) + monsterShapes.js (Phase 10 신규 모양)
     monsterShapes.js   # 벌·토끼·포자버섯·늑대·그루터기·전갈·두더지·굴렁덤불·요정·설인·눈사람·보스 모양
     behaviors/         # 몬스터 행동 모듈 (melee·charger·ranged·darter·burrower·exploder), common.js 공용
-    bossPatterns.js    # 보스 패턴 (내려찍기·점프·가시 난사·얼음덩이·소환·뿌리·잎 폭풍)
+    bossPatterns.js    # 보스 패턴 (내려찍기·점프·가시 난사·얼음덩이·소환·뿌리·잎 폭풍·잠재우기·순간이동·파도)
     RaidMonster.js     # 밤 습격 몬스터 AI
     Boss.js            # 보스 AI (패턴 고르기·쿨다운, 페이즈 분열·분노, 귀환)
     Drop.js            # 바닥에 떨어진 골드·아이템 (줍기)
@@ -87,6 +87,8 @@ src/
     Facility.js        # 부속 건물 (작업대·창고·상점)
     FacilityModels.js  # 부속 건물 모양
     Wall.js            # 1칸 벽 (나무 울타리·돌담)
+    Npc.js             # 동물 주민 (거닐기·졸기·말 걸면 쳐다보기)
+    NpcModel.js        # 다람쥐·두더지·부엉이·곰·제비 모양
     ResourceNode.js    # 나무, 바위, 풀 등 채집물 (모양·흔들림·캔 모습)
   systems/
     CombatSystem.js
@@ -118,6 +120,11 @@ src/
     StorageSystem.js   # 기지별 창고
     WallSystem.js      # 벽 드래그 설치·저장·아침 수리
     ForgeSystem.js     # 대장간 장비 강화
+    NpcSystem.js       # 동물 주민 입주·대화·특가·꿀비 거래·하늘 택배
+    QuestSystem.js     # 메인 퀘스트 (부엉 박사), 설계도 해금 (ctx.unlocks)
+    BestiarySystem.js  # 몬스터 도감·처치 보상·칭호
+    BountySystem.js    # 현상금 게시판 의뢰
+    NightLordSystem.js # 최종 보스 밤의 군주 등장·파도 패턴·해돋이
     SaveSystem.js
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
@@ -139,6 +146,13 @@ src/
     GardenWindow.js    # 텃밭 (심기·거두기)
     ForgeWindow.js     # 대장간 (장비 강화)
     RaidIndicator.js   # 습격 웨이브 표시·기지 방향 화살표
+    CharacterCreator.js # 새 게임 캐릭터 만들기
+    DialogueWindow.js  # 대화 말풍선 (타자기)
+    CourierWindow.js   # 하늘 택배
+    QuestTracker.js    # 현재 목표 한 줄
+    BestiaryWindow.js  # 몬스터 도감
+    BountyWindow.js    # 현상금 게시판
+    EndingScreen.js    # 엔딩 크레딧·카메라 비행
     Tooltip.js
     styles.css         # 기본 HUD
     windows.css        # 창
@@ -167,6 +181,10 @@ src/
     nodes.json         # 채집 노드 종류·드롭·복구일, 지역별 밀도
     weapons.json       # 무기 종류별 공격 방식 (사거리·각도·쿨다운·배율·넉백·특수)
     shop.json          # 상점 판매 목록
+    npcs.json          # 동물 주민 (입주 조건·역할·모양) + 주민 수치
+    dialogues.json     # 주민 대사 (인사·상황별: 졸음·습격 전·보스 처치 후·레벨업 직후·비)
+    quests.json        # 메인 퀘스트 8단계
+    bounties.json      # 현상금 의뢰 템플릿
 ```
 
 파일은 필요해지는 Phase에서 만든다. 아직 없는 파일은 해당 Phase 전까지 만들지 않는다.
@@ -272,6 +290,30 @@ src/
 - 쓰러뜨리면 큰 보상(영웅 장비·골드·재료·텐트 키트). `respawnDays`일 뒤에 다시 나타난다
 - 지도에 둥지 표시 (가 본 곳만, 처치한 보스는 회색)
 
+### 4-12. 캐릭터·주민·퀘스트·엔딩 (Phase 13)
+- **캐릭터 만들기**: 새 게임에서 환영 카드 전에. 이름(최대 8자, 기본 "개척자"), 머리 색 6, 옷 색 8, 머리 장식(새싹 잎·꽃·리본·없음). 고를 때마다 바로 입혀 본다 (카드는 옆으로 비켜 캐릭터가 보인다). 옷 색은 몸 장비가 없을 때 보이고, 모자를 쓰면 장식은 숨는다. HUD에 이름(+도감 칭호). `config.character`, 저장 `player.appearance`
+- **동물 주민** (`npcs.json`, `dialogues.json`). 기지 안을 천천히 거닐고, 가까이(`interactRange`) 가서 E로 대화. 말풍선은 타자기처럼 나오고 누르면 바로 다 보인다. 선택지로 역할을 연다
+  | 주민 | 입주 | 역할 |
+  |---|---|---|
+  | 다람쥐 도토리 | 상점 건설 | 상점 창. 매일 아침 "오늘의 특가" 1개 30% 할인 |
+  | 두더지 무쇠 | 대장간 건설 | 장비 강화 창 |
+  | 부엉이 부엉 박사 | 처음부터 (첫 기지 옆, 없으면 시작 지점 옆) | 메인 퀘스트, 몬스터 도감. 낮엔 존다 (대사만) |
+  | 곰 꿀비 | 텃밭 건설 | 씨앗 판매, 약초·사과를 값 ×1.5에 사 감 |
+  | 제비 하늘 | 두 번째 기지 | 택배: 창고 한 칸을 다른 기지 창고로 (15골드, 다음 아침 도착, 넘치면 다음 날) |
+  - 상황별 대사 우선순위: 졸음(부엉이 낮) > 레벨업 직후 > 보스 처치한 날 > 해 지기 직전(습격 전) > 인사. 비 대사는 날씨(Phase 14)부터. 호감도는 없다
+- **메인 퀘스트** (`quests.json`): 한 번에 하나. HUD 왼쪽 위 판 아래에 목표 한 줄. 조건을 채우면 부엉 박사에게 "보고하기" → 보상 → 다음
+  1. 첫 번째 텐트 → 모닥불 설계도·약초차 3 / 2. 밤을 견뎌라(습격 방어 성공) → 골드 50 / 3. 초원의 왕(왕슬라임) → 철광석 5 / 4. 숲으로(숲에 기지) → 귀환 두루마리 3 / 5. 숲의 수호자 → 대장간 설계도 / 6. 뜨거운 모래 → 태양 수정 2 / 7. 얼어붙은 끝 → 서리 수정 2 / 8. 밤의 군주 → 엔딩
+  - 설계도: 모닥불·대장간은 `unlock`이 있어 설계도(ctx.unlocks)가 있어야 짓는다
+  - 예전 저장(퀘스트 기록 없음)은 이미 이룬 퀘스트를 건너뛰고 해금만 챙긴다
+- **밤의 군주** (`config.nightLord`, 몬스터 `night_lord`): 네 지역 보스를 모두 잡으면 다음 붉은 달에 **가장 레벨 높은 기지**의 마지막 웨이브로 온다 (그 기지 습격은 멀리 있어도 실시간). 하늘이 캄캄해지고 별이 쏟아진다. 떠다니고, 둥지로 돌아가도 회복하지 않는다. 아침까지 못 잡으면 물러갔다가 다음 붉은 달에 다시 온다
+  - 페이즈 1: 그림자 창 3연속(직선 예고) / 밤 슬라임 소환
+  - 페이즈 2 (HP 60%): 포탑 하나 3초 잠재우기(보라 안개) / 순간이동 후 내려찍기
+  - 페이즈 3 (HP 25%): 보스 둘레 원형 예고가 차례로 퍼지는 파도 — 구르기(무적)로 피한다
+  - 처치: 새벽검(전설) + 골드 1000 → 해가 빠르게 뜨고(다음 날 아침) → 엔딩 크레딧(기지들 위를 카메라가 돈다, 개척한 날·물리친 몬스터·세운 기지) → "계속 개척하기"
+  - 보스 패턴에 `repeat`(연속)과 `phases`(HP 비율마다 패턴 추가)가 생겼다
+- **현상금 게시판** (`bounties.json`): 매일 아침 의뢰 3개(처치 / 납품 / 정예). 목표 수·보상은 게시판 기지 지역 난이도를 따른다. 보상 골드 + 가끔 수정·귀환 두루마리
+- **몬스터 도감** (부엉 박사): 처음 잡으면 등록(색·이름·한 줄 설명 `lore`), 처치 10/50/100마리마다 골드 + 그 몬스터 재료. 완성률 50% → 칭호 「꼬마 박물학자」 + 박사의 돋보기(치명 +5%, 드롭률 +10%), 100% → 칭호 「초원 대박사」 + 골드 1000. `config.bestiary`
+
 ### 4-3. 아이템
 - 분류: 재료 / 소모품 / 장비(무기·방어구·장신구) / 건설 키트
 - 등급: 일반 / 고급 / 희귀 / 영웅 (색상 구분)
@@ -319,6 +361,7 @@ src/
 - v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
 - v7 → v8: `gather` 추가 (빈 값 = 모든 노드 살아 있음)
 - v8 → v9: `skills.slots` 추가 (액티브 스킬 Q·R, 빈 슬롯)
+- v10 → v11: `player.appearance`(없으면 기본값), `npcs`·`quests`·`bestiary`·`bounties`·`nightLord` 추가 (빈 값 = 처음부터, 퀘스트는 이룬 것 건너뛰기)
 - v9 → v10: 장착 슬롯 id 문자열 → `{ id, plus: 0 }`, `walls` 추가 (빈 값). 부속 건물에 텃밭 작물 `crop` { seed, day } (없으면 빈 텃밭)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
@@ -445,8 +488,9 @@ src/
 - **새 부속 건물 (Phase 12)**
   - 모닥불(텐트, 나무 6·돌멩이 4): 반경 5m 안 HP재생 +3 (`aura`), 밤에 주변을 밝힌다
   - 텃밭(움막, 나무 10·풀 섬유 6): 씨앗(약초 씨앗 1일 → 약초 3~5 / 사과 씨앗 2일 → 사과 2~4)을 심고 아침이 지나면 거둔다. 씨앗은 상점. 수치는 `config.garden`
-  - 대장간(집, 돌멩이 20·철광석 10): 장비 강화 (4-4-3). 대장장이 NPC는 Phase 13
-  - 게시판(움막, 나무 12): 현상금 의뢰는 Phase 13 (지금은 안내만)
+  - 대장간(집, 돌멩이 20·철광석 10): 장비 강화 (4-4-3). 설계도 필요(퀘스트 5). 두더지 무쇠 입주
+  - 모닥불도 설계도 필요(퀘스트 1)
+  - 게시판(움막, 나무 12): 현상금 의뢰 (4-12)
 - **습격 실패 손실**: 그 기지에 창고가 있으면 창고 재료의 `raid.failStorageLossRatio`를 잃는다. 창고가 없으면 예전처럼 소지 골드 일부
 
 ### 4-5-4. 벽 (Phase 12)
@@ -566,9 +610,9 @@ src/
   - **새 게임**: 저장이 있으면 "지우고 새로 시작할까요?" 확인
   - **조작 방법**: PC / 모바일 조작표
 - 타이틀에 있는 동안에는 게임 시간이 흐르지 않고 **저장도 하지 않는다** (탭을 닫아도 기존 저장을 덮어쓰지 않게)
-- 새 게임을 시작하면 환영 안내 카드 3장(이동·공격 → 첫 기지 → 밤 습격). 기기에 맞는 조작으로 설명. 카드가 떠 있는 동안 게임은 멈춘다
+- 새 게임을 시작하면 캐릭터 만들기 → 환영 안내 카드 3장(이동·공격 → 첫 기지 → 밤 습격). 기기에 맞는 조작으로 설명. 카드가 떠 있는 동안 게임은 멈춘다
 - **게임 중 메뉴**: 오른쪽 위 ☰ 버튼 또는 ESC(열린 창이 없을 때). 계속하기 · 저장하기 · 조작 방법 · 타이틀로(저장 후 돌아감). 메뉴가 떠 있으면 게임이 멈춘다
-- 게임 상태 `ctx.state`: 'title' | 'play' | 'paused'
+- 게임 상태 `ctx.state`: 'title' | 'play' | 'paused' | 'ending'(엔딩 크레딧)
 
 ### 5-0-1. 설정 (Phase 7)
 - 게임 메뉴(☰)와 타이틀의 "설정". `grassland-rpg-settings` 키에 따로 저장 (세이브와 분리)
@@ -641,7 +685,7 @@ src/
 - [x] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
 - [x] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
 - [x] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
-- [ ] Phase 13 — 캐릭터, NPC, 퀘스트, 엔딩
+- [x] Phase 13 — 캐릭터, NPC, 퀘스트, 엔딩
 - [ ] Phase 14 — 편의 기능과 마무리
 
 ---
@@ -753,9 +797,26 @@ src/
 | `player:aura` | FacilitySystem (모닥불 둘레) | Player (HP 재생) |
 | `forge:enhance` → `forge:enhanced` | ForgeWindow → ForgeSystem | (알림) |
 | `inventory:set-plus` / `equipment:set-plus` | ForgeSystem | InventorySystem / EquipmentSystem |
+| `player:appearance` → `player:named` | CharacterCreator | Player → HUD |
+| `player:title` | BestiarySystem | HUD |
+| `interact:npc` → `npc:talk` → `dialogue:open` | InteractionSystem → NpcSystem (퀘스트·도감이 줄·선택지를 보탬) | DialogueWindow |
+| `npc:joined` / `npc:open-facility` / `npc:sell-harvest` | NpcSystem / 대화 선택지 | (알림) / NpcSystem |
+| `shop:special` | NpcSystem (도토리, 매일 아침) | EconomySystem, ShopWindow |
+| `courier:open` → `courier:send` | 대화 선택지 → CourierWindow | NpcSystem |
+| `storage:take` / `storage:put` | NpcSystem (택배) | StorageSystem |
+| `quest:report` → `quest:completed`, `quest:changed` | 대화 선택지 → QuestSystem | QuestTracker |
+| `bestiary:open` → `bestiary:show` | 대화 선택지 → BestiarySystem | BestiaryWindow |
+| `bounty:show` / `bounty:claim` → `bounty:changed` | BountySystem(게시판 E) / BountyWindow | BountyWindow |
+| `raid:planning` | RaidSystem (습격 짜기 전) | NightLordSystem (`raid.nightLord`) |
+| `nightlord:spawn` → `nightlord:arrived` | RaidSystem (마지막 웨이브) | NightLordSystem |
+| `turret:sleep` → `turret:slept` | 보스 패턴 sleep | TurretSystem → FeedbackSystem |
+| `boss:wave` → `boss:wave-ring` | 보스 패턴 wave | NightLordSystem → FeedbackSystem |
+| `boss:phase` | Boss (phases) | (알림) |
+| `fx:stars` | NightLordSystem | FeedbackSystem |
+| `ending:stats` → `ending:start` | NightLordSystem (해돋이 뒤) | BestiarySystem(처치 수) → EndingScreen |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.
-`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build'), `ctx.activeSkills`({ slots, cd } — UI가 쿨다운 표시용으로 읽는다), `ctx.raids`(진행 중 습격, RaidIndicator), `ctx.bloodMoon`, `ctx.wallGrid`(벽 칸 — 몬스터 충돌·길찾기)
+`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build'), `ctx.activeSkills`({ slots, cd } — UI가 쿨다운 표시용으로 읽는다), `ctx.raids`(진행 중 습격, RaidIndicator), `ctx.bloodMoon`, `ctx.wallGrid`(벽 칸 — 몬스터 충돌·길찾기), `ctx.npcs`(동물 주민), `ctx.unlocks`(설계도), `ctx.nightLord`·`ctx.sunrise`(하늘 연출)
 | `player:damaged` / `player:died` / `player:respawned` | Player | HUD, EconomySystem |
 | `notify` | 누구나 | HUD (알림) |

@@ -255,5 +255,164 @@
     "repathInterval": 1,
     "pathMargin": 4,
     "maxPathNodes": 5000
+  },
+  "character": {
+    "nameMax": 8,
+    "defaultName": "개척자",
+    "hairColors": [
+      "#7a4b2a",
+      "#2f2a28",
+      "#e0b25a",
+      "#d9674f",
+      "#8fb8e8",
+      "#f2a7c3"
+    ],
+    "clothesColors": [
+      "#5b8def",
+      "#e9835b",
+      "#7cc67a",
+      "#b58ee0",
+      "#ffcf5c",
+      "#ff8fab",
+      "#5fc4c0",
+      "#f4efe3"
+    ],
+    "accessories": [
+      {
+        "id": "sprout",
+        "name": "새싹 잎"
+      },
+      {
+        "id": "flower",
+        "name": "꽃"
+      },
+      {
+        "id": "ribbon",
+        "name": "리본"
+      },
+      {
+        "id": "none",
+        "name": "없음"
+      }
+    ],
+    "default": {
+      "name": "개척자",
+      "hair": "#7a4b2a",
+      "clothes": "#5b8def",
+      "accessory": "sprout"
+    }
+  },
+  "bestiary": {
+    "milestones": [
+      {
+        "kills": 10,
+        "gold": 30,
+        "material": 3
+      },
+      {
+        "kills": 50,
+        "gold": 120,
+        "material": 8
+      },
+      {
+        "kills": 100,
+        "gold": 300,
+        "material": 15
+      }
+    ],
+    "completion": [
+      {
+        "ratio": 0.5,
+        "title": "꼬마 박물학자",
+        "item": "doctor_lens"
+      },
+      {
+        "ratio": 1,
+        "title": "초원 대박사",
+        "gold": 1000
+      }
+    ]
+  },
+  "nightLord": {
+    "name": "밤의 군주",
+    "monster": "night_lord",
+    "regionBosses": [
+      "king_slime",
+      "elder_treant",
+      "cactus_king",
+      "ice_giant"
+    ],
+    "aggroRange": 999,
+    "leashRange": 99999,
+    "spawnOffset": 6,
+    "patterns": [
+      {
+        "kind": "roots",
+        "windup": 0.8,
+        "count": 1,
+        "spreadDeg": 0,
+        "length": 16,
+        "width": 1.4,
+        "damage": 30,
+        "range": 16,
+        "cooldown": 5,
+        "repeat": 3,
+        "repeatWindup": 0.45
+      },
+      {
+        "kind": "summon",
+        "monster": "night_slime",
+        "count": 3,
+        "windup": 0.8,
+        "range": 30,
+        "cooldown": 12
+      }
+    ],
+    "phases": [
+      {
+        "at": 0.6,
+        "text": "밤의 군주가 포탑을 잠재우기 시작합니다!",
+        "add": [
+          {
+            "kind": "sleep",
+            "windup": 0.5,
+            "duration": 3,
+            "radius": 40,
+            "range": 40,
+            "cooldown": 9
+          },
+          {
+            "kind": "blink",
+            "windup": 0.9,
+            "radius": 3.2,
+            "damage": 34,
+            "range": 30,
+            "cooldown": 7
+          }
+        ]
+      },
+      {
+        "at": 0.25,
+        "text": "밤의 군주가 어둠의 파도를 일으킵니다! 구르기로 피하세요",
+        "add": [
+          {
+            "kind": "wave",
+            "windup": 0.8,
+            "rings": 5,
+            "spacing": 3,
+            "interval": 0.55,
+            "width": 1.4,
+            "damage": 28,
+            "range": 30,
+            "cooldown": 10
+          }
+        ]
+      }
+    ],
+    "sky": "#0b0a1e",
+    "starInterval": 0.2,
+    "sunrise": 3.5,
+    "creditsPerBase": 4.5,
+    "noHeal": true
   }
 }

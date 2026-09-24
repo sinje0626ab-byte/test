@@ -16,11 +16,17 @@ export class InteractionSystem {
       const d = player.position.distanceTo(s.position) - s.radius;
       if (d < this.cfg.range && d < bestD) { bestD = d; best = s; }
     }
+    // 동물 주민은 조금 더 가까이 가야 한다
+    for (const n of this.ctx.npcs ?? []) {
+      const d = player.position.distanceTo(n.position) - n.radius;
+      if (d < this.ctx.data.npcs.config.interactRange && d < bestD) { bestD = d; best = n; }
+    }
     return best;
   }
 
   hint(s) {
     if (!s) return '';
+    if (s.kind === 'npc') return `E  ${s.def.name}와(과) 이야기`;
     if (s.kind === 'turret') return `E  ${s.def.name}${s.alive ? '' : ' (부서짐)'} 관리`;
     if (s.kind === 'facility') {
       const verb = s.def.verb;
@@ -36,7 +42,8 @@ export class InteractionSystem {
       this.ctx.bus.emit('interact:hint', { text: this.hint(s) });
     }
     if (!s || !this.ctx.input.wasPressed('KeyE')) return;
-    if (s.kind === 'turret') this.ctx.bus.emit('interact:turret', { turret: s });
+    if (s.kind === 'npc') this.ctx.bus.emit('interact:npc', { npc: s });
+    else if (s.kind === 'turret') this.ctx.bus.emit('interact:turret', { turret: s });
     else if (s.kind === 'facility') { if (s.alive) this.ctx.bus.emit('interact:facility', { facility: s }); }
     else this.ctx.bus.emit('interact:base', { base: s.base });
   }
