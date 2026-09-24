@@ -1,0 +1,187 @@
+{
+  "grades": {
+    "common": {
+      "name": "일반",
+      "color": "#e8e8e8"
+    },
+    "uncommon": {
+      "name": "고급",
+      "color": "#6fd46f"
+    },
+    "rare": {
+      "name": "희귀",
+      "color": "#5ea8ff"
+    },
+    "epic": {
+      "name": "영웅",
+      "color": "#c07bff"
+    }
+  },
+  "categories": {
+    "currency": "화폐",
+    "material": "재료",
+    "consumable": "소모품",
+    "equipment": "장비",
+    "kit": "건설 키트"
+  },
+  "items": {
+    "gold": {
+      "name": "골드",
+      "category": "currency",
+      "color": "#ffd23f",
+      "description": "상점과 포탑에 쓰는 돈."
+    },
+    "slime_jelly": {
+      "name": "슬라임 젤리",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "color": "#8ee08a",
+      "maxStack": 99,
+      "description": "말랑말랑한 슬라임 젤리. 건설·제작 재료로 쓰인다."
+    },
+    "tent_kit": {
+      "name": "텐트 키트",
+      "category": "kit",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 5,
+      "color": "#e9a35b",
+      "builds": "tent",
+      "description": "펼치면 텐트가 되는 꾸러미. 설치한 곳이 새 기지가 된다."
+    },
+    "twig_sword": {
+      "name": "나뭇가지 검",
+      "equipSlot": "weapon",
+      "grade": "common",
+      "color": "#b88452",
+      "bonus": {
+        "attack": 3
+      },
+      "description": "단단한 나뭇가지를 깎아 만든 검.",
+      "category": "equipment",
+      "stackable": false
+    },
+    "iron_sword": {
+      "name": "무쇠 검",
+      "equipSlot": "weapon",
+      "grade": "uncommon",
+      "color": "#c9d3dd",
+      "bonus": {
+        "attack": 6,
+        "critChance": 0.03
+      },
+      "description": "묵직하고 잘 드는 검.",
+      "category": "equipment",
+      "stackable": false
+    },
+    "leaf_hat": {
+      "name": "풀잎 모자",
+      "equipSlot": "head",
+      "grade": "common",
+      "color": "#7ccf6a",
+      "bonus": {
+        "defense": 1,
+        "maxHp": 10
+      },
+      "description": "커다란 풀잎을 엮은 모자.",
+      "category": "equipment",
+      "stackable": false
+    },
+    "leather_vest": {
+      "name": "가죽 조끼",
+      "equipSlot": "body",
+      "grade": "uncommon",
+      "color": "#a86f45",
+      "bonus": {
+        "defense": 3,
+        "maxHp": 15
+      },
+      "description": "튼튼한 가죽 조끼.",
+      "category": "equipment",
+      "stackable": false
+    },
+    "straw_shoes": {
+      "name": "짚신",
+      "equipSlot": "feet",
+      "grade": "common",
+      "color": "#e8cf8a",
+      "bonus": {
+        "moveSpeed": 0.4,
+        "maxStamina": 10
+      },
+      "description": "가볍고 발이 편한 짚신.",
+      "category": "equipment",
+      "stackable": false
+    },
+    "clover_ring": {
+      "name": "네잎클로버 반지",
+      "equipSlot": "accessory",
+      "grade": "rare",
+      "color": "#5fd48a",
+      "bonus": {
+        "critChance": 0.05,
+        "attack": 1
+      },
+      "description": "행운이 깃든 반지.",
+      "category": "equipment",
+      "stackable": false
+    },
+    "jelly_charm": {
+      "name": "젤리 부적",
+      "equipSlot": "accessory",
+      "grade": "uncommon",
+      "color": "#8a6cf0",
+      "bonus": {
+        "hpRegen": 0.5,
+        "maxHp": 10
+      },
+      "description": "밤 슬라임 젤리를 굳힌 부적. 몸이 가볍게 회복된다.",
+      "category": "equipment",
+      "stackable": false
+    },
+    "mushroom_cap": {
+      "name": "버섯 갓",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#e0574f",
+      "description": "숲 버섯의 폭신한 갓. 건설·제작 재료로 쓰인다."
+    }
+  },
+  "statLabels": {
+    "maxHp": "최대 HP",
+    "maxStamina": "최대 스태미나",
+    "attack": "공격력",
+    "defense": "방어력",
+    "moveSpeed": "이동속도",
+    "critChance": "치명타 확률",
+    "hpRegen": "HP 재생(초당)",
+    "attackSpeed": "공격 속도",
+    "moveSpeedPct": "이동속도",
+    "spin": "회전 베기",
+    "gatherSpeed": "채집 속도",
+    "gatherAmount": "채집량",
+    "turretDamage": "포탑 데미지",
+    "turretRange": "포탑 사거리",
+    "buildCost": "포탑 비용 절감",
+    "extraTurrets": "포탑 설치 수"
+  },
+  "percentStats": [
+    "critChance",
+    "attackSpeed",
+    "moveSpeedPct",
+    "gatherSpeed",
+    "turretDamage",
+    "buildCost"
+  ],
+  "equipSlots": {
+    "weapon": "무기",
+    "head": "머리",
+    "body": "몸",
+    "feet": "신발",
+    "accessory1": "장신구",
+    "accessory2": "장신구"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "grassland": {
+    "name": "초원",
+    "difficulty": 1,
+    "statMultiplier": 1,
+    "zFrom": -60,
+    "zTo": 90,
+    "monsters": [
+      "slime"
+    ],
+    "raidMonster": "night_slime",
+    "mapColor": "#9edb6f",
+    "ground": [
+      "#9edb6f",
+      "#86c95c",
+      "#b2e27e"
+    ],
+    "decor": {
+      "pines": 5.5,
+      "roundTrees": 3.5,
+      "rocks": 2.8,
+      "bushes": 3.1,
+      "flowers": 27,
+      "tufts": 55,
+      "mushrooms": 0
+    },
+    "palette": {
+      "pine": [
+        "#4fae62",
+        "#5cbb6a",
+        "#46a05a"
+      ],
+      "round": [
+        "#7ccf6a",
+        "#95d86f"
+      ],
+      "blossom": [
+        "#f4b6c9",
+        "#ffd08a"
+      ],
+      "flower": [
+        "#ffffff",
+        "#ffd6e5",
+        "#fff27a",
+        "#d9c6ff",
+        "#ffb3a1"
+      ],
+      "tuft": [
+        "#7ec85a",
+        "#94d468",
+        "#6fbb52"
+      ]
+    }
+  },
+  "forest": {
+    "name": "숲",
+    "difficulty": 2,
+    "statMultiplier": 1.35,
+    "zFrom": -270,
+    "zTo": -60,
+    "monsters": [
+      "mushroom",
+      "mushroom",
+      "slime"
+    ],
+    "raidMonster": "night_mushroom",
+    "mapColor": "#4f9a5a",
+    "ground": [
+      "#6fb866",
+      "#5ea85a",
+      "#7cc26d"
+    ],
+    "decor": {
+      "pines": 15,
+      "roundTrees": 4,
+      "rocks": 3,
+      "bushes": 6,
+      "flowers": 6,
+      "tufts": 40,
+      "mushrooms": 7
+    },
+    "palette": {
+      "pine": [
+        "#2f8a4e",
+        "#3a9657",
+        "#2a7a47"
+      ],
+      "round": [
+        "#4fa85a",
+        "#5cb565"
+      ],
+      "blossom": [
+        "#d98b5f"
+      ],
+      "flower": [
+        "#ffffff",
+        "#d9c6ff",
+        "#b8e0ff"
+      ],
+      "tuft": [
+        "#5da84c",
+        "#6cb659",
+        "#4f9a42"
+      ]
+    }
+  }
+}
