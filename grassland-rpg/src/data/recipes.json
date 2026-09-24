@@ -1,0 +1,140 @@
+{
+  "potion": {
+    "result": "potion",
+    "count": 2,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 3
+      }
+    ]
+  },
+  "tent_kit": {
+    "result": "tent_kit",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 10
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 6
+      }
+    ]
+  },
+  "twig_sword": {
+    "result": "twig_sword",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 4
+      }
+    ]
+  },
+  "leaf_hat": {
+    "result": "leaf_hat",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 5
+      }
+    ]
+  },
+  "straw_shoes": {
+    "result": "straw_shoes",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 5
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 2
+      }
+    ]
+  },
+  "big_potion": {
+    "result": "big_potion",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 4
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 3
+      }
+    ]
+  },
+  "leather_vest": {
+    "result": "leather_vest",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 8
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 6
+      }
+    ]
+  },
+  "jelly_charm": {
+    "result": "jelly_charm",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 12
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 4
+      }
+    ]
+  },
+  "iron_sword": {
+    "result": "iron_sword",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 10
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 10
+      }
+    ]
+  },
+  "clover_ring": {
+    "result": "clover_ring",
+    "count": 1,
+    "baseLevel": 4,
+    "ingredients": [
+      {
+        "id": "slime_jelly",
+        "count": 15
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 15
+      }
+    ]
+  }
+}

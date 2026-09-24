@@ -30,6 +30,7 @@ export class HUD {
       <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-interact" data-interact hidden></div>
+      <div class="quickbar" data-quick></div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
     `;
@@ -39,7 +40,7 @@ export class HUD {
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
-      help: $('[data-help]'), banner: $('[data-banner]'), interact: $('[data-interact]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
+      help: $('[data-help]'), banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
     const { bus } = ctx;
@@ -56,6 +57,9 @@ export class HUD {
       this.el.sp.textContent = `스킬 +${skillPoints} (K)`;
     });
     bus.on('xp:gain', ({ amount, position }) => this.floatText({ position, amount: `+${amount} XP`, target: 'xp' }));
+    // 퀵슬롯: 가방에 있는 소모품 종류를 순서대로 최대 N개
+    this.quick = [];
+    bus.on('inventory:changed', ({ slots }) => this.renderQuick(slots));
     bus.on('interact:hint', ({ text }) => {
       this.el.interact.hidden = !text;
       this.el.interact.textContent = text;
@@ -95,6 +99,21 @@ export class HUD {
     el.classList.add(cls);
   }
 
+  renderQuick(slots) {
+    const { items, config } = this.ctx.data;
+    const counts = new Map();
+    for (const s of slots) {
+      if (!s || items.items[s.id].category !== 'consumable') continue;
+      counts.set(s.id, (counts.get(s.id) ?? 0) + s.count);
+    }
+    this.quick = [...counts.keys()].slice(0, config.quickslots);
+    this.el.quick.innerHTML = Array.from({ length: config.quickslots }, (_, i) => {
+      const id = this.quick[i];
+      const def = id && items.items[id];
+      return `<div class="qslot"><kbd>${i + 1}</kbd>${def ? `<i class="item-icon" style="--c:${def.color}"></i><b class="count">${counts.get(id)}</b>` : ''}</div>`;
+    }).join('');
+  }
+
   banner(title, sub, kind) {
     const b = this.el.banner;
     b.className = `hud-banner ${kind}`;
@@ -127,6 +146,10 @@ export class HUD {
   }
 
   update(dt) {
+    const input = this.ctx.input;
+    for (let i = 0; i < this.quick.length; i++) {
+      if (input.wasPressed(`Digit${i + 1}`)) this.ctx.bus.emit('inventory:use-item', { item: this.quick[i] });
+    }
     const s = this.ctx.player.stats;
     this.el.hp.style.width = `${(s.hp / s.maxHp) * 100}%`;
     this.el.hpText.textContent = `${Math.ceil(s.hp)} / ${s.maxHp}`;

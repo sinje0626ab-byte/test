@@ -71,6 +71,8 @@ src/
     BaseModels.js      # 기지 단계별 모양
     Turret.js
     TurretModels.js    # 포탑 종류별 모양
+    Facility.js        # 부속 건물 (작업대·창고·상점)
+    FacilityModels.js  # 부속 건물 모양
     ResourceNode.js    # 나무, 바위, 풀 등 채집물
   systems/
     CombatSystem.js
@@ -86,7 +88,10 @@ src/
     TurretSystem.js    # 타겟팅, 발사, 업그레이드·수리·철거
     InteractionSystem.js # E 상호작용 대상 찾기 (포탑·기지)
     RaidSystem.js      # 밤 습격 (실시간 + 원격 계산)
-    EconomySystem.js   # 골드, 상점
+    EconomySystem.js   # 골드, 상점(사고팔기)
+    FacilitySystem.js  # 부속 건물 설치·목록·아침 수리
+    CraftingSystem.js  # 작업대 제작
+    StorageSystem.js   # 기지별 창고
     SaveSystem.js
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
@@ -97,11 +102,14 @@ src/
     BuildMenu.js
     TurretWindow.js    # 포탑 관리 (E)
     ShopWindow.js
+    CraftWindow.js
+    StorageWindow.js
     MapWindow.js
     Tooltip.js
     styles.css
   utils/
     random.js          # 시드 난수 (월드 배치 재현용)
+    slots.js           # 칸 목록에 넣기·빼기·세기 (가방·창고 공용)
   data/
     config.json        # 월드·카메라·스포너·전투 공통 수치
     player.json        # 플레이어 기본 능력치
@@ -112,6 +120,8 @@ src/
     skills.json
     regions.json
     levels.json
+    recipes.json       # 제작법
+    shop.json          # 상점 판매 목록
 ```
 
 파일은 필요해지는 Phase에서 만든다. 아직 없는 파일은 해당 Phase 전까지 만들지 않는다.
@@ -164,13 +174,16 @@ src/
     "stats": { "level": 1, "xp": 0, "skillPoints": 0 },
     "equipment": { "slots": { "weapon": "twig_sword", "head": null, ... } },
     "skills": { "ranks": { "power": 2 } },
-    "exploration": { "cells": "0011100…", "visited": ["grassland"] }
+    "exploration": { "cells": "0011100…", "visited": ["grassland"] },
+    "facilities": [ { "type": "workbench", "baseId": 1, "position": [x, z], "hp": 120 } ],
+    "storages": { "1": [ { "id": "slime_jelly", "count": 30 }, null, ... ] }
   }
   ```
 - v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
 - v2 → v3: `stats`·`equipment`·`skills` 추가 (레벨 1부터)
 - v3 → v4: `exploration` 추가 (빈 값 → 불러온 뒤 플레이어·기지 주변부터 다시 밝힌다)
 - v4 → v5: 포탑마다 `priority` 추가 (기본값은 그 포탑 종류의 `priority`)
+- v5 → v6: `facilities`·`storages` 추가 (빈 값)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
@@ -222,6 +235,20 @@ src/
 - 비용은 **재료** (경제 원칙: 재료 = 건설). 다음 단계의 `cost`에 적힌 재료를 가방에서 쓴다
 - 올리면: 영역 반경·포탑 설치 수·중심 건물 체력이 늘고, 모양이 바뀌고, 새 포탑이 해금된다. 경험치도 받는다
 - 건설 창(B)의 건물 탭에서 올린다. 기지 중심 건물 앞에서 E를 눌러도 건설 창이 열린다
+
+### 4-5-3. 부속 건물 (Phase 6)
+- 작업대(텐트부터) · 창고(움막부터) · 상점(움막부터). 기지마다 종류별로 하나씩
+- 비용은 재료. 건설 창(B) 건물 탭에서 고르고, 포탑처럼 배치 미리보기로 기지 영역 안에 놓는다
+- 체력이 있어 습격 몬스터가 부술 수 있다. 부서지면 아침까지 못 쓰고, 아침마다 기지 건물과 함께 회복된다
+- 건물 앞에서 E: 작업대 → 제작 창, 창고 → 창고 창, 상점 → 상점 창
+- **제작**: `recipes.json`. 재료로 장비·소모품·텐트 키트를 만든다. 제작법마다 필요한 기지 단계가 있다. 가방에 자리가 없으면 만들지 않는다
+- **창고**: 기지마다 따로 (`buildings.json`의 `slots`칸). 클릭하면 한 칸 통째로 가방 ↔ 창고
+- **상점**: 구매(골드 → `shop.json`의 물건), 판매(아이템의 `value` 골드). 재료 = 제작/건설, 골드 = 포탑/상점 원칙 유지
+- **습격 실패 손실**: 그 기지에 창고가 있으면 창고 재료의 `raid.failStorageLossRatio`를 잃는다. 창고가 없으면 예전처럼 소지 골드 일부
+
+### 4-3-1. 소모품과 퀵슬롯
+- 소모품은 `use` 효과(`heal` 등). 가방에서 우클릭하거나 퀵슬롯 숫자키(1~5)로 쓴다
+- 퀵슬롯: 가방에 있는 소모품 종류를 가방 순서대로 최대 5개 보여준다 (따로 등록하지 않음)
 
 ### 4-6. 멀티 기지
 - 새 기지는 "텐트 키트"를 다른 지역에 설치해서 생성
@@ -350,7 +377,7 @@ src/
 ### Phase 6 — 확장
 - [x] 기지 레벨 업그레이드 (움막·집·요새)
 - [x] 포탑 추가 종류, 업그레이드, 수리
-- [ ] 상점, 제작
+- [x] 상점, 제작
 - [ ] 새 지역 (사막·설원), 보스
 
 ---
@@ -410,6 +437,15 @@ src/
 | `turret:upgrade` / `turret:repair` / `turret:priority` / `turret:demolish` | TurretWindow | TurretSystem |
 | `turret:changed` | TurretSystem | TurretWindow |
 | `projectile:explode` | TurretSystem | CombatSystem (범위 피해) |
+| `interact:facility` | InteractionSystem | CraftWindow / StorageWindow / ShopWindow |
+| `facility:changed` | FacilitySystem | BuildMenu |
+| `craft:make` | CraftWindow | CraftingSystem |
+| `inventory:can-add` | CraftingSystem, EconomySystem | InventorySystem (`ok`) |
+| `inventory:take-slot` | StorageSystem, EconomySystem | InventorySystem (칸을 통째로 꺼내 `item`에 담음) |
+| `storage:deposit` / `storage:withdraw` → `storage:changed` | StorageWindow → StorageSystem | StorageWindow |
+| `storage:lose` | RaidSystem | StorageSystem (`handled`) |
+| `shop:buy` / `shop:sell` | ShopWindow | EconomySystem |
+| `inventory:use-item` | HUD (퀵슬롯) | InventorySystem |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

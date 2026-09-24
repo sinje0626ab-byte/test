@@ -97,7 +97,8 @@
     "presenceMargin": 20,
     "remoteFightSeconds": 25,
     "remotePartialRatio": 0.5,
-    "remoteTurretDamage": 0.8
+    "remoteTurretDamage": 0.8,
+    "failStorageLossRatio": 0.3
   },
   "map": {
     "cellSize": 6,
@@ -110,5 +111,6 @@
   },
   "interact": {
     "range": 2.8
-  }
+  },
+  "quickslots": 5
 }

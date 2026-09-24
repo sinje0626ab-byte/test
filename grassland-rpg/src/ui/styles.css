@@ -92,7 +92,7 @@ html, body {
 .dmg.player { color: #ff6b6b; }
 
 .hud-help {
-  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: 16px; left: 16px; max-width: calc(50% - 150px);
   padding: 6px 14px; border-radius: 999px; font-size: 13px;
   background: rgba(255, 252, 240, 0.75); color: #6b6453;
 }
@@ -321,11 +321,54 @@ kbd {
 
 /* E 상호작용 안내 */
 .hud-interact {
-  position: absolute; bottom: 58px; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%);
   padding: 7px 16px; border-radius: 999px; font-size: 14px; font-weight: 700;
   background: #2f2a24; color: #fff4d6; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
 }
 .hud-interact[hidden] { display: none; }
+
+/* 퀵슬롯 */
+.quickbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+.qslot {
+  position: relative; width: 48px; height: 48px; border-radius: 12px;
+  background: var(--panel); border: 2px solid var(--panel-edge);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 0 rgba(120, 100, 60, 0.18);
+}
+.qslot kbd { position: absolute; top: -8px; left: -6px; margin: 0; }
+.qslot .item-icon { width: 26px; height: 26px; }
+.dmg.heal { color: #7cf09a; }
+
+/* 제작·상점 줄 */
+.craft-list, .shop-list { display: flex; flex-direction: column; gap: 6px; width: 460px; max-height: 60vh; overflow: auto; }
+.craft-row, .shop-row {
+  display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 12px;
+  background: #fff6e0; border: 2px solid var(--panel-edge);
+}
+.craft-row.locked { opacity: 0.55; }
+.craft-icon {
+  --grade: transparent; flex: none; width: 46px; height: 46px; border-radius: 10px; background: #f1e8d2;
+  border: 2px solid var(--grade); display: flex; align-items: center; justify-content: center;
+}
+.craft-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.craft-text small { font-size: 11px; color: #8a7f63; }
+.craft-ing { display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.craft-ing .ok { color: #5a9a4a; }
+.craft-ing .bad { color: #d9534f; }
+.craft-row button, .shop-row button {
+  flex: none; padding: 6px 12px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #7cc67a; color: #fff; font: 700 12px inherit; display: inline-flex; align-items: center; gap: 4px;
+}
+.craft-row button:disabled, .shop-row button:disabled { background: #e3dac3; color: #a99f86; cursor: not-allowed; }
+.shop-row .coin { width: 14px; height: 14px; display: inline-block; }
+.shop-sell { display: flex; align-items: center; gap: 6px; flex: none; }
+.shop-sell small { font-size: 11px; color: #8a7f63; }
+
+/* 창고 */
+.st-cols { display: flex; gap: 18px; }
+.st-cols h3 { margin: 0 0 8px; font-size: 14px; }
+.st-grid .slot { width: 44px; height: 44px; cursor: pointer; }
+.st-grid { grid-template-columns: repeat(var(--cols), 44px); }
 
 /* 포탑 관리 창 */
 .tw { width: 300px; }

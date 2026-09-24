@@ -67,5 +67,63 @@
       ]
     }
   },
-  "buildings": {}
+  "buildings": {
+    "workbench": {
+      "name": "작업대",
+      "description": "재료로 장비·물약·텐트 키트를 만든다.",
+      "model": "workbench",
+      "unlockBaseLevel": 1,
+      "cost": [
+        {
+          "id": "slime_jelly",
+          "count": 6
+        }
+      ],
+      "hp": 120,
+      "radius": 0.9,
+      "xp": 15,
+      "color": "#b88452"
+    },
+    "storage": {
+      "name": "창고",
+      "description": "이 기지 전용 보관함. 습격에 지면 여기 재료를 잃는다.",
+      "model": "storage",
+      "unlockBaseLevel": 2,
+      "cost": [
+        {
+          "id": "slime_jelly",
+          "count": 10
+        },
+        {
+          "id": "mushroom_cap",
+          "count": 6
+        }
+      ],
+      "hp": 200,
+      "radius": 1.2,
+      "xp": 20,
+      "slots": 24,
+      "color": "#9a6a45"
+    },
+    "shop": {
+      "name": "상점",
+      "description": "골드로 물건을 사고, 재료·장비를 판다.",
+      "model": "shop",
+      "unlockBaseLevel": 2,
+      "cost": [
+        {
+          "id": "slime_jelly",
+          "count": 8
+        },
+        {
+          "id": "mushroom_cap",
+          "count": 8
+        }
+      ],
+      "hp": 150,
+      "radius": 1.2,
+      "xp": 20,
+      "color": "#e9835b"
+    }
+  }
 }

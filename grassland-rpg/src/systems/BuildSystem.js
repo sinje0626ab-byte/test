@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Turret } from '../entities/Turret.js';
+import { createFacilityModel } from '../entities/FacilityModels.js';
 import { baseAt } from '../utils/bases.js';
 import { turretCost, maxTurrets } from '../utils/build.js';
 
@@ -14,6 +15,11 @@ export class BuildSystem {
     this.placing = null;
     this.gold = 0;
     this.lastHint = '';
+    this.counts = {};
+    ctx.bus.on('inventory:changed', ({ slots }) => {
+      this.counts = {};
+      for (const s of slots) if (s) this.counts[s.id] = (this.counts[s.id] ?? 0) + s.count;
+    });
     ctx.mode = 'play';
     ctx.bus.on('gold:changed', ({ gold }) => { this.gold = gold; });
     ctx.bus.on('build:start', (e) => this.start(e));
@@ -22,7 +28,9 @@ export class BuildSystem {
 
   start({ kind, type, item }) {
     this.end();
-    const ghost = kind === 'tent' ? this.tentGhost() : Turret.createMesh(this.ctx.data.turrets[type]).group;
+    const ghost = kind === 'tent' ? this.tentGhost()
+      : kind === 'facility' ? createFacilityModel(this.ctx.data.buildings.buildings[type].model).group
+        : Turret.createMesh(this.ctx.data.turrets[type]).group;
     const mats = [];
     ghost.traverse((o) => {
       if (!o.isMesh) return;
@@ -80,6 +88,7 @@ export class BuildSystem {
       if (world.isBlocked(pos.x, pos.z, def.radius)) return { ok: false, reason: '나무나 바위에 막혀 있습니다' };
       return { ok: true };
     }
+    if (p.kind === 'facility') return this.validateFacility(pos);
     const def = data.turrets[p.type];
     const base = baseAt(bases, pos);
     if (!base) return { ok: false, reason: '기지 영역 안에만 지을 수 있습니다' };
@@ -88,6 +97,19 @@ export class BuildSystem {
     const cost = turretCost(def, player.stats);
     if (count >= max) return { ok: false, reason: `이 기지엔 포탑을 더 세울 수 없습니다 (${count}/${max})` };
     if (this.gold < cost) return { ok: false, reason: `골드가 부족합니다 (${cost} 필요)` };
+    if (world.isBlocked(pos.x, pos.z, def.radius) || this.overlapsStructure(pos, def.radius)) return { ok: false, reason: '자리가 막혀 있습니다' };
+    if (pos.distanceTo(player.position) < def.radius + player.radius) return { ok: false, reason: '자리가 막혀 있습니다' };
+    return { ok: true, base };
+  }
+
+  validateFacility(pos) {
+    const { world, bases, data, structures, player } = this.ctx;
+    const def = data.buildings.buildings[this.placing.type];
+    const base = baseAt(bases, pos);
+    if (!base) return { ok: false, reason: '기지 영역 안에만 지을 수 있습니다' };
+    if (base.level < def.unlockBaseLevel) return { ok: false, reason: `기지 Lv${def.unlockBaseLevel}부터 지을 수 있습니다` };
+    if (structures.some((s) => s.kind === 'facility' && s.type === this.placing.type && s.baseId === base.id)) return { ok: false, reason: `이 기지엔 이미 ${def.name}이(가) 있습니다` };
+    if (!def.cost.every((c) => (this.counts[c.id] ?? 0) >= c.count)) return { ok: false, reason: '재료가 부족합니다' };
     if (world.isBlocked(pos.x, pos.z, def.radius) || this.overlapsStructure(pos, def.radius)) return { ok: false, reason: '자리가 막혀 있습니다' };
     if (pos.distanceTo(player.position) < def.radius + player.radius) return { ok: false, reason: '자리가 막혀 있습니다' };
     return { ok: true, base };
@@ -119,6 +141,11 @@ export class BuildSystem {
     if (p.kind === 'turret') {
       const spend = { amount: turretCost(this.ctx.data.turrets[p.type], this.ctx.player.stats), ok: false };
       bus.emit('economy:spend', spend);
+      if (!spend.ok) return;
+    }
+    if (p.kind === 'facility') {
+      const spend = { items: this.ctx.data.buildings.buildings[p.type].cost, ok: false };
+      bus.emit('inventory:spend', spend);
       if (!spend.ok) return;
     }
     const placed = { kind: p.kind, type: p.type, item: p.item, position: p.pos.clone(), baseId: p.check.base?.id };

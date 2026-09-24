@@ -1,0 +1,28 @@
+{
+  "buy": [
+    {
+      "id": "potion",
+      "price": 12
+    },
+    {
+      "id": "big_potion",
+      "price": 35
+    },
+    {
+      "id": "twig_sword",
+      "price": 30
+    },
+    {
+      "id": "leaf_hat",
+      "price": 30
+    },
+    {
+      "id": "straw_shoes",
+      "price": 35
+    },
+    {
+      "id": "tent_kit",
+      "price": 250
+    }
+  ]
+}
