@@ -17,6 +17,7 @@
 .t-btn[hidden] { display: none; }
 .t-attack { right: 24px; bottom: 30px; width: 92px; height: 92px; background: rgba(255, 123, 123, 0.9); font-size: 20px; }
 .t-attack:active { transform: scale(0.94); }
+.t-roll { right: 128px; bottom: 30px; width: 66px; height: 66px; background: rgba(124, 198, 122, 0.92); font-size: 14px; }
 .t-use { right: 34px; bottom: 138px; width: 64px; height: 64px; background: rgba(47, 42, 36, 0.9); color: #fff4d6; font-size: 22px; }
 .t-menu {
   position: absolute; right: 10px; top: 118px; display: flex; flex-direction: column; gap: 6px;

@@ -15,6 +15,12 @@ export class CombatSystem {
     ctx.bus.on('enemy:hit-player', (a) => this.hitPlayer(a.damage, a.dir));
   }
 
+  killed(m) {
+    this.ctx.bus.emit('monster:killed', {
+      type: m.type, position: m.position.clone(), color: m.def.color, radius: m.radius, boss: !!m.boss,
+    });
+  }
+
   calcDamage(attack, defense, critChance = 0, critMultiplier = 1) {
     const v = this.cfg.variance;
     let dmg = (attack - defense) * (1 + (Math.random() * 2 - 1) * v);
@@ -40,8 +46,8 @@ export class CombatSystem {
       }
       const { amount, crit } = this.calcDamage(a.attack, m.stats.defense, a.critChance, a.critMultiplier);
       const killed = m.takeDamage(amount, dir.clone().multiplyScalar(a.knockback));
-      bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster' });
-      if (killed) bus.emit('monster:killed', { type: m.type, position: m.position.clone() });
+      bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color });
+      if (killed) this.killed(m);
     }
   }
 
@@ -49,8 +55,8 @@ export class CombatSystem {
     if (!monster.alive) return;
     const { amount, crit } = this.calcDamage(damage, monster.stats.defense);
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
-    this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster' });
-    if (killed) this.ctx.bus.emit('monster:killed', { type: monster.type, position: monster.position.clone() });
+    this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster', source: 'turret', color: monster.def.color });
+    if (killed) this.killed(monster);
   }
 
   // 보스 범위 공격: 범위 안이면 플레이어가 맞는다.

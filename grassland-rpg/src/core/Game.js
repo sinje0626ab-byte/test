@@ -38,6 +38,12 @@ import { StorageWindow } from '../ui/StorageWindow.js';
 import { ShopWindow } from '../ui/ShopWindow.js';
 import { TouchControls } from '../ui/TouchControls.js';
 import { TitleScreen } from '../ui/TitleScreen.js';
+import { SettingsPanel } from '../ui/SettingsPanel.js';
+import { Settings } from './Settings.js';
+import { Synth } from './Synth.js';
+import { FeedbackSystem } from '../systems/FeedbackSystem.js';
+import { SoundSystem } from '../systems/SoundSystem.js';
+import { MusicSystem } from '../systems/MusicSystem.js';
 import { PauseMenu } from '../ui/PauseMenu.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
@@ -62,6 +68,7 @@ export class Game {
       scene: new THREE.Scene(),
       bus,
       time: this.time,
+      timeScale: 1,
       input: new Input(renderer.domElement),
       camera: this.camera.camera,
       mouseGround: null,
@@ -107,6 +114,16 @@ export class Game {
     new StorageWindow(ctx, this.ui, this.tooltip);
     new ShopWindow(ctx, this.ui, this.tooltip);
     this.touch = new TouchControls(ctx, uiRoot);
+
+    // 연출·소리·설정 (게임 로직과 따로)
+    this.settings = new Settings(bus);
+    this.settingsPanel = new SettingsPanel(this.settings);
+    this.synth = new Synth();
+    this.feedback = new FeedbackSystem(ctx, this.camera);
+    this.sound = new SoundSystem(ctx, this.synth);
+    this.music = new MusicSystem(ctx, this.synth);
+    bus.on('settings:changed', ({ key, value }) => { if (key === 'shadows') this.applyShadows(value); });
+    this.settings.broadcast();
     bus.on('player:teleport', () => this.camera.snapTo(ctx.player.position));
 
     // 창들이 첫 화면을 그릴 수 있게 현재 상태를 한 번 알린다. (불러오기가 있으면 다시 알린다)
@@ -158,8 +175,30 @@ export class Game {
     requestAnimationFrame(this.loop);
   }
 
-  update(dt) {
+  // 그림자 품질: off / low / high
+  applyShadows(q) {
+    const r = this.renderer;
+    const on = q !== 'off';
+    const size = q === 'low' ? 1024 : 2048;
+    const sun = this.ctx.world.sun;
+    if (sun.shadow.mapSize.x !== size) {
+      sun.shadow.mapSize.set(size, size);
+      sun.shadow.map?.dispose();
+      sun.shadow.map = null;
+    }
+    if (r.shadowMap.enabled !== on) {
+      r.shadowMap.enabled = on;
+      this.ctx.scene.traverse((o) => { if (o.material) o.material.needsUpdate = true; });
+    }
+  }
+
+  update(realDt) {
     const ctx = this.ctx;
+    this.music.update();
+    this.sound.update();
+    this.camera.updateShake(realDt);
+    // 히트스톱: 게임 시간만 느려지고 파티클·흔들림은 실제 시간
+    const dt = ctx.state === 'play' ? realDt * this.feedback.tick(realDt) : realDt;
     if (ctx.state === 'title') {
       // 타이틀 뒤 배경: 시작 지점 둘레를 천천히 돈다
       this.titleAngle += dt * 0.06;

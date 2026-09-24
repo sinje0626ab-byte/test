@@ -18,7 +18,16 @@ export class Chunk {
       mesh.castShadow = !noShadow.has(kind);
       mesh.receiveShadow = true;
       mesh.computeBoundingSphere(); // 띠마다 따로 화면 밖이면 안 그린다
+      mesh.userData = { kind, total: list.length };
       this.group.add(mesh);
+    }
+  }
+
+  // 장식 밀도 설정: 충돌하지 않는 풀·꽃·덤불만 줄인다.
+  setDensity(density, kinds) {
+    for (const mesh of this.group.children) {
+      const { kind, total } = mesh.userData;
+      mesh.count = kinds.includes(kind) ? Math.round(total * density) : total;
     }
   }
 

@@ -27,7 +27,7 @@ export class HUD {
       </div>
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
-      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
+      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · Space 구르기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-interact" data-interact hidden></div>
       <div class="quickbar" data-quick></div>
@@ -51,6 +51,7 @@ export class HUD {
       if (delta > 0) this.pulse(this.el.gold.parentElement);
     });
     bus.on('notify', (n) => this.notify(n));
+    bus.on('settings:changed', ({ key, value }) => { if (key === 'damageNumbers') this.hideNumbers = !value; });
     bus.on('save:done', () => this.pulse(this.el.saved, 'show'));
     bus.on('stats:changed', ({ level, xp, xpToNext, skillPoints }) => {
       this.el.lv.textContent = level;
@@ -155,6 +156,7 @@ export class HUD {
   }
 
   floatText({ position, amount, crit, target }) {
+    if (this.hideNumbers && target !== 'xp') return;
     const el = document.createElement('div');
     el.className = `dmg ${target}${crit ? ' crit' : ''}`;
     el.textContent = crit ? `${amount}!` : `${amount}`;

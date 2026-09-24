@@ -145,3 +145,27 @@ body.on-title #ui { display: none; }
 .w-dots { display: flex; gap: 6px; margin: 2px 0 4px; }
 .w-dots i { width: 8px; height: 8px; border-radius: 50%; background: #e3dac3; }
 .w-dots i.on { background: #7cc67a; width: 20px; border-radius: 999px; }
+
+/* 설정 창 */
+.set-list { display: flex; flex-direction: column; gap: 12px; margin: 6px 0 8px; }
+.set-list label, .set-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; font-weight: 700; font-size: 15px; }
+.set-list input[type="range"] { flex: 1; max-width: 220px; accent-color: #7cc67a; }
+.seg { display: flex; gap: 4px; background: #f1e8d2; padding: 3px; border-radius: 999px; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 13px; font-family: inherit; color: #8a7f63; }
+.seg button.on { background: #7cc67a; color: #fff; }
+.tog { width: 52px; height: 30px; border-radius: 999px; border: 0; background: #e3dac3; position: relative; cursor: pointer; transition: background 0.15s; }
+.tog i { position: absolute; left: 4px; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12); transition: left 0.15s; }
+.tog.on { background: #7cc67a; }
+.tog.on i { left: 26px; }
+.set-note { font-size: 12px !important; color: #9a8f73 !important; margin: 4px 0 0 !important; }
+
+/* 좁은 화면: ☰ 버튼을 HP 칸 아래 왼쪽으로 (날짜·골드와 겹치지 않게) */
+@media (max-width: 600px) {
+  .hud-tr .menu-btn { position: fixed; top: 116px; left: 12px; }
+}
+@media (max-width: 420px) {
+  .hud-tl { width: 158px; }
+  .clock { font-size: 12px; gap: 5px; padding: 4px 9px 4px 6px; }
+  .clock span { font-size: 10px; }
+  .sun { width: 15px; height: 15px; }
+}

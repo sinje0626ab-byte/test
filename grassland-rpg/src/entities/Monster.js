@@ -79,10 +79,11 @@ export class Monster {
     this.hpBarTimer = Math.max(0, this.hpBarTimer - dt);
 
     if (this.state === 'dead') {
-      const t = this.stateTime / 0.5;
-      this.body.scale.setScalar(Math.max(0.001, 1 - t));
-      this.body.position.y = t * 0.4;
-      this.setOpacity(0.92 * (1 - t));
+      // 납작하게 눌리며 사라진다 (조각·연기는 FeedbackSystem)
+      const t = Math.min(1, this.stateTime / this.ctx.data.config.feedback.deathSquash);
+      this.body.scale.set(1 + t * 0.5, Math.max(0.001, 1 - t), 1 + t * 0.5);
+      this.body.position.y = 0;
+      this.setOpacity(0.92 * (1 - t * 0.7));
       if (t >= 1) this.done = true;
       return;
     }

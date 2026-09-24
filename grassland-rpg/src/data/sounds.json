@@ -1,0 +1,406 @@
+{
+  "maxVoices": 12,
+  "maxDistance": 30,
+  "masterSfx": 0.55,
+  "masterMusic": 0.32,
+  "sfx": {
+    "swing": [
+      {
+        "type": "noise",
+        "d": 0.12,
+        "g": 0.25,
+        "filter": 2200,
+        "filter2": 700
+      }
+    ],
+    "hit": [
+      {
+        "type": "square",
+        "f": 220,
+        "f2": 90,
+        "d": 0.08,
+        "g": 0.22
+      },
+      {
+        "type": "noise",
+        "d": 0.05,
+        "g": 0.18,
+        "filter": 1800
+      }
+    ],
+    "crit": [
+      {
+        "type": "square",
+        "f": 330,
+        "f2": 110,
+        "d": 0.12,
+        "g": 0.25
+      },
+      {
+        "type": "triangle",
+        "f": 990,
+        "f2": 1320,
+        "d": 0.12,
+        "t": 0.03,
+        "g": 0.18
+      },
+      {
+        "type": "noise",
+        "d": 0.07,
+        "g": 0.2,
+        "filter": 3000
+      }
+    ],
+    "kill": [
+      {
+        "type": "triangle",
+        "f": 520,
+        "f2": 180,
+        "d": 0.22,
+        "g": 0.25
+      },
+      {
+        "type": "noise",
+        "d": 0.18,
+        "g": 0.15,
+        "filter": 1200,
+        "filter2": 300
+      }
+    ],
+    "coin": [
+      {
+        "type": "square",
+        "f": 988,
+        "d": 0.07,
+        "g": 0.12
+      },
+      {
+        "type": "square",
+        "f": 1319,
+        "d": 0.18,
+        "t": 0.07,
+        "g": 0.12
+      }
+    ],
+    "pickup": [
+      {
+        "type": "triangle",
+        "f": 660,
+        "f2": 990,
+        "d": 0.1,
+        "g": 0.2
+      }
+    ],
+    "levelup": [
+      {
+        "type": "triangle",
+        "f": 523,
+        "d": 0.12,
+        "g": 0.2
+      },
+      {
+        "type": "triangle",
+        "f": 659,
+        "d": 0.12,
+        "t": 0.1,
+        "g": 0.2
+      },
+      {
+        "type": "triangle",
+        "f": 784,
+        "d": 0.12,
+        "t": 0.2,
+        "g": 0.2
+      },
+      {
+        "type": "triangle",
+        "f": 1047,
+        "d": 0.35,
+        "t": 0.3,
+        "g": 0.22
+      }
+    ],
+    "hurt": [
+      {
+        "type": "sawtooth",
+        "f": 180,
+        "f2": 70,
+        "d": 0.18,
+        "g": 0.2
+      },
+      {
+        "type": "noise",
+        "d": 0.1,
+        "g": 0.15,
+        "filter": 900
+      }
+    ],
+    "roll": [
+      {
+        "type": "noise",
+        "d": 0.22,
+        "g": 0.18,
+        "filter": 600,
+        "filter2": 1600
+      }
+    ],
+    "bow": [
+      {
+        "type": "triangle",
+        "f": 420,
+        "f2": 180,
+        "d": 0.09,
+        "g": 0.14
+      }
+    ],
+    "crossbow": [
+      {
+        "type": "square",
+        "f": 260,
+        "f2": 120,
+        "d": 0.1,
+        "g": 0.14
+      },
+      {
+        "type": "noise",
+        "d": 0.05,
+        "g": 0.1,
+        "filter": 2500
+      }
+    ],
+    "gun": [
+      {
+        "type": "noise",
+        "d": 0.06,
+        "g": 0.18,
+        "filter": 3500,
+        "filter2": 900
+      }
+    ],
+    "cannon": [
+      {
+        "type": "sine",
+        "f": 120,
+        "f2": 40,
+        "d": 0.3,
+        "g": 0.35
+      },
+      {
+        "type": "noise",
+        "d": 0.2,
+        "g": 0.2,
+        "filter": 800
+      }
+    ],
+    "boom": [
+      {
+        "type": "sine",
+        "f": 90,
+        "f2": 30,
+        "d": 0.5,
+        "g": 0.4
+      },
+      {
+        "type": "noise",
+        "d": 0.45,
+        "g": 0.3,
+        "filter": 1400,
+        "filter2": 200
+      }
+    ],
+    "build": [
+      {
+        "type": "square",
+        "f": 330,
+        "d": 0.06,
+        "g": 0.14
+      },
+      {
+        "type": "square",
+        "f": 440,
+        "d": 0.06,
+        "t": 0.08,
+        "g": 0.14
+      },
+      {
+        "type": "triangle",
+        "f": 660,
+        "d": 0.2,
+        "t": 0.16,
+        "g": 0.18
+      }
+    ],
+    "click": [
+      {
+        "type": "triangle",
+        "f": 880,
+        "f2": 660,
+        "d": 0.05,
+        "g": 0.12
+      }
+    ],
+    "open": [
+      {
+        "type": "triangle",
+        "f": 440,
+        "f2": 660,
+        "d": 0.08,
+        "g": 0.12
+      }
+    ],
+    "close": [
+      {
+        "type": "triangle",
+        "f": 660,
+        "f2": 440,
+        "d": 0.08,
+        "g": 0.1
+      }
+    ],
+    "horn": [
+      {
+        "type": "sawtooth",
+        "f": 196,
+        "d": 0.5,
+        "g": 0.14,
+        "a": 0.08
+      },
+      {
+        "type": "sawtooth",
+        "f": 294,
+        "d": 0.8,
+        "t": 0.45,
+        "g": 0.14,
+        "a": 0.08
+      },
+      {
+        "type": "sine",
+        "f": 98,
+        "d": 1.2,
+        "g": 0.12,
+        "a": 0.1
+      }
+    ],
+    "birds": [
+      {
+        "type": "sine",
+        "f": 2400,
+        "f2": 3200,
+        "d": 0.08,
+        "g": 0.08
+      },
+      {
+        "type": "sine",
+        "f": 2800,
+        "f2": 2200,
+        "d": 0.08,
+        "t": 0.12,
+        "g": 0.08
+      },
+      {
+        "type": "sine",
+        "f": 2600,
+        "f2": 3400,
+        "d": 0.1,
+        "t": 0.5,
+        "g": 0.07
+      },
+      {
+        "type": "sine",
+        "f": 3000,
+        "f2": 2400,
+        "d": 0.08,
+        "t": 0.64,
+        "g": 0.07
+      }
+    ],
+    "slam": [
+      {
+        "type": "sine",
+        "f": 70,
+        "f2": 30,
+        "d": 0.45,
+        "g": 0.4
+      },
+      {
+        "type": "noise",
+        "d": 0.3,
+        "g": 0.25,
+        "filter": 600
+      }
+    ]
+  },
+  "music": {
+    "moods": {
+      "grassland_day": {
+        "root": 261.63,
+        "scale": [
+          0,
+          2,
+          4,
+          7,
+          9
+        ],
+        "tempo": 92,
+        "lead": "triangle",
+        "pad": "sine"
+      },
+      "forest_day": {
+        "root": 220,
+        "scale": [
+          0,
+          2,
+          4,
+          7,
+          9
+        ],
+        "tempo": 84,
+        "lead": "sine",
+        "pad": "triangle"
+      },
+      "desert_day": {
+        "root": 293.66,
+        "scale": [
+          0,
+          3,
+          5,
+          7,
+          10
+        ],
+        "tempo": 96,
+        "lead": "triangle",
+        "pad": "sine"
+      },
+      "snow_day": {
+        "root": 329.63,
+        "scale": [
+          0,
+          2,
+          4,
+          7,
+          9
+        ],
+        "tempo": 76,
+        "lead": "sine",
+        "pad": "sine"
+      },
+      "night": {
+        "root": 174.61,
+        "scale": [
+          0,
+          3,
+          5,
+          7,
+          10
+        ],
+        "tempo": 68,
+        "lead": "sine",
+        "pad": "sine"
+      }
+    },
+    "raidDrums": true,
+    "bossTempoMultiplier": 1.45,
+    "melodyChance": 0.62,
+    "stepsPerBar": 8
+  }
+}

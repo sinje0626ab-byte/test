@@ -120,6 +120,33 @@
     "joystickRadius": 56,
     "runThreshold": 0.9,
     "autoAimRange": 4.5,
-    "doubleTapMs": 350
+    "doubleTapMs": 350,
+    "rollButton": true
+  },
+  "feedback": {
+    "hitstop": {
+      "hit": 0.045,
+      "crit": 0.08,
+      "bossKill": 0.25,
+      "scale": 0.05
+    },
+    "shake": {
+      "crit": 0.15,
+      "playerHit": 0.25,
+      "cannon": 0.2,
+      "cannonFalloff": 25,
+      "bossAoe": 0.5,
+      "duration": 0.25
+    },
+    "particles": {
+      "max": 300,
+      "hit": 6,
+      "kill": 14,
+      "levelup": 24,
+      "muzzle": 4,
+      "blast": 18
+    },
+    "deathSquash": 0.15,
+    "dustInterval": 0.12
   }
 }

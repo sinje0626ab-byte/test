@@ -24,6 +24,7 @@ export class TouchControls {
       <div class="joy" data-joy><div class="joy-knob" data-knob></div></div>
       <button type="button" class="t-btn t-attack" data-attack>공격</button>
       <button type="button" class="t-btn t-use" data-use hidden>E</button>
+      <button type="button" class="t-btn t-roll" data-key="Space">구르기</button>
       <nav class="t-menu">${MENU.map(([code, label]) => `<button type="button" data-key="${code}">${label}</button>`).join('')}</nav>
       <div class="t-build" data-build hidden>
         <button type="button" class="ok" data-key="BuildConfirm">설치</button>
@@ -31,7 +32,7 @@ export class TouchControls {
       </div>`;
     root.appendChild(el);
     const $ = (q) => el.querySelector(q);
-    this.el = { joy: $('[data-joy]'), knob: $('[data-knob]'), attack: $('[data-attack]'), use: $('[data-use]'), build: $('[data-build]'), menu: $('.t-menu') };
+    this.el = { joy: $('[data-joy]'), knob: $('[data-knob]'), attack: $('[data-attack]'), use: $('[data-use]'), build: $('[data-build]'), menu: $('.t-menu'), roll: $('.t-roll') };
 
     this.bindJoystick();
 
@@ -98,6 +99,7 @@ export class TouchControls {
     const build = this.ctx.mode === 'build';
     this.el.build.hidden = !build;
     this.el.attack.hidden = build;
+    this.el.roll.hidden = build;
     if (build) this.el.use.hidden = true;
   }
 }

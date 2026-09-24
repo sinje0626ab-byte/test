@@ -131,6 +131,7 @@ export class RaidSystem {
       results.push({ baseId: raid.base.id, baseName: raid.base.label, remote: raid.remote, status, killed, total: raid.total, reward });
     }
     this.raids = [];
+    this.ctx.bus.emit('raid:end', {});
     this.ctx.bus.emit('raid:result', { day, results });
   }
 
