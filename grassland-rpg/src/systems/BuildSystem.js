@@ -39,9 +39,18 @@ export class BuildSystem {
       mats.push(o.material);
     });
     this.ctx.scene.add(ghost);
-    this.placing = { kind, type, item, ghost, mats, pos: new THREE.Vector3(), check: { ok: false } };
+    // 처음엔 플레이어 앞 몇 걸음 자리 (터치는 탭할 때까지 여기 머문다)
+    const pl = this.ctx.player;
+    const start = pl.position.clone().addScaledVector(pl.facing, kind === 'tent' ? 4 : 3);
+    this.placing = { kind, type, item, ghost, mats, pos: this.snap(start), check: { ok: false } };
+    ghost.position.copy(this.placing.pos);
     this.ctx.mode = 'build';
     this.ctx.input.consumeMouse();
+  }
+
+  snap(v) {
+    const g = this.cfg.gridSnap;
+    return new THREE.Vector3(Math.round(v.x / g) * g, 0, Math.round(v.z / g) * g);
   }
 
   tentGhost() {
@@ -120,20 +129,23 @@ export class BuildSystem {
     if (!p) return;
     const { input, mouseGround, bus } = this.ctx;
 
-    if (input.rightPressed || input.wasPressed('Escape')) {
+    if (input.rightPressed || input.wasPressed('Escape') || input.wasPressed('BuildCancel')) {
       this.end();
       return;
     }
-    if (mouseGround) {
-      const snap = this.cfg.gridSnap;
-      p.pos.set(Math.round(mouseGround.x / snap) * snap, 0, Math.round(mouseGround.z / snap) * snap);
+    const follow = input.touchMode ? input.leftPressed : true;
+    if (mouseGround && follow) {
+      p.pos.copy(this.snap(mouseGround));
       p.ghost.position.copy(p.pos);
     }
     p.check = this.validate(p.pos);
     for (const m of p.mats) m.color.setHex(p.check.ok ? OK : BAD);
-    this.hint(p.check.ok ? '좌클릭: 설치 · 우클릭/ESC: 취소' : p.check.reason, p.check.ok);
+    const okText = input.touchMode ? '화면을 탭해 자리를 고르고 "설치"를 누르세요' : '좌클릭: 설치 · 우클릭/ESC: 취소';
+    this.hint(p.check.ok ? okText : p.check.reason, p.check.ok);
 
-    if (!input.leftPressed) return;
+    // 마우스는 클릭으로 바로 설치, 터치는 탭으로 자리만 옮기고 "설치" 버튼으로 정한다.
+    const confirm = input.touchMode ? input.wasPressed('BuildConfirm') : input.leftPressed;
+    if (!confirm) return;
     if (!p.check.ok) {
       bus.emit('notify', { text: p.check.reason, kind: 'warn' });
       return;

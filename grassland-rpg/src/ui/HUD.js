@@ -62,6 +62,11 @@ export class HUD {
     // 퀵슬롯: 가방에 있는 소모품 종류를 순서대로 최대 N개
     this.quick = [];
     bus.on('inventory:changed', ({ slots }) => this.renderQuick(slots));
+    // 퀵슬롯 탭/클릭으로도 사용
+    this.el.quick.addEventListener('pointerdown', (e) => {
+      const i = [...this.el.quick.children].indexOf(e.target.closest('.qslot'));
+      if (i >= 0 && this.quick[i]) bus.emit('inventory:use-item', { item: this.quick[i] });
+    });
     this.boss = null;
     bus.on('boss:engaged', ({ boss }) => {
       this.boss = boss;
@@ -83,7 +88,7 @@ export class HUD {
       else this.notify({ text: `${name}에 들어섰습니다`, kind: 'info' });
     });
     bus.on('stats:levelup', ({ level }) => {
-      this.banner(`레벨 업! Lv ${level}`, '스킬 포인트 +1 · K 키로 스킬을 배워요', 'level');
+      this.banner(`레벨 업! Lv ${level}`, '스킬 포인트 +1 · 스킬 창(K)에서 배워요', 'level');
       this.pulse(this.el.lv.parentElement);
     });
     this.helpText = this.el.help.textContent;

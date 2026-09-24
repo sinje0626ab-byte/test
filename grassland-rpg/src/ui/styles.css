@@ -11,6 +11,7 @@
 * { box-sizing: border-box; }
 html, body {
   margin: 0; height: 100%; overflow: hidden;
+  touch-action: none; overscroll-behavior: none; -webkit-touch-callout: none;
   background: #bfe6f7;
   font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   color: var(--ink);
@@ -327,6 +328,55 @@ kbd {
 }
 .hud-interact[hidden] { display: none; }
 
+/* 모바일 터치 조작 */
+.touch-ui { position: absolute; inset: 0; pointer-events: none; }
+.touch-ui > * { pointer-events: auto; touch-action: none; }
+.joy {
+  position: absolute; left: 22px; bottom: 26px; width: 128px; height: 128px; border-radius: 50%;
+  background: rgba(255, 252, 240, 0.35); border: 3px solid rgba(255, 252, 240, 0.8);
+  display: flex; align-items: center; justify-content: center;
+}
+.joy-knob {
+  width: 58px; height: 58px; border-radius: 50%; background: rgba(255, 252, 240, 0.92);
+  box-shadow: 0 3px 0 rgba(120, 100, 60, 0.25); pointer-events: none;
+}
+.t-btn {
+  position: absolute; border: 0; border-radius: 50%; font: 800 26px inherit; color: #fff;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); -webkit-tap-highlight-color: transparent;
+}
+.t-btn[hidden] { display: none; }
+.t-attack { right: 24px; bottom: 30px; width: 92px; height: 92px; background: rgba(255, 123, 123, 0.9); font-size: 20px; }
+.t-attack:active { transform: scale(0.94); }
+.t-use { right: 34px; bottom: 138px; width: 64px; height: 64px; background: rgba(47, 42, 36, 0.9); color: #fff4d6; font-size: 22px; }
+.t-menu {
+  position: absolute; right: 10px; top: 118px; display: flex; flex-direction: column; gap: 6px;
+}
+.t-menu button, .t-build button {
+  padding: 8px 10px; min-width: 58px; border: 2px solid var(--panel-edge); border-radius: 12px;
+  background: rgba(255, 252, 240, 0.92); font: 700 12px inherit; color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+.t-build { position: absolute; right: 20px; bottom: 36px; display: flex; gap: 8px; }
+.t-build[hidden] { display: none; }
+.t-build button { padding: 14px 18px; font-size: 15px; }
+.t-build .ok { background: #7cc67a; color: #fff; border-color: #6ab468; }
+body.touch .hud-help { display: none; }
+body.touch .hud-help.bad { display: block; left: 50%; transform: translateX(-50%); bottom: auto; top: 118px; max-width: 70vw; }
+body.touch .quickbar { bottom: 168px; }
+body.touch .qslot { width: 42px; height: 42px; }
+body.touch .hud-interact { bottom: 214px; font-size: 12px; }
+body.touch .hud-notify { top: 112px; right: 84px; }
+body.touch .note { font-size: 12px; padding: 4px 10px; }
+body.touch .window { max-height: 80vh; overflow: auto; max-width: calc(100vw - 16px); }
+@media (max-width: 600px) {
+  body.touch .window, body.touch .window.win-left, body.touch .window.win-center {
+    left: 50%; right: auto; transform: translate(-50%, -50%); animation-name: win-in-center;
+  }
+  .tw, .craft-list, .shop-list, .build-list { width: min(460px, calc(100vw - 48px)); }
+  .st-cols { flex-direction: column; }
+  .hud-banner b { font-size: 22px; }
+}
+
 /* 보스 체력바 */
 .bossbar {
   position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: min(460px, 50vw);
@@ -338,7 +388,8 @@ kbd {
 .bossbar .fill { background: linear-gradient(90deg, #ff5f5f, #ff9a5f); transition: width 0.15s linear; }
 
 /* 퀵슬롯 */
-.quickbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+.quickbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; pointer-events: auto; }
+.qslot { cursor: pointer; }
 .qslot {
   position: relative; width: 48px; height: 48px; border-radius: 12px;
   background: var(--panel); border: 2px solid var(--panel-edge);

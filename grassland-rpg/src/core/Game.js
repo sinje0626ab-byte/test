@@ -36,6 +36,7 @@ import { TurretWindow } from '../ui/TurretWindow.js';
 import { CraftWindow } from '../ui/CraftWindow.js';
 import { StorageWindow } from '../ui/StorageWindow.js';
 import { ShopWindow } from '../ui/ShopWindow.js';
+import { TouchControls } from '../ui/TouchControls.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -103,6 +104,7 @@ export class Game {
     new CraftWindow(ctx, this.ui, this.tooltip);
     new StorageWindow(ctx, this.ui, this.tooltip);
     new ShopWindow(ctx, this.ui, this.tooltip);
+    this.touch = new TouchControls(ctx, uiRoot);
     bus.on('player:teleport', () => this.camera.snapTo(ctx.player.position));
 
     // 창들이 첫 화면을 그릴 수 있게 현재 상태를 한 번 알린다. (불러오기가 있으면 다시 알린다)
@@ -146,6 +148,7 @@ export class Game {
     this.camera.update(dt, ctx.player.position);
     this.hud.update(dt);
     this.ui.update(dt);
+    this.touch.update();
     ctx.input.endFrame();
   }
 
