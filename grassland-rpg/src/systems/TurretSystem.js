@@ -93,7 +93,7 @@ export class TurretSystem {
     let best = null;
     let bestScore = Infinity;
     for (const m of this.ctx.monsters) {
-      if (!m.alive) continue;
+      if (!m.alive || m.untargetable) continue;
       const d = Math.hypot(m.position.x - t.position.x, m.position.z - t.position.z);
       if (d > range) continue;
       const score = t.priority === 'lowestHp' ? m.stats.hp : d;
@@ -169,10 +169,10 @@ export class TurretSystem {
       }
       let hit = null;
       for (const m of monsters) {
-        if (!m.alive) continue;
+        if (!m.alive || m.untargetable) continue;
         const dx = m.position.x - p.position.x;
         const dz = m.position.z - p.position.z;
-        if (dx * dx + dz * dz < (m.radius + 0.15) ** 2 && p.position.y < m.radius * 2) { hit = m; break; }
+        if (dx * dx + dz * dz < (m.radius + 0.15) ** 2 && p.position.y < m.radius * 2 + (m.def.flier ? 1.3 : 0)) { hit = m; break; }
       }
       if (hit) {
         bus.emit('projectile:hit', { monster: hit, damage: p.damage, dir: p.velocity.clone().setY(0).normalize() });

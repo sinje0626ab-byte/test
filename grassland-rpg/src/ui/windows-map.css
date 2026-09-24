@@ -1,0 +1,71 @@
+/* 포탑 관리·기지 업그레이드·지도 창 */
+/* 포탑 관리 창 */
+.tw { width: 300px; }
+.tw-head { display: flex; justify-content: space-between; align-items: center; font-size: 16px; margin-bottom: 6px; }
+.tw-stats { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; margin: 10px 0; font-size: 13px; }
+.tw-stats dt { color: #8a7f63; }
+.tw-stats dd { margin: 0; font-weight: 800; text-align: right; }
+.tw-stats i { font-style: normal; color: #6b8f5a; }
+.tw-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.tw-actions button {
+  padding: 8px 10px; border: 2px solid var(--panel-edge); border-radius: 12px; cursor: pointer;
+  background: #fff6e0; font-weight: 700; font-size: 13px; font-family: inherit; color: inherit;
+}
+.tw-actions button:hover:not(:disabled) { border-color: #7cc67a; background: #fff1c9; }
+.tw-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+.tw-actions button[data-act="priority"] { grid-column: 1 / -1; font-weight: 600; }
+.tw-actions .danger { grid-column: 1 / -1; color: #d9534f; }
+.tw-actions small { display: inline-flex; align-items: center; gap: 3px; margin-left: 4px; }
+.tw-actions .coin { width: 14px; height: 14px; display: inline-block; }
+.tw-note { margin: 8px 0 0; font-size: 12px; color: #d9534f; }
+
+/* 기지 업그레이드 카드 */
+.base-up { padding: 12px 14px; border-radius: 14px; background: #fff6e0; border: 2px solid var(--panel-edge); }
+.base-up-title { font-size: 16px; }
+.base-up-title small { color: #9a8f73; margin-left: 6px; }
+.base-up-eff { margin: 8px 0; padding-left: 18px; font-size: 13px; color: #6b8f5a; line-height: 1.6; }
+.base-up-cost { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
+.base-up-cost li { display: flex; align-items: center; gap: 6px; }
+.base-up-cost .item-icon { width: 18px; height: 18px; }
+.base-up-cost .bad b { color: #d9534f; }
+.base-up-cost .ok b { color: #5a9a4a; }
+.base-up-btn {
+  width: 100%; padding: 9px; border: 0; border-radius: 12px; cursor: pointer;
+  background: #7cc67a; color: #fff; font-weight: 800; font-size: 14px; font-family: inherit;
+}
+.base-up-btn:disabled { background: #e3dac3; color: #a99f86; cursor: not-allowed; }
+
+/* 지도 창 */
+.map { display: flex; gap: 14px; align-items: flex-start; }
+.map-canvas { border-radius: 12px; border: 2px solid var(--panel-edge); display: block; }
+.map-side { width: 220px; }
+.map-side h3 { margin: 0 0 8px; font-size: 14px; }
+.map-bases { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.map-bases li {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 10px; border-radius: 12px; background: #fff6e0; border: 2px solid var(--panel-edge);
+}
+.map-bases li.here { border-color: #7cc67a; }
+.map-bases li.empty { justify-content: center; color: #9a8f73; font-size: 13px; }
+.map-bases span { display: flex; flex-direction: column; font-size: 13px; }
+.map-bases small { font-size: 11px; color: #8a7f63; }
+.map-bases button {
+  flex: none; padding: 5px 12px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #7cc67a; color: #fff; font-weight: 700; font-size: 12px; font-family: inherit;
+}
+.map-bases button:disabled { background: #e3dac3; color: #a99f86; cursor: not-allowed; }
+.map-hint { font-size: 12px; color: #9a8f73; margin: 10px 0 0; }
+.window.win-center { right: auto; left: 50%; transform: translate(-50%, -50%); animation-name: win-in-center; }
+@keyframes win-in-center { from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); } }
+
+@media (max-width: 600px) {
+  .map { flex-direction: column; }
+  .map-canvas { max-height: 50vh; width: auto !important; }
+  .sk-tree { grid-template-columns: 1fr; max-height: 60vh; overflow: auto; }
+  .char { flex-direction: column; }
+  .window.win-left { left: 50%; }
+  .build-list { width: 300px; }
+  .window { right: 50%; transform: translate(50%, -50%); }
+  .hud-tl { width: 180px; top: 10px; left: 10px; }
+  .hud-tr { top: 10px; right: 10px; }
+}

@@ -10,23 +10,22 @@ export class BossSystem {
     this.ctx = ctx;
     this.defs = ctx.data.bosses;
     this.status = {}; // bossId → { defeatedDay }
-    this.active = new Map(); // bossId → Boss
+    this.active = new Map(); // bossId → [Boss] (분열하면 조각들)
     this.pool = new ProjectilePool(ctx.scene);
     this.gravity = ctx.data.config.turret.gravity;
     const { bus } = ctx;
 
     for (const def of Object.values(this.defs)) this.buildLair(def);
 
-    bus.on('monster:killed', ({ type }) => {
-      for (const [id, boss] of this.active) {
-        if (boss.type !== type || boss.alive) continue;
-        this.status[id] = { defeatedDay: ctx.time.day };
-        this.active.delete(id);
-        bus.emit('boss:defeated', { id, name: this.defs[id].name });
-        bus.emit('notify', { text: `${this.defs[id].name} 처치! ${this.defs[id].respawnDays}일 뒤에 다시 나타납니다`, kind: 'gold' });
-        this.emitStatus();
+    // 모든 조각(분열했으면 둘 다)이 쓰러져야 처치
+    bus.on('monster:killed', ({ position }) => {
+      for (const [id, parts] of this.active) {
+        if (parts.some((b) => b.alive)) continue;
+        if (!parts.some((b) => b.state === 'dead')) continue;
+        this.defeat(id, position);
       }
     });
+    bus.on('boss:split', ({ boss }) => this.split(boss));
     bus.on('boss:volley', (e) => this.volley(e));
     bus.on('boss:boulder', (e) => this.boulder(e));
     bus.on('save:collect', (save) => { save.bosses = { ...this.status }; });
@@ -55,6 +54,36 @@ export class BossSystem {
     }
     g.position.set(def.lair[0], 0, def.lair[1]);
     this.ctx.scene.add(g);
+  }
+
+  defeat(id, position) {
+    const def = this.defs[id];
+    const { bus } = this.ctx;
+    this.status[id] = { defeatedDay: this.ctx.time.day };
+    this.active.delete(id);
+    // 조각으로 끝나는 보스는 보상을 마지막 자리에 한꺼번에
+    const drops = this.ctx.data.monsters[def.monster].bossDrops;
+    if (drops) bus.emit('loot:table', { drops, position });
+    bus.emit('boss:defeated', { id, name: def.name });
+    bus.emit('notify', { text: `${def.name} 처치! ${def.respawnDays}일 뒤에 다시 나타납니다`, kind: 'gold' });
+    this.emitStatus();
+  }
+
+  // 분열: 원래 보스 자리 양옆에 조각들
+  split(boss) {
+    const sp = boss.bdef.split;
+    const parts = [];
+    for (let i = 0; i < sp.count; i++) {
+      const a = boss.facing.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2 + (i / sp.count) * Math.PI * 2);
+      const pos = boss.position.clone().addScaledVector(a, boss.radius);
+      const b = new Boss(this.ctx, boss.bossId, boss.bdef, { monster: sp.into, position: pos, patterns: sp.patterns, part: true });
+      b.knock.copy(a).multiplyScalar(6);
+      parts.push(b);
+      this.ctx.monsters.push(b);
+    }
+    for (const b of parts) b.parts = parts; // HUD 체력바는 조각 합계
+    this.active.set(boss.bossId, parts);
+    this.ctx.bus.emit('notify', { text: `${boss.bdef.name}이(가) 둘로 갈라졌습니다!`, kind: 'warn' });
   }
 
   isDefeated(id) {
@@ -93,15 +122,15 @@ export class BossSystem {
     for (const [id, def] of Object.entries(this.defs)) {
       const lair = tmp.set(def.lair[0], 0, def.lair[1]);
       const dist = player.position.distanceTo(lair);
-      const boss = this.active.get(id);
-      if (!boss && !this.isDefeated(id) && dist < def.spawnRange) {
+      const parts = this.active.get(id);
+      if (!parts && !this.isDefeated(id) && dist < def.spawnRange) {
         const b = new Boss(this.ctx, id, def);
-        this.active.set(id, b);
+        this.active.set(id, [b]);
         monsters.push(b);
         bus.emit('notify', { text: `어딘가에서 ${def.name}의 기척이 느껴집니다…`, kind: 'warn' });
-      } else if (boss && boss.alive && dist > def.despawnRange && !boss.engaged) {
-        boss.done = true; // 멀리 가면 치운다 (다시 오면 새로 나타난다)
-        boss.alive = false;
+      } else if (parts && dist > def.despawnRange && parts.every((b) => b.alive && !b.engaged)) {
+        // 멀리 가면 치운다 (다시 오면 처음 모습으로 새로 나타난다)
+        for (const b of parts) { b.done = true; b.alive = false; }
         this.active.delete(id);
       }
     }

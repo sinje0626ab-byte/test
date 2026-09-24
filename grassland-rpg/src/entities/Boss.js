@@ -1,38 +1,31 @@
 import * as THREE from 'three';
 import { Monster } from './Monster.js';
+import { PATTERNS } from './bossPatterns.js';
 
 const tmp = new THREE.Vector3();
 
-function telegraph(radius) {
-  const geo = new THREE.CircleGeometry(radius, 40).rotateX(-Math.PI / 2);
-  const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xff4d4d, transparent: true, opacity: 0, depthWrite: false }));
-  mesh.position.y = 0.06;
-  mesh.visible = false;
-  return mesh;
-}
-
-// 보스: 둥지에서 기다리다 다가오면 싸운다. 내려찍기 + 원거리 패턴, 멀리 끌려가면 돌아가서 회복.
+// 보스: 둥지에서 기다리다 다가오면 싸운다. bosses.json의 patterns에서 쿨다운이 돈 패턴을 골라 쓴다.
+// 멀리 끌려가면 돌아가서 회복. 페이즈: split(갈라짐) / enrage(분노).
+// opts: { monster, position, patterns, part } — 분열 조각은 part = true
 export class Boss extends Monster {
-  constructor(ctx, bossId, def) {
+  constructor(ctx, bossId, def, opts = {}) {
     const lair = new THREE.Vector3(def.lair[0], 0, def.lair[1]);
-    super(ctx, def.monster, lair);
+    super(ctx, opts.monster ?? def.monster, opts.position ?? lair);
     this.boss = true;
     this.bossId = bossId;
     this.bdef = def;
     this.lair = lair;
+    this.part = !!opts.part;
     this.hasFled = true;
-    this.slamCd = 1.5;
-    this.rangedCd = 2.5;
     this.cast = null;
     this.engaged = false;
+    this.jumpHeight = 0;
+    this.cdSpeed = 1;
+    this.sceneMarks = [];
     this.hpBar.group.visible = false;
-
-    // 예고 표시: 내려찍기는 보스 발밑, 얼음덩이는 떨어질 자리
-    this.slamMark = telegraph(def.slam.radius);
-    this.mesh.add(this.slamMark);
-    this.rangedMark = telegraph(def.ranged.radius ?? 1);
-    ctx.scene.add(this.rangedMark);
-    this.setState('idle');
+    // 패턴마다 따로 쿨다운 (처음엔 조금씩 어긋나게)
+    this.patterns = (opts.patterns ?? def.patterns).map((p, i) => ({ ...p, cd: 1.2 + i * 1.3 }));
+    this.setState(this.part ? 'chase' : 'idle');
   }
 
   setEngaged(on) {
@@ -47,8 +40,7 @@ export class Boss extends Monster {
     const player = this.ctx.player;
     const move = new THREE.Vector3();
     let speed = 0;
-    this.slamCd -= dt;
-    this.rangedCd -= dt;
+    for (const p of this.patterns) p.cd -= dt * this.cdSpeed;
     const dist = player.alive ? this.position.distanceTo(player.position) : Infinity;
     const fromLair = this.position.distanceTo(this.lair);
 
@@ -62,10 +54,10 @@ export class Boss extends Monster {
           this.setState('return');
           break;
         }
-        if (dist < b.slam.radius * 0.8 && this.slamCd <= 0) { this.startCast('slam'); break; }
-        if (dist < b.ranged.range && this.rangedCd <= 0) { this.startCast('ranged'); break; }
+        const p = this.patterns.find((x) => x.cd <= 0 && PATTERNS[x.kind].ready(this, x, dist));
+        if (p) { this.startCast(p); break; }
         move.set(player.position.x - this.position.x, 0, player.position.z - this.position.z);
-        speed = dist > b.slam.radius * 0.5 ? d.chaseSpeed : 0;
+        speed = dist > this.radius + 1.2 ? d.chaseSpeed : 0;
         break;
       }
       case 'cast':
@@ -84,41 +76,23 @@ export class Boss extends Monster {
     return { move, speed };
   }
 
-  startCast(kind) {
-    const b = this.bdef;
-    const p = this.ctx.player.position;
-    this.cast = { kind, windup: kind === 'slam' ? b.slam.windup : b.ranged.windup, target: new THREE.Vector3(p.x, 0, p.z) };
+  startCast(p) {
+    const pp = this.ctx.player.position;
+    this.cast = { p, target: new THREE.Vector3(pp.x, 0, pp.z) };
     this.setState('cast');
-    if (kind === 'ranged' && b.ranged.kind === 'boulder') {
-      this.rangedMark.position.set(p.x, 0.06, p.z);
-      this.rangedMark.visible = true;
-    }
-    if (kind === 'slam') this.slamMark.visible = true;
+    PATTERNS[p.kind].start?.(this, p, this.cast);
   }
 
   updateCast() {
     const c = this.cast;
-    const b = this.bdef;
-    const t = Math.min(1, this.stateTime / c.windup);
-    const mark = c.kind === 'slam' ? this.slamMark : this.rangedMark;
-    mark.material.opacity = 0.15 + 0.35 * t;
+    const pat = PATTERNS[c.p.kind];
+    const t = Math.min(1, this.stateTime / (c.p.windup / this.cdSpeed));
     tmp.set(c.target.x - this.position.x, 0, c.target.z - this.position.z);
     if (tmp.lengthSq() > 1e-4) this.facing.copy(tmp.normalize());
+    pat.during?.(this, c.p, c, t);
     if (t < 1) return;
-
-    const bus = this.ctx.bus;
-    if (c.kind === 'slam') {
-      bus.emit('boss:aoe', { position: this.position.clone(), radius: b.slam.radius, damage: b.slam.damage, boss: this });
-      this.slamCd = b.slam.cooldown;
-    } else if (b.ranged.kind === 'volley') {
-      bus.emit('boss:volley', { origin: this.position.clone(), count: b.ranged.count, speed: b.ranged.speed, damage: b.ranged.damage, range: b.ranged.range });
-      this.rangedCd = b.ranged.cooldown;
-    } else {
-      bus.emit('boss:boulder', { from: this.position.clone().setY(this.radius * 2), target: c.target.clone(), speed: b.ranged.speed, radius: b.ranged.radius, damage: b.ranged.damage, mark: this.rangedMark });
-      this.rangedCd = b.ranged.cooldown;
-    }
-    this.slamMark.visible = false;
-    if (c.kind !== 'ranged' || b.ranged.kind !== 'boulder') this.rangedMark.visible = false;
+    pat.fire(this, c.p, c);
+    c.p.cd = c.p.cooldown;
     this.cast = null;
     this.setState('chase');
   }
@@ -127,27 +101,56 @@ export class Boss extends Monster {
     super.animate(dt, speed);
     this.hpBar.group.visible = false; // 보스 체력은 화면 위 막대로
     if (this.state === 'cast') {
-      const t = Math.min(1, this.stateTime / this.cast.windup);
+      const t = Math.min(1, this.stateTime / (this.cast.p.windup / this.cdSpeed));
       this.body.scale.set(1 + t * 0.12, 1 - t * 0.2, 1 + t * 0.12); // 힘 모으기
     }
+    this.body.position.y += this.jumpHeight;
+  }
+
+  // 페이즈 넘어가기: 분열·분노
+  checkPhase() {
+    const b = this.bdef;
+    const ratio = this.stats.hp / this.stats.maxHp;
+    if (b.split && !this.part && !this.splitDone && ratio <= b.split.at) {
+      this.splitDone = true;
+      this.clearCast();
+      this.setEngaged(false);
+      this.alive = false; // 조각들이 이어받는다
+      this.done = true;
+      this.ctx.bus.emit('boss:split', { boss: this });
+    }
+    if (b.enrage && !this.enraged && ratio <= b.enrage.at) {
+      this.enraged = true;
+      this.cdSpeed = b.enrage.speed;
+      this.mat.color.set(b.enrage.color);
+      this.ctx.bus.emit('notify', { text: `${b.name}이(가) 분노했습니다!`, kind: 'warn' });
+      this.ctx.bus.emit('boss:enraged', { boss: this });
+    }
+  }
+
+  clearCast() {
+    for (const p of this.patterns) for (const m of p.marks ?? []) m.visible = false;
+    this.jumpHeight = 0;
+    this.cast = null;
+    if (this.state === 'cast') this.setState('chase');
   }
 
   takeDamage(amount, knockVec) {
     const died = super.takeDamage(amount, knockVec);
     if (died) {
       this.setEngaged(false);
-      this.slamMark.visible = false;
-      this.rangedMark.visible = false;
+      this.clearCast();
       return true;
     }
+    this.checkPhase();
     // 부모는 맞으면 추적·도주로 바꾸지만 보스는 하던 일을 계속한다.
-    if (this.state === 'idle' || this.state === 'wander') this.setState('chase');
+    if (this.alive && (this.state === 'idle' || this.state === 'wander' || this.state === 'flee')) this.setState('chase');
     return false;
   }
 
   dispose() {
     this.setEngaged(false);
-    this.ctx.scene.remove(this.rangedMark);
+    for (const m of this.sceneMarks) this.ctx.scene.remove(m);
     super.dispose();
   }
 }

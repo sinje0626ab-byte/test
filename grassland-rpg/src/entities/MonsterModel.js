@@ -1,8 +1,13 @@
 import * as THREE from 'three';
+import { SHAPES } from './monsterShapes.js';
 
 // 몬스터 모양. def.shape: 'slime' (말랑한 젤리) / 'mushroom' (갓 쓴 버섯) / 'cactus' (걷는 선인장) / 'golem' (얼음 덩어리)
 // 돌려주는 mat 은 피격 번쩍임·사라짐 연출에 쓰는 본체 재질
 export function createMonsterModel(def) {
+  if (SHAPES[def.shape]) {
+    const { body, mat, extraMats, wings } = SHAPES[def.shape](def);
+    return { body, mat, extraMats, wings };
+  }
   const r = def.radius;
   const body = new THREE.Group();
   const mat = new THREE.MeshStandardMaterial({

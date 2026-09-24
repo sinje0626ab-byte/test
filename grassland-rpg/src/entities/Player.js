@@ -23,6 +23,7 @@ export class Player {
     this.velocity = new THREE.Vector3();
     this.knock = new THREE.Vector3();
     this.alive = true;
+    this.speedMult = 1; // 감속 (StatusSystem)
 
     this.attackTimer = 0;
     this.staminaDelay = 0;
@@ -125,7 +126,7 @@ export class Player {
       return;
     }
 
-    let speed = s.moveSpeed * (moving ? Math.max(0.35, mv.amount) : 1);
+    let speed = s.moveSpeed * this.speedMult * (moving ? Math.max(0.35, mv.amount) : 1);
     const wantsRun = input.isDown('ShiftLeft') || input.isDown('ShiftRight')
       || (mv.stick && mv.amount >= this.ctx.data.config.touch.runThreshold);
     if (moving && wantsRun && s.stamina > 0) {
@@ -168,7 +169,7 @@ export class Player {
       let best = null;
       let bestD = range;
       for (const m of list) {
-        if (!m.alive) continue;
+        if (!m.alive || m.untargetable) continue;
         const d = m.position.distanceTo(this.position) - m.radius;
         if (d < bestD) { bestD = d; best = m; }
       }
@@ -193,6 +194,15 @@ export class Player {
     return true;
   }
 
+  // 독 같은 지속 피해: 무적 시간·넉백 없이 깎는다. 깎였으면 true
+  applyDot(amount) {
+    if (!this.alive) return false;
+    const s = this.stats;
+    s.hp = Math.max(0, s.hp - amount);
+    if (s.hp <= 0) this.die();
+    return true;
+  }
+
   die() {
     this.alive = false;
     this.attack.cancel();
@@ -203,6 +213,7 @@ export class Player {
   respawn() {
     const s = this.stats;
     this.alive = true;
+    this.speedMult = 1;
     s.hp = s.maxHp;
     s.stamina = s.maxStamina;
     this.knock.set(0, 0, 0);

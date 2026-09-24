@@ -6,7 +6,12 @@
     "zFrom": -60,
     "zTo": 90,
     "monsters": [
-      "slime"
+      "slime",
+      "slime",
+      "slime",
+      "bee",
+      "horn_rabbit",
+      "big_slime"
     ],
     "raidMonster": "night_slime",
     "mapColor": "#9edb6f",
@@ -67,6 +72,9 @@
     "monsters": [
       "mushroom",
       "mushroom",
+      "spore_puff",
+      "thorn_wolf",
+      "stump",
       "slime"
     ],
     "raidMonster": "night_mushroom",
@@ -125,6 +133,9 @@
     "monsters": [
       "cactus",
       "sand_slime",
+      "scorpion",
+      "sand_mole",
+      "tumble",
       "cactus"
     ],
     "raidMonster": "night_cactus",
@@ -177,8 +188,11 @@
     "zFrom": -480,
     "zTo": -270,
     "monsters": [
-      "ice_golem",
       "snow_slime",
+      "ice_golem",
+      "frost_wisp",
+      "yeti_cub",
+      "snow_bomber",
       "snow_slime"
     ],
     "raidMonster": "night_golem",

@@ -29,7 +29,7 @@ export class ArrowSystem {
       p.step(dt);
       let hit = null;
       for (const m of monsters) {
-        if (!m.alive) continue;
+        if (!m.alive || m.untargetable) continue;
         const dx = m.position.x - p.position.x;
         const dz = m.position.z - p.position.z;
         if (dx * dx + dz * dz < (m.radius + 0.2) ** 2) { hit = m; break; }

@@ -1,5 +1,6 @@
 import './ui/styles.css';
 import './ui/windows.css';
+import './ui/windows-map.css';
 import './ui/touch.css';
 import './ui/title.css';
 import config from './data/config.json';

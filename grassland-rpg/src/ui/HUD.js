@@ -76,7 +76,7 @@ export class HUD {
     this.boss = null;
     bus.on('boss:engaged', ({ boss }) => {
       this.boss = boss;
-      this.el.bossName.textContent = boss.def.name;
+      this.el.bossName.textContent = boss.bdef?.name ?? boss.def.name;
       this.el.boss.hidden = false;
     });
     bus.on('boss:disengaged', ({ boss }) => {
@@ -176,7 +176,11 @@ export class HUD {
     for (let i = 0; i < this.quick.length; i++) {
       if (input.wasPressed(`Digit${i + 1}`)) this.ctx.bus.emit('inventory:use-item', { item: this.quick[i] });
     }
-    if (this.boss) this.el.bossFill.style.width = `${(this.boss.stats.hp / this.boss.stats.maxHp) * 100}%`;
+    if (this.boss) {
+      const parts = this.boss.parts ?? [this.boss];
+      const sum = (f) => parts.reduce((a, b) => a + f(b.stats), 0);
+      this.el.bossFill.style.width = `${(sum((s) => s.hp) / sum((s) => s.maxHp)) * 100}%`;
+    }
     const s = this.ctx.player.stats;
     this.el.hp.style.width = `${(s.hp / s.maxHp) * 100}%`;
     this.el.hpText.textContent = `${Math.ceil(s.hp)} / ${s.maxHp}`;

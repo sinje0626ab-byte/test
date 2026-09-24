@@ -2,10 +2,14 @@ import * as THREE from 'three';
 import { rand } from '../utils/random.js';
 import { createMonsterModel } from './MonsterModel.js';
 import { HpBar } from './HpBar.js';
+import { BEHAVIORS } from './behaviors/index.js';
+
+const NIGHT_GLOW = new THREE.Color(0.22, 0.08, 0.32);
+const ELITE_GLOW = new THREE.Color(0.45, 0.33, 0.05);
 
 const tmp = new THREE.Vector3();
 
-// 필드 몬스터. AI 상태: 배회 → 추적 → 공격 → (체력 낮으면) 도주 → 사망
+// 필드 몬스터. 행동(AI)은 def.behavior 모듈(entities/behaviors)이 정한다.
 export class Monster {
   constructor(ctx, type, position) {
     this.ctx = ctx;
@@ -31,8 +35,24 @@ export class Monster {
     this.flash = 0;
     this.hopPhase = rand.range(0, Math.PI * 2);
     this.hpBarTimer = 0;
+    this.speedMult = 1;
+    this.untargetable = false; // 땅속에 숨었을 때 등
+    this.bs = {}; // 행동 모듈이 쓰는 상태
 
     this.buildMesh();
+    this.behavior = BEHAVIORS[d.behavior] ?? BEHAVIORS.melee;
+    this.behavior.init?.(this);
+  }
+
+  // 정예: 크고 강하고 금빛 (config.elite)
+  makeElite(cfg) {
+    this.elite = true;
+    const s = this.stats;
+    s.maxHp = Math.round(s.maxHp * cfg.hp);
+    s.hp = s.maxHp;
+    s.attack = Math.round(s.attack * cfg.attack);
+    this.radius *= cfg.scale;
+    this.mesh.scale.setScalar(cfg.scale);
   }
 
   buildMesh() {
@@ -42,6 +62,15 @@ export class Monster {
     this.extraMats = extraMats;
     const outer = new THREE.Group();
     outer.add(body);
+    // 나는 몬스터: 바닥 그림자 원
+    if (this.def.flier) {
+      const shadow = new THREE.Mesh(
+        new THREE.CircleGeometry(this.def.radius * 0.9, 16).rotateX(-Math.PI / 2),
+        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false }),
+      );
+      shadow.position.y = 0.04;
+      outer.add(shadow);
+    }
 
     // 체력바 (맞았을 때만 잠깐 보인다)
     this.hpBar = new HpBar(0.9);
@@ -64,6 +93,7 @@ export class Monster {
     s.maxHp = Math.round(s.maxHp * mult);
     s.hp = s.maxHp;
     s.attack = Math.round(s.attack * mult);
+    this.statMult = (this.statMult ?? 1) * mult; // 분열한 조각도 같은 세기로
   }
 
   setState(state) {
@@ -98,75 +128,16 @@ export class Monster {
     this.position.addScaledVector(this.knock, dt);
     this.knock.multiplyScalar(Math.exp(-8 * dt));
     this.separate();
-    this.ctx.world.resolveCollision(this.position, this.radius);
+    // 나는 몬스터는 나무·바위를 넘어 다닌다 (월드 경계만)
+    if (this.def.flier) this.ctx.world.clampToBounds(this.position);
+    else this.ctx.world.resolveCollision(this.position, this.radius);
 
     this.animate(dt, speed);
   }
 
-  // 매 프레임 상태를 정하고 어느 쪽으로 얼마나 빨리 움직일지 돌려준다.
+  // 매 프레임 상태를 정하고 어느 쪽으로 얼마나 빨리 움직일지 돌려준다 (행동 모듈이 정한다).
   think(dt) {
-    const d = this.def;
-    const player = this.ctx.player;
-    const toPlayer = tmp.set(player.position.x - this.position.x, 0, player.position.z - this.position.z);
-    const dist = toPlayer.length();
-    const canSee = player.alive && dist < d.detectRange;
-    let speed = 0;
-    const move = new THREE.Vector3();
-    this.attackTarget = player;
-
-    switch (this.state) {
-      case 'wander': {
-        if (canSee) { this.setState('chase'); break; }
-        if (!this.target) {
-          this.pause -= dt;
-          if (this.pause <= 0) {
-            const a = rand.range(0, Math.PI * 2);
-            const r = rand.range(1, d.wanderRadius);
-            this.target = new THREE.Vector3(this.home.x + Math.cos(a) * r, 0, this.home.z + Math.sin(a) * r);
-          }
-        } else {
-          move.set(this.target.x - this.position.x, 0, this.target.z - this.position.z);
-          if (move.length() < 0.3 || this.stateTime > 8) {
-            this.target = null;
-            this.stateTime = 0;
-            this.pause = rand.range(d.wanderPauseMin, d.wanderPauseMax);
-            move.set(0, 0, 0);
-          } else {
-            speed = d.moveSpeed;
-          }
-        }
-        break;
-      }
-      case 'chase': {
-        if (!player.alive || dist > d.loseRange) {
-          this.home.copy(this.position);
-          this.target = null;
-          this.setState('wander');
-          break;
-        }
-        if (dist <= d.attackRange + player.radius && this.cooldown <= 0) {
-          this.setState('attack');
-          break;
-        }
-        move.copy(toPlayer);
-        speed = dist > d.attackRange * 0.8 ? d.chaseSpeed : 0;
-        break;
-      }
-      case 'attack':
-        this.attackStep('chase');
-        break;
-      case 'flee': {
-        move.copy(toPlayer).multiplyScalar(-1);
-        speed = d.fleeSpeed;
-        if (this.stateTime >= d.fleeDuration) {
-          this.home.copy(this.position);
-          this.target = null;
-          this.setState('wander');
-        }
-        break;
-      }
-    }
-    return { move, speed };
+    return this.behavior.think(this, dt);
   }
 
   // 움츠렸다가(예비동작) 튀어오르며 attackTarget을 공격한다. 끝나면 next 상태로.
@@ -207,6 +178,16 @@ export class Monster {
     const d = this.def;
     this.mesh.position.copy(this.position);
     this.body.rotation.y = Math.atan2(this.facing.x, this.facing.z);
+    this.glow(dt);
+    this.hpBar.update(this.stats.hp / this.stats.maxHp, this.ctx.camera, this.hpBarTimer > 0);
+    if (this.behavior.animate?.(this, dt, speed)) return;
+    if (d.flier) {
+      // 둥실둥실 떠다닌다
+      this.hopPhase += dt * 6;
+      this.body.position.y = 1.1 + Math.sin(this.hopPhase) * 0.15;
+      this.body.scale.setScalar(1);
+      return;
+    }
 
     let sy = 1;
     let y = 0;
@@ -225,16 +206,22 @@ export class Monster {
     }
     this.body.position.y = y;
     this.body.scale.set(1 / Math.sqrt(sy), sy, 1 / Math.sqrt(sy));
+  }
 
-    const e = this.flash > 0 ? 1 : 0;
-    this.mat.emissive.setRGB(e, e, e);
-
-    this.hpBar.update(this.stats.hp / this.stats.maxHp, this.ctx.camera, this.hpBarTimer > 0);
+  // 피격 번쩍임(흰색) > 정예(금빛) > 밤 몬스터(보랏빛)
+  glow() {
+    const e = this.mat.emissive;
+    if (this.flash > 0) e.setRGB(1, 1, 1);
+    else if (this.elite) e.copy(ELITE_GLOW);
+    else if (this.night) e.copy(NIGHT_GLOW);
+    else e.setRGB(0, 0, 0);
   }
 
   // 데미지를 받고 죽었으면 true
   takeDamage(amount, knockVec) {
-    if (!this.alive) return false;
+    if (!this.alive || this.untargetable) return false;
+    // 무리: 한 마리가 맞으면 무리 전체가 쫓아온다
+    for (const o of this.pack ?? []) if (o !== this && o.alive) o.alert();
     const s = this.stats;
     s.hp = Math.max(0, s.hp - amount);
     this.flash = 0.12;
@@ -246,13 +233,18 @@ export class Monster {
       this.setState('dead');
       return true;
     }
-    if (!this.hasFled && s.hp / s.maxHp <= this.def.fleeHpRatio) {
+    if (this.behavior.flees && !this.hasFled && s.hp / s.maxHp <= this.def.fleeHpRatio) {
       this.hasFled = true;
       this.setState('flee');
-    } else if (this.state === 'wander') {
-      this.setState('chase');
+    } else {
+      this.alert();
     }
     return false;
+  }
+
+  // 배회 중이면 싸움 상태로 (행동마다 첫 상태가 다르다: 두더지는 땅속으로)
+  alert() {
+    if (this.state === 'wander') this.setState(this.behavior.aggro ?? 'chase');
   }
 
   dispose() {
