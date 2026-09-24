@@ -13,7 +13,8 @@ export class StatsSystem {
 
     bus.on('monster:killed', ({ type }) => this.gain(data.monsters[type]?.xp ?? 0));
     bus.on('build:place', ({ kind, type }) => {
-      const xp = kind === 'tent' ? data.buildings.baseLevels['1'].xp : data.turrets[type]?.xp;
+      const xp = kind === 'tent' ? data.buildings.baseLevels['1'].xp
+        : kind === 'facility' ? data.buildings.buildings[type]?.xp : data.turrets[type]?.xp;
       this.gain(xp ?? 0);
     });
     bus.on('base:upgraded', ({ level }) => this.gain(data.buildings.baseLevels[String(level)]?.xp ?? 0));

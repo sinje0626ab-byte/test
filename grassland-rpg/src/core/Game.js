@@ -20,6 +20,9 @@ import { EquipmentSystem } from '../systems/EquipmentSystem.js';
 import { SkillSystem } from '../systems/SkillSystem.js';
 import { ExplorationSystem } from '../systems/ExplorationSystem.js';
 import { InteractionSystem } from '../systems/InteractionSystem.js';
+import { FacilitySystem } from '../systems/FacilitySystem.js';
+import { CraftingSystem } from '../systems/CraftingSystem.js';
+import { StorageSystem } from '../systems/StorageSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
@@ -29,6 +32,9 @@ import { CharacterWindow } from '../ui/CharacterWindow.js';
 import { SkillWindow } from '../ui/SkillWindow.js';
 import { MapWindow } from '../ui/MapWindow.js';
 import { TurretWindow } from '../ui/TurretWindow.js';
+import { CraftWindow } from '../ui/CraftWindow.js';
+import { StorageWindow } from '../ui/StorageWindow.js';
+import { ShopWindow } from '../ui/ShopWindow.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -76,6 +82,9 @@ export class Game {
       new SkillSystem(ctx),
       new ExplorationSystem(ctx),
       new InteractionSystem(ctx),
+      new FacilitySystem(ctx),
+      new CraftingSystem(ctx),
+      new StorageSystem(ctx),
     );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);
@@ -89,6 +98,9 @@ export class Game {
     new SkillWindow(ctx, this.ui);
     new MapWindow(ctx, this.ui);
     new TurretWindow(ctx, this.ui);
+    new CraftWindow(ctx, this.ui, this.tooltip);
+    new StorageWindow(ctx, this.ui, this.tooltip);
+    new ShopWindow(ctx, this.ui, this.tooltip);
     bus.on('player:teleport', () => this.camera.snapTo(ctx.player.position));
 
     // 창들이 첫 화면을 그릴 수 있게 현재 상태를 한 번 알린다. (불러오기가 있으면 다시 알린다)

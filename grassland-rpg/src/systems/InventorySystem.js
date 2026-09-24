@@ -1,3 +1,5 @@
+import { maxStackOf, countIn, roomFor, addTo, removeFrom } from '../utils/slots.js';
+
 // 가방: 정해진 칸 수, 칸마다 { id, count } 또는 null.
 export class InventorySystem {
   constructor(ctx) {
@@ -27,6 +29,22 @@ export class InventorySystem {
       e.taken += added;
       if (added) this.changed();
     });
+    // 다 들어갈 자리가 있는지만 본다.
+    bus.on('inventory:can-add', (e) => {
+      e.ok = roomFor(this.slots, e.item, this.maxStack(e.item)) >= e.count;
+    });
+    // 한 칸을 통째로 꺼낸다 (창고에 넣기·팔기)
+    bus.on('inventory:take-slot', (e) => {
+      e.item = this.slots[e.slot];
+      if (!e.item) return;
+      this.slots[e.slot] = null;
+      this.changed();
+    });
+    // 퀵슬롯: 그 아이템이 든 첫 칸을 쓴다.
+    bus.on('inventory:use-item', ({ item }) => {
+      const i = this.slots.findIndex((x) => x?.id === item);
+      if (i >= 0) this.use(i);
+    });
     bus.on('game:new', () => {
       for (const s of ctx.data.config.startingItems) this.add(s.id, s.count);
       this.changed();
@@ -42,32 +60,16 @@ export class InventorySystem {
   }
 
   maxStack(id) {
-    const d = this.def(id);
-    return d.stackable ? (d.maxStack ?? this.cfg.defaultMaxStack) : 1;
+    return maxStackOf(this.ctx.data, id);
   }
 
   countOf(id) {
-    return this.slots.reduce((n, s) => n + (s?.id === id ? s.count : 0), 0);
+    return countIn(this.slots, id);
   }
 
   // 들어간 개수를 돌려준다 (가방이 차면 일부만 들어갈 수 있다).
   add(id, count) {
-    const max = this.maxStack(id);
-    let left = count;
-    for (const s of this.slots) {
-      if (left <= 0) break;
-      if (s?.id !== id || s.count >= max) continue;
-      const n = Math.min(left, max - s.count);
-      s.count += n;
-      left -= n;
-    }
-    for (let i = 0; i < this.slots.length && left > 0; i++) {
-      if (this.slots[i]) continue;
-      const n = Math.min(left, max);
-      this.slots[i] = { id, count: n };
-      left -= n;
-    }
-    return count - left;
+    return addTo(this.slots, id, count, this.maxStack(id));
   }
 
   onPicked(e) {
@@ -108,7 +110,13 @@ export class InventorySystem {
     if (!s) return;
     const def = this.def(s.id);
     if (def.category === 'consumable') {
-      this.ctx.bus.emit('item:use', { item: s.id });
+      // 효과를 받은 쪽이 used = true (HP가 가득이면 안 쓴다)
+      const e = { item: s.id, used: false };
+      this.ctx.bus.emit('item:use', e);
+      if (!e.used) {
+        this.ctx.bus.emit('notify', { text: '지금은 쓸 필요가 없어요', kind: 'info' });
+        return;
+      }
       s.count -= 1;
       if (s.count <= 0) this.slots[index] = null;
       this.changed();
@@ -121,17 +129,9 @@ export class InventorySystem {
   }
 
   remove(id, count) {
-    let left = count;
-    for (let i = this.slots.length - 1; i >= 0 && left > 0; i--) {
-      const s = this.slots[i];
-      if (s?.id !== id) continue;
-      const n = Math.min(left, s.count);
-      s.count -= n;
-      left -= n;
-      if (s.count <= 0) this.slots[i] = null;
-    }
+    const n = removeFrom(this.slots, id, count);
     this.changed();
-    return count - left;
+    return n;
   }
 
   applySave(inv) {

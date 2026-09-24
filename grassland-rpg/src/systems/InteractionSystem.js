@@ -21,6 +21,10 @@ export class InteractionSystem {
   hint(s) {
     if (!s) return '';
     if (s.kind === 'turret') return `E  ${s.def.name}${s.alive ? '' : ' (부서짐)'} 관리`;
+    if (s.kind === 'facility') {
+      const verb = { workbench: '제작', storage: '열기', shop: '사고팔기' }[s.type];
+      return s.alive ? `E  ${s.def.name} — ${verb}` : `${s.def.name} (부서짐 · 아침에 복구)`;
+    }
     return `E  ${s.base.label} — 건설·업그레이드`;
   }
 
@@ -32,6 +36,7 @@ export class InteractionSystem {
     }
     if (!s || !this.ctx.input.wasPressed('KeyE')) return;
     if (s.kind === 'turret') this.ctx.bus.emit('interact:turret', { turret: s });
+    else if (s.kind === 'facility') { if (s.alive) this.ctx.bus.emit('interact:facility', { facility: s }); }
     else this.ctx.bus.emit('interact:base', { base: s.base });
   }
 }

@@ -94,15 +94,23 @@ export class RaidSystem {
       raid.status = 'partial';
     } else {
       raid.status = 'failed';
-      this.ctx.bus.emit('economy:lose', { ratio: c.failGoldLossRatio, text: `${raid.base.label}이(가) 습격에 무너졌습니다! 골드를 빼앗겼어요` });
+      this.loseGoods(raid.base, `${raid.base.label}이(가) 습격에 무너졌습니다!`);
     }
+  }
+
+  // 창고가 있으면 창고 재료를, 없으면 소지 골드 일부를 잃는다.
+  loseGoods(base, text) {
+    const e = { baseId: base.id, ratio: this.cfg.failStorageLossRatio, handled: false, lost: 0 };
+    this.ctx.bus.emit('storage:lose', e);
+    if (e.handled) this.ctx.bus.emit('notify', { text: `${text} 창고 재료 ${e.lost}개를 빼앗겼어요`, kind: 'warn' });
+    else this.ctx.bus.emit('economy:lose', { ratio: this.cfg.failGoldLossRatio, text: `${text} 골드를 빼앗겼어요` });
   }
 
   fail(raid) {
     raid.status = 'failed';
     raid.toSpawn = 0;
     for (const m of raid.monsters) m.retreat();
-    this.ctx.bus.emit('economy:lose', { ratio: this.cfg.failGoldLossRatio, text: '텐트가 무너졌습니다! 골드를 빼앗겼어요' });
+    this.loseGoods(raid.base, `${raid.base.label}의 중심 건물이 무너졌습니다!`);
   }
 
   // 아침: 결과 정산 + 남은 몬스터는 물러간다.

@@ -75,7 +75,8 @@ export class CombatSystem {
     bus.emit('combat:hit', { position: s.position.clone(), amount, crit: false, target: 'structure' });
     if (destroyed) {
       bus.emit('structure:destroyed', { structure: s });
-      bus.emit('notify', { text: s.kind === 'tent' ? '텐트가 무너졌습니다!' : '포탑이 부서졌습니다', kind: 'warn' });
+      const name = s.kind === 'tent' ? s.base.name : s.def.name;
+      bus.emit('notify', { text: `${name}이(가) 부서졌습니다!`, kind: 'warn' });
     }
   }
 

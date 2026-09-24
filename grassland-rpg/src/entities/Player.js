@@ -45,6 +45,16 @@ export class Player {
       const w = slots.weapon && ctx.data.items.items[slots.weapon];
       this.blade.material.color.set(w ? w.color : '#e8eef5');
     });
+    // 소모품 효과
+    ctx.bus.on('item:use', (e) => {
+      const heal = ctx.data.items.items[e.item]?.use?.heal;
+      const s = this.stats;
+      if (!heal || !this.alive || s.hp >= s.maxHp) return;
+      const amount = Math.min(heal, s.maxHp - s.hp);
+      s.hp += amount;
+      e.used = true;
+      ctx.bus.emit('combat:hit', { position: this.position.clone(), amount: `+${Math.round(amount)}`, crit: false, target: 'heal' });
+    });
     ctx.bus.on('player:teleport', ({ position }) => {
       this.position.copy(position);
       this.knock.set(0, 0, 0);

@@ -33,11 +33,48 @@ export class EconomySystem {
       bus.emit('notify', { text: loss > 0 ? `${text} (-${loss})` : text, kind: 'warn' });
     });
 
+    bus.on('shop:buy', ({ id }) => this.buy(id));
+    bus.on('shop:sell', ({ slot, count }) => this.sell(slot, count));
+
     bus.on('save:collect', (save) => { save.economy = { gold: this.gold }; });
     bus.on('save:apply', (save) => {
       this.gold = 0;
       this.change(save.economy?.gold ?? 0);
     });
+  }
+
+  buy(id) {
+    const { bus, data } = this.ctx;
+    const entry = data.shop.buy.find((b) => b.id === id);
+    if (!entry) return;
+    const name = data.items.items[id].name;
+    if (this.gold < entry.price) {
+      bus.emit('notify', { text: `골드가 부족합니다 (${entry.price} 필요)`, kind: 'warn' });
+      return;
+    }
+    const room = { item: id, count: 1, ok: false };
+    bus.emit('inventory:can-add', room);
+    if (!room.ok) {
+      bus.emit('notify', { text: '가방에 자리가 없습니다', kind: 'warn' });
+      return;
+    }
+    this.change(-entry.price);
+    bus.emit('inventory:add', { item: id, count: 1, taken: 0 });
+    bus.emit('notify', { text: `${name} 구매 (-${entry.price})`, kind: 'gold' });
+  }
+
+  // 가방 칸에서 count개 판다 (칸을 꺼냈다가 남는 건 되돌린다)
+  sell(slot, count) {
+    const { bus, data } = this.ctx;
+    const take = { slot, item: null };
+    bus.emit('inventory:take-slot', take);
+    if (!take.item) return;
+    const { id } = take.item;
+    const value = data.items.items[id].value ?? 0;
+    const n = Math.min(count, take.item.count);
+    if (take.item.count > n) bus.emit('inventory:add', { item: id, count: take.item.count - n, taken: 0 });
+    this.change(value * n);
+    bus.emit('notify', { text: `${data.items.items[id].name} ${n}개 판매 (+${value * n})`, kind: 'gold' });
   }
 
   change(delta) {

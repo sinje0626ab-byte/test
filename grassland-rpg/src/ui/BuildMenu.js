@@ -48,6 +48,11 @@ export class BuildMenu {
         this.render();
         return;
       }
+      const fac = e.target.closest('[data-facility]');
+      if (fac && !fac.classList.contains('disabled')) {
+        ctx.bus.emit('build:start', { kind: 'facility', type: fac.dataset.facility });
+        return;
+      }
       const card = e.target.closest('[data-turret]');
       if (!card || card.classList.contains('disabled')) return;
       ctx.bus.emit('build:start', { kind: 'turret', type: card.dataset.turret });
@@ -57,6 +62,7 @@ export class BuildMenu {
       for (const s of slots) if (s) this.counts[s.id] = (this.counts[s.id] ?? 0) + s.count;
       if (ui.isOpen('build')) this.render();
     });
+    ctx.bus.on('facility:changed', () => { if (ui.isOpen('build')) this.render(); });
     ctx.bus.on('interact:base', () => {
       this.tab = 'building';
       if (ui.isOpen('build')) this.render();
@@ -80,7 +86,7 @@ export class BuildMenu {
     this.infoEl.textContent = `${base.label} (${base.name} Lv${base.level}) · 포탑 ${count}/${max}`;
 
     if (this.tab === 'building') {
-      this.list.innerHTML = this.baseUpgradeCard(base);
+      this.list.innerHTML = this.baseUpgradeCard(base) + this.facilityCards(base);
       return;
     }
     const cards = Object.entries(ctx.data.turrets).map(([id, t]) => {
@@ -104,11 +110,29 @@ export class BuildMenu {
     this.list.innerHTML = cards.join('');
   }
 
+  // 부속 건물 카드: 해금 단계·비용(재료)·이미 지었는지
+  facilityCards(base) {
+    const { buildings, items } = this.ctx.data;
+    return Object.entries(buildings.buildings).map(([id, f]) => {
+      const built = this.ctx.structures.some((s) => s.kind === 'facility' && s.type === id && s.baseId === base.id);
+      const locked = base.level < f.unlockBaseLevel;
+      const enough = f.cost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
+      const cost = f.cost.map((c) => `${items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}`).join(' · ');
+      const why = built ? '이미 있음' : locked ? `${buildings.baseLevels[String(f.unlockBaseLevel)].name} 필요` : enough ? '클릭해서 배치' : '재료 부족';
+      return `
+        <button type="button" class="build-card${built || locked || !enough ? ' disabled' : ''}" data-facility="${id}">
+          <i class="build-icon" style="--c:${f.color}"></i>
+          <span class="build-text"><b>${f.name}</b><small>${f.description}</small><small class="stats">${cost}</small></span>
+          <span class="build-cost"><small>${why}</small></span>
+        </button>`;
+    }).join('');
+  }
+
   // 기지 업그레이드 카드: 다음 단계 효과와 필요한 재료
   baseUpgradeCard(base) {
     const { buildings, items, turrets } = this.ctx.data;
     const next = buildings.baseLevels[String(base.level + 1)];
-    if (!next) return `<p class="empty">${base.label}은(는) 이미 최고 단계(${base.name})예요.<br>작업대·창고·상점은 곧 추가됩니다.</p>`;
+    if (!next) return `<p class="empty">${base.label}은(는) 이미 최고 단계(${base.name})예요.</p>`;
     const cur = buildings.baseLevels[String(base.level)];
     const enough = next.cost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
     const unlocks = Object.values(turrets).filter((t) => t.unlockBaseLevel === base.level + 1).map((t) => t.name);
