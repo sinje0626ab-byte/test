@@ -29,7 +29,7 @@ export class World {
 
     this.buildLights();
     this.buildGround();
-    buildDecor(this);
+    this.chunks = buildDecor(this);
   }
 
   buildLights() {
@@ -163,6 +163,7 @@ export class World {
 
   update(dt, focus) {
     this.applyDaylight(this.ctx.time.daylight);
+    for (const c of this.chunks) c.setVisible(focus.z, this.cfg.chunkViewDistance);
     // 그림자 범위를 좁게 유지하려고 태양이 플레이어를 따라다닌다.
     this.sun.target.position.copy(focus);
     this.sun.position.copy(focus).add(this.sunOffset);

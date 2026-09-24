@@ -136,5 +136,50 @@
         "count": 15
       }
     ]
+  },
+  "desert_cloak": {
+    "result": "desert_cloak",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "cactus_spine",
+        "count": 12
+      },
+      {
+        "id": "slime_jelly",
+        "count": 10
+      }
+    ]
+  },
+  "ice_sword": {
+    "result": "ice_sword",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "ice_shard",
+        "count": 12
+      },
+      {
+        "id": "cactus_spine",
+        "count": 6
+      }
+    ]
+  },
+  "snow_charm": {
+    "result": "snow_charm",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "ice_shard",
+        "count": 10
+      },
+      {
+        "id": "mushroom_cap",
+        "count": 10
+      }
+    ]
   }
 }

@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import { Chunk } from './Chunk.js';
 
 // 지역별 장식 배치. 같은 시드면 같은 숲이 나온다.
-// 종류마다 InstancedMesh 하나로 모아 그린다.
+// z 띠(청크)마다, 종류마다 InstancedMesh 하나로 모아 그린다. 만든 청크 목록을 돌려준다.
 export function buildDecor(world) {
   const { rng: r, regions, bounds, scene } = world;
   const m4 = new THREE.Matrix4();
@@ -10,11 +11,15 @@ export function buildDecor(world) {
   const v = new THREE.Vector3();
   const sc = new THREE.Vector3();
 
-  // 종류별로 [행렬, 색] 을 모았다가 한 번에 만든다.
-  const kinds = {};
+  // 청크별·종류별로 [행렬, 색] 을 모았다가 한 번에 만든다.
+  const size = world.cfg.chunkSize;
+  const byChunk = new Map();
   const push = (kind, x, y, z, sx, sy, sz, color, ry = 0, rx = 0) => {
     e.set(rx, ry, 0);
     q.setFromEuler(e);
+    const ci = Math.floor(z / size);
+    if (!byChunk.has(ci)) byChunk.set(ci, {});
+    const kinds = byChunk.get(ci);
     (kinds[kind] ??= []).push({ m: new THREE.Matrix4().compose(v.set(x, y, z), q, sc.set(sx, sy, sz)), c: new THREE.Color(color) });
   };
 
@@ -28,6 +33,9 @@ export function buildDecor(world) {
     tuft: new THREE.ConeGeometry(0.07, 0.34, 3).translate(0, 0.17, 0),
     stem: new THREE.CylinderGeometry(0.07, 0.09, 0.3, 6).translate(0, 0.15, 0),
     cap: new THREE.SphereGeometry(0.22, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2),
+    snowCap: new THREE.ConeGeometry(0.62, 0.7, 7).translate(0, 0.35, 0),
+    cactus: new THREE.CylinderGeometry(0.28, 0.32, 1, 7).translate(0, 0.5, 0),
+    cactusArm: new THREE.CylinderGeometry(0.16, 0.16, 1, 6).translate(0, 0.5, 0),
   };
   const noShadow = new Set(['flower', 'tuft']);
 
@@ -37,6 +45,7 @@ export function buildDecor(world) {
     push('trunk', x, 0, z, s, s * 0.9, s, 0x9a6a45, ry);
     push('pineLow', x, 0.75 * s, z, s * 1.05, s, s * 1.05, col, ry);
     push('pineTop', x, 1.75 * s, z, s * 0.72, s * 0.85, s * 0.72, col.clone().offsetHSL(0, 0, 0.04), ry + 0.4);
+    if (pal.snow) push('snowCap', x, 2.55 * s, z, s * 0.75, s * 0.75, s * 0.75, '#ffffff', ry);
     if (collide) world.addCollider(x, z, 0.4 * s);
   };
 
@@ -77,7 +86,7 @@ export function buildDecor(world) {
       const p = spot(1.2);
       if (!p) continue;
       const s = r.range(0.6, 1.5);
-      push('rock', p[0], 0.18 * s, p[1], s, s * r.range(0.55, 0.8), s * r.range(0.8, 1.1), r.pick(['#b8bcc4', '#a9adb6', '#c9c6be']), r.range(0, 6), r.range(-0.3, 0.3));
+      push('rock', p[0], 0.18 * s, p[1], s, s * r.range(0.55, 0.8), s * r.range(0.8, 1.1), r.pick(pal.rock), r.range(0, 6), r.range(-0.3, 0.3));
       world.addCollider(p[0], p[1], 0.55 * s);
     }
     for (let i = 0; i < count('bushes'); i++) {
@@ -97,6 +106,19 @@ export function buildDecor(world) {
       for (let k = 0; k < 3; k++) {
         push('tuft', p[0] + r.range(-0.12, 0.12), 0, p[1] + r.range(-0.12, 0.12), 1, r.range(0.7, 1.3), 1, col, r.range(0, 6), r.range(-0.35, 0.35));
       }
+    }
+    for (let i = 0; i < count('cacti'); i++) {
+      const p = spot(1.0);
+      if (!p) continue;
+      const s = r.range(0.8, 1.6);
+      const col = r.pick(['#5fa85a', '#6fb866', '#4f9a4a']);
+      push('cactus', p[0], 0, p[1], s, s * r.range(1.4, 2.2), s, col);
+      const arms = r.int(0, 2);
+      for (let k = 0; k < arms; k++) {
+        const side = k === 0 ? 1 : -1;
+        push('cactusArm', p[0] + side * 0.32 * s, s * r.range(0.8, 1.3), p[1], s, s * r.range(0.5, 0.9), s, col, 0, 0);
+      }
+      world.addCollider(p[0], p[1], 0.35 * s);
     }
     for (let i = 0; i < count('mushrooms'); i++) {
       const p = spot(0.5);
@@ -122,12 +144,12 @@ export function buildDecor(world) {
     }
   }
 
-  for (const [kind, list] of Object.entries(kinds)) {
-    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, roughness: 0.9 });
-    const mesh = new THREE.InstancedMesh(geos[kind], mat, list.length);
-    list.forEach((it, i) => { mesh.setMatrixAt(i, it.m); mesh.setColorAt(i, it.c); });
-    mesh.castShadow = !noShadow.has(kind);
-    mesh.receiveShadow = true;
-    scene.add(mesh);
+  const mats = Object.fromEntries(Object.keys(geos).map((k) => [k, new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, roughness: 0.9 })]));
+  const chunks = [];
+  for (const [ci, kinds] of byChunk) {
+    const chunk = new Chunk(scene, ci, size);
+    chunk.build(kinds, geos, mats, noShadow);
+    chunks.push(chunk);
   }
+  return chunks;
 }

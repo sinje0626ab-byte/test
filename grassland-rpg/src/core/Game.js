@@ -23,6 +23,7 @@ import { InteractionSystem } from '../systems/InteractionSystem.js';
 import { FacilitySystem } from '../systems/FacilitySystem.js';
 import { CraftingSystem } from '../systems/CraftingSystem.js';
 import { StorageSystem } from '../systems/StorageSystem.js';
+import { BossSystem } from '../systems/BossSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
@@ -85,6 +86,7 @@ export class Game {
       new FacilitySystem(ctx),
       new CraftingSystem(ctx),
       new StorageSystem(ctx),
+      new BossSystem(ctx),
     );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);
@@ -133,7 +135,11 @@ export class Game {
     this.time.advance(dt);
 
     ctx.player.update(dt);
-    for (const m of ctx.monsters) m.update(dt);
+    // 멀리 있는 몬스터는 멈춰 둔다 (습격 몬스터는 기지를 공격해야 하니 예외)
+    const active = ctx.data.config.world.activeRadius;
+    for (const m of ctx.monsters) {
+      if (m.raid || m.state === 'dead' || m.position.distanceTo(ctx.player.position) < active) m.update(dt);
+    }
     for (const s of this.systems) s.update?.(dt);
 
     ctx.world.update(dt, ctx.player.position);

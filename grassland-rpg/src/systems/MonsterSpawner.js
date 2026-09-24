@@ -17,7 +17,7 @@ export class MonsterSpawner {
 
     for (let i = monsters.length - 1; i >= 0; i--) {
       const m = monsters[i];
-      const far = !m.raid && m.position.distanceTo(player.position) > cfg.despawnDistance;
+      const far = !m.raid && !m.boss && m.position.distanceTo(player.position) > cfg.despawnDistance;
       if (m.done || (far && m.alive)) {
         m.dispose();
         monsters.splice(i, 1);
@@ -27,7 +27,7 @@ export class MonsterSpawner {
     this.timer -= dt;
     if (this.timer > 0) return;
     this.timer = cfg.interval;
-    if (monsters.filter((m) => !m.raid).length >= cfg.maxMonsters) return;
+    if (monsters.filter((m) => !m.raid && !m.boss).length >= cfg.maxMonsters) return;
 
     const pos = this.findSpot();
     if (!pos) return;

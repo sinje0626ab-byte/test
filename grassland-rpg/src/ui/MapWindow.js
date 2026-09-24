@@ -1,6 +1,7 @@
 import { baseAt } from '../utils/bases.js';
 
-const SCALE = 1.1; // 월드 1m = 지도 1.1px
+const MAX_H = 480; // 지도 캔버스 최대 높이(px). 월드가 길면 그만큼 줄여 그린다.
+let SCALE = 1.1;
 const FOG = '#46423a';
 
 // 지도 창 (M): 탐험한 곳, 기지 위치, 플레이어, 기지 목록과 빠른 이동
@@ -9,9 +10,11 @@ export class MapWindow {
     this.ctx = ctx;
     this.ui = ui;
     this.explored = null;
+    this.lairs = [];
     this.timer = 0;
     const b = ctx.data.config.world.bounds;
     this.bounds = b;
+    SCALE = Math.min(1.1, MAX_H / (b.maxZ - b.minZ));
     this.w = Math.round((b.maxX - b.minX) * SCALE);
     this.h = Math.round((b.maxZ - b.minZ) * SCALE);
 
@@ -50,6 +53,7 @@ export class MapWindow {
       if (ui.isOpen('map')) this.draw();
     });
     ctx.bus.on('base:created', () => { if (ui.isOpen('map')) this.render(); });
+    ctx.bus.on('boss:status', ({ list }) => { this.lairs = list; });
   }
 
   toMap(x, z) {
@@ -89,6 +93,24 @@ export class MapWindow {
       const [mx, my] = this.toMap((bounds.minX + bounds.maxX) / 2, z);
       g.fillStyle = 'rgba(255,255,255,0.75)';
       g.fillText(reg.name, mx, my);
+    }
+
+    // 보스 둥지 (가 본 곳만, 처치했으면 회색)
+    const cs = this.ctx.data.config.map.cellSize;
+    for (const l of this.lairs) {
+      const c = Math.floor((l.lair[0] - bounds.minX) / cs);
+      const r = Math.floor((l.lair[1] - bounds.minZ) / cs);
+      if (!ex || !ex.cells[r * ex.cols + c]) continue;
+      const [mx, my] = this.toMap(l.lair[0], l.lair[1]);
+      g.fillStyle = l.defeated ? '#9a958c' : '#d9403a';
+      g.beginPath();
+      g.arc(mx, my, 6, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#fff';
+      g.font = '800 9px system-ui, sans-serif';
+      g.fillText('보스', mx, my + 3);
+      g.font = '700 10px system-ui, sans-serif';
+      g.fillText(l.name, mx, my - 10);
     }
 
     for (const b of bases) {

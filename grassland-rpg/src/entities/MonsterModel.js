@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-// 몬스터 모양. def.shape: 'slime' (말랑한 젤리) / 'mushroom' (갓 쓴 버섯)
+// 몬스터 모양. def.shape: 'slime' (말랑한 젤리) / 'mushroom' (갓 쓴 버섯) / 'cactus' (걷는 선인장) / 'golem' (얼음 덩어리)
 // 돌려주는 mat 은 피격 번쩍임·사라짐 연출에 쓰는 본체 재질
 export function createMonsterModel(def) {
   const r = def.radius;
@@ -17,6 +17,48 @@ export function createMonsterModel(def) {
       body.add(eye);
     }
   };
+
+  if (def.shape === 'cactus') {
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.55, r * 0.65, r * 1.9, 8), mat);
+    trunk.position.y = r * 0.95;
+    trunk.castShadow = true;
+    body.add(trunk);
+    for (const side of [-1, 1]) {
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.22, r * 0.22, r * 0.8, 6), mat);
+      arm.position.set(side * r * 0.72, r * 1.25, 0);
+      const elbow = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.22, r * 0.22, r * 0.5, 6), mat);
+      elbow.rotation.z = Math.PI / 2;
+      elbow.position.set(side * r * 0.55, r * 0.9, 0);
+      body.add(arm, elbow);
+    }
+    const flower = new THREE.Mesh(new THREE.OctahedronGeometry(r * 0.25, 0), new THREE.MeshBasicMaterial({ color: def.flowerColor }));
+    flower.position.y = r * 1.95;
+    body.add(flower);
+    eyes(r * 1.25, r * 0.58);
+    return { body, mat, extraMats: [] };
+  }
+
+  if (def.shape === 'golem') {
+    const torso = new THREE.Mesh(new THREE.DodecahedronGeometry(r * 0.85, 0), mat);
+    torso.position.y = r * 1.05;
+    torso.scale.set(1.1, 1, 0.9);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(r * 0.8, r * 0.6, r * 0.7), mat);
+    head.position.y = r * 1.95;
+    for (const m of [torso, head]) { m.castShadow = true; body.add(m); }
+    for (const side of [-1, 1]) {
+      const fist = new THREE.Mesh(new THREE.IcosahedronGeometry(r * 0.38, 0), mat);
+      fist.position.set(side * r * 1.05, r * 0.7, r * 0.1);
+      fist.castShadow = true;
+      body.add(fist);
+    }
+    const glow = new THREE.MeshBasicMaterial({ color: 0xe8fbff });
+    for (const side of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.BoxGeometry(r * 0.14, r * 0.08, r * 0.05), glow);
+      eye.position.set(side * r * 0.18, r * 2.0, r * 0.36);
+      body.add(eye);
+    }
+    return { body, mat, extraMats: [] };
+  }
 
   if (def.shape === 'mushroom') {
     const stemMat = new THREE.MeshStandardMaterial({ color: def.stemColor, flatShading: true, roughness: 0.6, transparent: true });

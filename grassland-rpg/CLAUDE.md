@@ -56,15 +56,16 @@ src/
     EventBus.js        # 시스템 간 이벤트 통신
     Time.js            # 게임 내 시간, 낮/밤
   world/
-    World.js           # 지면·조명·충돌·경계 (청크 로딩은 월드가 더 커지는 Phase 6에서 Chunk.js로)
+    World.js           # 지면·조명·충돌·경계, 청크 보이기/숨기기
     Decor.js           # 지역별 나무·바위·꽃 배치 (시드 난수)
-    Chunk.js           # 지형 타일, 오브젝트 배치
+    Chunk.js           # z 띠 하나의 장식 묶음 (따로 그리고 따로 숨긴다)
     Regions.js         # 지역(초원/숲/사막/설원) 찾기·색 섞기
   entities/
     Player.js
     Monster.js
     MonsterModel.js    # 몬스터 모양 (슬라임 / 버섯)
     RaidMonster.js     # 밤 습격 몬스터 AI
+    Boss.js            # 보스 AI (내려찍기·원거리 패턴, 예고 표시, 귀환)
     Drop.js            # 바닥에 떨어진 골드·아이템 (줍기)
     Projectile.js      # 화살, 총알, 포탄
     Building.js        # 기지 중심 건물 (텐트~요새)
@@ -78,6 +79,7 @@ src/
     CombatSystem.js
     MonsterSpawner.js
     ExplorationSystem.js # 탐험한 칸(지도 안개), 지역 진입 알림
+    BossSystem.js      # 보스 등장·재등장, 보스 투사체
     LootSystem.js
     InventorySystem.js
     EquipmentSystem.js
@@ -121,6 +123,7 @@ src/
     regions.json
     levels.json
     recipes.json       # 제작법
+    bosses.json        # 보스 둥지·패턴·재등장
     shop.json          # 상점 판매 목록
 ```
 
@@ -142,6 +145,17 @@ src/
 - 습격 몬스터: 밤에 기지를 향해 이동, 건물·포탑·플레이어 공격
 - AI 상태: 배회 → 추적 → 공격 → (체력 낮으면) 도주
 - 드롭: 경험치, 골드, 재료 (`monsters.json`의 드롭 테이블 기준)
+
+### 4-2-1. 보스 (Phase 6)
+- 사막 끝 **선인장왕**, 설원 끝 **얼음 거인** (`bosses.json`, 능력치는 `monsters.json`)
+- 둥지 `spawnRange` 안으로 들어가면 나타난다. `aggroRange` 안에 오면 싸움 시작, 화면 위에 보스 체력바
+- 패턴 (모두 바닥에 빨간 예고 표시 후 발동)
+  - 내려찍기: 보스 둘레 원형 범위 피해
+  - 선인장왕 가시 난사: 사방으로 가시 여러 발
+  - 얼음 거인 얼음덩이: 플레이어 자리에 포물선으로 던져 떨어진 곳 범위 피해
+- 둥지에서 `leashRange` 넘게 끌려가면 돌아가서 체력이 가득 찬다 (넉백은 거의 안 받는다)
+- 쓰러뜨리면 큰 보상(영웅 장비·골드·재료·텐트 키트). `respawnDays`일 뒤에 다시 나타난다
+- 지도에 둥지 표시 (가 본 곳만, 처치한 보스는 회색)
 
 ### 4-3. 아이템
 - 분류: 재료 / 소모품 / 장비(무기·방어구·장신구) / 건설 키트
@@ -176,7 +190,8 @@ src/
     "skills": { "ranks": { "power": 2 } },
     "exploration": { "cells": "0011100…", "visited": ["grassland"] },
     "facilities": [ { "type": "workbench", "baseId": 1, "position": [x, z], "hp": 120 } ],
-    "storages": { "1": [ { "id": "slime_jelly", "count": 30 }, null, ... ] }
+    "storages": { "1": [ { "id": "slime_jelly", "count": 30 }, null, ... ] },
+    "bosses": { "cactus_king": { "defeatedDay": 4 } }
   }
   ```
 - v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
@@ -184,6 +199,7 @@ src/
 - v3 → v4: `exploration` 추가 (빈 값 → 불러온 뒤 플레이어·기지 주변부터 다시 밝힌다)
 - v4 → v5: 포탑마다 `priority` 추가 (기본값은 그 포탑 종류의 `priority`)
 - v5 → v6: `facilities`·`storages` 추가 (빈 값)
+- v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
@@ -225,7 +241,12 @@ src/
 
 ### 4-5-1. 월드와 지역
 - 월드는 남북으로 긴 직사각형 (`config.json`의 `world.bounds`). 가장자리는 침엽수 벽
-- 지역은 z 범위로 나눈다 (`regions.json`의 `zFrom`·`zTo`). 남쪽(시작 지점)이 초원, 북쪽(W 방향)이 숲
+- 지역은 z 범위로 나눈다 (`regions.json`의 `zFrom`·`zTo`). 북쪽(W 방향)에서 남쪽 순서로:
+  설원(난이도 4) · 숲(2) · **초원(1, 시작 지점)** · 사막(3)
+- 사막: 모래 땅, 선인장·사암, 모래 슬라임·선인장 몬스터, 재료 선인장 가시
+- 설원: 눈 땅, 눈 덮인 침엽수·얼음 바위, 눈 슬라임·얼음 골렘, 재료 얼음 조각
+- 청크: 장식은 z 방향 `world.chunkSize` 띠로 나눠 그린다. 플레이어와 `world.chunkViewDistance`보다 먼 띠는 숨긴다
+- 플레이어와 `world.activeRadius`보다 먼 필드 몬스터·보스는 업데이트하지 않는다 (습격 몬스터는 예외)
 - 지역마다: 난이도, 능력치 배율, 필드 몬스터 목록, 습격 몬스터, 지면 색, 장식 밀도
 - 숲 버섯 몬스터는 낮은 확률로 텐트 키트를 떨어뜨린다 → 두 번째 기지의 재료
 - 지역 경계를 넘으면 지역 이름 알림 (처음 가 본 지역은 큰 배너)
@@ -378,7 +399,7 @@ src/
 - [x] 기지 레벨 업그레이드 (움막·집·요새)
 - [x] 포탑 추가 종류, 업그레이드, 수리
 - [x] 상점, 제작
-- [ ] 새 지역 (사막·설원), 보스
+- [x] 새 지역 (사막·설원), 보스
 
 ---
 
@@ -446,6 +467,11 @@ src/
 | `storage:lose` | RaidSystem | StorageSystem (`handled`) |
 | `shop:buy` / `shop:sell` | ShopWindow | EconomySystem |
 | `inventory:use-item` | HUD (퀵슬롯) | InventorySystem |
+| `boss:aoe` | Boss, BossSystem(얼음덩이 착지) | CombatSystem (범위 안 플레이어 피해) |
+| `boss:volley` / `boss:boulder` | Boss | BossSystem (투사체) |
+| `enemy:hit-player` | BossSystem | CombatSystem |
+| `boss:engaged` / `boss:disengaged` | Boss | HUD (보스 체력바) |
+| `boss:status` | BossSystem | MapWindow (둥지 표시) |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

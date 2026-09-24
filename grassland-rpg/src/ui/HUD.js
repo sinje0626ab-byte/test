@@ -31,6 +31,7 @@ export class HUD {
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-interact" data-interact hidden></div>
       <div class="quickbar" data-quick></div>
+      <div class="bossbar" data-boss hidden><b data-boss-name></b><div class="bar"><div class="fill" data-boss-fill></div></div></div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
     `;
@@ -40,7 +41,8 @@ export class HUD {
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
-      help: $('[data-help]'), banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
+      help: $('[data-help]'), banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
+      boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
     const { bus } = ctx;
@@ -60,6 +62,18 @@ export class HUD {
     // 퀵슬롯: 가방에 있는 소모품 종류를 순서대로 최대 N개
     this.quick = [];
     bus.on('inventory:changed', ({ slots }) => this.renderQuick(slots));
+    this.boss = null;
+    bus.on('boss:engaged', ({ boss }) => {
+      this.boss = boss;
+      this.el.bossName.textContent = boss.def.name;
+      this.el.boss.hidden = false;
+    });
+    bus.on('boss:disengaged', ({ boss }) => {
+      if (this.boss !== boss) return;
+      this.boss = null;
+      this.el.boss.hidden = true;
+    });
+    bus.on('boss:defeated', ({ name }) => this.banner(`${name} 처치!`, '큰 보상을 떨어뜨렸어요', 'level'));
     bus.on('interact:hint', ({ text }) => {
       this.el.interact.hidden = !text;
       this.el.interact.textContent = text;
@@ -150,6 +164,7 @@ export class HUD {
     for (let i = 0; i < this.quick.length; i++) {
       if (input.wasPressed(`Digit${i + 1}`)) this.ctx.bus.emit('inventory:use-item', { item: this.quick[i] });
     }
+    if (this.boss) this.el.bossFill.style.width = `${(this.boss.stats.hp / this.boss.stats.maxHp) * 100}%`;
     const s = this.ctx.player.stats;
     this.el.hp.style.width = `${(s.hp / s.maxHp) * 100}%`;
     this.el.hpText.textContent = `${Math.ceil(s.hp)} / ${s.maxHp}`;

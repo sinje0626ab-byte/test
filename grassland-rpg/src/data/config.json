@@ -9,15 +9,18 @@
     "bounds": {
       "minX": -90,
       "maxX": 90,
-      "minZ": -270,
-      "maxZ": 90
+      "minZ": -480,
+      "maxZ": 300
     },
     "edgeTrees": {
       "spacing": 2.6,
       "layers": 3,
       "layerGap": 3.2
     },
-    "regionBlend": 14
+    "regionBlend": 14,
+    "chunkSize": 60,
+    "chunkViewDistance": 130,
+    "activeRadius": 75
   },
   "camera": {
     "fov": 42,
