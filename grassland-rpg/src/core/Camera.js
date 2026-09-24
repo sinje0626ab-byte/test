@@ -28,6 +28,16 @@ export class Camera {
     this.camera.lookAt(this.lookAt);
   }
 
+  // 타이틀 화면용: center 둘레를 angle 만큼 돈 자리에서 내려다본다.
+  orbit(center, angle) {
+    const r = Math.hypot(this.offset.x, this.offset.z) * 1.15;
+    this.camera.position.set(center.x + Math.sin(angle) * r, this.offset.y * 0.7, center.z + Math.cos(angle) * r);
+    this.lookAt.copy(center);
+    this.lookAt.y += this.cfg.lookHeight + 1.5;
+    this.camera.lookAt(this.lookAt);
+    this.focus.copy(center);
+  }
+
   resize(aspect) {
     this.camera.aspect = aspect;
     this.camera.updateProjectionMatrix();

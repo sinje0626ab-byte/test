@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -26,6 +26,8 @@ const migrations = {
   4: (s) => ({ ...s, saveVersion: 5, turrets: (s.turrets ?? []).map((t) => ({ ...t, priority: t.priority ?? 'nearest' })) }),
   // v5 → v6: 부속 건물·창고 추가
   5: (s) => ({ ...s, saveVersion: 6, facilities: [], storages: {} }),
+  // v6 → v7: 보스 처치 기록 (빈 값 = 모두 살아 있음)
+  6: (s) => ({ ...s, saveVersion: 7, bosses: {} }),
 };
 
 export class SaveSystem {
@@ -73,6 +75,33 @@ export class SaveSystem {
     this.ctx.bus.emit('save:loaded', data);
     this.ctx.bus.emit('notify', { text: '이어서 시작합니다', kind: 'info' });
     return true;
+  }
+
+  // 타이틀의 "이어하기"에 보여 줄 요약. 저장이 없으면 null
+  peek() {
+    let raw;
+    try {
+      raw = localStorage.getItem(this.cfg.key);
+    } catch {
+      return null;
+    }
+    if (!raw) return null;
+    try {
+      const s = this.migrate(JSON.parse(raw));
+      return {
+        day: s.time?.day ?? 1,
+        level: s.stats?.level ?? 1,
+        gold: s.economy?.gold ?? 0,
+        bases: s.bases?.length ?? 0,
+        savedAt: s.savedAt,
+      };
+    } catch (err) {
+      return { broken: true, newer: !!err.newer };
+    }
+  }
+
+  clear() {
+    try { localStorage.removeItem(this.cfg.key); } catch { /* 무시 */ }
   }
 
   migrate(save) {

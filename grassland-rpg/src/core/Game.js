@@ -23,6 +23,7 @@ import { InteractionSystem } from '../systems/InteractionSystem.js';
 import { FacilitySystem } from '../systems/FacilitySystem.js';
 import { CraftingSystem } from '../systems/CraftingSystem.js';
 import { StorageSystem } from '../systems/StorageSystem.js';
+import { BossSystem } from '../systems/BossSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
@@ -35,6 +36,9 @@ import { TurretWindow } from '../ui/TurretWindow.js';
 import { CraftWindow } from '../ui/CraftWindow.js';
 import { StorageWindow } from '../ui/StorageWindow.js';
 import { ShopWindow } from '../ui/ShopWindow.js';
+import { TouchControls } from '../ui/TouchControls.js';
+import { TitleScreen } from '../ui/TitleScreen.js';
+import { PauseMenu } from '../ui/PauseMenu.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -85,6 +89,7 @@ export class Game {
       new FacilitySystem(ctx),
       new CraftingSystem(ctx),
       new StorageSystem(ctx),
+      new BossSystem(ctx),
     );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);
@@ -101,6 +106,7 @@ export class Game {
     new CraftWindow(ctx, this.ui, this.tooltip);
     new StorageWindow(ctx, this.ui, this.tooltip);
     new ShopWindow(ctx, this.ui, this.tooltip);
+    this.touch = new TouchControls(ctx, uiRoot);
     bus.on('player:teleport', () => this.camera.snapTo(ctx.player.position));
 
     // 창들이 첫 화면을 그릴 수 있게 현재 상태를 한 번 알린다. (불러오기가 있으면 다시 알린다)
@@ -108,8 +114,12 @@ export class Game {
     this.systems.find((s) => s instanceof EquipmentSystem).changed();
     this.systems.find((s) => s instanceof SkillSystem).changed();
 
-    // 모든 시스템·창이 이벤트를 듣기 시작한 뒤에 불러와야 각자 자기 몫을 받는다.
-    this.save.load();
+    // 타이틀에서 "이어하기"/"새 게임"을 고를 때까지 기다린다. 그동안은 저장하지 않는다.
+    ctx.state = 'title';
+    this.save.disabled = true;
+    this.titleAngle = 0;
+    this.pause = new PauseMenu(ctx, this);
+    this.title = new TitleScreen(ctx, this);
 
     this.camera.snapTo(ctx.player.position);
     window.addEventListener('resize', () => this.resize());
@@ -118,6 +128,27 @@ export class Game {
 
   start() {
     requestAnimationFrame(this.loop);
+  }
+
+  // 이어하기: 저장을 불러온다. 모든 시스템·창이 이벤트를 듣기 시작한 뒤라 각자 자기 몫을 받는다.
+  continueGame() {
+    this.save.disabled = false;
+    if (!this.save.load()) this.ctx.bus.emit('game:new');
+    this.beginPlay();
+  }
+
+  newGame() {
+    this.save.clear();
+    this.save.disabled = false;
+    this.ctx.bus.emit('game:new');
+    this.beginPlay();
+    this.save.save();
+  }
+
+  beginPlay() {
+    this.ctx.state = 'play';
+    document.body.classList.remove('on-title');
+    this.camera.snapTo(this.ctx.player.position);
   }
 
   loop(now) {
@@ -129,17 +160,35 @@ export class Game {
 
   update(dt) {
     const ctx = this.ctx;
+    if (ctx.state === 'title') {
+      // 타이틀 뒤 배경: 시작 지점 둘레를 천천히 돈다
+      this.titleAngle += dt * 0.06;
+      this.camera.orbit(ctx.player.position, this.titleAngle);
+      ctx.player.syncMesh(dt);
+      ctx.world.update(dt, ctx.player.position);
+      ctx.input.endFrame();
+      return;
+    }
+    if (ctx.state === 'paused') {
+      ctx.input.endFrame();
+      return;
+    }
     this.updateMouseGround();
     this.time.advance(dt);
 
     ctx.player.update(dt);
-    for (const m of ctx.monsters) m.update(dt);
+    // 멀리 있는 몬스터는 멈춰 둔다 (습격 몬스터는 기지를 공격해야 하니 예외)
+    const active = ctx.data.config.world.activeRadius;
+    for (const m of ctx.monsters) {
+      if (m.raid || m.state === 'dead' || m.position.distanceTo(ctx.player.position) < active) m.update(dt);
+    }
     for (const s of this.systems) s.update?.(dt);
 
     ctx.world.update(dt, ctx.player.position);
     this.camera.update(dt, ctx.player.position);
     this.hud.update(dt);
     this.ui.update(dt);
+    this.touch.update();
     ctx.input.endFrame();
   }
 

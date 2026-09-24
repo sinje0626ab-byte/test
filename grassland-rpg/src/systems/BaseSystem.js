@@ -16,7 +16,7 @@ export class BaseSystem {
       const base = this.createBase({ position: e.position, level: 1 });
       if (e.item) bus.emit('inventory:consume', { item: e.item, count: 1 });
       bus.emit('base:created', { base });
-      bus.emit('notify', { text: `${base.label}을(를) 세웠습니다! B 키로 포탑을 지을 수 있어요`, kind: 'item' });
+      bus.emit('notify', { text: `${base.label}을(를) 세웠습니다! 건설(B)에서 포탑을 지을 수 있어요`, kind: 'item' });
     });
 
     bus.on('base:travel', ({ baseId }) => this.travel(baseId));

@@ -22,7 +22,8 @@
       "bushes": 3.1,
       "flowers": 27,
       "tufts": 55,
-      "mushrooms": 0
+      "mushrooms": 0,
+      "cacti": 0
     },
     "palette": {
       "pine": [
@@ -49,6 +50,11 @@
         "#7ec85a",
         "#94d468",
         "#6fbb52"
+      ],
+      "rock": [
+        "#b8bcc4",
+        "#a9adb6",
+        "#c9c6be"
       ]
     }
   },
@@ -77,7 +83,8 @@
       "bushes": 6,
       "flowers": 6,
       "tufts": 40,
-      "mushrooms": 7
+      "mushrooms": 7,
+      "cacti": 0
     },
     "palette": {
       "pine": [
@@ -101,6 +108,120 @@
         "#5da84c",
         "#6cb659",
         "#4f9a42"
+      ],
+      "rock": [
+        "#b8bcc4",
+        "#a9adb6",
+        "#c9c6be"
+      ]
+    }
+  },
+  "desert": {
+    "name": "사막",
+    "difficulty": 3,
+    "statMultiplier": 1.8,
+    "zFrom": 90,
+    "zTo": 300,
+    "monsters": [
+      "cactus",
+      "sand_slime",
+      "cactus"
+    ],
+    "raidMonster": "night_cactus",
+    "mapColor": "#e8cf8a",
+    "ground": [
+      "#ecd59a",
+      "#e2c682",
+      "#f3e2b0"
+    ],
+    "decor": {
+      "pines": 0,
+      "roundTrees": 0.4,
+      "rocks": 3.5,
+      "bushes": 1.2,
+      "flowers": 3,
+      "tufts": 8,
+      "mushrooms": 0,
+      "cacti": 6
+    },
+    "palette": {
+      "pine": [
+        "#6fa860"
+      ],
+      "round": [
+        "#b5b86a",
+        "#a9ad5f"
+      ],
+      "blossom": [
+        "#e9a35b"
+      ],
+      "flower": [
+        "#ff8fb1",
+        "#fff27a"
+      ],
+      "tuft": [
+        "#c9b86a",
+        "#b5a85a"
+      ],
+      "rock": [
+        "#d9b98a",
+        "#c9a06a",
+        "#e0c79a"
+      ]
+    }
+  },
+  "snow": {
+    "name": "설원",
+    "difficulty": 4,
+    "statMultiplier": 2.4,
+    "zFrom": -480,
+    "zTo": -270,
+    "monsters": [
+      "ice_golem",
+      "snow_slime",
+      "snow_slime"
+    ],
+    "raidMonster": "night_golem",
+    "mapColor": "#e6f2fa",
+    "ground": [
+      "#f2f7fb",
+      "#e3edf5",
+      "#ffffff"
+    ],
+    "decor": {
+      "pines": 9,
+      "roundTrees": 0,
+      "rocks": 3,
+      "bushes": 1.5,
+      "flowers": 0,
+      "tufts": 6,
+      "mushrooms": 0,
+      "cacti": 0
+    },
+    "palette": {
+      "pine": [
+        "#3f7a5a",
+        "#4a8766",
+        "#356b50"
+      ],
+      "snow": true,
+      "round": [
+        "#cfe3ee"
+      ],
+      "blossom": [
+        "#cfe3ee"
+      ],
+      "flower": [
+        "#ffffff"
+      ],
+      "tuft": [
+        "#b9cfdb",
+        "#a8c2d0"
+      ],
+      "rock": [
+        "#b9dcf2",
+        "#a5cde8",
+        "#d6ecfa"
       ]
     }
   }

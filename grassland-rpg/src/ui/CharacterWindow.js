@@ -38,6 +38,22 @@ export class CharacterWindow {
       const slot = e.target.closest('[data-eslot]')?.dataset.eslot;
       if (slot && this.equip[slot]) ctx.bus.emit('equipment:unequip', { slot });
     });
+    // 모바일: 탭하면 설명, 두 번 탭하면 해제
+    this.grid.addEventListener('pointerup', (e) => {
+      if (e.pointerType !== 'touch') return;
+      const slot = e.target.closest('[data-eslot]')?.dataset.eslot;
+      const id = slot && this.equip[slot];
+      if (!id) return;
+      const now = performance.now();
+      if (this.lastTap?.slot === slot && now - this.lastTap.time < ctx.data.config.touch.doubleTapMs) {
+        this.lastTap = null;
+        tooltip.hide();
+        ctx.bus.emit('equipment:unequip', { slot });
+        return;
+      }
+      this.lastTap = { slot, time: now };
+      tooltip.show(itemTooltip(ctx.data, id, { hint: '두 번 탭: 해제' }), e.clientX, e.clientY);
+    });
     this.grid.addEventListener('pointermove', (e) => {
       const slot = e.target.closest('[data-eslot]')?.dataset.eslot;
       const id = slot && this.equip[slot];

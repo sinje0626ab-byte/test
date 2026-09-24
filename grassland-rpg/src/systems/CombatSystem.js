@@ -11,6 +11,8 @@ export class CombatSystem {
     ctx.bus.on('monster:attack', (a) => this.onMonsterAttack(a));
     ctx.bus.on('projectile:hit', (a) => this.onProjectileHit(a));
     ctx.bus.on('projectile:explode', (a) => this.onExplode(a));
+    ctx.bus.on('boss:aoe', (a) => this.onBossAoe(a));
+    ctx.bus.on('enemy:hit-player', (a) => this.hitPlayer(a.damage, a.dir));
   }
 
   calcDamage(attack, defense, critChance = 0, critMultiplier = 1) {
@@ -49,6 +51,24 @@ export class CombatSystem {
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
     this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster' });
     if (killed) this.ctx.bus.emit('monster:killed', { type: monster.type, position: monster.position.clone() });
+  }
+
+  // 보스 범위 공격: 범위 안이면 플레이어가 맞는다.
+  onBossAoe({ position, radius, damage }) {
+    const p = this.ctx.player;
+    const d = Math.hypot(p.position.x - position.x, p.position.z - position.z);
+    if (d > radius + p.radius) return;
+    const dir = new THREE.Vector3(p.position.x - position.x, 0, p.position.z - position.z);
+    this.hitPlayer(damage, dir.lengthSq() > 1e-4 ? dir.normalize() : null);
+  }
+
+  hitPlayer(attack, dir) {
+    const { player, bus } = this.ctx;
+    if (!player.alive) return;
+    const { amount } = this.calcDamage(attack, player.stats.defense);
+    if (player.takeDamage(amount, dir)) {
+      bus.emit('combat:hit', { position: player.position.clone(), amount, crit: false, target: 'player' });
+    }
   }
 
   // 대포: 떨어진 곳 둘레 모두. 가장자리일수록 약하다.

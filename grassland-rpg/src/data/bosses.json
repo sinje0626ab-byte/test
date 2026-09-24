@@ -1,0 +1,60 @@
+{
+  "cactus_king": {
+    "name": "선인장왕",
+    "monster": "cactus_king",
+    "region": "desert",
+    "lair": [
+      0,
+      265
+    ],
+    "spawnRange": 60,
+    "despawnRange": 95,
+    "aggroRange": 15,
+    "leashRange": 34,
+    "respawnDays": 3,
+    "slam": {
+      "windup": 1.0,
+      "radius": 3.8,
+      "damage": 26,
+      "cooldown": 5
+    },
+    "ranged": {
+      "kind": "volley",
+      "windup": 0.7,
+      "count": 12,
+      "speed": 11,
+      "damage": 12,
+      "range": 14,
+      "cooldown": 4.5
+    }
+  },
+  "ice_giant": {
+    "name": "얼음 거인",
+    "monster": "ice_giant",
+    "region": "snow",
+    "lair": [
+      0,
+      -445
+    ],
+    "spawnRange": 60,
+    "despawnRange": 95,
+    "aggroRange": 15,
+    "leashRange": 34,
+    "respawnDays": 3,
+    "slam": {
+      "windup": 1.1,
+      "radius": 4.6,
+      "damage": 34,
+      "cooldown": 5
+    },
+    "ranged": {
+      "kind": "boulder",
+      "windup": 1.0,
+      "speed": 14,
+      "radius": 2.8,
+      "damage": 30,
+      "range": 18,
+      "cooldown": 3.5
+    }
+  }
+}

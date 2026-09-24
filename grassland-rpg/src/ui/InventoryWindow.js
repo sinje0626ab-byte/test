@@ -16,7 +16,7 @@ export class InventoryWindow {
       <div class="inv-grid" style="--cols:${cfg.columns}"></div>
       <footer class="inv-foot">
         <span class="gold"><i class="coin"></i><b data-inv-gold>0</b></span>
-        <span class="inv-hint">드래그: 옮기기 · 우클릭: 사용</span>
+        <span class="inv-hint">${ctx.input.touchMode ? '끌기: 옮기기 · 두 번 탭: 사용' : '드래그: 옮기기 · 우클릭: 사용'}</span>
       </footer>`;
     this.grid = win.body.querySelector('.inv-grid');
     this.goldEl = win.body.querySelector('[data-inv-gold]');
@@ -57,7 +57,9 @@ export class InventoryWindow {
 
   tooltipHtml(s) {
     const def = this.def(s.id);
-    const hint = { equipment: '우클릭: 장착', consumable: '우클릭: 사용', kit: '우클릭: 설치' }[def.category];
+    const how = this.ctx.input.touchMode ? '두 번 탭' : '우클릭';
+    const verb = { equipment: '장착', consumable: '사용', kit: '설치' }[def.category];
+    const hint = verb && `${how}: ${verb}`;
     return itemTooltip(this.ctx.data, s.id, { count: s.count, hint });
   }
 
@@ -114,7 +116,23 @@ export class InventoryWindow {
       const { from } = this.drag;
       this.cancelDrag();
       if (to >= 0 && to !== from) this.ctx.bus.emit('inventory:move', { from, to });
+      else if (to === from) this.onTap(from, e);
     });
+  }
+
+  // 제자리 탭: 설명 보이기, 빠르게 두 번 탭하면 우클릭과 같은 동작 (모바일용)
+  onTap(i, e) {
+    const s = this.slots[i];
+    if (!s) return;
+    const now = performance.now();
+    if (this.lastTap?.slot === i && now - this.lastTap.time < this.ctx.data.config.touch.doubleTapMs) {
+      this.lastTap = null;
+      this.tooltip.hide();
+      this.ctx.bus.emit('inventory:use', { slot: i });
+      return;
+    }
+    this.lastTap = { slot: i, time: now };
+    if (e.pointerType === 'touch') this.tooltip.show(this.tooltipHtml(s), e.clientX, e.clientY);
   }
 
   moveGhost(x, y) {

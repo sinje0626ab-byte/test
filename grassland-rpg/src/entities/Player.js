@@ -107,16 +107,15 @@ export class Player {
     }
 
     // 이동 입력 (카메라가 -z를 보고 있으므로 W = -z)
-    const dir = new THREE.Vector3(
-      (input.isDown('KeyD') ? 1 : 0) - (input.isDown('KeyA') ? 1 : 0),
-      0,
-      (input.isDown('KeyS') ? 1 : 0) - (input.isDown('KeyW') ? 1 : 0),
-    );
-    const moving = dir.lengthSq() > 0;
+    // 키보드 WASD 또는 터치 조이스틱 (조이스틱은 민 만큼 빠르다)
+    const mv = input.moveVector();
+    const dir = new THREE.Vector3(mv.x, 0, mv.z);
+    const moving = mv.amount > 0;
     if (moving) dir.normalize();
 
-    let speed = s.moveSpeed;
-    const wantsRun = input.isDown('ShiftLeft') || input.isDown('ShiftRight');
+    let speed = s.moveSpeed * (moving ? Math.max(0.35, mv.amount) : 1);
+    const wantsRun = input.isDown('ShiftLeft') || input.isDown('ShiftRight')
+      || (mv.stick && mv.amount >= this.ctx.data.config.touch.runThreshold);
     if (moving && wantsRun && s.stamina > 0) {
       speed *= b.runMultiplier;
       s.stamina = Math.max(0, s.stamina - b.staminaRunCost * dt);
@@ -147,9 +146,9 @@ export class Player {
     const s = this.stats;
     const input = this.ctx.input;
 
-    if (this.ctx.mode === 'play' && input.mouseDown && this.attackTimer <= 0 && s.stamina >= b.attackStaminaCost) {
-      // 클릭한 순간 마우스 쪽으로 몸을 돌려 벤다.
-      const aim = this.ctx.mouseGround;
+    if (this.ctx.mode === 'play' && input.attackHeld && this.attackTimer <= 0 && s.stamina >= b.attackStaminaCost) {
+      // 클릭한 순간 마우스 쪽으로 몸을 돌려 벤다. 터치 공격 버튼은 가까운 적을 자동으로 겨눈다.
+      const aim = input.virtualAttack ? this.nearestEnemy()?.position : this.ctx.mouseGround;
       if (aim) {
         const d = new THREE.Vector3(aim.x - this.position.x, 0, aim.z - this.position.z);
         if (d.lengthSq() > 0.01) this.facing.copy(d.normalize());
@@ -181,6 +180,18 @@ export class Player {
       });
     }
     if (this.swingTime >= b.attackDuration) this.swingTime = -1;
+  }
+
+  nearestEnemy() {
+    const range = this.ctx.data.config.touch.autoAimRange;
+    let best = null;
+    let bestD = range;
+    for (const m of this.ctx.monsters) {
+      if (!m.alive) continue;
+      const d = m.position.distanceTo(this.position) - m.radius;
+      if (d < bestD) { bestD = d; best = m; }
+    }
+    return best;
   }
 
   takeDamage(amount, knockDir) {
