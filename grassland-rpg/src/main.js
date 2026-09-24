@@ -15,12 +15,13 @@ import recipes from './data/recipes.json';
 import shop from './data/shop.json';
 import bosses from './data/bosses.json';
 import sounds from './data/sounds.json';
+import nodes from './data/nodes.json';
 import { Game } from './core/Game.js';
 
 const game = new Game({
   container: document.getElementById('app'),
   uiRoot: document.getElementById('ui'),
-  data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds },
+  data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds, nodes },
 });
 game.start();
 

@@ -17,6 +17,7 @@ export class StatsSystem {
         : kind === 'facility' ? data.buildings.buildings[type]?.xp : data.turrets[type]?.xp;
       this.gain(xp ?? 0);
     });
+    bus.on('gather:done', ({ xp }) => this.gain(xp ?? 0));
     bus.on('base:upgraded', ({ level }) => this.gain(data.buildings.baseLevels[String(level)]?.xp ?? 0));
     bus.on('equipment:changed', ({ bonus }) => { this.equipBonus = bonus; this.recalc(); });
     bus.on('skills:changed', ({ effects }) => { this.skillEffects = effects; this.recalc(); });

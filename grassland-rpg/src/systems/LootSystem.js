@@ -10,6 +10,7 @@ export class LootSystem {
     this.drops = [];
     this.fullNotice = 0;
     ctx.bus.on('monster:killed', (e) => this.onKilled(e));
+    ctx.bus.on('loot:spawn', ({ item, count, position }) => this.spawn(item, count, position));
   }
 
   onKilled({ type, position }) {

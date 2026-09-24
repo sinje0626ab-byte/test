@@ -24,6 +24,7 @@ import { FacilitySystem } from '../systems/FacilitySystem.js';
 import { CraftingSystem } from '../systems/CraftingSystem.js';
 import { StorageSystem } from '../systems/StorageSystem.js';
 import { BossSystem } from '../systems/BossSystem.js';
+import { GatherSystem } from '../systems/GatherSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
@@ -97,6 +98,7 @@ export class Game {
       new CraftingSystem(ctx),
       new StorageSystem(ctx),
       new BossSystem(ctx),
+      new GatherSystem(ctx),
     );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);

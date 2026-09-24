@@ -1,0 +1,219 @@
+{
+  "nodes": {
+    "tree_node": {
+      "name": "둥근 나무",
+      "model": "roundTree",
+      "hp": 30,
+      "respawnDays": 2,
+      "xp": 3,
+      "radius": 0.55,
+      "collide": true,
+      "sound": "chop",
+      "color": "#7ccf6a",
+      "drops": [
+        {
+          "item": "wood",
+          "min": 2,
+          "max": 3,
+          "chance": 1
+        },
+        {
+          "item": "apple",
+          "min": 1,
+          "max": 1,
+          "chance": 0.3
+        }
+      ]
+    },
+    "pine_node": {
+      "name": "전나무",
+      "model": "pine",
+      "hp": 40,
+      "respawnDays": 2,
+      "xp": 4,
+      "radius": 0.55,
+      "collide": true,
+      "sound": "chop",
+      "color": "#3f8a55",
+      "drops": [
+        {
+          "item": "wood",
+          "min": 2,
+          "max": 4,
+          "chance": 1
+        },
+        {
+          "item": "resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.25
+        }
+      ]
+    },
+    "rock_node": {
+      "name": "바위",
+      "model": "rock",
+      "hp": 45,
+      "respawnDays": 3,
+      "xp": 4,
+      "radius": 0.8,
+      "collide": true,
+      "sound": "mine",
+      "color": "#a9adb6",
+      "drops": [
+        {
+          "item": "stone",
+          "min": 2,
+          "max": 3,
+          "chance": 1
+        },
+        {
+          "item": "iron_ore",
+          "min": 1,
+          "max": 1,
+          "chance": 0.35,
+          "chanceByRegion": {
+            "grassland": 0.15
+          }
+        }
+      ]
+    },
+    "herb_node": {
+      "name": "약초 덤불",
+      "model": "herb",
+      "hp": 10,
+      "respawnDays": 1,
+      "xp": 2,
+      "radius": 0.5,
+      "collide": false,
+      "sound": "rustle",
+      "color": "#6fbf5f",
+      "drops": [
+        {
+          "item": "herb",
+          "min": 1,
+          "max": 2,
+          "chance": 1
+        }
+      ]
+    },
+    "fiber_node": {
+      "name": "긴 풀",
+      "model": "fiber",
+      "hp": 8,
+      "respawnDays": 1,
+      "xp": 1,
+      "radius": 0.45,
+      "collide": false,
+      "sound": "rustle",
+      "color": "#9fd46a",
+      "drops": [
+        {
+          "item": "fiber",
+          "min": 1,
+          "max": 3,
+          "chance": 1
+        }
+      ]
+    },
+    "cactus_node": {
+      "name": "큰 선인장",
+      "model": "cactus",
+      "hp": 35,
+      "respawnDays": 2,
+      "xp": 4,
+      "radius": 0.5,
+      "collide": true,
+      "sound": "chop",
+      "color": "#5fa85a",
+      "drops": [
+        {
+          "item": "cactus_pulp",
+          "min": 1,
+          "max": 2,
+          "chance": 1
+        },
+        {
+          "item": "cactus_spine",
+          "min": 1,
+          "max": 1,
+          "chance": 0.5
+        }
+      ]
+    },
+    "sandstone_node": {
+      "name": "사암",
+      "model": "sandstone",
+      "hp": 55,
+      "respawnDays": 3,
+      "xp": 5,
+      "radius": 0.85,
+      "collide": true,
+      "sound": "mine",
+      "color": "#e0a86a",
+      "drops": [
+        {
+          "item": "sandstone",
+          "min": 2,
+          "max": 3,
+          "chance": 1
+        },
+        {
+          "item": "sun_crystal",
+          "min": 1,
+          "max": 1,
+          "chance": 0.08
+        }
+      ]
+    },
+    "ice_node": {
+      "name": "얼음 기둥",
+      "model": "ice",
+      "hp": 60,
+      "respawnDays": 3,
+      "xp": 6,
+      "radius": 0.6,
+      "collide": true,
+      "sound": "mine",
+      "color": "#9fd8ff",
+      "drops": [
+        {
+          "item": "ice_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 1
+        },
+        {
+          "item": "frost_crystal",
+          "min": 1,
+          "max": 1,
+          "chance": 0.08
+        }
+      ]
+    }
+  },
+  "density": {
+    "grassland": {
+      "tree_node": 0.9,
+      "rock_node": 0.5,
+      "herb_node": 0.8,
+      "fiber_node": 1.0
+    },
+    "forest": {
+      "tree_node": 0.6,
+      "pine_node": 1.2,
+      "rock_node": 0.6,
+      "herb_node": 0.5
+    },
+    "desert": {
+      "cactus_node": 0.9,
+      "sandstone_node": 0.6,
+      "rock_node": 0.4
+    },
+    "snow": {
+      "pine_node": 0.8,
+      "ice_node": 0.7,
+      "rock_node": 0.5
+    }
+  }
+}

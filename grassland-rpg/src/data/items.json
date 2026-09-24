@@ -276,6 +276,119 @@
       "description": "얼음 거인의 식지 않는 심장.",
       "category": "equipment",
       "stackable": false
+    },
+    "wood": {
+      "name": "나무 토막",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#b88452",
+      "value": 1,
+      "description": "건설의 기본. 어디서나 구할 수 있다."
+    },
+    "stone": {
+      "name": "돌멩이",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#a9adb6",
+      "value": 1,
+      "description": "단단한 돌. 벽과 포탑 받침에 쓴다."
+    },
+    "fiber": {
+      "name": "풀 섬유",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#b5d67a",
+      "value": 1,
+      "description": "질긴 풀을 꼬아 만든 실."
+    },
+    "herb": {
+      "name": "약초",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#6fbf5f",
+      "value": 2,
+      "description": "쌉싸름한 풀. 물약의 재료."
+    },
+    "resin": {
+      "name": "송진",
+      "category": "material",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#e9b44f",
+      "value": 5,
+      "description": "끈적한 나무 진. 접착제로 쓴다."
+    },
+    "iron_ore": {
+      "name": "철광석",
+      "category": "material",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#8a7f8f",
+      "value": 6,
+      "description": "무쇠 장비와 대장간의 재료."
+    },
+    "cactus_pulp": {
+      "name": "선인장 과육",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#8fd46a",
+      "value": 3,
+      "description": "물기 많은 과육. 사막 요리에 쓴다."
+    },
+    "sandstone": {
+      "name": "사암",
+      "category": "material",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#e0a86a",
+      "value": 4,
+      "description": "따뜻한 빛깔의 돌. 요새 벽에 쓴다."
+    },
+    "sun_crystal": {
+      "name": "태양 수정",
+      "category": "material",
+      "grade": "rare",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#ffd23f",
+      "value": 30,
+      "description": "햇빛을 머금은 수정. 강력한 장비에 쓴다."
+    },
+    "frost_crystal": {
+      "name": "서리 수정",
+      "category": "material",
+      "grade": "rare",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#b8ecff",
+      "value": 35,
+      "description": "늘 차가운 수정. 서리 포탑의 심장."
+    },
+    "apple": {
+      "name": "사과",
+      "category": "consumable",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 20,
+      "color": "#ff6b6b",
+      "use": {
+        "heal": 15
+      },
+      "value": 2,
+      "description": "아삭한 사과. HP가 15 찬다."
     }
   },
   "statLabels": {

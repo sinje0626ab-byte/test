@@ -19,12 +19,16 @@
       "xp": 40,
       "cost": [
         {
-          "id": "slime_jelly",
-          "count": 12
+          "id": "wood",
+          "count": 20
         },
         {
-          "id": "mushroom_cap",
-          "count": 4
+          "id": "stone",
+          "count": 10
+        },
+        {
+          "id": "slime_jelly",
+          "count": 8
         }
       ]
     },
@@ -38,12 +42,20 @@
       "xp": 60,
       "cost": [
         {
-          "id": "slime_jelly",
+          "id": "wood",
+          "count": 40
+        },
+        {
+          "id": "stone",
           "count": 25
         },
         {
+          "id": "resin",
+          "count": 6
+        },
+        {
           "id": "mushroom_cap",
-          "count": 15
+          "count": 10
         }
       ]
     },
@@ -57,12 +69,24 @@
       "xp": 100,
       "cost": [
         {
-          "id": "slime_jelly",
-          "count": 45
+          "id": "wood",
+          "count": 60
         },
         {
-          "id": "mushroom_cap",
-          "count": 35
+          "id": "sandstone",
+          "count": 30
+        },
+        {
+          "id": "iron_ore",
+          "count": 12
+        },
+        {
+          "id": "cactus_spine",
+          "count": 15
+        },
+        {
+          "id": "ice_shard",
+          "count": 10
         }
       ]
     }
@@ -75,8 +99,12 @@
       "unlockBaseLevel": 1,
       "cost": [
         {
+          "id": "wood",
+          "count": 8
+        },
+        {
           "id": "slime_jelly",
-          "count": 6
+          "count": 4
         }
       ],
       "hp": 120,
@@ -91,12 +119,12 @@
       "unlockBaseLevel": 2,
       "cost": [
         {
-          "id": "slime_jelly",
-          "count": 10
+          "id": "wood",
+          "count": 15
         },
         {
-          "id": "mushroom_cap",
-          "count": 6
+          "id": "stone",
+          "count": 8
         }
       ],
       "hp": 200,
@@ -112,12 +140,16 @@
       "unlockBaseLevel": 2,
       "cost": [
         {
-          "id": "slime_jelly",
-          "count": 8
+          "id": "wood",
+          "count": 12
         },
         {
-          "id": "mushroom_cap",
-          "count": 8
+          "id": "fiber",
+          "count": 10
+        },
+        {
+          "id": "stone",
+          "count": 6
         }
       ],
       "hp": 150,

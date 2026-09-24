@@ -77,7 +77,7 @@
       "branch": "survival",
       "tier": 1,
       "name": "손놀림",
-      "description": "채집이 빨라진다. (채집이 추가된 뒤부터 효과)",
+      "description": "채집 노드(나무·바위·풀)에 주는 피해가 늘어 더 빨리 캔다.",
       "maxRank": 3,
       "requires": [],
       "effects": {
@@ -99,7 +99,7 @@
       "branch": "survival",
       "tier": 2,
       "name": "알뜰 채집",
-      "description": "채집할 때 더 많이 얻는다. (채집이 추가된 뒤부터 효과)",
+      "description": "채집할 때 주 재료를 1개 더 얻는다.",
       "maxRank": 3,
       "requires": [
         {
