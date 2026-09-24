@@ -21,7 +21,7 @@ export class SkillSystem {
       bus.emit('notify', { text: `스킬을 모두 잊었어요. 포인트 ${spent} 돌려받음`, kind: 'item' });
       this.changed();
     });
-    bus.on('save:collect', (save) => { save.skills = { ranks: { ...this.ranks } }; });
+    bus.on('save:collect', (save) => { save.skills = { ...(save.skills ?? {}), ranks: { ...this.ranks } }; });
     bus.on('save:apply', (save) => {
       this.ranks = {};
       for (const [id, r] of Object.entries(save.skills?.ranks ?? {})) {

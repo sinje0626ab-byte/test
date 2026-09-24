@@ -31,6 +31,10 @@ export class SoundSystem {
     bus.on('gather:done', (e) => this.play('gathered', e.position));
     bus.on('player:damaged', () => this.play('hurt'));
     bus.on('player:roll', () => this.play('roll'));
+    bus.on('player:dash', () => this.play('roll', null, { pitch: 1.4 }));
+    bus.on('player:sweep', () => this.play('swing', null, { pitch: 0.8 }));
+    bus.on('skill:used', ({ id }) => { if (id === 'first_aid') this.play('drink'); });
+    bus.on('turret:overclock', () => this.play('shock', null, { pitch: 1.5 }));
     bus.on('turret:fired', (e) => this.play(ctx.data.turrets[e.type]?.model ?? 'bow', at(e), { gain: 0.8 }));
     bus.on('projectile:explode', (e) => this.play('boom', at(e)));
     bus.on('boss:aoe', (e) => this.play('slam', at(e)));

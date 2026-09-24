@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -30,6 +30,8 @@ const migrations = {
   6: (s) => ({ ...s, saveVersion: 7, bosses: {} }),
   // v7 → v8: 채집 노드 (빈 값 = 모든 노드 살아 있음)
   7: (s) => ({ ...s, saveVersion: 8, gather: { depleted: {} } }),
+  // v8 → v9: 액티브 스킬 슬롯 Q·R (빈 슬롯)
+  8: (s) => ({ ...s, saveVersion: 9, skills: { ...(s.skills ?? { ranks: {} }), slots: [null, null] } }),
 };
 
 export class SaveSystem {

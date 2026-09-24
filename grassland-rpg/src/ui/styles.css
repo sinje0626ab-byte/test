@@ -156,3 +156,20 @@ html, body {
 .qslot kbd { position: absolute; top: -8px; left: -6px; margin: 0; }
 .qslot .item-icon { width: 26px; height: 26px; }
 .dmg.heal { color: #7cf09a; }
+
+/* 액티브 스킬 슬롯 (Q·R) */
+.skillbar { position: absolute; bottom: 14px; left: calc(50% + 150px); display: flex; gap: 6px; pointer-events: auto; }
+.sslot {
+  position: relative; width: 48px; height: 48px; border-radius: 50%; padding: 0; cursor: pointer; font-family: inherit;
+  background: #fff4d6; border: 2px solid #e9a35b; box-shadow: 0 3px 0 rgba(120, 100, 60, 0.25);
+  display: flex; align-items: center; justify-content: center; overflow: visible;
+}
+.sslot kbd { position: absolute; top: -8px; left: -6px; margin: 0; z-index: 2; }
+.sslot .s-icon { font-size: 22px; line-height: 1; color: #6b4a36; }
+.sslot .s-cd {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(rgba(40, 30, 20, 0.6) calc(var(--p, 0) * 360deg), transparent 0);
+}
+.sslot .s-num { position: absolute; font-weight: 800; font-size: 16px; color: #fff; text-shadow: 0 1px 2px #000; pointer-events: none; }
+.sslot.empty { opacity: 0.45; border-style: dashed; }
+.sslot.low .s-icon { opacity: 0.4; }

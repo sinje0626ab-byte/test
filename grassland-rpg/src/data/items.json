@@ -964,7 +964,14 @@
     "damageTaken": "받는 피해",
     "slowImmune": "감속 면역",
     "attackPct": "공격력",
-    "staminaRegenPct": "스태미나 회복"
+    "staminaRegenPct": "스태미나 회복",
+    "spearRange": "창 사거리",
+    "hammerCooldown": "망치 쿨다운 감소",
+    "arrowSpeedPct": "화살 속도",
+    "healPct": "소모품 회복량",
+    "structureHp": "건물 체력",
+    "buildMaterialCost": "건설 재료 절감",
+    "turretCrit": "포탑 치명타"
   },
   "percentStats": [
     "critChance",
@@ -981,7 +988,13 @@
     "baseRegenMult",
     "damageTaken",
     "attackPct",
-    "staminaRegenPct"
+    "staminaRegenPct",
+    "hammerCooldown",
+    "arrowSpeedPct",
+    "healPct",
+    "structureHp",
+    "buildMaterialCost",
+    "turretCrit"
   ],
   "equipSlots": {
     "weapon": "무기",

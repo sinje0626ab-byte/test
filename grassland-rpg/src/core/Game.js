@@ -28,6 +28,8 @@ import { GatherSystem } from '../systems/GatherSystem.js';
 import { ArrowSystem } from '../systems/ArrowSystem.js';
 import { StatusSystem } from '../systems/StatusSystem.js';
 import { EnemyShotSystem } from '../systems/EnemyShotSystem.js';
+import { ActiveSkillSystem } from '../systems/ActiveSkillSystem.js';
+import { SkillBar } from '../ui/SkillBar.js';
 import { BuffSystem } from '../systems/BuffSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
@@ -96,6 +98,7 @@ export class Game {
       new StatsSystem(ctx),
       new EquipmentSystem(ctx),
       new SkillSystem(ctx),
+      new ActiveSkillSystem(ctx),
       new ExplorationSystem(ctx),
       new InteractionSystem(ctx),
       new FacilitySystem(ctx),
@@ -124,6 +127,7 @@ export class Game {
     new StorageWindow(ctx, this.ui, this.tooltip);
     new ShopWindow(ctx, this.ui, this.tooltip);
     this.touch = new TouchControls(ctx, uiRoot);
+    this.skillBar = new SkillBar(ctx, uiRoot);
 
     // 연출·소리·설정 (게임 로직과 따로)
     this.settings = new Settings(bus);
@@ -238,6 +242,7 @@ export class Game {
     this.hud.update(dt);
     this.ui.update(dt);
     this.touch.update();
+    this.skillBar.update();
     ctx.input.endFrame();
   }
 

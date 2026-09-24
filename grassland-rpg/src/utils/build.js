@@ -13,3 +13,14 @@ export const demolishRefund = (t, stats, ratio) => {
   const spent = turretCost(t.def, stats) + t.def.upgradeCosts.slice(0, t.level - 1).reduce((a, b) => a + b, 0);
   return Math.floor(spent * ratio);
 };
+
+// 석공 스킬: 기지·부속 건물 체력, 건설 재료 절감
+export const structureHp = (hp, stats) => Math.round(hp * (1 + (stats.structureHp ?? 0)));
+export const materialCost = (cost, stats) =>
+  cost.map((c) => ({ ...c, count: Math.max(1, Math.round(c.count * (1 - (stats.buildMaterialCost ?? 0)))) }));
+// 최대 체력이 바뀌면: 가득 차 있었으면 가득, 아니면 넘치지 않게
+export function setMaxHp(s, max) {
+  const full = s.stats.hp >= s.stats.maxHp;
+  s.stats.maxHp = max;
+  s.stats.hp = full && s.alive ? max : Math.min(s.stats.hp, max);
+}

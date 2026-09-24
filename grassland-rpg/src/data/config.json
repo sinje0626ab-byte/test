@@ -176,5 +176,16 @@
     "hitRadius": 0.3,
     "leafSpin": 2.4,
     "leafHeight": 1.0
+  },
+  "activeSkills": {
+    "keys": [
+      "KeyQ",
+      "KeyR"
+    ],
+    "labels": [
+      "Q",
+      "R"
+    ],
+    "healTick": 0.5
   }
 }

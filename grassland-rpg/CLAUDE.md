@@ -68,6 +68,7 @@ src/
     PlayerModel.js     # 플레이어 모양, 무기 종류별 모양, 장비 색 반영
     PlayerAttack.js    # 무기 종류별 공격 (베기·찌르기·내려치기·활 쏘기)
     PlayerRoll.js      # 회피 구르기
+    PlayerDash.js      # 돌진 베기 (액티브 스킬) 이동·판정
     Monster.js
     MonsterModel.js    # 몬스터 모양 (슬라임 / 버섯 / 선인장 / 골렘) + monsterShapes.js (Phase 10 신규 모양)
     monsterShapes.js   # 벌·토끼·포자버섯·늑대·그루터기·전갈·두더지·굴렁덤불·요정·설인·눈사람·보스 모양
@@ -103,6 +104,7 @@ src/
     EquipmentSystem.js
     StatsSystem.js     # 레벨, 경험치, 능력치
     SkillSystem.js
+    ActiveSkillSystem.js # 액티브 스킬 Q·R 슬롯·쿨다운·발동
     BuildSystem.js     # 건설 모드, 배치 검증
     BaseSystem.js      # 기지 목록, 기지 레벨, 빠른 이동
     TurretSystem.js    # 타겟팅, 발사, 업그레이드·수리·철거
@@ -116,6 +118,7 @@ src/
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
     TouchControls.js   # 모바일 터치 조작 (조이스틱·버튼)
+    SkillBar.js        # 액티브 스킬 슬롯 Q·R (PC 퀵슬롯 옆 / 모바일 공격 버튼 위, 쿨다운 원)
     TitleScreen.js     # 타이틀·새 게임/이어하기·조작 방법·새 게임 안내
     PauseMenu.js       # 게임 중 메뉴 (☰ / ESC)
     SettingsPanel.js   # 설정 창 (게임 메뉴·타이틀에서)
@@ -289,7 +292,7 @@ src/
     "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1, "priority": "nearest" } ],
     "stats": { "level": 1, "xp": 0, "skillPoints": 0 },
     "equipment": { "slots": { "weapon": "twig_sword", "head": null, ... } },
-    "skills": { "ranks": { "power": 2 } },
+    "skills": { "ranks": { "power": 2 }, "slots": ["dash_slash", null] },
     "exploration": { "cells": "0011100…", "visited": ["grassland"] },
     "facilities": [ { "type": "workbench", "baseId": 1, "position": [x, z], "hp": 120 } ],
     "storages": { "1": [ { "id": "slime_jelly", "count": 30 }, null, ... ] },
@@ -304,6 +307,7 @@ src/
 - v5 → v6: `facilities`·`storages` 추가 (빈 값)
 - v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
 - v7 → v8: `gather` 추가 (빈 값 = 모든 노드 살아 있음)
+- v8 → v9: `skills.slots` 추가 (액티브 스킬 Q·R, 빈 슬롯)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
@@ -350,8 +354,25 @@ src/
 - 레벨업 시 `levels.json`의 `perLevel`만큼 능력치 상승, HP·스태미나 가득 회복
 - 최종 능력치 = 기본(`player.json`) + 레벨 보너스 + 장비 보너스 + 스킬 효과. StatsSystem이 계산해서 `ctx.player.stats`에 넣고, 다른 시스템은 그 값을 읽는다
   - 포탑 데미지·사거리·비용·설치 수 같은 건축 스킬 효과도 `ctx.player.stats`에 들어 있다
-- 스킬은 한 번에 1랭크씩, 찍기 전 확인 창을 띄운다. 초기화 기능은 아직 없다
+- 스킬은 한 번에 1랭크씩, 찍기 전 확인 창을 띄운다. 망각의 물약으로 초기화 (포인트 전부 돌려받음, 슬롯도 비움)
 - 손놀림(`gatherSpeed`) = 채집 노드에 주는 피해 증가, 알뜰 채집(`gatherAmount`) = 노드의 주 드롭 +1 (랭크당)
+- 최대 레벨 40 (`levels.json`). 스킬 포인트는 모든 스킬을 다 찍기엔 모자라다 (선택의 의미)
+
+### 4-4-2. 스킬 개편 (Phase 11)
+- **액티브 스킬** (`skills.json`의 `active`). 배우면 빈 슬롯(Q·R)에 자동 등록, 스킬 창에서 Q·R 버튼으로 바꾼다
+  - PC `Q`·`R`, 모바일은 공격 버튼 위 둥근 버튼 2개. 쿨다운은 원형으로 줄어들고 남은 초 표시
+| id | 갈래 | 이름 | 효과 | 쿨 | 스태미나 | 선행 |
+|---|---|---|---|---|---|---|
+| dash_slash | 전투 | 돌진 베기 | 앞으로 6m 돌진(무적), 지나간 길의 적 모두 공격력 150% (랭크당 +30%) | 7초 | 25 | 힘 2 |
+| first_aid | 생존 | 응급 처치 | 5초에 걸쳐 최대 HP 30% 회복 (랭크당 +8%) | 25초 | 0 | 회복력 1 |
+| overclock | 건축 | 포탑 과부하 | 반경 15m 포탑 연사 속도 ×2, 8초 (랭크당 +2초) | 40초 | 30 | 포탑 정비 1 |
+- 돌진 방향: PC는 마우스 쪽, 모바일은 가까운 적(없으면 바라보는 방향)
+- **패시브 추가**
+  - 무기 숙련(전투, 최대 3, 선행 연속 베기 1): 창 사거리 +0.3, 망치 쿨다운 -8%, 화살 속도 +15% (랭크당)
+  - 두꺼운 가죽(생존, 최대 5): 방어 +2
+  - 약초꾼(생존, 최대 3, 선행 알뜰 채집 1): 소모품 회복량 +15%
+  - 석공(건축, 최대 3, 선행 절약 1): 기지·부속 건물 체력 +20%, 기지 업그레이드·부속 건물 재료 -10% (개수 반올림, 최소 1)
+  - 명사수 포탑(건축, 최대 3, 선행 진지 확장 1): 포탑 치명타 확률 +10% (치명타 배율은 플레이어와 같다)
 
 ### 4-4-1. 장비
 - 슬롯: 무기, 머리, 몸, 신발, 장신구 2
@@ -518,13 +539,14 @@ src/
 - 오른쪽 **메뉴 버튼**: 가방·캐릭터·스킬·건설·지도 (단축키와 같음)
 - **건설 모드**: 화면을 탭하면 그 자리로 미리보기가 옮겨 가고, "설치"·"취소" 버튼으로 정한다
 - 가방·장비 칸: 탭하면 설명, **두 번 탭하면 우클릭과 같은 동작**(사용·장착·해제·설치)
-- 퀵슬롯: 탭하면 사용
+- 퀵슬롯: 탭하면 사용 (터치에선 왼쪽 아래 조이스틱 위)
+- **스킬 버튼**: 공격 버튼 위 둥근 버튼 2개 (등록된 액티브 스킬만 보인다). E 버튼은 구르기 버튼 위
 - 화면 확대(핀치·두 번 탭 확대)는 막는다
 
 ### HUD (항상 표시)
 - 좌상단: HP, 스태미나, 레벨, 경험치 바
 - 우상단: 골드, 날짜, 낮/밤 시계
-- 하단: 퀵슬롯 1~5 (소모품)
+- 하단: 퀵슬롯 1~5 (소모품), 그 옆 스킬 슬롯 Q·R
 - 알림: 아이템 획득, 레벨업, 습격 결과
 
 ---
@@ -572,7 +594,7 @@ src/
 - [x] Phase 8 — 채집 (채집 노드 · 새 재료 · 건설비 재조정)
 - [x] Phase 9 — 무기 종류와 장비 확장 (무기 4종 · 등급 전설 · 세트 효과 · 소모품·버프)
 - [x] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
-- [ ] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
+- [x] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
 - [ ] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
 - [ ] Phase 13 — 캐릭터, NPC, 퀘스트, 엔딩
 - [ ] Phase 14 — 편의 기능과 마무리
@@ -672,9 +694,15 @@ src/
 | `monster:stunned` | 행동 charger (벽에 박음) | FeedbackSystem, SoundSystem |
 | `loot:table` | BossSystem (분열 보스 처치 보상 `bossDrops`) | LootSystem (드롭 테이블 굴리기) |
 | `stats:refund-points` | SkillSystem (망각의 물약) | StatsSystem |
+| `skills:slots` | ActiveSkillSystem | SkillBar, SkillWindow |
+| `skill:assign` | SkillWindow (Q·R 버튼) | ActiveSkillSystem |
+| `skill:cast` | SkillBar (슬롯 누름) | ActiveSkillSystem (키보드 Q·R은 직접 읽는다) |
+| `skill:used` | ActiveSkillSystem | FeedbackSystem, SoundSystem |
+| `player:dash` / `player:sweep` | PlayerDash (돌진 시작 / 끝) | FeedbackSystem·SoundSystem / CombatSystem (지나간 길 판정) |
+| `turret:overclock` | ActiveSkillSystem | TurretSystem (연사 배율), FeedbackSystem |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.
-`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build')
+`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build'), `ctx.activeSkills`({ slots, cd } — UI가 쿨다운 표시용으로 읽는다)
 | `player:damaged` / `player:died` / `player:respawned` | Player | HUD, EconomySystem |
 | `notify` | 누구나 | HUD (알림) |

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { HpBar } from './HpBar.js';
 import { createBaseModel } from './BaseModels.js';
+import { structureHp, setMaxHp } from '../utils/build.js';
 
 // 기지 중심 건물 (텐트 → 움막 → 집 → 요새). 기지 영역 둘레를 땅에 표시하고, 밤엔 등불이 켜진다.
 export class Building {
@@ -29,8 +30,9 @@ export class Building {
   // 단계가 바뀌면 모양·영역 표시·체력을 새로 맞춘다. 체력 비율은 유지.
   setLevel(levelDef) {
     const ratio = this.stats.hp / this.stats.maxHp;
-    this.stats.maxHp = levelDef.hp;
-    this.stats.hp = Math.round(levelDef.hp * ratio);
+    this.levelDef = levelDef;
+    this.stats.maxHp = structureHp(levelDef.hp, this.ctx.player.stats);
+    this.stats.hp = Math.round(this.stats.maxHp * ratio);
     this.radius = levelDef.radius;
 
     if (this.model) this.mesh.remove(this.model.group);
@@ -50,6 +52,11 @@ export class Building {
     this.ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35, depthWrite: false }));
     this.ring.position.y = 0.04;
     this.mesh.add(this.ring);
+  }
+
+  // 석공 스킬이 바뀌면 (BaseSystem)
+  refreshMaxHp() {
+    setMaxHp(this, structureHp(this.levelDef.hp, this.ctx.player.stats));
   }
 
   takeDamage(amount) {

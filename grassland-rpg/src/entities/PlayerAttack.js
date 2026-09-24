@@ -62,7 +62,9 @@ export class PlayerAttack {
       this.count += 1;
       // 회전 공격 스킬: 근접 무기로 N번째 공격마다 한 바퀴
       this.spinning = this.type !== 'bow' && s.spin > 0 && this.count % b.spinEvery === 0;
-      this.timer = w.cooldown * Math.max(0.3, 1 - s.attackSpeed);
+      // 무기 숙련: 망치 쿨다운 감소
+      const hammer = this.type === 'hammer' ? 1 - (s.hammerCooldown ?? 0) : 1;
+      this.timer = w.cooldown * hammer * Math.max(0.3, 1 - s.attackSpeed);
       s.stamina -= w.staminaCost;
       p.staminaDelay = b.staminaRegenDelay;
     }
@@ -88,7 +90,7 @@ export class PlayerAttack {
 
     if (this.type === 'bow') {
       bus.emit('player:shoot', {
-        origin: p.position.clone().setY(1.0), dir: this.dir.clone(), speed: w.arrowSpeed, range: w.range,
+        origin: p.position.clone().setY(1.0), dir: this.dir.clone(), speed: w.arrowSpeed * (1 + (s.arrowSpeedPct ?? 0)), range: w.range,
         count: 1 + Math.round(s.multiShot ?? 0), spread: THREE.MathUtils.degToRad(w.spreadDeg),
         attack, knockback: w.knockback, ...common,
       });
@@ -97,7 +99,7 @@ export class PlayerAttack {
     bus.emit('player:attack', {
       origin: p.position.clone(),
       dir: this.dir.clone(),
-      range: w.range,
+      range: w.range + (this.type === 'spear' ? s.spearRange ?? 0 : 0), // 무기 숙련: 창 사거리
       arc: this.spinning ? Math.PI * 2 : THREE.MathUtils.degToRad(w.arcDeg),
       attack: this.spinning ? attack * (1 + b.spinDamagePerRank * s.spin) : attack,
       knockback: w.knockback,

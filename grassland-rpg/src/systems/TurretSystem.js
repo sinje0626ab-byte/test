@@ -27,6 +27,10 @@ export class TurretSystem {
       this.changed(turret);
     });
     bus.on('turret:demolish', ({ turret }) => this.demolish(turret));
+    // 포탑 과부하 스킬: 정해진 시간 동안 연사 속도 배율
+    bus.on('turret:overclock', ({ turrets, mult, duration }) => {
+      for (const t of turrets) t.overclock = { mult, time: duration };
+    });
 
     bus.on('save:collect', (save) => {
       save.turrets = this.turrets.map((t) => ({
@@ -143,7 +147,9 @@ export class TurretSystem {
     for (const t of this.turrets) {
       t.update(dt);
       if (!t.alive) continue;
-      t.cooldown -= dt;
+      const oc = t.overclock;
+      if (oc && (oc.time -= dt) <= 0) t.overclock = null;
+      t.cooldown -= dt * (t.overclock?.mult ?? 1);
       const target = this.pickTarget(t);
       if (!target) continue;
       t.aimYaw = Math.atan2(target.position.x - t.position.x, target.position.z - t.position.z);

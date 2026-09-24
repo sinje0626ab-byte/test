@@ -8,6 +8,7 @@ export class SkillWindow {
     this.blocked = {};
     this.points = 0;
     this.pending = null;
+    this.slots = [null, null];
 
     const win = ui.createWindow({ id: 'skills', title: '스킬', key: 'KeyK', hotkeyLabel: 'K' });
     win.onOpen = () => this.render();
@@ -22,6 +23,12 @@ export class SkillWindow {
     this.ui = ui;
 
     this.tree.addEventListener('click', (e) => {
+      // 액티브 스킬 Q·R 등록
+      const assign = e.target.closest('[data-assign]');
+      if (assign) {
+        ctx.bus.emit('skill:assign', { id: assign.closest('[data-skill]').dataset.skill, slot: Number(assign.dataset.assign) });
+        return;
+      }
       const id = e.target.closest('[data-skill]')?.dataset.skill;
       if (!id) return;
       if (this.blocked[id] || this.points <= 0) return;
@@ -39,6 +46,10 @@ export class SkillWindow {
       this.blocked = blocked;
       this.refresh();
     });
+    ctx.bus.on('skills:slots', ({ slots }) => {
+      this.slots = slots;
+      this.refresh();
+    });
     ctx.bus.on('stats:changed', ({ skillPoints }) => {
       this.points = skillPoints;
       this.refresh();
@@ -51,9 +62,18 @@ export class SkillWindow {
 
   effectText(def, ranks = 1) {
     const items = this.ctx.data.items;
+    if (def.active) return ranks > 1 ? `${def.rankText} ×${ranks - 1}` : def.rankText;
     return Object.entries(def.effects)
       .map(([k, v]) => `${items.statLabels[k] ?? k} ${formatStat(items, k, v * ranks)}`)
       .join(', ');
+  }
+
+  // 액티브: 쿨다운·스태미나, 배웠으면 Q·R 등록 버튼
+  activeLine(id, s, r) {
+    const a = s.active;
+    const { labels } = this.ctx.data.config.activeSkills;
+    const assign = r > 0 ? `<span class="sk-assign">${labels.map((k, i) => `<span role="button" class="${this.slots[i] === id ? 'on' : ''}" data-assign="${i}">${k}</span>`).join('')}</span>` : '';
+    return `<small class="sk-eff"><b class="sk-active">액티브</b> 쿨 ${a.cooldown}초${a.stamina ? ` · 스태미나 ${a.stamina}` : ''} · 랭크당 ${s.rankText}</small>${assign}`;
   }
 
   render() {
@@ -73,7 +93,7 @@ export class SkillWindow {
               <button type="button" class="sk-node ${cls}${this.pending === id ? ' picked' : ''}" data-skill="${id}">
                 <span class="sk-head"><b>${s.name}</b><span class="sk-rank">${r}/${s.maxRank}</span></span>
                 <small>${s.description}</small>
-                <small class="sk-eff">랭크당 ${this.effectText(s)}</small>
+                ${s.active ? this.activeLine(id, s, r) : `<small class="sk-eff">랭크당 ${this.effectText(s)}</small>`}
                 ${req ? `<small class="sk-req${why && why !== '최대 랭크' ? ' bad' : ''}">선행: ${req}</small>` : ''}
               </button>`;
           }).join('')}

@@ -2,6 +2,14 @@ import * as THREE from 'three';
 
 const dir = new THREE.Vector3();
 
+// 점 pos에서 선분(origin에서 dir 방향 length)까지의 거리
+function sideDistance(pos, origin, d, length) {
+  const rx = pos.x - origin.x;
+  const rz = pos.z - origin.z;
+  const along = Math.max(0, Math.min(length, rx * d.x + rz * d.z));
+  return Math.hypot(rx - d.x * along, rz - d.z * along);
+}
+
 // 공격 판정과 데미지 계산. 결과는 이벤트로 알린다.
 export class CombatSystem {
   constructor(ctx) {
@@ -15,6 +23,7 @@ export class CombatSystem {
     ctx.bus.on('monster:emerge', (a) => this.areaHitPlayer(a));
     ctx.bus.on('monster:blast', (a) => this.onBlast(a));
     ctx.bus.on('boss:line', (a) => this.onLine(a));
+    ctx.bus.on('player:sweep', (a) => this.onSweep(a));
     ctx.bus.on('monster:charge-hit', ({ monster, dir: d }) => {
       if (monster.alive) this.hitPlayer(monster.stats.attack, d, monster.def.hitEffect);
     });
@@ -94,7 +103,9 @@ export class CombatSystem {
 
   onProjectileHit({ monster, damage, dir: d }) {
     if (!monster.alive || monster.untargetable) return;
-    const { amount, crit } = this.calcDamage(damage, monster.stats.defense);
+    // 명사수 포탑 스킬: 포탑 치명타
+    const { player } = this.ctx;
+    const { amount, crit } = this.calcDamage(damage, monster.stats.defense, player.stats.turretCrit ?? 0, player.base.critMultiplier);
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
     this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster', source: 'turret', color: monster.def.color });
     if (killed) this.killed(monster);
@@ -136,12 +147,18 @@ export class CombatSystem {
   // 뿌리 줄기: 직선(길이·폭) 안이면 맞는다.
   onLine({ origin, dir: d, length, width, damage }) {
     const p = this.ctx.player;
-    const rx = p.position.x - origin.x;
-    const rz = p.position.z - origin.z;
-    const along = Math.max(0, Math.min(length, rx * d.x + rz * d.z));
-    const side = Math.hypot(rx - d.x * along, rz - d.z * along);
-    if (side > width / 2 + p.radius) return;
+    if (sideDistance(p.position, origin, d, length) > width / 2 + p.radius) return;
     this.hitPlayer(damage, d.clone());
+  }
+
+  // 돌진 베기: 지나간 길 위의 적 모두
+  onSweep(a) {
+    const length = Math.hypot(a.to.x - a.from.x, a.to.z - a.from.z);
+    for (const m of this.ctx.monsters) {
+      if (!m.alive || m.untargetable) continue;
+      if (sideDistance(m.position, a.from, a.dir, length) > a.width / 2 + m.radius) continue;
+      this.playerHits(m, a, a.dir.clone());
+    }
   }
 
   // 대포: 떨어진 곳 둘레 모두. 가장자리일수록 약하다.
