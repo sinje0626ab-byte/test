@@ -42,7 +42,11 @@ import { BountySystem } from '../systems/BountySystem.js';
 import { BestiaryWindow } from '../ui/BestiaryWindow.js';
 import { BountyWindow } from '../ui/BountyWindow.js';
 import { NightLordSystem } from '../systems/NightLordSystem.js';
+import { WeatherSystem } from '../systems/WeatherSystem.js';
+import { TombstoneSystem } from '../systems/TombstoneSystem.js';
 import { EndingScreen } from '../ui/EndingScreen.js';
+import { Minimap } from '../ui/Minimap.js';
+import { LootLog } from '../ui/LootLog.js';
 import { QuestTracker } from '../ui/QuestTracker.js';
 import { DialogueWindow } from '../ui/DialogueWindow.js';
 import { CourierWindow } from '../ui/CourierWindow.js';
@@ -122,6 +126,8 @@ export class Game {
       new BestiarySystem(ctx),
       new BountySystem(ctx),
       new NightLordSystem(ctx),
+      new WeatherSystem(ctx),
+      new TombstoneSystem(ctx),
       new ExplorationSystem(ctx),
       new InteractionSystem(ctx),
       new FacilitySystem(ctx),
@@ -160,10 +166,12 @@ export class Game {
     this.skillBar = new SkillBar(ctx, uiRoot);
     this.raidInd = new RaidIndicator(ctx, uiRoot);
     new QuestTracker(ctx, uiRoot);
+    this.minimap = new Minimap(ctx, uiRoot);
+    this.lootLog = new LootLog(ctx, uiRoot);
 
     // 연출·소리·설정 (게임 로직과 따로)
     this.settings = new Settings(bus);
-    this.settingsPanel = new SettingsPanel(this.settings);
+    this.settingsPanel = new SettingsPanel(this.settings, this.save, ctx);
     this.synth = new Synth();
     this.feedback = new FeedbackSystem(ctx, this.camera);
     this.sound = new SoundSystem(ctx, this.synth);
@@ -283,6 +291,8 @@ export class Game {
     this.touch.update();
     this.skillBar.update();
     this.raidInd.update();
+    this.minimap.update(dt);
+    this.lootLog.update(realDt);
     ctx.input.endFrame();
   }
 

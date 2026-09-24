@@ -19,10 +19,13 @@ export class StorageWindow {
         <section><h3>가방</h3><div class="inv-grid st-grid" data-side="bag" style="--cols:6"></div></section>
         <section><h3 data-st-title>창고</h3><div class="inv-grid st-grid" data-side="store" style="--cols:6"></div></section>
       </div>
-      <p class="inv-hint">클릭: 한 칸 통째로 옮기기 · 습격에 지면 창고 재료를 일부 잃어요</p>`;
+      <p class="inv-hint">클릭: 한 칸 통째로 옮기기 · 습격에 지면 창고 재료를 일부 잃어요 <button type="button" class="inv-sort" data-all>재료 모두 넣기</button></p>`;
     this.win = win;
     this.grids = { bag: win.body.querySelector('[data-side="bag"]'), store: win.body.querySelector('[data-side="store"]') };
     this.title = win.body.querySelector('[data-st-title]');
+    win.body.querySelector('[data-all]').addEventListener('click', () => {
+      if (this.facility) ctx.bus.emit('storage:deposit-materials', { baseId: this.facility.baseId, slots: [...this.bag] });
+    });
 
     for (const [side, grid] of Object.entries(this.grids)) {
       grid.addEventListener('click', (e) => {

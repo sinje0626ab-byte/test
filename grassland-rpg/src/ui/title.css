@@ -50,9 +50,10 @@ body.on-title #ui { display: none; }
 }
 
 .title-center { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 0 16px; }
-.logo-wrap { position: relative; display: flex; align-items: flex-end; }
-.logo { margin: 0; font-size: clamp(52px, 14vw, 104px); font-weight: 900; letter-spacing: 2px; line-height: 1; }
-.logo span {
+.logo-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
+.logo { margin: 0; font-size: clamp(40px, 11vw, 92px); font-weight: 900; letter-spacing: 1px; line-height: 1.05; display: flex; flex-wrap: wrap; justify-content: center; column-gap: 0.3em; text-align: center; }
+.logo .word { display: inline-flex; animation: none; opacity: 1; text-shadow: none; }
+.logo .word span {
   display: inline-block; opacity: 0;
   animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, bob 3.2s ease-in-out infinite;
   animation-delay: calc(0.12s * var(--i) + 0.2s), calc(0.12s * var(--i) + 1s);
@@ -69,8 +70,8 @@ body.on-title #ui { display: none; }
 @keyframes pop { 0% { opacity: 0; transform: translateY(40px) scale(0.4); } 100% { opacity: 1; transform: none; } }
 @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 .logo-badge {
-  margin: 0 0 12px 8px; padding: 3px 10px; border-radius: 999px; background: #ffcf5c; color: #7a5412;
-  font-weight: 900; font-size: 15px; transform: rotate(-8deg); box-shadow: 0 3px 0 #d9a53a;
+  margin: 12px 0 0; padding: 4px 16px; border-radius: 999px; background: #ffcf5c; color: #7a5412;
+  font-weight: 900; font-size: clamp(16px, 4.4vw, 22px); letter-spacing: 0.1em; transform: rotate(-3deg); box-shadow: 0 3px 0 #d9a53a;
   opacity: 0; animation: pop 0.5s 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 .sprout { position: absolute; left: 18%; top: -26px; width: 30px; height: 30px; opacity: 0; animation: pop 0.5s 0.9s forwards; }
@@ -211,3 +212,20 @@ body.on-title #ui { display: none; }
 .ending-credits .thanks { color: #e0645a; font-weight: 800; }
 @keyframes credits-up { from { opacity: 0; transform: translateY(20px); } }
 .ending-roll .t-menu-btn { display: block; margin: 0 auto; min-width: 180px; }
+
+/* 저장 슬롯 */
+.t-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.t-slot {
+  display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 4px; border-radius: 14px; cursor: pointer;
+  background: rgba(255, 252, 240, 0.85); border: 2px solid var(--panel-edge); font: inherit; color: var(--ink);
+}
+.t-slot b { font-size: 13px; }
+.t-slot small { font-size: 10px; color: #8a7f63; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.t-slot.on { background: #fff4d6; border-color: #e9a35b; box-shadow: 0 3px 0 #d9a53a; }
+/* 저장 옮기기 */
+.set-h { margin: 14px 0 6px; font-size: 15px; }
+.set-h small { color: #8a7f63; font-weight: 400; }
+.set-transfer { display: flex; flex-direction: column; gap: 6px; }
+.set-transfer textarea { font: 12px monospace; border-radius: 12px; border: 2px solid var(--panel-edge); padding: 6px; resize: vertical; }
+.set-transfer .t-menu-btn { padding: 8px; font-size: 14px; }
+.set-msg { margin: 0; font-size: 12px; color: #4f9a4a; text-align: center; }

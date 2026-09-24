@@ -1,5 +1,5 @@
 import { itemIcon } from './icons.js';
-import { itemTooltip } from './itemText.js';
+import { itemTooltip, compareLines } from './itemText.js';
 
 // 인벤토리 창 (I): 격자 슬롯, 드래그로 이동, 우클릭 사용/장착, 툴팁
 export class InventoryWindow {
@@ -17,7 +17,9 @@ export class InventoryWindow {
       <footer class="inv-foot">
         <span class="gold"><i class="coin"></i><b data-inv-gold>0</b></span>
         <span class="inv-hint">${ctx.input.touchMode ? '끌기: 옮기기 · 두 번 탭: 사용' : '드래그: 옮기기 · 우클릭: 사용'}</span>
+        <button type="button" class="inv-sort" data-sort>정리</button>
       </footer>`;
+    win.body.querySelector('[data-sort]').addEventListener('click', () => ctx.bus.emit('inventory:sort'));
     this.grid = win.body.querySelector('.inv-grid');
     this.goldEl = win.body.querySelector('[data-inv-gold]');
     for (let i = 0; i < cfg.slots; i++) {
@@ -30,6 +32,9 @@ export class InventoryWindow {
 
     this.bindEvents();
     ctx.bus.on('inventory:changed', ({ slots }) => this.render(slots));
+    this.worn = {};
+    this.wornPlus = {};
+    ctx.bus.on('equipment:changed', ({ slots, plus }) => { this.worn = slots; this.wornPlus = plus; });
     ctx.bus.on('gold:changed', ({ gold }) => { this.goldEl.textContent = gold.toLocaleString(); });
   }
 
@@ -51,7 +56,7 @@ export class InventoryWindow {
       const def = this.def(s.id);
       el.className = 'slot filled';
       el.style.setProperty('--grade', grades[def.grade]?.color ?? '#e8e8e8');
-      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}`;
+      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}${s.fresh ? '<i class="new-dot"></i>' : ''}`;
     });
   }
 
@@ -60,7 +65,14 @@ export class InventoryWindow {
     const how = this.ctx.input.touchMode ? '두 번 탭' : '우클릭';
     const verb = { equipment: '장착', consumable: '사용', kit: '설치' }[def.category];
     const hint = verb && `${how}: ${verb}`;
-    return itemTooltip(this.ctx.data, s.id, { count: s.count, hint, plus: s.plus ?? 0 });
+    // 장비는 지금 그 자리에 낀 것과 비교 (장신구는 첫째 칸)
+    let compare;
+    if (def.category === 'equipment') {
+      const slot = def.equipSlot === 'accessory' ? 'accessory1' : def.equipSlot;
+      const cur = this.worn[slot];
+      compare = compareLines(this.ctx.data, def, s.plus ?? 0, cur && this.def(cur), this.wornPlus[slot] ?? 0);
+    }
+    return itemTooltip(this.ctx.data, s.id, { count: s.count, hint, plus: s.plus ?? 0, compare });
   }
 
   slotIndexAt(x, y) {
@@ -77,6 +89,7 @@ export class InventoryWindow {
       const s = this.slots[i];
       if (s) this.tooltip.show(this.tooltipHtml(s), e.clientX, e.clientY);
       else this.tooltip.hide();
+      if (s?.fresh) this.ctx.bus.emit('inventory:seen', { slot: i });
     });
     grid.addEventListener('pointerleave', () => this.tooltip.hide());
 
@@ -133,6 +146,7 @@ export class InventoryWindow {
     }
     this.lastTap = { slot: i, time: now };
     if (e.pointerType === 'touch') this.tooltip.show(this.tooltipHtml(s), e.clientX, e.clientY);
+    if (s.fresh) this.ctx.bus.emit('inventory:seen', { slot: i });
   }
 
   moveGhost(x, y) {

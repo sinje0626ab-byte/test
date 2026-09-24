@@ -414,5 +414,84 @@
     "sunrise": 3.5,
     "creditsPerBase": 4.5,
     "noHeal": true
+  },
+  "minimap": {
+    "size": 128,
+    "mobileSize": 84,
+    "range": 48,
+    "redraw": 0.25
+  },
+  "lootLog": {
+    "max": 5,
+    "life": 3.5
+  },
+  "ponds": [
+    {
+      "x": -40,
+      "z": 32,
+      "r": 6
+    },
+    {
+      "x": 46,
+      "z": -18,
+      "r": 5
+    },
+    {
+      "x": 22,
+      "z": 64,
+      "r": 4.5
+    }
+  ],
+  "weather": {
+    "stormChance": 0.35,
+    "snowChance": 0.6,
+    "byRegion": {
+      "grassland": "rain",
+      "forest": "rain",
+      "desert": "sandstorm",
+      "snow": "snow"
+    },
+    "fx": {
+      "rain": {
+        "count": 420,
+        "speed": 18,
+        "dim": 0.72,
+        "fogFar": 80,
+        "color": "#9fb8d8"
+      },
+      "sandstorm": {
+        "count": 360,
+        "speed": 11,
+        "dim": 0.85,
+        "fogFar": 42,
+        "fogColor": "#d9b98a",
+        "color": "#d9b98a"
+      },
+      "snow": {
+        "count": 300,
+        "speed": 2.2,
+        "dim": 0.9,
+        "fogFar": 90,
+        "color": "#ffffff"
+      }
+    },
+    "area": 26,
+    "names": {
+      "rain": "비가 내리기 시작했어요",
+      "sandstorm": "모래바람이 불어요. 앞이 잘 안 보여요",
+      "snow": "눈이 소복소복 내려요"
+    }
+  },
+  "critters": {
+    "butterflies": 14,
+    "fireflies": 22,
+    "radius": 16,
+    "regions": [
+      "grassland",
+      "forest"
+    ]
+  },
+  "tombstone": {
+    "ratio": 0.5
   }
 }

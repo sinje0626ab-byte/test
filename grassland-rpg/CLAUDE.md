@@ -1,4 +1,6 @@
-# CLAUDE.md — 초원 기지 RPG (가제)
+# CLAUDE.md — Meadow Pioneers (초원 개척단)
+
+> 게임 이름: 영어 **Meadow Pioneers**, 한글 표기 **초원 개척단** (Phase 14에서 확정. 저장 키 `grassland-rpg-save`는 바꾸지 않는다)
 
 이 문서는 게임의 설계 기준이다. 모든 작업은 이 문서를 먼저 읽고 따른다.
 설계가 바뀌면 코드보다 이 문서를 먼저 수정한다.
@@ -64,6 +66,8 @@ src/
     Chunk.js           # z 띠 하나의 장식 묶음 (따로 그리고 따로 숨긴다)
     Regions.js         # 지역(초원/숲/사막/설원) 찾기·색 섞기
     WallGrid.js        # 벽 칸 목록 (ctx.wallGrid): 몬스터 충돌, 기지 둘레 격자 길찾기
+    Ponds.js           # 초원 연못 (config.ponds)
+    Ambient.js         # 날씨 알갱이(비·모래·눈)·나비·반딧불이 (InstancedMesh)
   entities/
     Player.js
     PlayerModel.js     # 플레이어 모양, 무기 종류별 모양, 장비 색 반영
@@ -125,6 +129,8 @@ src/
     BestiarySystem.js  # 몬스터 도감·처치 보상·칭호
     BountySystem.js    # 현상금 게시판 의뢰
     NightLordSystem.js # 최종 보스 밤의 군주 등장·파도 패턴·해돋이
+    WeatherSystem.js   # 하루 단위 날씨, 장식 생물
+    TombstoneSystem.js # 쓰러진 자리 묘비 (잃은 골드 절반)
     SaveSystem.js
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
@@ -153,6 +159,8 @@ src/
     BestiaryWindow.js  # 몬스터 도감
     BountyWindow.js    # 현상금 게시판
     EndingScreen.js    # 엔딩 크레딧·카메라 비행
+    Minimap.js         # 둥근 미니맵 (골드 아래)
+    LootLog.js         # 획득 로그 (왼쪽 아래)
     Tooltip.js
     styles.css         # 기본 HUD
     windows.css        # 창
@@ -314,6 +322,22 @@ src/
 - **현상금 게시판** (`bounties.json`): 매일 아침 의뢰 3개(처치 / 납품 / 정예). 목표 수·보상은 게시판 기지 지역 난이도를 따른다. 보상 골드 + 가끔 수정·귀환 두루마리
 - **몬스터 도감** (부엉 박사): 처음 잡으면 등록(색·이름·한 줄 설명 `lore`), 처치 10/50/100마리마다 골드 + 그 몬스터 재료. 완성률 50% → 칭호 「꼬마 박물학자」 + 박사의 돋보기(치명 +5%, 드롭률 +10%), 100% → 칭호 「초원 대박사」 + 골드 1000. `config.bestiary`
 
+### 4-13. 편의 기능과 마무리 (Phase 14)
+- **게임 이름**: 영어 **Meadow Pioneers**, 한글 **초원 개척단**. 로고(영어 글자 + 한글 배지)·`<title>`·엔딩 크레딧. 저장 키는 그대로
+- **미니맵**: HUD 오른쪽 위 골드 아래 둥근 지도 (반경 `minimap.range` m, 위 = 북쪽). 지도 창과 같은 탐험 칸·지역 색, 기지·보스 둥지(가 본 곳)·주민·묘비, 퀘스트 목표(보고할 땐 부엉 박사, 보스 퀘스트면 둥지 — 밖이면 가장자리 화살표). 누르면 지도 창
+- **장비 비교 툴팁**: 가방 장비에 마우스를 올리면 그 자리에 낀 장비와 능력치 차이 (초록 ▲ / 빨강 ▼, 강화 반영)
+- **가방 정리** 버튼: 같은 아이템 합치고 종류(장비 → 소모품 → 재료 → 키트) → 등급(높은 것 먼저) → 이름 순
+- **창고 "재료 모두 넣기"**: 가방의 재료만 한 번에
+- **새 아이템 점**: 처음 얻은 아이템 칸에 빨간 점 (마우스를 올리거나 탭하면 사라짐). 얻어 본 목록은 `inventory.seen`
+- **획득 로그**: 줍는 아이템·골드는 오른쪽 알림 대신 왼쪽 아래에 "+3 나무 토막" (같은 아이템은 합쳐서, `lootLog`)
+- **날씨** (`config.weather`): 하루마다 궂은 날(`stormChance`)을 굴린다. 궂은 날은 초원·숲 비, 사막 모래바람(시야가 짧다), 설원 눈(설원은 `snowChance`로도). 조금 어둡고 안개가 가까워진다. 비 오는 날은 주민 비 대사
+- **장식 생물**: 초원·숲에서 맑은 낮엔 나비, 밤엔 반딧불이 (InstancedMesh, 플레이어 둘레)
+- **연못**: 초원에 3개 (`config.ponds`). 파란 평면 + 반짝이는 가장자리 + 연잎. 들어갈 수 없고 장식을 두지 않는다. 낚시는 없음
+- **묘비**: 쓰러진 자리에 남고 잃은 골드의 절반이 들어 있다. E로 되찾는다. 다시 쓰러지면 예전 묘비는 사라진다
+- **저장 슬롯 3개**: 타이틀에서 고른다. 1번은 예전 키(`grassland-rpg-save`) 그대로, 2·3번은 `-2`·`-3`. 마지막 슬롯은 기억한다
+- **저장 옮기기**: 설정 → 내보내기(현재 슬롯 저장을 base64 글자로, 클립보드 복사) / 가져오기(붙여 넣으면 검사 후 현재 슬롯에. 게임 중이면 페이지를 새로 연다)
+- **성능**: three.js를 따로 번들(`three-*.js`)로 나눠 캐시. 터치 기기는 처음 그림자 "낮음"
+
 ### 4-3. 아이템
 - 분류: 재료 / 소모품 / 장비(무기·방어구·장신구) / 건설 키트
 - 등급: 일반 / 고급 / 희귀 / 영웅 (색상 구분)
@@ -361,6 +385,7 @@ src/
 - v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
 - v7 → v8: `gather` 추가 (빈 값 = 모든 노드 살아 있음)
 - v8 → v9: `skills.slots` 추가 (액티브 스킬 Q·R, 빈 슬롯)
+- v11 → v12: `weather`(없으면 그날 새로), `tomb`(없음), `inventory.seen`(없으면 지금 가방 아이템)
 - v10 → v11: `player.appearance`(없으면 기본값), `npcs`·`quests`·`bestiary`·`bounties`·`nightLord` 추가 (빈 값 = 처음부터, 퀘스트는 이룬 것 건너뛰기)
 - v9 → v10: 장착 슬롯 id 문자열 → `{ id, plus: 0 }`, `walls` 추가 (빈 값). 부속 건물에 텃밭 작물 `crop` { seed, day } (없으면 빈 텃밭)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
@@ -686,7 +711,7 @@ src/
 - [x] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
 - [x] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
 - [x] Phase 13 — 캐릭터, NPC, 퀘스트, 엔딩
-- [ ] Phase 14 — 편의 기능과 마무리
+- [x] Phase 14 — 편의 기능과 마무리 (Meadow Pioneers · 초원 개척단)
 
 ---
 
@@ -814,9 +839,14 @@ src/
 | `boss:phase` | Boss (phases) | (알림) |
 | `fx:stars` | NightLordSystem | FeedbackSystem |
 | `ending:stats` → `ending:start` | NightLordSystem (해돋이 뒤) | BestiarySystem(처치 수) → EndingScreen |
+| `loot:gained` | InventorySystem·EconomySystem (주움) | LootLog |
+| `inventory:sort` / `inventory:seen` | InventoryWindow | InventorySystem |
+| `storage:deposit-materials` | StorageWindow | StorageSystem |
+| `weather:changed` | WeatherSystem | (알림) — 연출은 World가 `ctx.weatherFx`를 읽는다 |
+| `economy:death-loss` → `interact:tomb` | EconomySystem → InteractionSystem | TombstoneSystem |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.
-`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build'), `ctx.activeSkills`({ slots, cd } — UI가 쿨다운 표시용으로 읽는다), `ctx.raids`(진행 중 습격, RaidIndicator), `ctx.bloodMoon`, `ctx.wallGrid`(벽 칸 — 몬스터 충돌·길찾기), `ctx.npcs`(동물 주민), `ctx.unlocks`(설계도), `ctx.nightLord`·`ctx.sunrise`(하늘 연출)
+`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build'), `ctx.activeSkills`({ slots, cd } — UI가 쿨다운 표시용으로 읽는다), `ctx.raids`(진행 중 습격, RaidIndicator), `ctx.bloodMoon`, `ctx.wallGrid`(벽 칸 — 몬스터 충돌·길찾기), `ctx.npcs`(동물 주민), `ctx.unlocks`(설계도), `ctx.nightLord`·`ctx.sunrise`(하늘 연출), `ctx.weather`·`ctx.weatherFx`, `ctx.tomb`
 | `player:damaged` / `player:died` / `player:respawned` | Player | HUD, EconomySystem |
 | `notify` | 누구나 | HUD (알림) |

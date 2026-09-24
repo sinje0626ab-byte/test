@@ -26,7 +26,7 @@ export class EndingScreen {
           <dt>세운 기지</dt><dd>${stats.bases}곳</dd>
         </dl>
         <div class="ending-credits">
-          <p><b>초원 기지 RPG</b></p>
+          <p><b>Meadow Pioneers · 초원 개척단</b></p>
           <p>개척자 · ${stats.name}</p>
           <p>동물 친구들 · 도토리 · 무쇠 · 부엉 박사 · 꿀비 · 하늘</p>
           <p>그리고 초원의 모든 슬라임에게</p>

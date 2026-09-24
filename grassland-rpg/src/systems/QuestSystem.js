@@ -118,6 +118,16 @@ export class QuestSystem {
 
   changed() {
     const q = this.current;
-    this.ctx.bus.emit('quest:changed', q ? { title: q.title, goal: this.ready ? this.ctx.data.quests.trackerDone : q.goal, ready: this.ready, index: this.index } : { title: null });
+    this.ctx.bus.emit('quest:changed', q ? { title: q.title, goal: this.ready ? this.ctx.data.quests.trackerDone : q.goal, ready: this.ready, index: this.index, target: this.target(q) } : { title: null });
+  }
+
+  // 미니맵 목표 자리: 보고할 땐 부엉 박사, 보스 퀘스트면 둥지
+  target(q) {
+    if (this.ready) {
+      const owl = this.ctx.npcs?.find((n) => n.id === 'buheong');
+      return owl ? [owl.anchor.x, owl.anchor.z] : null;
+    }
+    const lair = q.cond.type === 'boss' && this.ctx.data.bosses[q.cond.id]?.lair;
+    return lair ?? null;
   }
 }

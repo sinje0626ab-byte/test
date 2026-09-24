@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 11;
+export const SAVE_VERSION = 12;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -41,6 +41,8 @@ const migrations = {
   }),
   // v10 → v11: 캐릭터 외형(기본값), NPC·퀘스트·도감·현상금 (빈 값 = 처음부터)
   10: (s) => ({ ...s, saveVersion: 11, player: { ...s.player, appearance: null }, npcs: null, quests: null, bestiary: null, bounties: null }),
+  // v11 → v12: 날씨(없으면 그날 새로 굴림), 묘비(없음), 가방 seen(없으면 지금 가방 아이템)
+  11: (s) => ({ ...s, saveVersion: 12, weather: null, tomb: null }),
 };
 
 export class SaveSystem {
@@ -55,12 +57,48 @@ export class SaveSystem {
       if (document.visibilityState === 'hidden') this.save();
     });
     ctx.bus.on('save:request', () => this.save());
+    // 저장 슬롯 3개. 1번은 예전 키 그대로 (기존 저장이 사라지지 않게), 2·3번은 키 뒤에 -2 / -3
+    try { this.slot = Number(localStorage.getItem(`${this.cfg.key}-slot`)) || 1; } catch { this.slot = 1; }
+  }
+
+  keyFor(slot) {
+    return slot === 1 ? this.cfg.key : `${this.cfg.key}-${slot}`;
+  }
+
+  get key() {
+    return this.keyFor(this.slot);
+  }
+
+  setSlot(slot) {
+    this.slot = slot;
+    try { localStorage.setItem(`${this.cfg.key}-slot`, String(slot)); } catch { /* 무시 */ }
+  }
+
+  // 저장 옮기기: 지금 슬롯 저장을 base64 문자열로 (휴대폰 ↔ PC)
+  exportString() {
+    this.save();
+    let raw = null;
+    try { raw = localStorage.getItem(this.key); } catch { /* 무시 */ }
+    return raw ? btoa(unescape(encodeURIComponent(raw))) : '';
+  }
+
+  // 문자열을 풀어 검사한 뒤 slot에 넣는다. 실패하면 이유 문자열, 성공하면 null
+  importString(text, slot = this.slot) {
+    let raw;
+    try {
+      raw = decodeURIComponent(escape(atob(text.trim())));
+      this.migrate(JSON.parse(raw));
+    } catch (err) {
+      return err.newer ? '더 새로운 버전의 저장이에요' : '저장 문자열이 올바르지 않아요';
+    }
+    try { localStorage.setItem(this.keyFor(slot), raw); } catch { return '저장 공간이 부족해요'; }
+    return null;
   }
 
   load() {
     let raw;
     try {
-      raw = localStorage.getItem(this.cfg.key);
+      raw = localStorage.getItem(this.key);
     } catch {
       return false;
     }
@@ -78,7 +116,7 @@ export class SaveSystem {
         // 더 새로운 버전으로 만든 저장은 지우지 않도록 자동 저장을 끈다.
         this.disabled = true;
       } else {
-        try { localStorage.setItem(`${this.cfg.key}-broken`, raw); } catch { /* 무시 */ }
+        try { localStorage.setItem(`${this.key}-broken`, raw); } catch { /* 무시 */ }
       }
       this.ctx.bus.emit('notify', { text: '저장을 불러오지 못해 새로 시작합니다', kind: 'warn' });
       this.ctx.bus.emit('game:new');
@@ -90,11 +128,11 @@ export class SaveSystem {
     return true;
   }
 
-  // 타이틀의 "이어하기"에 보여 줄 요약. 저장이 없으면 null
-  peek() {
+  // 타이틀의 "이어하기"·슬롯에 보여 줄 요약. 저장이 없으면 null
+  peek(slot = this.slot) {
     let raw;
     try {
-      raw = localStorage.getItem(this.cfg.key);
+      raw = localStorage.getItem(this.keyFor(slot));
     } catch {
       return null;
     }
@@ -107,6 +145,7 @@ export class SaveSystem {
         gold: s.economy?.gold ?? 0,
         bases: s.bases?.length ?? 0,
         savedAt: s.savedAt,
+        name: s.player?.appearance?.name ?? null,
       };
     } catch (err) {
       return { broken: true, newer: !!err.newer };
@@ -114,7 +153,7 @@ export class SaveSystem {
   }
 
   clear() {
-    try { localStorage.removeItem(this.cfg.key); } catch { /* 무시 */ }
+    try { localStorage.removeItem(this.key); } catch { /* 무시 */ }
   }
 
   migrate(save) {
@@ -138,7 +177,7 @@ export class SaveSystem {
     const data = { saveVersion: SAVE_VERSION, savedAt: Date.now() };
     this.ctx.bus.emit('save:collect', data);
     try {
-      localStorage.setItem(this.cfg.key, JSON.stringify(data));
+      localStorage.setItem(this.key, JSON.stringify(data));
     } catch (err) {
       console.warn('[save] 저장 실패:', err.message);
       return;

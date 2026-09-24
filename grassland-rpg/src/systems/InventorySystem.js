@@ -6,6 +6,7 @@ export class InventorySystem {
     this.ctx = ctx;
     this.cfg = ctx.data.config.inventory;
     this.slots = new Array(this.cfg.slots).fill(null);
+    this.seen = new Set(); // 한 번이라도 얻어 본 아이템 (처음 얻으면 칸에 점)
     const { bus } = ctx;
 
     bus.on('loot:picked', (e) => this.onPicked(e));
@@ -51,12 +52,19 @@ export class InventorySystem {
       this.slots[slot].plus = plus;
       this.changed();
     });
+    bus.on('inventory:sort', () => this.sort());
+    // 새 아이템 점: 마우스를 올리거나 탭하면 지운다
+    bus.on('inventory:seen', ({ slot }) => {
+      if (!this.slots[slot]?.fresh) return;
+      delete this.slots[slot].fresh;
+      this.changed();
+    });
     bus.on('game:new', () => {
       for (const s of ctx.data.config.startingItems) this.add(s.id, s.count);
       this.changed();
     });
     bus.on('save:collect', (save) => {
-      save.inventory = { slots: this.slots.map((s) => (s ? { ...s } : null)) };
+      save.inventory = { slots: this.slots.map((s) => (s ? { ...s } : null)), seen: [...this.seen] };
     });
     bus.on('save:apply', (save) => this.applySave(save.inventory));
   }
@@ -84,13 +92,15 @@ export class InventorySystem {
     const added = this.add(e.item, e.count);
     if (added <= 0) return;
     e.taken += added;
+    if (!this.seen.has(e.item)) {
+      this.seen.add(e.item);
+      const s = this.slots.find((x) => x?.id === e.item);
+      if (s) s.fresh = true;
+    }
     const total = this.countOf(e.item);
     this.changed({ item: e.item, count: added, total });
-    this.ctx.bus.emit('notify', {
-      text: `${def.name} +${added} (보유 ${total})`,
-      kind: 'item',
-      color: this.ctx.data.items.grades[def.grade]?.color,
-    });
+    // 획득 로그 (화면 왼쪽 아래, LootLog)
+    this.ctx.bus.emit('loot:gained', { item: e.item, count: added, total });
   }
 
   // 같은 아이템이면 합치고, 아니면 자리를 바꾼다.
@@ -140,12 +150,41 @@ export class InventorySystem {
     return n;
   }
 
+  // 가방 정리: 같은 아이템 합치고 종류 → 등급 → 이름 순
+  sort() {
+    const items = this.ctx.data.items;
+    const catOrder = ['equipment', 'consumable', 'material', 'kit'];
+    const gradeOrder = Object.keys(items.grades).reverse(); // 높은 등급 먼저
+    const list = [];
+    for (const s of this.slots) {
+      if (!s) continue;
+      const same = list.find((x) => x.id === s.id && (x.plus ?? 0) === (s.plus ?? 0) && x.count < this.maxStack(s.id));
+      if (same) {
+        const n = Math.min(s.count, this.maxStack(s.id) - same.count);
+        same.count += n;
+        if (s.count > n) list.push({ ...s, count: s.count - n });
+      } else list.push({ ...s });
+    }
+    const key = (s) => {
+      const d = items.items[s.id];
+      return [catOrder.indexOf(d.category), gradeOrder.indexOf(d.grade), d.name];
+    };
+    list.sort((a, b) => {
+      const [ca, ga, na] = key(a);
+      const [cb, gb, nb] = key(b);
+      return ca - cb || ga - gb || na.localeCompare(nb, 'ko') || (b.plus ?? 0) - (a.plus ?? 0);
+    });
+    this.slots = this.slots.map((_, i) => list[i] ?? null);
+    this.changed();
+  }
+
   applySave(inv) {
     if (!inv) return;
+    this.seen = new Set(inv.seen ?? inv.slots.filter(Boolean).map((s) => s.id));
     this.slots = new Array(this.cfg.slots).fill(null);
     inv.slots.forEach((s, i) => {
       if (!s || !this.def(s.id)) return;
-      if (i < this.slots.length) this.slots[i] = { id: s.id, count: s.count, ...(s.plus ? { plus: s.plus } : {}) };
+      if (i < this.slots.length) this.slots[i] = { id: s.id, count: s.count, ...(s.plus ? { plus: s.plus } : {}), ...(s.fresh ? { fresh: true } : {}) };
       else this.add(s.id, s.count, s.plus ?? 0); // 칸 수가 줄었으면 앞쪽 빈칸으로
     });
     this.changed();
