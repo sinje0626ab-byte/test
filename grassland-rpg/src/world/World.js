@@ -150,6 +150,13 @@ export class World {
     pos.z = Math.max(b.minZ + 1, Math.min(b.maxZ - 1, pos.z));
   }
 
+  // 월드 경계 안으로만 (나는 몬스터용)
+  clampToBounds(pos) {
+    const b = this.bounds;
+    pos.x = Math.max(b.minX + 1, Math.min(b.maxX - 1, pos.x));
+    pos.z = Math.max(b.minZ + 1, Math.min(b.maxZ - 1, pos.z));
+  }
+
   isInside(x, z, margin = 2) {
     const b = this.bounds;
     return x > b.minX + margin && x < b.maxX - margin && z > b.minZ + margin && z < b.maxZ - margin;

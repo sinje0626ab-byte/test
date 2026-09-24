@@ -12,21 +12,24 @@
     "aggroRange": 15,
     "leashRange": 34,
     "respawnDays": 3,
-    "slam": {
-      "windup": 1.0,
-      "radius": 3.8,
-      "damage": 26,
-      "cooldown": 5
-    },
-    "ranged": {
-      "kind": "volley",
-      "windup": 0.7,
-      "count": 12,
-      "speed": 11,
-      "damage": 12,
-      "range": 14,
-      "cooldown": 4.5
-    }
+    "patterns": [
+      {
+        "kind": "slam",
+        "windup": 1.0,
+        "radius": 3.8,
+        "damage": 26,
+        "cooldown": 5
+      },
+      {
+        "kind": "volley",
+        "windup": 0.7,
+        "count": 12,
+        "speed": 11,
+        "damage": 12,
+        "range": 14,
+        "cooldown": 4.5
+      }
+    ]
   },
   "ice_giant": {
     "name": "얼음 거인",
@@ -41,20 +44,120 @@
     "aggroRange": 15,
     "leashRange": 34,
     "respawnDays": 3,
-    "slam": {
-      "windup": 1.1,
-      "radius": 4.6,
-      "damage": 34,
-      "cooldown": 5
-    },
-    "ranged": {
-      "kind": "boulder",
-      "windup": 1.0,
-      "speed": 14,
-      "radius": 2.8,
-      "damage": 30,
-      "range": 18,
-      "cooldown": 3.5
+    "patterns": [
+      {
+        "kind": "slam",
+        "windup": 1.1,
+        "radius": 4.6,
+        "damage": 34,
+        "cooldown": 5
+      },
+      {
+        "kind": "boulder",
+        "windup": 1.0,
+        "speed": 14,
+        "radius": 2.8,
+        "damage": 30,
+        "range": 18,
+        "cooldown": 3.5
+      }
+    ]
+  },
+  "king_slime": {
+    "name": "왕슬라임",
+    "monster": "king_slime",
+    "region": "grassland",
+    "lair": [
+      70,
+      -45
+    ],
+    "spawnRange": 60,
+    "despawnRange": 95,
+    "aggroRange": 14,
+    "leashRange": 30,
+    "respawnDays": 3,
+    "patterns": [
+      {
+        "kind": "jump",
+        "windup": 1.1,
+        "radius": 3.5,
+        "damage": 18,
+        "range": 12,
+        "cooldown": 4
+      },
+      {
+        "kind": "summon",
+        "monster": "slime",
+        "count": 3,
+        "windup": 0.6,
+        "range": 14,
+        "cooldown": 10
+      }
+    ],
+    "split": {
+      "at": 0.5,
+      "into": "king_slime_half",
+      "count": 2,
+      "patterns": [
+        {
+          "kind": "jump",
+          "windup": 1.0,
+          "radius": 2.6,
+          "damage": 13,
+          "range": 12,
+          "cooldown": 4.5
+        }
+      ]
+    }
+  },
+  "elder_treant": {
+    "name": "고목 수호자",
+    "monster": "elder_treant",
+    "region": "forest",
+    "lair": [
+      -60,
+      -240
+    ],
+    "spawnRange": 60,
+    "despawnRange": 95,
+    "aggroRange": 15,
+    "leashRange": 34,
+    "respawnDays": 3,
+    "patterns": [
+      {
+        "kind": "roots",
+        "windup": 1.0,
+        "count": 3,
+        "spreadDeg": 25,
+        "length": 12,
+        "width": 1.3,
+        "damage": 22,
+        "range": 13,
+        "cooldown": 6
+      },
+      {
+        "kind": "summon",
+        "monster": "stump",
+        "count": 2,
+        "windup": 0.8,
+        "range": 16,
+        "cooldown": 14
+      },
+      {
+        "kind": "leafstorm",
+        "windup": 0.6,
+        "count": 8,
+        "damage": 12,
+        "duration": 3,
+        "maxRadius": 7,
+        "range": 9,
+        "cooldown": 8
+      }
+    ],
+    "enrage": {
+      "at": 0.3,
+      "speed": 1.3,
+      "color": "#d9674f"
     }
   }
 }

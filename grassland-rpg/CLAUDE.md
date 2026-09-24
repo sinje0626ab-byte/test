@@ -69,9 +69,12 @@ src/
     PlayerAttack.js    # 무기 종류별 공격 (베기·찌르기·내려치기·활 쏘기)
     PlayerRoll.js      # 회피 구르기
     Monster.js
-    MonsterModel.js    # 몬스터 모양 (슬라임 / 버섯)
+    MonsterModel.js    # 몬스터 모양 (슬라임 / 버섯 / 선인장 / 골렘) + monsterShapes.js (Phase 10 신규 모양)
+    monsterShapes.js   # 벌·토끼·포자버섯·늑대·그루터기·전갈·두더지·굴렁덤불·요정·설인·눈사람·보스 모양
+    behaviors/         # 몬스터 행동 모듈 (melee·charger·ranged·darter·burrower·exploder), common.js 공용
+    bossPatterns.js    # 보스 패턴 (내려찍기·점프·가시 난사·얼음덩이·소환·뿌리·잎 폭풍)
     RaidMonster.js     # 밤 습격 몬스터 AI
-    Boss.js            # 보스 AI (내려찍기·원거리 패턴, 예고 표시, 귀환)
+    Boss.js            # 보스 AI (패턴 고르기·쿨다운, 페이즈 분열·분노, 귀환)
     Drop.js            # 바닥에 떨어진 골드·아이템 (줍기)
     Projectile.js      # 화살, 총알, 포탄
     Particles.js       # 파티클 풀 (로우폴리 조각, InstancedMesh 하나)
@@ -86,7 +89,8 @@ src/
     CombatSystem.js
     MonsterSpawner.js
     ExplorationSystem.js # 탐험한 칸(지도 안개), 지역 진입 알림
-    BossSystem.js      # 보스 등장·재등장, 보스 투사체
+    BossSystem.js      # 보스 등장·재등장, 보스 투사체·분열
+    EnemyShotSystem.js # 몬스터 투사체 (포자탄·얼음탄), 보스 잎 폭풍
     GatherSystem.js    # 채집 노드 배치·타격·드롭·복구
     ArrowSystem.js     # 플레이어 활 화살
     StatusSystem.js    # 상태 이상 (독·감속)
@@ -128,6 +132,7 @@ src/
     Tooltip.js
     styles.css         # 기본 HUD
     windows.css        # 창
+    windows-map.css    # 포탑 관리·기지 업그레이드·지도 창
     touch.css          # 모바일 터치 조작
     title.css          # 타이틀·게임 메뉴
   utils/
@@ -212,8 +217,39 @@ src/
 - AI 상태: 배회 → 추적 → 공격 → (체력 낮으면) 도주
 - 드롭: 경험치, 골드, 재료 (`monsters.json`의 드롭 테이블 기준)
 
+### 4-2-0. 몬스터 행동 (Phase 10)
+- `monsters.json`의 `behavior` (없으면 melee). 행동 모듈은 `entities/behaviors/`
+| behavior | 동작 | 추가 필드 |
+|---|---|---|
+| melee | 다가와서 때림 (기존) | - |
+| charger | 멈춰서 바닥에 돌진 예고선 → 일직선 돌진. 나무·바위에 박으면 `stunTime`초 기절 | chargeWindup, chargeSpeed, chargeDistance, chargeCooldown |
+| ranged | 거리를 유지하며 투사체. 가까이 오면 뒷걸음 | keepDistance, shotSpeed, shotCooldown, shotWindup, shotEffect |
+| darter | 빠르게 날아와 한 번 쏘고 멀리 빠짐 (반복) | dartSpeed, retreatDistance |
+| burrower | 땅속으로 숨어 이동(맞지 않음) → 발밑 흙더미 예고 → 튀어나오며 범위 공격 | burrowTime, emergeWindup, emergeRadius |
+| exploder | 가까이 오면 부풀며 깜빡임 → 폭발. 건물에 `blastMultiplier`배 | fuseTime, blastRadius, blastMultiplier |
+| + splitter | 죽으면 작은 개체로 갈라짐 (행동과 함께 쓰는 속성) | splitInto, splitCount |
+| + pack | 2~3마리 무리로 스폰. 한 마리가 맞으면 무리 전체 추적 | packMin, packMax |
+| + flier | 나무·바위(벽 포함)를 넘어 다닌다. 바닥에 그림자 원 | flier: true |
+- 상태 이상은 플레이어에게도 걸린다: 독(초당 피해, 무적 시간 없음), 감속(이동 속도). 독 저항은 독 시간·피해를 줄이고, 감속 면역이면 감속이 안 걸린다
+- 밤에 태어난 필드 몬스터는 몸이 보랏빛으로 은은히 빛난다 (새 몬스터의 밤 버전은 따로 없음)
+
+### 4-2-0-1. 신규 몬스터 (Phase 10)
+수치는 지역 배율 적용 전 기본값.
+- 초원: 붕붕벌(darter·flier), 뿔토끼(charger), 큰 슬라임(splitter → 슬라임 2)
+- 숲: 포자 버섯(ranged, 포자탄 독 3초), 가시 늑대(pack 2~3), 그루터기 괴물(느리고 단단함)
+- 사막: 모래 전갈(charger, 적중 시 독), 모래 두더지(burrower), 굴렁 덤불(exploder)
+- 설원: 눈꽃 요정(ranged·flier, 얼음탄 감속 40% 2초), 설인 새끼(pack 2), 눈사람 폭탄(exploder)
+
+### 4-2-0-2. 정예 몬스터 (Phase 10)
+- 필드 스폰의 `elite.chance`(5%)가 정예. 크기 1.3배, 금빛으로 빛남
+- HP ×2.5, 공 ×1.5, XP ×3, 골드 ×3, 장비 드롭 확률 ×3 (`config.json`의 `elite`)
+
 ### 4-2-1. 보스 (Phase 6)
-- 사막 끝 **선인장왕**, 설원 끝 **얼음 거인** (`bosses.json`, 능력치는 `monsters.json`)
+- 지역마다 보스 하나. 난이도 순서: **왕슬라임**(초원 북동쪽) → **고목 수호자**(숲 깊은 곳) → **선인장왕**(사막 끝) → **얼음 거인**(설원 끝) → 밤의 군주(Phase 13)
+- `bosses.json`의 `patterns` 목록에서 쿨다운이 돈 패턴을 골라 쓴다 (`bossPatterns.js`)
+  - slam 내려찍기 / jump 점프 후 착지 지점 내려찍기 / volley 가시 난사 / boulder 얼음덩이 / summon 부하 소환 / roots 뿌리 줄기 3갈래(직선 예고) / leafstorm 몸 주변을 돌며 퍼지는 잎
+- 페이즈: 왕슬라임은 HP 50% 이하에서 중간 슬라임 2마리로 갈라지고 둘 다 잡아야 처치. 고목 수호자는 HP 30% 이하에서 공격 속도 +30%, 붉은 단풍색
+- 보스 드롭은 `oneOf`(여럿 중 하나)를 쓸 수 있다
 - 둥지 `spawnRange` 안으로 들어가면 나타난다. `aggroRange` 안에 오면 싸움 시작, 화면 위에 보스 체력바
 - 패턴 (모두 바닥에 빨간 예고 표시 후 발동)
   - 내려찍기: 보스 둘레 원형 범위 피해
@@ -535,7 +571,7 @@ src/
 - [x] Phase 7 — 손맛과 사운드 (타격 피드백 · 구르기 · 합성 사운드·배경음 · 설정)
 - [x] Phase 8 — 채집 (채집 노드 · 새 재료 · 건설비 재조정)
 - [x] Phase 9 — 무기 종류와 장비 확장 (무기 4종 · 등급 전설 · 세트 효과 · 소모품·버프)
-- [ ] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
+- [x] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
 - [ ] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
 - [ ] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
 - [ ] Phase 13 — 캐릭터, NPC, 퀘스트, 엔딩
@@ -559,7 +595,7 @@ src/
 | `player:attack` | Player | CombatSystem |
 | `monster:attack` | Monster | CombatSystem |
 | `combat:hit` | CombatSystem | HUD (데미지 숫자) |
-| `monster:killed` | CombatSystem | LootSystem |
+| `monster:killed` | CombatSystem (`elite`, 자폭이면 `noLoot`) | LootSystem, StatsSystem, BossSystem |
 | `loot:picked` | LootSystem | EconomySystem, InventorySystem (받은 만큼 `taken`에 더한다) |
 | `gold:changed` | EconomySystem | HUD, InventoryWindow |
 | `inventory:changed` | InventorySystem | InventoryWindow |
@@ -609,7 +645,7 @@ src/
 | `inventory:use-item` | HUD (퀵슬롯) | InventorySystem |
 | `boss:aoe` | Boss, BossSystem(얼음덩이 착지) | CombatSystem (범위 안 플레이어 피해) |
 | `boss:volley` / `boss:boulder` | Boss | BossSystem (투사체) |
-| `enemy:hit-player` | BossSystem | CombatSystem |
+| `enemy:hit-player` | BossSystem, EnemyShotSystem (`effect` 상태 이상) | CombatSystem |
 | `boss:engaged` / `boss:disengaged` | Boss | HUD (보스 체력바) |
 | `boss:status` | BossSystem | MapWindow (둥지 표시) |
 | `pause:open` | UIManager (ESC), HUD (☰) | PauseMenu |
@@ -627,6 +663,14 @@ src/
 | `status:apply` / `status:damage` | CombatSystem / StatusSystem | StatusSystem / CombatSystem |
 | `player:heal` | CombatSystem (처치 시 회복) | Player |
 | `buffs:changed` | BuffSystem | StatsSystem, HUD |
+| `monster:shoot` | 행동 ranged | EnemyShotSystem |
+| `monster:spawn` | CombatSystem (splitter 처치), 보스 소환 | MonsterSpawner |
+| `monster:blast` / `monster:emerge` | 행동 exploder / burrower | CombatSystem (범위 피해) |
+| `monster:charge-hit` | 행동 charger | CombatSystem |
+| `boss:line` / `boss:leafstorm` / `boss:split` | 보스 패턴 | CombatSystem / EnemyShotSystem / BossSystem |
+| `boss:enraged` | Boss (분노 페이즈) | (알림) |
+| `monster:stunned` | 행동 charger (벽에 박음) | FeedbackSystem, SoundSystem |
+| `loot:table` | BossSystem (분열 보스 처치 보상 `bossDrops`) | LootSystem (드롭 테이블 굴리기) |
 | `stats:refund-points` | SkillSystem (망각의 물약) | StatsSystem |
 
 ### 공유 상태 (ctx)

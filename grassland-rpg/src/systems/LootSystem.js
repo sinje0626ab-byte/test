@@ -11,14 +11,25 @@ export class LootSystem {
     this.fullNotice = 0;
     ctx.bus.on('monster:killed', (e) => this.onKilled(e));
     ctx.bus.on('loot:spawn', ({ item, count, position }) => this.spawn(item, count, position));
+    ctx.bus.on('loot:table', ({ drops, position }) => this.roll(drops, position));
   }
 
-  onKilled({ type, position }) {
-    const def = this.ctx.data.monsters[type];
-    for (const entry of def.drops) {
-      if (Math.random() >= entry.chance) continue;
-      const count = rand.int(entry.min, entry.max);
-      if (count > 0) this.spawn(entry.item, count, position);
+  onKilled({ type, position, elite, noLoot }) {
+    if (noLoot) return;
+    this.roll(this.ctx.data.monsters[type].drops, position, elite ? this.ctx.data.config.elite : null);
+  }
+
+  // 드롭 테이블 굴리기. { oneOf: [...] }는 그중 하나. 정예면 골드·장비 확률이 오른다.
+  roll(drops, position, elite = null) {
+    const items = this.ctx.data.items.items;
+    for (const entry of drops) {
+      const item = entry.oneOf ? rand.pick(entry.oneOf) : entry.item;
+      const equip = !!items[item]?.equipSlot;
+      const chance = entry.chance * (elite && equip ? elite.dropBonus : 1);
+      if (Math.random() >= chance) continue;
+      let count = entry.oneOf ? 1 : rand.int(entry.min, entry.max);
+      if (elite && item === 'gold') count = Math.round(count * elite.gold);
+      if (count > 0) this.spawn(item, count, position);
     }
   }
 

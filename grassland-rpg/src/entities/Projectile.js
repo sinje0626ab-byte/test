@@ -3,10 +3,23 @@ import * as THREE from 'three';
 const fwd = new THREE.Vector3(0, 0, 1);
 const mat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true });
 
-// 투사체 모양: 화살 · 석궁 볼트 · 총알 · 포탄
+const glow = (color) => new THREE.MeshBasicMaterial({ color });
+
+// 투사체 모양: 화살 · 석궁 볼트 · 총알 · 포탄 · 포자탄 · 얼음탄 · 잎
 function createMesh(kind) {
   const g = new THREE.Group();
-  if (kind === 'ball') {
+  if (kind === 'spore') {
+    g.add(new THREE.Mesh(new THREE.IcosahedronGeometry(0.2, 0), glow(0xb36fe0)));
+  } else if (kind === 'icebolt') {
+    const b = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), glow(0xa8e4ff));
+    b.scale.z = 1.8;
+    g.add(b);
+  } else if (kind === 'leaf') {
+    const leaf = new THREE.Mesh(new THREE.CircleGeometry(0.28, 5).rotateX(-Math.PI / 2), mat(0x6fbf4a));
+    leaf.material.side = THREE.DoubleSide;
+    leaf.scale.z = 0.55;
+    g.add(leaf);
+  } else if (kind === 'ball') {
     g.add(new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 1), mat(0x2f333b)));
   } else if (kind === 'bullet') {
     const b = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 4), new THREE.MeshBasicMaterial({ color: 0xffe08a }));

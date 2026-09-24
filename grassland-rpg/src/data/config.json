@@ -158,6 +158,23 @@
   },
   "status": {
     "poisonDps": 4,
-    "slowDefault": 0.4
+    "slowDefault": 0.4,
+    "playerPoisonDps": 4,
+    "playerIconHeight": 2.1
+  },
+  "elite": {
+    "chance": 0.05,
+    "hp": 2.5,
+    "attack": 1.5,
+    "xp": 3,
+    "gold": 3,
+    "dropBonus": 3,
+    "scale": 1.3
+  },
+  "enemyShot": {
+    "life": 2.6,
+    "hitRadius": 0.3,
+    "leafSpin": 2.4,
+    "leafHeight": 1.0
   }
 }

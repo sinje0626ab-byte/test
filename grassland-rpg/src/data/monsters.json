@@ -635,5 +635,733 @@
     ],
     "shape": "golem",
     "stemColor": "#f4e6cf"
+  },
+  "bee": {
+    "name": "붕붕벌",
+    "hp": 18,
+    "attack": 6,
+    "defense": 0,
+    "radius": 0.4,
+    "moveSpeed": 2.48,
+    "chaseSpeed": 5.5,
+    "fleeSpeed": 3.8,
+    "detectRange": 9,
+    "loseRange": 16,
+    "attackRange": 1.2,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#ffd23f",
+    "xp": 6,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 2,
+        "max": 5,
+        "chance": 1
+      },
+      {
+        "item": "honey_jar",
+        "min": 1,
+        "max": 1,
+        "chance": 0.05
+      },
+      {
+        "item": "bee_ring",
+        "min": 1,
+        "max": 1,
+        "chance": 0.03
+      }
+    ],
+    "shape": "bee",
+    "behavior": "darter",
+    "flier": true,
+    "dartSpeed": 7,
+    "retreatDistance": 6,
+    "shotSpeed": 0
+  },
+  "horn_rabbit": {
+    "name": "뿔토끼",
+    "hp": 40,
+    "attack": 11,
+    "defense": 0,
+    "radius": 0.5,
+    "moveSpeed": 1.48,
+    "chaseSpeed": 3.3,
+    "fleeSpeed": 3.8,
+    "detectRange": 9,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#ffffff",
+    "xp": 8,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 3,
+        "max": 6,
+        "chance": 1
+      },
+      {
+        "item": "fiber",
+        "min": 1,
+        "max": 2,
+        "chance": 0.6
+      },
+      {
+        "item": "rabbit_foot",
+        "min": 1,
+        "max": 1,
+        "chance": 0.03
+      }
+    ],
+    "shape": "rabbit",
+    "behavior": "charger",
+    "chargeWindup": 0.7,
+    "chargeSpeed": 11,
+    "chargeDistance": 8,
+    "chargeCooldown": 2.5,
+    "stunTime": 1.5
+  },
+  "big_slime": {
+    "name": "큰 슬라임",
+    "hp": 70,
+    "attack": 10,
+    "defense": 0,
+    "radius": 1.0,
+    "moveSpeed": 1.08,
+    "chaseSpeed": 2.4,
+    "fleeSpeed": 3.8,
+    "detectRange": 8,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#4fbf52",
+    "xp": 12,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 4,
+        "max": 8,
+        "chance": 1
+      },
+      {
+        "item": "slime_jelly",
+        "min": 2,
+        "max": 4,
+        "chance": 1
+      }
+    ],
+    "shape": "slime",
+    "splitInto": "slime",
+    "splitCount": 2
+  },
+  "spore_puff": {
+    "name": "포자 버섯",
+    "hp": 36,
+    "attack": 7,
+    "defense": 0,
+    "radius": 0.55,
+    "moveSpeed": 0.9,
+    "chaseSpeed": 2.0,
+    "fleeSpeed": 3.8,
+    "detectRange": 11,
+    "loseRange": 16,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#9a6cd6",
+    "xp": 10,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 4,
+        "max": 8,
+        "chance": 1
+      },
+      {
+        "item": "mushroom_cap",
+        "min": 1,
+        "max": 1,
+        "chance": 0.6
+      },
+      {
+        "item": "spore_pendant",
+        "min": 1,
+        "max": 1,
+        "chance": 0.03
+      }
+    ],
+    "shape": "puff",
+    "behavior": "ranged",
+    "keepDistance": 7,
+    "shotSpeed": 7,
+    "shotCooldown": 2.4,
+    "shotWindup": 0.6,
+    "shotEffect": {
+      "type": "poison",
+      "duration": 3
+    },
+    "shotColor": "#b88ae0",
+    "shotKind": "spore"
+  },
+  "thorn_wolf": {
+    "name": "가시 늑대",
+    "hp": 38,
+    "attack": 10,
+    "defense": 0,
+    "radius": 0.55,
+    "moveSpeed": 1.89,
+    "chaseSpeed": 4.2,
+    "fleeSpeed": 3.8,
+    "detectRange": 10,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#5f8f55",
+    "xp": 10,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 4,
+        "max": 8,
+        "chance": 1
+      },
+      {
+        "item": "resin",
+        "min": 1,
+        "max": 1,
+        "chance": 0.3
+      },
+      {
+        "item": "leather_boots",
+        "min": 1,
+        "max": 1,
+        "chance": 0.02
+      }
+    ],
+    "shape": "wolf",
+    "packMin": 2,
+    "packMax": 3
+  },
+  "stump": {
+    "name": "그루터기 괴물",
+    "hp": 90,
+    "attack": 14,
+    "defense": 4,
+    "radius": 0.7,
+    "moveSpeed": 0.81,
+    "chaseSpeed": 1.8,
+    "fleeSpeed": 3.8,
+    "detectRange": 8,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0.7,
+    "lungeSpeed": 4,
+    "color": "#8a6440",
+    "xp": 14,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 5,
+        "max": 9,
+        "chance": 1
+      },
+      {
+        "item": "wood",
+        "min": 3,
+        "max": 5,
+        "chance": 1
+      },
+      {
+        "item": "resin",
+        "min": 1,
+        "max": 1,
+        "chance": 0.5
+      }
+    ],
+    "shape": "stump"
+  },
+  "scorpion": {
+    "name": "모래 전갈",
+    "hp": 44,
+    "attack": 12,
+    "defense": 0,
+    "radius": 0.6,
+    "moveSpeed": 1.53,
+    "chaseSpeed": 3.4,
+    "fleeSpeed": 3.8,
+    "detectRange": 9,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#c9803f",
+    "xp": 16,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 5,
+        "max": 10,
+        "chance": 1
+      },
+      {
+        "item": "cactus_spine",
+        "min": 1,
+        "max": 2,
+        "chance": 0.6
+      },
+      {
+        "item": "scorpion_pike",
+        "min": 1,
+        "max": 1,
+        "chance": 0.02
+      }
+    ],
+    "shape": "scorpion",
+    "behavior": "charger",
+    "chargeWindup": 0.6,
+    "chargeSpeed": 10,
+    "chargeDistance": 7,
+    "chargeCooldown": 2.4,
+    "stunTime": 1.5,
+    "hitEffect": {
+      "type": "poison",
+      "duration": 3
+    }
+  },
+  "sand_mole": {
+    "name": "모래 두더지",
+    "hp": 50,
+    "attack": 13,
+    "defense": 0,
+    "radius": 0.6,
+    "moveSpeed": 1.35,
+    "chaseSpeed": 3.0,
+    "fleeSpeed": 3.8,
+    "detectRange": 10,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#9a6a45",
+    "xp": 17,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 5,
+        "max": 10,
+        "chance": 1
+      },
+      {
+        "item": "sandstone",
+        "min": 1,
+        "max": 2,
+        "chance": 0.7
+      },
+      {
+        "item": "iron_ore",
+        "min": 1,
+        "max": 1,
+        "chance": 0.2
+      }
+    ],
+    "shape": "mole",
+    "behavior": "burrower",
+    "burrowTime": 2.2,
+    "emergeWindup": 0.8,
+    "emergeRadius": 2.2,
+    "surfaceTime": 2.5
+  },
+  "tumble": {
+    "name": "굴렁 덤불",
+    "hp": 22,
+    "attack": 20,
+    "defense": 0,
+    "radius": 0.5,
+    "moveSpeed": 2.16,
+    "chaseSpeed": 4.8,
+    "fleeSpeed": 3.8,
+    "detectRange": 10,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#b59a5a",
+    "xp": 12,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 3,
+        "max": 6,
+        "chance": 1
+      },
+      {
+        "item": "fiber",
+        "min": 1,
+        "max": 2,
+        "chance": 0.8
+      }
+    ],
+    "shape": "tumble",
+    "behavior": "exploder",
+    "fuseTime": 0.9,
+    "blastRadius": 2.4,
+    "blastMultiplier": 2,
+    "triggerRange": 1.8
+  },
+  "frost_wisp": {
+    "name": "눈꽃 요정",
+    "hp": 30,
+    "attack": 9,
+    "defense": 0,
+    "radius": 0.45,
+    "moveSpeed": 1.35,
+    "chaseSpeed": 3.0,
+    "fleeSpeed": 3.8,
+    "detectRange": 11,
+    "loseRange": 16,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#bfeaff",
+    "xp": 18,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 5,
+        "max": 10,
+        "chance": 1
+      },
+      {
+        "item": "frost_crystal",
+        "min": 1,
+        "max": 1,
+        "chance": 0.03
+      },
+      {
+        "item": "wisp_lantern",
+        "min": 1,
+        "max": 1,
+        "chance": 0.02
+      }
+    ],
+    "shape": "wisp",
+    "behavior": "ranged",
+    "flier": true,
+    "keepDistance": 7,
+    "shotSpeed": 9,
+    "shotCooldown": 2.0,
+    "shotWindup": 0.5,
+    "shotEffect": {
+      "type": "slow",
+      "duration": 2,
+      "amount": 0.4
+    },
+    "shotColor": "#9fe8ff",
+    "shotKind": "icebolt"
+  },
+  "yeti_cub": {
+    "name": "설인 새끼",
+    "hp": 55,
+    "attack": 13,
+    "defense": 0,
+    "radius": 0.65,
+    "moveSpeed": 1.62,
+    "chaseSpeed": 3.6,
+    "fleeSpeed": 3.8,
+    "detectRange": 9,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#f4f7fb",
+    "xp": 20,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 6,
+        "max": 12,
+        "chance": 1
+      },
+      {
+        "item": "fiber",
+        "min": 1,
+        "max": 2,
+        "chance": 0.5
+      },
+      {
+        "item": "fur_hat",
+        "min": 1,
+        "max": 1,
+        "chance": 0.03
+      },
+      {
+        "item": "yeti_coat",
+        "min": 1,
+        "max": 1,
+        "chance": 0.02
+      }
+    ],
+    "shape": "yeti",
+    "packMin": 2,
+    "packMax": 2
+  },
+  "snow_bomber": {
+    "name": "눈사람 폭탄",
+    "hp": 30,
+    "attack": 24,
+    "defense": 0,
+    "radius": 0.6,
+    "moveSpeed": 1.44,
+    "chaseSpeed": 3.2,
+    "fleeSpeed": 3.8,
+    "detectRange": 10,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#ffffff",
+    "xp": 16,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 5,
+        "max": 10,
+        "chance": 1
+      },
+      {
+        "item": "ice_shard",
+        "min": 1,
+        "max": 1,
+        "chance": 0.7
+      }
+    ],
+    "shape": "snowman",
+    "behavior": "exploder",
+    "fuseTime": 1.0,
+    "blastRadius": 2.8,
+    "blastMultiplier": 2,
+    "triggerRange": 1.9
+  },
+  "king_slime": {
+    "name": "왕슬라임",
+    "hp": 400,
+    "attack": 12,
+    "defense": 0,
+    "radius": 1.8,
+    "moveSpeed": 0.99,
+    "chaseSpeed": 2.2,
+    "fleeSpeed": 3.8,
+    "detectRange": 8,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0.95,
+    "lungeSpeed": 4,
+    "color": "#6fd46a",
+    "xp": 0,
+    "drops": [],
+    "shape": "kingslime",
+    "bossDrops": [
+      {
+        "item": "gold",
+        "min": 150,
+        "max": 150,
+        "chance": 1
+      },
+      {
+        "oneOf": [
+          "jelly_greatsword",
+          "royal_jelly_crown"
+        ],
+        "chance": 1
+      },
+      {
+        "item": "slime_jelly",
+        "min": 20,
+        "max": 20,
+        "chance": 1
+      }
+    ]
+  },
+  "king_slime_half": {
+    "name": "중간 왕슬라임",
+    "hp": 130,
+    "attack": 10,
+    "defense": 0,
+    "radius": 1.2,
+    "moveSpeed": 1.17,
+    "chaseSpeed": 2.6,
+    "fleeSpeed": 3.8,
+    "detectRange": 8,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0.9,
+    "lungeSpeed": 4,
+    "color": "#8ee08a",
+    "xp": 60,
+    "drops": [],
+    "shape": "kingslime"
+  },
+  "elder_treant": {
+    "name": "고목 수호자",
+    "hp": 1100,
+    "attack": 16,
+    "defense": 4,
+    "radius": 1.8,
+    "moveSpeed": 0.72,
+    "chaseSpeed": 1.6,
+    "fleeSpeed": 3.8,
+    "detectRange": 8,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0.95,
+    "lungeSpeed": 4,
+    "color": "#5f8f45",
+    "xp": 220,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 300,
+        "max": 300,
+        "chance": 1
+      },
+      {
+        "oneOf": [
+          "heartwood_bow",
+          "treant_seed"
+        ],
+        "chance": 1
+      },
+      {
+        "item": "resin",
+        "min": 10,
+        "max": 10,
+        "chance": 1
+      }
+    ],
+    "shape": "treant"
   }
 }

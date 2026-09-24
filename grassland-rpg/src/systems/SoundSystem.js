@@ -34,6 +34,13 @@ export class SoundSystem {
     bus.on('turret:fired', (e) => this.play(ctx.data.turrets[e.type]?.model ?? 'bow', at(e), { gain: 0.8 }));
     bus.on('projectile:explode', (e) => this.play('boom', at(e)));
     bus.on('boss:aoe', (e) => this.play('slam', at(e)));
+    bus.on('boss:line', (e) => this.play('slam', e.origin, { pitch: 0.8 }));
+    bus.on('boss:split', ({ boss }) => this.play('slam', boss.position, { pitch: 1.3 }));
+    bus.on('boss:leafstorm', ({ boss }) => this.play('rustle', boss.position));
+    bus.on('monster:blast', (e) => this.play('boom', e.position));
+    bus.on('monster:emerge', (e) => this.play('slam', e.position, { pitch: 1.4, gain: 0.6 }));
+    bus.on('monster:shoot', (e) => this.play('shoot', e.origin, { pitch: 1.3, gain: 0.5 }));
+    bus.on('monster:stunned', ({ monster }) => this.play('hit', monster.position, { pitch: 0.7 }));
     bus.on('build:place', () => this.play('build'));
     bus.on('base:upgraded', () => this.play('build'));
     bus.on('ui:open', () => this.play('open'));

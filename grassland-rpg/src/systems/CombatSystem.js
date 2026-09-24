@@ -11,12 +11,23 @@ export class CombatSystem {
     ctx.bus.on('monster:attack', (a) => this.onMonsterAttack(a));
     ctx.bus.on('projectile:hit', (a) => this.onProjectileHit(a));
     ctx.bus.on('projectile:explode', (a) => this.onExplode(a));
-    ctx.bus.on('boss:aoe', (a) => this.onBossAoe(a));
-    ctx.bus.on('enemy:hit-player', (a) => this.hitPlayer(a.damage, a.dir));
-    ctx.bus.on('arrow:hit', ({ monster, shot, dir: d }) => {
-      if (monster.alive) this.playerHits(monster, shot, d.clone());
+    ctx.bus.on('boss:aoe', (a) => this.areaHitPlayer(a));
+    ctx.bus.on('monster:emerge', (a) => this.areaHitPlayer(a));
+    ctx.bus.on('monster:blast', (a) => this.onBlast(a));
+    ctx.bus.on('boss:line', (a) => this.onLine(a));
+    ctx.bus.on('monster:charge-hit', ({ monster, dir: d }) => {
+      if (monster.alive) this.hitPlayer(monster.stats.attack, d, monster.def.hitEffect);
     });
-    ctx.bus.on('status:damage', ({ monster, amount }) => {
+    ctx.bus.on('enemy:hit-player', (a) => this.hitPlayer(a.damage, a.dir, a.effect));
+    ctx.bus.on('arrow:hit', ({ monster, shot, dir: d }) => {
+      if (monster.alive && !monster.untargetable) this.playerHits(monster, shot, d.clone());
+    });
+    ctx.bus.on('status:damage', ({ target, amount }) => {
+      if (target === ctx.player) {
+        if (target.applyDot(amount)) ctx.bus.emit('combat:hit', { position: target.position.clone(), amount, crit: false, target: 'player', source: 'status' });
+        return;
+      }
+      const monster = target;
       if (!monster.alive) return;
       const killed = monster.takeDamage(amount, null);
       ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit: false, target: 'monster', source: 'status', color: '#7cd67a' });
@@ -24,13 +35,19 @@ export class CombatSystem {
     });
   }
 
-  killed(m, byPlayer = false) {
+  // noLoot: 스스로 터진 몬스터 (보상 없음)
+  killed(m, byPlayer = false, noLoot = false) {
+    const { bus } = this.ctx;
     // 처치 시 HP 회복 (왕젤리 대검 등)
     const heal = this.ctx.player.stats.onKillHeal;
-    if (byPlayer && heal) this.ctx.bus.emit('player:heal', { amount: heal });
-    this.ctx.bus.emit('monster:killed', {
-      type: m.type, position: m.position.clone(), color: m.def.color, radius: m.radius, boss: !!m.boss,
+    if (byPlayer && heal) bus.emit('player:heal', { amount: heal });
+    bus.emit('monster:killed', {
+      type: m.type, position: m.position.clone(), color: m.def.color, radius: m.radius, boss: !!m.boss, elite: !!m.elite, noLoot,
     });
+    // 분열: 작은 개체로 갈라진다
+    if (m.def.splitInto) {
+      bus.emit('monster:spawn', { type: m.def.splitInto, count: m.def.splitCount, position: m.position.clone(), mult: m.statMult, night: m.night, spread: m.radius });
+    }
   }
 
   calcDamage(attack, defense, critChance = 0, critMultiplier = 1) {
@@ -46,7 +63,7 @@ export class CombatSystem {
     const { bus, monsters } = this.ctx;
     const half = a.arc / 2;
     for (const m of monsters) {
-      if (!m.alive) continue;
+      if (!m.alive || m.untargetable) continue;
       dir.set(m.position.x - a.origin.x, 0, m.position.z - a.origin.z);
       const dist = dir.length();
       if (dist - m.radius > a.range) continue;
@@ -76,15 +93,15 @@ export class CombatSystem {
   }
 
   onProjectileHit({ monster, damage, dir: d }) {
-    if (!monster.alive) return;
+    if (!monster.alive || monster.untargetable) return;
     const { amount, crit } = this.calcDamage(damage, monster.stats.defense);
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
     this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster', source: 'turret', color: monster.def.color });
     if (killed) this.killed(monster);
   }
 
-  // 보스 범위 공격: 범위 안이면 플레이어가 맞는다.
-  onBossAoe({ position, radius, damage }) {
+  // 보스 범위 공격·두더지 솟아오르기: 범위 안이면 플레이어가 맞는다.
+  areaHitPlayer({ position, radius, damage }) {
     const p = this.ctx.player;
     const d = Math.hypot(p.position.x - position.x, p.position.z - position.z);
     if (d > radius + p.radius) return;
@@ -92,13 +109,39 @@ export class CombatSystem {
     this.hitPlayer(damage, dir.lengthSq() > 1e-4 ? dir.normalize() : null);
   }
 
-  hitPlayer(attack, dir) {
+  // effect: 맞으면 걸리는 상태 이상 { type, duration, amount }
+  hitPlayer(attack, dir, effect) {
     const { player, bus } = this.ctx;
     if (!player.alive) return;
     const { amount } = this.calcDamage(attack, player.stats.defense);
     if (player.takeDamage(amount, dir)) {
       bus.emit('combat:hit', { position: player.position.clone(), amount, crit: false, target: 'player' });
+      if (effect) bus.emit('status:apply', { target: player, ...effect });
     }
+  }
+
+  // 자폭: 플레이어와 둘레 건물. 건물엔 multiplier배. 터진 몬스터는 보상 없이 죽는다.
+  onBlast({ monster, position, radius, damage, multiplier }) {
+    if (!monster.alive) return;
+    monster.takeDamage(monster.stats.hp, null);
+    this.killed(monster, false, true);
+    this.areaHitPlayer({ position, radius, damage });
+    for (const s of this.ctx.structures) {
+      if (!s.alive) continue;
+      if (Math.hypot(s.position.x - position.x, s.position.z - position.z) > radius + s.radius) continue;
+      this.damageStructure(s, damage * multiplier);
+    }
+  }
+
+  // 뿌리 줄기: 직선(길이·폭) 안이면 맞는다.
+  onLine({ origin, dir: d, length, width, damage }) {
+    const p = this.ctx.player;
+    const rx = p.position.x - origin.x;
+    const rz = p.position.z - origin.z;
+    const along = Math.max(0, Math.min(length, rx * d.x + rz * d.z));
+    const side = Math.hypot(rx - d.x * along, rz - d.z * along);
+    if (side > width / 2 + p.radius) return;
+    this.hitPlayer(damage, d.clone());
   }
 
   // 대포: 떨어진 곳 둘레 모두. 가장자리일수록 약하다.
@@ -115,12 +158,16 @@ export class CombatSystem {
 
   // 포탑·텐트를 때릴 때
   hitStructure(monster, s) {
-    const { bus } = this.ctx;
     if (!s.alive) return;
     const dist = monster.position.distanceTo(s.position);
     if (dist > monster.stats.attackRange + s.radius + monster.radius * 0.5) return;
     const mult = monster.def.structureDamageMultiplier ?? 1;
-    const { amount } = this.calcDamage(monster.stats.attack * mult, 0);
+    this.damageStructure(s, monster.stats.attack * mult);
+  }
+
+  damageStructure(s, attack) {
+    const { bus } = this.ctx;
+    const { amount } = this.calcDamage(attack, 0);
     const destroyed = s.takeDamage(amount);
     bus.emit('combat:hit', { position: s.position.clone(), amount, crit: false, target: 'structure' });
     if (destroyed) {
@@ -145,6 +192,7 @@ export class CombatSystem {
     if (dist > 1e-4) dir.divideScalar(dist);
     if (player.takeDamage(amount, dir)) {
       bus.emit('combat:hit', { position: player.position.clone(), amount, crit: false, target: 'player' });
+      if (monster.def.hitEffect) bus.emit('status:apply', { target: player, ...monster.def.hitEffect });
     }
   }
 }

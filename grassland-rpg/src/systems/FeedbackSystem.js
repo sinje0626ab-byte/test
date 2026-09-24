@@ -61,6 +61,30 @@ export class FeedbackSystem {
       this.shake(S.bossAoe);
       this.particles.burst(e.position.clone().setY(0.2), { color: ['#d9c6a0', '#ffffff'], count: P.blast, speed: e.radius * 1.5, up: 3, life: 0.6, size: 0.14 });
     });
+    // 몬스터 다양화 (Phase 10)
+    bus.on('monster:blast', (e) => {
+      const d = e.position.distanceTo(ctx.player.position);
+      this.shake(S.cannon * Math.max(0, 1 - d / S.cannonFalloff));
+      this.particles.burst(e.position.clone().setY(0.4), { color: ['#ffb35c', '#ff7b3d', e.monster.def.color], count: P.blast, speed: e.radius * 2.5, up: 5, life: 0.6, size: 0.13 });
+    });
+    bus.on('monster:emerge', (e) => {
+      this.shake(S.bossAoe * 0.4);
+      this.particles.burst(e.position.clone().setY(0.2), { color: ['#c9a36a', '#8a6a44'], count: 16, speed: e.radius * 1.8, up: 5, life: 0.6, size: 0.12 });
+    });
+    bus.on('monster:stunned', ({ monster }) => {
+      this.particles.burst(monster.position.clone().setY(monster.radius * 2 + 0.3), { color: ['#fff27a', '#ffffff'], count: 6, speed: 1.5, up: 1.5, gravity: 0, life: 0.8, size: 0.09, drag: 2 });
+    });
+    bus.on('boss:line', (e) => {
+      this.shake(S.bossAoe * 0.5);
+      for (let i = 1; i <= 6; i++) {
+        const at = e.origin.clone().addScaledVector(e.dir, (e.length * i) / 6).setY(0.2);
+        this.particles.burst(at, { color: ['#7a5a3a', '#5f8f45'], count: 4, speed: 2, up: 4, life: 0.5, size: 0.12 });
+      }
+    });
+    bus.on('boss:split', ({ boss }) => {
+      this.shake(S.bossAoe);
+      this.particles.burst(boss.position.clone().setY(1), { color: boss.def.color, count: P.blast, speed: 6, up: 5, life: 0.7, size: 0.16 });
+    });
     bus.on('player:roll', ({ position }) => this.dust(position, 6));
     bus.on('player:running', ({ position }) => {
       this.dustTimer -= 1;
