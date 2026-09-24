@@ -4263,6 +4263,16 @@ const tierHpMul  = () => 1 + (G.tier - 1) * 0.60;   // 적 체력
 const tierDmgMul = () => 1 + (G.tier - 1) * 0.35;   // 적 공격력
 const tierSpdMul = () => Math.min(1.6, 1 + (G.tier - 1) * 0.06); // 적 이동속도(상한)
 const hpMul = () => (1 + G.time * 0.004) * tierHpMul();
+/* ── PHASE J 실험용 · 개발 전용 ─────────────────────────────────────────────
+   초반 구간의 "일반 적" HP 배율만 바꿔 A/B 를 비교하기 위한 스위치다.
+   production 기본값은 1.0 이므로 아래 곱셈은 항등원이고 동작이 바뀌지 않는다.
+   UI·로비·저장 어디에도 노출하지 않는다. 실험 하네스가 런타임에 값만 바꾼다.
+   보스/미니보스는 spawnBoss() 라는 별도 경로를 쓰므로 여기 영향을 받지 않는다. */
+const DEV_BALANCE_TEST = { enabled: true, earlyEnemyHpMultiplier: 1.0, earlyWindowSec: 30 };
+const earlyHpMul = () => {
+  const D = DEV_BALANCE_TEST;
+  return (D.enabled && G.time < D.earlyWindowSec) ? D.earlyEnemyHpMultiplier : 1;
+};
 const xpForLevel = lv => Math.floor(4 + lv * 3 + lv * lv * 0.4);
 
 function wdef(w){ return w.evolved ? EVOS[WEAPONS[w.key].evo] : WEAPONS[w.key]; }
@@ -4749,7 +4759,8 @@ function spawnEnemy(typeKey, ox, oy) {
   e.x = (ox !== undefined) ? ox : P().x + Math.cos(ang) * rad;
   e.y = (oy !== undefined) ? oy : P().y + Math.sin(ang) * rad;
   e.def = def; e.key = typeKey;
-  e.maxhp = def.hp * hpMul(); e.hp = e.maxhp;
+  // 스폰 시 한 번만 결정한다 — 매 프레임 재적용하거나 기존 적을 나중에 다시 손대지 않는다.
+  e.maxhp = def.hp * hpMul() * earlyHpMul(); e.hp = e.maxhp;
   e.r = def.r; e.spd = def.spd * tierSpdMul(); e.dead = false; e.boss = false; e.mini = false;
   e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140);
   e.howlT = randInt(140, 220); e.hasteT = 0; e.chill = 0; e.chillPow = 1; e.pullT = 0; e.facing = 1; e.id = G.uid++;
