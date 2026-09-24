@@ -15,6 +15,10 @@
     "epic": {
       "name": "영웅",
       "color": "#c07bff"
+    },
+    "legendary": {
+      "name": "전설",
+      "color": "#ffa53d"
     }
   },
   "categories": {
@@ -63,7 +67,8 @@
       "description": "단단한 나뭇가지를 깎아 만든 검.",
       "category": "equipment",
       "stackable": false,
-      "value": 8
+      "value": 8,
+      "weaponType": "sword"
     },
     "iron_sword": {
       "name": "무쇠 검",
@@ -77,7 +82,8 @@
       "description": "묵직하고 잘 드는 검.",
       "category": "equipment",
       "stackable": false,
-      "value": 30
+      "value": 30,
+      "weaponType": "sword"
     },
     "leaf_hat": {
       "name": "풀잎 모자",
@@ -231,7 +237,8 @@
       "value": 80,
       "description": "차갑게 빛나는 날카로운 검.",
       "category": "equipment",
-      "stackable": false
+      "stackable": false,
+      "weaponType": "sword"
     },
     "snow_charm": {
       "name": "눈꽃 부적",
@@ -389,6 +396,543 @@
       },
       "value": 2,
       "description": "아삭한 사과. HP가 15 찬다."
+    },
+    "bamboo_spear": {
+      "name": "대나무 창",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "common",
+      "color": "#c9d68a",
+      "bonus": {
+        "attack": 3
+      },
+      "value": 8,
+      "description": "가볍고 길다. 멀리서 콕콕 찌른다.",
+      "weaponType": "spear"
+    },
+    "stone_hammer": {
+      "name": "돌망치",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "common",
+      "color": "#a9adb6",
+      "bonus": {
+        "attack": 5
+      },
+      "value": 10,
+      "description": "무겁지만 한 방이 세다.",
+      "weaponType": "hammer"
+    },
+    "short_bow": {
+      "name": "짧은 활",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "common",
+      "color": "#b88452",
+      "bonus": {
+        "attack": 2
+      },
+      "value": 10,
+      "description": "멀리서 화살을 쏜다.",
+      "weaponType": "bow"
+    },
+    "iron_spear": {
+      "name": "무쇠 창",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "uncommon",
+      "color": "#c9d3dd",
+      "bonus": {
+        "attack": 6,
+        "moveSpeed": 0.2
+      },
+      "value": 30,
+      "description": "무게 중심이 좋아 몸이 가볍다.",
+      "weaponType": "spear"
+    },
+    "mossy_mace": {
+      "name": "이끼 철퇴",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "uncommon",
+      "color": "#6f9a5a",
+      "bonus": {
+        "attack": 9
+      },
+      "value": 35,
+      "description": "이끼 낀 쇠뭉치.",
+      "weaponType": "hammer"
+    },
+    "hunter_bow": {
+      "name": "사냥꾼 활",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "uncommon",
+      "color": "#8a6440",
+      "bonus": {
+        "attack": 5,
+        "critChance": 0.05
+      },
+      "value": 35,
+      "description": "사냥꾼이 쓰던 튼튼한 활.",
+      "weaponType": "bow"
+    },
+    "sun_blade": {
+      "name": "태양 검",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "rare",
+      "color": "#ffd23f",
+      "bonus": {
+        "attack": 10,
+        "critChance": 0.05
+      },
+      "value": 90,
+      "description": "태양 수정을 박아 넣은 검.",
+      "weaponType": "sword"
+    },
+    "scorpion_pike": {
+      "name": "전갈 꼬리 창",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "rare",
+      "color": "#b35e2c",
+      "bonus": {
+        "attack": 9,
+        "onHitPoison": 3
+      },
+      "value": 90,
+      "description": "찔린 적은 독에 걸린다.",
+      "weaponType": "spear"
+    },
+    "sandstone_maul": {
+      "name": "사암 망치",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "rare",
+      "color": "#e0a86a",
+      "bonus": {
+        "attack": 14
+      },
+      "value": 90,
+      "description": "사암 덩어리를 통째로 휘두른다.",
+      "weaponType": "hammer"
+    },
+    "dune_bow": {
+      "name": "모래바람 활",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "rare",
+      "color": "#e9b44f",
+      "bonus": {
+        "attack": 8,
+        "attackSpeed": 0.1
+      },
+      "value": 90,
+      "description": "모래바람처럼 빠르게 쏜다.",
+      "weaponType": "bow"
+    },
+    "frost_lance": {
+      "name": "서리 창",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "rare",
+      "color": "#9fd8ff",
+      "bonus": {
+        "attack": 12,
+        "onHitSlow": 0.4
+      },
+      "value": 100,
+      "description": "찔린 적은 느려진다.",
+      "weaponType": "spear"
+    },
+    "glacier_hammer": {
+      "name": "빙하 망치",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "rare",
+      "color": "#7fc0f0",
+      "bonus": {
+        "attack": 17
+      },
+      "value": 100,
+      "description": "빙하처럼 무겁다.",
+      "weaponType": "hammer"
+    },
+    "aurora_bow": {
+      "name": "오로라 활",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "rare",
+      "color": "#b8a0ff",
+      "bonus": {
+        "attack": 11,
+        "critChance": 0.08
+      },
+      "value": 100,
+      "description": "오로라빛 화살을 쏜다.",
+      "weaponType": "bow"
+    },
+    "jelly_greatsword": {
+      "name": "왕젤리 대검",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "epic",
+      "color": "#8ee08a",
+      "bonus": {
+        "attack": 8,
+        "maxHp": 30,
+        "onKillHeal": 3
+      },
+      "value": 200,
+      "description": "왕슬라임의 젤리를 굳힌 대검. 쓰러뜨릴 때마다 기운이 난다.",
+      "weaponType": "sword"
+    },
+    "heartwood_bow": {
+      "name": "고목심 활",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "epic",
+      "color": "#9a6a45",
+      "bonus": {
+        "attack": 12,
+        "multiShot": 1
+      },
+      "value": 220,
+      "description": "고목의 심재로 만든 활. 화살 두 발을 쏜다.",
+      "weaponType": "bow"
+    },
+    "dawn_blade": {
+      "name": "새벽검",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "weapon",
+      "grade": "legendary",
+      "color": "#ffa53d",
+      "bonus": {
+        "attack": 22,
+        "critChance": 0.1,
+        "nightBonus": 0.3
+      },
+      "value": 500,
+      "description": "밤을 가르는 새벽빛 검.",
+      "weaponType": "sword"
+    },
+    "grass_tunic": {
+      "name": "풀잎 옷",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "body",
+      "grade": "common",
+      "color": "#8fce6a",
+      "bonus": {
+        "defense": 2,
+        "maxHp": 10
+      },
+      "value": 8,
+      "description": "풀잎을 엮은 가벼운 옷."
+    },
+    "mushroom_hat": {
+      "name": "버섯 모자",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "head",
+      "grade": "uncommon",
+      "color": "#e0574f",
+      "bonus": {
+        "defense": 2,
+        "maxHp": 20
+      },
+      "value": 25,
+      "description": "폭신한 버섯 갓 모자."
+    },
+    "leather_boots": {
+      "name": "가죽 장화",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "feet",
+      "grade": "uncommon",
+      "color": "#8a5a3a",
+      "bonus": {
+        "defense": 1,
+        "moveSpeed": 0.5,
+        "maxStamina": 15
+      },
+      "value": 25,
+      "description": "오래 걸어도 발이 편하다."
+    },
+    "desert_hood": {
+      "name": "사막 두건",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "head",
+      "grade": "rare",
+      "color": "#e9a35b",
+      "bonus": {
+        "defense": 3,
+        "maxHp": 25,
+        "critChance": 0.03
+      },
+      "value": 60,
+      "description": "모래바람을 막는 두건."
+    },
+    "sand_sandals": {
+      "name": "모래 샌들",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "feet",
+      "grade": "rare",
+      "color": "#e8cf8a",
+      "bonus": {
+        "moveSpeed": 0.7,
+        "maxStamina": 20
+      },
+      "value": 60,
+      "description": "모래 위를 미끄러지듯 걷는다."
+    },
+    "fur_hat": {
+      "name": "털모자",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "head",
+      "grade": "rare",
+      "color": "#f2f2f2",
+      "bonus": {
+        "defense": 4,
+        "maxHp": 35
+      },
+      "value": 60,
+      "description": "귀까지 따뜻한 털모자."
+    },
+    "yeti_coat": {
+      "name": "설인 털옷",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "body",
+      "grade": "rare",
+      "color": "#e6f2fa",
+      "bonus": {
+        "defense": 9,
+        "maxHp": 45
+      },
+      "value": 80,
+      "description": "설인 털로 짠 두꺼운 옷."
+    },
+    "snow_boots": {
+      "name": "설원 부츠",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "feet",
+      "grade": "rare",
+      "color": "#b9dcf2",
+      "bonus": {
+        "defense": 2,
+        "moveSpeed": 0.6,
+        "maxStamina": 25
+      },
+      "value": 60,
+      "description": "눈길에도 미끄러지지 않는다."
+    },
+    "royal_jelly_crown": {
+      "name": "말랑 왕관",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "head",
+      "grade": "epic",
+      "color": "#ffb3d9",
+      "bonus": {
+        "maxHp": 50,
+        "hpRegen": 1.5
+      },
+      "value": 200,
+      "description": "왕슬라임의 말랑한 왕관."
+    },
+    "bee_ring": {
+      "name": "꿀벌 반지",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "accessory",
+      "grade": "uncommon",
+      "color": "#ffd23f",
+      "bonus": {
+        "attackSpeed": 0.08
+      },
+      "value": 30,
+      "description": "붕붕벌처럼 재빠르게."
+    },
+    "rabbit_foot": {
+      "name": "토끼발 부적",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "accessory",
+      "grade": "uncommon",
+      "color": "#ffffff",
+      "bonus": {
+        "moveSpeed": 0.3,
+        "rollStaminaPct": -0.25
+      },
+      "value": 30,
+      "description": "행운과 날쌘 발."
+    },
+    "spore_pendant": {
+      "name": "포자 목걸이",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "accessory",
+      "grade": "uncommon",
+      "color": "#b88ae0",
+      "bonus": {
+        "hpRegen": 0.8,
+        "poisonResist": 0.5
+      },
+      "value": 30,
+      "description": "독에 조금 강해진다."
+    },
+    "wisp_lantern": {
+      "name": "요정 등불",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "accessory",
+      "grade": "rare",
+      "color": "#9fe8ff",
+      "bonus": {
+        "critDamage": 0.25
+      },
+      "value": 70,
+      "description": "치명타가 더 아프다."
+    },
+    "treant_seed": {
+      "name": "고목의 씨앗",
+      "category": "equipment",
+      "stackable": false,
+      "equipSlot": "accessory",
+      "grade": "epic",
+      "color": "#6fae4a",
+      "bonus": {
+        "defense": 5,
+        "maxHp": 40,
+        "baseRegenMult": 1
+      },
+      "value": 200,
+      "description": "기지 안에 있으면 회복이 두 배."
+    },
+    "herb_tea": {
+      "name": "약초차",
+      "category": "consumable",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 20,
+      "color": "#a6d48a",
+      "use": {
+        "buff": {
+          "id": "herb_tea",
+          "duration": 30,
+          "effects": {
+            "staminaRegenPct": 0.5
+          }
+        }
+      },
+      "value": 4,
+      "description": "30초 동안 스태미나가 50% 더 빨리 찬다."
+    },
+    "honey_jar": {
+      "name": "꿀단지",
+      "category": "consumable",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 20,
+      "color": "#ffc53d",
+      "use": {
+        "buff": {
+          "id": "honey",
+          "duration": 60,
+          "effects": {
+            "moveSpeedPct": 0.2
+          }
+        }
+      },
+      "value": 10,
+      "description": "60초 동안 이동속도 +20%."
+    },
+    "fire_tonic": {
+      "name": "불꽃 강장제",
+      "category": "consumable",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 20,
+      "color": "#ff7b3d",
+      "use": {
+        "buff": {
+          "id": "fire_tonic",
+          "duration": 90,
+          "effects": {
+            "attackPct": 0.15
+          }
+        }
+      },
+      "value": 12,
+      "description": "90초 동안 공격력 +15%."
+    },
+    "cactus_juice": {
+      "name": "선인장 주스",
+      "category": "consumable",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 20,
+      "color": "#8fd46a",
+      "use": {
+        "heal": 60,
+        "buff": {
+          "id": "cactus_juice",
+          "duration": 10,
+          "effects": {
+            "hpRegen": 3
+          }
+        }
+      },
+      "value": 10,
+      "description": "HP 60 회복, 10초 동안 HP재생 +3."
+    },
+    "return_scroll": {
+      "name": "귀환 두루마리",
+      "category": "consumable",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 10,
+      "color": "#e9dcb0",
+      "use": {
+        "returnHome": true
+      },
+      "value": 20,
+      "description": "읽으면 가장 가까운 기지로 돌아간다. 기지 밖에서도!"
+    },
+    "forget_potion": {
+      "name": "망각의 물약",
+      "category": "consumable",
+      "grade": "rare",
+      "stackable": true,
+      "maxStack": 5,
+      "color": "#9a7fe0",
+      "use": {
+        "resetSkills": true
+      },
+      "value": 100,
+      "description": "배운 스킬을 모두 잊고 스킬 포인트를 돌려받는다."
     }
   },
   "statLabels": {
@@ -407,7 +951,20 @@
     "turretDamage": "포탑 데미지",
     "turretRange": "포탑 사거리",
     "buildCost": "포탑 비용 절감",
-    "extraTurrets": "포탑 설치 수"
+    "extraTurrets": "포탑 설치 수",
+    "critDamage": "치명타 피해",
+    "onHitPoison": "적중 시 독(초)",
+    "onHitSlow": "적중 시 감속",
+    "onKillHeal": "처치 시 HP 회복",
+    "multiShot": "화살 추가",
+    "nightBonus": "밤 몬스터에게 피해",
+    "rollStaminaPct": "구르기 스태미나",
+    "poisonResist": "독 저항",
+    "baseRegenMult": "기지 안 HP재생",
+    "damageTaken": "받는 피해",
+    "slowImmune": "감속 면역",
+    "attackPct": "공격력",
+    "staminaRegenPct": "스태미나 회복"
   },
   "percentStats": [
     "critChance",
@@ -415,7 +972,16 @@
     "moveSpeedPct",
     "gatherSpeed",
     "turretDamage",
-    "buildCost"
+    "buildCost",
+    "critDamage",
+    "onHitSlow",
+    "nightBonus",
+    "rollStaminaPct",
+    "poisonResist",
+    "baseRegenMult",
+    "damageTaken",
+    "attackPct",
+    "staminaRegenPct"
   ],
   "equipSlots": {
     "weapon": "무기",
@@ -424,5 +990,58 @@
     "feet": "신발",
     "accessory1": "장신구",
     "accessory2": "장신구"
+  },
+  "sets": {
+    "grassland": {
+      "name": "초원 세트",
+      "pieces": [
+        "leaf_hat",
+        "grass_tunic",
+        "straw_shoes"
+      ],
+      "bonus": {
+        "moveSpeedPct": 0.08
+      }
+    },
+    "forest": {
+      "name": "숲 세트",
+      "pieces": [
+        "mushroom_hat",
+        "leather_vest",
+        "leather_boots"
+      ],
+      "bonus": {
+        "hpRegen": 1
+      }
+    },
+    "desert": {
+      "name": "사막 세트",
+      "pieces": [
+        "desert_hood",
+        "desert_cloak",
+        "sand_sandals"
+      ],
+      "bonus": {
+        "critChance": 0.05
+      }
+    },
+    "snow": {
+      "name": "설원 세트",
+      "pieces": [
+        "fur_hat",
+        "yeti_coat",
+        "snow_boots"
+      ],
+      "bonus": {
+        "damageTaken": -0.1,
+        "slowImmune": 1
+      }
+    }
+  },
+  "weaponNames": {
+    "sword": "검",
+    "spear": "창",
+    "hammer": "망치",
+    "bow": "활"
   }
 }

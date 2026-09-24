@@ -1,0 +1,56 @@
+{
+  "sword": {
+    "name": "검",
+    "range": 2.1,
+    "arcDeg": 120,
+    "cooldown": 0.42,
+    "damageMult": 1.0,
+    "knockback": 5,
+    "swing": "slash",
+    "staminaCost": 6,
+    "duration": 0.26,
+    "hitTime": 0.1
+  },
+  "spear": {
+    "name": "창",
+    "range": 3.2,
+    "arcDeg": 40,
+    "cooldown": 0.5,
+    "damageMult": 1.05,
+    "knockback": 3,
+    "swing": "thrust",
+    "staminaCost": 6,
+    "duration": 0.24,
+    "hitTime": 0.1
+  },
+  "hammer": {
+    "name": "망치",
+    "range": 2.3,
+    "arcDeg": 170,
+    "cooldown": 0.85,
+    "damageMult": 1.7,
+    "knockback": 10,
+    "swing": "smash",
+    "staminaCost": 9,
+    "shockEvery": 3,
+    "shockRadius": 3.0,
+    "shockMult": 0.6,
+    "duration": 0.42,
+    "hitTime": 0.24
+  },
+  "bow": {
+    "name": "활",
+    "range": 13,
+    "arcDeg": 0,
+    "cooldown": 0.6,
+    "damageMult": 0.8,
+    "knockback": 1.5,
+    "swing": "shoot",
+    "staminaCost": 8,
+    "arrowSpeed": 24,
+    "autoAimRange": 10,
+    "spreadDeg": 8,
+    "duration": 0.22,
+    "hitTime": 0.08
+  }
+}

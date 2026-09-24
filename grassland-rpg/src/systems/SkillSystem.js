@@ -7,6 +7,20 @@ export class SkillSystem {
     const { bus } = ctx;
 
     bus.on('skill:learn', ({ id }) => this.learn(id));
+    // 망각의 물약: 스킬을 모두 잊고 포인트를 돌려받는다
+    bus.on('item:use', (e) => {
+      if (!ctx.data.items.items[e.item]?.use?.resetSkills) return;
+      const spent = Object.values(this.ranks).reduce((a, b) => a + b, 0);
+      if (!spent) {
+        bus.emit('notify', { text: '잊을 스킬이 없어요', kind: 'warn' });
+        return;
+      }
+      e.used = true;
+      this.ranks = {};
+      bus.emit('stats:refund-points', { count: spent });
+      bus.emit('notify', { text: `스킬을 모두 잊었어요. 포인트 ${spent} 돌려받음`, kind: 'item' });
+      this.changed();
+    });
     bus.on('save:collect', (save) => { save.skills = { ranks: { ...this.ranks } }; });
     bus.on('save:apply', (save) => {
       this.ranks = {};

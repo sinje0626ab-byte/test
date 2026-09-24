@@ -55,10 +55,15 @@ export class EquipmentSystem {
 
   changed() {
     const bonus = {};
-    for (const id of Object.values(this.slots)) {
-      if (!id) continue;
-      for (const [k, v] of Object.entries(this.def(id).bonus ?? {})) bonus[k] = (bonus[k] ?? 0) + v;
-    }
-    this.ctx.bus.emit('equipment:changed', { slots: this.slots, bonus });
+    const add = (b) => { for (const [k, v] of Object.entries(b ?? {})) bonus[k] = (bonus[k] ?? 0) + v; };
+    for (const id of Object.values(this.slots)) if (id) add(this.def(id).bonus);
+    // 세트: 머리·몸·발을 모두 같은 지역 세트로 끼면 보너스
+    const worn = new Set(Object.values(this.slots));
+    const sets = Object.entries(this.ctx.data.items.sets).map(([id, set]) => {
+      const have = set.pieces.filter((p) => worn.has(p)).length;
+      if (have === set.pieces.length) add(set.bonus);
+      return { id, name: set.name, have, total: set.pieces.length, bonus: set.bonus };
+    });
+    this.ctx.bus.emit('equipment:changed', { slots: this.slots, bonus, sets });
   }
 }

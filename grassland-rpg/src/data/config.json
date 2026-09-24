@@ -155,5 +155,9 @@
     "sparkleRange": 3.5,
     "visibleRange": 110,
     "autoAimRange": 2.6
+  },
+  "status": {
+    "poisonDps": 4,
+    "slowDefault": 0.4
   }
 }

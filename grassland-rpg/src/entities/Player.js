@@ -1,7 +1,8 @@
 import * as THREE from 'three';
-import { nearestBase } from '../utils/bases.js';
-import { createPlayerModel } from './PlayerModel.js';
+import { nearestBase, baseAt } from '../utils/bases.js';
+import { createPlayerModel, applyAppearance, DEFAULT_BLADE } from './PlayerModel.js';
 import { PlayerRoll } from './PlayerRoll.js';
+import { PlayerAttack } from './PlayerAttack.js';
 
 // 플레이어: 이동·달리기·근접 공격·피격·사망/부활.
 export class Player {
@@ -24,16 +25,11 @@ export class Player {
     this.alive = true;
 
     this.attackTimer = 0;
-    this.swingTime = -1;
-    this.swingDir = new THREE.Vector3(0, 0, 1);
-    this.hitDone = true;
     this.staminaDelay = 0;
     this.invuln = 0;
     this.deathTimer = 0;
     this.walkPhase = 0;
     this.flash = 0;
-    this.attackCount = 0;
-    this.spinning = false;
 
     this.roll = new PlayerRoll(this);
     this.runTick = 0;
@@ -41,12 +37,19 @@ export class Player {
     Object.assign(this, model);
     this.mesh = model.group;
     ctx.scene.add(this.mesh);
+    this.attack = new PlayerAttack(this);
     this.syncMesh(0);
 
-    // 무기를 바꾸면 칼날 색도 바뀐다.
+    // 무기 종류·색, 모자·옷·신발 색이 장비를 따라간다.
     ctx.bus.on('equipment:changed', ({ slots }) => {
-      const w = slots.weapon && ctx.data.items.items[slots.weapon];
-      this.blade.material.color.set(w ? w.color : '#e8eef5');
+      const items = ctx.data.items.items;
+      const w = slots.weapon && items[slots.weapon];
+      this.attack.setWeapon(w?.weaponType ?? 'sword', w ? w.color : DEFAULT_BLADE);
+      applyAppearance(this, { head: items[slots.head], body: items[slots.body], feet: items[slots.feet] });
+    });
+    ctx.bus.on('player:heal', ({ amount }) => {
+      if (!this.alive) return;
+      this.stats.hp = Math.min(this.stats.maxHp, this.stats.hp + amount);
     });
     // 소모품 효과
     ctx.bus.on('item:use', (e) => {
@@ -61,7 +64,7 @@ export class Player {
     ctx.bus.on('player:teleport', ({ position }) => {
       this.position.copy(position);
       this.knock.set(0, 0, 0);
-      this.swingTime = -1;
+      this.attack.cancel();
     });
     ctx.bus.on('save:collect', (save) => this.collectSave(save));
     ctx.bus.on('save:apply', (save) => this.applySave(save.player));
@@ -132,7 +135,7 @@ export class Player {
       s.stamina = Math.max(0, s.stamina - b.staminaRunCost * dt);
       this.staminaDelay = b.staminaRegenDelay;
     }
-    if (this.swingTime >= 0) speed *= b.attackMoveMultiplier;
+    if (this.attack.swinging) speed *= b.attackMoveMultiplier;
 
     this.velocity.copy(dir).multiplyScalar(speed);
     this.position.addScaledVector(this.velocity, dt);
@@ -140,11 +143,11 @@ export class Player {
     this.knock.multiplyScalar(Math.exp(-10 * dt));
     this.ctx.world.resolveCollision(this.position, this.radius);
 
-    if (moving && this.swingTime < 0) this.facing.copy(dir);
+    if (moving && !this.attack.swinging) this.facing.copy(dir);
     if (moving) this.walkPhase += dt * speed * 2.2;
 
     this.regen(dt);
-    this.updateAttack(dt);
+    this.attack.update(dt);
     this.syncMesh(dt);
   }
 
@@ -153,53 +156,14 @@ export class Player {
     const b = this.base;
     const s = this.stats;
     this.staminaDelay -= dt;
-    if (this.staminaDelay <= 0) s.stamina = Math.min(s.maxStamina, s.stamina + b.staminaRegen * dt);
-    s.hp = Math.min(s.maxHp, s.hp + s.hpRegen * dt);
+    if (this.staminaDelay <= 0) s.stamina = Math.min(s.maxStamina, s.stamina + b.staminaRegen * (1 + (s.staminaRegenPct ?? 0)) * dt);
+    // 고목의 씨앗: 기지 안에서 HP재생 배율
+    const inBase = s.baseRegenMult && baseAt(this.ctx.bases, this.position);
+    s.hp = Math.min(s.maxHp, s.hp + s.hpRegen * (inBase ? 1 + s.baseRegenMult : 1) * dt);
   }
 
-  updateAttack(dt) {
-    const b = this.base;
-    const s = this.stats;
-    const input = this.ctx.input;
-
-    if (this.ctx.mode === 'play' && input.attackHeld && this.attackTimer <= 0 && s.stamina >= b.attackStaminaCost) {
-      // 클릭한 순간 마우스 쪽으로 몸을 돌려 벤다. 터치 공격 버튼은 가까운 적을 자동으로 겨눈다.
-      const aim = input.virtualAttack ? this.nearestEnemy()?.position : this.ctx.mouseGround;
-      if (aim) {
-        const d = new THREE.Vector3(aim.x - this.position.x, 0, aim.z - this.position.z);
-        if (d.lengthSq() > 0.01) this.facing.copy(d.normalize());
-      }
-      this.swingDir.copy(this.facing);
-      this.swingTime = 0;
-      this.hitDone = false;
-      this.attackCount += 1;
-      // 회전 공격 스킬: N번째 공격마다 한 바퀴
-      this.spinning = s.spin > 0 && this.attackCount % b.spinEvery === 0;
-      this.attackTimer = b.attackCooldown * Math.max(0.3, 1 - s.attackSpeed);
-      s.stamina -= b.attackStaminaCost;
-      this.staminaDelay = b.staminaRegenDelay;
-    }
-
-    if (this.swingTime < 0) return;
-    this.swingTime += dt;
-    if (!this.hitDone && this.swingTime >= b.attackHitTime) {
-      this.hitDone = true;
-      this.ctx.bus.emit('player:attack', {
-        origin: this.position.clone(),
-        dir: this.swingDir.clone(),
-        range: b.attackRange,
-        arc: this.spinning ? Math.PI * 2 : THREE.MathUtils.degToRad(b.attackArcDeg),
-        attack: this.spinning ? s.attack * (1 + b.spinDamagePerRank * s.spin) : s.attack,
-        critChance: s.critChance,
-        critMultiplier: b.critMultiplier,
-        knockback: b.knockback,
-      });
-    }
-    if (this.swingTime >= b.attackDuration) this.swingTime = -1;
-  }
-
-  // 터치 자동 조준: 가까운 적, 없으면 가까운 채집 노드
-  nearestEnemy() {
+  // 터치 자동 조준: 가까운 적, 없으면 가까운 채집 노드 (range를 주면 적만 그 거리까지)
+  nearestEnemy(range) {
     const pick = (list, range) => {
       let best = null;
       let bestD = range;
@@ -211,24 +175,27 @@ export class Player {
       return best;
     };
     const { config } = this.ctx.data;
+    if (range) return pick(this.ctx.monsters, range);
     return pick(this.ctx.monsters, config.touch.autoAimRange) ?? pick(this.ctx.nodes ?? [], config.gather.autoAimRange);
   }
 
   takeDamage(amount, knockDir) {
     if (!this.alive || this.invuln > 0 || this.roll.invulnerable) return false;
     const s = this.stats;
-    s.hp = Math.max(0, s.hp - amount);
+    // 받는 피해 감소 (설원 세트 등)
+    const dmg = Math.max(1, Math.round(amount * (1 + (s.damageTaken ?? 0))));
+    s.hp = Math.max(0, s.hp - dmg);
     this.invuln = this.base.invulnTime;
     this.flash = 0.18;
     if (knockDir) this.knock.copy(knockDir).multiplyScalar(this.base.knockback);
-    this.ctx.bus.emit('player:damaged', { amount, hp: s.hp });
+    this.ctx.bus.emit('player:damaged', { amount: dmg, hp: s.hp });
     if (s.hp <= 0) this.die();
     return true;
   }
 
   die() {
     this.alive = false;
-    this.swingTime = -1;
+    this.attack.cancel();
     this.deathTimer = this.base.respawnDelay;
     this.ctx.bus.emit('player:died', { position: this.position.clone() });
   }
@@ -262,25 +229,7 @@ export class Player {
     this.footL.position.z = moving ? Math.sin(this.walkPhase) * 0.14 : 0;
     this.footR.position.z = moving ? -Math.sin(this.walkPhase) * 0.14 : 0;
 
-    // 칼 휘두르기: 오른쪽 → 왼쪽
-    const b = this.base;
-    this.inner.rotation.y = 0;
-    this.spinTrail.material.opacity = 0;
-    if (this.swingTime >= 0) {
-      const t = Math.min(1, this.swingTime / b.attackDuration);
-      const ease = 1 - Math.pow(1 - t, 3);
-      this.swordPivot.rotation.y = THREE.MathUtils.lerp(1.4, -1.6, ease);
-      if (this.spinning) {
-        this.inner.rotation.y = -ease * Math.PI * 2;
-        this.spinTrail.material.opacity = 0.45 * (1 - t);
-        this.trail.material.opacity = 0;
-      } else {
-        this.trail.material.opacity = 0.45 * (1 - t);
-      }
-    } else {
-      this.swordPivot.rotation.y += (0.9 - this.swordPivot.rotation.y) * Math.min(1, dt * 10);
-      this.trail.material.opacity = 0;
-    }
+    this.attack.animate(dt);
 
     // 쓰러짐 / 무적 깜빡임 / 피격 번쩍임
     if (!this.roll.active) this.inner.rotation.x = this.alive ? 0 : Math.min(Math.PI / 2, this.inner.rotation.x + dt * 6);

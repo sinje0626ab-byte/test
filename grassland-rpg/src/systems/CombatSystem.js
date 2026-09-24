@@ -13,9 +13,21 @@ export class CombatSystem {
     ctx.bus.on('projectile:explode', (a) => this.onExplode(a));
     ctx.bus.on('boss:aoe', (a) => this.onBossAoe(a));
     ctx.bus.on('enemy:hit-player', (a) => this.hitPlayer(a.damage, a.dir));
+    ctx.bus.on('arrow:hit', ({ monster, shot, dir: d }) => {
+      if (monster.alive) this.playerHits(monster, shot, d.clone());
+    });
+    ctx.bus.on('status:damage', ({ monster, amount }) => {
+      if (!monster.alive) return;
+      const killed = monster.takeDamage(amount, null);
+      ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit: false, target: 'monster', source: 'status', color: '#7cd67a' });
+      if (killed) this.killed(monster, true);
+    });
   }
 
-  killed(m) {
+  killed(m, byPlayer = false) {
+    // 처치 시 HP 회복 (왕젤리 대검 등)
+    const heal = this.ctx.player.stats.onKillHeal;
+    if (byPlayer && heal) this.ctx.bus.emit('player:heal', { amount: heal });
     this.ctx.bus.emit('monster:killed', {
       type: m.type, position: m.position.clone(), color: m.def.color, radius: m.radius, boss: !!m.boss,
     });
@@ -44,11 +56,23 @@ export class CombatSystem {
       } else {
         dir.copy(a.dir);
       }
-      const { amount, crit } = this.calcDamage(a.attack, m.stats.defense, a.critChance, a.critMultiplier);
-      const killed = m.takeDamage(amount, dir.clone().multiplyScalar(a.knockback));
-      bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color });
-      if (killed) this.killed(m);
+      this.playerHits(m, a, dir.clone());
     }
+  }
+
+  // 플레이어 공격(근접·화살) 한 방: 치명타, 밤 몬스터 추가 피해, 적중 시 독·감속, 처치 시 회복
+  playerHits(m, a, d) {
+    const s = this.ctx.player.stats;
+    const night = (m.night || m.raid) && s.nightBonus ? 1 + s.nightBonus : 1;
+    const { amount, crit } = this.calcDamage(a.attack * night, m.stats.defense, a.critChance, a.critMultiplier);
+    const killed = m.takeDamage(amount, d.multiplyScalar(a.knockback));
+    this.ctx.bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color });
+    if (killed) {
+      this.killed(m, true);
+      return;
+    }
+    if (s.onHitPoison) this.ctx.bus.emit('status:apply', { target: m, type: 'poison', duration: s.onHitPoison });
+    if (s.onHitSlow) this.ctx.bus.emit('status:apply', { target: m, type: 'slow', duration: 2, amount: s.onHitSlow });
   }
 
   onProjectileHit({ monster, damage, dir: d }) {

@@ -5,8 +5,12 @@
     "baseLevel": 1,
     "ingredients": [
       {
+        "id": "herb",
+        "count": 2
+      },
+      {
         "id": "slime_jelly",
-        "count": 3
+        "count": 1
       }
     ]
   },
@@ -178,6 +182,351 @@
       },
       {
         "id": "mushroom_cap",
+        "count": 10
+      }
+    ]
+  },
+  "bamboo_spear": {
+    "result": "bamboo_spear",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "wood",
+        "count": 6
+      },
+      {
+        "id": "fiber",
+        "count": 4
+      }
+    ]
+  },
+  "stone_hammer": {
+    "result": "stone_hammer",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "wood",
+        "count": 4
+      },
+      {
+        "id": "stone",
+        "count": 8
+      }
+    ]
+  },
+  "short_bow": {
+    "result": "short_bow",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "wood",
+        "count": 8
+      },
+      {
+        "id": "fiber",
+        "count": 6
+      }
+    ]
+  },
+  "grass_tunic": {
+    "result": "grass_tunic",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "fiber",
+        "count": 10
+      }
+    ]
+  },
+  "herb_tea": {
+    "result": "herb_tea",
+    "count": 1,
+    "baseLevel": 1,
+    "ingredients": [
+      {
+        "id": "herb",
+        "count": 2
+      }
+    ]
+  },
+  "iron_spear": {
+    "result": "iron_spear",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "iron_ore",
+        "count": 6
+      },
+      {
+        "id": "wood",
+        "count": 10
+      }
+    ]
+  },
+  "mossy_mace": {
+    "result": "mossy_mace",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "iron_ore",
+        "count": 5
+      },
+      {
+        "id": "resin",
+        "count": 4
+      },
+      {
+        "id": "stone",
+        "count": 10
+      }
+    ]
+  },
+  "hunter_bow": {
+    "result": "hunter_bow",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "resin",
+        "count": 4
+      },
+      {
+        "id": "wood",
+        "count": 15
+      },
+      {
+        "id": "fiber",
+        "count": 8
+      }
+    ]
+  },
+  "mushroom_hat": {
+    "result": "mushroom_hat",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "mushroom_cap",
+        "count": 8
+      },
+      {
+        "id": "fiber",
+        "count": 4
+      }
+    ]
+  },
+  "leather_boots": {
+    "result": "leather_boots",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "fiber",
+        "count": 8
+      },
+      {
+        "id": "resin",
+        "count": 3
+      }
+    ]
+  },
+  "fire_tonic": {
+    "result": "fire_tonic",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "cactus_pulp",
+        "count": 3
+      },
+      {
+        "id": "herb",
+        "count": 2
+      }
+    ]
+  },
+  "cactus_juice": {
+    "result": "cactus_juice",
+    "count": 1,
+    "baseLevel": 2,
+    "ingredients": [
+      {
+        "id": "cactus_pulp",
+        "count": 4
+      }
+    ]
+  },
+  "sun_blade": {
+    "result": "sun_blade",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "sun_crystal",
+        "count": 2
+      },
+      {
+        "id": "iron_ore",
+        "count": 8
+      }
+    ]
+  },
+  "sandstone_maul": {
+    "result": "sandstone_maul",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "sandstone",
+        "count": 20
+      },
+      {
+        "id": "iron_ore",
+        "count": 6
+      }
+    ]
+  },
+  "dune_bow": {
+    "result": "dune_bow",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "cactus_spine",
+        "count": 15
+      },
+      {
+        "id": "resin",
+        "count": 6
+      }
+    ]
+  },
+  "desert_hood": {
+    "result": "desert_hood",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "cactus_spine",
+        "count": 8
+      },
+      {
+        "id": "fiber",
+        "count": 10
+      }
+    ]
+  },
+  "sand_sandals": {
+    "result": "sand_sandals",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "cactus_pulp",
+        "count": 10
+      },
+      {
+        "id": "fiber",
+        "count": 8
+      }
+    ]
+  },
+  "frost_lance": {
+    "result": "frost_lance",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "frost_crystal",
+        "count": 2
+      },
+      {
+        "id": "ice_shard",
+        "count": 12
+      }
+    ]
+  },
+  "glacier_hammer": {
+    "result": "glacier_hammer",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "ice_shard",
+        "count": 20
+      },
+      {
+        "id": "iron_ore",
+        "count": 8
+      }
+    ]
+  },
+  "aurora_bow": {
+    "result": "aurora_bow",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "frost_crystal",
+        "count": 2
+      },
+      {
+        "id": "resin",
+        "count": 8
+      }
+    ]
+  },
+  "fur_hat": {
+    "result": "fur_hat",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "ice_shard",
+        "count": 6
+      },
+      {
+        "id": "fiber",
+        "count": 10
+      }
+    ]
+  },
+  "yeti_coat": {
+    "result": "yeti_coat",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "ice_shard",
+        "count": 12
+      },
+      {
+        "id": "fiber",
+        "count": 14
+      },
+      {
+        "id": "frost_crystal",
+        "count": 1
+      }
+    ]
+  },
+  "snow_boots": {
+    "result": "snow_boots",
+    "count": 1,
+    "baseLevel": 3,
+    "ingredients": [
+      {
+        "id": "ice_shard",
+        "count": 10
+      },
+      {
+        "id": "fiber",
         "count": 10
       }
     ]

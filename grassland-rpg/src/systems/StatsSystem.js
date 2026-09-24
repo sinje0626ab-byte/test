@@ -9,6 +9,7 @@ export class StatsSystem {
     this.skillPoints = 0;
     this.equipBonus = {};
     this.skillEffects = {};
+    this.buffEffects = {};
     const { bus, data } = ctx;
 
     bus.on('monster:killed', ({ type }) => this.gain(data.monsters[type]?.xp ?? 0));
@@ -21,6 +22,18 @@ export class StatsSystem {
     bus.on('base:upgraded', ({ level }) => this.gain(data.buildings.baseLevels[String(level)]?.xp ?? 0));
     bus.on('equipment:changed', ({ bonus }) => { this.equipBonus = bonus; this.recalc(); });
     bus.on('skills:changed', ({ effects }) => { this.skillEffects = effects; this.recalc(); });
+    bus.on('buffs:changed', ({ effects }) => {
+      const key = JSON.stringify(effects);
+      if (key === this.buffKey) return; // 남은 시간만 바뀐 알림은 무시
+      this.buffKey = key;
+      this.buffEffects = effects;
+      this.recalc();
+    });
+    // 망각의 물약: 쓴 스킬 포인트를 돌려받는다
+    bus.on('stats:refund-points', ({ count }) => {
+      this.skillPoints += count;
+      this.emitChanged();
+    });
     bus.on('stats:spend-point', (e) => {
       if (this.skillPoints <= 0) return;
       this.skillPoints -= 1;
@@ -79,10 +92,11 @@ export class StatsSystem {
       turretDamage: 0, turretRange: 0, buildCost: 0, extraTurrets: 0,
     };
     for (const [k, v] of Object.entries(this.levels.perLevel)) out[k] += v * (this.level - 1);
-    for (const src of [this.equipBonus, this.skillEffects]) {
+    for (const src of [this.equipBonus, this.skillEffects, this.buffEffects]) {
       for (const [k, v] of Object.entries(src)) out[k] = (out[k] ?? 0) + v;
     }
     out.moveSpeed *= 1 + out.moveSpeedPct;
+    out.attack *= 1 + (out.attackPct ?? 0);
     out.maxHp = Math.round(out.maxHp);
     out.maxStamina = Math.round(out.maxStamina);
     out.attack = Math.round(out.attack * 10) / 10;

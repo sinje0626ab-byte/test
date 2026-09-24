@@ -16,7 +16,10 @@ export class SoundSystem {
     });
     synth.onStart = () => this.applyVolume();
 
-    bus.on('player:attack', () => this.play('swing'));
+    bus.on('player:attack', (a) => { if (!a.shock) this.play('swing'); });
+    bus.on('player:shoot', () => this.play('shoot'));
+    bus.on('player:shock', () => this.play('shock'));
+    bus.on('item:use', (e) => { if (ctx.data.items.items[e.item]?.category === 'consumable') this.play('drink'); });
     bus.on('combat:hit', (e) => {
       if (e.target === 'monster' && e.source === 'player') this.play(e.crit ? 'crit' : 'hit', at(e));
       else if (e.target === 'monster') this.play('hit', at(e), { gain: 0.5 });

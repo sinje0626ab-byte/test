@@ -65,6 +65,9 @@ src/
     Regions.js         # 지역(초원/숲/사막/설원) 찾기·색 섞기
   entities/
     Player.js
+    PlayerModel.js     # 플레이어 모양, 무기 종류별 모양, 장비 색 반영
+    PlayerAttack.js    # 무기 종류별 공격 (베기·찌르기·내려치기·활 쏘기)
+    PlayerRoll.js      # 회피 구르기
     Monster.js
     MonsterModel.js    # 몬스터 모양 (슬라임 / 버섯)
     RaidMonster.js     # 밤 습격 몬스터 AI
@@ -85,6 +88,9 @@ src/
     ExplorationSystem.js # 탐험한 칸(지도 안개), 지역 진입 알림
     BossSystem.js      # 보스 등장·재등장, 보스 투사체
     GatherSystem.js    # 채집 노드 배치·타격·드롭·복구
+    ArrowSystem.js     # 플레이어 활 화살
+    StatusSystem.js    # 상태 이상 (독·감속)
+    BuffSystem.js      # 소모품 버프 (남은 시간·효과)
     FeedbackSystem.js  # 타격 연출 (히트스톱·화면 흔들림·파티클). 게임 로직은 건드리지 않는다
     SoundSystem.js     # 효과음 (이벤트 → 합성음)
     MusicSystem.js     # 배경음 (지역·낮밤·습격·보스에 따라 합성 루프)
@@ -141,6 +147,7 @@ src/
     bosses.json        # 보스 둥지·패턴·재등장
     sounds.json        # 효과음 합성 정의, 배경음 음계·템포
     nodes.json         # 채집 노드 종류·드롭·복구일, 지역별 밀도
+    weapons.json       # 무기 종류별 공격 방식 (사거리·각도·쿨다운·배율·넉백·특수)
     shop.json          # 상점 판매 목록
 ```
 
@@ -264,6 +271,34 @@ src/
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
+
+### 4-3-2. 무기 종류 (Phase 9)
+- 무기 아이템에 `weaponType`. 공격 방식은 무기 종류(`weapons.json`)가, 능력치는 아이템이 정한다. 무기가 없으면 검
+| 종류 | 사거리 | 각도 | 쿨다운 | 데미지 배율 | 넉백 | 특징 |
+|---|---|---|---|---|---|---|
+| 검 sword | 2.1 | 120° | 0.42 | 1.0 | 5 | 기본. 회전 공격 스킬과 궁합 |
+| 창 spear | 3.2 | 40° | 0.5 | 1.05 | 3 | 길고 좁게 찌름 (부채꼴 안 모두 관통) |
+| 망치 hammer | 2.3 | 170° | 0.85 | 1.7 | 10 | 느리고 넓고 강함. 3타마다 작은 충격파 |
+| 활 bow | 13 | - | 0.6 | 0.8 | 1.5 | 화살 발사, 스태미나 8. PC는 마우스 방향, 모바일은 가장 가까운 적(10m) |
+- 모양: 칼 자리에 종류별 모양 (창 = 긴 막대+창날, 망치 = 짧은 자루+큰 머리, 활 = 휜 활대+시위). 휘두르는 동작도 종류별
+- 장비 외형: 머리 장비 = 모자 모양·색, 몸 장비 = 옷 색, 신발 = 신발 색
+- 특수 능력치: 적중 시 독(`onHitPoison` 초), 적중 시 감속(`onHitSlow` 비율), 처치 시 HP 회복(`onKillHeal`), 화살 추가(`multiShot`), 밤 몬스터 피해(`nightBonus`), 치명타 피해(`critDamage`), 구르기 스태미나(`rollStaminaPct`), 독 저항(`poisonResist`), 기지 안 HP재생 배율(`baseRegenMult`), 받는 피해(`damageTaken`), 감속 면역(`slowImmune`)
+- 밤 몬스터 = 밤에 태어난 필드 몬스터와 습격 몬스터
+
+### 4-3-3. 등급·세트 (Phase 9)
+- 등급에 전설(legendary, `#ffa53d`) 추가. 최종 보스 전용
+- 세트: 같은 지역 머리·몸·발 3부위를 모두 끼면 보너스 (`items.json`의 `sets`). 캐릭터 창에 세트 진행도
+  - 초원(풀잎 모자·풀잎 옷·짚신): 이속 +8% / 숲(버섯 모자·가죽 조끼·가죽 장화): HP재생 +1
+  - 사막(사막 두건·사막 망토·모래 샌들): 치명 +5% / 설원(털모자·설인 털옷·설원 부츠): 받는 피해 -10%, 감속 면역
+- 몬스터·보스 드롭 전용 장비 중 아직 없는 몬스터(Phase 10·13)가 떨어뜨리는 것은 그때부터 얻을 수 있다
+
+### 4-3-4. 소모품·버프 (Phase 9)
+- 소모품 `use`: `heal`(즉시 회복), `buff`({ id, duration, effects }), `returnHome`(가장 가까운 기지로, 영역 밖에서도), `resetSkills`(스킬 포인트 전부 돌려받음)
+- 버프는 BuffSystem: 같은 버프는 겹치지 않고 시간만 새로. HUD HP바 아래에 아이콘 + 남은 초. 버프 효과는 능력치 계산에 더해진다
+- 사과(HP 15) · 약초차(30초 스태미나 회복 +50%) · HP 물약(제작 재료: 약초 2 + 슬라임 젤리 1) · 꿀단지(60초 이속 +20%) · 불꽃 강장제(90초 공격 +15%) · 선인장 주스(HP 60 + 10초 HP재생 +3) · 귀환 두루마리(상점 40골드) · 망각의 물약(상점 300골드)
+
+### 4-3-5. 상태 이상 (Phase 9 몬스터 / Phase 10 플레이어)
+- StatusSystem: 독(초당 피해), 감속(이동 속도 배율). 같은 상태는 시간만 새로. 몬스터 머리 위 작은 색 아이콘 (독 초록, 감속 파랑)
 
 ### 4-4. 레벨·스킬
 - 몬스터 처치, 채집, 건설로 경험치 획득
@@ -499,7 +534,7 @@ src/
 ### 2차 업데이트 (`docs/UPDATE_GUIDE2.pdf`)
 - [x] Phase 7 — 손맛과 사운드 (타격 피드백 · 구르기 · 합성 사운드·배경음 · 설정)
 - [x] Phase 8 — 채집 (채집 노드 · 새 재료 · 건설비 재조정)
-- [ ] Phase 9 — 무기 종류와 장비 확장 (무기 4종 · 등급 전설 · 세트 효과 · 소모품·버프)
+- [x] Phase 9 — 무기 종류와 장비 확장 (무기 4종 · 등급 전설 · 세트 효과 · 소모품·버프)
 - [ ] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
 - [ ] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
 - [ ] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
@@ -587,6 +622,12 @@ src/
 | `gather:hit` | GatherSystem | FeedbackSystem (조각), SoundSystem |
 | `gather:done` | GatherSystem | StatsSystem (경험치), FeedbackSystem, SoundSystem |
 | `loot:spawn` | GatherSystem | LootSystem (바닥에 드롭) |
+| `player:shoot` | PlayerAttack (활) | ArrowSystem |
+| `arrow:hit` | ArrowSystem | CombatSystem |
+| `status:apply` / `status:damage` | CombatSystem / StatusSystem | StatusSystem / CombatSystem |
+| `player:heal` | CombatSystem (처치 시 회복) | Player |
+| `buffs:changed` | BuffSystem | StatsSystem, HUD |
+| `stats:refund-points` | SkillSystem (망각의 물약) | StatsSystem |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

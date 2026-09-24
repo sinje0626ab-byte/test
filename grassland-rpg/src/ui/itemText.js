@@ -15,12 +15,15 @@ export function itemTooltip(data, id, { count, hint } = {}) {
   const { grades, categories } = data.items;
   const def = data.items.items[id];
   const grade = grades[def.grade];
-  const slotName = def.equipSlot ? ` · ${data.items.equipSlots[def.equipSlot] ?? data.items.equipSlots.accessory1}` : '';
+  const slotName = def.weaponType ? ` · ${data.items.weaponNames[def.weaponType]}`
+    : def.equipSlot ? ` · ${data.items.equipSlots[def.equipSlot] ?? data.items.equipSlots.accessory1}` : '';
+  const set = Object.values(data.items.sets ?? {}).find((st) => st.pieces.includes(id));
   const max = def.stackable ? def.maxStack ?? data.config.inventory.defaultMaxStack : null;
   return `
     <div class="tt-name" style="color:${grade?.color ?? '#fff'}">${def.name}</div>
     <div class="tt-meta">${grade ? `${grade.name} · ` : ''}${categories[def.category] ?? ''}${slotName}</div>
     ${bonusLines(data.items, def.bonus)}
+    ${set ? `<div class="tt-meta">${set.name} (3부위: ${Object.entries(set.bonus).map(([k, v]) => `${data.items.statLabels[k]} ${formatStat(data.items, k, v)}`).join(', ')})</div>` : ''}
     ${def.description ? `<p class="tt-desc">${def.description}</p>` : ''}
     ${count != null && max ? `<div class="tt-meta">수량 ${count} / ${max}</div>` : ''}
     ${hint ? `<div class="tt-hint">${hint}</div>` : ''}`;
