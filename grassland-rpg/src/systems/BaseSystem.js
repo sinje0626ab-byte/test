@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Building } from '../entities/Building.js';
-import { baseAt } from '../utils/bases.js';
+import { baseAt, nearestBase } from '../utils/bases.js';
 
 // 기지 목록(ctx.bases)과 기지 중심 텐트. 빠른 이동·기지 레벨업은 이후 Phase.
 export class BaseSystem {
@@ -21,6 +21,18 @@ export class BaseSystem {
 
     bus.on('base:travel', ({ baseId }) => this.travel(baseId));
     bus.on('base:upgrade', ({ baseId }) => this.upgrade(baseId));
+    // 귀환 두루마리: 가장 가까운 기지로 (영역 밖에서도)
+    bus.on('item:use', (e) => {
+      if (!ctx.data.items.items[e.item]?.use?.returnHome) return;
+      const base = nearestBase(ctx.bases, ctx.player.position);
+      if (!base || !ctx.player.alive) {
+        bus.emit('notify', { text: '돌아갈 기지가 없어요', kind: 'warn' });
+        return;
+      }
+      e.used = true;
+      bus.emit('player:teleport', { position: this.doorstep(base) });
+      bus.emit('notify', { text: `${base.label}(으)로 돌아왔습니다`, kind: 'info' });
+    });
 
     // 아침마다 텐트는 다시 멀쩡해진다.
     bus.on('time:day', () => {

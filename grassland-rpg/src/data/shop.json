@@ -23,6 +23,14 @@
     {
       "id": "tent_kit",
       "price": 250
+    },
+    {
+      "id": "return_scroll",
+      "price": 40
+    },
+    {
+      "id": "forget_potion",
+      "price": 300
     }
   ]
 }

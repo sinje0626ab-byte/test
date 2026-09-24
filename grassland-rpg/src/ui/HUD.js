@@ -19,6 +19,7 @@ export class HUD {
         <div class="bar hp"><div class="fill" data-hp></div><span data-hp-text></span></div>
         <div class="bar st"><div class="fill" data-st></div></div>
         <div class="bar xp"><div class="fill" data-xp></div></div>
+        <div class="buffs" data-buffs></div>
       </div>
       <div class="hud-tr">
         <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">☰</button><div class="clock" data-clock><i class="sun" data-sun></i><b data-day>1일차</b><span data-until></span></div></div>
@@ -42,7 +43,7 @@ export class HUD {
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
       help: $('[data-help]'), banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
-      boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
+      buffs: $('[data-buffs]'), boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
     const { bus } = ctx;
@@ -51,6 +52,9 @@ export class HUD {
       if (delta > 0) this.pulse(this.el.gold.parentElement);
     });
     bus.on('notify', (n) => this.notify(n));
+    bus.on('buffs:changed', ({ list }) => {
+      this.el.buffs.innerHTML = list.map((b) => `<span class="buff" title="${b.name}"><i style="--c:${b.color}"></i>${Math.ceil(b.time)}</span>`).join('');
+    });
     bus.on('settings:changed', ({ key, value }) => { if (key === 'damageNumbers') this.hideNumbers = !value; });
     bus.on('save:done', () => this.pulse(this.el.saved, 'show'));
     bus.on('stats:changed', ({ level, xp, xpToNext, skillPoints }) => {

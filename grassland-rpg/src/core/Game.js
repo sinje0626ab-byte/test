@@ -25,6 +25,9 @@ import { CraftingSystem } from '../systems/CraftingSystem.js';
 import { StorageSystem } from '../systems/StorageSystem.js';
 import { BossSystem } from '../systems/BossSystem.js';
 import { GatherSystem } from '../systems/GatherSystem.js';
+import { ArrowSystem } from '../systems/ArrowSystem.js';
+import { StatusSystem } from '../systems/StatusSystem.js';
+import { BuffSystem } from '../systems/BuffSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
@@ -99,6 +102,9 @@ export class Game {
       new StorageSystem(ctx),
       new BossSystem(ctx),
       new GatherSystem(ctx),
+      new ArrowSystem(ctx),
+      new StatusSystem(ctx),
+      new BuffSystem(ctx),
     );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);

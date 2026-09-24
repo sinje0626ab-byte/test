@@ -43,6 +43,10 @@ html, body {
 .bar.st .fill { background: var(--st); }
 .bar.xp { height: 6px; }
 .bar.xp .fill { background: var(--xp); }
+.buffs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.buffs:empty { display: none; }
+.buff { display: inline-flex; align-items: center; gap: 3px; padding: 1px 7px 1px 3px; border-radius: 999px; background: #f1e8d2; font-size: 11px; font-weight: 800; color: #6b6453; font-variant-numeric: tabular-nums; }
+.buff i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15); }
 .bar span {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);

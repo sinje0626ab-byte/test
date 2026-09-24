@@ -25,10 +25,12 @@ export class CharacterWindow {
           <div class="bar xp"><div class="fill" data-c-xp></div></div>
           <div class="char-xp" data-c-xptext></div>
           <dl data-c-list></dl>
+          <div class="sets" data-c-sets></div>
         </div>
       </div>
       <footer class="inv-foot"><span class="inv-hint">장비 칸 우클릭: 해제 · 가방에서 우클릭: 장착</span></footer>`;
     const $ = (q) => win.body.querySelector(q);
+    this.setsEl = $('[data-c-sets]');
     this.el = { lv: $('[data-c-lv]'), sp: $('[data-c-sp]'), xp: $('[data-c-xp]'), xpText: $('[data-c-xptext]'), list: $('[data-c-list]') };
     this.grid = $('.equip-grid');
     this.win = win;
@@ -62,7 +64,15 @@ export class CharacterWindow {
     });
     this.grid.addEventListener('pointerleave', () => tooltip.hide());
 
-    ctx.bus.on('equipment:changed', ({ slots }) => { this.equip = { ...slots }; this.renderEquip(); });
+    ctx.bus.on('equipment:changed', ({ slots, sets }) => {
+      this.equip = { ...slots };
+      this.renderEquip();
+      // 세트 진행도 (하나라도 낀 세트만)
+      const items = ctx.data.items;
+      this.setsEl.innerHTML = (sets ?? []).filter((st) => st.have > 0).map((st) => `
+        <div class="set${st.have === st.total ? ' done' : ''}"><b>${st.name} ${st.have}/${st.total}</b>
+        <small>${Object.entries(st.bonus).map(([k, v]) => `${items.statLabels[k]} ${formatStat(items, k, v)}`).join(', ')}</small></div>`).join('');
+    });
     ctx.bus.on('stats:changed', (info) => { this.info = info; this.renderStats(); });
   }
 

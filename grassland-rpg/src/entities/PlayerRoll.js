@@ -9,6 +9,11 @@ export class PlayerRoll {
     this.dir = new THREE.Vector3();
   }
 
+  // 토끼발 부적 등: rollStaminaPct 만큼 싸진다
+  get cost() {
+    return this.player.base.rollStamina * (1 + (this.player.stats.rollStaminaPct ?? 0));
+  }
+
   get active() {
     return this.time >= 0;
   }
@@ -25,13 +30,13 @@ export class PlayerRoll {
     const s = p.stats;
     this.cooldown = Math.max(0, this.cooldown - dt);
 
-    if (!this.active && input.wasPressed('Space') && this.cooldown <= 0 && s.stamina >= b.rollStamina && p.ctx.mode === 'play') {
+    if (!this.active && input.wasPressed('Space') && this.cooldown <= 0 && s.stamina >= this.cost && p.ctx.mode === 'play') {
       this.dir.copy(moveDir.lengthSq() > 0 ? moveDir : p.facing).setY(0).normalize();
       p.facing.copy(this.dir);
       this.time = 0;
-      s.stamina -= b.rollStamina;
+      s.stamina -= this.cost;
       p.staminaDelay = b.staminaRegenDelay;
-      p.swingTime = -1; // 휘두르던 칼은 취소
+      p.attack.cancel(); // 휘두르던 칼은 취소
       p.ctx.bus.emit('player:roll', { position: p.position.clone() });
     }
     if (!this.active) return false;

@@ -36,6 +36,7 @@ export class MonsterSpawner {
     const m = new Monster(this.ctx, rand.pick(region.monsters), pos);
     const mult = region.statMultiplier * (this.ctx.time.isNight ? cfg.nightStatMultiplier : 1);
     if (mult !== 1) m.scaleStats(mult);
+    m.night = this.ctx.time.isNight; // 밤 몬스터 (새벽검 추가 피해)
     monsters.push(m);
   }
 

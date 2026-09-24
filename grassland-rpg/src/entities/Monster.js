@@ -93,7 +93,7 @@ export class Monster {
     if (speed > 0 && move.lengthSq() > 1e-6) {
       move.normalize();
       this.facing.lerp(move, Math.min(1, dt * 8)).normalize();
-      this.position.addScaledVector(move, speed * dt);
+      this.position.addScaledVector(move, speed * (this.speedMult ?? 1) * dt);
     }
     this.position.addScaledVector(this.knock, dt);
     this.knock.multiplyScalar(Math.exp(-8 * dt));
