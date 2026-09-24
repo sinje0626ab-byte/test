@@ -1,18 +1,23 @@
 {
   "world": {
-    "size": 180,
     "seed": 20260924,
     "spawnPoint": [
       0,
       0
     ],
     "clearRadius": 7,
-    "trees": 140,
-    "roundTrees": 90,
-    "rocks": 70,
-    "bushes": 80,
-    "flowers": 700,
-    "grassTufts": 1400
+    "bounds": {
+      "minX": -90,
+      "maxX": 90,
+      "minZ": -270,
+      "maxZ": 90
+    },
+    "edgeTrees": {
+      "spacing": 2.6,
+      "layers": 3,
+      "layerGap": 3.2
+    },
+    "regionBlend": 14
   },
   "camera": {
     "fov": 42,
@@ -30,9 +35,6 @@
     "minDistance": 13,
     "maxDistance": 32,
     "despawnDistance": 60,
-    "monsterTypes": [
-      "slime"
-    ],
     "nightStatMultiplier": 1.3
   },
   "combat": {
@@ -92,7 +94,14 @@
     "rewardBase": 20,
     "rewardPerMonster": 6,
     "failGoldLossRatio": 0.1,
-    "monsterType": "night_slime",
-    "region": "grassland"
+    "presenceMargin": 20,
+    "remoteFightSeconds": 25,
+    "remotePartialRatio": 0.5,
+    "remoteTurretDamage": 0.8
+  },
+  "map": {
+    "cellSize": 6,
+    "revealRadius": 22,
+    "revealInterval": 0.25
   }
 }

@@ -27,7 +27,7 @@ export class HUD {
       </div>
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
-      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설</div>
+      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
@@ -55,6 +55,10 @@ export class HUD {
       this.el.sp.textContent = `스킬 +${skillPoints} (K)`;
     });
     bus.on('xp:gain', ({ amount, position }) => this.floatText({ position, amount: `+${amount} XP`, target: 'xp' }));
+    bus.on('region:entered', ({ name, first }) => {
+      if (first) this.banner(`${name}`, '처음 와 보는 곳이에요', 'day');
+      else this.notify({ text: `${name}에 들어섰습니다`, kind: 'info' });
+    });
     bus.on('stats:levelup', ({ level }) => {
       this.banner(`레벨 업! Lv ${level}`, '스킬 포인트 +1 · K 키로 스킬을 배워요', 'level');
       this.pulse(this.el.lv.parentElement);
@@ -70,7 +74,8 @@ export class HUD {
       const label = { cleared: '방어 성공', partial: '부분 피해', failed: '실패' };
       for (const r of results) {
         const reward = r.reward ? ` · 보상 골드 +${r.reward}` : '';
-        this.notify({ text: `[${r.baseName}] 습격 ${label[r.status]} — ${r.killed}/${r.total} 처치${reward}`, kind: r.status === 'cleared' ? 'gold' : 'warn' });
+        const where = r.remote ? `${r.baseName} (원격)` : r.baseName;
+        this.notify({ text: `[${where}] 습격 ${label[r.status]} — ${r.killed}/${r.total} 처치${reward}`, kind: r.status === 'cleared' ? 'gold' : 'warn' });
       }
     });
     bus.on('combat:hit', (h) => this.floatText(h));
@@ -124,7 +129,8 @@ export class HUD {
 
     const t = this.ctx.time;
     const left = Math.ceil(t.untilChange);
-    this.el.day.textContent = `${t.day}일차`;
+    const p = this.ctx.player.position;
+    this.el.day.textContent = `${t.day}일차 · ${this.ctx.world.regionAt(p.x, p.z).name}`;
     this.el.until.textContent = `${t.isNight ? '아침까지' : '밤까지'} ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
     this.el.clock.classList.toggle('night', t.isNight);
 

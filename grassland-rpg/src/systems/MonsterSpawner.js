@@ -31,8 +31,11 @@ export class MonsterSpawner {
 
     const pos = this.findSpot();
     if (!pos) return;
-    const m = new Monster(this.ctx, rand.pick(cfg.monsterTypes), pos);
-    if (this.ctx.time.isNight) m.scaleStats(cfg.nightStatMultiplier);
+    // 지역마다 나오는 몬스터와 세기가 다르다.
+    const region = this.ctx.world.regionAt(pos.x, pos.z);
+    const m = new Monster(this.ctx, rand.pick(region.monsters), pos);
+    const mult = region.statMultiplier * (this.ctx.time.isNight ? cfg.nightStatMultiplier : 1);
+    if (mult !== 1) m.scaleStats(mult);
     monsters.push(m);
   }
 

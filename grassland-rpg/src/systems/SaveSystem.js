@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -20,6 +20,8 @@ const migrations = {
     equipment: { slots: {} },
     skills: { ranks: {} },
   }),
+  // v3 → v4: 탐험 기록 추가 (빈 값이면 불러온 뒤 주변부터 다시 밝힌다)
+  3: (s) => ({ ...s, saveVersion: 4, exploration: null }),
 };
 
 export class SaveSystem {

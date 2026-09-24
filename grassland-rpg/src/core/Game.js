@@ -18,6 +18,7 @@ import { RaidSystem } from '../systems/RaidSystem.js';
 import { StatsSystem } from '../systems/StatsSystem.js';
 import { EquipmentSystem } from '../systems/EquipmentSystem.js';
 import { SkillSystem } from '../systems/SkillSystem.js';
+import { ExplorationSystem } from '../systems/ExplorationSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
@@ -25,6 +26,7 @@ import { InventoryWindow } from '../ui/InventoryWindow.js';
 import { BuildMenu } from '../ui/BuildMenu.js';
 import { CharacterWindow } from '../ui/CharacterWindow.js';
 import { SkillWindow } from '../ui/SkillWindow.js';
+import { MapWindow } from '../ui/MapWindow.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -70,6 +72,7 @@ export class Game {
       new StatsSystem(ctx),
       new EquipmentSystem(ctx),
       new SkillSystem(ctx),
+      new ExplorationSystem(ctx),
     );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);
@@ -81,6 +84,8 @@ export class Game {
     new BuildMenu(ctx, this.ui);
     new CharacterWindow(ctx, this.ui, this.tooltip);
     new SkillWindow(ctx, this.ui);
+    new MapWindow(ctx, this.ui);
+    bus.on('player:teleport', () => this.camera.snapTo(ctx.player.position));
 
     // 창들이 첫 화면을 그릴 수 있게 현재 상태를 한 번 알린다. (불러오기가 있으면 다시 알린다)
     this.systems.find((s) => s instanceof StatsSystem).recalc();
@@ -118,7 +123,7 @@ export class Game {
     ctx.world.update(dt, ctx.player.position);
     this.camera.update(dt, ctx.player.position);
     this.hud.update(dt);
-    this.ui.update();
+    this.ui.update(dt);
     ctx.input.endFrame();
   }
 

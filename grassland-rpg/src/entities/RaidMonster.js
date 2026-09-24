@@ -66,7 +66,7 @@ export class RaidMonster extends Monster {
         move.set(this.position.x - this.base.position.x, 0, this.position.z - this.base.position.z);
         speed = d.moveSpeed * 1.5;
         this.retreatTimer += dt;
-        this.mat.opacity = Math.max(0, 0.92 * (1 - this.retreatTimer / 3));
+        this.setOpacity(Math.max(0, 0.92 * (1 - this.retreatTimer / 3)));
         if (this.retreatTimer >= 3) {
           this.alive = false;
           this.done = true;

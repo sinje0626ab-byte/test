@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { rand } from '../utils/random.js';
+import { createMonsterModel } from './MonsterModel.js';
+import { HpBar } from './HpBar.js';
 
 const tmp = new THREE.Vector3();
 
@@ -34,51 +36,26 @@ export class Monster {
   }
 
   buildMesh() {
-    const d = this.def;
-    const g = new THREE.Group();
-    this.mat = new THREE.MeshStandardMaterial({
-      color: d.color, flatShading: true, roughness: 0.35, transparent: true, opacity: 0.92,
-    });
-    const body = new THREE.Mesh(new THREE.IcosahedronGeometry(d.radius, 1), this.mat);
-    body.scale.set(1, 0.78, 1);
-    body.position.y = d.radius * 0.78;
-    body.castShadow = true;
-    const eyeMat = new THREE.MeshStandardMaterial({ color: 0x23262e, flatShading: true });
-    const eyeGeo = new THREE.SphereGeometry(d.radius * 0.11, 6, 4);
-    for (const side of [-1, 1]) {
-      const eye = new THREE.Mesh(eyeGeo, eyeMat);
-      eye.position.set(side * d.radius * 0.33, d.radius * 0.95, d.radius * 0.82);
-      g.add(eye);
-    }
-    const shine = new THREE.Mesh(
-      new THREE.SphereGeometry(d.radius * 0.14, 6, 4),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7 }),
-    );
-    shine.position.set(-d.radius * 0.35, d.radius * 1.2, d.radius * 0.3);
-    g.add(body, shine);
-
+    const { body, mat, extraMats } = createMonsterModel(this.def);
+    this.body = body;
+    this.mat = mat;
+    this.extraMats = extraMats;
     const outer = new THREE.Group();
-    outer.add(g);
-    this.body = g;
+    outer.add(body);
 
     // 체력바 (맞았을 때만 잠깐 보인다)
-    const bar = new THREE.Group();
-    const bg = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.12), new THREE.MeshBasicMaterial({ color: 0x2b2b33, depthTest: false }));
-    const fgGeo = new THREE.PlaneGeometry(0.86, 0.08);
-    fgGeo.translate(0.43, 0, 0);
-    this.hpFill = new THREE.Mesh(fgGeo, new THREE.MeshBasicMaterial({ color: 0xff6b6b, depthTest: false }));
-    this.hpFill.position.set(-0.43, 0, 0.001);
-    bg.renderOrder = 10;
-    this.hpFill.renderOrder = 11;
-    bar.add(bg, this.hpFill);
-    bar.position.y = d.radius * 2 + 0.35;
-    bar.visible = false;
-    outer.add(bar);
-    this.hpBar = bar;
+    this.hpBar = new HpBar(0.9);
+    this.hpBar.group.position.y = this.def.radius * 2 + 0.35;
+    outer.add(this.hpBar.group);
 
     this.mesh = outer;
     this.ctx.scene.add(outer);
     this.mesh.position.copy(this.position);
+  }
+
+  setOpacity(o) {
+    this.mat.opacity = o;
+    for (const m of this.extraMats) m.opacity = o;
   }
 
   // 밤에 태어난 몬스터·날짜가 지난 습격 몬스터를 강하게 만든다.
@@ -105,7 +82,7 @@ export class Monster {
       const t = this.stateTime / 0.5;
       this.body.scale.setScalar(Math.max(0.001, 1 - t));
       this.body.position.y = t * 0.4;
-      this.mat.opacity = 0.92 * (1 - t);
+      this.setOpacity(0.92 * (1 - t));
       if (t >= 1) this.done = true;
       return;
     }
@@ -251,11 +228,7 @@ export class Monster {
     const e = this.flash > 0 ? 1 : 0;
     this.mat.emissive.setRGB(e, e, e);
 
-    this.hpBar.visible = this.hpBarTimer > 0;
-    if (this.hpBar.visible) {
-      this.hpBar.quaternion.copy(this.ctx.camera.quaternion);
-      this.hpFill.scale.x = Math.max(0.001, this.stats.hp / this.stats.maxHp);
-    }
+    this.hpBar.update(this.stats.hp / this.stats.maxHp, this.ctx.camera, this.hpBarTimer > 0);
   }
 
   // 데미지를 받고 죽었으면 true
@@ -268,7 +241,7 @@ export class Monster {
     if (knockVec) this.knock.copy(knockVec).multiplyScalar(1 - this.def.knockbackResist);
     if (s.hp <= 0) {
       this.alive = false;
-      this.hpBar.visible = false;
+      this.hpBar.group.visible = false;
       this.setState('dead');
       return true;
     }

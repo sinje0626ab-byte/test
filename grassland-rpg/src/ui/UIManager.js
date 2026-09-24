@@ -25,7 +25,7 @@ export class UIManager {
       </header>
       <div class="win-body"></div>`;
     this.layer.appendChild(el);
-    const win = { id, key, el, body: el.querySelector('.win-body'), onOpen: null, onClose: null, canOpen: null };
+    const win = { id, key, el, body: el.querySelector('.win-body'), onOpen: null, onClose: null, canOpen: null, onUpdate: null };
     el.addEventListener('pointerdown', () => this.focus(win));
     el.querySelector('.win-close').addEventListener('click', () => this.close(id));
     this.windows.set(id, win);
@@ -70,8 +70,9 @@ export class UIManager {
     this.stack.forEach((w, i) => { w.el.style.zIndex = String(10 + i); });
   }
 
-  update() {
+  update(dt) {
     const { input } = this.ctx;
+    for (const w of this.stack) w.onUpdate?.(dt);
     for (const win of this.windows.values()) {
       if (win.key && input.wasPressed(win.key)) this.toggle(win.id);
     }

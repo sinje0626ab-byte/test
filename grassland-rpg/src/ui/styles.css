@@ -319,7 +319,32 @@ kbd {
 .sk-actions button { padding: 6px 14px; border: 0; border-radius: 999px; cursor: pointer; font: 700 13px inherit; background: #5a5147; color: #fff; }
 .sk-actions .primary { background: #7cc67a; }
 
+/* 지도 창 */
+.map { display: flex; gap: 14px; align-items: flex-start; }
+.map-canvas { border-radius: 12px; border: 2px solid var(--panel-edge); display: block; }
+.map-side { width: 220px; }
+.map-side h3 { margin: 0 0 8px; font-size: 14px; }
+.map-bases { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.map-bases li {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 7px 10px; border-radius: 12px; background: #fff6e0; border: 2px solid var(--panel-edge);
+}
+.map-bases li.here { border-color: #7cc67a; }
+.map-bases li.empty { justify-content: center; color: #9a8f73; font-size: 13px; }
+.map-bases span { display: flex; flex-direction: column; font-size: 13px; }
+.map-bases small { font-size: 11px; color: #8a7f63; }
+.map-bases button {
+  flex: none; padding: 5px 12px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #7cc67a; color: #fff; font: 700 12px inherit;
+}
+.map-bases button:disabled { background: #e3dac3; color: #a99f86; cursor: not-allowed; }
+.map-hint { font-size: 12px; color: #9a8f73; margin: 10px 0 0; }
+.window.win-center { right: auto; left: 50%; transform: translate(-50%, -50%); animation-name: win-in-center; }
+@keyframes win-in-center { from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); } }
+
 @media (max-width: 600px) {
+  .map { flex-direction: column; }
+  .map-canvas { max-height: 50vh; width: auto !important; }
   .sk-tree { grid-template-columns: 1fr; max-height: 60vh; overflow: auto; }
   .char { flex-direction: column; }
   .window.win-left { left: 50%; }

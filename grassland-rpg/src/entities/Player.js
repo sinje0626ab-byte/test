@@ -45,6 +45,11 @@ export class Player {
       const w = slots.weapon && ctx.data.items.items[slots.weapon];
       this.blade.material.color.set(w ? w.color : '#e8eef5');
     });
+    ctx.bus.on('player:teleport', ({ position }) => {
+      this.position.copy(position);
+      this.knock.set(0, 0, 0);
+      this.swingTime = -1;
+    });
     ctx.bus.on('save:collect', (save) => this.collectSave(save));
     ctx.bus.on('save:apply', (save) => this.applySave(save.player));
     // 장비·스킬까지 반영된 최대치가 정해진 뒤에 HP를 맞춘다.

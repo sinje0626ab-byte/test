@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Building } from '../entities/Building.js';
+import { baseAt } from '../utils/bases.js';
 
 // 기지 목록(ctx.bases)과 기지 중심 텐트. 빠른 이동·기지 레벨업은 이후 Phase.
 export class BaseSystem {
@@ -15,8 +16,10 @@ export class BaseSystem {
       const base = this.createBase({ position: e.position, level: 1 });
       if (e.item) bus.emit('inventory:consume', { item: e.item, count: 1 });
       bus.emit('base:created', { base });
-      bus.emit('notify', { text: '기지를 세웠습니다! B 키로 포탑을 지을 수 있어요', kind: 'item' });
+      bus.emit('notify', { text: `${base.label}을(를) 세웠습니다! B 키로 포탑을 지을 수 있어요`, kind: 'item' });
     });
+
+    bus.on('base:travel', ({ baseId }) => this.travel(baseId));
 
     // 아침마다 텐트는 다시 멀쩡해진다.
     bus.on('time:day', () => {
@@ -41,19 +44,42 @@ export class BaseSystem {
 
   createBase({ id, position, level, hp }) {
     const def = this.levelDef(level);
+    const region = this.ctx.world.regionAt(position.x, position.z);
     const base = {
       id: id ?? this.nextId,
       level,
       name: def.name,
+      region,
       position: position.clone(),
       areaRadius: def.areaRadius,
       maxTurrets: def.maxTurrets,
     };
     this.nextId = Math.max(this.nextId, base.id + 1);
+    base.label = `${region.name} 기지 #${base.id}`;
     base.tent = new Building(this.ctx, base, def, hp);
     this.ctx.bases.push(base);
     this.ctx.structures.push(base.tent);
     return base;
+  }
+
+  // 텐트 문 앞 (부활·빠른 이동 도착 지점)
+  doorstep(base) {
+    return new THREE.Vector3(base.position.x, 0, base.position.z + base.tent.radius + 1.2);
+  }
+
+  // 빠른 이동: 기지 영역 안에서 다른 기지로
+  travel(baseId) {
+    const { player, bases, bus } = this.ctx;
+    const target = bases.find((b) => b.id === baseId);
+    if (!target || !player.alive) return;
+    const here = baseAt(bases, player.position);
+    if (!here) {
+      bus.emit('notify', { text: '기지 영역 안에서만 빠른 이동할 수 있습니다', kind: 'warn' });
+      return;
+    }
+    if (here === target) return;
+    bus.emit('player:teleport', { position: this.doorstep(target) });
+    bus.emit('notify', { text: `${target.label}(으)로 이동했습니다`, kind: 'info' });
   }
 
   update(dt) {

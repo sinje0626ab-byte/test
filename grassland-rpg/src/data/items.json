@@ -139,6 +139,15 @@
       "description": "밤 슬라임 젤리를 굳힌 부적. 몸이 가볍게 회복된다.",
       "category": "equipment",
       "stackable": false
+    },
+    "mushroom_cap": {
+      "name": "버섯 갓",
+      "category": "material",
+      "grade": "common",
+      "stackable": true,
+      "maxStack": 99,
+      "color": "#e0574f",
+      "description": "숲 버섯의 폭신한 갓. 건설·제작 재료로 쓰인다."
     }
   },
   "statLabels": {

@@ -54,7 +54,8 @@
         "max": 1,
         "chance": 0.03
       }
-    ]
+    ],
+    "shape": "slime"
   },
   "night_slime": {
     "name": "밤 슬라임",
@@ -118,6 +119,120 @@
         "chance": 0.02
       }
     ],
-    "structureDamageMultiplier": 1.5
+    "structureDamageMultiplier": 1.5,
+    "shape": "slime"
+  },
+  "mushroom": {
+    "name": "숲 버섯",
+    "hp": 46,
+    "attack": 10,
+    "defense": 1,
+    "radius": 0.55,
+    "moveSpeed": 1.2,
+    "chaseSpeed": 2.9,
+    "fleeSpeed": 3.2,
+    "detectRange": 7,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#e0574f",
+    "xp": 9,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 3,
+        "max": 8,
+        "chance": 1
+      },
+      {
+        "item": "mushroom_cap",
+        "min": 1,
+        "max": 2,
+        "chance": 0.7
+      },
+      {
+        "item": "tent_kit",
+        "min": 1,
+        "max": 1,
+        "chance": 0.05
+      },
+      {
+        "item": "leather_vest",
+        "min": 1,
+        "max": 1,
+        "chance": 0.02
+      },
+      {
+        "item": "straw_shoes",
+        "min": 1,
+        "max": 1,
+        "chance": 0.03
+      }
+    ],
+    "shape": "mushroom",
+    "stemColor": "#f4e6cf"
+  },
+  "night_mushroom": {
+    "name": "밤 버섯",
+    "hp": 56,
+    "attack": 11,
+    "defense": 0,
+    "radius": 0.6,
+    "moveSpeed": 2.2,
+    "chaseSpeed": 2.8,
+    "fleeSpeed": 3.8,
+    "detectRange": 6,
+    "loseRange": 10,
+    "attackRange": 1.2,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#6c4bd6",
+    "xp": 12,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 2,
+        "max": 4,
+        "chance": 1
+      },
+      {
+        "item": "mushroom_cap",
+        "min": 1,
+        "max": 1,
+        "chance": 0.4
+      },
+      {
+        "item": "iron_sword",
+        "min": 1,
+        "max": 1,
+        "chance": 0.04
+      },
+      {
+        "item": "clover_ring",
+        "min": 1,
+        "max": 1,
+        "chance": 0.03
+      }
+    ],
+    "structureDamageMultiplier": 1.5,
+    "shape": "mushroom",
+    "stemColor": "#d9d0f0"
   }
 }

@@ -56,12 +56,15 @@ src/
     EventBus.js        # 시스템 간 이벤트 통신
     Time.js            # 게임 내 시간, 낮/밤
   world/
-    World.js           # 청크 관리, 로딩/언로딩
+    World.js           # 지면·조명·충돌·경계 (청크 로딩은 월드가 더 커지는 Phase 6에서 Chunk.js로)
+    Decor.js           # 지역별 나무·바위·꽃 배치 (시드 난수)
     Chunk.js           # 지형 타일, 오브젝트 배치
-    Regions.js         # 지역(초원/숲/사막/설원) 정의
+    Regions.js         # 지역(초원/숲/사막/설원) 찾기·색 섞기
   entities/
     Player.js
     Monster.js
+    MonsterModel.js    # 몬스터 모양 (슬라임 / 버섯)
+    RaidMonster.js     # 밤 습격 몬스터 AI
     Drop.js            # 바닥에 떨어진 골드·아이템 (줍기)
     Projectile.js      # 화살, 총알, 포탄
     Building.js
@@ -70,6 +73,7 @@ src/
   systems/
     CombatSystem.js
     MonsterSpawner.js
+    ExplorationSystem.js # 탐험한 칸(지도 안개), 지역 진입 알림
     LootSystem.js
     InventorySystem.js
     EquipmentSystem.js
@@ -155,11 +159,13 @@ src/
     "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1 } ],
     "stats": { "level": 1, "xp": 0, "skillPoints": 0 },
     "equipment": { "slots": { "weapon": "twig_sword", "head": null, ... } },
-    "skills": { "ranks": { "power": 2 } }
+    "skills": { "ranks": { "power": 2 } },
+    "exploration": { "cells": "0011100…", "visited": ["grassland"] }
   }
   ```
 - v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
 - v2 → v3: `stats`·`equipment`·`skills` 추가 (레벨 1부터)
+- v3 → v4: `exploration` 추가 (빈 값 → 불러온 뒤 플레이어·기지 주변부터 다시 밝힌다)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
@@ -199,10 +205,18 @@ src/
 - 플레이어는 쓰러지면 가장 가까운 기지 텐트 앞에서 부활한다
 - 기지 단계별 수치(영역 반경, 포탑 수, 텐트 체력)는 `data/buildings.json`의 `baseLevels`
 
+### 4-5-1. 월드와 지역
+- 월드는 남북으로 긴 직사각형 (`config.json`의 `world.bounds`). 가장자리는 침엽수 벽
+- 지역은 z 범위로 나눈다 (`regions.json`의 `zFrom`·`zTo`). 남쪽(시작 지점)이 초원, 북쪽(W 방향)이 숲
+- 지역마다: 난이도, 능력치 배율, 필드 몬스터 목록, 습격 몬스터, 지면 색, 장식 밀도
+- 숲 버섯 몬스터는 낮은 확률로 텐트 키트를 떨어뜨린다 → 두 번째 기지의 재료
+- 지역 경계를 넘으면 지역 이름 알림 (처음 가 본 지역은 큰 배너)
+
 ### 4-6. 멀티 기지
 - 새 기지는 "텐트 키트"를 다른 지역에 설치해서 생성
 - 기지 간 최소 거리 제한 (겹침 방지)
-- 기지끼리 빠른 이동 가능 (M 지도 창에서 선택)
+- 기지끼리 빠른 이동 가능 (M 지도 창에서 선택). 기지 영역 안에 있을 때만 쓸 수 있다
+- 기지 이름: `<지역> 기지 #<번호>`
 - 지역마다 몬스터·재료가 달라서 여러 기지를 둘 이유가 생기도록 설계
 - 창고는 기지별로 따로 (나중에 공유 창고 건물 추가 가능)
 
@@ -228,6 +242,16 @@ src/
   - 포탑 총 화력 vs 웨이브 강도 비교
   - 결과: 방어 성공(보상) / 부분 피해(포탑·건물 체력 감소) / 실패(창고 재료 일부 손실)
   - 아침에 결과를 알림으로 표시
+- 어느 기지가 실시간인가: 해 질 때 플레이어가 기지 영역 + `raid.presenceMargin` 안에 있으면 실시간, 아니면 원격 계산
+- 원격 계산 (아침에 정산)
+  - 방어력 = 그 기지의 멀쩡한 포탑 초당 데미지 합 × `raid.remoteFightSeconds`
+  - 습격 체력 = 습격 몬스터 수 × 습격 몬스터 체력(날짜·지역 배율 반영)
+  - 비율 = 방어력 ÷ 습격 체력
+  - 1 이상: 방어 성공 (보상은 실시간과 같음)
+  - `raid.remotePartialRatio` 이상: 부분 피해 — 포탑마다 최대 체력 × (1-비율) × `raid.remoteTurretDamage` 만큼 깎임
+  - 그 미만: 실패 — 포탑 피해 + 소지 골드 일부 손실 (창고가 생기면 창고 재료 손실로 바꾼다)
+  - 텐트는 원격 계산으로 깎지 않는다 (아침 회복과 순서가 꼬이지 않게)
+- 습격 몬스터는 기지가 있는 지역의 `raidMonster`, 능력치는 날짜 배율 × 지역 배율
 - 실시간 습격 판정 (Phase 3)
   - 해가 지면 기지 영역 바깥 둘레에서 습격 몬스터가 몇 초 간격으로 나타나 기지로 온다
   - 습격 몬스터는 가까운 플레이어를 먼저 노리고, 아니면 가장 가까운 포탑·텐트를 부순다. 도망치지 않는다
@@ -261,7 +285,7 @@ src/
 | C | 캐릭터 정보 | 장비 슬롯(무기·머리·몸·신발·장신구2), 능력치, 레벨, 경험치 바 |
 | K | 스킬 | 3갈래 트리, 남은 포인트, 선행 조건 표시, 찍기 전 확인 |
 | B | 건설 | 기지 영역 안에서만, 건물/포탑 탭, 비용 표시, 배치 미리보기(가능=초록, 불가=빨강) |
-| M | 지도 | 탐험한 지역, 기지 위치, 빠른 이동 |
+| M | 지도 | 탐험한 지역(안 가 본 곳은 안개), 기지 위치, 플레이어 위치, 기지 목록과 빠른 이동 버튼 |
 | (상점 건물에서 E) | 상점 | 구매/판매 탭 |
 
 ### HUD (항상 표시)
@@ -299,10 +323,10 @@ src/
 - [x] 스킬 창 (K), 스킬트리 3갈래
 
 ### Phase 5 — 멀티 기지
-- [ ] 두 번째 지역 (숲)
-- [ ] 텐트 키트로 새 기지 생성
-- [ ] 지도 창 (M), 빠른 이동
-- [ ] 원격 기지 습격 계산 처리
+- [x] 두 번째 지역 (숲)
+- [x] 텐트 키트로 새 기지 생성
+- [x] 지도 창 (M), 빠른 이동
+- [x] 원격 기지 습격 계산 처리
 
 ### Phase 6 — 확장
 - [ ] 기지 레벨 업그레이드 (움막·집·요새)
@@ -355,7 +379,11 @@ src/
 | `equipment:changed` | EquipmentSystem | StatsSystem, CharacterWindow |
 | `skill:learn` | SkillWindow | SkillSystem |
 | `skills:changed` | SkillSystem | StatsSystem, SkillWindow |
-| `save:loaded` | SaveSystem | Player (HP 맞추기) |
+| `save:loaded` | SaveSystem | Player (HP 맞추기), ExplorationSystem |
+| `region:entered` | ExplorationSystem | HUD (지역 알림) |
+| `map:explored` | ExplorationSystem | MapWindow |
+| `base:travel` | MapWindow | BaseSystem |
+| `player:teleport` | BaseSystem | Player, Game (카메라) |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

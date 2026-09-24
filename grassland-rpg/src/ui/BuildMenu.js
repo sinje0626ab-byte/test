@@ -59,7 +59,7 @@ export class BuildMenu {
     const stats = ctx.player.stats;
     const count = ctx.structures.filter((s) => s.kind === 'turret' && s.baseId === base.id).length;
     const max = maxTurrets(base, stats);
-    this.infoEl.textContent = `${base.name} Lv${base.level} · 포탑 ${count}/${max}`;
+    this.infoEl.textContent = `${base.label} (${base.name} Lv${base.level}) · 포탑 ${count}/${max}`;
 
     if (this.tab === 'building') {
       this.list.innerHTML = '<p class="empty">아직 지을 수 있는 건물이 없어요.<br>작업대·창고·상점은 곧 추가됩니다.</p>';
