@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -39,6 +39,8 @@ const migrations = {
     walls: [],
     equipment: { slots: Object.fromEntries(Object.entries(s.equipment?.slots ?? {}).map(([k, v]) => [k, v ? { id: v, plus: 0 } : null])) },
   }),
+  // v10 → v11: 캐릭터 외형(기본값), NPC·퀘스트·도감·현상금 (빈 값 = 처음부터)
+  10: (s) => ({ ...s, saveVersion: 11, player: { ...s.player, appearance: null }, npcs: null, quests: null, bestiary: null, bounties: null }),
 };
 
 export class SaveSystem {

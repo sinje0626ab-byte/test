@@ -35,6 +35,17 @@ import { GardenWindow } from '../ui/GardenWindow.js';
 import { ForgeWindow } from '../ui/ForgeWindow.js';
 import { ForgeSystem } from '../systems/ForgeSystem.js';
 import { WallSystem } from '../systems/WallSystem.js';
+import { NpcSystem } from '../systems/NpcSystem.js';
+import { QuestSystem } from '../systems/QuestSystem.js';
+import { BestiarySystem } from '../systems/BestiarySystem.js';
+import { BountySystem } from '../systems/BountySystem.js';
+import { BestiaryWindow } from '../ui/BestiaryWindow.js';
+import { BountyWindow } from '../ui/BountyWindow.js';
+import { NightLordSystem } from '../systems/NightLordSystem.js';
+import { EndingScreen } from '../ui/EndingScreen.js';
+import { QuestTracker } from '../ui/QuestTracker.js';
+import { DialogueWindow } from '../ui/DialogueWindow.js';
+import { CourierWindow } from '../ui/CourierWindow.js';
 import { BuffSystem } from '../systems/BuffSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
@@ -106,6 +117,11 @@ export class Game {
       new SkillSystem(ctx),
       new ActiveSkillSystem(ctx),
       new ForgeSystem(ctx),
+      new NpcSystem(ctx),
+      new QuestSystem(ctx),
+      new BestiarySystem(ctx),
+      new BountySystem(ctx),
+      new NightLordSystem(ctx),
       new ExplorationSystem(ctx),
       new InteractionSystem(ctx),
       new FacilitySystem(ctx),
@@ -135,9 +151,15 @@ export class Game {
     new ShopWindow(ctx, this.ui, this.tooltip);
     new GardenWindow(ctx, this.ui);
     new ForgeWindow(ctx, this.ui);
+    new DialogueWindow(ctx, this.ui);
+    new CourierWindow(ctx, this.ui);
+    new BestiaryWindow(ctx, this.ui);
+    new BountyWindow(ctx, this.ui);
+    this.ending = new EndingScreen(ctx, this);
     this.touch = new TouchControls(ctx, uiRoot);
     this.skillBar = new SkillBar(ctx, uiRoot);
     this.raidInd = new RaidIndicator(ctx, uiRoot);
+    new QuestTracker(ctx, uiRoot);
 
     // 연출·소리·설정 (게임 로직과 따로)
     this.settings = new Settings(bus);
@@ -229,6 +251,13 @@ export class Game {
       this.camera.orbit(ctx.player.position, this.titleAngle);
       ctx.player.syncMesh(dt);
       ctx.world.update(dt, ctx.player.position);
+      ctx.input.endFrame();
+      return;
+    }
+    if (ctx.state === 'ending') {
+      // 엔딩 크레딧: 카메라가 기지들 위를 돈다 (게임 시간은 멈춤)
+      this.ending.update(realDt);
+      ctx.world.update(realDt, ctx.player.position);
       ctx.input.endFrame();
       return;
     }

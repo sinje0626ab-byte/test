@@ -1,6 +1,7 @@
 import { itemIcon } from './icons.js';
 import { itemTooltip } from './itemText.js';
 import { closeWhenFar } from './CraftWindow.js';
+import { shopPrice } from '../utils/shop.js';
 
 // 상점 창 (상점 앞에서 E): 구매 / 판매 탭
 export class ShopWindow {
@@ -10,6 +11,7 @@ export class ShopWindow {
     this.tab = 'buy';
     this.gold = 0;
     this.bag = [];
+    this.special = null;
 
     const win = ui.createWindow({ id: 'shop', title: '상점' });
     win.el.classList.add('win-center');
@@ -46,6 +48,7 @@ export class ShopWindow {
       ui.open('shop');
       this.render();
     });
+    ctx.bus.on('shop:special', (e) => { this.special = e; });
     ctx.bus.on('gold:changed', ({ gold }) => {
       this.gold = gold;
       this.goldEl.textContent = gold.toLocaleString();
@@ -71,8 +74,12 @@ export class ShopWindow {
     const { items, shop } = this.ctx.data;
     for (const b of this.win.body.querySelectorAll('[data-tab]')) b.classList.toggle('on', b.dataset.tab === this.tab);
     if (this.tab === 'buy') {
-      this.list.innerHTML = shop.buy.map((e) => this.row(items.items[e.id], e.id, `
-        <button type="button" data-buy="${e.id}" ${this.gold < e.price ? 'disabled' : ''}><i class="coin"></i>${e.price}</button>`)).join('');
+      this.list.innerHTML = shop.buy.map((e) => {
+        const price = shopPrice(e, this.special);
+        const sale = price < e.price ? `<small class="sale">특가 <s>${e.price}</s></small>` : '';
+        return this.row(items.items[e.id], e.id, `${sale}
+        <button type="button" data-buy="${e.id}" ${this.gold < price ? 'disabled' : ''}><i class="coin"></i>${price}</button>`);
+      }).join('');
       return;
     }
     const rows = this.bag.map((s, i) => {

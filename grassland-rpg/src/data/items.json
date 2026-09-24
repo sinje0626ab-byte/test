@@ -953,6 +953,19 @@
       "color": "#e0645a",
       "value": 3,
       "description": "텃밭에 심으면 이틀 뒤 사과가 열린다."
+    },
+    "doctor_lens": {
+      "name": "박사의 돋보기",
+      "category": "equipment",
+      "equipSlot": "accessory",
+      "grade": "epic",
+      "color": "#c9a44a",
+      "value": 200,
+      "bonus": {
+        "critChance": 0.05,
+        "dropRate": 0.1
+      },
+      "description": "부엉 박사가 아끼던 돋보기. 작은 것도 놓치지 않는다."
     }
   },
   "statLabels": {
@@ -991,7 +1004,8 @@
     "healPct": "소모품 회복량",
     "structureHp": "건물 체력",
     "buildMaterialCost": "건설 재료 절감",
-    "turretCrit": "포탑 치명타"
+    "turretCrit": "포탑 치명타",
+    "dropRate": "드롭률"
   },
   "percentStats": [
     "critChance",
@@ -1014,7 +1028,8 @@
     "healPct",
     "structureHp",
     "buildMaterialCost",
-    "turretCrit"
+    "turretCrit",
+    "dropRate"
   ],
   "equipSlots": {
     "weapon": "무기",

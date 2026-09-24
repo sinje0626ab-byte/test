@@ -15,7 +15,7 @@ export class HUD {
     this.root = root;
     root.innerHTML = `
       <div class="hud-tl">
-        <div class="hud-level"><span class="lv-badge">Lv <b data-lv>1</b></span><span class="sp-pip" data-sp hidden></span></div>
+        <div class="hud-level"><span class="lv-badge">Lv <b data-lv>1</b></span><b class="hud-name" data-hud-name></b><span class="sp-pip" data-sp hidden></span></div>
         <div class="bar hp"><div class="fill" data-hp></div><span data-hp-text></span></div>
         <div class="bar st"><div class="fill" data-st></div></div>
         <div class="bar xp"><div class="fill" data-xp></div></div>
@@ -74,6 +74,13 @@ export class HUD {
       if (i >= 0 && this.quick[i]) bus.emit('inventory:use-item', { item: this.quick[i] });
     });
     this.boss = null;
+    // 이름 (+ 도감 칭호)
+    const nameEl = root.querySelector('[data-hud-name]');
+    let hudName = '';
+    let hudTitle = null;
+    const showName = () => { nameEl.textContent = hudTitle ? `${hudName} · ${hudTitle}` : hudName; };
+    bus.on('player:named', ({ name }) => { hudName = name; showName(); });
+    bus.on('player:title', ({ title }) => { hudTitle = title; showName(); });
     bus.on('boss:engaged', ({ boss }) => {
       this.boss = boss;
       this.el.bossName.textContent = boss.bdef?.name ?? boss.def.name;

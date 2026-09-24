@@ -45,12 +45,18 @@ export class Player {
     this.syncMesh(0);
 
     // 무기 종류·색, 모자·옷·신발 색이 장비를 따라간다.
+    // 캐릭터 만들기에서 고른 이름·머리색·옷색·머리 장식
+    this.appearance = { ...ctx.data.config.character.default };
+    this.worn = {};
     ctx.bus.on('equipment:changed', ({ slots }) => {
       const items = ctx.data.items.items;
       const w = slots.weapon && items[slots.weapon];
       this.attack.setWeapon(w?.weaponType ?? 'sword', w ? w.color : DEFAULT_BLADE);
-      applyAppearance(this, { head: items[slots.head], body: items[slots.body], feet: items[slots.feet] });
+      this.worn = { head: items[slots.head], body: items[slots.body], feet: items[slots.feet] };
+      applyAppearance(this, this.worn, this.appearance);
     });
+    ctx.bus.on('player:appearance', ({ appearance }) => this.setAppearance(appearance));
+    ctx.bus.on('game:new', () => this.setAppearance(ctx.data.config.character.default));
     ctx.bus.on('player:aura', ({ hpRegen }) => { this.auraRegen = hpRegen; });
     ctx.bus.on('player:heal', ({ amount }) => {
       if (!this.alive) return;
@@ -84,6 +90,12 @@ export class Player {
     });
   }
 
+  setAppearance(a) {
+    this.appearance = { ...this.ctx.data.config.character.default, ...a };
+    applyAppearance(this, this.worn, this.appearance);
+    this.ctx.bus.emit('player:named', { name: this.appearance.name });
+  }
+
   // 쓰러져 있는 중에 저장되면 부활한 상태로 저장한다.
   collectSave(save) {
     const s = this.stats;
@@ -92,6 +104,7 @@ export class Player {
       position: [pos.x, pos.z],
       hp: this.alive ? s.hp : s.maxHp,
       stamina: this.alive ? s.stamina : s.maxStamina,
+      appearance: { ...this.appearance },
     };
   }
 
@@ -100,6 +113,7 @@ export class Player {
     this.position.set(p.position[0], 0, p.position[1]);
     this.ctx.world.resolveCollision(this.position, this.radius);
     this.loadedVitals = { hp: p.hp, stamina: p.stamina };
+    this.setAppearance(p.appearance ?? {});
   }
 
   update(dt) {

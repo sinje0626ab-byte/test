@@ -1,0 +1,89 @@
+{
+  "npcs": {
+    "dotori": {
+      "name": "도토리",
+      "animal": "다람쥐",
+      "model": "squirrel",
+      "color": "#c98a4b",
+      "accent": "#f4e6cf",
+      "joins": {
+        "facility": "shop"
+      },
+      "role": "shop",
+      "face": "🐿"
+    },
+    "mucheol": {
+      "name": "무쇠",
+      "animal": "두더지",
+      "model": "mole",
+      "color": "#5a5147",
+      "accent": "#ff9aa8",
+      "joins": {
+        "facility": "forge"
+      },
+      "role": "forge",
+      "face": "🔨"
+    },
+    "buheong": {
+      "name": "부엉 박사",
+      "animal": "부엉이",
+      "model": "owl",
+      "color": "#a07a52",
+      "accent": "#f4e6cf",
+      "joins": {
+        "start": true
+      },
+      "role": "doctor",
+      "face": "🦉",
+      "nightOwl": true
+    },
+    "kkulbi": {
+      "name": "꿀비",
+      "animal": "곰",
+      "model": "bear",
+      "color": "#b07845",
+      "accent": "#ffd23f",
+      "joins": {
+        "facility": "garden"
+      },
+      "role": "garden",
+      "face": "🐻"
+    },
+    "haneul": {
+      "name": "하늘",
+      "animal": "제비",
+      "model": "swallow",
+      "color": "#3a4a8a",
+      "accent": "#fff4d6",
+      "joins": {
+        "bases": 2
+      },
+      "role": "courier",
+      "face": "🐦"
+    }
+  },
+  "config": {
+    "wanderRadius": 3.5,
+    "speed": 0.9,
+    "interactRange": 2.2,
+    "typeSpeed": 32,
+    "special": {
+      "discount": 0.3
+    },
+    "garden": {
+      "sellMultiplier": 1.5,
+      "items": [
+        "herb",
+        "apple"
+      ]
+    },
+    "courier": {
+      "costPerSlot": 15
+    },
+    "doctorOffset": [
+      6,
+      5
+    ],
+    "levelUpWindow": 90
+  }
+}

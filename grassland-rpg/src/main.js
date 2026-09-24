@@ -18,12 +18,16 @@ import bosses from './data/bosses.json';
 import sounds from './data/sounds.json';
 import nodes from './data/nodes.json';
 import weapons from './data/weapons.json';
+import npcs from './data/npcs.json';
+import dialogues from './data/dialogues.json';
+import quests from './data/quests.json';
+import bounties from './data/bounties.json';
 import { Game } from './core/Game.js';
 
 const game = new Game({
   container: document.getElementById('app'),
   uiRoot: document.getElementById('ui'),
-  data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds, nodes, weapons },
+  data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds, nodes, weapons, npcs, dialogues, quests, bounties },
 });
 game.start();
 

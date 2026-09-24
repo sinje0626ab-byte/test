@@ -1,4 +1,6 @@
-// 골드. (상점은 Phase 6)
+import { shopPrice } from '../utils/shop.js';
+
+// 골드, 상점 사고팔기
 export class EconomySystem {
   constructor(ctx) {
     this.ctx = ctx;
@@ -34,6 +36,9 @@ export class EconomySystem {
     });
 
     bus.on('shop:buy', ({ id }) => this.buy(id));
+    // 도토리 오늘의 특가
+    this.special = { id: null, discount: 0 };
+    bus.on('shop:special', (e) => { this.special = e; });
     bus.on('shop:sell', ({ slot, count }) => this.sell(slot, count));
 
     bus.on('save:collect', (save) => { save.economy = { gold: this.gold }; });
@@ -45,8 +50,9 @@ export class EconomySystem {
 
   buy(id) {
     const { bus, data } = this.ctx;
-    const entry = data.shop.buy.find((b) => b.id === id);
-    if (!entry) return;
+    const found = data.shop.buy.find((b) => b.id === id);
+    if (!found) return;
+    const entry = { ...found, price: shopPrice(found, this.special) };
     const name = data.items.items[id].name;
     if (this.gold < entry.price) {
       bus.emit('notify', { text: `골드가 부족합니다 (${entry.price} 필요)`, kind: 'warn' });

@@ -10,6 +10,20 @@ export class StorageSystem {
     bus.on('storage:deposit', ({ baseId, slot }) => this.deposit(baseId, slot));
     bus.on('storage:withdraw', ({ baseId, slot }) => this.withdraw(baseId, slot));
     bus.on('storage:request', ({ baseId }) => this.changed(baseId));
+    // 택배(하늘): 한 칸 꺼내기 / 넣기 (못 넣은 개수는 left)
+    bus.on('storage:take', (e) => {
+      const slots = this.get(e.baseId);
+      e.item = slots[e.slot];
+      if (!e.item) return;
+      slots[e.slot] = null;
+      this.changed(e.baseId);
+    });
+    bus.on('storage:put', (e) => {
+      const { id, count, plus = 0 } = e.item;
+      const put = addTo(this.get(e.baseId), id, count, maxStackOf(ctx.data, id), plus);
+      e.left = count - put;
+      this.changed(e.baseId);
+    });
     // 습격 실패: 창고가 있으면 재료 일부를 잃는다.
     bus.on('storage:lose', (e) => {
       if (!this.hasStorage(e.baseId)) return;

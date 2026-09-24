@@ -1,3 +1,4 @@
+import { CharacterCreator } from './CharacterCreator.js';
 // 타이틀 화면: 로고 · 이어하기 / 새 게임 / 조작 방법, 새 게임 환영 안내 카드
 const LOGO = [['초', 'g'], ['원', 'g'], [' ', ''], ['기', 'o'], ['지', 'o']];
 
@@ -129,6 +130,7 @@ export class TitleScreen {
       case 'go':
         this.dialog.hidden = true;
         this.el.remove();
+        document.body.classList.remove('in-intro');
         this.ctx.state = 'play';
         break;
     }
@@ -152,18 +154,25 @@ export class TitleScreen {
   startNew() {
     this.el.classList.add('leaving');
     this.game.newGame();
-    // 환영 안내를 보는 동안에는 게임을 멈춘다.
+    // 환영 안내를 보는 동안에는 게임을 멈추고 터치 버튼도 숨긴다.
     this.ctx.state = 'paused';
+    document.body.classList.add('in-intro');
     this.step = 0;
     this.el.querySelector('.title-center').remove();
     this.el.querySelector('.title-foot').remove();
-    this.renderWelcome();
+    // 먼저 캐릭터 만들기 (카드는 옆으로 비켜서 가운데 캐릭터가 보이게)
+    this.dialog.classList.add('side');
+    this.dialog.hidden = false;
+    new CharacterCreator(this.ctx, this.card, () => {
+      this.dialog.classList.remove('side');
+      this.renderWelcome();
+    });
   }
 
   welcomeSteps() {
     const t = this.touch;
     return [
-      { icon: 'wave', title: '초원에 온 걸 환영해요!', body: t
+      { icon: 'wave', title: '{name}님, 초원에 온 걸 환영해요!', body: t
         ? '왼쪽 <b>조이스틱</b>으로 걷고, 끝까지 밀면 달려요.<br>빨간 <b>공격</b> 버튼으로 슬라임을 혼내 주세요.'
         : '<b>WASD</b>로 걷고 <b>Shift</b>로 달려요.<br><b>마우스 클릭</b>으로 그쪽을 향해 칼을 휘둘러요.' },
       { icon: 'tent', title: '첫 기지를 세워요', body: t
@@ -180,7 +189,7 @@ export class TitleScreen {
     this.showCard(`
       <div class="welcome">
         <i class="w-icon w-${s.icon}" aria-hidden="true"></i>
-        <h2>${s.title}</h2>
+        <h2>${s.title.replace('{name}', this.ctx.player.appearance.name)}</h2>
         <p>${s.body}</p>
         <div class="w-dots">${steps.map((_, i) => `<i class="${i === this.step ? 'on' : ''}"></i>`).join('')}</div>
         <div class="t-actions"><button type="button" class="t-menu-btn primary" data-act="${last ? 'go' : 'next'}">${last ? '모험 시작!' : '다음'}</button></div>

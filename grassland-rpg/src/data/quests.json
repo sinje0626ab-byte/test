@@ -1,0 +1,132 @@
+{
+  "quests": [
+    {
+      "id": "first_tent",
+      "title": "첫 번째 텐트",
+      "goal": "텐트를 세워 첫 기지를 만들기",
+      "cond": {
+        "type": "bases",
+        "count": 1
+      },
+      "reward": {
+        "unlock": "campfire",
+        "items": [
+          {
+            "id": "herb_tea",
+            "count": 3
+          }
+        ]
+      },
+      "talk": "호오, 멋진 텐트로군요! 이 설계도를 드리지요. 모닥불이 있으면 밤도 따뜻할 게요."
+    },
+    {
+      "id": "survive_night",
+      "title": "밤을 견뎌라",
+      "goal": "밤 습격을 한 번 막아 내기",
+      "cond": {
+        "type": "raidCleared"
+      },
+      "reward": {
+        "gold": 50
+      },
+      "talk": "첫 밤을 무사히 넘기셨군요. 이제 진짜 개척자라 불러도 되겠습니다."
+    },
+    {
+      "id": "grass_king",
+      "title": "초원의 왕",
+      "goal": "초원 북동쪽의 왕슬라임 쓰러뜨리기",
+      "cond": {
+        "type": "boss",
+        "id": "king_slime"
+      },
+      "reward": {
+        "items": [
+          {
+            "id": "iron_ore",
+            "count": 5
+          }
+        ]
+      },
+      "talk": "왕슬라임을! 이제 기지를 움막으로 키울 때군요. 나무·돌멩이·슬라임 젤리를 모아 건설 창에서 올리시게."
+    },
+    {
+      "id": "to_forest",
+      "title": "숲으로",
+      "goal": "숲(북쪽)에 두 번째 기지 세우기",
+      "cond": {
+        "type": "baseInRegion",
+        "region": "forest"
+      },
+      "reward": {
+        "items": [
+          {
+            "id": "return_scroll",
+            "count": 3
+          }
+        ]
+      },
+      "talk": "숲에도 기지가 생겼군요. 제비 하늘이 기지 사이 택배를 맡아 줄 겁니다."
+    },
+    {
+      "id": "forest_guardian",
+      "title": "숲의 수호자",
+      "goal": "숲 깊은 곳의 고목 수호자 쓰러뜨리기",
+      "cond": {
+        "type": "boss",
+        "id": "elder_treant"
+      },
+      "reward": {
+        "unlock": "forge"
+      },
+      "talk": "고목 수호자라니, 대단하군요. 대장간 설계도를 드리지요. 무쇠가 좋아할 겁니다."
+    },
+    {
+      "id": "hot_sand",
+      "title": "뜨거운 모래",
+      "goal": "사막 끝의 선인장왕 쓰러뜨리기",
+      "cond": {
+        "type": "boss",
+        "id": "cactus_king"
+      },
+      "reward": {
+        "items": [
+          {
+            "id": "sun_crystal",
+            "count": 2
+          }
+        ]
+      },
+      "talk": "사막의 왕도 쓰러졌군요. 태양 수정은 따끈따끈하답니다."
+    },
+    {
+      "id": "frozen_end",
+      "title": "얼어붙은 끝",
+      "goal": "설원 끝의 얼음 거인 쓰러뜨리기",
+      "cond": {
+        "type": "boss",
+        "id": "ice_giant"
+      },
+      "reward": {
+        "items": [
+          {
+            "id": "frost_crystal",
+            "count": 2
+          }
+        ]
+      },
+      "talk": "네 지역의 주인을 모두 만나셨군요… 그런데 밤이 수상합니다. 다음 붉은 달을 조심하시게."
+    },
+    {
+      "id": "night_lord",
+      "title": "밤의 군주",
+      "goal": "다음 붉은 달, 가장 큰 기지로 오는 밤의 군주 막기",
+      "cond": {
+        "type": "boss",
+        "id": "night_lord"
+      },
+      "reward": {},
+      "talk": "해가 떴군요! 초원에 다시 아침이 왔습니다. 고맙소, 개척자여."
+    }
+  ],
+  "trackerDone": "부엉 박사에게 보고하기"
+}

@@ -49,6 +49,7 @@ export class World {
     const bm = this.ctx.data.config.raid.bloodMoon; // 붉은 달 밤
     this.bloodSky = new THREE.Color(bm.sky);
     this.bloodMoon = new THREE.Color(bm.moon);
+    this.lordSky = new THREE.Color(this.ctx.data.config.nightLord.sky); // 밤의 군주: 캄캄한 하늘
 
     const sun = new THREE.DirectionalLight(0xfff0d2, 1.9);
     sun.castShadow = true;
@@ -167,9 +168,11 @@ export class World {
 
   // 낮/밤: 1 = 한낮, 0 = 한밤
   applyDaylight(daylight) {
-    const d = daylight;
+    const lord = this.ctx.nightLord;
+    // 해돋이 연출(ctx.sunrise 0~1)이 있으면 그만큼 밝게
+    const d = Math.max(lord ? 0 : daylight, this.ctx.sunrise ?? 0);
     const blood = this.ctx.bloodMoon;
-    this.skyColor.copy(blood ? this.bloodSky : this.nightSky).lerp(this.daySky, d);
+    this.skyColor.copy(lord ? this.lordSky : blood ? this.bloodSky : this.nightSky).lerp(this.daySky, d);
     this.ctx.scene.background.copy(this.skyColor);
     this.ctx.scene.fog.color.copy(this.skyColor);
     this.hemi.intensity = 0.45 + 0.8 * d;

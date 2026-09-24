@@ -58,3 +58,6 @@ body.touch .sslot.empty { display: none; }
 body.touch .sslot kbd { display: none; }
 body.touch .t-use { right: 104px; bottom: 106px; width: 56px; height: 56px; }
 body.touch .quickbar { left: 12px; transform: none; }
+body.touch .window.win-dialogue { left: 50%; top: auto; bottom: 270px; transform: translateX(-50%); animation-name: dlg-in; }
+@media (max-width: 600px) { body.touch .quest-tracker { max-width: 200px; } }
+body.in-intro .touch-ui, body.in-intro .quickbar, body.in-intro .skillbar { display: none; }

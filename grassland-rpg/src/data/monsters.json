@@ -55,7 +55,8 @@
         "chance": 0.03
       }
     ],
-    "shape": "slime"
+    "shape": "slime",
+    "lore": "말랑말랑. 초원 어디에나 통통 튄다."
   },
   "night_slime": {
     "name": "밤 슬라임",
@@ -120,7 +121,8 @@
       }
     ],
     "structureDamageMultiplier": 1.5,
-    "shape": "slime"
+    "shape": "slime",
+    "lore": "밤이면 보랏빛으로 물드는 슬라임."
   },
   "mushroom": {
     "name": "숲 버섯",
@@ -179,7 +181,8 @@
       }
     ],
     "shape": "mushroom",
-    "stemColor": "#f4e6cf"
+    "stemColor": "#f4e6cf",
+    "lore": "숲 그늘에서 자라는 성미 급한 버섯."
   },
   "night_mushroom": {
     "name": "밤 버섯",
@@ -233,7 +236,8 @@
     ],
     "structureDamageMultiplier": 1.5,
     "shape": "mushroom",
-    "stemColor": "#d9d0f0"
+    "stemColor": "#d9d0f0",
+    "lore": "밤의 숲을 떠도는 버섯. 포자가 따끔하다."
   },
   "sand_slime": {
     "name": "모래 슬라임",
@@ -279,7 +283,8 @@
         "chance": 0.5
       }
     ],
-    "shape": "slime"
+    "shape": "slime",
+    "lore": "모래알을 삼켜 까끌까끌해진 슬라임."
   },
   "cactus": {
     "name": "선인장 몬스터",
@@ -333,7 +338,8 @@
     ],
     "shape": "cactus",
     "stemColor": "#f4e6cf",
-    "flowerColor": "#ff8fb1"
+    "flowerColor": "#ff8fb1",
+    "lore": "가시를 세우고 다가오는 선인장."
   },
   "night_cactus": {
     "name": "밤 선인장",
@@ -375,7 +381,8 @@
     ],
     "structureDamageMultiplier": 1.5,
     "shape": "cactus",
-    "flowerColor": "#c9a0ff"
+    "flowerColor": "#c9a0ff",
+    "lore": "밤에 더 뾰족해지는 선인장."
   },
   "snow_slime": {
     "name": "눈 슬라임",
@@ -421,7 +428,8 @@
         "chance": 0.5
       }
     ],
-    "shape": "slime"
+    "shape": "slime",
+    "lore": "차가운 젤리. 만지면 손이 시리다."
   },
   "ice_golem": {
     "name": "얼음 골렘",
@@ -474,7 +482,8 @@
       }
     ],
     "shape": "golem",
-    "stemColor": "#f4e6cf"
+    "stemColor": "#f4e6cf",
+    "lore": "얼음 덩어리가 모여 움직이는 골렘."
   },
   "night_golem": {
     "name": "밤 골렘",
@@ -515,7 +524,8 @@
       }
     ],
     "structureDamageMultiplier": 1.5,
-    "shape": "golem"
+    "shape": "golem",
+    "lore": "밤하늘 빛을 머금은 골렘."
   },
   "cactus_king": {
     "name": "선인장왕",
@@ -575,7 +585,8 @@
     ],
     "shape": "cactus",
     "stemColor": "#f4e6cf",
-    "flowerColor": "#ff5f8f"
+    "flowerColor": "#ff5f8f",
+    "lore": "사막의 주인. 사방으로 가시를 쏜다."
   },
   "ice_giant": {
     "name": "얼음 거인",
@@ -634,7 +645,8 @@
       }
     ],
     "shape": "golem",
-    "stemColor": "#f4e6cf"
+    "stemColor": "#f4e6cf",
+    "lore": "설원 끝의 거인. 얼음덩이를 던진다."
   },
   "bee": {
     "name": "붕붕벌",
@@ -685,7 +697,8 @@
     "flier": true,
     "dartSpeed": 7,
     "retreatDistance": 6,
-    "shotSpeed": 0
+    "shotSpeed": 0,
+    "lore": "붕붕 날아와 콕 쏘고 달아난다."
   },
   "horn_rabbit": {
     "name": "뿔토끼",
@@ -737,7 +750,8 @@
     "chargeSpeed": 11,
     "chargeDistance": 8,
     "chargeCooldown": 2.5,
-    "stunTime": 1.5
+    "stunTime": 1.5,
+    "lore": "뿔을 앞세우고 돌진! 나무에 박히면 어질어질."
   },
   "big_slime": {
     "name": "큰 슬라임",
@@ -779,7 +793,8 @@
     ],
     "shape": "slime",
     "splitInto": "slime",
-    "splitCount": 2
+    "splitCount": 2,
+    "lore": "큰 슬라임은 쓰러지면 작은 슬라임 둘이 된다."
   },
   "spore_puff": {
     "name": "포자 버섯",
@@ -836,7 +851,8 @@
       "duration": 3
     },
     "shotColor": "#b88ae0",
-    "shotKind": "spore"
+    "shotKind": "spore",
+    "lore": "멀리서 독 포자를 뿜는 버섯."
   },
   "thorn_wolf": {
     "name": "가시 늑대",
@@ -884,7 +900,8 @@
     ],
     "shape": "wolf",
     "packMin": 2,
-    "packMax": 3
+    "packMax": 3,
+    "lore": "무리 지어 다니는 가시 늑대."
   },
   "stump": {
     "name": "그루터기 괴물",
@@ -930,7 +947,8 @@
         "chance": 0.5
       }
     ],
-    "shape": "stump"
+    "shape": "stump",
+    "lore": "느릿느릿, 하지만 아주 단단한 그루터기."
   },
   "scorpion": {
     "name": "모래 전갈",
@@ -986,7 +1004,8 @@
     "hitEffect": {
       "type": "poison",
       "duration": 3
-    }
+    },
+    "lore": "독침 돌진을 조심해야 하는 전갈."
   },
   "sand_mole": {
     "name": "모래 두더지",
@@ -1037,7 +1056,8 @@
     "burrowTime": 2.2,
     "emergeWindup": 0.8,
     "emergeRadius": 2.2,
-    "surfaceTime": 2.5
+    "surfaceTime": 2.5,
+    "lore": "땅속에서 불쑥! 흙더미를 잘 보자."
   },
   "tumble": {
     "name": "굴렁 덤불",
@@ -1082,7 +1102,8 @@
     "fuseTime": 0.9,
     "blastRadius": 2.4,
     "blastMultiplier": 2,
-    "triggerRange": 1.8
+    "triggerRange": 1.8,
+    "lore": "굴러와서 펑! 건물엔 더 아프다."
   },
   "frost_wisp": {
     "name": "눈꽃 요정",
@@ -1141,7 +1162,8 @@
       "amount": 0.4
     },
     "shotColor": "#9fe8ff",
-    "shotKind": "icebolt"
+    "shotKind": "icebolt",
+    "lore": "얼음탄을 쏘는 눈꽃 요정. 맞으면 느려진다."
   },
   "yeti_cub": {
     "name": "설인 새끼",
@@ -1195,7 +1217,8 @@
     ],
     "shape": "yeti",
     "packMin": 2,
-    "packMax": 2
+    "packMax": 2,
+    "lore": "둘이서 다니는 장난꾸러기 설인."
   },
   "snow_bomber": {
     "name": "눈사람 폭탄",
@@ -1240,7 +1263,8 @@
     "fuseTime": 1.0,
     "blastRadius": 2.8,
     "blastMultiplier": 2,
-    "triggerRange": 1.9
+    "triggerRange": 1.9,
+    "lore": "웃는 얼굴로 다가와 터지는 눈사람."
   },
   "king_slime": {
     "name": "왕슬라임",
@@ -1288,7 +1312,8 @@
         "max": 20,
         "chance": 1
       }
-    ]
+    ],
+    "lore": "초원의 왕. 반쯤 다치면 둘로 갈라진다."
   },
   "king_slime_half": {
     "name": "중간 왕슬라임",
@@ -1315,7 +1340,9 @@
     "color": "#8ee08a",
     "xp": 60,
     "drops": [],
-    "shape": "kingslime"
+    "shape": "kingslime",
+    "lore": "왕슬라임의 반쪽.",
+    "bestiary": false
   },
   "elder_treant": {
     "name": "고목 수호자",
@@ -1362,6 +1389,49 @@
         "chance": 1
       }
     ],
-    "shape": "treant"
+    "shape": "treant",
+    "lore": "숲의 수호자. 뿌리와 잎 폭풍을 부린다."
+  },
+  "night_lord": {
+    "name": "밤의 군주",
+    "hp": 4000,
+    "attack": 30,
+    "defense": 6,
+    "radius": 1.5,
+    "moveSpeed": 1.4,
+    "chaseSpeed": 2.6,
+    "fleeSpeed": 3.8,
+    "detectRange": 8,
+    "loseRange": 15,
+    "attackRange": 1.3,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0.98,
+    "lungeSpeed": 4,
+    "color": "#5b3a8a",
+    "xp": 1000,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 1000,
+        "max": 1000,
+        "chance": 1
+      },
+      {
+        "item": "dawn_blade",
+        "min": 1,
+        "max": 1,
+        "chance": 1
+      }
+    ],
+    "shape": "nightlord",
+    "lore": "붉은 달 끝에 찾아오는 밤의 주인. 초승달 뿔, 보라 망토.",
+    "flier": true
   }
 }

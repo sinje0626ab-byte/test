@@ -28,6 +28,15 @@ export class TurretSystem {
     });
     bus.on('turret:demolish', ({ turret }) => this.demolish(turret));
     // 포탑 과부하 스킬: 정해진 시간 동안 연사 속도 배율
+    // 밤의 군주: 가까운 포탑 하나를 잠재운다
+    bus.on('turret:sleep', ({ position, radius, duration }) => {
+      const near = this.turrets.filter((t) => t.alive && !(t.sleep > 0) && t.position.distanceTo(position) <= radius);
+      if (!near.length) return;
+      const t = near[Math.floor(Math.random() * near.length)];
+      t.sleep = duration;
+      bus.emit('turret:slept', { turret: t });
+      bus.emit('notify', { text: `${t.def.name}이(가) 잠들었습니다!`, kind: 'warn' });
+    });
     bus.on('turret:overclock', ({ turrets, mult, duration }) => {
       for (const t of turrets) t.overclock = { mult, time: duration };
     });
@@ -165,6 +174,7 @@ export class TurretSystem {
     for (const t of this.turrets) {
       t.update(dt);
       if (!t.alive) continue;
+      if (t.sleep > 0) { t.sleep -= dt; continue; } // 잠든 포탑은 쏘지 않는다
       const oc = t.overclock;
       if (oc && (oc.time -= dt) <= 0) t.overclock = null;
       t.cooldown -= dt * (t.overclock?.mult ?? 1);

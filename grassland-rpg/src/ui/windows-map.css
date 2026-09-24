@@ -100,3 +100,52 @@
 .fg-text .up { color: #e0a21c; }
 .fg-text small { font-size: 11px; color: #8a7f63; display: flex; align-items: center; gap: 3px; }
 .fg-text .coin { width: 12px; height: 12px; display: inline-block; }
+
+/* 상점 특가 */
+.shop-row .sale { color: #e0645a; font-weight: 800; font-size: 11px; margin-right: 4px; }
+
+/* 대화 창: 화면 아래 말풍선 */
+.window.win-dialogue { left: 50%; right: auto; top: auto; bottom: 90px; transform: translateX(-50%); width: min(560px, calc(100vw - 24px)); animation-name: dlg-in; }
+@keyframes dlg-in { from { opacity: 0; transform: translateX(-50%) translateY(12px); } }
+.dlg { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.dlg-face {
+  flex: none; width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 92%, var(--a) 0 22%, var(--c) 24%); color: #fff; font-style: normal; font-weight: 800; font-size: 20px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
+}
+.dlg-text { margin: 4px 0 0; min-height: 3.2em; font-size: 15px; line-height: 1.6; white-space: pre-line; }
+.dlg-opts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin-top: 10px; }
+.dlg-opts[hidden] { display: none; }
+.dlg-opts button {
+  padding: 7px 12px; border-radius: 12px; border: 2px solid var(--panel-edge); background: #fff6e0; font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); cursor: pointer;
+}
+.dlg-opts button:hover { border-color: #e9a35b; background: #fff1c9; }
+
+/* 하늘 택배 */
+.cr { display: flex; flex-direction: column; gap: 10px; }
+.cr .slot.picked { outline: 3px solid #e9a35b; }
+.cr .slot { cursor: pointer; }
+.cr-to { display: flex; flex-wrap: wrap; gap: 6px; }
+.cr-to button { padding: 7px 12px; border-radius: 12px; border: 2px solid var(--panel-edge); background: #fff6e0; font: inherit; font-weight: 700; cursor: pointer; }
+.cr-to button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 몬스터 도감 */
+.bs { width: min(560px, calc(100vw - 48px)); }
+.bs-head { margin: 0 0 10px; font-size: 14px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.bs-head small { color: #8a7f63; font-size: 11px; }
+.bs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; max-height: 56vh; overflow-y: auto; }
+.bs-card { position: relative; display: grid; grid-template-columns: 26px 1fr; gap: 1px 8px; padding: 7px 8px; border-radius: 12px; background: #fff6e0; border: 2px solid var(--panel-edge); font-size: 13px; }
+.bs-card small { grid-column: 2; font-size: 11px; color: #8a7f63; line-height: 1.35; }
+.bs-card.boss { border-color: #e9a35b; }
+.bs-card.unknown { opacity: 0.55; }
+.bs-dot { grid-row: span 2; width: 22px; height: 22px; border-radius: 50%; background: var(--c, #cfc6ae); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15); }
+.bs-kills { position: absolute; right: 8px; top: 6px; font-size: 11px; font-weight: 800; color: #a07a52; }
+
+/* 현상금 게시판 */
+.bt { width: min(380px, calc(100vw - 48px)); display: flex; flex-direction: column; gap: 6px; }
+.bt-card { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 12px; background: #fff6e0; border: 2px solid var(--panel-edge); }
+.bt-card small { grid-column: 1; font-size: 11px; color: #8a7f63; display: flex; align-items: center; gap: 3px; }
+.bt-card .coin { width: 12px; height: 12px; display: inline-block; }
+.bt-card button { grid-row: 1 / span 2; grid-column: 2; padding: 6px 10px; border-radius: 10px; border: 2px solid #6ab468; background: #7cc67a; color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+.bt-card button:disabled { background: #e3dac3; border-color: #d8ccae; color: #a99f86; cursor: not-allowed; }
+.bt-card.claimed { opacity: 0.6; }

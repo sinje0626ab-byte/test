@@ -29,6 +29,7 @@ html, body {
   box-shadow: 0 4px 0 rgba(120, 100, 60, 0.18);
 }
 .hud-level { margin-bottom: 6px; }
+.hud-name { margin: 0 6px; font-size: 13px; color: #5a5243; }
 .lv-badge {
   display: inline-block; padding: 1px 10px; border-radius: 999px;
   background: #7cc67a; color: #fff; font-size: 13px; font-weight: 700;
@@ -192,3 +193,15 @@ html, body {
 }
 .raid-arrow span { margin-top: 3px; font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; white-space: nowrap; }
 @keyframes raid-pulse { from { opacity: 0.75; } to { opacity: 1; } }
+
+/* 퀘스트 추적기 */
+.quest-tracker {
+  position: absolute; left: 16px; top: 124px; max-width: 240px; padding: 6px 12px 7px; border-radius: 14px;
+  background: rgba(255, 250, 240, 0.9); border: 2px solid var(--panel-edge); display: flex; flex-direction: column; gap: 1px;
+  font-size: 12px; color: #6b5a3e; pointer-events: none;
+}
+.quest-tracker b { font-size: 13px; color: #a07a52; }
+.quest-tracker b::before { content: '📜 '; }
+.quest-tracker.ready { border-color: #7cc67a; }
+.quest-tracker.ready span { color: #4f9a4a; font-weight: 700; }
+.quest-tracker[hidden] { display: none; }

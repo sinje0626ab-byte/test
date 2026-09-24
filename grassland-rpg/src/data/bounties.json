@@ -1,0 +1,60 @@
+{
+  "perDay": 3,
+  "kill": {
+    "countBase": 4,
+    "countPerDifficulty": 2,
+    "goldPerKill": 6
+  },
+  "deliver": [
+    {
+      "item": "iron_ore",
+      "count": 10,
+      "gold": 90
+    },
+    {
+      "item": "wood",
+      "count": 20,
+      "gold": 50
+    },
+    {
+      "item": "stone",
+      "count": 15,
+      "gold": 50
+    },
+    {
+      "item": "slime_jelly",
+      "count": 12,
+      "gold": 45
+    },
+    {
+      "item": "resin",
+      "count": 6,
+      "gold": 70
+    },
+    {
+      "item": "herb",
+      "count": 8,
+      "gold": 40
+    },
+    {
+      "item": "cactus_spine",
+      "count": 8,
+      "gold": 70
+    },
+    {
+      "item": "ice_shard",
+      "count": 8,
+      "gold": 80
+    }
+  ],
+  "elite": {
+    "count": 1,
+    "gold": 120
+  },
+  "bonusChance": 0.3,
+  "bonusItems": [
+    "sun_crystal",
+    "frost_crystal",
+    "return_scroll"
+  ]
+}
