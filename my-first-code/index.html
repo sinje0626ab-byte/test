@@ -63,7 +63,9 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);overflow:hid
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;
   font-size:var(--f-body);line-height:1.5;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  user-select:none;-webkit-user-select:none;overscroll-behavior:none;}
+  user-select:none;-webkit-user-select:none;overscroll-behavior:none;
+  /* iOS 는 user-scalable=no 를 무시한다. manipulation 이 더블탭 확대만 끄고 스크롤은 남긴다. */
+  touch-action:manipulation;-webkit-text-size-adjust:100%;}
 
 /* ---------- 화면 층 ---------- */
 #game{position:fixed;inset:0;}
@@ -82,7 +84,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;}
 /* ---------- 오버레이 · 카드 ---------- */
 .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
   z-index:20;padding:var(--s4);padding-top:calc(var(--s4) + var(--safe-t));
-  padding-bottom:calc(var(--s4) + var(--safe-b));touch-action:auto;}
+  padding-bottom:calc(var(--s4) + var(--safe-b));touch-action:manipulation;}
 .overlay.show{display:flex;}
 .veil{position:absolute;inset:0;background:rgba(5,7,6,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
 .card{position:relative;width:min(520px,100%);max-height:100%;overflow-y:auto;
@@ -767,6 +769,43 @@ table.gd-tier td:first-child,table.gd-tier th:first-child{text-align:left;}
   16%{opacity:1;transform:translate(-50%,-50%);}78%{opacity:1;}100%{opacity:0;}}
 @media (prefers-reduced-motion:reduce){ .mut-banner.show{animation:none;opacity:0;} }
 
+/* ---------- 보스 경보 — 화면이 번쩍이며 등장을 예고한다 ---------- */
+.boss-alert{position:fixed;inset:0;z-index:18;pointer-events:none;display:none;}
+.boss-alert.show{display:block;}
+/* 붉은 섬광이 화면 전체를 덮었다 사라지기를 반복한다 */
+.boss-alert .flash{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 50%,
+  rgba(255,77,90,.42) 0%, rgba(180,30,40,.30) 45%, rgba(120,0,10,.20) 100%);
+  opacity:0;animation:bossFlash 2200ms steps(1,end) forwards;}
+/* 위아래에서 밀려 들어오는 경고 띠 */
+.boss-alert .bars span{position:absolute;left:0;right:0;height:5px;background:var(--red);
+  box-shadow:0 0 22px rgba(255,77,90,.9);opacity:0;}
+.boss-alert .bars span:nth-child(1){top:0;animation:bossBarIn 2200ms var(--ease) forwards;}
+.boss-alert .bars span:nth-child(2){bottom:0;animation:bossBarIn 2200ms var(--ease) forwards;}
+.boss-alert .txt{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+  text-align:center;opacity:0;animation:bossTxtIn 2200ms var(--ease) forwards;}
+.boss-alert .txt .l{font-size:var(--f-meta);font-weight:800;letter-spacing:.42em;
+  text-transform:uppercase;color:var(--red);text-shadow:0 0 16px rgba(255,77,90,.8);}
+.boss-alert .txt .n{margin-top:8px;font-size:var(--f-h1);font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.95),0 0 30px rgba(255,77,90,.55);}
+/* 번쩍임은 4회(약 480~570ms 간격 = 초당 2회 이하)로 둔다.
+   광과민성 기준(1초에 3회 이하)에 여유를 두면서도 "번쩍번쩍" 하는 강조는 남긴다. */
+@keyframes bossFlash{
+  0%{opacity:0;}    6%{opacity:1;}   14%{opacity:0;}
+  28%{opacity:.85;} 36%{opacity:0;}
+  52%{opacity:.62;} 60%{opacity:0;}
+  78%{opacity:.38;} 86%{opacity:0;}  100%{opacity:0;}}
+@keyframes bossBarIn{0%{opacity:0;transform:scaleX(0);}8%{opacity:1;transform:scaleX(1);}
+  82%{opacity:1;}100%{opacity:0;}}
+@keyframes bossTxtIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.86);}
+  10%{opacity:1;transform:translate(-50%,-50%) scale(1);}80%{opacity:1;}100%{opacity:0;}}
+/* 동작 줄이기: 번쩍임은 끄고 글자만 조용히 띄운다 */
+@media (prefers-reduced-motion:reduce){
+  .boss-alert .flash{animation:none;opacity:.18;}
+  .boss-alert .bars span{animation:none;opacity:.8;}
+  .boss-alert .txt{animation:bossTxtCalm 2200ms linear forwards;}
+  @keyframes bossTxtCalm{0%,100%{opacity:0;}10%,80%{opacity:1;}}
+}
+
 /* 레벨업 도구 — 기회변경 티켓 */
 .lu-tool.ticket{border-color:rgba(255,212,90,.28);color:var(--tx-3);}
 .lu-tool.ticket b{color:var(--gold);}
@@ -1010,6 +1049,11 @@ h2.res.lose{color:var(--red);}
     <div class="n" id="mutBannerN"></div>
     <div class="d" id="mutBannerD"></div>
     <div class="r" id="mutBannerR" hidden></div>
+  </div>
+  <div class="boss-alert" id="bossAlert" aria-hidden="true">
+    <div class="flash"></div>
+    <div class="bars"><span></span><span></span></div>
+    <div class="txt"><div class="l" id="bossAlertL">WARNING</div><div class="n" id="bossAlertN"></div></div>
   </div>
   <div class="bossbar" id="bossbar">
     <div class="nm" id="bossName">BOSS</div>
@@ -1701,6 +1745,21 @@ const Audio = (() => {
     },
 
     /* ---- 보스 ---- */
+    siren() {                                // 경보 — 보스가 나타나기 직전에 먼저 울린다
+      if (!gate('boss', 'siren', 400)) return;
+      duckFor(0.35, 2000, 700);              // 다른 소리를 눌러 경보만 들리게
+      const t0 = T();
+      // 두 번 오르내리는 사이렌. 두 옥타브를 살짝 어긋나게 겹쳐 금속성 울림을 만든다.
+      for (let i = 0; i < 2; i++) {
+        const s = t0 + i * 0.9;
+        v({ f: 440, f2: 880, dur: 0.44, vol: 0.075, type: 'sawtooth', atk: 0.04, glide: 0.44, t: s, send: 0.35 });
+        v({ f: 880, f2: 440, dur: 0.44, vol: 0.06, type: 'sawtooth', atk: 0.02, glide: 0.44, t: s + 0.44, send: 0.35 });
+        v({ f: 220, f2: 440, dur: 0.44, vol: 0.04, type: 'square', atk: 0.04, glide: 0.44, t: s, send: 0.2 });
+        v({ f: 440, f2: 220, dur: 0.44, vol: 0.03, type: 'square', atk: 0.02, glide: 0.44, t: s + 0.44, send: 0.2 });
+      }
+      v({ f: 40, dur: 1.9, vol: 0.09, type: 'sine', atk: 0.08, t: t0, send: 0.3 });   // 바닥을 까는 저역
+      release('boss', 2100);
+    },
     boss() {                                 // 등장 — 화면을 보기 전에 귀로 먼저 안다
       if (!gate('boss', 'bossIn')) return;
       duckFor(0.3, 900, 1000);
@@ -2002,7 +2061,7 @@ const el = {
   timeChip:$('timeChip'), killChip:$('killChip'), coinChip:$('coinChip'), shieldChip:$('shieldChip'), tierChip:$('tierChip'),
   loadout:$('loadout'), choices:$('choices'), hint:$('hint'), luHeal:$('luHeal'),
   skWrap:$('skWrap'), skBtn:$('skBtn'), skFill:$('skFill'), skArc:$('skArc'), skKey:$('skKey'),
-  bossbar:$('bossbar'), bossName:$('bossName'), bossFill:$('bossFill'),
+  bossbar:$('bossbar'), bossName:$('bossName'), bossFill:$('bossFill'), bossAlert:$('bossAlert'),
   bankCoins:$('bankCoins'), bestTime:$('bestTime'), totalKills:$('totalKills'),
   armory:$('armory'), shieldVal:$('shieldVal'), hpbar:$('hpbar'), resEmoji:$('resEmoji'), resTitle:$('resTitle'), resStats:$('resStats'), resNext:$('resNext'), resReward:$('resReward'),
   pauseStats:$('pauseStats'), charsel:$('charsel'),
@@ -3590,7 +3649,7 @@ const UI = {
     'pause.brand':'일시정지', 'pause.title':'멈춤', 'pause.resume':'계속하기', 'pause.save':'저장하고 나가기', 'pause.exit':'피난처로 대피 (종료)',
     'btn.continue':'이어하기 · {n}차 Lv{lv} ({t})',
     'pause.stats':'생존 {t} · 처치 {k} · 코인 {c}',
-    'title.press':'아무 버튼이나 눌러주세요', 'splash.start':'아무 버튼이나 눌러주세요',
+    'boss.warning':'경 고', 'title.press':'아무 버튼이나 눌러주세요', 'splash.start':'아무 버튼이나 눌러주세요',
     'lu.slotW':'무기', 'lu.slotP':'기술', 'lu.slotLeft':'+{n} 더', 'lu.slotFull':'가득', 'lu.label':'LEVEL UP', 'lu.title':'능력 선택', 'lu.heal':'＋ 긴급 치유 발동',
     'b.evo':'진화', 'b.up':'강화', 'b.new':'신규',
     'lv.evo':'초월 진화', 'lv.wnew':'신규 무기', 'lv.pnew':'신규 패시브',
@@ -3627,7 +3686,7 @@ const UI = {
     'pause.brand':'Paused', 'pause.title':'Paused', 'pause.resume':'Resume', 'pause.save':'Save & Exit', 'pause.exit':'Retreat to Shelter (Quit)',
     'btn.continue':'Continue · Tier {n} Lv{lv} ({t})',
     'pause.stats':'Survived {t} · Kills {k} · Coins {c}',
-    'title.press':'Press any button', 'splash.start':'Press any button',
+    'boss.warning':'WARNING', 'title.press':'Press any button', 'splash.start':'Press any button',
     'lu.slotW':'Weapons', 'lu.slotP':'Skills', 'lu.slotLeft':'+{n} more', 'lu.slotFull':'full', 'lu.label':'Level Up', 'lu.title':'Choose an ability', 'lu.heal':'＋ Emergency heal triggered',
     'b.evo':'EVO', 'b.up':'UP', 'b.new':'NEW',
     'lv.evo':'Transcendent Evolution', 'lv.wnew':'New Weapon', 'lv.pnew':'New Passive',
@@ -3664,7 +3723,7 @@ const UI = {
     'pause.brand':'暂停', 'pause.title':'暂停', 'pause.resume':'继续', 'pause.save':'保存并退出', 'pause.exit':'撤回避难所（退出）',
     'btn.continue':'继续 · 第{n}层 Lv{lv} ({t})',
     'pause.stats':'生存 {t} · 击杀 {k} · 金币 {c}',
-    'title.press':'请按任意键', 'splash.start':'请按任意键',
+    'boss.warning':'警 告', 'title.press':'请按任意键', 'splash.start':'请按任意键',
     'lu.slotW':'武器', 'lu.slotP':'技能', 'lu.slotLeft':'还可 +{n}', 'lu.slotFull':'已满', 'lu.label':'Level Up', 'lu.title':'选择一项能力', 'lu.heal':'＋ 紧急治疗已触发',
     'b.evo':'进化', 'b.up':'强化', 'b.new':'新',
     'lv.evo':'超越进化', 'lv.wnew':'新武器', 'lv.pnew':'新被动',
@@ -3701,7 +3760,7 @@ const UI = {
     'pause.brand':'หยุดชั่วคราว', 'pause.title':'หยุด', 'pause.resume':'เล่นต่อ', 'pause.save':'บันทึกแล้วออก', 'pause.exit':'ถอยกลับที่หลบภัย (ออก)',
     'btn.continue':'เล่นต่อ · ระดับ{n} Lv{lv} ({t})',
     'pause.stats':'รอด {t} · สังหาร {k} · เหรียญ {c}',
-    'title.press':'กดปุ่มใดก็ได้', 'splash.start':'กดปุ่มใดก็ได้',
+    'boss.warning':'คำเตือน', 'title.press':'กดปุ่มใดก็ได้', 'splash.start':'กดปุ่มใดก็ได้',
     'lu.slotW':'อาวุธ', 'lu.slotP':'สกิล', 'lu.slotLeft':'+{n} ได้อีก', 'lu.slotFull':'เต็ม', 'lu.label':'Level Up', 'lu.title':'เลือกความสามารถ', 'lu.heal':'＋ ฟื้นฟูฉุกเฉินทำงาน',
     'b.evo':'วิวัฒน์', 'b.up':'อัป', 'b.new':'ใหม่',
     'lv.evo':'วิวัฒนาการขั้นสูง', 'lv.wnew':'อาวุธใหม่', 'lv.pnew':'พาสซีฟใหม่',
@@ -3738,7 +3797,7 @@ const UI = {
     'pause.brand':'Tạm dừng', 'pause.title':'Tạm dừng', 'pause.resume':'Tiếp tục', 'pause.save':'Lưu & Thoát', 'pause.exit':'Rút về nơi trú ẩn (Thoát)',
     'btn.continue':'Tiếp tục · Cấp {n} Lv{lv} ({t})',
     'pause.stats':'Sống sót {t} · Hạ gục {k} · Xu {c}',
-    'title.press':'Nhấn phím bất kỳ', 'splash.start':'Nhấn nút bất kỳ',
+    'boss.warning':'CẢNH BÁO', 'title.press':'Nhấn phím bất kỳ', 'splash.start':'Nhấn nút bất kỳ',
     'lu.slotW':'Vũ khí', 'lu.slotP':'Kỹ năng', 'lu.slotLeft':'+{n} nữa', 'lu.slotFull':'đầy', 'lu.label':'Level Up', 'lu.title':'Chọn một kỹ năng', 'lu.heal':'＋ Hồi máu khẩn cấp kích hoạt',
     'b.evo':'TIẾN HÓA', 'b.up':'NÂNG', 'b.new':'MỚI',
     'lv.evo':'Tiến hóa siêu việt', 'lv.wnew':'Vũ khí mới', 'lv.pnew':'Bị động mới',
@@ -3775,7 +3834,7 @@ const UI = {
     'pause.brand':'Pausa', 'pause.title':'Pausa', 'pause.resume':'Continuar', 'pause.save':'Guardar y salir', 'pause.exit':'Retirarse al refugio (Salir)',
     'btn.continue':'Continuar · Nivel {n} Lv{lv} ({t})',
     'pause.stats':'Sobrevivió {t} · Bajas {k} · Monedas {c}',
-    'title.press':'Pulsa cualquier botón', 'splash.start':'Pulsa cualquier botón',
+    'boss.warning':'ALERTA', 'title.press':'Pulsa cualquier botón', 'splash.start':'Pulsa cualquier botón',
     'lu.slotW':'Armas', 'lu.slotP':'Habilidades', 'lu.slotLeft':'+{n} más', 'lu.slotFull':'lleno', 'lu.label':'Level Up', 'lu.title':'Elige una habilidad', 'lu.heal':'＋ Curación de emergencia activada',
     'b.evo':'EVO', 'b.up':'MEJORA', 'b.new':'NUEVO',
     'lv.evo':'Evolución trascendente', 'lv.wnew':'Arma nueva', 'lv.pnew':'Pasiva nueva',
@@ -4263,6 +4322,16 @@ const tierHpMul  = () => 1 + (G.tier - 1) * 0.60;   // 적 체력
 const tierDmgMul = () => 1 + (G.tier - 1) * 0.35;   // 적 공격력
 const tierSpdMul = () => Math.min(1.6, 1 + (G.tier - 1) * 0.06); // 적 이동속도(상한)
 const hpMul = () => (1 + G.time * 0.004) * tierHpMul();
+/* ── PHASE J 실험용 · 개발 전용 ─────────────────────────────────────────────
+   초반 구간의 "일반 적" HP 배율만 바꿔 A/B 를 비교하기 위한 스위치다.
+   production 기본값은 1.0 이므로 아래 곱셈은 항등원이고 동작이 바뀌지 않는다.
+   UI·로비·저장 어디에도 노출하지 않는다. 실험 하네스가 런타임에 값만 바꾼다.
+   보스/미니보스는 spawnBoss() 라는 별도 경로를 쓰므로 여기 영향을 받지 않는다. */
+const DEV_BALANCE_TEST = { enabled: true, earlyEnemyHpMultiplier: 1.0, earlyWindowSec: 30 };
+const earlyHpMul = () => {
+  const D = DEV_BALANCE_TEST;
+  return (D.enabled && G.time < D.earlyWindowSec) ? D.earlyEnemyHpMultiplier : 1;
+};
 const xpForLevel = lv => Math.floor(4 + lv * 3 + lv * lv * 0.4);
 
 function wdef(w){ return w.evolved ? EVOS[WEAPONS[w.key].evo] : WEAPONS[w.key]; }
@@ -4749,7 +4818,8 @@ function spawnEnemy(typeKey, ox, oy) {
   e.x = (ox !== undefined) ? ox : P().x + Math.cos(ang) * rad;
   e.y = (oy !== undefined) ? oy : P().y + Math.sin(ang) * rad;
   e.def = def; e.key = typeKey;
-  e.maxhp = def.hp * hpMul(); e.hp = e.maxhp;
+  // 스폰 시 한 번만 결정한다 — 매 프레임 재적용하거나 기존 적을 나중에 다시 손대지 않는다.
+  e.maxhp = def.hp * hpMul() * earlyHpMul(); e.hp = e.maxhp;
   e.r = def.r; e.spd = def.spd * tierSpdMul(); e.dead = false; e.boss = false; e.mini = false;
   e.wob = Math.random() * TAU; e.bladeCd = 0; e.axeCd = 0; e.spitT = randInt(60, 140);
   e.howlT = randInt(140, 220); e.hasteT = 0; e.chill = 0; e.chillPow = 1; e.pullT = 0; e.facing = 1; e.id = G.uid++;
@@ -4820,12 +4890,29 @@ function spawnBoss(kind) {
   }
   G.enemies.push(e); G.bossN++;    // 보스는 일반 적 상한을 쓰지 않는다
   G.screenShake = 16; Audio.S.boss();
+  bossAlert(e.def.name);           // 사이렌 + 화면 번쩍임 경보
+}
+/* 보스 경보 — 사이렌을 울리고 화면을 번쩍이게 한다.
+   애니메이션을 다시 태우려면 클래스를 떼었다가 리플로우를 거쳐 다시 붙여야 한다. */
+let _bossAlertT = null;
+function bossAlert(name) {
+  Audio.S.siren && Audio.S.siren();
+  const box = el.bossAlert; if (!box) return;
+  const n = document.getElementById('bossAlertN');
+  if (n) n.textContent = name || '';
+  const l = document.getElementById('bossAlertL');
+  if (l) l.textContent = t('boss.warning');
+  box.classList.remove('show');
+  void box.offsetWidth;                       // 리플로우 — 같은 런에서 두 번째 보스도 다시 번쩍인다
+  box.classList.add('show');
+  clearTimeout(_bossAlertT);
+  _bossAlertT = setTimeout(() => box.classList.remove('show'), 2200);
 }
 function onBossDown(e) {
   if (e === G.boss) {
     for (let i = 0; i < 40; i++) spawnCoin(e.x, e.y, 50);   // 보스 골드 드랍
     ring(e.x, e.y, 120, '#ffcf4d', 40); G.screenShake = 20;
-    G.boss = null; el.bossbar.classList.remove('show');
+    G.boss = null; el.bossbar.classList.remove('show'); if (el.bossAlert) el.bossAlert.classList.remove('show');
     beginStageClear();
   }
 }
@@ -7270,7 +7357,7 @@ function endRun(win) {
   el.resReward.style.display = 'none';
   renderRunReport();
   renderMasteryGain();
-  hud.classList.remove('show'); el.bossbar.classList.remove('show');
+  hud.classList.remove('show'); el.bossbar.classList.remove('show'); if (el.bossAlert) el.bossAlert.classList.remove('show');
   el.result.classList.add('show');
 }
 /* 차수 클리어(최종 보스 처치): 다음 차수 도전 또는 로비 귀환 선택 */
@@ -7303,7 +7390,7 @@ function winRound() {
   el.resNext.textContent = t('res.next').replace('{n}', G.tier + 1);
   renderRunReport();
   renderMasteryGain();
-  hud.classList.remove('show'); el.bossbar.classList.remove('show');
+  hud.classList.remove('show'); el.bossbar.classList.remove('show'); if (el.bossAlert) el.bossAlert.classList.remove('show');
   el.result.classList.add('show');
 }
 /* 다음 차수로 계속 — 무기·기술은 처음 상태로 초기화, 코인·처치수·차수는 유지, 난이도 상승 */
@@ -7332,7 +7419,7 @@ function continueTier() {
   G.camX = 0; G.camY = 0; moveSmooth.x = 0; moveSmooth.y = 0;
   hudReset(); loadoutSig = '';
   el.result.classList.remove('show');
-  el.bossbar.classList.remove('show');
+  el.bossbar.classList.remove('show'); if (el.bossAlert) el.bossAlert.classList.remove('show');
   hud.classList.add('show');
   el.hint.textContent = t('tier.banner').replace('{n}', G.tier);
   el.hint.style.opacity = '1'; el.hint.dataset.hidden = '';
@@ -7383,7 +7470,7 @@ function saveAndExit() {
   if (!rs) { backToMenu(); return; }
   G.save.runState = rs; Store.save(G.save);
   G.state = 'menu'; G.player = null; G.boss = null;
-  hideAllOverlays(); hud.classList.remove('show'); el.bossbar.classList.remove('show'); loadoutSig = '';
+  hideAllOverlays(); hud.classList.remove('show'); el.bossbar.classList.remove('show'); if (el.bossAlert) el.bossAlert.classList.remove('show'); loadoutSig = '';
   refreshMenu(); el.menu.classList.add('show');
   Audio.startMusic('title');
 }
@@ -7433,7 +7520,7 @@ function resumeRun() {
   hideAllOverlays(); hud.classList.add('show');
   hudReset(); loadoutSig = '';
   el.hint.style.opacity = '0'; el.hint.dataset.hidden = '1';
-  el.bossbar.classList.remove('show');
+  el.bossbar.classList.remove('show'); if (el.bossAlert) el.bossAlert.classList.remove('show');
   clearSavedRun();                              // 저장본은 소비됨
   if (rs.bossPending) spawnBoss(rs.bossPending);
   if (p.pendingLevels > 0) enterLevelUp(); else G.state = 'play';
