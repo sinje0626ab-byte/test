@@ -7,6 +7,10 @@ export class UIManager {
     root.appendChild(this.layer);
     this.windows = new Map();
     this.stack = [];
+    // 배치 모드에 들어가면 창을 모두 닫아 땅이 보이게 한다.
+    ctx.bus.on('build:start', () => {
+      for (const w of [...this.stack]) this.close(w.id);
+    });
   }
 
   // 제목줄 + 닫기 버튼이 있는 빈 창을 만들어 등록한다. 내용은 body에 채운다.
@@ -21,7 +25,7 @@ export class UIManager {
       </header>
       <div class="win-body"></div>`;
     this.layer.appendChild(el);
-    const win = { id, key, el, body: el.querySelector('.win-body'), onOpen: null, onClose: null };
+    const win = { id, key, el, body: el.querySelector('.win-body'), onOpen: null, onClose: null, canOpen: null };
     el.addEventListener('pointerdown', () => this.focus(win));
     el.querySelector('.win-close').addEventListener('click', () => this.close(id));
     this.windows.set(id, win);
@@ -35,6 +39,7 @@ export class UIManager {
   open(id) {
     const win = this.windows.get(id);
     if (!win || this.isOpen(id)) return;
+    if (win.canOpen && !win.canOpen()) return;
     win.el.hidden = false;
     this.stack.push(win);
     this.restack();
@@ -70,6 +75,6 @@ export class UIManager {
     for (const win of this.windows.values()) {
       if (win.key && input.wasPressed(win.key)) this.toggle(win.id);
     }
-    if (input.wasPressed('Escape') && this.stack.length) this.close(this.stack.at(-1).id);
+    if (input.wasPressed('Escape') && this.stack.length && this.ctx.mode !== 'build') this.close(this.stack.at(-1).id);
   }
 }

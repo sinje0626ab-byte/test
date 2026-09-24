@@ -1,0 +1,16 @@
+{
+  "wood_bow": {
+    "name": "나무 활 포탑",
+    "description": "싸고 약한 활 포탑. 한 번에 한 마리를 쏜다.",
+    "unlockBaseLevel": 1,
+    "cost": 30,
+    "hp": 80,
+    "radius": 0.6,
+    "range": 9,
+    "fireRate": 1.1,
+    "damage": 8,
+    "projectileSpeed": 20,
+    "priority": "nearest",
+    "color": "#c58b4f"
+  }
+}

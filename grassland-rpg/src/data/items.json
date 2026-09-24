@@ -39,6 +39,16 @@
       "color": "#8ee08a",
       "maxStack": 99,
       "description": "말랑말랑한 슬라임 젤리. 건설·제작 재료로 쓰인다."
+    },
+    "tent_kit": {
+      "name": "텐트 키트",
+      "category": "kit",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 5,
+      "color": "#e9a35b",
+      "builds": "tent",
+      "description": "펼치면 텐트가 되는 꾸러미. 설치한 곳이 새 기지가 된다."
     }
   }
 }

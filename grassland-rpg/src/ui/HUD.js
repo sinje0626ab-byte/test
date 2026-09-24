@@ -21,12 +21,14 @@ export class HUD {
         <div class="bar xp"><div class="fill" data-xp></div></div>
       </div>
       <div class="hud-tr">
+        <div class="clock" data-clock><i class="sun" data-sun></i><b data-day>1일차</b><span data-until></span></div>
         <div class="gold"><i class="coin"></i><b data-gold>0</b></div>
         <div class="saved" data-saved>저장됨</div>
       </div>
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
-      <div class="hud-help">WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방</div>
+      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · B 건설</div>
+      <div class="hud-banner" data-banner hidden></div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
     `;
@@ -35,6 +37,8 @@ export class HUD {
       hp: $('[data-hp]'), hpText: $('[data-hp-text]'), st: $('[data-st]'), xp: $('[data-xp]'),
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
+      clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
+      help: $('[data-help]'), banner: $('[data-banner]'),
     };
 
     const { bus } = ctx;
@@ -44,6 +48,20 @@ export class HUD {
     });
     bus.on('notify', (n) => this.notify(n));
     bus.on('save:done', () => this.pulse(this.el.saved, 'show'));
+    this.helpText = this.el.help.textContent;
+    bus.on('build:hint', ({ text, ok }) => {
+      this.el.help.textContent = text || this.helpText;
+      this.el.help.classList.toggle('bad', !!text && !ok);
+    });
+    bus.on('raid:start', ({ count }) => this.banner('밤 습격!', `몬스터 ${count}마리가 기지로 옵니다`, 'night'));
+    bus.on('time:day', ({ day }) => this.banner(`${day}일차 아침`, '', 'day'));
+    bus.on('raid:result', ({ results }) => {
+      const label = { cleared: '방어 성공', partial: '부분 피해', failed: '실패' };
+      for (const r of results) {
+        const reward = r.reward ? ` · 보상 골드 +${r.reward}` : '';
+        this.notify({ text: `[${r.baseName}] 습격 ${label[r.status]} — ${r.killed}/${r.total} 처치${reward}`, kind: r.status === 'cleared' ? 'gold' : 'warn' });
+      }
+    });
     bus.on('combat:hit', (h) => this.floatText(h));
     bus.on('player:damaged', () => this.pulse(this.el.vignette, 'hit'));
     bus.on('player:died', () => { this.el.death.hidden = false; });
@@ -54,6 +72,15 @@ export class HUD {
     el.classList.remove(cls);
     void el.offsetWidth;
     el.classList.add(cls);
+  }
+
+  banner(title, sub, kind) {
+    const b = this.el.banner;
+    b.className = `hud-banner ${kind}`;
+    b.innerHTML = `<b>${title}</b>${sub ? `<small>${sub}</small>` : ''}`;
+    b.hidden = false;
+    clearTimeout(this.bannerTimer);
+    this.bannerTimer = setTimeout(() => { b.hidden = true; }, 2800);
   }
 
   notify({ text, kind = 'info', color }) {
@@ -84,6 +111,12 @@ export class HUD {
     this.el.hpText.textContent = `${Math.ceil(s.hp)} / ${s.maxHp}`;
     this.el.st.style.width = `${(s.stamina / s.maxStamina) * 100}%`;
     this.el.xp.style.width = '0%'; // 레벨·경험치는 Phase 4
+
+    const t = this.ctx.time;
+    const left = Math.ceil(t.untilChange);
+    this.el.day.textContent = `${t.day}일차`;
+    this.el.until.textContent = `${t.isNight ? '아침까지' : '밤까지'} ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+    this.el.clock.classList.toggle('night', t.isNight);
 
     const cam = this.ctx.camera;
     const w = window.innerWidth;

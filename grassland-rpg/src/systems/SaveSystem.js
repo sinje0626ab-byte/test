@@ -1,8 +1,18 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
-// 이전 버전 → 다음 버전 변환. 예) 1: (s) => ({ ...s, 새필드: 기본값, saveVersion: 2 })
-const migrations = {};
+// 이전 버전 → 다음 버전 변환
+const migrations = {
+  // v1 → v2: 기지·포탑·시간 추가. v1엔 기지가 없으니 텐트 키트를 하나 넣어 준다.
+  1: (s) => {
+    const slots = s.inventory?.slots ? [...s.inventory.slots] : [];
+    const free = slots.indexOf(null);
+    const kit = { id: 'tent_kit', count: 1 };
+    if (free >= 0) slots[free] = kit;
+    else slots.push(kit);
+    return { ...s, saveVersion: 2, inventory: { slots }, bases: [], turrets: [] };
+  },
+};
 
 export class SaveSystem {
   constructor(ctx) {
@@ -25,7 +35,10 @@ export class SaveSystem {
     } catch {
       return false;
     }
-    if (!raw) return false;
+    if (!raw) {
+      this.ctx.bus.emit('game:new');
+      return false;
+    }
 
     let data;
     try {
@@ -39,6 +52,7 @@ export class SaveSystem {
         try { localStorage.setItem(`${this.cfg.key}-broken`, raw); } catch { /* 무시 */ }
       }
       this.ctx.bus.emit('notify', { text: '저장을 불러오지 못해 새로 시작합니다', kind: 'warn' });
+      this.ctx.bus.emit('game:new');
       return false;
     }
     this.ctx.bus.emit('save:apply', data);

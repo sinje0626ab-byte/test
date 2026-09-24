@@ -11,10 +11,15 @@ import { LootSystem } from '../systems/LootSystem.js';
 import { EconomySystem } from '../systems/EconomySystem.js';
 import { InventorySystem } from '../systems/InventorySystem.js';
 import { SaveSystem } from '../systems/SaveSystem.js';
+import { BaseSystem } from '../systems/BaseSystem.js';
+import { BuildSystem } from '../systems/BuildSystem.js';
+import { TurretSystem } from '../systems/TurretSystem.js';
+import { RaidSystem } from '../systems/RaidSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
 import { InventoryWindow } from '../ui/InventoryWindow.js';
+import { BuildMenu } from '../ui/BuildMenu.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -28,14 +33,16 @@ export class Game {
     this.renderer = renderer;
 
     this.camera = new Camera(data.config.camera, window.innerWidth / window.innerHeight);
-    this.time = new Time(data.config.time);
     this.raycaster = new THREE.Raycaster();
     this.groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
+    const bus = new EventBus();
+    this.time = new Time(data.config.time, bus);
     const ctx = {
       data,
       scene: new THREE.Scene(),
-      bus: new EventBus(),
+      bus,
+      time: this.time,
       input: new Input(renderer.domElement),
       camera: this.camera.camera,
       mouseGround: null,
@@ -44,14 +51,18 @@ export class Game {
     this.ctx = ctx;
 
     ctx.world = new World(ctx);
+    this.systems = [new BaseSystem(ctx)]; // ctx.bases / ctx.structures 를 먼저 만든다
     ctx.player = new Player(ctx);
-    this.systems = [
+    this.systems.push(
       new CombatSystem(ctx),
       new MonsterSpawner(ctx),
       new LootSystem(ctx),
       new EconomySystem(ctx),
       new InventorySystem(ctx),
-    ];
+      new BuildSystem(ctx),
+      new TurretSystem(ctx),
+      new RaidSystem(ctx),
+    );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);
 
@@ -59,6 +70,7 @@ export class Game {
     this.ui = new UIManager(ctx, uiRoot);
     this.tooltip = new Tooltip(uiRoot);
     new InventoryWindow(ctx, this.ui, this.tooltip);
+    new BuildMenu(ctx, this.ui);
 
     // 모든 시스템·창이 이벤트를 듣기 시작한 뒤에 불러와야 각자 자기 몫을 받는다.
     this.save.load();
@@ -82,6 +94,7 @@ export class Game {
   update(dt) {
     const ctx = this.ctx;
     this.updateMouseGround();
+    this.time.advance(dt);
 
     ctx.player.update(dt);
     for (const m of ctx.monsters) m.update(dt);

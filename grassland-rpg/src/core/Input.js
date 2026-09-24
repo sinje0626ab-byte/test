@@ -5,6 +5,8 @@ export class Input {
     this.pressed = new Set();
     this.mouseNdc = { x: 0, y: 0 };
     this.mouseDown = false;
+    this.leftPressed = false;
+    this.rightPressed = false;
     this.hasMouse = false;
 
     window.addEventListener('keydown', (e) => {
@@ -25,8 +27,10 @@ export class Input {
       this.hasMouse = true;
     });
     canvas.addEventListener('pointerdown', (e) => {
+      if (e.button === 2) this.rightPressed = true;
       if (e.button !== 0) return;
       this.mouseDown = true;
+      this.leftPressed = true;
       canvas.setPointerCapture?.(e.pointerId);
     });
     window.addEventListener('pointerup', (e) => {
@@ -43,7 +47,16 @@ export class Input {
     return this.pressed.has(code);
   }
 
+  // 클릭 한 번이 두 가지 일(설치 + 공격)을 하지 않도록 눌림 상태를 비운다.
+  consumeMouse() {
+    this.mouseDown = false;
+    this.leftPressed = false;
+    this.rightPressed = false;
+  }
+
   endFrame() {
     this.pressed.clear();
+    this.leftPressed = false;
+    this.rightPressed = false;
   }
 }

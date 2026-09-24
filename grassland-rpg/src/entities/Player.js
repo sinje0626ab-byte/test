@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { nearestBase } from '../utils/bases.js';
 
 const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.8 });
 
@@ -174,7 +175,7 @@ export class Player {
     const s = this.stats;
     const input = this.ctx.input;
 
-    if (input.mouseDown && this.attackTimer <= 0 && s.stamina >= b.attackStaminaCost) {
+    if (this.ctx.mode === 'play' && input.mouseDown && this.attackTimer <= 0 && s.stamina >= b.attackStaminaCost) {
       // 클릭한 순간 마우스 쪽으로 몸을 돌려 벤다.
       const aim = this.ctx.mouseGround;
       if (aim) {
@@ -233,8 +234,10 @@ export class Player {
     s.stamina = s.maxStamina;
     this.knock.set(0, 0, 0);
     this.invuln = this.base.invulnTime * 2;
-    // 기지가 생기면(Phase 3) 가장 가까운 기지로 바꾼다.
-    this.position.copy(this.ctx.world.spawnPoint);
+    // 가장 가까운 기지 텐트 앞, 기지가 없으면 시작 지점
+    const base = nearestBase(this.ctx.bases, this.position);
+    if (base) this.position.set(base.position.x, 0, base.position.z + base.tent.radius + 1.2);
+    else this.position.copy(this.ctx.world.spawnPoint);
     this.ctx.bus.emit('player:respawned', { position: this.position.clone() });
   }
 

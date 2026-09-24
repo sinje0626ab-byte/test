@@ -149,9 +149,13 @@ src/
     "savedAt": 1727000000000,
     "player": { "position": [x, z], "hp": 100, "stamina": 100 },
     "economy": { "gold": 0 },
-    "inventory": { "slots": [ { "id": "slime_jelly", "count": 3 }, null, ... ] }
+    "inventory": { "slots": [ { "id": "slime_jelly", "count": 3 }, null, ... ] },
+    "time": { "day": 1, "clock": 120.5 },
+    "bases": [ { "id": 1, "level": 1, "position": [x, z], "hp": 300 } ],
+    "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1 } ]
   }
   ```
+- v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
 
@@ -171,6 +175,11 @@ src/
 - 부속 건물: 작업대(제작), 창고, 상점, 훈련장 등
 - 기지 레벨이 부속 건물 종류와 포탑 설치 수를 결정
 
+- 첫 기지: 새 게임을 시작하면 가방에 "텐트 키트" 1개가 들어 있다. 가방에서 우클릭 → 배치 미리보기 → 좌클릭으로 설치 (우클릭/ESC 취소)
+- 텐트(기지 중심)에도 체력이 있다. 습격 몬스터가 부수면 그날 밤 습격은 실패. 아침마다 텐트 체력은 가득 찬다
+- 플레이어는 쓰러지면 가장 가까운 기지 텐트 앞에서 부활한다
+- 기지 단계별 수치(영역 반경, 포탑 수, 텐트 체력)는 `data/buildings.json`의 `baseLevels`
+
 ### 4-6. 멀티 기지
 - 새 기지는 "텐트 키트"를 다른 지역에 설치해서 생성
 - 기지 간 최소 거리 제한 (겹침 방지)
@@ -189,6 +198,8 @@ src/
 - 업그레이드: 골드로 Lv1~Lv3
 - 체력 있음, 파괴되면 수리비(골드) 필요
 - 모든 수치는 `data/turrets.json`
+- 설치 수 제한: 기지 레벨의 `maxTurrets`
+- 부서진 포탑은 잔해로 남아 동작하지 않는다 (수리는 Phase 6)
 
 ### 4-8. 밤 습격
 - 밤이 되면 각 기지에 습격 웨이브 발생
@@ -198,6 +209,14 @@ src/
   - 포탑 총 화력 vs 웨이브 강도 비교
   - 결과: 방어 성공(보상) / 부분 피해(포탑·건물 체력 감소) / 실패(창고 재료 일부 손실)
   - 아침에 결과를 알림으로 표시
+- 실시간 습격 판정 (Phase 3)
+  - 해가 지면 기지 영역 바깥 둘레에서 습격 몬스터가 몇 초 간격으로 나타나 기지로 온다
+  - 습격 몬스터는 가까운 플레이어를 먼저 노리고, 아니면 가장 가까운 포탑·텐트를 부순다. 도망치지 않는다
+  - 방어 성공: 습격 몬스터를 모두 처치 → 아침에 보상 골드
+  - 부분 피해: 아침까지 다 못 잡음 → 남은 몬스터는 물러가고 보상 없음
+  - 실패: 텐트가 부서짐 → 남은 몬스터는 물러가고 소지 골드 일부 손실
+  - 습격 몬스터 수 = `raid.baseCount` + 기지 레벨 × `perBaseLevel` + 지역 난이도 × `perRegionDifficulty` + (날짜-1) × `perDay`
+  - 날짜가 지날수록 습격 몬스터 능력치도 `statScalePerDay`씩 오른다
 
 ### 4-9. 경제
 - 골드 획득: 몬스터 드롭, 상점에 재료 판매, 습격 방어 보상
@@ -207,7 +226,9 @@ src/
 
 ### 4-10. 낮/밤
 - 하루 = 실제 시간 약 10분 (낮 7분, 밤 3분) — data에서 조절
-- 밤에는 조명이 어두워지고 필드 몬스터가 강해짐
+- 밤에는 조명이 어두워지고 필드 몬스터가 강해짐 (밤에 태어난 필드 몬스터는 `spawner.nightStatMultiplier`배)
+- 해 지기 `time.nightWarning`초 전에 경고 알림
+- 우상단 HUD에 날짜와 다음 낮/밤까지 남은 시간
 
 ---
 
@@ -248,10 +269,10 @@ src/
 - [x] 세이브/로드 (localStorage, 자동 저장)
 
 ### Phase 3 — 기지·포탑·습격 (핵심 재미 검증)
-- [ ] 텐트 설치, 기지 영역
-- [ ] 건설 메뉴 (B), 배치 미리보기
-- [ ] 나무 활 포탑 1종, 자동 타겟팅·발사
-- [ ] 낮/밤, 밤 습격 (실시간)
+- [x] 텐트 설치, 기지 영역
+- [x] 건설 메뉴 (B), 배치 미리보기
+- [x] 나무 활 포탑 1종, 자동 타겟팅·발사
+- [x] 낮/밤, 밤 습격 (실시간)
 
 ### Phase 4 — 성장
 - [ ] 레벨·경험치
@@ -296,5 +317,19 @@ src/
 | `item:use` / `item:equip` | InventorySystem | (소모품 효과·장비는 이후 Phase) |
 | `save:collect` / `save:apply` | SaveSystem | Player, EconomySystem, InventorySystem |
 | `save:done` | SaveSystem | HUD (저장 표시) |
+| `game:new` | SaveSystem (저장 없음) | InventorySystem (시작 아이템) |
+| `time:dusk` / `time:night` / `time:day` | Time | RaidSystem, HUD |
+| `build:start` | InventorySystem(키트), BuildMenu | BuildSystem |
+| `build:place` | BuildSystem | BaseSystem(텐트), TurretSystem(포탑) |
+| `inventory:consume` | BaseSystem (키트 사용) | InventorySystem |
+| `economy:spend` / `economy:reward` | BuildSystem / RaidSystem | EconomySystem (`ok`에 결과) |
+| `base:created` | BaseSystem | HUD 알림 |
+| `projectile:hit` | TurretSystem | CombatSystem |
+| `structure:destroyed` | CombatSystem | RaidSystem (텐트면 실패) |
+| `raid:result` | RaidSystem | HUD (아침 결과 배너) |
+
+### 공유 상태 (ctx)
+시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.
+`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build')
 | `player:damaged` / `player:died` / `player:respawned` | Player | HUD, EconomySystem |
 | `notify` | 누구나 | HUD (알림) |

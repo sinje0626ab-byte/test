@@ -9,6 +9,7 @@ export class CombatSystem {
     this.cfg = ctx.data.config.combat;
     ctx.bus.on('player:attack', (a) => this.onPlayerAttack(a));
     ctx.bus.on('monster:attack', (a) => this.onMonsterAttack(a));
+    ctx.bus.on('projectile:hit', (a) => this.onProjectileHit(a));
   }
 
   calcDamage(attack, defense, critChance = 0, critMultiplier = 1) {
@@ -41,8 +42,36 @@ export class CombatSystem {
     }
   }
 
-  onMonsterAttack({ monster }) {
+  onProjectileHit({ monster, damage, dir: d }) {
+    if (!monster.alive) return;
+    const { amount, crit } = this.calcDamage(damage, monster.stats.defense);
+    const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
+    this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster' });
+    if (killed) this.ctx.bus.emit('monster:killed', { type: monster.type, position: monster.position.clone() });
+  }
+
+  // 포탑·텐트를 때릴 때
+  hitStructure(monster, s) {
+    const { bus } = this.ctx;
+    if (!s.alive) return;
+    const dist = monster.position.distanceTo(s.position);
+    if (dist > monster.stats.attackRange + s.radius + monster.radius * 0.5) return;
+    const mult = monster.def.structureDamageMultiplier ?? 1;
+    const { amount } = this.calcDamage(monster.stats.attack * mult, 0);
+    const destroyed = s.takeDamage(amount);
+    bus.emit('combat:hit', { position: s.position.clone(), amount, crit: false, target: 'structure' });
+    if (destroyed) {
+      bus.emit('structure:destroyed', { structure: s });
+      bus.emit('notify', { text: s.kind === 'tent' ? '텐트가 무너졌습니다!' : '포탑이 부서졌습니다', kind: 'warn' });
+    }
+  }
+
+  onMonsterAttack({ monster, target }) {
     const { bus, player } = this.ctx;
+    if (target && target !== player) {
+      this.hitStructure(monster, target);
+      return;
+    }
     if (!player.alive || !monster.alive) return;
     dir.set(player.position.x - monster.position.x, 0, player.position.z - monster.position.z);
     const dist = dir.length();

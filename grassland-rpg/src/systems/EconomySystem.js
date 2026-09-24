@@ -20,6 +20,19 @@ export class EconomySystem {
       bus.emit('notify', { text: `쓰러져서 골드 ${loss}을(를) 잃었습니다`, kind: 'warn' });
     });
 
+    // 포탑 설치 등: 골드가 충분하면 빼고 ok = true
+    bus.on('economy:spend', (e) => {
+      if (this.gold < e.amount) return;
+      this.change(-e.amount);
+      e.ok = true;
+    });
+    bus.on('economy:reward', ({ amount }) => this.change(amount));
+    bus.on('economy:lose', ({ ratio, text }) => {
+      const loss = Math.floor(this.gold * ratio);
+      if (loss > 0) this.change(-loss);
+      bus.emit('notify', { text: loss > 0 ? `${text} (-${loss})` : text, kind: 'warn' });
+    });
+
     bus.on('save:collect', (save) => { save.economy = { gold: this.gold }; });
     bus.on('save:apply', (save) => {
       this.gold = 0;

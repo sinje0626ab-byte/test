@@ -9,6 +9,11 @@ export class InventorySystem {
     bus.on('loot:picked', (e) => this.onPicked(e));
     bus.on('inventory:move', ({ from, to }) => this.move(from, to));
     bus.on('inventory:use', ({ slot }) => this.use(slot));
+    bus.on('inventory:consume', ({ item, count }) => this.remove(item, count));
+    bus.on('game:new', () => {
+      for (const s of ctx.data.config.startingItems) this.add(s.id, s.count);
+      this.changed();
+    });
     bus.on('save:collect', (save) => {
       save.inventory = { slots: this.slots.map((s) => (s ? { ...s } : null)) };
     });
@@ -90,9 +95,26 @@ export class InventorySystem {
       s.count -= 1;
       if (s.count <= 0) this.slots[index] = null;
       this.changed();
+    } else if (def.category === 'kit') {
+      // 실제로 설치됐을 때 inventory:consume 으로 하나 줄어든다.
+      this.ctx.bus.emit('build:start', { kind: def.builds, item: s.id });
     } else if (def.category === 'equipment') {
       this.ctx.bus.emit('item:equip', { item: s.id, slot: index });
     }
+  }
+
+  remove(id, count) {
+    let left = count;
+    for (let i = this.slots.length - 1; i >= 0 && left > 0; i--) {
+      const s = this.slots[i];
+      if (s?.id !== id) continue;
+      const n = Math.min(left, s.count);
+      s.count -= n;
+      left -= n;
+      if (s.count <= 0) this.slots[i] = null;
+    }
+    this.changed();
+    return count - left;
   }
 
   applySave(inv) {

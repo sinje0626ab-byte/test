@@ -81,6 +81,14 @@ export class Monster {
     this.mesh.position.copy(this.position);
   }
 
+  // 밤에 태어난 몬스터·날짜가 지난 습격 몬스터를 강하게 만든다.
+  scaleStats(mult) {
+    const s = this.stats;
+    s.maxHp = Math.round(s.maxHp * mult);
+    s.hp = s.maxHp;
+    s.attack = Math.round(s.attack * mult);
+  }
+
   setState(state) {
     this.state = state;
     this.stateTime = 0;
@@ -88,8 +96,6 @@ export class Monster {
   }
 
   update(dt) {
-    const d = this.def;
-    const player = this.ctx.player;
     this.stateTime += dt;
     this.cooldown = Math.max(0, this.cooldown - dt);
     this.flash = Math.max(0, this.flash - dt);
@@ -104,11 +110,31 @@ export class Monster {
       return;
     }
 
+    const { move, speed } = this.think(dt);
+
+    if (speed > 0 && move.lengthSq() > 1e-6) {
+      move.normalize();
+      this.facing.lerp(move, Math.min(1, dt * 8)).normalize();
+      this.position.addScaledVector(move, speed * dt);
+    }
+    this.position.addScaledVector(this.knock, dt);
+    this.knock.multiplyScalar(Math.exp(-8 * dt));
+    this.separate();
+    this.ctx.world.resolveCollision(this.position, this.radius);
+
+    this.animate(dt, speed);
+  }
+
+  // 매 프레임 상태를 정하고 어느 쪽으로 얼마나 빨리 움직일지 돌려준다.
+  think(dt) {
+    const d = this.def;
+    const player = this.ctx.player;
     const toPlayer = tmp.set(player.position.x - this.position.x, 0, player.position.z - this.position.z);
     const dist = toPlayer.length();
     const canSee = player.alive && dist < d.detectRange;
     let speed = 0;
     const move = new THREE.Vector3();
+    this.attackTarget = player;
 
     switch (this.state) {
       case 'wander': {
@@ -148,20 +174,9 @@ export class Monster {
         speed = dist > d.attackRange * 0.8 ? d.chaseSpeed : 0;
         break;
       }
-      case 'attack': {
-        // 움츠렸다가(예비동작) 튀어오르며 공격
-        this.facing.copy(toPlayer).normalize();
-        if (!this.attacked && this.stateTime >= d.attackWindup) {
-          this.attacked = true;
-          this.knock.copy(this.facing).multiplyScalar(d.lungeSpeed);
-          this.ctx.bus.emit('monster:attack', { monster: this });
-        }
-        if (this.stateTime >= d.attackWindup + d.attackRecover) {
-          this.cooldown = d.attackCooldown;
-          this.setState('chase');
-        }
+      case 'attack':
+        this.attackStep('chase');
         break;
-      }
       case 'flee': {
         move.copy(toPlayer).multiplyScalar(-1);
         speed = d.fleeSpeed;
@@ -173,18 +188,24 @@ export class Monster {
         break;
       }
     }
+    return { move, speed };
+  }
 
-    if (speed > 0 && move.lengthSq() > 1e-6) {
-      move.normalize();
-      this.facing.lerp(move, Math.min(1, dt * 8)).normalize();
-      this.position.addScaledVector(move, speed * dt);
+  // 움츠렸다가(예비동작) 튀어오르며 attackTarget을 공격한다. 끝나면 next 상태로.
+  attackStep(next) {
+    const d = this.def;
+    const t = this.attackTarget;
+    tmp.set(t.position.x - this.position.x, 0, t.position.z - this.position.z);
+    if (tmp.lengthSq() > 1e-6) this.facing.copy(tmp).normalize();
+    if (!this.attacked && this.stateTime >= d.attackWindup) {
+      this.attacked = true;
+      this.knock.copy(this.facing).multiplyScalar(d.lungeSpeed);
+      this.ctx.bus.emit('monster:attack', { monster: this, target: t });
     }
-    this.position.addScaledVector(this.knock, dt);
-    this.knock.multiplyScalar(Math.exp(-8 * dt));
-    this.separate();
-    this.ctx.world.resolveCollision(this.position, this.radius);
-
-    this.animate(dt, speed);
+    if (this.stateTime >= d.attackWindup + d.attackRecover) {
+      this.cooldown = d.attackCooldown;
+      this.setState(next);
+    }
   }
 
   // 몬스터끼리 겹치지 않게 밀어낸다.

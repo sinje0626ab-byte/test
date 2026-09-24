@@ -24,8 +24,58 @@
     "color": "#57c95a",
     "xp": 5,
     "drops": [
-      { "item": "gold", "min": 2, "max": 6, "chance": 1 },
-      { "item": "slime_jelly", "min": 1, "max": 2, "chance": 0.7 }
+      {
+        "item": "gold",
+        "min": 2,
+        "max": 6,
+        "chance": 1
+      },
+      {
+        "item": "slime_jelly",
+        "min": 1,
+        "max": 2,
+        "chance": 0.7
+      }
     ]
+  },
+  "night_slime": {
+    "name": "밤 슬라임",
+    "hp": 50,
+    "attack": 9,
+    "defense": 0,
+    "radius": 0.6,
+    "moveSpeed": 2.2,
+    "chaseSpeed": 2.8,
+    "fleeSpeed": 3.8,
+    "detectRange": 6,
+    "loseRange": 10,
+    "attackRange": 1.2,
+    "attackWindup": 0.45,
+    "attackRecover": 0.5,
+    "attackCooldown": 1.1,
+    "fleeHpRatio": 0.25,
+    "fleeDuration": 3,
+    "wanderRadius": 6,
+    "wanderPauseMin": 0.8,
+    "wanderPauseMax": 2.5,
+    "knockbackResist": 0,
+    "lungeSpeed": 4,
+    "color": "#8a6cf0",
+    "xp": 8,
+    "drops": [
+      {
+        "item": "gold",
+        "min": 1,
+        "max": 3,
+        "chance": 1
+      },
+      {
+        "item": "slime_jelly",
+        "min": 1,
+        "max": 1,
+        "chance": 0.4
+      }
+    ],
+    "structureDamageMultiplier": 1.5
   }
 }

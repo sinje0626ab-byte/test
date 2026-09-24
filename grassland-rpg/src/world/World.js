@@ -4,6 +4,7 @@ import { createRandom } from '../utils/random.js';
 // 초원 평지 한 장. 청크 로딩은 Phase 5(두 번째 지역)에서 Chunk.js로 나눈다.
 const PALETTE = {
   sky: 0xbfe6f7,
+  nightSky: 0x26305a,
   grassA: new THREE.Color('#9edb6f'),
   grassB: new THREE.Color('#86c95c'),
   grassC: new THREE.Color('#b2e27e'),
@@ -37,7 +38,13 @@ export class World {
 
   buildLights() {
     const scene = this.ctx.scene;
-    scene.add(new THREE.HemisphereLight(0xeaf6ff, 0x6f9a52, 1.25));
+    this.hemi = new THREE.HemisphereLight(0xeaf6ff, 0x6f9a52, 1.25);
+    scene.add(this.hemi);
+    this.daySky = new THREE.Color(PALETTE.sky);
+    this.nightSky = new THREE.Color(PALETTE.nightSky);
+    this.skyColor = new THREE.Color();
+    this.sunColor = new THREE.Color(0xfff0d2);
+    this.moonColor = new THREE.Color(0x8ea6ff);
 
     const sun = new THREE.DirectionalLight(0xfff0d2, 1.9);
     sun.castShadow = true;
@@ -240,7 +247,19 @@ export class World {
     return Math.hypot(x, z) < this.half - margin;
   }
 
+  // 낮/밤: 1 = 한낮, 0 = 한밤
+  applyDaylight(daylight) {
+    const d = daylight;
+    this.skyColor.copy(this.nightSky).lerp(this.daySky, d);
+    this.ctx.scene.background.copy(this.skyColor);
+    this.ctx.scene.fog.color.copy(this.skyColor);
+    this.hemi.intensity = 0.45 + 0.8 * d;
+    this.sun.intensity = 0.45 + 1.45 * d;
+    this.sun.color.copy(this.moonColor).lerp(this.sunColor, d);
+  }
+
   update(dt, focus) {
+    this.applyDaylight(this.ctx.time.daylight);
     // 그림자 범위를 좁게 유지하려고 태양이 플레이어를 따라다닌다.
     this.sun.target.position.copy(focus);
     this.sun.position.copy(focus).add(this.sunOffset);
