@@ -1,3 +1,6 @@
+import { itemIcon } from './icons.js';
+import { itemTooltip } from './itemText.js';
+
 // 인벤토리 창 (I): 격자 슬롯, 드래그로 이동, 우클릭 사용/장착, 툴팁
 export class InventoryWindow {
   constructor(ctx, ui, tooltip) {
@@ -48,21 +51,14 @@ export class InventoryWindow {
       const def = this.def(s.id);
       el.className = 'slot filled';
       el.style.setProperty('--grade', grades[def.grade]?.color ?? '#e8e8e8');
-      el.innerHTML = `<i class="item-icon" style="--c:${def.color}"></i>${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}`;
+      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}`;
     });
   }
 
   tooltipHtml(s) {
-    const { grades, categories } = this.ctx.data.items;
     const def = this.def(s.id);
-    const grade = grades[def.grade];
-    const usable = def.category === 'consumable' || def.category === 'equipment';
-    return `
-      <div class="tt-name" style="color:${grade?.color ?? '#fff'}">${def.name}</div>
-      <div class="tt-meta">${grade ? `${grade.name} · ` : ''}${categories[def.category] ?? ''}</div>
-      ${def.description ? `<p class="tt-desc">${def.description}</p>` : ''}
-      <div class="tt-meta">수량 ${s.count}${def.stackable ? ` / ${def.maxStack ?? this.ctx.data.config.inventory.defaultMaxStack}` : ''}</div>
-      ${usable ? `<div class="tt-hint">우클릭: ${def.category === 'equipment' ? '장착' : '사용'}</div>` : ''}`;
+    const hint = { equipment: '우클릭: 장착', consumable: '우클릭: 사용', kit: '우클릭: 설치' }[def.category];
+    return itemTooltip(this.ctx.data, s.id, { count: s.count, hint });
   }
 
   slotIndexAt(x, y) {

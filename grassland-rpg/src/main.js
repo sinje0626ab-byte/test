@@ -6,12 +6,14 @@ import items from './data/items.json';
 import buildings from './data/buildings.json';
 import turrets from './data/turrets.json';
 import regions from './data/regions.json';
+import levels from './data/levels.json';
+import skills from './data/skills.json';
 import { Game } from './core/Game.js';
 
 const game = new Game({
   container: document.getElementById('app'),
   uiRoot: document.getElementById('ui'),
-  data: { config, player, monsters, items, buildings, turrets, regions },
+  data: { config, player, monsters, items, buildings, turrets, regions, levels, skills },
 });
 game.start();
 

@@ -1,0 +1,12 @@
+{
+  "maxLevel": 30,
+  "xpBase": 20,
+  "xpGrowth": 1.3,
+  "skillPointsPerLevel": 1,
+  "perLevel": {
+    "maxHp": 8,
+    "maxStamina": 4,
+    "attack": 1,
+    "defense": 0.5
+  }
+}

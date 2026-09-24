@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { nearestBase } from '../utils/bases.js';
-
-const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.8 });
+import { createPlayerModel } from './PlayerModel.js';
 
 // 플레이어: 이동·달리기·근접 공격·피격·사망/부활.
 export class Player {
@@ -13,8 +12,9 @@ export class Player {
       maxHp: b.hp, hp: b.hp,
       maxStamina: b.stamina, stamina: b.stamina,
       attack: b.attack, defense: b.defense,
-      moveSpeed: b.moveSpeed, critChance: b.critChance,
-    };
+      moveSpeed: b.moveSpeed, critChance: b.critChance, hpRegen: b.hpRegen,
+      attackSpeed: 0, spin: 0,
+    }; // StatsSystem이 레벨·장비·스킬을 더해 다시 채운다
     this.radius = b.radius;
     this.position = ctx.world.spawnPoint.clone();
     this.facing = new THREE.Vector3(0, 0, 1);
@@ -31,12 +31,30 @@ export class Player {
     this.deathTimer = 0;
     this.walkPhase = 0;
     this.flash = 0;
+    this.attackCount = 0;
+    this.spinning = false;
 
-    this.buildMesh();
+    const model = createPlayerModel(b);
+    Object.assign(this, model);
+    this.mesh = model.group;
+    ctx.scene.add(this.mesh);
     this.syncMesh(0);
 
+    // 무기를 바꾸면 칼날 색도 바뀐다.
+    ctx.bus.on('equipment:changed', ({ slots }) => {
+      const w = slots.weapon && ctx.data.items.items[slots.weapon];
+      this.blade.material.color.set(w ? w.color : '#e8eef5');
+    });
     ctx.bus.on('save:collect', (save) => this.collectSave(save));
     ctx.bus.on('save:apply', (save) => this.applySave(save.player));
+    // 장비·스킬까지 반영된 최대치가 정해진 뒤에 HP를 맞춘다.
+    ctx.bus.on('save:loaded', () => {
+      if (!this.loadedVitals) return;
+      const s = this.stats;
+      s.hp = Math.max(1, Math.min(s.maxHp, this.loadedVitals.hp));
+      s.stamina = Math.min(s.maxStamina, this.loadedVitals.stamina);
+      this.loadedVitals = null;
+    });
   }
 
   // 쓰러져 있는 중에 저장되면 부활한 상태로 저장한다.
@@ -52,70 +70,9 @@ export class Player {
 
   applySave(p) {
     if (!p) return;
-    const s = this.stats;
     this.position.set(p.position[0], 0, p.position[1]);
     this.ctx.world.resolveCollision(this.position, this.radius);
-    s.hp = Math.max(1, Math.min(s.maxHp, p.hp));
-    s.stamina = Math.min(s.maxStamina, p.stamina);
-  }
-
-  buildMesh() {
-    const g = new THREE.Group();
-    this.bodyMats = [];
-    const addMat = (m) => (this.bodyMats.push(m), m);
-
-    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 0.35, 3, 8), addMat(flat('#5b8def')));
-    body.position.y = 0.55;
-    const head = new THREE.Mesh(new THREE.IcosahedronGeometry(0.34, 1), addMat(flat('#ffd9b8')));
-    head.position.y = 1.18;
-    const hair = new THREE.Mesh(new THREE.SphereGeometry(0.36, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), addMat(flat('#7a4b2a')));
-    hair.position.y = 1.22;
-    hair.rotation.x = -0.25;
-    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.25, 4), addMat(flat('#63c96b')));
-    leaf.position.set(0.05, 1.6, 0);
-    leaf.rotation.z = -0.5;
-    const eyeMat = flat('#2b2b33');
-    const eyeGeo = new THREE.SphereGeometry(0.045, 6, 4);
-    const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-    const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-    eyeL.position.set(-0.12, 1.18, 0.3);
-    eyeR.position.set(0.12, 1.18, 0.3);
-    const footGeo = new THREE.BoxGeometry(0.16, 0.12, 0.24);
-    const footMat = addMat(flat('#6b4a36'));
-    this.footL = new THREE.Mesh(footGeo, footMat);
-    this.footR = new THREE.Mesh(footGeo, footMat);
-    this.footL.position.set(-0.13, 0.06, 0);
-    this.footR.position.set(0.13, 0.06, 0);
-
-    // 칼은 몸 중심의 피벗에 달려서 좌우로 휘두른다.
-    this.swordPivot = new THREE.Group();
-    this.swordPivot.position.y = 0.7;
-    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.9), flat('#e8eef5'));
-    blade.position.set(0.42, 0, 0.55);
-    const guard = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.06, 0.06), flat('#c9a44a'));
-    guard.position.set(0.42, 0, 0.1);
-    this.swordPivot.add(blade, guard);
-    this.swordPivot.rotation.y = 0.9;
-
-    const inner = new THREE.Group();
-    inner.add(body, head, hair, leaf, eyeL, eyeR, this.footL, this.footR, this.swordPivot);
-    inner.traverse((o) => { if (o.isMesh) o.castShadow = true; });
-    g.add(inner);
-    this.inner = inner;
-
-    // 휘두를 때 잠깐 보이는 궤적
-    const arc = THREE.MathUtils.degToRad(this.base.attackArcDeg);
-    const trailGeo = new THREE.RingGeometry(0.5, this.base.attackRange, 20, 1, -arc / 2, arc);
-    trailGeo.rotateX(-Math.PI / 2);
-    trailGeo.rotateY(-Math.PI / 2);
-    this.trail = new THREE.Mesh(trailGeo, new THREE.MeshBasicMaterial({
-      color: 0xffffff, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false,
-    }));
-    this.trail.position.y = 0.45;
-    g.add(this.trail);
-
-    this.mesh = g;
-    this.ctx.scene.add(g);
+    this.loadedVitals = { hp: p.hp, stamina: p.stamina };
   }
 
   update(dt) {
@@ -164,7 +121,7 @@ export class Player {
     // 스태미나·HP 재생
     this.staminaDelay -= dt;
     if (this.staminaDelay <= 0) s.stamina = Math.min(s.maxStamina, s.stamina + b.staminaRegen * dt);
-    s.hp = Math.min(s.maxHp, s.hp + b.hpRegen * dt);
+    s.hp = Math.min(s.maxHp, s.hp + s.hpRegen * dt);
 
     this.updateAttack(dt);
     this.syncMesh(dt);
@@ -185,7 +142,10 @@ export class Player {
       this.swingDir.copy(this.facing);
       this.swingTime = 0;
       this.hitDone = false;
-      this.attackTimer = b.attackCooldown;
+      this.attackCount += 1;
+      // 회전 공격 스킬: N번째 공격마다 한 바퀴
+      this.spinning = s.spin > 0 && this.attackCount % b.spinEvery === 0;
+      this.attackTimer = b.attackCooldown * Math.max(0.3, 1 - s.attackSpeed);
       s.stamina -= b.attackStaminaCost;
       this.staminaDelay = b.staminaRegenDelay;
     }
@@ -198,8 +158,8 @@ export class Player {
         origin: this.position.clone(),
         dir: this.swingDir.clone(),
         range: b.attackRange,
-        arc: THREE.MathUtils.degToRad(b.attackArcDeg),
-        attack: s.attack,
+        arc: this.spinning ? Math.PI * 2 : THREE.MathUtils.degToRad(b.attackArcDeg),
+        attack: this.spinning ? s.attack * (1 + b.spinDamagePerRank * s.spin) : s.attack,
         critChance: s.critChance,
         critMultiplier: b.critMultiplier,
         knockback: b.knockback,
@@ -258,11 +218,19 @@ export class Player {
 
     // 칼 휘두르기: 오른쪽 → 왼쪽
     const b = this.base;
+    this.inner.rotation.y = 0;
+    this.spinTrail.material.opacity = 0;
     if (this.swingTime >= 0) {
       const t = Math.min(1, this.swingTime / b.attackDuration);
       const ease = 1 - Math.pow(1 - t, 3);
       this.swordPivot.rotation.y = THREE.MathUtils.lerp(1.4, -1.6, ease);
-      this.trail.material.opacity = 0.45 * (1 - t);
+      if (this.spinning) {
+        this.inner.rotation.y = -ease * Math.PI * 2;
+        this.spinTrail.material.opacity = 0.45 * (1 - t);
+        this.trail.material.opacity = 0;
+      } else {
+        this.trail.material.opacity = 0.45 * (1 - t);
+      }
     } else {
       this.swordPivot.rotation.y += (0.9 - this.swordPivot.rotation.y) * Math.min(1, dt * 10);
       this.trail.material.opacity = 0;

@@ -15,7 +15,7 @@ export class HUD {
     this.root = root;
     root.innerHTML = `
       <div class="hud-tl">
-        <div class="hud-level"><span class="lv-badge">Lv <b data-lv>1</b></span></div>
+        <div class="hud-level"><span class="lv-badge">Lv <b data-lv>1</b></span><span class="sp-pip" data-sp hidden></span></div>
         <div class="bar hp"><div class="fill" data-hp></div><span data-hp-text></span></div>
         <div class="bar st"><div class="fill" data-st></div></div>
         <div class="bar xp"><div class="fill" data-xp></div></div>
@@ -27,7 +27,7 @@ export class HUD {
       </div>
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
-      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · B 건설</div>
+      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방 · C 캐릭터 · K 스킬 · B 건설</div>
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
@@ -38,7 +38,7 @@ export class HUD {
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
-      help: $('[data-help]'), banner: $('[data-banner]'),
+      help: $('[data-help]'), banner: $('[data-banner]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
     const { bus } = ctx;
@@ -48,6 +48,17 @@ export class HUD {
     });
     bus.on('notify', (n) => this.notify(n));
     bus.on('save:done', () => this.pulse(this.el.saved, 'show'));
+    bus.on('stats:changed', ({ level, xp, xpToNext, skillPoints }) => {
+      this.el.lv.textContent = level;
+      this.el.xp.style.width = Number.isFinite(xpToNext) ? `${(xp / xpToNext) * 100}%` : '100%';
+      this.el.sp.hidden = skillPoints <= 0;
+      this.el.sp.textContent = `스킬 +${skillPoints} (K)`;
+    });
+    bus.on('xp:gain', ({ amount, position }) => this.floatText({ position, amount: `+${amount} XP`, target: 'xp' }));
+    bus.on('stats:levelup', ({ level }) => {
+      this.banner(`레벨 업! Lv ${level}`, '스킬 포인트 +1 · K 키로 스킬을 배워요', 'level');
+      this.pulse(this.el.lv.parentElement);
+    });
     this.helpText = this.el.help.textContent;
     bus.on('build:hint', ({ text, ok }) => {
       this.el.help.textContent = text || this.helpText;
@@ -110,7 +121,6 @@ export class HUD {
     this.el.hp.style.width = `${(s.hp / s.maxHp) * 100}%`;
     this.el.hpText.textContent = `${Math.ceil(s.hp)} / ${s.maxHp}`;
     this.el.st.style.width = `${(s.stamina / s.maxStamina) * 100}%`;
-    this.el.xp.style.width = '0%'; // 레벨·경험치는 Phase 4
 
     const t = this.ctx.time;
     const left = Math.ceil(t.untilChange);

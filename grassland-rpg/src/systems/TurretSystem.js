@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Turret } from '../entities/Turret.js';
 import { ProjectilePool } from '../entities/Projectile.js';
+import { turretDamage, turretRange } from '../utils/build.js';
 
 const tmp = new THREE.Vector3();
 
@@ -39,7 +40,7 @@ export class TurretSystem {
 
   // 사거리 안의 적 중 우선순위(가장 가까운 적 / 체력 낮은 적)대로 고른다.
   pickTarget(t) {
-    const range = t.def.range;
+    const range = turretRange(t.def, this.ctx.player.stats);
     let best = null;
     let bestScore = Infinity;
     for (const m of this.ctx.monsters) {
@@ -56,8 +57,9 @@ export class TurretSystem {
     const def = t.def;
     const from = t.muzzle;
     tmp.set(target.position.x, 0.5, target.position.z).sub(from).normalize().multiplyScalar(def.projectileSpeed);
-    const life = (def.range * 1.3) / def.projectileSpeed;
-    this.pool.acquire().fire(from, tmp, def.damage, life);
+    const stats = this.ctx.player.stats;
+    const life = (turretRange(def, stats) * 1.3) / def.projectileSpeed;
+    this.pool.acquire().fire(from, tmp, turretDamage(def, stats), life);
     t.recoil = 1;
   }
 

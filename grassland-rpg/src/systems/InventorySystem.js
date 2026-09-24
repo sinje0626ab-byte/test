@@ -10,6 +10,17 @@ export class InventorySystem {
     bus.on('inventory:move', ({ from, to }) => this.move(from, to));
     bus.on('inventory:use', ({ slot }) => this.use(slot));
     bus.on('inventory:consume', ({ item, count }) => this.remove(item, count));
+    // 장비 장착: 그 칸을 원래 끼던 장비(없으면 빈칸)로 바꾼다.
+    bus.on('inventory:replace-slot', ({ slot, item }) => {
+      this.slots[slot] = item ? { id: item, count: 1 } : null;
+      this.changed();
+    });
+    // 장비 해제 등: 받은 만큼 e.taken 에 더한다.
+    bus.on('inventory:add', (e) => {
+      const added = this.add(e.item, e.count);
+      e.taken += added;
+      if (added) this.changed();
+    });
     bus.on('game:new', () => {
       for (const s of ctx.data.config.startingItems) this.add(s.id, s.count);
       this.changed();

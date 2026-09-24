@@ -15,11 +15,16 @@ import { BaseSystem } from '../systems/BaseSystem.js';
 import { BuildSystem } from '../systems/BuildSystem.js';
 import { TurretSystem } from '../systems/TurretSystem.js';
 import { RaidSystem } from '../systems/RaidSystem.js';
+import { StatsSystem } from '../systems/StatsSystem.js';
+import { EquipmentSystem } from '../systems/EquipmentSystem.js';
+import { SkillSystem } from '../systems/SkillSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
 import { InventoryWindow } from '../ui/InventoryWindow.js';
 import { BuildMenu } from '../ui/BuildMenu.js';
+import { CharacterWindow } from '../ui/CharacterWindow.js';
+import { SkillWindow } from '../ui/SkillWindow.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -62,6 +67,9 @@ export class Game {
       new BuildSystem(ctx),
       new TurretSystem(ctx),
       new RaidSystem(ctx),
+      new StatsSystem(ctx),
+      new EquipmentSystem(ctx),
+      new SkillSystem(ctx),
     );
     this.save = new SaveSystem(ctx);
     this.systems.push(this.save);
@@ -71,6 +79,13 @@ export class Game {
     this.tooltip = new Tooltip(uiRoot);
     new InventoryWindow(ctx, this.ui, this.tooltip);
     new BuildMenu(ctx, this.ui);
+    new CharacterWindow(ctx, this.ui, this.tooltip);
+    new SkillWindow(ctx, this.ui);
+
+    // 창들이 첫 화면을 그릴 수 있게 현재 상태를 한 번 알린다. (불러오기가 있으면 다시 알린다)
+    this.systems.find((s) => s instanceof StatsSystem).recalc();
+    this.systems.find((s) => s instanceof EquipmentSystem).changed();
+    this.systems.find((s) => s instanceof SkillSystem).changed();
 
     // 모든 시스템·창이 이벤트를 듣기 시작한 뒤에 불러와야 각자 자기 몫을 받는다.
     this.save.load();

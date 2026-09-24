@@ -11,6 +11,7 @@
     "damage": 8,
     "projectileSpeed": 20,
     "priority": "nearest",
-    "color": "#c58b4f"
+    "color": "#c58b4f",
+    "xp": 10
   }
 }

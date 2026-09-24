@@ -25,5 +25,7 @@
   "deathGoldLossRatio": 0.2,
   "pickupRadius": 0.9,
   "magnetRadius": 3.5,
-  "magnetSpeed": 12
+  "magnetSpeed": 12,
+  "spinEvery": 3,
+  "spinDamagePerRank": 0.25
 }

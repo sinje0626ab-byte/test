@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -12,6 +12,14 @@ const migrations = {
     else slots.push(kit);
     return { ...s, saveVersion: 2, inventory: { slots }, bases: [], turrets: [] };
   },
+  // v2 → v3: 레벨·장비·스킬 추가
+  2: (s) => ({
+    ...s,
+    saveVersion: 3,
+    stats: { level: 1, xp: 0, skillPoints: 0 },
+    equipment: { slots: {} },
+    skills: { ranks: {} },
+  }),
 };
 
 export class SaveSystem {
@@ -56,6 +64,7 @@ export class SaveSystem {
       return false;
     }
     this.ctx.bus.emit('save:apply', data);
+    this.ctx.bus.emit('save:loaded', data);
     this.ctx.bus.emit('notify', { text: '이어서 시작합니다', kind: 'info' });
     return true;
   }

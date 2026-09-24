@@ -152,10 +152,15 @@ src/
     "inventory": { "slots": [ { "id": "slime_jelly", "count": 3 }, null, ... ] },
     "time": { "day": 1, "clock": 120.5 },
     "bases": [ { "id": 1, "level": 1, "position": [x, z], "hp": 300 } ],
-    "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1 } ]
+    "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1 } ],
+    "stats": { "level": 1, "xp": 0, "skillPoints": 0 },
+    "equipment": { "slots": { "weapon": "twig_sword", "head": null, ... } },
+    "skills": { "ranks": { "power": 2 } }
   }
   ```
 - v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
+- v2 → v3: `stats`·`equipment`·`skills` 추가 (레벨 1부터)
+- 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
 
@@ -167,6 +172,20 @@ src/
   - 생존·채집: 채집 속도, 채집량, HP 재생, 이동속도
   - 건축: 건설 비용 감소, 포탑 데미지·사거리, 포탑 설치 수 증가
 - 스킬은 선행 스킬이 있어야 찍을 수 있음 (`skills.json`의 `requires`)
+
+- 경험치 출처: 몬스터 처치(`monsters.json`의 `xp`), 건설(`turrets.json`·`buildings.json`의 `xp`), 채집(채집 추가 후)
+- 다음 레벨까지 필요 경험치 = `levels.json`의 `xpBase` × `xpGrowth`^(레벨-1) (반올림)
+- 레벨업 시 `levels.json`의 `perLevel`만큼 능력치 상승, HP·스태미나 가득 회복
+- 최종 능력치 = 기본(`player.json`) + 레벨 보너스 + 장비 보너스 + 스킬 효과. StatsSystem이 계산해서 `ctx.player.stats`에 넣고, 다른 시스템은 그 값을 읽는다
+  - 포탑 데미지·사거리·비용·설치 수 같은 건축 스킬 효과도 `ctx.player.stats`에 들어 있다
+- 스킬은 한 번에 1랭크씩, 찍기 전 확인 창을 띄운다. 초기화 기능은 아직 없다
+- 채집 속도·채집량 스킬은 찍을 수 있지만, 채집(ResourceNode)이 추가된 뒤부터 효과가 난다
+
+### 4-4-1. 장비
+- 슬롯: 무기, 머리, 몸, 신발, 장신구 2
+- 아이템의 `equipSlot`(weapon / head / body / feet / accessory)과 `bonus`(능력치 증가)로 정의
+- 가방에서 우클릭 → 장착 (원래 끼던 장비는 그 가방 칸으로 돌아온다). 캐릭터 창에서 장비 칸 우클릭 → 해제 (가방이 차 있으면 해제 불가)
+- 장비는 몬스터 드롭으로 얻는다 (낮은 확률). 제작·상점은 Phase 6
 
 ### 4-5. 기지
 - 단계: 텐트(Lv1) → 움막(Lv2) → 집(Lv3) → 요새(Lv4)
@@ -275,9 +294,9 @@ src/
 - [x] 낮/밤, 밤 습격 (실시간)
 
 ### Phase 4 — 성장
-- [ ] 레벨·경험치
-- [ ] 캐릭터 정보 창 (C), 장비 장착
-- [ ] 스킬 창 (K), 스킬트리 3갈래
+- [x] 레벨·경험치
+- [x] 캐릭터 정보 창 (C), 장비 장착
+- [x] 스킬 창 (K), 스킬트리 3갈래
 
 ### Phase 5 — 멀티 기지
 - [ ] 두 번째 지역 (숲)
@@ -327,6 +346,16 @@ src/
 | `projectile:hit` | TurretSystem | CombatSystem |
 | `structure:destroyed` | CombatSystem | RaidSystem (텐트면 실패) |
 | `raid:result` | RaidSystem | HUD (아침 결과 배너) |
+| `xp:gain` | StatsSystem (처치·건설을 듣고) | HUD (+XP 표시) |
+| `stats:changed` / `stats:levelup` | StatsSystem | HUD, CharacterWindow, SkillWindow |
+| `stats:spend-point` | SkillSystem | StatsSystem (`ok`에 결과) |
+| `item:equip` | InventorySystem | EquipmentSystem |
+| `inventory:replace-slot` / `inventory:add` | EquipmentSystem | InventorySystem |
+| `equipment:unequip` | CharacterWindow | EquipmentSystem |
+| `equipment:changed` | EquipmentSystem | StatsSystem, CharacterWindow |
+| `skill:learn` | SkillWindow | SkillSystem |
+| `skills:changed` | SkillSystem | StatsSystem, SkillWindow |
+| `save:loaded` | SaveSystem | Player (HP 맞추기) |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

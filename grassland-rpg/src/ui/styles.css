@@ -257,7 +257,71 @@ kbd {
 .empty { margin: 16px 0; text-align: center; color: #9a8f73; font-size: 14px; line-height: 1.6; }
 .dmg.structure { color: #ffb86b; }
 
+.sp-pip {
+  margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  background: #ffcf5c; color: #6b4a1a; animation: pulse 1.2s ease-in-out infinite;
+}
+.sp-pip[hidden] { display: none; }
+.dmg.xp { color: #b9a4ff; font-size: 14px; }
+.hud-banner.level { border-color: #ffcf5c; }
+.hud-banner.level b { color: #e0a21c; }
+
+.item-svg { width: 34px; height: 34px; }
+.item-svg.hint { opacity: 0.8; width: 28px; height: 28px; }
+.tt-bonus { color: #9ad48f; font-weight: 700; margin-top: 3px; }
+
+/* 캐릭터 창 */
+.char { display: flex; gap: 18px; }
+.equip-grid { display: grid; grid-template-columns: repeat(2, 72px); gap: 8px; align-content: start; }
+.eslot {
+  --grade: transparent;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 0 6px;
+  border-radius: 12px; background: #f1e8d2; box-shadow: inset 0 2px 0 rgba(120, 100, 60, 0.15);
+}
+.eslot span { font-size: 11px; color: #9a8f73; }
+.eslot .eicon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.eslot.filled { background: #fff6e0; border: 2px solid var(--grade); padding: 3px 0 4px; cursor: pointer; }
+.char-stats { width: 190px; }
+.char-level { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #c98a12; font-weight: 700; }
+.char-xp { font-size: 11px; color: #9a8f73; margin: 3px 0 8px; }
+.char-stats dl { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; margin: 0; font-size: 13px; }
+.char-stats dt { color: #8a7f63; }
+.char-stats dd { margin: 0; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* 스킬 창 */
+.sk-points { font-size: 14px; margin-bottom: 10px; }
+.sk-points b { color: #e0a21c; font-size: 17px; }
+.sk-tree { display: grid; grid-template-columns: repeat(3, 200px); gap: 12px; }
+.sk-branch h3 { margin: 0 0 8px; font-size: 14px; padding: 3px 10px; border-radius: 999px; background: var(--bc); color: #fff; display: inline-block; }
+.sk-node {
+  display: flex; flex-direction: column; gap: 2px; width: 100%; margin-bottom: 8px; padding: 8px 10px;
+  text-align: left; font: inherit; color: inherit; border-radius: 12px; cursor: default;
+  background: #fff6e0; border: 2px solid var(--panel-edge);
+}
+.sk-node small { font-size: 11px; color: #8a7f63; line-height: 1.4; }
+.sk-node .sk-eff { color: #6b8f5a; }
+.sk-node .sk-req.bad { color: #e0645a; }
+.sk-head { display: flex; justify-content: space-between; align-items: center; }
+.sk-rank { font-size: 12px; font-weight: 800; color: var(--bc); }
+.sk-node.ready { cursor: pointer; border-color: var(--bc); }
+.sk-node.ready:hover { background: #fff1c9; }
+.sk-node.locked { opacity: 0.55; }
+.sk-node.max { background: color-mix(in srgb, var(--bc), #fff 80%); border-color: var(--bc); }
+.sk-node.picked { outline: 3px solid #ffcf5c; }
+.sk-confirm {
+  margin-top: 6px; padding: 10px 12px; border-radius: 12px; background: #2f2a24; color: #f4efe3;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.sk-confirm[hidden] { display: none; }
+.sk-confirm p { margin: 0; font-size: 14px; }
+.sk-confirm small { color: #c9bfa8; }
+.sk-actions { display: flex; gap: 6px; flex: none; }
+.sk-actions button { padding: 6px 14px; border: 0; border-radius: 999px; cursor: pointer; font: 700 13px inherit; background: #5a5147; color: #fff; }
+.sk-actions .primary { background: #7cc67a; }
+
 @media (max-width: 600px) {
+  .sk-tree { grid-template-columns: 1fr; max-height: 60vh; overflow: auto; }
+  .char { flex-direction: column; }
   .window.win-left { left: 50%; }
   .build-list { width: 300px; }
   .window { right: 50%; transform: translate(50%, -50%); }
