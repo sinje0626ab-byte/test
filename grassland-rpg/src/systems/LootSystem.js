@@ -8,6 +8,7 @@ export class LootSystem {
     this.ctx = ctx;
     this.cfg = ctx.data.config.loot;
     this.drops = [];
+    this.fullNotice = 0;
     ctx.bus.on('monster:killed', (e) => this.onKilled(e));
   }
 
@@ -29,18 +30,31 @@ export class LootSystem {
     this.drops.push(new Drop(this.ctx, itemId, count, start, vel));
   }
 
+  onBagFull(drop) {
+    drop.blocked = this.cfg.fullRetry;
+    if (this.fullNotice > 0) return;
+    this.fullNotice = this.cfg.fullNoticeCooldown;
+    this.ctx.bus.emit('notify', { text: '가방이 가득 찼습니다', kind: 'warn' });
+  }
+
   update(dt) {
     const { player, bus } = this.ctx;
     const p = this.ctx.data.player;
+    this.fullNotice = Math.max(0, this.fullNotice - dt);
     for (let i = this.drops.length - 1; i >= 0; i--) {
       const d = this.drops[i];
       d.update(dt);
 
-      if (player.alive && d.age > this.cfg.pickupDelay) {
+      d.blocked = Math.max(0, (d.blocked ?? 0) - dt);
+      if (player.alive && d.age > this.cfg.pickupDelay && d.blocked <= 0) {
         const dist = Math.hypot(player.position.x - d.position.x, player.position.z - d.position.z);
         if (dist < p.pickupRadius) {
-          bus.emit('loot:picked', { item: d.itemId, count: d.count });
-          d.done = true;
+          // 받은 쪽이 taken에 받은 개수를 더한다. 다 못 받으면 나머지는 바닥에 남는다.
+          const e = { item: d.itemId, count: d.count, taken: 0 };
+          bus.emit('loot:picked', e);
+          d.count -= e.taken;
+          if (d.count <= 0) d.done = true;
+          else this.onBagFull(d);
         } else if (dist < p.magnetRadius) {
           d.pullToward(player.position, p.magnetSpeed, dt);
         }

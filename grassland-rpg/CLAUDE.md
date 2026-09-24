@@ -131,6 +131,29 @@ src/
 - 재료 겹치기(stack) 가능, 장비는 불가
 - 모든 아이템은 `data/items.json`에 id로 정의
 - 바닥의 드롭은 가까이 가면 자동으로 끌려와서 주워진다
+- 가방(인벤토리)은 칸 수가 정해져 있다 (`config.json`의 `inventory`). 가득 차면 드롭은 바닥에 남는다
+- 한 칸에 겹칠 수 있는 최대 수량은 아이템의 `maxStack` (없으면 `inventory.defaultMaxStack`)
+- 골드는 가방 칸을 차지하지 않는다 (EconomySystem이 따로 관리)
+
+### 4-11. 저장
+- localStorage 한 키에 JSON 하나 (`config.json`의 `save.key`)
+- 자동 저장: 일정 간격(`save.autosaveInterval`초) + 탭을 숨기거나 닫을 때
+- 게임 시작 시 저장이 있으면 불러온다
+- SaveSystem은 다른 시스템을 직접 부르지 않는다
+  - 저장: `save:collect` 이벤트에 빈 객체를 넘기면 각 시스템이 자기 몫을 채운다
+  - 불러오기: `save:apply` 이벤트로 저장 데이터를 넘기면 각 시스템이 자기 몫을 가져간다
+- 저장 구조 (saveVersion 1)
+  ```json
+  {
+    "saveVersion": 1,
+    "savedAt": 1727000000000,
+    "player": { "position": [x, z], "hp": 100, "stamina": 100 },
+    "economy": { "gold": 0 },
+    "inventory": { "slots": [ { "id": "slime_jelly", "count": 3 }, null, ... ] }
+  }
+  ```
+- 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
+- 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
 
 ### 4-4. 레벨·스킬
 - 몬스터 처치, 채집, 건설로 경험치 획득
@@ -221,8 +244,8 @@ src/
 - [x] HUD 기본
 
 ### Phase 2 — 인벤토리·저장
-- [ ] 인벤토리 창 (I)
-- [ ] 세이브/로드 (localStorage, 자동 저장)
+- [x] 인벤토리 창 (I)
+- [x] 세이브/로드 (localStorage, 자동 저장)
 
 ### Phase 3 — 기지·포탑·습격 (핵심 재미 검증)
 - [ ] 텐트 설치, 기지 영역
@@ -266,8 +289,12 @@ src/
 | `monster:attack` | Monster | CombatSystem |
 | `combat:hit` | CombatSystem | HUD (데미지 숫자) |
 | `monster:killed` | CombatSystem | LootSystem |
-| `loot:picked` | LootSystem | EconomySystem, InventorySystem |
-| `gold:changed` | EconomySystem | HUD |
-| `inventory:changed` | InventorySystem | (Phase 2 인벤토리 창) |
+| `loot:picked` | LootSystem | EconomySystem, InventorySystem (받은 만큼 `taken`에 더한다) |
+| `gold:changed` | EconomySystem | HUD, InventoryWindow |
+| `inventory:changed` | InventorySystem | InventoryWindow |
+| `inventory:move` / `inventory:use` | InventoryWindow | InventorySystem |
+| `item:use` / `item:equip` | InventorySystem | (소모품 효과·장비는 이후 Phase) |
+| `save:collect` / `save:apply` | SaveSystem | Player, EconomySystem, InventorySystem |
+| `save:done` | SaveSystem | HUD (저장 표시) |
 | `player:damaged` / `player:died` / `player:respawned` | Player | HUD, EconomySystem |
 | `notify` | 누구나 | HUD (알림) |

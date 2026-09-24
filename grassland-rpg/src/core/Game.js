@@ -10,7 +10,11 @@ import { MonsterSpawner } from '../systems/MonsterSpawner.js';
 import { LootSystem } from '../systems/LootSystem.js';
 import { EconomySystem } from '../systems/EconomySystem.js';
 import { InventorySystem } from '../systems/InventorySystem.js';
+import { SaveSystem } from '../systems/SaveSystem.js';
 import { HUD } from '../ui/HUD.js';
+import { UIManager } from '../ui/UIManager.js';
+import { Tooltip } from '../ui/Tooltip.js';
+import { InventoryWindow } from '../ui/InventoryWindow.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -48,7 +52,16 @@ export class Game {
       new EconomySystem(ctx),
       new InventorySystem(ctx),
     ];
+    this.save = new SaveSystem(ctx);
+    this.systems.push(this.save);
+
     this.hud = new HUD(ctx, uiRoot);
+    this.ui = new UIManager(ctx, uiRoot);
+    this.tooltip = new Tooltip(uiRoot);
+    new InventoryWindow(ctx, this.ui, this.tooltip);
+
+    // 모든 시스템·창이 이벤트를 듣기 시작한 뒤에 불러와야 각자 자기 몫을 받는다.
+    this.save.load();
 
     this.camera.snapTo(ctx.player.position);
     window.addEventListener('resize', () => this.resize());
@@ -77,6 +90,7 @@ export class Game {
     ctx.world.update(dt, ctx.player.position);
     this.camera.update(dt, ctx.player.position);
     this.hud.update(dt);
+    this.ui.update();
     ctx.input.endFrame();
   }
 

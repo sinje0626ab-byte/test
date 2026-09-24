@@ -1,22 +1,44 @@
 {
   "grades": {
-    "common":   { "name": "일반", "color": "#e8e8e8" },
-    "uncommon": { "name": "고급", "color": "#6fd46f" },
-    "rare":     { "name": "희귀", "color": "#5ea8ff" },
-    "epic":     { "name": "영웅", "color": "#c07bff" }
+    "common": {
+      "name": "일반",
+      "color": "#e8e8e8"
+    },
+    "uncommon": {
+      "name": "고급",
+      "color": "#6fd46f"
+    },
+    "rare": {
+      "name": "희귀",
+      "color": "#5ea8ff"
+    },
+    "epic": {
+      "name": "영웅",
+      "color": "#c07bff"
+    }
+  },
+  "categories": {
+    "currency": "화폐",
+    "material": "재료",
+    "consumable": "소모품",
+    "equipment": "장비",
+    "kit": "건설 키트"
   },
   "items": {
     "gold": {
       "name": "골드",
       "category": "currency",
-      "color": "#ffd23f"
+      "color": "#ffd23f",
+      "description": "상점과 포탑에 쓰는 돈."
     },
     "slime_jelly": {
       "name": "슬라임 젤리",
       "category": "material",
       "grade": "common",
       "stackable": true,
-      "color": "#8ee08a"
+      "color": "#8ee08a",
+      "maxStack": 99,
+      "description": "말랑말랑한 슬라임 젤리. 건설·제작 재료로 쓰인다."
     }
   }
 }

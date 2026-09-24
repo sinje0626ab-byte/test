@@ -33,6 +33,29 @@ export class Player {
 
     this.buildMesh();
     this.syncMesh(0);
+
+    ctx.bus.on('save:collect', (save) => this.collectSave(save));
+    ctx.bus.on('save:apply', (save) => this.applySave(save.player));
+  }
+
+  // 쓰러져 있는 중에 저장되면 부활한 상태로 저장한다.
+  collectSave(save) {
+    const s = this.stats;
+    const pos = this.alive ? this.position : this.ctx.world.spawnPoint;
+    save.player = {
+      position: [pos.x, pos.z],
+      hp: this.alive ? s.hp : s.maxHp,
+      stamina: this.alive ? s.stamina : s.maxStamina,
+    };
+  }
+
+  applySave(p) {
+    if (!p) return;
+    const s = this.stats;
+    this.position.set(p.position[0], 0, p.position[1]);
+    this.ctx.world.resolveCollision(this.position, this.radius);
+    s.hp = Math.max(1, Math.min(s.maxHp, p.hp));
+    s.stamina = Math.min(s.maxStamina, p.stamina);
   }
 
   buildMesh() {

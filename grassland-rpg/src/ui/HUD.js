@@ -6,9 +6,13 @@ const v = new THREE.Vector3();
 export class HUD {
   constructor(ctx, root) {
     this.ctx = ctx;
-    this.root = root;
     this.floats = [];
 
+    // HUD는 자기 층을 따로 쓴다 (창은 UIManager 층).
+    root = document.createElement('div');
+    root.className = 'hud';
+    document.getElementById('ui').prepend(root);
+    this.root = root;
     root.innerHTML = `
       <div class="hud-tl">
         <div class="hud-level"><span class="lv-badge">Lv <b data-lv>1</b></span></div>
@@ -18,10 +22,11 @@ export class HUD {
       </div>
       <div class="hud-tr">
         <div class="gold"><i class="coin"></i><b data-gold>0</b></div>
+        <div class="saved" data-saved>저장됨</div>
       </div>
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
-      <div class="hud-help">WASD 이동 · Shift 달리기 · 좌클릭 공격</div>
+      <div class="hud-help">WASD 이동 · Shift 달리기 · 좌클릭 공격 · I 가방</div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
     `;
@@ -29,7 +34,7 @@ export class HUD {
     this.el = {
       hp: $('[data-hp]'), hpText: $('[data-hp-text]'), st: $('[data-st]'), xp: $('[data-xp]'),
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
-      death: $('[data-death]'), vignette: $('[data-vignette]'),
+      death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
     };
 
     const { bus } = ctx;
@@ -38,6 +43,7 @@ export class HUD {
       if (delta > 0) this.pulse(this.el.gold.parentElement);
     });
     bus.on('notify', (n) => this.notify(n));
+    bus.on('save:done', () => this.pulse(this.el.saved, 'show'));
     bus.on('combat:hit', (h) => this.floatText(h));
     bus.on('player:damaged', () => this.pulse(this.el.vignette, 'hit'));
     bus.on('player:died', () => { this.el.death.hidden = false; });
