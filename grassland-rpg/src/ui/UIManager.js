@@ -44,6 +44,7 @@ export class UIManager {
     this.stack.push(win);
     this.restack();
     win.onOpen?.();
+    this.ctx.bus.emit('ui:open', { id });
   }
 
   close(id) {
@@ -53,6 +54,7 @@ export class UIManager {
     this.stack = this.stack.filter((w) => w !== win);
     this.restack();
     win.onClose?.();
+    this.ctx.bus.emit('ui:close', { id });
   }
 
   toggle(id) {

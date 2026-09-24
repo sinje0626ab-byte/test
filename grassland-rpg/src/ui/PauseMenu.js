@@ -44,6 +44,7 @@ export class PauseMenu {
         <button type="button" class="t-menu-btn primary" data-act="resume">계속하기</button>
         <button type="button" class="t-menu-btn" data-act="save">저장하기${note ? `<small>${note}</small>` : ''}</button>
         <button type="button" class="t-menu-btn" data-act="help">조작 방법</button>
+        <button type="button" class="t-menu-btn" data-act="settings">설정</button>
         <button type="button" class="t-menu-btn" data-act="title">타이틀로<small>저장하고 돌아가요</small></button>
       </div>`;
   }
@@ -62,6 +63,9 @@ export class PauseMenu {
         break;
       case 'back':
         this.renderMain();
+        break;
+      case 'settings':
+        this.game.settingsPanel.render(this.card, () => this.renderMain());
         break;
       case 'title':
         this.ctx.bus.emit('save:request');

@@ -30,6 +30,11 @@ export class World {
     this.buildLights();
     this.buildGround();
     this.chunks = buildDecor(this);
+    // 설정의 장식 밀도 (나무·바위처럼 부딪히는 건 줄이지 않는다)
+    ctx.bus.on('settings:changed', ({ key, value }) => {
+      if (key !== 'decorDensity') return;
+      for (const c of this.chunks) c.setDensity(value, ['flower', 'tuft', 'bush', 'stem', 'cap']);
+    });
   }
 
   buildLights() {

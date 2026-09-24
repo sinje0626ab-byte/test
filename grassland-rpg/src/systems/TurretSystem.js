@@ -122,6 +122,7 @@ export class TurretSystem {
       p.fire(from, tmp, damage, (range * 1.3) / def.projectileSpeed);
     }
     t.recoil = 1;
+    this.ctx.bus.emit('turret:fired', { type: t.type, position: t.position, muzzle: from });
   }
 
   blast(position, radius) {

@@ -27,5 +27,10 @@
   "magnetRadius": 3.5,
   "magnetSpeed": 12,
   "spinEvery": 3,
-  "spinDamagePerRank": 0.25
+  "spinDamagePerRank": 0.25,
+  "rollDistance": 4.5,
+  "rollDuration": 0.35,
+  "rollInvuln": 0.25,
+  "rollStamina": 20,
+  "rollCooldown": 0.5
 }

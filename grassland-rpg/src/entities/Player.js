@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { nearestBase } from '../utils/bases.js';
 import { createPlayerModel } from './PlayerModel.js';
+import { PlayerRoll } from './PlayerRoll.js';
 
 // 플레이어: 이동·달리기·근접 공격·피격·사망/부활.
 export class Player {
@@ -34,6 +35,8 @@ export class Player {
     this.attackCount = 0;
     this.spinning = false;
 
+    this.roll = new PlayerRoll(this);
+    this.runTick = 0;
     const model = createPlayerModel(b);
     Object.assign(this, model);
     this.mesh = model.group;
@@ -113,11 +116,19 @@ export class Player {
     const moving = mv.amount > 0;
     if (moving) dir.normalize();
 
+    if (this.roll.update(dt, input, dir)) {
+      this.regen(dt);
+      this.syncMesh(dt);
+      return;
+    }
+
     let speed = s.moveSpeed * (moving ? Math.max(0.35, mv.amount) : 1);
     const wantsRun = input.isDown('ShiftLeft') || input.isDown('ShiftRight')
       || (mv.stick && mv.amount >= this.ctx.data.config.touch.runThreshold);
     if (moving && wantsRun && s.stamina > 0) {
       speed *= b.runMultiplier;
+      this.runTick += 1;
+      if (this.runTick % 4 === 0) this.ctx.bus.emit('player:running', { position: this.position });
       s.stamina = Math.max(0, s.stamina - b.staminaRunCost * dt);
       this.staminaDelay = b.staminaRegenDelay;
     }
@@ -132,13 +143,18 @@ export class Player {
     if (moving && this.swingTime < 0) this.facing.copy(dir);
     if (moving) this.walkPhase += dt * speed * 2.2;
 
-    // 스태미나·HP 재생
+    this.regen(dt);
+    this.updateAttack(dt);
+    this.syncMesh(dt);
+  }
+
+  // 스태미나·HP 재생
+  regen(dt) {
+    const b = this.base;
+    const s = this.stats;
     this.staminaDelay -= dt;
     if (this.staminaDelay <= 0) s.stamina = Math.min(s.maxStamina, s.stamina + b.staminaRegen * dt);
     s.hp = Math.min(s.maxHp, s.hp + s.hpRegen * dt);
-
-    this.updateAttack(dt);
-    this.syncMesh(dt);
   }
 
   updateAttack(dt) {
@@ -195,7 +211,7 @@ export class Player {
   }
 
   takeDamage(amount, knockDir) {
-    if (!this.alive || this.invuln > 0) return false;
+    if (!this.alive || this.invuln > 0 || this.roll.invulnerable) return false;
     const s = this.stats;
     s.hp = Math.max(0, s.hp - amount);
     this.invuln = this.base.invulnTime;
@@ -238,7 +254,7 @@ export class Player {
 
     const moving = this.velocity.lengthSq() > 0.01;
     const bob = moving ? Math.abs(Math.sin(this.walkPhase)) * 0.08 : 0;
-    this.inner.position.y = bob;
+    if (!this.roll.active) this.inner.position.y = bob;
     this.footL.position.z = moving ? Math.sin(this.walkPhase) * 0.14 : 0;
     this.footR.position.z = moving ? -Math.sin(this.walkPhase) * 0.14 : 0;
 
@@ -263,7 +279,7 @@ export class Player {
     }
 
     // 쓰러짐 / 무적 깜빡임 / 피격 번쩍임
-    this.inner.rotation.x = this.alive ? 0 : Math.min(Math.PI / 2, this.inner.rotation.x + dt * 6);
+    if (!this.roll.active) this.inner.rotation.x = this.alive ? 0 : Math.min(Math.PI / 2, this.inner.rotation.x + dt * 6);
     m.visible = this.alive && this.invuln > 0 ? Math.floor(this.invuln * 20) % 2 === 0 : true;
     const e = this.flash > 0 ? 0.8 : 0;
     for (const mat of this.bodyMats) mat.emissive.setRGB(e, e * 0.3, e * 0.3);

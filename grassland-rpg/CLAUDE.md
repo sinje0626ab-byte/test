@@ -2,6 +2,7 @@
 
 이 문서는 게임의 설계 기준이다. 모든 작업은 이 문서를 먼저 읽고 따른다.
 설계가 바뀌면 코드보다 이 문서를 먼저 수정한다.
+2차 업데이트(Phase 7~14) 지시서: `docs/UPDATE_GUIDE2.pdf` — 이 문서와 함께 읽는다.
 
 ---
 
@@ -54,6 +55,8 @@ src/
     Input.js           # 키보드·마우스 입력
     Camera.js          # 탑다운 추적 카메라
     EventBus.js        # 시스템 간 이벤트 통신
+    Settings.js        # 설정 (세이브와 별도 localStorage)
+    Synth.js           # Web Audio 합성 (효과음·악기)
     Time.js            # 게임 내 시간, 낮/밤
   world/
     World.js           # 지면·조명·충돌·경계, 청크 보이기/숨기기
@@ -68,6 +71,7 @@ src/
     Boss.js            # 보스 AI (내려찍기·원거리 패턴, 예고 표시, 귀환)
     Drop.js            # 바닥에 떨어진 골드·아이템 (줍기)
     Projectile.js      # 화살, 총알, 포탄
+    Particles.js       # 파티클 풀 (로우폴리 조각, InstancedMesh 하나)
     Building.js        # 기지 중심 건물 (텐트~요새)
     BaseModels.js      # 기지 단계별 모양
     Turret.js
@@ -80,6 +84,9 @@ src/
     MonsterSpawner.js
     ExplorationSystem.js # 탐험한 칸(지도 안개), 지역 진입 알림
     BossSystem.js      # 보스 등장·재등장, 보스 투사체
+    FeedbackSystem.js  # 타격 연출 (히트스톱·화면 흔들림·파티클). 게임 로직은 건드리지 않는다
+    SoundSystem.js     # 효과음 (이벤트 → 합성음)
+    MusicSystem.js     # 배경음 (지역·낮밤·습격·보스에 따라 합성 루프)
     LootSystem.js
     InventorySystem.js
     EquipmentSystem.js
@@ -100,6 +107,7 @@ src/
     TouchControls.js   # 모바일 터치 조작 (조이스틱·버튼)
     TitleScreen.js     # 타이틀·새 게임/이어하기·조작 방법·새 게임 안내
     PauseMenu.js       # 게임 중 메뉴 (☰ / ESC)
+    SettingsPanel.js   # 설정 창 (게임 메뉴·타이틀에서)
     HUD.js
     InventoryWindow.js
     CharacterWindow.js
@@ -130,6 +138,7 @@ src/
     levels.json
     recipes.json       # 제작법
     bosses.json        # 보스 둥지·패턴·재등장
+    sounds.json        # 효과음 합성 정의, 배경음 음계·템포
     shop.json          # 상점 판매 목록
 ```
 
@@ -145,6 +154,25 @@ src/
 - 상호작용: E (채집, 건물 사용, NPC)
 - 능력치: HP, 스태미나, 공격력, 방어력, 이동속도, 치명타 확률
 - 사망 시: 가장 가까운 기지에서 부활, 소지 골드 일부 손실 (기지가 없으면 시작 지점)
+
+### 4-1-1. 회피 구르기 (Phase 7)
+- PC `Space`, 모바일은 공격 버튼 왼쪽 구르기 버튼
+- 이동 방향(없으면 바라보는 방향)으로 `rollDuration`초 동안 `rollDistance` m, 처음 `rollInvuln`초 무적
+- 스태미나 `rollStamina`, 쿨다운 `rollCooldown` (`player.json`). 구르는 중엔 공격 못 함 (휘두르던 칼은 취소)
+
+### 4-1-2. 타격감 (Phase 7, FeedbackSystem)
+- 연출만 담당. 이벤트(`combat:hit`, `monster:killed`, `player:damaged` …)를 듣고 보여 주기만 한다
+- **히트스톱**: 플레이어가 적을 때리면 `hitstop.hit`초, 치명타 `hitstop.crit`초, 보스 처치 `hitstop.bossKill`초 동안 게임 시간 배율 `hitstop.scale`. Game 루프가 `ctx.timeScale`을 곱한다 (카메라 흔들림·파티클·UI는 실제 시간)
+- **화면 흔들림** `Camera.shake(세기, 시간)`: 치명타·플레이어 피격·대포 착탄(거리 감쇠)·보스 범위 공격. 설정에서 끌 수 있다
+- **파티클** (최대 `particles.max`개 풀): 타격 조각, 처치 조각+연기, 레벨업 빛기둥+별, 달리기 먼지(지면 색), 포탑 총구 섬광, 대포 폭발
+- 몬스터는 처치되면 `deathSquash`초 동안 납작해지며 사라진다
+- 수치는 `config.json`의 `feedback`
+
+### 4-1-3. 사운드 (Phase 7)
+- 외부 파일 없이 Web Audio로 합성. 효과음 정의는 `sounds.json`의 `sfx` (음 여러 개: 파형·주파수·끝 주파수·길이·지연·음량, 노이즈)
+- 같은 효과음은 한 프레임에 1번만, 동시 재생 최대 `maxVoices`, 플레이어에서 `maxDistance` m 넘으면 무음 (가까울수록 크게)
+- 배경음: 펜타토닉 음계를 느린 템포로 합성하는 루프. 지역·낮밤마다 조성·음높이·템포가 다르고(초원 낮 = 밝은 장조, 밤 = 단조·저음), 습격 중엔 북 리듬, 보스전은 빠른 템포
+- 브라우저 정책상 첫 클릭/터치(타이틀 화면) 때 AudioContext를 시작한다
 
 ### 4-2. 몬스터
 - 필드 몬스터: 지역별로 스폰, 기지 안전지대 안에는 스폰 안 됨
@@ -372,12 +400,17 @@ src/
 - **게임 중 메뉴**: 오른쪽 위 ☰ 버튼 또는 ESC(열린 창이 없을 때). 계속하기 · 저장하기 · 조작 방법 · 타이틀로(저장 후 돌아감). 메뉴가 떠 있으면 게임이 멈춘다
 - 게임 상태 `ctx.state`: 'title' | 'play' | 'paused'
 
+### 5-0-1. 설정 (Phase 7)
+- 게임 메뉴(☰)와 타이틀의 "설정". `grassland-rpg-settings` 키에 따로 저장 (세이브와 분리)
+- 배경음 볼륨, 효과음 볼륨, 화면 흔들림 켜기/끄기, 그림자 품질(끄기/낮음/높음), 장식 밀도(50%/100% — 풀·꽃·덤불만 줄인다. 충돌하는 나무·바위는 그대로), 데미지 숫자 표시
+
 ### 5-1. 모바일 터치 조작
 터치 기기(`pointer: coarse`)에서만 보인다. 키보드·마우스 입력과 같은 Input을 거치므로 게임 로직은 따로 두지 않는다.
 - 왼쪽 아래 **가상 조이스틱**: 이동. 끝까지 밀면(`touch.runThreshold` 이상) 달리기
 - 오른쪽 아래 **공격 버튼**: 누르고 있으면 계속 공격. 가까운 적(`touch.autoAimRange` 안)을 자동으로 겨눈다. 없으면 바라보는 방향
 - 화면 빈 곳을 탭해도 그쪽으로 공격한다 (마우스 클릭과 같음)
 - **E 버튼**: 상호작용할 대상이 있을 때만 공격 버튼 위에 나타난다
+- **구르기 버튼**: 공격 버튼 왼쪽
 - 오른쪽 **메뉴 버튼**: 가방·캐릭터·스킬·건설·지도 (단축키와 같음)
 - **건설 모드**: 화면을 탭하면 그 자리로 미리보기가 옮겨 가고, "설치"·"취소" 버튼으로 정한다
 - 가방·장비 칸: 탭하면 설명, **두 번 탭하면 우클릭과 같은 동작**(사용·장착·해제·설치)
@@ -429,6 +462,16 @@ src/
 - [x] 포탑 추가 종류, 업그레이드, 수리
 - [x] 상점, 제작
 - [x] 새 지역 (사막·설원), 보스
+
+### 2차 업데이트 (`docs/UPDATE_GUIDE2.pdf`)
+- [x] Phase 7 — 손맛과 사운드 (타격 피드백 · 구르기 · 합성 사운드·배경음 · 설정)
+- [ ] Phase 8 — 채집 (채집 노드 · 새 재료 · 건설비 재조정)
+- [ ] Phase 9 — 무기 종류와 장비 확장 (무기 4종 · 등급 전설 · 세트 효과 · 소모품·버프)
+- [ ] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
+- [ ] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
+- [ ] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
+- [ ] Phase 13 — 캐릭터, NPC, 퀘스트, 엔딩
+- [ ] Phase 14 — 편의 기능과 마무리
 
 ---
 
@@ -502,6 +545,12 @@ src/
 | `boss:engaged` / `boss:disengaged` | Boss | HUD (보스 체력바) |
 | `boss:status` | BossSystem | MapWindow (둥지 표시) |
 | `pause:open` | UIManager (ESC), HUD (☰) | PauseMenu |
+| `player:roll` | Player | SoundSystem, FeedbackSystem |
+| `player:running` | Player (달리는 동안 주기적으로) | FeedbackSystem (먼지) |
+| `turret:fired` | TurretSystem | FeedbackSystem (총구 섬광), SoundSystem |
+| `ui:open` / `ui:close` | UIManager | SoundSystem |
+| `settings:changed` | Settings | SoundSystem, MusicSystem, FeedbackSystem, HUD, Game(그림자), World(장식 밀도) |
+| `raid:end` | RaidSystem (아침 정산) | MusicSystem |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.

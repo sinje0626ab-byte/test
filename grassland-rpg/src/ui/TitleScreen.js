@@ -10,6 +10,7 @@ export function helpHtml() {
         <h3>PC</h3>
         <table>
           ${row('이동', 'W A S D · Shift 달리기')}
+          ${row('구르기', 'Space (잠깐 무적)')}
           ${row('공격', '마우스 왼쪽 클릭 (마우스 쪽으로)')}
           ${row('상호작용', 'E (포탑·건물 앞에서)')}
           ${row('창', 'I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도')}
@@ -22,6 +23,7 @@ export function helpHtml() {
         <h3>휴대폰</h3>
         <table>
           ${row('이동', '왼쪽 조이스틱 (끝까지 밀면 달리기)')}
+          ${row('구르기', '초록 구르기 버튼 (잠깐 무적)')}
           ${row('공격', '빨간 공격 버튼 (가까운 적 자동 조준)')}
           ${row('상호작용', '나타나는 E 버튼')}
           ${row('창', '오른쪽 메뉴 버튼')}
@@ -91,7 +93,8 @@ export class TitleScreen {
       ${has ? `<button type="button" class="t-menu-btn primary" data-act="continue">이어하기<small>${summary}</small></button>` : ''}
       ${info?.broken ? `<p class="t-warn">${info.newer ? '더 새로운 버전에서 만든 저장이 있어요' : '저장을 읽지 못했어요'}</p>` : ''}
       <button type="button" class="t-menu-btn${has ? '' : ' primary'}" data-act="new">새 게임</button>
-      <button type="button" class="t-menu-btn" data-act="help">조작 방법</button>`;
+      <button type="button" class="t-menu-btn" data-act="help">조작 방법</button>
+      <button type="button" class="t-menu-btn" data-act="settings">설정</button>`;
   }
 
   act(act) {
@@ -112,6 +115,10 @@ export class TitleScreen {
         break;
       case 'back':
         this.dialog.hidden = true;
+        break;
+      case 'settings':
+        this.dialog.hidden = false;
+        this.game.settingsPanel.render(this.card, () => { this.dialog.hidden = true; });
         break;
       case 'next':
         this.step += 1;
