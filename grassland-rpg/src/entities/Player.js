@@ -25,6 +25,7 @@ export class Player {
     this.knock = new THREE.Vector3();
     this.alive = true;
     this.speedMult = 1; // 감속 (StatusSystem)
+    this.auraRegen = 0; // 모닥불 둘레 (FacilitySystem)
 
     this.attackTimer = 0;
     this.staminaDelay = 0;
@@ -50,6 +51,7 @@ export class Player {
       this.attack.setWeapon(w?.weaponType ?? 'sword', w ? w.color : DEFAULT_BLADE);
       applyAppearance(this, { head: items[slots.head], body: items[slots.body], feet: items[slots.feet] });
     });
+    ctx.bus.on('player:aura', ({ hpRegen }) => { this.auraRegen = hpRegen; });
     ctx.bus.on('player:heal', ({ amount }) => {
       if (!this.alive) return;
       this.stats.hp = Math.min(this.stats.maxHp, this.stats.hp + amount);
@@ -163,7 +165,7 @@ export class Player {
     if (this.staminaDelay <= 0) s.stamina = Math.min(s.maxStamina, s.stamina + b.staminaRegen * (1 + (s.staminaRegenPct ?? 0)) * dt);
     // 고목의 씨앗: 기지 안에서 HP재생 배율
     const inBase = s.baseRegenMult && baseAt(this.ctx.bases, this.position);
-    s.hp = Math.min(s.maxHp, s.hp + s.hpRegen * (inBase ? 1 + s.baseRegenMult : 1) * dt);
+    s.hp = Math.min(s.maxHp, s.hp + (s.hpRegen * (inBase ? 1 + s.baseRegenMult : 1) + this.auraRegen) * dt);
   }
 
   // 돌진 베기 (ActiveSkillSystem)

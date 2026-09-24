@@ -36,7 +36,7 @@ export class StorageWindow {
       grid.addEventListener('pointermove', (e) => {
         const i = Number(e.target.closest('[data-slot]')?.dataset.slot);
         const s = (side === 'bag' ? this.bag : this.store)[i];
-        if (s) tooltip.show(itemTooltip(ctx.data, s.id, { count: s.count, hint: side === 'bag' ? '클릭: 창고에 넣기' : '클릭: 가방으로' }), e.clientX, e.clientY);
+        if (s) tooltip.show(itemTooltip(ctx.data, s.id, { count: s.count, plus: s.plus ?? 0, hint: side === 'bag' ? '클릭: 창고에 넣기' : '클릭: 가방으로' }), e.clientX, e.clientY);
         else tooltip.hide();
       });
       grid.addEventListener('pointerleave', () => tooltip.hide());
@@ -67,7 +67,7 @@ export class StorageWindow {
     this.grids[side].innerHTML = slots.map((s, i) => {
       if (!s) return `<div class="slot" data-slot="${i}"></div>`;
       const def = items.items[s.id];
-      return `<div class="slot filled" data-slot="${i}" style="--grade:${items.grades[def.grade]?.color ?? '#e8e8e8'}">${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}</div>`;
+      return `<div class="slot filled" data-slot="${i}" style="--grade:${items.grades[def.grade]?.color ?? '#e8e8e8'}">${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}</div>`;
     }).join('');
   }
 }

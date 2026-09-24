@@ -33,9 +33,10 @@ export class Turret {
   }
 
   buildMesh() {
-    const { group, head, parts, stars } = createTurretModel(this.def);
+    const { group, head, parts, stars, crown } = createTurretModel(this.def);
     this.head = head;
     this.stars = stars;
+    this.crown = crown;
     this.mats = parts.map((p) => p.material);
     this.baseColors = this.mats.map((m) => m.color.clone());
     this.hpBar = new HpBar(1, 0x7cc67a);
@@ -52,6 +53,7 @@ export class Turret {
     this.mesh.rotation.z = this.alive ? 0 : 0.25;
     this.mats.forEach((m, i) => m.color.copy(this.baseColors[i]).multiplyScalar(this.alive ? 1 : 0.55));
     this.stars.forEach((s, i) => { s.visible = this.level >= i + 2; });
+    this.crown.visible = this.level >= 5 && this.alive;
   }
 
   get muzzle() {

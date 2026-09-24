@@ -130,7 +130,10 @@ export class Monster {
     this.separate();
     // 나는 몬스터는 나무·바위를 넘어 다닌다 (월드 경계만)
     if (this.def.flier) this.ctx.world.clampToBounds(this.position);
-    else this.ctx.world.resolveCollision(this.position, this.radius);
+    else {
+      this.ctx.world.resolveCollision(this.position, this.radius);
+      this.ctx.wallGrid?.resolve(this.position, this.radius); // 벽은 몬스터만 막는다
+    }
 
     this.animate(dt, speed);
   }

@@ -13,7 +13,6 @@
       "horn_rabbit",
       "big_slime"
     ],
-    "raidMonster": "night_slime",
     "mapColor": "#9edb6f",
     "ground": [
       "#9edb6f",
@@ -61,7 +60,25 @@
         "#a9adb6",
         "#c9c6be"
       ]
-    }
+    },
+    "raidPool": [
+      {
+        "monster": "night_slime",
+        "weight": 4
+      },
+      {
+        "monster": "horn_rabbit",
+        "weight": 2
+      },
+      {
+        "monster": "big_slime",
+        "weight": 1
+      },
+      {
+        "monster": "bee",
+        "weight": 1
+      }
+    ]
   },
   "forest": {
     "name": "숲",
@@ -77,7 +94,6 @@
       "stump",
       "slime"
     ],
-    "raidMonster": "night_mushroom",
     "mapColor": "#4f9a5a",
     "ground": [
       "#6fb866",
@@ -122,7 +138,25 @@
         "#a9adb6",
         "#c9c6be"
       ]
-    }
+    },
+    "raidPool": [
+      {
+        "monster": "night_mushroom",
+        "weight": 4
+      },
+      {
+        "monster": "thorn_wolf",
+        "weight": 2
+      },
+      {
+        "monster": "stump",
+        "weight": 1
+      },
+      {
+        "monster": "spore_puff",
+        "weight": 1
+      }
+    ]
   },
   "desert": {
     "name": "사막",
@@ -138,7 +172,6 @@
       "tumble",
       "cactus"
     ],
-    "raidMonster": "night_cactus",
     "mapColor": "#e8cf8a",
     "ground": [
       "#ecd59a",
@@ -179,7 +212,25 @@
         "#c9a06a",
         "#e0c79a"
       ]
-    }
+    },
+    "raidPool": [
+      {
+        "monster": "night_cactus",
+        "weight": 4
+      },
+      {
+        "monster": "scorpion",
+        "weight": 2
+      },
+      {
+        "monster": "tumble",
+        "weight": 1
+      },
+      {
+        "monster": "sand_slime",
+        "weight": 1
+      }
+    ]
   },
   "snow": {
     "name": "설원",
@@ -195,7 +246,6 @@
       "snow_bomber",
       "snow_slime"
     ],
-    "raidMonster": "night_golem",
     "mapColor": "#e6f2fa",
     "ground": [
       "#f2f7fb",
@@ -237,6 +287,24 @@
         "#a5cde8",
         "#d6ecfa"
       ]
-    }
+    },
+    "raidPool": [
+      {
+        "monster": "night_golem",
+        "weight": 4
+      },
+      {
+        "monster": "yeti_cub",
+        "weight": 2
+      },
+      {
+        "monster": "snow_bomber",
+        "weight": 1
+      },
+      {
+        "monster": "frost_wisp",
+        "weight": 1
+      }
+    ]
   }
 }

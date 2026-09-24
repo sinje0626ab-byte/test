@@ -28,6 +28,7 @@ export class BuildSystem {
 
   start({ kind, type, item }) {
     this.end();
+    if (kind === 'wall') return; // 벽은 WallSystem (드래그로 한 줄)
     const ghost = kind === 'tent' ? this.tentGhost()
       : kind === 'facility' ? createFacilityModel(this.ctx.data.buildings.buildings[type].model).group
         : Turret.createMesh(this.ctx.data.turrets[type]).group;
@@ -106,6 +107,7 @@ export class BuildSystem {
     const cost = turretCost(def, player.stats);
     if (count >= max) return { ok: false, reason: `이 기지엔 포탑을 더 세울 수 없습니다 (${count}/${max})` };
     if (this.gold < cost) return { ok: false, reason: `골드가 부족합니다 (${cost} 필요)` };
+    if (!(def.buildItems ?? []).every((c) => (this.counts[c.id] ?? 0) >= c.count)) return { ok: false, reason: '재료가 부족합니다' };
     if (world.isBlocked(pos.x, pos.z, def.radius) || this.overlapsStructure(pos, def.radius)) return { ok: false, reason: '자리가 막혀 있습니다' };
     if (pos.distanceTo(player.position) < def.radius + player.radius) return { ok: false, reason: '자리가 막혀 있습니다' };
     return { ok: true, base };
@@ -151,9 +153,19 @@ export class BuildSystem {
       return;
     }
     if (p.kind === 'turret') {
-      const spend = { amount: turretCost(this.ctx.data.turrets[p.type], this.ctx.player.stats), ok: false };
+      const def = this.ctx.data.turrets[p.type];
+      // 독침·서리 포탑은 골드 + 재료
+      if (def.buildItems) {
+        const items = { items: def.buildItems, ok: false };
+        bus.emit('inventory:spend', items);
+        if (!items.ok) return;
+      }
+      const spend = { amount: turretCost(def, this.ctx.player.stats), ok: false };
       bus.emit('economy:spend', spend);
-      if (!spend.ok) return;
+      if (!spend.ok) {
+        for (const c of def.buildItems ?? []) bus.emit('inventory:add', { item: c.id, count: c.count, taken: 0 });
+        return;
+      }
     }
     if (p.kind === 'facility') {
       const spend = { items: materialCost(this.ctx.data.buildings.buildings[p.type].cost, this.ctx.player.stats), ok: false };

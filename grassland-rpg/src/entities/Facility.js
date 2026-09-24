@@ -1,10 +1,11 @@
+import * as THREE from 'three';
 import { structureHp, setMaxHp } from '../utils/build.js';
 import { HpBar } from './HpBar.js';
 import { createFacilityModel } from './FacilityModels.js';
 
-// 부속 건물 (작업대·창고·상점). 습격에 부서지면 아침까지 못 쓴다.
+// 부속 건물 (작업대·창고·상점·모닥불·텃밭·대장간·게시판). 습격에 부서지면 아침까지 못 쓴다.
 export class Facility {
-  constructor(ctx, type, baseId, position, { hp } = {}) {
+  constructor(ctx, type, baseId, position, { hp, crop } = {}) {
     this.ctx = ctx;
     this.kind = 'facility';
     this.type = type;
@@ -18,7 +19,31 @@ export class Facility {
     this.flash = 0;
     this.hpTimer = 0;
 
-    const { group, parts } = createFacilityModel(this.def.model);
+    this.crop = crop ?? null; // 텃밭: { seed, day }
+    const { group, parts, flame } = createFacilityModel(this.def.model);
+    this.flame = flame;
+    // 모닥불: 밤에 주변을 밝히는 불빛
+    if (this.def.light) {
+      const l = this.def.light;
+      this.light = new THREE.PointLight(l.color, 0, l.distance, 1.6);
+      this.light.position.y = 1;
+      group.add(this.light);
+    }
+    if (this.def.model === 'garden') {
+      this.cropGroup = new THREE.Group();
+      this.sprouts = [];
+      for (let i = 0; i < 6; i++) {
+        const sp = new THREE.Group();
+        sp.add(new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.35, 4), new THREE.MeshStandardMaterial({ color: 0x6fbf5f, flatShading: true })));
+        const fruit = new THREE.Mesh(new THREE.IcosahedronGeometry(0.1, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true }));
+        fruit.position.y = 0.25;
+        sp.add(fruit);
+        sp.position.set(-0.6 + (i % 3) * 0.6, 0.25, i < 3 ? -0.25 : 0.25);
+        this.cropGroup.add(sp);
+        this.sprouts.push({ sp, fruit });
+      }
+      group.add(this.cropGroup);
+    }
     this.mats = parts.map((p) => p.material);
     this.baseColors = this.mats.map((m) => m.color.clone());
     this.hpBar = new HpBar(1.2, 0x7cc67a);
@@ -63,7 +88,34 @@ export class Facility {
     this.applyLook();
   }
 
+  // 텃밭 작물 자람 정도 (0~1), 없으면 null
+  growth() {
+    if (!this.crop) return null;
+    const c = this.ctx.data.config.garden.crops[this.crop.seed];
+    return Math.min(1, (this.ctx.time.day - this.crop.day) / c.days);
+  }
+
+  animateExtras(dt) {
+    if (this.flame) {
+      this.flame.visible = this.alive;
+      this.flame.scale.set(1, 0.85 + Math.sin(performance.now() * 0.012) * 0.15, 1);
+    }
+    if (this.light) this.light.intensity = this.alive ? this.def.light.intensity * (1 - this.ctx.time.daylight) : 0;
+    if (this.cropGroup) {
+      const g = this.growth();
+      this.cropGroup.visible = g != null;
+      if (g == null) return;
+      const c = this.ctx.data.config.garden.crops[this.crop.seed];
+      for (const { sp, fruit } of this.sprouts) {
+        sp.scale.setScalar(0.4 + 0.6 * g);
+        fruit.visible = g >= 1;
+        fruit.material.color.set(c.color);
+      }
+    }
+  }
+
   update(dt) {
+    this.animateExtras(dt);
     this.flash = Math.max(0, this.flash - dt);
     this.hpTimer = Math.max(0, this.hpTimer - dt);
     const e = this.flash > 0 ? 0.6 : 0;

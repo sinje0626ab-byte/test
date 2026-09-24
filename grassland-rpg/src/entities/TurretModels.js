@@ -33,6 +33,31 @@ export function createTurretModel(def) {
       barrel.rotation.x = Math.PI / 2;
       barrel.position.set(x, 0.02, 0.6);
     }
+  } else if (def.model === 'poison') {
+    // 독침 포탑: 나무 받침 + 초록 독 주머니 + 짧은 대롱
+    add(g, new THREE.CylinderGeometry(0.45, 0.6, 0.8, 6), '#8a6440', 0.4);
+    add(g, new THREE.CylinderGeometry(0.62, 0.62, 0.16, 6), '#6b8f5a', 0.88);
+    head.position.y = 1.25;
+    add(head, new THREE.IcosahedronGeometry(0.36, 0), def.color);
+    const tube = add(head, new THREE.CylinderGeometry(0.07, 0.1, 0.7, 6), '#4f7a3a');
+    tube.rotation.x = Math.PI / 2;
+    tube.position.set(0, 0.02, 0.45);
+    for (const x of [-0.18, 0.18]) {
+      const spike = add(head, new THREE.ConeGeometry(0.06, 0.22, 4), '#f4e6cf', 0.32);
+      spike.position.x = x;
+    }
+  } else if (def.model === 'frost') {
+    // 서리 포탑: 돌 받침 + 떠 있는 얼음 결정
+    add(g, new THREE.CylinderGeometry(0.5, 0.68, 0.9, 6), '#a9b8c6', 0.45);
+    add(g, new THREE.CylinderGeometry(0.7, 0.7, 0.16, 6), '#dfeef8', 0.98);
+    head.position.y = 1.6;
+    const crystal = add(head, new THREE.OctahedronGeometry(0.4, 0), def.color);
+    crystal.scale.y = 1.5;
+    for (let i = 0; i < 3; i++) {
+      const shard = add(head, new THREE.OctahedronGeometry(0.12, 0), '#dff4ff');
+      const a = (i / 3) * Math.PI * 2;
+      shard.position.set(Math.cos(a) * 0.5, -0.2, Math.sin(a) * 0.5);
+    }
   } else if (def.model === 'crossbow') {
     add(g, new THREE.CylinderGeometry(0.5, 0.65, 1.0, 6), '#9a6a45', 0.5);
     add(g, new THREE.CylinderGeometry(0.72, 0.72, 0.18, 6), '#b88452', 1.08);
@@ -54,18 +79,31 @@ export function createTurretModel(def) {
     arrow.position.set(0, 0.1, 0.15);
   }
 
-  // 업그레이드 레벨 표시 (금색 띠)
+  // 업그레이드 레벨 표시 (금색 띠 Lv2~5, Lv5는 머리 위 금관)
   const stars = [];
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 4; i++) {
     const band = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.05, 4, 16), flat('#ffcf5c'));
     band.rotation.x = Math.PI / 2;
-    band.position.y = 0.3 + i * 0.22;
+    band.position.y = 0.2 + i * 0.17;
     band.visible = false;
     g.add(band);
     stars.push(band);
   }
 
+  const crown = new THREE.Group();
+  const gold = flat('#ffcf5c');
+  crown.add(new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.3, 0.12, 8), gold));
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2;
+    const spike = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.2, 4), gold);
+    spike.position.set(Math.cos(a) * 0.24, 0.14, Math.sin(a) * 0.24);
+    crown.add(spike);
+  }
+  crown.position.y = 0.55;
+  crown.visible = false;
+  head.add(crown);
+
   g.add(head);
   g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-  return { group: g, head, parts, stars };
+  return { group: g, head, parts, stars, crown };
 }

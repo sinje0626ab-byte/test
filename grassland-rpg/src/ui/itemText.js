@@ -1,3 +1,5 @@
+import { enhancedBonus } from '../utils/enhance.js';
+
 // 능력치 이름·값 표기와 아이템 툴팁 내용
 export function formatStat(items, key, value, sign = true) {
   const pct = items.percentStats.includes(key);
@@ -11,7 +13,7 @@ export function bonusLines(items, bonus) {
     .join('');
 }
 
-export function itemTooltip(data, id, { count, hint } = {}) {
+export function itemTooltip(data, id, { count, hint, plus = 0 } = {}) {
   const { grades, categories } = data.items;
   const def = data.items.items[id];
   const grade = grades[def.grade];
@@ -20,9 +22,10 @@ export function itemTooltip(data, id, { count, hint } = {}) {
   const set = Object.values(data.items.sets ?? {}).find((st) => st.pieces.includes(id));
   const max = def.stackable ? def.maxStack ?? data.config.inventory.defaultMaxStack : null;
   return `
-    <div class="tt-name" style="color:${grade?.color ?? '#fff'}">${def.name}</div>
+    <div class="tt-name" style="color:${grade?.color ?? '#fff'}">${def.name}${plus ? ` <b class="tt-plus">+${plus}</b>` : ''}</div>
     <div class="tt-meta">${grade ? `${grade.name} · ` : ''}${categories[def.category] ?? ''}${slotName}</div>
-    ${bonusLines(data.items, def.bonus)}
+    ${bonusLines(data.items, enhancedBonus(data, def.bonus, plus))}
+    ${plus ? `<div class="tt-meta">강화 +${plus} (기본 능력치 +${Math.round(plus * data.config.enhance.statPerPlus * 100)}%)</div>` : ''}
     ${set ? `<div class="tt-meta">${set.name} (3부위: ${Object.entries(set.bonus).map(([k, v]) => `${data.items.statLabels[k]} ${formatStat(data.items, k, v)}`).join(', ')})</div>` : ''}
     ${def.description ? `<p class="tt-desc">${def.description}</p>` : ''}
     ${count != null && max ? `<div class="tt-meta">수량 ${count} / ${max}</div>` : ''}

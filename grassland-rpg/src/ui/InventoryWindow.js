@@ -51,7 +51,7 @@ export class InventoryWindow {
       const def = this.def(s.id);
       el.className = 'slot filled';
       el.style.setProperty('--grade', grades[def.grade]?.color ?? '#e8e8e8');
-      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}`;
+      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}`;
     });
   }
 
@@ -60,7 +60,7 @@ export class InventoryWindow {
     const how = this.ctx.input.touchMode ? '두 번 탭' : '우클릭';
     const verb = { equipment: '장착', consumable: '사용', kit: '설치' }[def.category];
     const hint = verb && `${how}: ${verb}`;
-    return itemTooltip(this.ctx.data, s.id, { count: s.count, hint });
+    return itemTooltip(this.ctx.data, s.id, { count: s.count, hint, plus: s.plus ?? 0 });
   }
 
   slotIndexAt(x, y) {

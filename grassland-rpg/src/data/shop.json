@@ -31,6 +31,14 @@
     {
       "id": "forget_potion",
       "price": 300
+    },
+    {
+      "id": "herb_seed",
+      "price": 5
+    },
+    {
+      "id": "apple_seed",
+      "price": 12
     }
   ]
 }

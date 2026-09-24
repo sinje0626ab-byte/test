@@ -8,7 +8,10 @@ const glow = (color) => new THREE.MeshBasicMaterial({ color });
 // 투사체 모양: 화살 · 석궁 볼트 · 총알 · 포탄 · 포자탄 · 얼음탄 · 잎
 function createMesh(kind) {
   const g = new THREE.Group();
-  if (kind === 'spore') {
+  if (kind === 'needle') {
+    const n = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.45, 4).rotateX(Math.PI / 2), glow(0x7cd67a));
+    g.add(n);
+  } else if (kind === 'spore') {
     g.add(new THREE.Mesh(new THREE.IcosahedronGeometry(0.2, 0), glow(0xb36fe0)));
   } else if (kind === 'icebolt') {
     const b = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), glow(0xa8e4ff));
