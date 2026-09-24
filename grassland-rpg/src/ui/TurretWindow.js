@@ -1,4 +1,4 @@
-import { turretDamage, turretRange, upgradeCost, repairCost, demolishRefund } from '../utils/build.js';
+import { turretDamage, turretRange, upgradeCost, upgradeItems, repairCost, demolishRefund } from '../utils/build.js';
 
 // 포탑 관리 창 (포탑 앞에서 E): 업그레이드 · 수리 · 우선순위 · 철거
 export class TurretWindow {
@@ -39,6 +39,12 @@ export class TurretWindow {
       this.render();
     });
     ctx.bus.on('turret:changed', () => { if (this.turret) this.render(); });
+    this.counts = {};
+    ctx.bus.on('inventory:changed', ({ slots }) => {
+      this.counts = {};
+      for (const sl of slots) if (sl) this.counts[sl.id] = (this.counts[sl.id] ?? 0) + sl.count;
+      if (this.turret) this.render();
+    });
     ctx.bus.on('gold:changed', ({ gold }) => {
       this.gold = gold;
       if (this.turret) this.render();
@@ -50,6 +56,9 @@ export class TurretWindow {
     const stats = this.ctx.player.stats;
     const def = t.def;
     const up = t.level < def.maxLevel ? upgradeCost(def, t.level) : null;
+    const upItems = up != null ? upgradeItems(def, t.level) ?? [] : [];
+    const itemsOk = upItems.every((c) => (this.counts[c.id] ?? 0) >= c.count);
+    const itemsText = upItems.map((c) => `<span class="${(this.counts[c.id] ?? 0) >= c.count ? '' : 'bad'}">${this.ctx.data.items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}</span>`).join(' · ');
     const fix = repairCost(t);
     const refund = demolishRefund(t, stats, this.ctx.data.config.turret.demolishRefund);
     const line = (label, now, next) => `<dt>${label}</dt><dd>${now}${next != null ? ` <i>→ ${next}</i>` : ''}</dd>`;
@@ -68,10 +77,12 @@ export class TurretWindow {
           ${line('체력', t.stats.maxHp, nx && hpAt(nx))}
           ${line('초당 발사', def.fireRate, null)}
           ${def.splashRadius ? line('폭발 범위', def.splashRadius, null) : ''}
+          ${def.onHit ? line('적중 효과', def.onHit.type === 'poison' ? `독 ${def.onHit.duration}초` : `감속 ${Math.round(def.onHit.amount * 100)}%`, null) : ''}
         </dl>
         <div class="tw-actions">
-          <button type="button" data-act="upgrade" ${up == null || !t.alive || this.gold < up ? 'disabled' : ''}>
+          <button type="button" data-act="upgrade" ${up == null || !t.alive || this.gold < up || !itemsOk ? 'disabled' : ''}>
             ${up == null ? '최고 레벨' : `업그레이드 <small><i class="coin"></i>${up}</small>`}</button>
+          ${itemsText ? `<p class="tw-items">재료: ${itemsText}</p>` : ''}
           <button type="button" data-act="repair" ${fix <= 0 || this.gold < fix ? 'disabled' : ''}>
             ${fix <= 0 ? '멀쩡함' : `수리 <small><i class="coin"></i>${fix}</small>`}</button>
           <button type="button" data-act="priority">노리는 적: <b>${t.priority === 'nearest' ? '가장 가까운 적' : '체력 낮은 적'}</b></button>

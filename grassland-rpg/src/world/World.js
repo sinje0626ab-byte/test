@@ -46,6 +46,9 @@ export class World {
     this.skyColor = new THREE.Color();
     this.sunColor = new THREE.Color(0xfff0d2);
     this.moonColor = new THREE.Color(0x8ea6ff);
+    const bm = this.ctx.data.config.raid.bloodMoon; // 붉은 달 밤
+    this.bloodSky = new THREE.Color(bm.sky);
+    this.bloodMoon = new THREE.Color(bm.moon);
 
     const sun = new THREE.DirectionalLight(0xfff0d2, 1.9);
     sun.castShadow = true;
@@ -165,12 +168,13 @@ export class World {
   // 낮/밤: 1 = 한낮, 0 = 한밤
   applyDaylight(daylight) {
     const d = daylight;
-    this.skyColor.copy(this.nightSky).lerp(this.daySky, d);
+    const blood = this.ctx.bloodMoon;
+    this.skyColor.copy(blood ? this.bloodSky : this.nightSky).lerp(this.daySky, d);
     this.ctx.scene.background.copy(this.skyColor);
     this.ctx.scene.fog.color.copy(this.skyColor);
     this.hemi.intensity = 0.45 + 0.8 * d;
     this.sun.intensity = 0.45 + 1.45 * d;
-    this.sun.color.copy(this.moonColor).lerp(this.sunColor, d);
+    this.sun.color.copy(blood ? this.bloodMoon : this.moonColor).lerp(this.sunColor, d);
   }
 
   update(dt, focus) {

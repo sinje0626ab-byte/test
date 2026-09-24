@@ -12,6 +12,7 @@ export class InteractionSystem {
     let best = null;
     let bestD = Infinity;
     for (const s of structures) {
+      if (s.kind === 'wall') continue;
       const d = player.position.distanceTo(s.position) - s.radius;
       if (d < this.cfg.range && d < bestD) { bestD = d; best = s; }
     }
@@ -22,7 +23,7 @@ export class InteractionSystem {
     if (!s) return '';
     if (s.kind === 'turret') return `E  ${s.def.name}${s.alive ? '' : ' (부서짐)'} 관리`;
     if (s.kind === 'facility') {
-      const verb = { workbench: '제작', storage: '열기', shop: '사고팔기' }[s.type];
+      const verb = s.def.verb;
       return s.alive ? `E  ${s.def.name} — ${verb}` : `${s.def.name} (부서짐 · 아침에 복구)`;
     }
     return `E  ${s.base.label} — 건설·업그레이드`;

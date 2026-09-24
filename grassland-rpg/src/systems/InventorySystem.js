@@ -20,12 +20,12 @@ export class InventorySystem {
     });
     // 장비 장착: 그 칸을 원래 끼던 장비(없으면 빈칸)로 바꾼다.
     bus.on('inventory:replace-slot', ({ slot, item }) => {
-      this.slots[slot] = item ? { id: item, count: 1 } : null;
+      this.slots[slot] = item ? { id: item.id, count: 1, ...(item.plus ? { plus: item.plus } : {}) } : null;
       this.changed();
     });
     // 장비 해제 등: 받은 만큼 e.taken 에 더한다.
     bus.on('inventory:add', (e) => {
-      const added = this.add(e.item, e.count);
+      const added = this.add(e.item, e.count, e.plus ?? 0);
       e.taken += added;
       if (added) this.changed();
     });
@@ -44,6 +44,12 @@ export class InventorySystem {
     bus.on('inventory:use-item', ({ item }) => {
       const i = this.slots.findIndex((x) => x?.id === item);
       if (i >= 0) this.use(i);
+    });
+    // 대장간 강화
+    bus.on('inventory:set-plus', ({ slot, plus }) => {
+      if (!this.slots[slot]) return;
+      this.slots[slot].plus = plus;
+      this.changed();
     });
     bus.on('game:new', () => {
       for (const s of ctx.data.config.startingItems) this.add(s.id, s.count);
@@ -68,8 +74,8 @@ export class InventorySystem {
   }
 
   // 들어간 개수를 돌려준다 (가방이 차면 일부만 들어갈 수 있다).
-  add(id, count) {
-    return addTo(this.slots, id, count, this.maxStack(id));
+  add(id, count, plus = 0) {
+    return addTo(this.slots, id, count, this.maxStack(id), plus);
   }
 
   onPicked(e) {
@@ -124,7 +130,7 @@ export class InventorySystem {
       // 실제로 설치됐을 때 inventory:consume 으로 하나 줄어든다.
       this.ctx.bus.emit('build:start', { kind: def.builds, item: s.id });
     } else if (def.category === 'equipment') {
-      this.ctx.bus.emit('item:equip', { item: s.id, slot: index });
+      this.ctx.bus.emit('item:equip', { item: s.id, plus: s.plus ?? 0, slot: index });
     }
   }
 
@@ -139,8 +145,8 @@ export class InventorySystem {
     this.slots = new Array(this.cfg.slots).fill(null);
     inv.slots.forEach((s, i) => {
       if (!s || !this.def(s.id)) return;
-      if (i < this.slots.length) this.slots[i] = { id: s.id, count: s.count };
-      else this.add(s.id, s.count); // 칸 수가 줄었으면 앞쪽 빈칸으로
+      if (i < this.slots.length) this.slots[i] = { id: s.id, count: s.count, ...(s.plus ? { plus: s.plus } : {}) };
+      else this.add(s.id, s.count, s.plus ?? 0); // 칸 수가 줄었으면 앞쪽 빈칸으로
     });
     this.changed();
   }

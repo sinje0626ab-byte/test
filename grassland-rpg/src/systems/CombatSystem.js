@@ -101,7 +101,8 @@ export class CombatSystem {
     if (s.onHitSlow) this.ctx.bus.emit('status:apply', { target: m, type: 'slow', duration: 2, amount: s.onHitSlow });
   }
 
-  onProjectileHit({ monster, damage, dir: d }) {
+  // effect: 포탑 적중 효과 (독침·서리)
+  onProjectileHit({ monster, damage, dir: d, effect }) {
     if (!monster.alive || monster.untargetable) return;
     // 명사수 포탑 스킬: 포탑 치명타
     const { player } = this.ctx;
@@ -109,6 +110,7 @@ export class CombatSystem {
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
     this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster', source: 'turret', color: monster.def.color });
     if (killed) this.killed(monster);
+    else if (effect) this.ctx.bus.emit('status:apply', { target: monster, ...effect });
   }
 
   // 보스 범위 공격·두더지 솟아오르기: 범위 안이면 플레이어가 맞는다.
@@ -162,14 +164,14 @@ export class CombatSystem {
   }
 
   // 대포: 떨어진 곳 둘레 모두. 가장자리일수록 약하다.
-  onExplode({ position, radius, minFactor, damage }) {
+  onExplode({ position, radius, minFactor, damage, effect }) {
     for (const m of this.ctx.monsters) {
       if (!m.alive) continue;
       const d = Math.hypot(m.position.x - position.x, m.position.z - position.z);
       if (d > radius + m.radius) continue;
       const k = 1 - (1 - minFactor) * Math.min(1, d / radius);
       const dir = new THREE.Vector3(m.position.x - position.x, 0, m.position.z - position.z).normalize();
-      this.onProjectileHit({ monster: m, damage: damage * k, dir: dir.multiplyScalar(2) });
+      this.onProjectileHit({ monster: m, damage: damage * k, dir: dir.multiplyScalar(2), effect });
     }
   }
 
@@ -189,6 +191,7 @@ export class CombatSystem {
     bus.emit('combat:hit', { position: s.position.clone(), amount, crit: false, target: 'structure' });
     if (destroyed) {
       bus.emit('structure:destroyed', { structure: s });
+      if (s.kind === 'wall') return; // 벽은 조용히 무너진다
       const name = s.kind === 'tent' ? s.base.name : s.def.name;
       bus.emit('notify', { text: `${name}이(가) 부서졌습니다!`, kind: 'warn' });
     }

@@ -102,7 +102,7 @@ export class HUD {
       this.el.help.textContent = text || this.helpText;
       this.el.help.classList.toggle('bad', !!text && !ok);
     });
-    bus.on('raid:start', ({ count }) => this.banner('밤 습격!', `몬스터 ${count}마리가 기지로 옵니다`, 'night'));
+    bus.on('raid:start', ({ count, bloodMoon }) => this.banner(bloodMoon ? '붉은 달의 습격!' : '밤 습격!', `몬스터 ${count}마리가 웨이브 3번에 나눠 옵니다`, 'night'));
     bus.on('time:day', ({ day }) => this.banner(`${day}일차 아침`, '', 'day'));
     bus.on('raid:result', ({ results }) => {
       const label = { cleared: '방어 성공', partial: '부분 피해', failed: '실패' };

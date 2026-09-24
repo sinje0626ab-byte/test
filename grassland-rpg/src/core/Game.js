@@ -30,6 +30,11 @@ import { StatusSystem } from '../systems/StatusSystem.js';
 import { EnemyShotSystem } from '../systems/EnemyShotSystem.js';
 import { ActiveSkillSystem } from '../systems/ActiveSkillSystem.js';
 import { SkillBar } from '../ui/SkillBar.js';
+import { RaidIndicator } from '../ui/RaidIndicator.js';
+import { GardenWindow } from '../ui/GardenWindow.js';
+import { ForgeWindow } from '../ui/ForgeWindow.js';
+import { ForgeSystem } from '../systems/ForgeSystem.js';
+import { WallSystem } from '../systems/WallSystem.js';
 import { BuffSystem } from '../systems/BuffSystem.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
@@ -93,12 +98,14 @@ export class Game {
       new EconomySystem(ctx),
       new InventorySystem(ctx),
       new BuildSystem(ctx),
+      new WallSystem(ctx),
       new TurretSystem(ctx),
       new RaidSystem(ctx),
       new StatsSystem(ctx),
       new EquipmentSystem(ctx),
       new SkillSystem(ctx),
       new ActiveSkillSystem(ctx),
+      new ForgeSystem(ctx),
       new ExplorationSystem(ctx),
       new InteractionSystem(ctx),
       new FacilitySystem(ctx),
@@ -126,8 +133,11 @@ export class Game {
     new CraftWindow(ctx, this.ui, this.tooltip);
     new StorageWindow(ctx, this.ui, this.tooltip);
     new ShopWindow(ctx, this.ui, this.tooltip);
+    new GardenWindow(ctx, this.ui);
+    new ForgeWindow(ctx, this.ui);
     this.touch = new TouchControls(ctx, uiRoot);
     this.skillBar = new SkillBar(ctx, uiRoot);
+    this.raidInd = new RaidIndicator(ctx, uiRoot);
 
     // 연출·소리·설정 (게임 로직과 따로)
     this.settings = new Settings(bus);
@@ -243,6 +253,7 @@ export class Game {
     this.ui.update(dt);
     this.touch.update();
     this.skillBar.update();
+    this.raidInd.update();
     ctx.input.endFrame();
   }
 

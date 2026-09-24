@@ -18,6 +18,8 @@
 .tw-actions small { display: inline-flex; align-items: center; gap: 3px; margin-left: 4px; }
 .tw-actions .coin { width: 14px; height: 14px; display: inline-block; }
 .tw-note { margin: 8px 0 0; font-size: 12px; color: #d9534f; }
+.tw-items { grid-column: 1 / -1; margin: 0; font-size: 12px; color: #6b5a3e; }
+.tw-items .bad { color: #d9534f; }
 
 /* 기지 업그레이드 카드 */
 .base-up { padding: 12px 14px; border-radius: 14px; background: #fff6e0; border: 2px solid var(--panel-edge); }
@@ -69,3 +71,32 @@
   .hud-tl { width: 180px; top: 10px; left: 10px; }
   .hud-tr { top: 10px; right: 10px; }
 }
+
+/* 텃밭 */
+.gd { width: min(340px, calc(100vw - 48px)); display: flex; flex-direction: column; gap: 10px; }
+.gd-note { margin: 0; font-size: 14px; }
+.gd-seeds { display: flex; flex-direction: column; gap: 6px; }
+.gd-seeds button, .gd-harvest {
+  display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 2px 8px; text-align: left; padding: 8px 10px;
+  border: 2px solid var(--panel-edge); border-radius: 12px; background: #fff6e0; font: inherit; color: inherit; cursor: pointer;
+}
+.gd-seeds button small { grid-column: 2; font-size: 11px; color: #8a7f63; }
+.gd-seeds button:disabled { opacity: 0.5; cursor: not-allowed; }
+.gd-harvest { display: block; text-align: center; font-weight: 800; background: #7cc67a; color: #fff; border-color: #6ab468; }
+.gd .bar { height: 12px; background: #eadfc4; border-radius: 999px; overflow: hidden; }
+.gd .bar .fill { height: 100%; background: #7cc67a; }
+
+/* 대장간 */
+.fg { width: min(380px, calc(100vw - 48px)); display: flex; flex-direction: column; gap: 6px; max-height: 60vh; overflow-y: auto; }
+.fg-note { margin: 0 0 4px; font-size: 13px; color: #6b5a3e; }
+.fg-row {
+  display: flex; align-items: center; gap: 10px; padding: 6px 10px; text-align: left; font: inherit; color: inherit;
+  border: 2px solid var(--panel-edge); border-radius: 12px; background: #fff6e0; cursor: pointer;
+}
+.fg-row:disabled { opacity: 0.55; cursor: not-allowed; }
+.fg-row:hover:not(:disabled) { border-color: #e9a35b; background: #fff1c9; }
+.fg-icon { width: 36px; height: 36px; border-radius: 10px; border: 2px solid var(--grade); display: flex; align-items: center; justify-content: center; }
+.fg-text { display: flex; flex-direction: column; font-size: 14px; }
+.fg-text .up { color: #e0a21c; }
+.fg-text small { font-size: 11px; color: #8a7f63; display: flex; align-items: center; gap: 3px; }
+.fg-text .coin { width: 12px; height: 12px; display: inline-block; }

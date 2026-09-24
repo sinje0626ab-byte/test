@@ -17,13 +17,39 @@
     "xp": 10,
     "upgradeCosts": [
       40,
-      80
+      80,
+      160,
+      280
     ],
     "repairCostPerHp": 0.25,
     "damagePerLevel": 0.35,
     "rangePerLevel": 0.5,
     "hpPerLevel": 0.3,
-    "maxLevel": 3
+    "maxLevel": 5,
+    "upgradeItems": [
+      null,
+      null,
+      [
+        {
+          "id": "resin",
+          "count": 4
+        },
+        {
+          "id": "iron_ore",
+          "count": 3
+        }
+      ],
+      [
+        {
+          "id": "resin",
+          "count": 8
+        },
+        {
+          "id": "iron_ore",
+          "count": 6
+        }
+      ]
+    ]
   },
   "crossbow": {
     "name": "석궁 포탑",
@@ -43,13 +69,39 @@
     "xp": 15,
     "upgradeCosts": [
       70,
-      140
+      140,
+      260,
+      420
     ],
     "repairCostPerHp": 0.3,
     "damagePerLevel": 0.35,
     "rangePerLevel": 0.5,
     "hpPerLevel": 0.3,
-    "maxLevel": 3
+    "maxLevel": 5,
+    "upgradeItems": [
+      null,
+      null,
+      [
+        {
+          "id": "resin",
+          "count": 6
+        },
+        {
+          "id": "iron_ore",
+          "count": 5
+        }
+      ],
+      [
+        {
+          "id": "resin",
+          "count": 10
+        },
+        {
+          "id": "iron_ore",
+          "count": 10
+        }
+      ]
+    ]
   },
   "gun": {
     "name": "총 포탑",
@@ -69,13 +121,39 @@
     "xp": 20,
     "upgradeCosts": [
       110,
-      220
+      220,
+      380,
+      600
     ],
     "repairCostPerHp": 0.35,
     "damagePerLevel": 0.35,
     "rangePerLevel": 0.5,
     "hpPerLevel": 0.3,
-    "maxLevel": 3
+    "maxLevel": 5,
+    "upgradeItems": [
+      null,
+      null,
+      [
+        {
+          "id": "sandstone",
+          "count": 8
+        },
+        {
+          "id": "iron_ore",
+          "count": 6
+        }
+      ],
+      [
+        {
+          "id": "sandstone",
+          "count": 14
+        },
+        {
+          "id": "iron_ore",
+          "count": 12
+        }
+      ]
+    ]
   },
   "cannon": {
     "name": "대포 포탑",
@@ -98,12 +176,156 @@
     "xp": 30,
     "upgradeCosts": [
       170,
-      340
+      340,
+      520,
+      800
     ],
     "repairCostPerHp": 0.4,
     "damagePerLevel": 0.35,
     "rangePerLevel": 0.5,
     "hpPerLevel": 0.3,
-    "maxLevel": 3
+    "maxLevel": 5,
+    "upgradeItems": [
+      null,
+      null,
+      [
+        {
+          "id": "sandstone",
+          "count": 10
+        },
+        {
+          "id": "iron_ore",
+          "count": 8
+        }
+      ],
+      [
+        {
+          "id": "sandstone",
+          "count": 18
+        },
+        {
+          "id": "iron_ore",
+          "count": 15
+        }
+      ]
+    ]
+  },
+  "poison_thrower": {
+    "name": "독침 포탑",
+    "description": "독침을 쏜다. 맞은 적은 3초 동안 독에 걸리고, 여러 적을 번갈아 노린다.",
+    "model": "poison",
+    "projectile": "needle",
+    "unlockBaseLevel": 2,
+    "cost": 80,
+    "buildItems": [
+      {
+        "id": "cactus_spine",
+        "count": 8
+      }
+    ],
+    "hp": 100,
+    "radius": 0.65,
+    "range": 9,
+    "fireRate": 1.5,
+    "damage": 4,
+    "projectileSpeed": 24,
+    "onHit": {
+      "type": "poison",
+      "duration": 3
+    },
+    "priority": "spread",
+    "color": "#7cc67a",
+    "xp": 15,
+    "upgradeCosts": [
+      60,
+      120,
+      220,
+      360
+    ],
+    "upgradeItems": [
+      null,
+      null,
+      [
+        {
+          "id": "cactus_spine",
+          "count": 10
+        }
+      ],
+      [
+        {
+          "id": "cactus_spine",
+          "count": 16
+        },
+        {
+          "id": "iron_ore",
+          "count": 4
+        }
+      ]
+    ],
+    "repairCostPerHp": 0.3,
+    "damagePerLevel": 0.35,
+    "rangePerLevel": 0.5,
+    "hpPerLevel": 0.3,
+    "maxLevel": 5
+  },
+  "frost_tower": {
+    "name": "서리 포탑",
+    "description": "얼음탄이 터지며 주변 적을 느리게 만든다 (감속 40%).",
+    "model": "frost",
+    "projectile": "icebolt",
+    "unlockBaseLevel": 3,
+    "cost": 140,
+    "buildItems": [
+      {
+        "id": "frost_crystal",
+        "count": 2
+      }
+    ],
+    "hp": 140,
+    "radius": 0.7,
+    "range": 10,
+    "fireRate": 0.8,
+    "damage": 10,
+    "projectileSpeed": 18,
+    "hitSplash": 1.5,
+    "onHit": {
+      "type": "slow",
+      "duration": 2,
+      "amount": 0.4
+    },
+    "priority": "nearest",
+    "color": "#8fd0ff",
+    "xp": 25,
+    "upgradeCosts": [
+      120,
+      240,
+      400,
+      640
+    ],
+    "upgradeItems": [
+      null,
+      null,
+      [
+        {
+          "id": "frost_crystal",
+          "count": 2
+        }
+      ],
+      [
+        {
+          "id": "frost_crystal",
+          "count": 4
+        },
+        {
+          "id": "iron_ore",
+          "count": 6
+        }
+      ]
+    ],
+    "repairCostPerHp": 0.35,
+    "damagePerLevel": 0.35,
+    "rangePerLevel": 0.5,
+    "hpPerLevel": 0.3,
+    "maxLevel": 5
   }
 }

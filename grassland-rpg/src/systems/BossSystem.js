@@ -92,7 +92,7 @@ export class BossSystem {
   }
 
   emitStatus() {
-    const list = Object.entries(this.defs).map(([id, d]) => ({ id, name: d.name, lair: d.lair, defeated: !!this.isDefeated(id) }));
+    const list = Object.entries(this.defs).map(([id, d]) => ({ id, name: d.name, lair: d.lair, defeated: !!this.isDefeated(id), cleared: !!this.status[id] }));
     this.ctx.bus.emit('boss:status', { list });
   }
 

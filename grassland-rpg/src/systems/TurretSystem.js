@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Turret } from '../entities/Turret.js';
 import { ProjectilePool } from '../entities/Projectile.js';
-import { turretDamage, turretRange, upgradeCost, repairCost, demolishRefund } from '../utils/build.js';
+import { turretDamage, turretRange, upgradeCost, upgradeItems, repairCost, demolishRefund } from '../utils/build.js';
 
 const tmp = new THREE.Vector3();
 
@@ -66,7 +66,20 @@ export class TurretSystem {
   upgrade(t) {
     const cost = upgradeCost(t.def, t.level);
     if (!t.alive || cost == null || t.level >= t.def.maxLevel) return;
-    if (!this.spend(cost)) return;
+    // 재료가 있으면 먼저 쓰고, 골드가 모자라면 재료를 돌려준다
+    const items = upgradeItems(t.def, t.level);
+    if (items) {
+      const e = { items, ok: false };
+      this.ctx.bus.emit('inventory:spend', e);
+      if (!e.ok) {
+        this.ctx.bus.emit('notify', { text: '업그레이드 재료가 부족합니다', kind: 'warn' });
+        return;
+      }
+    }
+    if (!this.spend(cost)) {
+      for (const c of items ?? []) this.ctx.bus.emit('inventory:add', { item: c.id, count: c.count, taken: 0 });
+      return;
+    }
     t.levelUp();
     this.ctx.bus.emit('notify', { text: `${t.def.name} Lv${t.level}!`, kind: 'item' });
     this.changed(t);
@@ -100,7 +113,8 @@ export class TurretSystem {
       if (!m.alive || m.untargetable) continue;
       const d = Math.hypot(m.position.x - t.position.x, m.position.z - t.position.z);
       if (d > range) continue;
-      const score = t.priority === 'lowestHp' ? m.stats.hp : d;
+      // spread(독침): 최근에 쏜 적은 뒤로 미뤄 여러 적을 번갈아 노린다
+      const score = t.priority === 'lowestHp' ? m.stats.hp : t.priority === 'spread' ? d + (t.recent?.includes(m) ? 1000 : 0) : d;
       if (score < bestScore) { bestScore = score; best = m; }
     }
     return best;
@@ -125,11 +139,14 @@ export class TurretSystem {
       tmp.set(target.position.x, 0.5, target.position.z).sub(from).normalize().multiplyScalar(def.projectileSpeed);
       p.fire(from, tmp, damage, (range * 1.3) / def.projectileSpeed);
     }
+    p.onHit = def.onHit ?? null;
+    p.hitSplash = def.hitSplash ?? 0;
+    if (def.priority === 'spread') t.recent = [target, ...(t.recent ?? [])].slice(0, 2);
     t.recoil = 1;
     this.ctx.bus.emit('turret:fired', { type: t.type, position: t.position, muzzle: from });
   }
 
-  blast(position, radius) {
+  blast(position, radius, color = 0xffb35c) {
     let b = this.blasts.find((x) => x.t >= 1);
     if (!b) {
       const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), new THREE.MeshBasicMaterial({ color: 0xffb35c, transparent: true, depthWrite: false }));
@@ -139,6 +156,7 @@ export class TurretSystem {
     }
     b.t = 0;
     b.radius = radius;
+    b.mesh.material.color.setHex(color);
     b.mesh.position.copy(position).setY(0.2);
     b.mesh.visible = true;
   }
@@ -180,8 +198,13 @@ export class TurretSystem {
         const dz = m.position.z - p.position.z;
         if (dx * dx + dz * dz < (m.radius + 0.15) ** 2 && p.position.y < m.radius * 2 + (m.def.flier ? 1.3 : 0)) { hit = m; break; }
       }
-      if (hit) {
-        bus.emit('projectile:hit', { monster: hit, damage: p.damage, dir: p.velocity.clone().setY(0).normalize() });
+      if (hit && p.hitSplash) {
+        // 서리 포탑: 맞은 자리 둘레 모두 (감속)
+        bus.emit('projectile:explode', { position: hit.position.clone(), radius: p.hitSplash, minFactor: 1, damage: p.damage, effect: p.onHit });
+        this.blast(hit.position, p.hitSplash, 0x8fd0ff);
+        p.release();
+      } else if (hit) {
+        bus.emit('projectile:hit', { monster: hit, damage: p.damage, dir: p.velocity.clone().setY(0).normalize(), effect: p.onHit });
         p.release();
       } else if (p.life <= 0 || p.position.y < 0) {
         p.release();

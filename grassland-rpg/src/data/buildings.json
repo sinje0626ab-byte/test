@@ -110,7 +110,8 @@
       "hp": 120,
       "radius": 0.9,
       "xp": 15,
-      "color": "#b88452"
+      "color": "#b88452",
+      "verb": "제작"
     },
     "storage": {
       "name": "창고",
@@ -131,7 +132,8 @@
       "radius": 1.2,
       "xp": 20,
       "slots": 24,
-      "color": "#9a6a45"
+      "color": "#9a6a45",
+      "verb": "열기"
     },
     "shop": {
       "name": "상점",
@@ -155,7 +157,132 @@
       "hp": 150,
       "radius": 1.2,
       "xp": 20,
-      "color": "#e9835b"
+      "color": "#e9835b",
+      "verb": "사고팔기"
+    },
+    "campfire": {
+      "name": "모닥불",
+      "description": "둘레 5m 안에서 HP가 초당 3 더 찬다. 밤엔 주변을 밝힌다.",
+      "model": "campfire",
+      "unlockBaseLevel": 1,
+      "cost": [
+        {
+          "id": "wood",
+          "count": 6
+        },
+        {
+          "id": "stone",
+          "count": 4
+        }
+      ],
+      "hp": 80,
+      "radius": 0.6,
+      "xp": 10,
+      "color": "#ff9a3d",
+      "verb": "불 쬐기",
+      "aura": {
+        "radius": 5,
+        "hpRegen": 3
+      },
+      "light": {
+        "color": "#ffb35c",
+        "intensity": 2.2,
+        "distance": 12
+      }
+    },
+    "garden": {
+      "name": "텃밭",
+      "description": "씨앗을 심으면 하루이틀 뒤에 거둔다. 느긋한 즐거움.",
+      "model": "garden",
+      "unlockBaseLevel": 2,
+      "cost": [
+        {
+          "id": "wood",
+          "count": 10
+        },
+        {
+          "id": "fiber",
+          "count": 6
+        }
+      ],
+      "hp": 100,
+      "radius": 1.1,
+      "xp": 15,
+      "color": "#8a6440",
+      "verb": "텃밭 가꾸기"
+    },
+    "forge": {
+      "name": "대장간",
+      "description": "골드와 철광석으로 장비를 강화한다 (+1 ~ +5).",
+      "model": "forge",
+      "unlockBaseLevel": 3,
+      "cost": [
+        {
+          "id": "stone",
+          "count": 20
+        },
+        {
+          "id": "iron_ore",
+          "count": 10
+        }
+      ],
+      "hp": 200,
+      "radius": 1.3,
+      "xp": 25,
+      "color": "#5a5147",
+      "verb": "장비 강화"
+    },
+    "board": {
+      "name": "게시판",
+      "description": "현상금 의뢰가 붙는 게시판. (의뢰는 곧 붙어요)",
+      "model": "board",
+      "unlockBaseLevel": 2,
+      "cost": [
+        {
+          "id": "wood",
+          "count": 12
+        }
+      ],
+      "hp": 80,
+      "radius": 0.7,
+      "xp": 10,
+      "color": "#c9a06a",
+      "verb": "의뢰 보기"
+    }
+  },
+  "walls": {
+    "wall": {
+      "name": "나무 울타리",
+      "description": "1칸 벽. 몬스터 길을 막아 포탑 앞으로 유도한다. 드래그로 여러 칸.",
+      "unlockBaseLevel": 1,
+      "cost": [
+        {
+          "id": "wood",
+          "count": 4
+        }
+      ],
+      "hp": 120,
+      "color": "#b88452",
+      "model": "fence"
+    },
+    "stone_wall": {
+      "name": "돌담",
+      "description": "튼튼한 벽. 나무 울타리 위에 지으면 바꿔 끼운다.",
+      "unlockBaseLevel": 3,
+      "cost": [
+        {
+          "id": "stone",
+          "count": 6
+        },
+        {
+          "id": "sandstone",
+          "count": 2
+        }
+      ],
+      "hp": 350,
+      "color": "#a9a49c",
+      "model": "stone",
+      "replaces": "wall"
     }
   }
 }

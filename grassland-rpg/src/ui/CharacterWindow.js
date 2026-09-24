@@ -54,18 +54,19 @@ export class CharacterWindow {
         return;
       }
       this.lastTap = { slot, time: now };
-      tooltip.show(itemTooltip(ctx.data, id, { hint: '두 번 탭: 해제' }), e.clientX, e.clientY);
+      tooltip.show(itemTooltip(ctx.data, id, { hint: '두 번 탭: 해제', plus: this.plus?.[slot] ?? 0 }), e.clientX, e.clientY);
     });
     this.grid.addEventListener('pointermove', (e) => {
       const slot = e.target.closest('[data-eslot]')?.dataset.eslot;
       const id = slot && this.equip[slot];
-      if (id) tooltip.show(itemTooltip(ctx.data, id, { hint: '우클릭: 해제' }), e.clientX, e.clientY);
+      if (id) tooltip.show(itemTooltip(ctx.data, id, { hint: '우클릭: 해제', plus: this.plus?.[slot] ?? 0 }), e.clientX, e.clientY);
       else tooltip.hide();
     });
     this.grid.addEventListener('pointerleave', () => tooltip.hide());
 
-    ctx.bus.on('equipment:changed', ({ slots, sets }) => {
+    ctx.bus.on('equipment:changed', ({ slots, plus, sets }) => {
       this.equip = { ...slots };
+      this.plus = { ...plus };
       this.renderEquip();
       // 세트 진행도 (하나라도 낀 세트만)
       const items = ctx.data.items;
@@ -84,7 +85,8 @@ export class CharacterWindow {
       const def = id && items.items[id];
       el.classList.toggle('filled', !!def);
       el.style.setProperty('--grade', def ? items.grades[def.grade]?.color : 'transparent');
-      el.querySelector('.eicon').innerHTML = def ? itemIcon(def) : slotHint(slot);
+      const plus = this.plus?.[slot];
+      el.querySelector('.eicon').innerHTML = def ? itemIcon(def) + (plus ? `<b class="plus-badge">+${plus}</b>` : '') : slotHint(slot);
     }
     this.tooltip.hide();
   }

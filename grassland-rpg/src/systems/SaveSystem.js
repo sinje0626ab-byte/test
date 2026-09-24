@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -32,6 +32,13 @@ const migrations = {
   7: (s) => ({ ...s, saveVersion: 8, gather: { depleted: {} } }),
   // v8 → v9: 액티브 스킬 슬롯 Q·R (빈 슬롯)
   8: (s) => ({ ...s, saveVersion: 9, skills: { ...(s.skills ?? { ranks: {} }), slots: [null, null] } }),
+  // v9 → v10: 장비 강화. 장착 슬롯 id 문자열 → { id, plus }. 가방·창고 칸은 plus가 없으면 0으로 본다.
+  9: (s) => ({
+    ...s,
+    saveVersion: 10,
+    walls: [],
+    equipment: { slots: Object.fromEntries(Object.entries(s.equipment?.slots ?? {}).map(([k, v]) => [k, v ? { id: v, plus: 0 } : null])) },
+  }),
 };
 
 export class SaveSystem {

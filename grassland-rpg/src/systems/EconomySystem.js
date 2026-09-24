@@ -72,7 +72,7 @@ export class EconomySystem {
     const { id } = take.item;
     const value = data.items.items[id].value ?? 0;
     const n = Math.min(count, take.item.count);
-    if (take.item.count > n) bus.emit('inventory:add', { item: id, count: take.item.count - n, taken: 0 });
+    if (take.item.count > n) bus.emit('inventory:add', { item: id, count: take.item.count - n, taken: 0, plus: take.item.plus ?? 0 });
     this.change(value * n);
     bus.emit('notify', { text: `${data.items.items[id].name} ${n}개 판매 (+${value * n})`, kind: 'gold' });
   }

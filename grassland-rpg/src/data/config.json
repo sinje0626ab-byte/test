@@ -87,13 +87,10 @@
   },
   "raid": {
     "baseCount": 2,
-    "perBaseLevel": 1,
     "perRegionDifficulty": 1,
-    "perDay": 1,
     "maxCount": 30,
     "spawnInterval": 2.5,
     "spawnOffset": 9,
-    "statScalePerDay": 0.12,
     "rewardBase": 20,
     "rewardPerMonster": 6,
     "failGoldLossRatio": 0.1,
@@ -101,7 +98,26 @@
     "remoteFightSeconds": 25,
     "remotePartialRatio": 0.5,
     "remoteTurretDamage": 0.8,
-    "failStorageLossRatio": 0.3
+    "failStorageLossRatio": 0.3,
+    "progressPerPlayerLevels": 5,
+    "statPerProgress": 0.15,
+    "dayFactorEarly": 0.08,
+    "dayEarlyCap": 12,
+    "dayFactorLate": 0.02,
+    "countPerProgress": 2,
+    "countDayCap": 10,
+    "waves": 3,
+    "waveRest": 15,
+    "waveTimeout": 60,
+    "bloodMoon": {
+      "every": 5,
+      "eliteChance": 0.25,
+      "bossHp": 0.4,
+      "rewardMultiplier": 2,
+      "sky": "#6e1f2a",
+      "moon": "#ff6b5a"
+    },
+    "arrowMinDistance": 25
   },
   "map": {
     "cellSize": 6,
@@ -187,5 +203,57 @@
       "R"
     ],
     "healTick": 0.5
+  },
+  "garden": {
+    "crops": {
+      "herb_seed": {
+        "name": "약초",
+        "days": 1,
+        "item": "herb",
+        "min": 3,
+        "max": 5,
+        "color": "#6fbf5f"
+      },
+      "apple_seed": {
+        "name": "사과",
+        "days": 2,
+        "item": "apple",
+        "min": 2,
+        "max": 4,
+        "color": "#ff6b6b"
+      }
+    },
+    "xp": 5
+  },
+  "enhance": {
+    "max": 5,
+    "statPerPlus": 0.12,
+    "gold": [
+      50,
+      120,
+      250,
+      500,
+      1000
+    ],
+    "ore": [
+      2,
+      4,
+      6,
+      10,
+      15
+    ],
+    "oreItem": "iron_ore",
+    "noScale": [
+      "slowImmune",
+      "multiShot"
+    ]
+  },
+  "walls": {
+    "maxPerBase": 40,
+    "remoteHpRatio": 0.3,
+    "collideRadius": 0.5,
+    "repathInterval": 1,
+    "pathMargin": 4,
+    "maxPathNodes": 5000
   }
 }

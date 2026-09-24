@@ -63,6 +63,7 @@ src/
     Decor.js           # 지역별 나무·바위·꽃 배치 (시드 난수)
     Chunk.js           # z 띠 하나의 장식 묶음 (따로 그리고 따로 숨긴다)
     Regions.js         # 지역(초원/숲/사막/설원) 찾기·색 섞기
+    WallGrid.js        # 벽 칸 목록 (ctx.wallGrid): 몬스터 충돌, 기지 둘레 격자 길찾기
   entities/
     Player.js
     PlayerModel.js     # 플레이어 모양, 무기 종류별 모양, 장비 색 반영
@@ -85,6 +86,7 @@ src/
     TurretModels.js    # 포탑 종류별 모양
     Facility.js        # 부속 건물 (작업대·창고·상점)
     FacilityModels.js  # 부속 건물 모양
+    Wall.js            # 1칸 벽 (나무 울타리·돌담)
     ResourceNode.js    # 나무, 바위, 풀 등 채집물 (모양·흔들림·캔 모습)
   systems/
     CombatSystem.js
@@ -114,6 +116,8 @@ src/
     FacilitySystem.js  # 부속 건물 설치·목록·아침 수리
     CraftingSystem.js  # 작업대 제작
     StorageSystem.js   # 기지별 창고
+    WallSystem.js      # 벽 드래그 설치·저장·아침 수리
+    ForgeSystem.js     # 대장간 장비 강화
     SaveSystem.js
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
@@ -132,6 +136,9 @@ src/
     CraftWindow.js
     StorageWindow.js
     MapWindow.js
+    GardenWindow.js    # 텃밭 (심기·거두기)
+    ForgeWindow.js     # 대장간 (장비 강화)
+    RaidIndicator.js   # 습격 웨이브 표시·기지 방향 화살표
     Tooltip.js
     styles.css         # 기본 HUD
     windows.css        # 창
@@ -141,6 +148,9 @@ src/
   utils/
     random.js          # 시드 난수 (월드 배치 재현용)
     slots.js           # 칸 목록에 넣기·빼기·세기 (가방·창고 공용)
+    raid.js            # 습격 난이도 공식·웨이브 나누기·가중치 뽑기
+    pathfind.js        # 격자 A*
+    enhance.js         # 장비 강화 능력치·비용
   data/
     config.json        # 월드·카메라·스포너·전투 공통 수치
     player.json        # 플레이어 기본 능력치
@@ -291,13 +301,14 @@ src/
     "bases": [ { "id": 1, "level": 1, "position": [x, z], "hp": 300 } ],
     "turrets": [ { "type": "wood_bow", "baseId": 1, "position": [x, z], "hp": 80, "level": 1, "priority": "nearest" } ],
     "stats": { "level": 1, "xp": 0, "skillPoints": 0 },
-    "equipment": { "slots": { "weapon": "twig_sword", "head": null, ... } },
+    "equipment": { "slots": { "weapon": { "id": "twig_sword", "plus": 2 }, "head": null, ... } },
     "skills": { "ranks": { "power": 2 }, "slots": ["dash_slash", null] },
     "exploration": { "cells": "0011100…", "visited": ["grassland"] },
     "facilities": [ { "type": "workbench", "baseId": 1, "position": [x, z], "hp": 120 } ],
     "storages": { "1": [ { "id": "slime_jelly", "count": 30 }, null, ... ] },
     "bosses": { "cactus_king": { "defeatedDay": 4 } },
-    "gather": { "depleted": { "rock_node-12": 3 } }
+    "gather": { "depleted": { "rock_node-12": 3 } },
+    "walls": [ { "type": "wall", "baseId": 1, "cell": [cx, cz], "hp": 120 } ]
   }
   ```
 - v1 → v2: `time`·`bases`·`turrets` 추가, 기지가 없으니 텐트 키트 1개 지급
@@ -308,6 +319,7 @@ src/
 - v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
 - v7 → v8: `gather` 추가 (빈 값 = 모든 노드 살아 있음)
 - v8 → v9: `skills.slots` 추가 (액티브 스킬 Q·R, 빈 슬롯)
+- v9 → v10: 장착 슬롯 id 문자열 → `{ id, plus: 0 }`, `walls` 추가 (빈 값). 부속 건물에 텃밭 작물 `crop` { seed, day } (없으면 빈 텃밭)
 - 불러오기가 끝나면 `save:loaded` 이벤트. 플레이어 HP는 장비·스킬까지 반영된 최대치로 이때 맞춘다
 - 구조를 바꾸면 `SAVE_VERSION`을 올리고 `SaveSystem.js`의 `migrations`에 이전 버전 → 새 버전 변환을 넣는다
 - 저장이 깨졌으면 `<key>-broken`으로 옮겨 두고 새로 시작한다. 더 새로운 버전의 저장이면 덮어쓰지 않는다
@@ -380,6 +392,12 @@ src/
 - 가방에서 우클릭 → 장착 (원래 끼던 장비는 그 가방 칸으로 돌아온다). 캐릭터 창에서 장비 칸 우클릭 → 해제 (가방이 차 있으면 해제 불가)
 - 장비는 몬스터 드롭으로 얻는다 (낮은 확률). 제작·상점은 Phase 6
 
+### 4-4-3. 장비 강화 (Phase 12, 대장간)
+- +1 ~ +5. 단계마다 기본 능력치 +12% (`config.enhance`). 켜고 끄는 능력치(감속 면역·화살 추가)는 그대로
+- 비용: 골드 [50, 120, 250, 500, 1000] + 철광석 [2, 4, 6, 10, 15]. 실패 없음
+- 대상: 낀 장비와 가방 장비. 이름·칸에 +3 표시, 툴팁에 강화 수치
+- 칸 형식: 가방·창고 칸 `{ id, count, plus? }`, 장착 슬롯 `{ id, plus }` (강화 단계가 다르면 겹치지 않는다)
+
 ### 4-5. 기지
 - 단계: 텐트(Lv1) → 움막(Lv2) → 집(Lv3) → 요새(Lv4)
 - 기지 중심 건물 주변 일정 반경이 기지 영역 (레벨에 따라 확장)
@@ -424,7 +442,21 @@ src/
 - **제작**: `recipes.json`. 재료로 장비·소모품·텐트 키트를 만든다. 제작법마다 필요한 기지 단계가 있다. 가방에 자리가 없으면 만들지 않는다
 - **창고**: 기지마다 따로 (`buildings.json`의 `slots`칸). 클릭하면 한 칸 통째로 가방 ↔ 창고
 - **상점**: 구매(골드 → `shop.json`의 물건), 판매(아이템의 `value` 골드). 재료 = 제작/건설, 골드 = 포탑/상점 원칙 유지
+- **새 부속 건물 (Phase 12)**
+  - 모닥불(텐트, 나무 6·돌멩이 4): 반경 5m 안 HP재생 +3 (`aura`), 밤에 주변을 밝힌다
+  - 텃밭(움막, 나무 10·풀 섬유 6): 씨앗(약초 씨앗 1일 → 약초 3~5 / 사과 씨앗 2일 → 사과 2~4)을 심고 아침이 지나면 거둔다. 씨앗은 상점. 수치는 `config.garden`
+  - 대장간(집, 돌멩이 20·철광석 10): 장비 강화 (4-4-3). 대장장이 NPC는 Phase 13
+  - 게시판(움막, 나무 12): 현상금 의뢰는 Phase 13 (지금은 안내만)
 - **습격 실패 손실**: 그 기지에 창고가 있으면 창고 재료의 `raid.failStorageLossRatio`를 잃는다. 창고가 없으면 예전처럼 소지 골드 일부
+
+### 4-5-4. 벽 (Phase 12)
+- 나무 울타리(텐트, 나무 4, HP 120) · 돌담(집, 돌멩이 6·사암 2, HP 350). 1m 칸 하나. 기지당 최대 `walls.maxPerBase`(40)칸. `buildings.json`의 `walls`
+- 건설 창 건물 탭에서 고른 뒤 PC는 끌어서 한 줄(놓으면 설치), 터치는 탭(시작) → 탭(끝) → "설치". 대각선도 빈틈없이 4방향으로 잇는다
+- 돌담을 나무 울타리 위에 지으면 바꿔 끼운다. 재료는 석공 스킬 할인 적용
+- 벽은 **몬스터만** 막는다 (플레이어는 지나다닌다. 나는 몬스터는 넘어온다)
+- 습격 몬스터: 벽이 있는 기지면 기지 둘레 격자 A*(1m 칸, `repathInterval`초마다)로 돌아간다. 길이 완전히 막혔으면 가장 가까운 벽을 부순다
+- 부서진 벽은 사라진다. 남은 벽은 아침에 체력이 가득 찬다
+- 원격 습격 계산: 그 기지 벽 체력 합의 `walls.remoteHpRatio`(30%)를 방어력에 더한다
 
 ### 4-3-1. 소모품과 퀵슬롯
 - 소모품은 `use` 효과(`heal` 등). 가방에서 우클릭하거나 퀵슬롯 숫자키(1~5)로 쓴다
@@ -459,6 +491,10 @@ src/
   - 우선순위 바꾸기: 가장 가까운 적 ↔ 체력 낮은 적 (포탑마다 저장)
   - 철거: 설치비+업그레이드비의 `demolishRefund` 비율을 돌려받는다 (자리 제한 때문에 약한 포탑을 바꿀 수 있게)
 - 원격 습격 계산에서 대포 같은 범위 포탑은 `aoeFactor`배 화력으로 친다
+- **Phase 12**: 레벨 상한 5. Lv4·Lv5 업그레이드는 골드 + 지역 재료(`upgradeItems`: 나무활·석궁 송진·철광석 / 총·대포 사암·철광석 / 독침 선인장 가시 / 서리 서리 수정). 기존 포탑은 그대로. Lv5는 머리 위 금관
+  - 독침 포탑(움막, 골드 80 + 선인장 가시 8): 사거리 9, 초당 1.5, 데미지 4 + 독 3초. 우선순위 `spread`(최근에 쏜 적은 뒤로) — 여러 적을 번갈아 노린다
+  - 서리 포탑(집, 골드 140 + 서리 수정 2): 사거리 10, 초당 0.8, 데미지 10, 맞은 자리 1.5m 안 모두 감속 40% 2초 (`hitSplash`)
+  - 설치 재료는 `buildItems`, 적중 효과는 `onHit`
 
 ### 4-8. 밤 습격
 - 밤이 되면 각 기지에 습격 웨이브 발생
@@ -477,7 +513,16 @@ src/
   - `raid.remotePartialRatio` 이상: 부분 피해 — 포탑마다 최대 체력 × (1-비율) × `raid.remoteTurretDamage` 만큼 깎임
   - 그 미만: 실패 — 포탑 피해 + 소지 골드 일부 손실 (창고가 생기면 창고 재료 손실로 바꾼다)
   - 텐트는 원격 계산으로 깎지 않는다 (아침 회복과 순서가 꼬이지 않게)
-- 습격 몬스터는 기지가 있는 지역의 `raidMonster`, 능력치는 날짜 배율 × 지역 배율
+- **Phase 12 습격 개편** (`config.raid`, `utils/raid.js`)
+  - 진행도 progress = max(기지 레벨, floor(플레이어 레벨 / 5)) + 처치해 본 보스 수
+  - 날짜 배율 dayFactor = min(날짜-1, 12) × 0.08 + max(0, 날짜-13) × 0.02
+  - 능력치 배율 = (1 + progress × 0.15 + dayFactor) × 지역 statMultiplier
+  - 마릿수 = baseCount + progress × 2 + 지역 난이도 + min(날짜-1, 10) (최대 maxCount)
+  - 몬스터 구성: `regions.json`의 `raidPool`(가중치 목록). 예: 초원 밤 슬라임 4 · 뿔토끼 2 · 큰 슬라임 1 · 붕붕벌 1. 습격 몬스터는 모두 기지로 와서 때린다 (자폭 몬스터는 부풀었다 터진다)
+  - 웨이브 3개로 나눠 스폰. 웨이브를 다 잡거나 `waveTimeout`초가 지나면 `waveRest`(15)초 쉬고 다음 웨이브. 화면 위에 "습격 웨이브 2/3"
+  - **붉은 달**: 5일마다(5·10·15…). 하늘·달빛이 붉어지고, 습격 몬스터의 25%가 정예, 마지막 웨이브에 그 지역 보스의 그림자(HP 40%, 패턴 없이 돌진해 때림)가 온다. 방어 성공 보상 2배
+  - 습격 중인 기지에서 멀리 있으면 화면 가장자리에 기지 쪽 화살표 (`arrowMinDistance`)
+- (Phase 11 이전) 습격 몬스터는 기지가 있는 지역의 `raidMonster`, 능력치는 날짜 배율 × 지역 배율 → Phase 12에서 위 공식으로 바뀌었다
 - 실시간 습격 판정 (Phase 3)
   - 해가 지면 기지 영역 바깥 둘레에서 습격 몬스터가 몇 초 간격으로 나타나 기지로 온다
   - 습격 몬스터는 가까운 플레이어를 먼저 노리고, 아니면 가장 가까운 포탑·텐트를 부순다. 도망치지 않는다
@@ -595,7 +640,7 @@ src/
 - [x] Phase 9 — 무기 종류와 장비 확장 (무기 4종 · 등급 전설 · 세트 효과 · 소모품·버프)
 - [x] Phase 10 — 몬스터 다양화 (행동 8종 · 신규 12종 · 정예 · 보스 2)
 - [x] Phase 11 — 스킬 개편 (액티브 스킬 · 패시브 추가 · 초기화)
-- [ ] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
+- [x] Phase 12 — 기지 확장, 습격 개편 (벽 · 새 건물 · 포탑 Lv5 · 장비 강화 · 습격 공식·웨이브·붉은 달)
 - [ ] Phase 13 — 캐릭터, NPC, 퀘스트, 엔딩
 - [ ] Phase 14 — 편의 기능과 마무리
 
@@ -700,9 +745,17 @@ src/
 | `skill:used` | ActiveSkillSystem | FeedbackSystem, SoundSystem |
 | `player:dash` / `player:sweep` | PlayerDash (돌진 시작 / 끝) | FeedbackSystem·SoundSystem / CombatSystem (지나간 길 판정) |
 | `turret:overclock` | ActiveSkillSystem | TurretSystem (연사 배율), FeedbackSystem |
+| `raid:wave` | RaidSystem (웨이브 시작·끝) | RaidIndicator |
+| `bloodmoon:start` | RaidSystem | (알림) — 하늘은 World가 `ctx.bloodMoon`을 읽는다 |
+| `build:start` (kind: 'wall') | BuildMenu | WallSystem (BuildSystem은 무시) |
+| `walls:placed` | WallSystem | (알림) |
+| `garden:plant` / `garden:harvest` → `garden:changed` | GardenWindow → FacilitySystem | GardenWindow |
+| `player:aura` | FacilitySystem (모닥불 둘레) | Player (HP 재생) |
+| `forge:enhance` → `forge:enhanced` | ForgeWindow → ForgeSystem | (알림) |
+| `inventory:set-plus` / `equipment:set-plus` | ForgeSystem | InventorySystem / EquipmentSystem |
 
 ### 공유 상태 (ctx)
 시스템끼리 직접 부르지 않는 대신, 월드에 존재하는 것들의 목록은 ctx에 두고 누구나 읽는다.
-`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build'), `ctx.activeSkills`({ slots, cd } — UI가 쿨다운 표시용으로 읽는다)
+`ctx.player`, `ctx.monsters`, `ctx.bases`, `ctx.structures`(텐트·포탑), `ctx.time`, `ctx.mode`('play' | 'build'), `ctx.activeSkills`({ slots, cd } — UI가 쿨다운 표시용으로 읽는다), `ctx.raids`(진행 중 습격, RaidIndicator), `ctx.bloodMoon`, `ctx.wallGrid`(벽 칸 — 몬스터 충돌·길찾기)
 | `player:damaged` / `player:died` / `player:respawned` | Player | HUD, EconomySystem |
 | `notify` | 누구나 | HUD (알림) |
