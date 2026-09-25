@@ -463,7 +463,7 @@
         "count": 360,
         "speed": 11,
         "dim": 0.85,
-        "fogFar": 42,
+        "fogFar": 58,
         "fogColor": "#d9b98a",
         "color": "#d9b98a"
       },

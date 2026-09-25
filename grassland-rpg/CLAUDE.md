@@ -37,6 +37,11 @@
   - 이 레포는 루트를 그대로 Pages로 서비스한다. 그래서 빌드 결과는 `dist/` 대신 **레포 루트의 `grassland/`** 로 나간다 (`outDir: '../grassland'`, `base: './'`).
   - 소스는 `grassland-rpg/`, 배포물은 `grassland/`. 배포물은 손으로 고치지 않고 항상 `npm run build`로 다시 만든다.
 
+### 가이드북 (`docs/MeadowPioneers_Guide.pdf`)
+- `tools/render.html`(+`render.js`): 개발 서버에서 열면 `window.renderAll()`이 몬스터·주민·플레이어·무기·포탑·기지·부속 건물·벽·채집 노드 모델을 투명 배경 PNG(dataURL)로 그린다
+- `tools/guide.mjs <출력 폴더>`: `src/data/*.json`에서 모든 표·도감을 뽑아 `<출력 폴더>/guide.html`을 만든다 (그림은 `<출력 폴더>/img/`, 스타일 `tools/guide.css`). 브라우저로 A4 PDF 인쇄
+- 데이터가 바뀌면 그림·PDF를 다시 만든다
+
 ### 실행
 ```bash
 cd grassland-rpg
