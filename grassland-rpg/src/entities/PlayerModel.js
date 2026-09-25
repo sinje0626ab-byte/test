@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import items from '../data/items.json';
-import { buildWeapon } from './weaponModels.js';
+import { buildWeapon, addEnhanceLook } from './weaponModels.js';
 import { createGear, showGear, CLOTH, SHOES } from './gearModels.js';
 
 const idOf = new Map(Object.entries(items.items).map(([id, def]) => [def, id]));
@@ -9,8 +9,8 @@ const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: tru
 const DEFAULT = { body: '#5b8def', feet: '#6b4a36', blade: '#e8eef5' };
 
 // 무기 모양 (아이템마다 재질·장식이 다르다, weaponModels.js). 피벗 기준 오른손 자리(x 0.42)
-export function createWeaponMesh(type, color, id) {
-  const g = buildWeapon(type, color, id ?? (color === DEFAULT.blade ? 'default' : undefined));
+export function createWeaponMesh(type, color, id, plus = 0) {
+  const g = addEnhanceLook(buildWeapon(type, color, id ?? (color === DEFAULT.blade ? 'default' : undefined)), plus);
   g.position.x = 0.42;
   return g;
 }

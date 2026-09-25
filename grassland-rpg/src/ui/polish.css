@@ -1,0 +1,64 @@
+/* 비주얼 마감 (마지막에 읽는다): 글꼴·색·패널·버튼·툴팁을 한 규칙으로 통일한다.
+   구조는 그대로 두고 겉만 다듬는다. 색은 itemArt 재질 팔레트와 같은 따뜻한 톤. */
+:root {
+  --ink: #3b3328;
+  --ink-soft: #85775d;
+  --panel: rgba(255, 251, 240, 0.94);
+  --panel-edge: #dccfae;
+  --panel-deep: #b9a57e;
+  --hp: #e0695e;
+  --st: #eab94c;
+  --xp: #74aede;
+  --gold: #e0b34a;
+  --ok: #6aa85a;
+  --heading: "Jua", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+html, body { font-family: "Noto Sans KR", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+
+/* 제목 글꼴: 둥근 손글씨체 (로고·창 제목·배지·배너) */
+.logo, .win-head h2, .lv-badge, .hud-banner b, .raid-wave, .bossbar, .sk-branch h3, .cc-card h2, .ending h1 { font-family: var(--heading); font-weight: 400; letter-spacing: 0.3px; }
+.win-head h2 { font-size: 19px; }
+
+/* 패널: 얇은 안쪽 흰 선 + 두툼한 바닥 그림자 = 종이 카드 느낌 */
+.hud-tl, .gold, .qslot, .window, .loot-row, .quest-tracker {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 3px 0 rgba(120, 100, 60, 0.16), 0 8px 18px rgba(60, 50, 30, 0.12);
+}
+.window { border-width: 2px; border-color: var(--panel-edge); background: linear-gradient(#fffbf2, #fbf3e1); }
+.win-head { border-bottom: 1px solid var(--panel-edge); background: linear-gradient(#fff8e8, #f6ecd4); border-radius: 16px 16px 0 0; }
+.win-close { background: #efe3c6; color: #7a6b4e; transition: background 0.12s, transform 0.12s; }
+.win-close:hover { background: #e0695e; color: #fff; transform: rotate(90deg); }
+
+/* 체력·기력·경험치 막대: 위쪽 밝은 줄로 둥근 입체감 */
+.bar { background: rgba(60, 50, 30, 0.14); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12); }
+.bar .fill { background-image: linear-gradient(rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 55%); }
+.bar.hp .fill { background-color: var(--hp); }
+.bar.st .fill { background-color: var(--st); }
+.bar.xp .fill { background-color: var(--xp); }
+.lv-badge { background: var(--ok); box-shadow: 0 2px 0 #4f8a42; padding: 1px 10px 0; }
+
+/* 버튼: 누르는 느낌 (바닥 그림자 + 눌리면 내려감) */
+.tabs button, .craft-row button, .shop-row button, .sk-actions button, .inv-foot button, .st-foot button,
+.base-up button, .gd-harvest, .fg-row button, .bounty-row button, .choice, .menu-btn {
+  box-shadow: 0 2px 0 rgba(60, 45, 25, 0.22);
+  transition: transform 0.08s, filter 0.12s, box-shadow 0.08s;
+}
+.tabs button:hover:not(:disabled), .craft-row button:hover:not(:disabled), .shop-row button:hover:not(:disabled),
+.sk-actions button:hover, .inv-foot button:hover, .base-up button:hover:not(:disabled), .choice:hover { filter: brightness(1.06); }
+.tabs button:active:not(:disabled), .craft-row button:active:not(:disabled), .shop-row button:active:not(:disabled),
+.sk-actions button:active, .inv-foot button:active, .base-up button:active:not(:disabled), .choice:active { transform: translateY(2px); box-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+.tabs button.on, .craft-row button, .shop-row button { background: var(--ok); }
+.craft-row button:disabled, .shop-row button:disabled { box-shadow: none; }
+
+/* 목록 줄·카드: 떠 있는 종이 */
+.craft-row, .shop-row, .build-card { border-color: var(--panel-edge); background: #fffaf0; box-shadow: 0 2px 0 rgba(120, 100, 60, 0.1); }
+.build-card:hover { border-color: var(--ok); background: #fff6e2; }
+
+/* 툴팁: 짙은 밤색 판 + 얇은 금빛 테 */
+.tooltip { background: rgba(46, 38, 30, 0.96); border: 1px solid rgba(224, 179, 74, 0.35); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3); }
+
+/* 알림 배너 */
+.hud-banner { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 0 rgba(120, 100, 60, 0.18), 0 12px 26px rgba(60, 50, 30, 0.18); }
+
+/* 퀵슬롯·스킬 칸 */
+.qslot { background: radial-gradient(circle at 50% 40%, #fffbf2 0 45%, #f4ead2); }
+.sslot { background: radial-gradient(circle at 50% 40%, #fffbf2 0 45%, #f4ead2); border-color: var(--panel-deep); }

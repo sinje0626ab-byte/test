@@ -48,10 +48,10 @@ export class Player {
     // 캐릭터 만들기에서 고른 이름·머리색·옷색·머리 장식
     this.appearance = { ...ctx.data.config.character.default };
     this.worn = {};
-    ctx.bus.on('equipment:changed', ({ slots }) => {
+    ctx.bus.on('equipment:changed', ({ slots, plus }) => {
       const items = ctx.data.items.items;
       const w = slots.weapon && items[slots.weapon];
-      this.attack.setWeapon(w?.weaponType ?? 'sword', w ? w.color : DEFAULT_BLADE, w ? slots.weapon : 'default');
+      this.attack.setWeapon(w?.weaponType ?? 'sword', w ? w.color : DEFAULT_BLADE, w ? slots.weapon : 'default', plus?.weapon ?? 0);
       this.worn = { head: items[slots.head], body: items[slots.body], feet: items[slots.feet] };
       applyAppearance(this, this.worn, this.appearance);
     });

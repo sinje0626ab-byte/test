@@ -3,6 +3,7 @@ import './ui/windows.css';
 import './ui/windows-map.css';
 import './ui/touch.css';
 import './ui/title.css';
+import './ui/polish.css';
 import config from './data/config.json';
 import player from './data/player.json';
 import monsters from './data/monsters.json';

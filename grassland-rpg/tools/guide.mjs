@@ -328,7 +328,7 @@ chapter('포탑', 'Turrets', `
     <small class="stats">데미지 ${t.damage} · 사거리 ${t.range} · 초당 ${t.fireRate}발 · 체력 ${t.hp}${t.splashRadius ? ` · 폭발 ${t.splashRadius}m` : ''}</small>
     <small class="muted">${BL[String(t.unlockBaseLevel)].name}부터 · 설치 ${t.cost}골드${t.buildItems ? ` + ${t.buildItems.map((c) => `${I[c.id].name} ${c.count}`).join(', ')}` : ''}</small>
     <small class="muted">업그레이드 ${t.upgradeCosts.join(' / ')}골드${t.upgradeItems ? ` (Lv4·5 + ${t.upgradeItems.filter(Boolean).map((l) => l.map((c) => `${I[c.id].name} ${c.count}`).join(' ')).join(' / ')})` : ''}</small></div>`).join('')}</div>
-  <p>레벨마다 데미지 +${pct(T.wood_bow.damagePerLevel)}, 사거리 +${T.wood_bow.rangePerLevel}, 체력 +${pct(T.wood_bow.hpPerLevel)}. 레벨 상한 5, Lv5는 머리 위에 금관이 생깁니다. (위 그림: 왼쪽 Lv1, 오른쪽 Lv5)</p>
+  <p>레벨마다 데미지 +${pct(T.wood_bow.damagePerLevel)}, 사거리 +${T.wood_bow.rangePerLevel}, 체력 +${pct(T.wood_bow.hpPerLevel)}. 레벨 상한 5. 레벨이 오를수록 모양이 자랍니다: Lv2 청동 테 → Lv3 쇠 보강판·징 → Lv4 깃발 → Lv5 금 테와 머리 위 금관. (위 그림: 왼쪽 Lv1, 오른쪽 Lv5)</p>
   ${shot('turret', '포탑 관리 창(E)')}
 `);
 

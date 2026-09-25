@@ -17,9 +17,11 @@ export class Npc {
     this.pause = rand.range(1, 3);
     this.phase = rand.range(0, 6);
     this.talking = 0;
-    const { group, eyes } = createNpcModel(this.def);
+    const { group, eyes, body } = createNpcModel(this.def);
     this.mesh = group;
     this.eyes = eyes;
+    this.body = body;
+    this.blink = rand.range(2, 5);
     ctx.scene.add(group);
     this.mesh.position.copy(this.position);
   }
@@ -65,11 +67,18 @@ export class Npc {
       }
     }
     this.mesh.position.copy(this.position);
-    // 통통 걷기 / 숨쉬기 / 졸기(눈 감고 끄덕)
+    // 통통 걷기 / 숨쉬기 / 눈 깜빡임 / 말할 때 끄덕 / 졸기(눈 감고 꾸벅)
     this.mesh.position.y = moving ? Math.abs(Math.sin(this.phase * 8)) * 0.08 : 0;
     const sleepy = this.asleep && this.talking <= 0;
-    for (const e of this.eyes) e.scale.y = sleepy ? 0.15 : 1;
-    this.mesh.rotation.x = sleepy ? Math.sin(this.phase * 1.5) * 0.08 : 0;
+    this.blink -= dt;
+    if (this.blink < -0.12) this.blink = rand.range(2.5, 5.5);
+    const closed = sleepy || this.blink < 0;
+    for (const e of this.eyes) e.scale.y = closed ? 0.15 : 1.2;
+    const breath = 1 + Math.sin(this.phase * 2.2) * 0.022;
+    this.body.scale.set(2 - breath, breath, 2 - breath);
+    this.body.rotation.x = sleepy ? 0.12 + Math.sin(this.phase * 1.5) * 0.06 : this.talking > 0 ? Math.max(0, Math.sin(this.phase * 9)) * 0.08 : 0;
+    this.body.rotation.z = !moving && !sleepy && this.talking <= 0 ? Math.sin(this.phase * 0.7) * 0.04 : 0;
+    this.mesh.rotation.x = 0;
   }
 
   dispose() {
