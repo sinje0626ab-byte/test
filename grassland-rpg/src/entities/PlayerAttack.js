@@ -23,12 +23,12 @@ export class PlayerAttack {
     this.time = -1;
   }
 
-  setWeapon(type, color) {
+  setWeapon(type, color, id) {
     const p = this.p;
     this.type = type;
     this.w = p.ctx.data.weapons[type];
     p.swordPivot.remove(p.weapon);
-    p.weapon = createWeaponMesh(type, color);
+    p.weapon = createWeaponMesh(type, color, id);
     p.swordPivot.add(p.weapon);
     p.mesh.remove(p.trail);
     p.trail = createTrail(this.w.range, this.w.arcDeg);

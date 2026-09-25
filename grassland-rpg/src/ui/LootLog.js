@@ -1,3 +1,4 @@
+import { itemIcon } from './icons.js';
 // 아이템 획득 로그: 화면 왼쪽 아래에 "+3 나무 토막" 줄이 쌓였다가 사라진다. 같은 아이템은 합친다.
 export class LootLog {
   constructor(ctx, root) {
@@ -31,7 +32,7 @@ export class LootLog {
     }
     row.count += count;
     row.time = this.cfg.life;
-    row.el.innerHTML = `<i class="item-icon"></i><b>+${row.count}</b> ${def.name}`;
+    row.el.innerHTML = `${itemIcon(def)}<b>+${row.count}</b> ${def.name}`;
   }
 
   drop(item) {

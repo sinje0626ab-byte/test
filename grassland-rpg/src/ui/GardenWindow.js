@@ -1,4 +1,5 @@
 import { closeWhenFar } from './CraftWindow.js';
+import { itemIcon } from './icons.js';
 
 // 텃밭 창 (텃밭 앞에서 E): 씨앗 심기 · 자라는 중 · 거두기
 export class GardenWindow {
@@ -45,7 +46,7 @@ export class GardenWindow {
         <div class="gd-seeds">${Object.entries(crops).map(([seed, c]) => {
           const have = this.counts[seed] ?? 0;
           return `<button type="button" data-seed="${seed}" ${have ? '' : 'disabled'}>
-            <i class="item-icon" style="--c:${items[seed].color}"></i><b>${items[seed].name}</b>
+            ${itemIcon(items[seed])}<b>${items[seed].name}</b>
             <small>${c.days}일 뒤 ${c.name} ${c.min}~${c.max}개 · 가진 씨앗 ${have}</small></button>`;
         }).join('')}</div>`;
     } else {

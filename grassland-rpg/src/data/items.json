@@ -2,23 +2,23 @@
   "grades": {
     "common": {
       "name": "일반",
-      "color": "#e8e8e8"
+      "color": "#b9ae99"
     },
     "uncommon": {
       "name": "고급",
-      "color": "#6fd46f"
+      "color": "#6aa85a"
     },
     "rare": {
       "name": "희귀",
-      "color": "#5ea8ff"
+      "color": "#4f8fd6"
     },
     "epic": {
       "name": "영웅",
-      "color": "#c07bff"
+      "color": "#9a6ad2"
     },
     "legendary": {
       "name": "전설",
-      "color": "#ffa53d"
+      "color": "#e39a35"
     }
   },
   "categories": {

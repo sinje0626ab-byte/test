@@ -85,7 +85,7 @@ table.compact td, table.compact th { padding: 2.5pt 5pt; }
 .item { display: flex; gap: 7pt; background: #fff; border: 1pt solid var(--line); border-radius: 9pt; padding: 5pt 7pt; break-inside: avoid; align-items: flex-start; }
 .ipic { width: 42pt; height: 42pt; flex: none; display: flex; align-items: center; justify-content: center; background: #f6f1e4; border-radius: 8pt; }
 .ipic .pic { width: 40pt; height: 40pt; }
-.ipic .svg { width: 30pt; height: 30pt; }
+.ipic .svg { width: 40pt; height: 40pt; }
 .itext { min-width: 0; }
 .itext > b { font-size: 9.5pt; }
 .eff { color: #3f7d32; font-weight: 700; }

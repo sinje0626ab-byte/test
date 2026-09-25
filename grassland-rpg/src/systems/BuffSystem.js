@@ -8,7 +8,7 @@ export class BuffSystem {
       const def = ctx.data.items.items[e.item];
       const b = def?.use?.buff;
       if (!b) return;
-      this.buffs.set(b.id, { id: b.id, name: def.name, color: def.color, time: b.duration, duration: b.duration, effects: b.effects });
+      this.buffs.set(b.id, { id: b.id, item: e.item, name: def.name, color: def.color, time: b.duration, duration: b.duration, effects: b.effects });
       e.used = true;
       this.changed();
     });

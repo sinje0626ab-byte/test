@@ -51,7 +51,7 @@ export class Player {
     ctx.bus.on('equipment:changed', ({ slots }) => {
       const items = ctx.data.items.items;
       const w = slots.weapon && items[slots.weapon];
-      this.attack.setWeapon(w?.weaponType ?? 'sword', w ? w.color : DEFAULT_BLADE);
+      this.attack.setWeapon(w?.weaponType ?? 'sword', w ? w.color : DEFAULT_BLADE, w ? slots.weapon : 'default');
       this.worn = { head: items[slots.head], body: items[slots.body], feet: items[slots.feet] };
       applyAppearance(this, this.worn, this.appearance);
     });

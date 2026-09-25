@@ -101,7 +101,7 @@ export class Minimap {
       const c = Math.floor((l.lair[0] - b.minX) / cs);
       const r = Math.floor((l.lair[1] - b.minZ) / cs);
       if (!ex || !ex.cells[r * ex.cols + c]) continue;
-      dot(l.lair[0], l.lair[1], l.defeated ? '#9a958c' : '#d9403a', 4, '#fff');
+      dot(l.lair[0], l.lair[1], l.defeated ? '#9a958c' : '#c9584e', 4, '#fff');
     }
     for (const n of npcs ?? []) dot(n.position.x, n.position.z, n.def.color, 2.6, '#fff4d6');
     if (this.ctx.tomb) dot(this.ctx.tomb.position.x, this.ctx.tomb.position.z, '#9a958c', 3.5, '#ffcf5c');
@@ -135,7 +135,7 @@ export class Minimap {
       }
     }
     // 플레이어
-    g.fillStyle = '#ff5f5f';
+    g.fillStyle = '#e0645a';
     g.strokeStyle = '#fff';
     g.lineWidth = 1.5;
     g.beginPath();

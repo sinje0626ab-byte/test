@@ -2,6 +2,8 @@
 // 데이터(src/data/*.json)에서 표를 모두 뽑고, 출력 폴더의 img/ 그림(render.html·스크린샷)을 쓴다.
 import fs from 'fs';
 import path from 'path';
+import { itemArt } from '../src/ui/itemArt.js';
+import { skillArt } from '../src/ui/uiArt.js';
 
 const root = path.dirname(new URL(import.meta.url).pathname);
 const out = process.argv[2];
@@ -24,26 +26,11 @@ function stat(k, v) {
 }
 const bonusText = (b) => Object.entries(b ?? {}).map(([k, v]) => stat(k, v)).join(', ');
 const regionName = (id) => D.regions[id]?.name ?? id;
-const chip = (c, name) => `<span class="grade${c === '#e8e8e8' ? ' light' : ''}" style="--g:${c}">${name}</span>`;
+const chip = (c, name) => `<span class="grade" style="--g:${c}">${name}</span>`;
 const gradeChip = (g) => chip(D.items.grades[g]?.color, D.items.grades[g]?.name ?? '');
 
-// ── 아이템 아이콘 (게임과 같은 모양) ─────────
-const EDGE = 'stroke="rgba(60,40,20,.45)" stroke-width="1"';
-const SHAPES = {
-  head: (c) => `<path d="M4 16a8 8 0 0 1 16 0z" fill="${c}" ${EDGE}/><rect x="2" y="15" width="20" height="4" rx="2" fill="${c}" ${EDGE}/>`,
-  body: (c) => `<path d="M7 3l5 3 5-3 4 4-2 3v11H5V10L3 7z" fill="${c}" ${EDGE}/><path d="M12 6v15" stroke="rgba(60,40,20,.3)"/>`,
-  feet: (c) => `<path d="M5 4h7v9l7 3a2 2 0 0 1 2 2v3H5z" fill="${c}" ${EDGE}/>`,
-  accessory: (c) => `<circle cx="12" cy="14" r="6" fill="none" stroke="${c}" stroke-width="3.5"/><path d="M12 2l4 5h-8z" fill="#bfefff" ${EDGE}/>`,
-  weapon: (c) => `<path d="M19 2l3 3-11 11-3-3z" fill="${c}" ${EDGE}/><path d="M5 13l6 6-2 1-5-5z" fill="#c9a44a" ${EDGE}/><path d="M6 18l-3 3" stroke="#8a6440" stroke-width="3" stroke-linecap="round"/>`,
-};
-function itemPic(id) {
-  const d = I[id];
-  if (d.equipSlot === 'weapon' && has(`weapon_${id}.png`)) return img(`weapon_${id}.png`, 'pic');
-  if (d.category === 'equipment') return `<svg class="pic svg" viewBox="0 0 24 24">${SHAPES[d.equipSlot](d.color)}</svg>`;
-  if (d.category === 'currency') return '<i class="gem" style="--c:#ffcf5c"></i>';
-  if (d.category === 'kit') return img('base_1.png', 'pic');
-  return `<i class="gem" style="--c:${d.color}"></i>`;
-}
+// ── 아이템 아이콘: 게임과 같은 아트(src/ui/itemArt.js) ──
+const itemPic = (id) => itemArt(id, I[id], 'pic svg');
 
 // ── 얻는 곳 ─────────────────────────────────
 const sources = {};
@@ -62,29 +49,8 @@ for (const c of Object.values(D.config.garden.crops)) addSrc(c.item, '텃밭 수
 addSrc('doctor_lens', '몬스터 도감 50%');
 for (const b of D.bounties.bonusItems) addSrc(b, '현상금 의뢰 보너스');
 
-// ── 스킬 아이콘 (간단한 SVG 문장) ───────────
-const GLYPH = {
-  power: '<path d="M6 18L16 8l2 2L8 20z" fill="#fff"/><path d="M15 5l4 4" stroke="#fff" stroke-width="3" stroke-linecap="round"/>',
-  combo: '<path d="M5 17L14 8M9 19L18 10" stroke="#fff" stroke-width="3" stroke-linecap="round"/>',
-  whirl: '<path d="M12 5a7 7 0 1 1-6.5 4.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M4 6l2 4 4-2" fill="#fff"/>',
-  crit: '<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.6 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="#fff"/>',
-  weapon_master: '<path d="M5 19L17 7M7 5l12 12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>',
-  dash_slash: '<path d="M3 12h10M3 8h6M3 16h6" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M13 5l7 7-7 7z" fill="#fff"/>',
-  gatherSpeed: '<path d="M6 19l8-8M12 5l7 7-3 1-5-5z" fill="#fff" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>',
-  vitality: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" fill="#fff"/>',
-  gatherAmount: '<circle cx="9" cy="14" r="4" fill="#fff"/><circle cx="15" cy="10" r="4" fill="#fff" opacity=".8"/>',
-  swift: '<path d="M4 16h10l4-5-3-5H9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M3 11h6" stroke="#fff" stroke-width="2.5"/>',
-  thick_skin: '<path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z" fill="#fff"/>',
-  forager: '<path d="M12 21V10M12 12c-4 0-6-3-6-6 4 0 6 3 6 6zM12 10c4 0 6-3 6-6-4 0-6 3-6 6z" fill="#fff" stroke="#fff" stroke-width="1.5"/>',
-  first_aid: '<path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z" fill="#fff"/>',
-  thrift: '<circle cx="12" cy="12" r="7" fill="none" stroke="#fff" stroke-width="3"/><path d="M12 8v8M9.5 10h4" stroke="#fff" stroke-width="2"/>',
-  turretPower: '<rect x="7" y="11" width="10" height="9" rx="1" fill="#fff"/><path d="M12 11V5l5 3" stroke="#fff" stroke-width="2.5" fill="none"/>',
-  turretCount: '<rect x="3" y="12" width="7" height="8" fill="#fff"/><rect x="14" y="12" width="7" height="8" fill="#fff"/><path d="M12 3v6M9 6h6" stroke="#fff" stroke-width="2.5"/>',
-  mason: '<rect x="3" y="6" width="8" height="5" fill="#fff"/><rect x="13" y="6" width="8" height="5" fill="#fff"/><rect x="7" y="13" width="10" height="5" fill="#fff"/>',
-  sharpshooter: '<circle cx="12" cy="12" r="7" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="12" cy="12" r="2.5" fill="#fff"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5" stroke="#fff" stroke-width="2"/>',
-  overclock: '<path d="M13 2L5 14h6l-2 8 8-12h-6z" fill="#fff"/>',
-};
-const skillIcon = (id, s) => `<svg class="skill-ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="${D.skills.branches[s.branch].color}"/>${GLYPH[id] ?? ''}</svg>`;
+// ── 스킬 아이콘: 게임과 같은 배지(src/ui/uiArt.js) ──
+const skillIcon = (id, s) => skillArt(id, D.skills.branches[s.branch].color, 'skill-ic');
 
 // ── 페이지 조각 ─────────────────────────────
 const P = []; // 페이지들
@@ -256,7 +222,7 @@ const itemCard = (id) => {
   if (d.use?.resetSkills) extra.push('스킬 초기화');
   const src = [...(sources[id] ?? [])].slice(0, 4).join(' · ');
   const slot = d.weaponType ? D.items.weaponNames[d.weaponType] : d.equipSlot ? D.items.equipSlots[d.equipSlot] ?? '장신구' : '';
-  return `<div class="item"><div class="ipic">${itemPic(id)}</div><div class="itext"><b style="color:${D.items.grades[d.grade]?.color === '#e8e8e8' ? '#4a4338' : D.items.grades[d.grade]?.color}">${d.name}</b> ${gradeChip(d.grade)}${slot ? ` <span class="muted">${slot}</span>` : ''}
+  return `<div class="item"><div class="ipic">${itemPic(id)}</div><div class="itext"><b style="color:${d.grade === 'common' ? '#4a4338' : D.items.grades[d.grade]?.color}">${d.name}</b> ${gradeChip(d.grade)}${slot ? ` <span class="muted">${slot}</span>` : ''}
     ${extra.length ? `<small class="eff">${extra.join(' · ')}</small>` : ''}<small>${esc(d.description)}</small>${src ? `<small class="src">얻는 곳: ${src}</small>` : ''}${d.value ? `<small class="muted">판매 ${d.value}골드</small>` : ''}</div></div>`;
 };
 const order = Object.keys(D.items.grades);

@@ -33,8 +33,12 @@ kbd {
   background: #f1e8d2; box-shadow: inset 0 2px 0 rgba(120, 100, 60, 0.15);
   display: flex; align-items: center; justify-content: center;
 }
-.slot.filled { background: #fff6e0; border: 2px solid var(--grade); cursor: grab; }
-.slot.filled:hover { background: #fff1c9; }
+.slot.filled {
+  background: radial-gradient(circle at 50% 42%, #fffaf0 0 38%, color-mix(in srgb, var(--grade) 16%, #f6ecd6));
+  border: 2px solid color-mix(in srgb, var(--grade) 80%, #6b5a40); cursor: grab;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 -3px 0 color-mix(in srgb, var(--grade) 22%, transparent);
+}
+.slot.filled:hover { background: radial-gradient(circle at 50% 42%, #fffdf6 0 40%, color-mix(in srgb, var(--grade) 24%, #fbf1d8)); }
 .slot.over { outline: 3px solid #7cc67a; outline-offset: -1px; }
 .slot.dragging > * { opacity: 0.3; }
 .item-icon, .drag-ghost .item-icon {
@@ -150,8 +154,11 @@ kbd {
 .hud-banner.level { border-color: #ffcf5c; }
 .hud-banner.level b { color: #e0a21c; }
 
-.item-svg { width: 34px; height: 34px; }
-.item-svg.hint { opacity: 0.8; width: 28px; height: 28px; }
+.item-svg { width: 42px; height: 42px; display: block; filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.6)); }
+.item-svg.hint { width: 34px; height: 34px; filter: none; }
+.drag-ghost .item-svg { width: 46px; height: 46px; }
+.eslot .item-svg { width: 40px; height: 40px; }
+.craft-icon .item-svg { width: 40px; height: 40px; }
 .tt-bonus { color: #9ad48f; font-weight: 700; margin-top: 3px; }
 
 /* 캐릭터 창 */
@@ -164,7 +171,10 @@ kbd {
 }
 .eslot span { font-size: 11px; color: #9a8f73; }
 .eslot .eicon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-.eslot.filled { background: #fff6e0; border: 2px solid var(--grade); padding: 3px 0 4px; cursor: pointer; }
+.eslot.filled {
+  background: radial-gradient(circle at 50% 38%, #fffaf0 0 34%, color-mix(in srgb, var(--grade) 16%, #f6ecd6));
+  border: 2px solid color-mix(in srgb, var(--grade) 80%, #6b5a40); padding: 3px 0 4px; cursor: pointer;
+}
 .char-stats { width: 190px; }
 .char-level { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #c98a12; font-weight: 700; }
 .char-xp { font-size: 11px; color: #9a8f73; margin: 3px 0 8px; }
@@ -219,8 +229,9 @@ kbd {
 }
 .craft-row.locked { opacity: 0.55; }
 .craft-icon {
-  --grade: transparent; flex: none; width: 46px; height: 46px; border-radius: 10px; background: #f1e8d2;
-  border: 2px solid var(--grade); display: flex; align-items: center; justify-content: center;
+  --grade: transparent; flex: none; width: 46px; height: 46px; border-radius: 10px;
+  background: radial-gradient(circle at 50% 42%, #fffaf0 0 36%, color-mix(in srgb, var(--grade) 14%, #f1e8d2));
+  border: 2px solid color-mix(in srgb, var(--grade) 80%, #6b5a40); display: flex; align-items: center; justify-content: center;
 }
 .craft-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .craft-text small { font-size: 11px; color: #8a7f63; }
@@ -242,3 +253,8 @@ kbd {
 .st-grid .slot { width: 44px; height: 44px; cursor: pointer; }
 .st-grid { grid-template-columns: repeat(var(--cols), 44px); }
 
+
+/* 스킬 창 배지·건설 아이콘 */
+.sk-head .skill-svg { width: 28px; height: 28px; flex: none; margin-right: 6px; }
+.sk-head b { flex: 1; }
+.build-svg { flex: none; width: 46px; height: 46px; border-radius: 12px; background: radial-gradient(circle at 50% 45%, #fffaf0 0 40%, #f1e8d2); }

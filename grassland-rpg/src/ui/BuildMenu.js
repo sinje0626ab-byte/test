@@ -1,5 +1,7 @@
 import { baseAt } from '../utils/bases.js';
 import { turretCost, maxTurrets, turretDamage, turretRange, materialCost, structureHp } from '../utils/build.js';
+import { itemIcon } from './icons.js';
+import { buildArt } from './uiArt.js';
 
 // 건설 창 (B): 기지 영역 안에서만 열린다. 건물/포탑 탭, 비용 표시.
 export class BuildMenu {
@@ -105,7 +107,7 @@ export class BuildMenu {
       const mats = (t.buildItems ?? []).map((c) => `${ctx.data.items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}`).join(' · ');
       return `
         <button type="button" class="build-card${locked || full || poor ? ' disabled' : ''}" data-turret="${id}">
-          <i class="build-icon" style="--c:${t.color}"></i>
+          ${buildArt(id)}
           <span class="build-text">
             <b>${t.name}</b>
             <small>${t.description}</small>
@@ -131,7 +133,7 @@ export class BuildMenu {
       const why = built ? '이미 있음' : noPlan ? '설계도 필요 (퀘스트)' : locked ? `${buildings.baseLevels[String(f.unlockBaseLevel)].name} 필요` : enough ? '클릭해서 배치' : '재료 부족';
       return `
         <button type="button" class="build-card${built || locked || !enough ? ' disabled' : ''}" data-facility="${id}">
-          <i class="build-icon" style="--c:${f.color}"></i>
+          ${buildArt(id)}
           <span class="build-text"><b>${f.name}</b><small>${f.description}</small><small class="stats">${cost}</small></span>
           <span class="build-cost"><small>${why}</small></span>
         </button>`;
@@ -150,7 +152,7 @@ export class BuildMenu {
       const why = locked ? `${buildings.baseLevels[String(w.unlockBaseLevel)].name} 필요` : enough ? `끌어서 설치 (${have}/${config.walls.maxPerBase}칸)` : '재료 부족';
       return `
         <button type="button" class="build-card${locked || !enough ? ' disabled' : ''}" data-wall="${id}">
-          <i class="build-icon" style="--c:${w.color}"></i>
+          ${buildArt(id)}
           <span class="build-text"><b>${w.name}</b><small>${w.description}</small><small class="stats">1칸: ${text} · 체력 ${w.hp}</small></span>
           <span class="build-cost"><small>${why}</small></span>
         </button>`;
@@ -169,7 +171,7 @@ export class BuildMenu {
     const unlocks = Object.values(turrets).filter((t) => t.unlockBaseLevel === base.level + 1).map((t) => t.name);
     const cost = ncost.map((c) => {
       const have = this.counts[c.id] ?? 0;
-      return `<li class="${have >= c.count ? 'ok' : 'bad'}"><i class="item-icon" style="--c:${items.items[c.id].color}"></i>${items.items[c.id].name} <b>${have}/${c.count}</b></li>`;
+      return `<li class="${have >= c.count ? 'ok' : 'bad'}">${itemIcon(items.items[c.id])}${items.items[c.id].name} <b>${have}/${c.count}</b></li>`;
     }).join('');
     return `
       <div class="base-up">
