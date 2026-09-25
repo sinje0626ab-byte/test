@@ -62,7 +62,7 @@ export class HUD {
       this.el.lv.textContent = level;
       this.el.xp.style.width = Number.isFinite(xpToNext) ? `${(xp / xpToNext) * 100}%` : '100%';
       this.el.sp.hidden = skillPoints <= 0;
-      this.el.sp.textContent = `스킬 +${skillPoints} (K)`;
+      this.el.sp.innerHTML = `<span class="sp-long">스킬 </span>+${skillPoints}<span class="sp-long"> (K)</span>`; // 좁은 화면에선 '+5'만 (mobile.css)
     });
     bus.on('xp:gain', ({ amount, position }) => this.floatText({ position, amount: `+${amount} XP`, target: 'xp' }));
     // 퀵슬롯: 가방에 있는 소모품 종류를 순서대로 최대 N개
