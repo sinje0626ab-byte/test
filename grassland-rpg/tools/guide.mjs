@@ -70,7 +70,7 @@ const C = D.config;
 
 // 1. 소개
 chapter('게임 소개', 'Welcome to the Meadow', `
-  ${shot('base', '요새로 키운 기지. 포탑·부속 건물·벽·동물 주민이 함께 산다')}
+  <div class="grid2">${shot('base', '낮: 요새로 키운 기지. 포탑·부속 건물·벽·동물 주민')}${shot('night', '밤: 달빛·모닥불·텐트 불빛, 눈이 빛나는 밤 몬스터')}</div>
   <p class="lead"><b>Meadow Pioneers (초원 개척단)</b>은 작은 텐트 하나로 시작해 초원을 개척하는 로우폴리 오픈필드 액션 RPG입니다. 몬스터를 사냥하고 재료를 모아 기지를 세우고, 포탑으로 밤 습격을 막으며 더 먼 지역으로 나아갑니다. 네 지역의 보스를 모두 물리치면 붉은 달 밤에 최종 보스 <b>밤의 군주</b>가 찾아옵니다.</p>
   <div class="grid3">
     ${box('핵심 루프', '<ol><li>탐험하며 몬스터 사냥·채집</li><li>재료·골드·경험치 모으기</li><li>기지 건설·포탑 설치</li><li>밤 습격 막아 내기</li><li>더 먼 지역에 새 기지</li></ol>')}
@@ -78,7 +78,8 @@ chapter('게임 소개', 'Welcome to the Meadow', `
     ${box('경제 원칙', '<p><b>재료 = 건설·제작</b><br><b>골드 = 포탑·상점·강화</b></p><p>역할이 섞이지 않아서 무엇을 모아야 할지 분명합니다.</p>')}
   </div>
   <h2>하루의 흐름</h2>
-  <p>하루는 실제 시간 약 ${Math.round((C.time.dayLength + C.time.nightLength) / 60)}분 (낮 ${C.time.dayLength / 60}분, 밤 ${C.time.nightLength / 60}분). 해 지기 ${C.time.nightWarning}초 전에 경고가 나오고, 밤이 되면 모든 기지에 습격이 옵니다. 밤에 태어난 필드 몬스터는 ${C.spawner.nightStatMultiplier}배 강하고 몸이 보랏빛으로 빛납니다.</p>
+  <p>하루는 실제 시간 약 ${Math.round((C.time.dayLength + C.time.nightLength) / 60)}분 (낮 ${C.time.dayLength / 60}분, 밤 ${C.time.nightLength / 60}분). 해 지기 ${C.time.nightWarning}초 전에 경고가 나오고, 밤이 되면 모든 기지에 습격이 옵니다. 밤에 태어난 필드 몬스터는 ${C.spawner.nightStatMultiplier}배 강합니다.</p>
+  <p>밤은 그냥 어두워지는 게 아니라 남색 하늘빛과 차가운 달빛으로 바뀌고, 모닥불·텐트는 따뜻하게 빛납니다. 플레이어 곁에는 작은 등불이 있어 어둠 속에서도 잘 보입니다. <b>밤 몬스터</b>는 몸이 살짝 어둡고 차가워지며 <b>눈이 은은히 빛나고, 작은 빛 조각 둘이 곁을 맴돕니다</b> — 멀리서도 알아볼 수 있어요.</p>
 `);
 
 // 2. 시작하기
@@ -229,9 +230,11 @@ const order = Object.keys(D.items.grades);
 const sortItems = (ids) => ids.sort((a, b) => order.indexOf(I[a].grade) - order.indexOf(I[b].grade) || I[a].name.localeCompare(I[b].name, 'ko'));
 const equipBy = (slot) => sortItems(Object.keys(I).filter((id) => I[id].equipSlot === slot || (slot === 'accessory' && I[id].equipSlot === 'accessory')));
 chapter('아이템 도감', 'Items', `
-  <p>등급: ${Object.values(D.items.grades).map((g) => chip(g.color, g.name)).join(' ')} — 전설은 최종 보스 전용입니다. 재료는 겹쳐지고(최대 ${C.inventory.defaultMaxStack}), 장비는 한 칸에 하나. 가방은 ${C.inventory.slots}칸이고 골드는 칸을 차지하지 않습니다.</p>
+  <p>등급: ${Object.values(D.items.grades).map((g) => chip(g.color, g.name)).join(' ')} — 전설은 최종 보스 전용입니다. 희귀 이상은 아이콘 뒤에 등급 색 빛이 돌고(전설은 빛살까지), 바닥에 떨어지면 등급 색 빛 고리가 생깁니다. 무기는 바닥에서도 실제 모양으로 보입니다. 재료는 겹쳐지고(최대 ${C.inventory.defaultMaxStack}), 장비는 한 칸에 하나. 가방은 ${C.inventory.slots}칸이고 골드는 칸을 차지하지 않습니다.</p>
   ${[['weapon', '무기'], ['head', '머리'], ['body', '몸'], ['feet', '신발'], ['accessory', '장신구']].map(([s, n]) => `<h2>장비 — ${n}</h2><div class="items">${equipBy(s).map(itemCard).join('')}</div>`).join('')}
   <h2>세트 효과</h2>
+  <p>세트는 능력치뿐 아니라 겉모습도 다릅니다. 초원은 잎 삿갓·잎 깃, 숲은 버섯 모자·가죽 띠, 사막은 두건·등 망토, 설원은 털모자·털 칼라.</p>
+  <div class="cards4">${[['grass', '초원 세트'], ['forest', '숲 세트'], ['desert', '사막 세트'], ['snow', '설원 세트']].map(([k, n]) => `<div class="card">${img(`player_${k}.png`, 'pic big')}<small>${n}</small></div>`).join('')}</div>
   ${table(['세트', '구성', '3부위 보너스'], Object.values(D.items.sets).map((s) => [`<b>${s.name}</b>`, s.pieces.map((p) => I[p].name).join(' · '), bonusText(s.bonus)]))}
   ${cats.slice(1).map(([c, n]) => `<h2>${n}</h2><div class="items">${sortItems(Object.keys(I).filter((id) => I[id].category === c)).map(itemCard).join('')}</div>`).join('')}
 `);
@@ -271,7 +274,7 @@ chapter('몬스터 도감', 'Bestiary', `
     ['비행', '나무·바위·벽을 넘어 다닌다'], ['무리', '한 마리가 맞으면 무리 전체가 쫓아온다'],
   ], 'compact')}
   <h2>정예 몬스터</h2>
-  <p>필드 스폰의 ${pct(C.elite.chance)}. 크기 ×${C.elite.scale}, 금빛. HP ×${C.elite.hp}, 공격 ×${C.elite.attack}, XP ×${C.elite.xp}, 골드 ×${C.elite.gold}, 장비 드롭 ×${C.elite.dropBonus}.</p>
+  <p>필드 스폰의 ${pct(C.elite.chance)}. 크기 ×${C.elite.scale}, 은은한 금빛. HP ×${C.elite.hp}, 공격 ×${C.elite.attack}, XP ×${C.elite.xp}, 골드 ×${C.elite.gold}, 장비 드롭 ×${C.elite.dropBonus}.</p>
   <div class="mons">${Object.entries(D.monsters).filter(([id]) => !bossIds.has(id)).map(monCard).join('')}</div>
 `);
 
