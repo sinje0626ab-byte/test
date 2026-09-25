@@ -34,6 +34,16 @@ function createMesh(kind) {
     const tip = new THREE.ConeGeometry(big ? 0.1 : 0.07, 0.18, 4).rotateX(Math.PI / 2).translate(0, 0, big ? 0.52 : 0.42);
     g.add(new THREE.Mesh(shaft, mat(big ? 0x6b4a36 : 0xc9a06a)), new THREE.Mesh(tip, mat(0xdfe6ee)));
   }
+  // 꼬리 빛줄기: 탄도가 눈에 보이게 (가볍게, 더하기 섞기)
+  const TRAIL = { arrow: ['#fff1c9', 0.7], bolt: ['#fff1c9', 0.9], bullet: ['#ffe08a', 0.9], needle: ['#b8e05a', 0.6], icebolt: ['#bfeaff', 0.8], spore: ['#d6b3ff', 0.6] };
+  const tr = TRAIL[kind] ?? (kind === 'ball' ? ['#6a6258', 0.5] : null);
+  if (tr) {
+    const tail = new THREE.Mesh(
+      new THREE.ConeGeometry(kind === 'ball' ? 0.16 : 0.05, tr[1], 5, 1, true).rotateX(-Math.PI / 2).translate(0, 0, -tr[1] / 2 - 0.1),
+      new THREE.MeshBasicMaterial({ color: tr[0], transparent: true, opacity: kind === 'ball' ? 0.3 : 0.45, depthWrite: false, blending: kind === 'ball' ? THREE.NormalBlending : THREE.AdditiveBlending }),
+    );
+    g.add(tail);
+  }
   return g;
 }
 

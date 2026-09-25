@@ -43,7 +43,7 @@ export class FeedbackSystem {
       const pos = e.position.clone().setY(0.5);
       const big = (e.radius ?? 0.6) > 1;
       this.particles.burst(pos, { color: [soft(e.color), soft(e.color).clone().multiplyScalar(0.75)], count: P.kill * (big ? 2 : 1), speed: big ? 6 : 4, up: 4.5, life: 0.7, size: big ? 0.16 : 0.1 });
-      this.fx.ring(e.position, { color: soft(e.color).clone().lerp(new THREE.Color('#ffffff'), 0.5), from: 0.3, to: (e.radius ?? 0.6) * 3, life: 0.45, opacity: 0.6 });
+      this.fx.ring(e.position, { color: soft(e.color).clone().lerp(new THREE.Color('#ffffff'), 0.5), from: 0.3, to: (e.radius ?? 0.6) * 3, life: 0.4, opacity: 0.4 });
       this.particles.burst(pos, { color: '#ffffff', count: big ? 8 : 4, speed: 1.2, up: 1.2, gravity: -1, life: 0.6, size: 0.18, grow: true, drag: 3 });
       if (e.boss) this.stop(H.bossKill);
     });
@@ -61,6 +61,8 @@ export class FeedbackSystem {
     bus.on('turret:fired', (e) => {
       this.particles.burst(e.muzzle, { color: ['#fff3a6', '#ffcf5c'], count: P.muzzle, speed: 2, up: 1, gravity: 0, life: 0.15, size: 0.08, drag: 6 });
       this.fx.spark(e.muzzle, { color: '#ffe3a0', size: 0.4, life: 0.1 });
+      // 범위 포탑: 떨어질 자리에 잠깐 예고 고리 (무엇이 터질지 보이게)
+      if (e.target) this.fx.ring(e.target, { color: '#ffb35c', from: e.splash * 0.95, to: e.splash, life: 0.7, opacity: 0.35 });
     });
     bus.on('projectile:explode', (e) => {
       const d = e.position.distanceTo(ctx.player.position);
@@ -159,14 +161,14 @@ export class FeedbackSystem {
   levelUp() {
     const p = this.ctx.player.position;
     const mesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.9, 0.9, 7, 16, 1, true),
-      new THREE.MeshBasicMaterial({ color: 0xffd966, transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide }),
+      new THREE.CylinderGeometry(0.7, 0.9, 6, 16, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0xffe3a0, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }),
     );
     mesh.position.set(p.x, 3.5, p.z);
     this.ctx.scene.add(mesh);
     this.pillars.push({ mesh, t: 0 });
     this.particles.burst(p.clone().setY(1), { color: ['#ffd966', '#fff3a6', '#ffffff'], count: this.cfg.particles.levelup, speed: 2.5, up: 7, gravity: 4, life: 1.1, size: 0.1 });
-    this.fx.ring(p, { color: '#ffd966', from: 0.4, to: 3.2, life: 0.8, opacity: 0.8 });
+    this.fx.ring(p, { color: '#ffd966', from: 0.5, to: 2.2, life: 0.7, opacity: 0.4 });
     this.fx.spark(p.clone().setY(1.6), { color: '#fff1b8', size: 1.4, life: 0.35 });
   }
 
@@ -182,7 +184,7 @@ export class FeedbackSystem {
     this.fx.update(dt);
     for (const pl of this.pillars) {
       pl.t += dt;
-      pl.mesh.material.opacity = 0.55 * Math.max(0, 1 - pl.t / 1.2);
+      pl.mesh.material.opacity = 0.3 * Math.max(0, 1 - pl.t / 1.2);
       pl.mesh.scale.set(1 + pl.t * 0.5, 1, 1 + pl.t * 0.5);
       if (pl.t > 1.2) this.ctx.scene.remove(pl.mesh);
     }

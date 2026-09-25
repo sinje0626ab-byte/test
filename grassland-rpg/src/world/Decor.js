@@ -1,5 +1,17 @@
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Chunk } from './Chunk.js';
+
+// 여러 조각을 한 모양으로 합친다 (인스턴스 하나 = 그리기 호출 그대로). 위치·법선만 남긴다.
+function merged(parts) {
+  return mergeGeometries(parts.map(([geo, x, y, z, sx = 1, sy = sx, sz = sx]) => {
+    const g = (geo.index ? geo.toNonIndexed() : geo.clone()).scale(sx, sy, sz).translate(x, y, z);
+    for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k);
+    return g;
+  }));
+}
+// 장식 색을 조금 차분하게 (원색 줄이기)
+const calm = (c) => { const col = new THREE.Color(c); const h = {}; col.getHSL(h); return col.setHSL(h.h, h.s * 0.86, h.l); };
 
 // 지역별 장식 배치. 같은 시드면 같은 숲이 나온다.
 // z 띠(청크)마다, 종류마다 InstancedMesh 하나로 모아 그린다. 만든 청크 목록을 돌려준다.
@@ -20,16 +32,26 @@ export function buildDecor(world) {
     const ci = Math.floor(z / size);
     if (!byChunk.has(ci)) byChunk.set(ci, {});
     const kinds = byChunk.get(ci);
-    (kinds[kind] ??= []).push({ m: new THREE.Matrix4().compose(v.set(x, y, z), q, sc.set(sx, sy, sz)), c: new THREE.Color(color) });
+    (kinds[kind] ??= []).push({ m: new THREE.Matrix4().compose(v.set(x, y, z), q, sc.set(sx, sy, sz)), c: calm(color) });
   };
 
   const trunkGeo = new THREE.CylinderGeometry(0.16, 0.24, 1, 6).translate(0, 0.5, 0);
   const coneGeo = new THREE.ConeGeometry(1, 1.8, 7).translate(0, 0.9, 0);
-  const blobGeo = new THREE.IcosahedronGeometry(1, 0);
+  const ico = new THREE.IcosahedronGeometry(1, 0);
+  // 둥근 나무 머리: 큰 덩어리 + 옆 두 덩어리 + 위 작은 덩어리 (뭉게뭉게 실루엣)
+  const crownGeo = merged([[ico, 0, 0, 0, 0.9], [ico, 0.55, -0.15, 0.2, 0.62], [ico, -0.5, -0.1, -0.25, 0.6], [ico, 0.05, 0.5, -0.05, 0.55]]);
+  // 바위: 큰 돌 + 기대 선 작은 돌
+  const dode = new THREE.DodecahedronGeometry(0.6, 0);
+  const rockGeo = merged([[dode, 0, 0, 0, 1], [dode, 0.5, -0.12, 0.25, 0.45, 0.55, 0.5]]);
+  // 덤불: 낮은 덩어리 셋
+  const bushGeo = merged([[ico, 0, 0, 0, 0.85], [ico, 0.6, -0.1, 0.1, 0.6], [ico, -0.55, -0.12, -0.1, 0.55]]);
+  // 꽃: 꽃잎 다섯 장 + 가운데
+  const petal = new THREE.SphereGeometry(0.055, 5, 3);
+  const flowerGeo = merged([...[0, 1, 2, 3, 4].map((i) => [petal, Math.cos(i * 1.257) * 0.07, 0, Math.sin(i * 1.257) * 0.07, 1, 0.45, 1]), [petal, 0, 0.02, 0, 0.7, 0.6, 0.7]]);
   const geos = {
-    trunk: trunkGeo, pineLow: coneGeo, pineTop: coneGeo, crown: blobGeo,
-    rock: new THREE.DodecahedronGeometry(0.6, 0), bush: blobGeo,
-    flower: new THREE.OctahedronGeometry(0.09, 0),
+    trunk: trunkGeo, pineLow: coneGeo, pineTop: coneGeo, crown: crownGeo,
+    rock: rockGeo, bush: bushGeo,
+    flower: flowerGeo,
     tuft: new THREE.ConeGeometry(0.07, 0.34, 3).translate(0, 0.17, 0),
     stem: new THREE.CylinderGeometry(0.07, 0.09, 0.3, 6).translate(0, 0.15, 0),
     cap: new THREE.SphereGeometry(0.22, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2),

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // 짧은 빛 연출 풀: 바닥에 퍼지는 고리(ring)와 카메라를 보는 반짝 별(spark).
 // 파티클 조각만으로는 밋밋한 타격·처치·폭발을 또렷하게 해 준다. 미리 만든 메시를 돌려 쓴다.
-const RING = new THREE.RingGeometry(0.72, 1, 28).rotateX(-Math.PI / 2);
+const RING = new THREE.RingGeometry(0.86, 1, 32).rotateX(-Math.PI / 2); // 가는 고리 (굵으면 바닥을 덮는다)
 // 네 갈래 별 (가운데가 두꺼운 마름모 두 개)
 const STAR = (() => {
   const s = new THREE.Shape();

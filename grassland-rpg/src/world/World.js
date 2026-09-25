@@ -59,7 +59,7 @@ export class World {
     this.moonColor = new THREE.Color(0xa9bcff);
     const bm = this.ctx.data.config.raid.bloodMoon; // 붉은 달 밤
     this.bloodSky = new THREE.Color(bm.sky);
-    this.bloodMoon = new THREE.Color(bm.moon).lerp(new THREE.Color(0xa9bcff), 0.3);
+    this.bloodMoon = new THREE.Color(bm.moon).lerp(new THREE.Color(0xa9bcff), 0.5);
     this.lordSky = new THREE.Color(this.ctx.data.config.nightLord.sky); // 밤의 군주: 캄캄한 하늘
 
     const sun = new THREE.DirectionalLight(0xfff0d2, 1.9);
@@ -199,7 +199,7 @@ export class World {
     this.hemi.color.copy(night[0]).lerp(this.hemiDay[0], d);
     this.hemi.groundColor.copy(night[1]).lerp(this.hemiDay[1], d);
     this.hemi.intensity = (lord ? 0.4 : 0.62) + 0.63 * d;
-    this.sun.intensity = 0.7 + 1.2 * d;
+    this.sun.intensity = (blood ? 0.55 : 0.7) + (blood ? 1.35 : 1.2) * d; // 붉은 달빛은 조금 약하게 (땅이 갈색으로 뭉개지지 않게)
     this.sun.color.copy(blood ? this.bloodMoon : this.moonColor).lerp(this.sunColor, d);
     this.lantern.intensity = (1 - d) * 5;
   }

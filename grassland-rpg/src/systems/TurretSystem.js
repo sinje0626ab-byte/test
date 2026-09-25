@@ -152,7 +152,7 @@ export class TurretSystem {
     p.hitSplash = def.hitSplash ?? 0;
     if (def.priority === 'spread') t.recent = [target, ...(t.recent ?? [])].slice(0, 2);
     t.recoil = 1;
-    this.ctx.bus.emit('turret:fired', { type: t.type, position: t.position, muzzle: from });
+    this.ctx.bus.emit('turret:fired', { type: t.type, position: t.position, muzzle: from, target: def.splashRadius ? target.position.clone() : null, splash: def.splashRadius ?? 0 });
   }
 
   blast(position, radius, color = 0xffb35c) {

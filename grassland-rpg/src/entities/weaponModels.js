@@ -204,3 +204,32 @@ export function buildWeapon(type, color, id) {
     : [type, { head: mat({ color, roughness: 0.4, metalness: 0.3 }), limb: mat({ color, roughness: 0.8 }), kind: 'block' }]);
   return BUILD[spec[0]](spec[1]);
 }
+
+// 강화 외형: 색을 바꾸지 않고 장식이 붙는다. +3 금 테(손잡이), +4 금 테 + 보석, +5 은은한 금빛 기운 (더하기 섞기)
+const enhanceGold = mat('gold');
+export function addEnhanceLook(g, plus = 0) {
+  if (plus < 3) return g;
+  const box = new THREE.Box3().setFromObject(g);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const alongY = size.y > size.z; // 활은 세로로 선다
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.014, 5, 12), enhanceGold);
+  if (alongY) ring.position.set(0, 0, 0.85); else ring.position.set(0, 0, 0.12);
+  g.add(ring);
+  if (plus >= 4) {
+    const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.03, 0), glowMat('#ffd27a', 0.9));
+    gem.position.copy(ring.position).add(new THREE.Vector3(0, 0.05, 0));
+    g.add(gem);
+  }
+  if (plus >= 5) {
+    const len = alongY ? size.y : size.z;
+    const aura = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.07, len * 0.9, 6, 1, true),
+      new THREE.MeshBasicMaterial({ color: '#ffd27a', transparent: true, opacity: 0.18, depthWrite: false, blending: THREE.AdditiveBlending }),
+    );
+    if (!alongY) aura.rotation.x = Math.PI / 2;
+    aura.position.copy(center).sub(g.position);
+    g.add(aura);
+  }
+  return g;
+}
