@@ -187,6 +187,7 @@ export class World {
     this.ctx.scene.background.copy(this.skyColor);
     this.ctx.scene.fog.color.copy(this.skyColor);
     this.ctx.scene.fog.far = w?.fogFar ?? 115;
+    this.ctx.scene.fog.near = Math.min(45, this.ctx.scene.fog.far * 0.4); // 모래바람: 가까운 곳부터 뿌옇게
     this.hemi.intensity = 0.45 + 0.8 * d;
     this.sun.intensity = 0.45 + 1.45 * d;
     this.sun.color.copy(blood ? this.bloodMoon : this.moonColor).lerp(this.sunColor, d);
