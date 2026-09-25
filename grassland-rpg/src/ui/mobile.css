@@ -45,8 +45,11 @@
   body.touch .inv-hint { flex: 1 1 100%; order: 3; font-size: 11px; }
 
   /* 스킬: 칸은 폭 가득, 이름이 길면 줄임표. 배우기 확인은 창 아래에 붙는 판 */
-  body.touch .sk-tree { gap: 10px; max-height: none; overflow: visible; }
-  body.touch .sk-node { margin: 0 0 6px; padding: 7px 8px; min-width: 0; }
+  body.touch .sk-tree { width: 100%; max-height: none; overflow-y: hidden; }
+  body.touch .sk-branch { max-height: none; overflow: visible; gap: 6px; }
+  body.touch .sk-tab { font-size: 13px; padding: 6px 4px; }
+  body.touch .sk-arrow { display: none; }
+  body.touch .sk-node { margin: 0; padding: 7px 8px; min-width: 0; }
   body.touch .sk-head b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   body.touch .sk-head .skill-svg { width: 24px; height: 24px; margin-right: 4px; }
   body.touch .sk-rank { flex: none; margin-left: 4px; }
@@ -99,11 +102,6 @@
   body.touch .char { flex-direction: column; gap: 12px; }
   body.touch .equip-grid { grid-template-columns: repeat(3, 1fr); width: 100%; }
   body.touch .char-stats { width: 100%; }
-  /* 스킬: 갈래를 위아래로 쌓고 한 갈래 안은 두 칸씩 */
-  body.touch .sk-tree { grid-template-columns: 1fr; }
-  body.touch .sk-branch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; align-items: stretch; }
-  body.touch .sk-branch h3 { grid-column: 1 / -1; justify-self: start; margin-bottom: 0; }
-  body.touch .sk-branch .sk-node { margin: 0; }
   body.touch .map { flex-direction: column; align-items: stretch; }
   body.touch .map-canvas { max-height: 46dvh; }
 
@@ -126,7 +124,6 @@
   body.touch .lv-badge { padding: 1px 6px 0; }
   body.touch .clock { font-size: 11px; padding: 3px 8px 3px 5px; }
   body.touch .clock span { display: none; }
-  body.touch .sk-branch { grid-template-columns: 1fr; }
   body.touch .qslot { width: 40px; height: 40px; }
 }
 
@@ -155,7 +152,7 @@
   body.touch .window, body.touch .window.win-left, body.touch .window.win-center {
     width: min(620px, calc(100vw - 300px)); max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); top: 50%;
   }
-  body.touch .sk-tree { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.touch .sk-branch { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   body.touch .st-cols { flex-direction: row; }
   body.touch .char { flex-direction: row; gap: 12px; }
   body.touch .equip-grid { grid-template-columns: repeat(2, 64px); }

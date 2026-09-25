@@ -9,10 +9,45 @@ const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: tru
 const DEFAULT = { body: '#5b8def', feet: '#6b4a36', blade: '#e8eef5' };
 
 // 무기 모양 (아이템마다 재질·장식이 다르다, weaponModels.js). 피벗 기준 오른손 자리(x 0.42)
+// userData.grip = 손잡이 가운데 (피벗 기준). 오른손이 여기를 쥔다. 활은 몸 쪽으로 당겨 든다.
+const GRIP_Z = { sword: 0.09, spear: 0.1, hammer: 0.06, bow: 0.85 };
 export function createWeaponMesh(type, color, id, plus = 0) {
   const g = addEnhanceLook(buildWeapon(type, color, id ?? (color === DEFAULT.blade ? 'default' : undefined)), plus);
   g.position.x = 0.42;
+  if (type === 'bow') g.position.z = -0.38;
+  g.userData.grip = new THREE.Vector3(0.42, 0, g.position.z + (GRIP_Z[type] ?? 0.09));
   return g;
+}
+
+// 팔: 소매(옷 색) 원기둥 + 어깨 공 + 손(피부색, 손잡이를 감싸는 공 + 엄지)
+const Y = new THREE.Vector3(0, 1, 0);
+const SLEEVE = new THREE.CylinderGeometry(0.068, 0.078, 1, 7).translate(0, 0.5, 0);
+function createArm(sleeveMat, skinMat) {
+  const g = new THREE.Group();
+  const sleeve = new THREE.Mesh(SLEEVE, sleeveMat);
+  const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.085, 7, 5), sleeveMat);
+  const hand = new THREE.Group();
+  const palm = new THREE.Mesh(new THREE.SphereGeometry(0.07, 7, 5), skinMat);
+  palm.scale.set(1, 0.95, 1.1);
+  const thumb = new THREE.Mesh(new THREE.SphereGeometry(0.032, 5, 4), skinMat);
+  thumb.position.set(-0.03, 0.055, 0.03);
+  hand.add(palm, thumb);
+  g.add(sleeve, shoulder, hand);
+  return { group: g, sleeve, shoulder, hand };
+}
+// 어깨 from → 손 to 사이에 팔을 놓는다 (같은 부모 좌표)
+function placeArm(arm, from, to) {
+  const d = new THREE.Vector3().subVectors(to, from);
+  arm.shoulder.position.copy(from);
+  arm.sleeve.position.copy(from);
+  arm.sleeve.scale.set(1, Math.max(0.01, d.length() - 0.05), 1);
+  arm.sleeve.quaternion.setFromUnitVectors(Y, d.normalize());
+  arm.hand.position.copy(to);
+}
+const SHOULDER_R = new THREE.Vector3(0.2, 0.08, 0.02); // 피벗 기준 오른 어깨 (몸 안에서 시작)
+// 무기가 바뀌면 오른손을 새 손잡이로 옮긴다
+export function fitArm(model, weapon) {
+  placeArm(model.armR, SHOULDER_R, weapon.userData.grip);
 }
 
 // 휘두를 때 잠깐 보이는 부채꼴 궤적 (무기마다 사거리·각도가 다르다)
@@ -99,9 +134,17 @@ export function createPlayerModel(base) {
   swordPivot.rotation.y = 0.9;
   const weapon = createWeaponMesh('sword', DEFAULT.blade);
   swordPivot.add(weapon);
+  // 오른팔은 피벗에 달려 무기와 함께 휘두르고, 손은 손잡이를 쥔다. 왼팔은 걸을 때 앞뒤로 흔든다.
+  const skinMat = addMat(flat('#ffd9b8'));
+  const armR = createArm(bodyMat, skinMat);
+  swordPivot.add(armR.group);
+  placeArm(armR, SHOULDER_R, weapon.userData.grip);
+  const armL = createArm(bodyMat, skinMat);
+  armL.group.position.set(-0.27, 0.78, 0);
+  placeArm(armL, new THREE.Vector3(0, 0, 0), new THREE.Vector3(-0.1, -0.3, 0.04));
 
   const inner = new THREE.Group();
-  inner.add(body, head, hair, leaf, flower, ribbon, eyeL, eyeR, face, footL, footR, swordPivot);
+  inner.add(body, head, hair, leaf, flower, ribbon, eyeL, eyeR, face, footL, footR, swordPivot, armL.group);
   inner.traverse((o) => { if (o.isMesh) o.castShadow = true; });
   face.traverse((o) => { o.castShadow = false; });
   const gear = createGear(inner);
@@ -117,7 +160,7 @@ export function createPlayerModel(base) {
   spinTrail.position.y = 0.45;
   g.add(spinTrail);
 
-  return { group: g, inner, bodyMats, footL, footR, swordPivot, weapon, trail, spinTrail, bodyMat, footMat, gear, hair, leaf, accessories };
+  return { group: g, inner, bodyMats, footL, footR, swordPivot, weapon, armR, armL, trail, spinTrail, bodyMat, footMat, gear, hair, leaf, accessories };
 }
 
 // 외형: 장비(모자·옷·신발 색)가 있으면 장비 색, 없으면 캐릭터 만들기에서 고른 색·장식

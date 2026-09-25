@@ -16,7 +16,7 @@ export class InventoryWindow {
       <div class="inv-grid" style="--cols:${cfg.columns}"></div>
       <footer class="inv-foot">
         <span class="gold"><i class="coin"></i><b data-inv-gold>0</b></span>
-        <span class="inv-hint">${ctx.input.touchMode ? '끌기: 옮기기 · 두 번 탭: 사용' : '드래그: 옮기기 · 우클릭: 사용'}</span>
+        <span class="inv-hint">${ctx.input.touchMode ? '탭: 정보 · 두 번 탭: 사용 · 끌기: 옮기기' : '올리기: 정보 · 우클릭: 사용 · 드래그: 옮기기'}</span>
         <button type="button" class="inv-sort" data-sort>정리</button>
       </footer>`;
     win.body.querySelector('[data-sort]').addEventListener('click', () => ctx.bus.emit('inventory:sort'));
@@ -84,14 +84,14 @@ export class InventoryWindow {
     const grid = this.grid;
 
     grid.addEventListener('pointermove', (e) => {
-      if (this.drag) return;
+      if (this.drag || e.pointerType === 'touch') return;
       const i = this.slotIndexAt(e.clientX, e.clientY);
       const s = this.slots[i];
       if (s) this.tooltip.show(this.tooltipHtml(s), e.clientX, e.clientY);
       else this.tooltip.hide();
       if (s?.fresh) this.ctx.bus.emit('inventory:seen', { slot: i });
     });
-    grid.addEventListener('pointerleave', () => this.tooltip.hide());
+    grid.addEventListener('pointerleave', (e) => this.tooltip.hover(e));
 
     grid.addEventListener('contextmenu', (e) => {
       e.preventDefault();
@@ -145,7 +145,7 @@ export class InventoryWindow {
       return;
     }
     this.lastTap = { slot: i, time: now };
-    if (e.pointerType === 'touch') this.tooltip.show(this.tooltipHtml(s), e.clientX, e.clientY);
+    if (e.pointerType === 'touch') this.tooltip.pin(this.tooltipHtml(s), this.grid.children[i]);
     if (s.fresh) this.ctx.bus.emit('inventory:seen', { slot: i });
   }
 

@@ -43,7 +43,8 @@ export class CharacterWindow {
     // 모바일: 탭하면 설명, 두 번 탭하면 해제
     this.grid.addEventListener('pointerup', (e) => {
       if (e.pointerType !== 'touch') return;
-      const slot = e.target.closest('[data-eslot]')?.dataset.eslot;
+      const cell = e.target.closest('[data-eslot]');
+      const slot = cell?.dataset.eslot;
       const id = slot && this.equip[slot];
       if (!id) return;
       const now = performance.now();
@@ -54,15 +55,16 @@ export class CharacterWindow {
         return;
       }
       this.lastTap = { slot, time: now };
-      tooltip.show(itemTooltip(ctx.data, id, { hint: '두 번 탭: 해제', plus: this.plus?.[slot] ?? 0 }), e.clientX, e.clientY);
+      tooltip.pin(itemTooltip(ctx.data, id, { hint: '두 번 탭: 해제', plus: this.plus?.[slot] ?? 0 }), cell);
     });
     this.grid.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch') return;
       const slot = e.target.closest('[data-eslot]')?.dataset.eslot;
       const id = slot && this.equip[slot];
       if (id) tooltip.show(itemTooltip(ctx.data, id, { hint: '우클릭: 해제', plus: this.plus?.[slot] ?? 0 }), e.clientX, e.clientY);
       else tooltip.hide();
     });
-    this.grid.addEventListener('pointerleave', () => tooltip.hide());
+    this.grid.addEventListener('pointerleave', (e) => tooltip.hover(e));
 
     ctx.bus.on('equipment:changed', ({ slots, plus, sets }) => {
       this.equip = { ...slots };

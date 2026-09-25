@@ -63,7 +63,6 @@
 @media (max-width: 600px) {
   .map { flex-direction: column; }
   .map-canvas { max-height: 50vh; width: auto !important; }
-  .sk-tree { grid-template-columns: 1fr; max-height: 60vh; overflow: auto; }
   .char { flex-direction: column; }
   .window.win-left { left: 50%; }
   .build-list { width: 300px; }

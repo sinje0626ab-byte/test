@@ -264,6 +264,7 @@ export class Player {
     if (!this.roll.active) this.inner.position.y = bob;
     this.footL.position.z = moving ? Math.sin(this.walkPhase) * 0.14 : 0;
     this.footR.position.z = moving ? -Math.sin(this.walkPhase) * 0.14 : 0;
+    this.armL.group.rotation.x = moving ? -Math.sin(this.walkPhase) * 0.6 : 0;
 
     this.attack.animate(dt);
 
