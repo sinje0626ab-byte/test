@@ -155,7 +155,7 @@ html, body {
   box-shadow: 0 3px 0 rgba(120, 100, 60, 0.18);
 }
 .qslot kbd { position: absolute; top: -8px; left: -6px; margin: 0; }
-.qslot .item-icon { width: 26px; height: 26px; }
+.qslot .item-svg { width: 36px; height: 36px; }
 .dmg.heal { color: #7cf09a; }
 
 /* 액티브 스킬 슬롯 (Q·R) */
@@ -221,7 +221,7 @@ html, body {
   display: flex; align-items: center; gap: 6px; padding: 3px 10px 3px 5px; border-radius: 999px; font-size: 13px;
   background: rgba(255, 250, 240, 0.88); box-shadow: 0 2px 0 rgba(120, 100, 60, 0.15);
 }
-.loot-row .item-icon { width: 18px; height: 18px; }
+.loot-row .item-svg { width: 24px; height: 24px; }
 .loot-row b { color: #4f9a4a; }
 .loot-row.bump { animation: pulse 0.25s; }
 .new-dot { position: absolute; right: 4px; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; box-shadow: 0 0 0 2px #fff; }
@@ -230,3 +230,8 @@ html, body {
 .tt-cmp { font-size: 12px; }
 .tt-cmp.up { color: #8fe08a; }
 .tt-cmp.down { color: #ff8f8f; }
+
+/* 비주얼 통일: 스킬 배지·버프 아이콘 (itemArt·uiArt 와 같은 그림체) */
+.sslot .s-icon { display: flex; }
+.sslot .skill-svg { width: 42px; height: 42px; display: block; }
+.buff .item-svg { width: 18px; height: 18px; filter: none; }

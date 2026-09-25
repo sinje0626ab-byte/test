@@ -1,3 +1,4 @@
+import { skillArt } from './uiArt.js';
 // 액티브 스킬 슬롯 Q·R. PC는 퀵슬롯 옆, 모바일은 공격 버튼 위 둥근 버튼 (쿨다운 원형 표시).
 // 누르면 skill:cast. 쿨다운은 ctx.activeSkills(ActiveSkillSystem)를 읽는다.
 export class SkillBar {
@@ -29,7 +30,7 @@ export class SkillBar {
       const b = this.buttons[i];
       const def = id && defs[id];
       b.classList.toggle('empty', !def);
-      b.querySelector('.s-icon').textContent = def ? def.active.icon : '';
+      b.querySelector('.s-icon').innerHTML = def ? skillArt(id, this.ctx.data.skills.branches[def.branch].color) : '';
       b.title = def ? def.name : '비어 있음 (스킬 창에서 등록)';
     });
   }

@@ -1,33 +1,16 @@
 import * as THREE from 'three';
+import items from '../data/items.json';
+import { buildWeapon } from './weaponModels.js';
+import { createGear, showGear, CLOTH, SHOES } from './gearModels.js';
+
+const idOf = new Map(Object.entries(items.items).map(([id, def]) => [def, id]));
 
 const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.8 });
 const DEFAULT = { body: '#5b8def', feet: '#6b4a36', blade: '#e8eef5' };
 
-// 무기 종류별 모양. 피벗 기준 오른손 자리(x 0.42)에서 앞(+z)으로 뻗는다.
-export function createWeaponMesh(type, color) {
-  const g = new THREE.Group();
-  const add = (geo, c, x, y, z) => {
-    const m = new THREE.Mesh(geo, flat(c));
-    m.position.set(x, y, z);
-    m.castShadow = true;
-    g.add(m);
-    return m;
-  };
-  if (type === 'spear') {
-    add(new THREE.CylinderGeometry(0.035, 0.035, 1.7, 6).rotateX(Math.PI / 2), '#b88452', 0, 0, 0.55);
-    add(new THREE.ConeGeometry(0.09, 0.35, 4).rotateX(Math.PI / 2), color, 0, 0, 1.55);
-  } else if (type === 'hammer') {
-    add(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 6).rotateX(Math.PI / 2), '#8a6440', 0, 0, 0.35);
-    add(new THREE.BoxGeometry(0.42, 0.3, 0.3), color, 0, 0, 0.8);
-  } else if (type === 'bow') {
-    const bow = add(new THREE.TorusGeometry(0.5, 0.035, 5, 14, Math.PI), color, 0, 0, 0.35);
-    bow.rotation.set(0, 0, Math.PI / 2);
-    bow.rotation.y = Math.PI / 2;
-    add(new THREE.CylinderGeometry(0.008, 0.008, 1.0, 3), '#f4efe3', 0, 0, 0.35).rotation.x = 0;
-  } else {
-    add(new THREE.BoxGeometry(0.08, 0.04, 0.9), color, 0, 0, 0.55);
-    add(new THREE.BoxGeometry(0.26, 0.06, 0.06), '#c9a44a', 0, 0, 0.1);
-  }
+// 무기 모양 (아이템마다 재질·장식이 다르다, weaponModels.js). 피벗 기준 오른손 자리(x 0.42)
+export function createWeaponMesh(type, color, id) {
+  const g = buildWeapon(type, color, id ?? (color === DEFAULT.blade ? 'default' : undefined));
   g.position.x = 0.42;
   return g;
 }
@@ -98,15 +81,17 @@ export function createPlayerModel(base) {
   footL.position.set(-0.13, 0.06, 0);
   footR.position.set(0.13, 0.06, 0);
 
-  // 모자: 머리 장비를 끼면 보인다 (색은 장비 색)
-  const hatMat = addMat(flat('#ffffff'));
-  const hat = new THREE.Group();
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(0.4, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), hatMat);
-  const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.05, 12), hatMat);
-  dome.position.y = 1.3;
-  brim.position.y = 1.3;
-  hat.add(dome, brim);
-  hat.visible = false;
+  // 눈 하이라이트·볼 터치 (얼굴을 또렷하게)
+  const shine = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const face = new THREE.Group();
+  for (const x of [-0.12, 0.12]) {
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.016, 5, 4), shine);
+    hl.position.set(x + 0.015, 1.2, 0.34);
+    const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 4), new THREE.MeshBasicMaterial({ color: 0xff9c8a, transparent: true, opacity: 0.45 }));
+    cheek.position.set(x * 1.5, 1.1, 0.27);
+    cheek.scale.set(1, 0.6, 0.4);
+    face.add(hl, cheek);
+  }
 
   // 무기는 몸 중심의 피벗에 달려서 휘두른다. 무기 종류가 바뀌면 안의 모양만 바꾼다.
   const swordPivot = new THREE.Group();
@@ -116,8 +101,10 @@ export function createPlayerModel(base) {
   swordPivot.add(weapon);
 
   const inner = new THREE.Group();
-  inner.add(body, head, hair, leaf, flower, ribbon, eyeL, eyeR, footL, footR, hat, swordPivot);
+  inner.add(body, head, hair, leaf, flower, ribbon, eyeL, eyeR, face, footL, footR, swordPivot);
   inner.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+  face.traverse((o) => { o.castShadow = false; });
+  const gear = createGear(inner);
   g.add(inner);
 
   const trail = createTrail(base.attackRange, base.attackArcDeg);
@@ -130,19 +117,20 @@ export function createPlayerModel(base) {
   spinTrail.position.y = 0.45;
   g.add(spinTrail);
 
-  return { group: g, inner, bodyMats, footL, footR, swordPivot, weapon, trail, spinTrail, bodyMat, footMat, hatMat, hat, hair, leaf, accessories };
+  return { group: g, inner, bodyMats, footL, footR, swordPivot, weapon, trail, spinTrail, bodyMat, footMat, gear, hair, leaf, accessories };
 }
 
 // 외형: 장비(모자·옷·신발 색)가 있으면 장비 색, 없으면 캐릭터 만들기에서 고른 색·장식
 // look = { hair, clothes, accessory }
 export function applyAppearance(model, items, look = {}) {
   const { head, body, feet } = items;
-  model.hat.visible = !!head;
+  const ids = { head: idOf.get(head), body: idOf.get(body), feet: idOf.get(feet) };
+  showGear(model.gear, ids, head?.color);
   for (const [id, m] of Object.entries(model.accessories)) m.visible = !head && id === (look.accessory ?? 'sprout');
-  if (head) model.hatMat.color.set(head.color);
   model.hair.material.color.set(look.hair ?? '#7a4b2a');
-  model.bodyMat.color.set(body?.color ?? look.clothes ?? DEFAULT.body);
-  model.footMat.color.set(feet?.color ?? DEFAULT.feet);
+  model.hair.visible = !head || ids.head !== 'desert_hood';
+  model.bodyMat.color.set(body ? CLOTH[ids.body] ?? body.color : look.clothes ?? DEFAULT.body);
+  model.footMat.color.set(feet ? SHOES[ids.feet] ?? feet.color : DEFAULT.feet);
 }
 
 export const DEFAULT_BLADE = DEFAULT.blade;

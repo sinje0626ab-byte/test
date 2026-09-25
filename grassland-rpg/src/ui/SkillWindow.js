@@ -1,4 +1,5 @@
 import { formatStat } from './itemText.js';
+import { skillArt } from './uiArt.js';
 
 // 스킬 창 (K): 3갈래 트리, 남은 포인트, 선행 조건 표시, 찍기 전 확인
 export class SkillWindow {
@@ -91,7 +92,7 @@ export class SkillWindow {
             const req = s.requires.map((q) => `${skills[q.id].name} ${q.rank}`).join(', ');
             return `
               <button type="button" class="sk-node ${cls}${this.pending === id ? ' picked' : ''}" data-skill="${id}">
-                <span class="sk-head"><b>${s.name}</b><span class="sk-rank">${r}/${s.maxRank}</span></span>
+                <span class="sk-head">${skillArt(id, br.color)}<b>${s.name}</b><span class="sk-rank">${r}/${s.maxRank}</span></span>
                 <small>${s.description}</small>
                 ${s.active ? this.activeLine(id, s, r) : `<small class="sk-eff">랭크당 ${this.effectText(s)}</small>`}
                 ${req ? `<small class="sk-req${why && why !== '최대 랭크' ? ' bad' : ''}">선행: ${req}</small>` : ''}

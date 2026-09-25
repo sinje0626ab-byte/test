@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { itemIcon } from './icons.js';
 
 const v = new THREE.Vector3();
 
@@ -53,7 +54,7 @@ export class HUD {
     });
     bus.on('notify', (n) => this.notify(n));
     bus.on('buffs:changed', ({ list }) => {
-      this.el.buffs.innerHTML = list.map((b) => `<span class="buff" title="${b.name}"><i style="--c:${b.color}"></i>${Math.ceil(b.time)}</span>`).join('');
+      this.el.buffs.innerHTML = list.map((b) => `<span class="buff" title="${b.name}">${b.item ? itemIcon(this.ctx.data.items.items[b.item]) : `<i style="--c:${b.color}"></i>`}${Math.ceil(b.time)}</span>`).join('');
     });
     bus.on('settings:changed', ({ key, value }) => { if (key === 'damageNumbers') this.hideNumbers = !value; });
     bus.on('save:done', () => this.pulse(this.el.saved, 'show'));
@@ -142,7 +143,7 @@ export class HUD {
     this.el.quick.innerHTML = Array.from({ length: config.quickslots }, (_, i) => {
       const id = this.quick[i];
       const def = id && items.items[id];
-      return `<div class="qslot"><kbd>${i + 1}</kbd>${def ? `<i class="item-icon" style="--c:${def.color}"></i><b class="count">${counts.get(id)}</b>` : ''}</div>`;
+      return `<div class="qslot"><kbd>${i + 1}</kbd>${def ? `${itemIcon(def)}<b class="count">${counts.get(id)}</b>` : ''}</div>`;
     }).join('');
   }
 

@@ -28,7 +28,7 @@
 .base-up-eff { margin: 8px 0; padding-left: 18px; font-size: 13px; color: #6b8f5a; line-height: 1.6; }
 .base-up-cost { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
 .base-up-cost li { display: flex; align-items: center; gap: 6px; }
-.base-up-cost .item-icon { width: 18px; height: 18px; }
+.base-up-cost .item-svg { width: 22px; height: 22px; display: inline-block; vertical-align: middle; }
 .base-up-cost .bad b { color: #d9534f; }
 .base-up-cost .ok b { color: #5a9a4a; }
 .base-up-btn {
@@ -95,6 +95,7 @@
 }
 .fg-row:disabled { opacity: 0.55; cursor: not-allowed; }
 .fg-row:hover:not(:disabled) { border-color: #e9a35b; background: #fff1c9; }
+.fg-icon .item-svg { width: 32px; height: 32px; }
 .fg-icon { width: 36px; height: 36px; border-radius: 10px; border: 2px solid var(--grade); display: flex; align-items: center; justify-content: center; }
 .fg-text { display: flex; flex-direction: column; font-size: 14px; }
 .fg-text .up { color: #e0a21c; }
@@ -149,3 +150,4 @@
 .bt-card button { grid-row: 1 / span 2; grid-column: 2; padding: 6px 10px; border-radius: 10px; border: 2px solid #6ab468; background: #7cc67a; color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
 .bt-card button:disabled { background: #e3dac3; border-color: #d8ccae; color: #a99f86; cursor: not-allowed; }
 .bt-card.claimed { opacity: 0.6; }
+.gd-seeds .item-svg { width: 30px; height: 30px; }

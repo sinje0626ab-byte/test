@@ -45,14 +45,21 @@ export class World {
     const scene = this.ctx.scene;
     this.hemi = new THREE.HemisphereLight(0xeaf6ff, 0x6f9a52, 1.25);
     scene.add(this.hemi);
+    // 반구광: 낮은 하늘빛·풀빛, 밤은 달빛 도는 남색 하늘·짙은 쪽빛 땅 (밝기만 낮춘 밤이 아니라 색이 바뀐다)
+    this.hemiDay = [new THREE.Color(0xeaf6ff), new THREE.Color(0x6f9a52)];
+    this.hemiNight = [new THREE.Color(0x7a90e0), new THREE.Color(0x323c66)];
+    this.hemiBlood = [new THREE.Color(0xa07898), new THREE.Color(0x2c2742)]; // 붉은 달: 남색 밤 + 붉은 달빛 (온통 붉게 칠하지 않는다)
+    // 플레이어 곁 등불: 밤에도 플레이어가 어둠에 묻히지 않게 (따뜻한 빛 하나)
+    this.lantern = new THREE.PointLight(0xffd9a0, 0, 9, 1.8);
+    scene.add(this.lantern);
     this.daySky = new THREE.Color(PALETTE.sky);
     this.nightSky = new THREE.Color(PALETTE.nightSky);
     this.skyColor = new THREE.Color();
     this.sunColor = new THREE.Color(0xfff0d2);
-    this.moonColor = new THREE.Color(0x8ea6ff);
+    this.moonColor = new THREE.Color(0xa9bcff);
     const bm = this.ctx.data.config.raid.bloodMoon; // 붉은 달 밤
     this.bloodSky = new THREE.Color(bm.sky);
-    this.bloodMoon = new THREE.Color(bm.moon);
+    this.bloodMoon = new THREE.Color(bm.moon).lerp(new THREE.Color(0xa9bcff), 0.3);
     this.lordSky = new THREE.Color(this.ctx.data.config.nightLord.sky); // 밤의 군주: 캄캄한 하늘
 
     const sun = new THREE.DirectionalLight(0xfff0d2, 1.9);
@@ -186,11 +193,15 @@ export class World {
     if (w?.fogColor) this.skyColor.lerp(w.fogColor, 0.6 * d);
     this.ctx.scene.background.copy(this.skyColor);
     this.ctx.scene.fog.color.copy(this.skyColor);
-    this.ctx.scene.fog.far = w?.fogFar ?? 115;
+    this.ctx.scene.fog.far = w?.fogFar ?? 92 + 23 * d; // 밤엔 먼 곳이 조금 더 빨리 어둠에 잠긴다
     this.ctx.scene.fog.near = Math.min(45, this.ctx.scene.fog.far * 0.4); // 모래바람: 가까운 곳부터 뿌옇게
-    this.hemi.intensity = 0.45 + 0.8 * d;
-    this.sun.intensity = 0.45 + 1.45 * d;
+    const night = blood ? this.hemiBlood : this.hemiNight;
+    this.hemi.color.copy(night[0]).lerp(this.hemiDay[0], d);
+    this.hemi.groundColor.copy(night[1]).lerp(this.hemiDay[1], d);
+    this.hemi.intensity = (lord ? 0.4 : 0.62) + 0.63 * d;
+    this.sun.intensity = 0.7 + 1.2 * d;
     this.sun.color.copy(blood ? this.bloodMoon : this.moonColor).lerp(this.sunColor, d);
+    this.lantern.intensity = (1 - d) * 5;
   }
 
   update(dt, focus) {
@@ -200,6 +211,7 @@ export class World {
     this.pondRims?.forEach((r, i) => { r.material.opacity = 0.35 + 0.3 * Math.sin(t + i * 1.7); });
     for (const c of this.chunks) c.setVisible(focus.z, this.cfg.chunkViewDistance);
     // 그림자 범위를 좁게 유지하려고 태양이 플레이어를 따라다닌다.
+    this.lantern.position.set(focus.x, 2.4, focus.z + 0.6);
     this.sun.target.position.copy(focus);
     this.sun.position.copy(focus).add(this.sunOffset);
   }

@@ -69,3 +69,4 @@ body.in-intro .touch-ui, body.in-intro .quickbar, body.in-intro .skillbar { disp
   body.touch .hud-notify { top: 104px; right: 104px; }
 }
 body.touch .loot-log { left: 12px; bottom: 226px; }
+body.touch .sslot .skill-svg { width: 48px; height: 48px; }

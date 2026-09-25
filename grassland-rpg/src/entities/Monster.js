@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import { rand } from '../utils/random.js';
 import { createMonsterModel } from './MonsterModel.js';
+import { nightLook } from './monsterKit.js';
 import { HpBar } from './HpBar.js';
 import { BEHAVIORS } from './behaviors/index.js';
 
-const NIGHT_GLOW = new THREE.Color(0.22, 0.08, 0.32);
-const ELITE_GLOW = new THREE.Color(0.45, 0.33, 0.05);
+const NIGHT_GLOW = new THREE.Color(0.015, 0.01, 0.035);
+const ELITE_GLOW = new THREE.Color(0.32, 0.23, 0.04);
 
 const tmp = new THREE.Vector3();
 
@@ -56,12 +57,14 @@ export class Monster {
   }
 
   buildMesh() {
-    const { body, mat, extraMats } = createMonsterModel(this.def);
-    this.body = body;
-    this.mat = mat;
-    this.extraMats = extraMats;
+    const model = createMonsterModel(this.def, this.type);
+    this.model = model;
+    this.body = model.body;
+    this.mat = model.mat;
+    this.extraMats = model.extraMats;
+    this.eyeMat = model.eyeMat;
     const outer = new THREE.Group();
-    outer.add(body);
+    outer.add(this.body);
     // 나는 몬스터: 바닥 그림자 원
     if (this.def.flier) {
       const shadow = new THREE.Mesh(
@@ -212,7 +215,22 @@ export class Monster {
   }
 
   // 피격 번쩍임(흰색) > 정예(금빛) > 밤 몬스터(보랏빛)
-  glow() {
+  glow(dt = 0) {
+    // 밤 몬스터(밤에 태어난 필드 몬스터·습격 몬스터)는 처음 한 번 밤 모습으로
+    if ((this.night || this.raid) && !this.motes && this.alive) {
+      this.motes = nightLook(this.model, this.def.radius, this.type.startsWith('night'));
+      this.mesh.add(this.motes);
+    }
+    if (this.motes) {
+      this.moteT = (this.moteT ?? Math.random() * 6) + dt;
+      const r = this.motes.userData.r;
+      this.motes.visible = this.alive;
+      this.motes.children.forEach((m, i) => {
+        const a = this.moteT * 1.6 + i * Math.PI;
+        m.position.set(Math.cos(a) * r * 1.5, r * (1.4 + i * 0.5) + Math.sin(this.moteT * 2.3 + i) * r * 0.25, Math.sin(a) * r * 1.5);
+        m.rotation.y = a * 2;
+      });
+    }
     const e = this.mat.emissive;
     if (this.flash > 0) e.setRGB(1, 1, 1);
     else if (this.elite) e.copy(ELITE_GLOW);

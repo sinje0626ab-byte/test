@@ -9,6 +9,7 @@ import turrets from '../src/data/turrets.json';
 import nodes from '../src/data/nodes.json';
 import npcs from '../src/data/npcs.json';
 import { createMonsterModel } from '../src/entities/MonsterModel.js';
+import { nightLook } from '../src/entities/monsterKit.js';
 import { createNpcModel } from '../src/entities/NpcModel.js';
 import { createPlayerModel, applyAppearance, createWeaponMesh } from '../src/entities/PlayerModel.js';
 import { createTurretModel } from '../src/entities/TurretModels.js';
@@ -68,7 +69,9 @@ window.renderAll = () => {
   const out = {};
   // 몬스터
   for (const [id, def] of Object.entries(monsters)) {
-    const { body } = createMonsterModel(def);
+    const model = createMonsterModel(def, id);
+    const { body } = model;
+    if (window.nightRender) body.add(nightLook(model, def.radius, id.startsWith('night')));
     const g = new THREE.Group();
     g.add(body);
     if (def.flier) body.position.y = 0.9;
@@ -82,7 +85,7 @@ window.renderAll = () => {
     applyAppearance(m, worn, { hair, clothes, accessory });
     if (weapon) {
       m.swordPivot.remove(m.weapon);
-      m.swordPivot.add(createWeaponMesh(weapon.weaponType ?? 'sword', weapon.color));
+      m.swordPivot.add(createWeaponMesh(weapon.weaponType ?? 'sword', weapon.color, Object.keys(I).find((k) => I[k] === weapon)));
     }
     m.group.remove(m.trail, m.spinTrail); // 휘두르기 궤적은 크기 계산에서 빼기
     return snap(m.group, { yaw: 0.35 });
@@ -95,10 +98,14 @@ window.renderAll = () => {
   const I = items.items;
   out.player_grass = look('#7a4b2a', null, 'sprout', { head: I.leaf_hat, body: I.grass_tunic, feet: I.straw_shoes }, I.bamboo_spear);
   out.player_snow = look('#e0b25a', null, 'sprout', { head: I.fur_hat, body: I.yeti_coat, feet: I.snow_boots }, I.glacier_hammer);
+  out.player_forest = look('#2f2a28', null, 'sprout', { head: I.mushroom_hat, body: I.leather_vest, feet: I.leather_boots }, I.mossy_mace);
+  out.player_desert = look('#7a4b2a', null, 'sprout', { head: I.desert_hood, body: I.desert_cloak, feet: I.sand_sandals }, I.dune_bow);
+  out.player_royal = look('#f2a7c3', null, 'sprout', { head: I.royal_jelly_crown, body: I.grass_tunic, feet: I.leather_boots }, I.dawn_blade);
+  out.player_cactus = look('#7a4b2a', '#5b8def', 'sprout', { head: I.cactus_crown }, I.sun_blade);
   // 무기 (3D)
   for (const [id, def] of Object.entries(I)) {
     if (def.equipSlot !== 'weapon') continue;
-    const g = createWeaponMesh(def.weaponType ?? 'sword', def.color);
+    const g = createWeaponMesh(def.weaponType ?? 'sword', def.color, id);
     g.position.x = 0;
     g.rotation.y = -Math.PI / 2;
     out[`weapon_${id}`] = snap(g, { yaw: 0.9, pitch: 0.7, ground: false });
