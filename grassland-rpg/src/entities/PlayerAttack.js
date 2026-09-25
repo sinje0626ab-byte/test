@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createWeaponMesh, createTrail, DEFAULT_BLADE } from './PlayerModel.js';
+import { createWeaponMesh, createTrail, fitArm, DEFAULT_BLADE } from './PlayerModel.js';
 
 // 무기 종류별 공격: 검(베기)·창(찌르기)·망치(내려치기, 3타마다 충격파)·활(화살).
 // 수치는 weapons.json, 능력치는 장비(ctx.player.stats).
@@ -30,6 +30,7 @@ export class PlayerAttack {
     p.swordPivot.remove(p.weapon);
     p.weapon = createWeaponMesh(type, color, id, plus);
     p.swordPivot.add(p.weapon);
+    fitArm(p, p.weapon);
     p.mesh.remove(p.trail);
     p.trail = createTrail(this.w.range, this.w.arcDeg);
     p.mesh.add(p.trail);
