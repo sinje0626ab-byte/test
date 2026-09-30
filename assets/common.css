@@ -1484,6 +1484,12 @@ audio:focus-visible,
 .pc-formula b { color: var(--ink); }
 .pc-op { color: var(--ink-faint); margin: 0 2px; }
 .pc-span { margin: 0 0 14px; font-size: 13.5px; color: var(--ink-muted); }
+/* 닉네임 계보 — 이름이 바뀌어도 기록은 한 사람의 것임을 밝힌다 */
+.pc-was {
+  margin: -6px 0 14px; padding: 9px 13px;
+  background: var(--paper-deep); border-left: 3px solid var(--gold-light);
+  font-size: 13px; line-height: 1.8; color: var(--ink-sub);
+}
 
 /* 참여 추모건 막대 */
 .pbs { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
@@ -1646,6 +1652,25 @@ audio:focus-visible,
   border-radius: 2px; padding: 1px 6px 2px; vertical-align: 1px;
 }
 .pg--out  { color: var(--ink-faint); border: 1px solid var(--border); background: var(--paper-deep); }
+/* 현 닉네임 — 본문에서 옛 이름을 쓸 때 지금 이름을 나란히 밝힌다 */
+.nm-now {
+  display: inline-block; margin-left: 8px; vertical-align: 2px;
+  font-size: 11.5px; font-weight: 400; letter-spacing: 1px; white-space: nowrap;
+  color: var(--gold); background: var(--paper-deep);
+  border: 1px dashed var(--gold-light); border-radius: 2px; padding: 1px 7px 2px;
+}
+
+/* 구 닉네임 — 최종 닉네임 옆에 예전 이름을 붙여 같은 사람임을 알린다 */
+.pg--was  {
+  color: var(--gold); border: 1px dashed var(--gold-light); background: var(--paper);
+  font-weight: 400;
+  /* 긴 옛 이름이 순위표의 성명 칸을 넓히지 아니하도록 줄바꿈을 허용한다 */
+  white-space: normal; overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .pr-name .pg--was { display: block; margin: 3px 0 0; width: fit-content; }
+}
+
 .pr[data-gone="1"] .pr-link { color: var(--ink-muted); }
 #rankBody.only-stay tr[data-gone="1"] { display: none; }
 .onlystay { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
