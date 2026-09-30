@@ -119,6 +119,13 @@ h2 {
   background: linear-gradient(180deg, var(--paper-warm), var(--paper));
   scroll-margin-top: calc(var(--nav-height) + 12px);
 }
+/* 역대 국가 구분 표제 — 대(代)가 바뀌는 자리를 굵게 갈라 둔다 */
+h2.era {
+  margin-top: 78px; padding: 20px 0;
+  border-top: 4px double var(--navy); border-bottom: 4px double var(--navy);
+  background: var(--paper-deep); color: var(--gold);
+}
+
 h3 {
   font-size: var(--fs-h3); margin: 32px 0 14px; color: var(--ink-sub);
   letter-spacing: 3px; font-weight: 600;
