@@ -663,6 +663,16 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 .oc--former .oc-rank { background: #6f6a60; width: auto; height: auto; border-radius: 10px; padding: 4px 10px; font-size: 11.5px; letter-spacing: 2px; }
 .oc-term { display: block; font-size: 13px; color: var(--ink-muted); letter-spacing: 2px; margin-top: 6px; }
 
+/* 카드가 하나뿐인 묶음 — 2단 격자에 홀로 남아 한쪽으로 쏠리지 않도록 가운데로 모은다 */
+.council-grid--solo { grid-template-columns: minmax(0, 1fr); max-width: 640px; margin-inline: auto; }
+
+/* 국무위원 외 현직 기관장 — 카드는 현직 그대로 두고, 서열 배지만 직위 표기로 바꾼다 */
+.oc--exofc { border-style: dashed; }
+.oc--exofc .oc-rank {
+  background: var(--gold); width: auto; height: auto; border-radius: 10px;
+  padding: 4px 10px; font-size: 11.5px; letter-spacing: 2px;
+}
+
 /* 궐위 안내 */
 .vacancy {
   background: var(--paper-deep); border: 1px dashed var(--accent-red);
