@@ -18,7 +18,7 @@
     return (i >= 0 ? href.slice(0, i) : '') + 'assets/';
   }());
 
-  var DATA = null, INDEX = null, loading = null;
+  var DATA = null, INDEX = null, BYRANK = null, loading = null;
 
   function num(n) { return (n || 0).toLocaleString('ko-KR'); }
   function esc(s) {
@@ -29,6 +29,12 @@
   /* 재적 구분 — 기준일 현재의 추모방 명단에 따른다. 0 체류중 / 1 퇴거 */
   function badge(p) {
     return p.g ? '<span class="pg pg--out">퇴거</span>' : '';
+  }
+  /* 구 닉네임 — 최종 닉네임 옆에 나란히 적는다 */
+  function was(p) {
+    return (p.o || []).map(function (w) {
+      return '<span class="pg pg--was">구 ' + esc(w) + '</span>';
+    }).join('');
   }
   function standing(p) {
     return p.g
@@ -52,7 +58,13 @@
       .then(function (j) {
         DATA = j;
         INDEX = {};
-        j.people.forEach(function (p) { INDEX[p.n] = p; });
+        BYRANK = {};
+        j.people.forEach(function (p) {
+          if (!INDEX[p.n]) INDEX[p.n] = p;
+          BYRANK[p.r] = p;
+          /* 구 닉네임으로도 찾아지도록 한다 — 이름을 바꾸어도 기록은 한 사람의 것이다 */
+          (p.o || []).forEach(function (w) { if (!INDEX[w]) INDEX[w] = p; });
+        });
         return j;
       });
     return loading;
@@ -68,10 +80,17 @@
     if (!q) return [];
     var lo = q.toLowerCase(), exact = [], starts = [], has = [];
     DATA.people.forEach(function (p) {
-      var n = p.n.toLowerCase();
-      if (n === lo) exact.push(p);
-      else if (n.indexOf(lo) === 0) starts.push(p);
-      else if (n.indexOf(lo) !== -1) has.push(p);
+      /* 최종 닉네임과 구 닉네임을 모두 대조한다 */
+      var all = [p.n].concat(p.o || []).map(function (x) { return x.toLowerCase(); });
+      var best = 3;
+      all.forEach(function (n) {
+        if (n === lo) best = Math.min(best, 0);
+        else if (n.indexOf(lo) === 0) best = Math.min(best, 1);
+        else if (n.indexOf(lo) !== -1) best = Math.min(best, 2);
+      });
+      if (best === 0) exact.push(p);
+      else if (best === 1) starts.push(p);
+      else if (best === 2) has.push(p);
     });
     return exact.concat(starts, has);
   }
@@ -94,7 +113,7 @@
     return '<article class="pcard">' +
       '<header class="pc-head">' +
         '<span class="pc-rank">' + num(p.r) + '<small>위</small></span>' +
-        '<h3 class="pc-name">' + esc(p.n) + badge(p) + '</h3>' +
+        '<h3 class="pc-name">' + esc(p.n) + badge(p) + was(p) + '</h3>' +
         '<span class="pc-score">' + num(p.s) + '<small>점</small></span>' +
       '</header>' +
       '<div class="pc-formula">' + scoreLine + ' <span class="pc-op">=</span> <b>' + num(p.s) + '</b></div>' +
@@ -106,6 +125,10 @@
         '<span><i>활동일</i><b>' + num(p.d) + '</b>일</span>' +
       '</div>' +
       '<p class="pc-span">최초 발화 ' + ymd(p.f) + ' &mdash; 최종 발화 ' + ymd(p.t) + '<br>' + standing(p) + '</p>' +
+      ((p.o || []).length
+        ? '<p class="pc-was">이 기록은 <b>' + esc((p.o || []).join(' → ')) + ' → ' + esc(p.n) +
+          '</b> 로 이어진 한 사람의 것이다. 구 닉네임으로도 조회된다.</p>'
+        : '') +
       (bars ? '<ul class="pbs">' + bars + '</ul>' : '') +
       '<div class="pc-share noprint">본 기록의 주소는 그대로 인용·배포할 수 있다.' +
         '<button type="button" class="pc-copy" data-copy="' + esc(p.n) + '">주소 복사</button></div>' +
@@ -148,6 +171,19 @@
     show(name, smooth);
   }
 
+  /* 순위로 특정하여 연다 — 동명이인이 있어도 어긋나지 아니한다 */
+  function openRank(rank, name) {
+    input.value = name;
+    load().then(function () {
+      var p = BYRANK[rank];
+      if (!p) { show(name, true); return; }
+      out.innerHTML = card(p);
+      focusOut(true);
+    }).catch(function () {
+      fail('명부 자료를 조회할 수 없다. 잠시 후 재조회하기 바란다.');
+    });
+  }
+
   go && go.addEventListener('click', function () { show(input.value, true); });
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); input.blur(); show(input.value, true); }
@@ -157,6 +193,9 @@
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (t && t.classList && t.classList.contains('pr-link')) {
+      /* 최종 닉네임이 겹치는 별개 계정이 있으므로, 순위가 적혀 있으면 그쪽을 먼저 따른다 */
+      var rk = t.getAttribute('data-rank');
+      if (rk) { openRank(+rk, t.getAttribute('data-who') || t.textContent); return; }
       open(t.getAttribute('data-who') || t.textContent, true);
       return;
     }
@@ -179,7 +218,7 @@
       var rest = j.people.slice(body.rows.length);
       var html = rest.map(function (p) {
         return '<tr class="pr" data-gone="' + p.g + '"><td class="pr-rank">' + p.r + '</td>' +
-          '<td class="pr-name"><button type="button" class="pr-link" data-who="' + esc(p.n) + '">' + esc(p.n) + '</button>' + badge(p) + '</td>' +
+          '<td class="pr-name"><button type="button" class="pr-link" data-rank="' + p.r + '" data-who="' + esc(p.n) + '">' + esc(p.n) + '</button>' + badge(p) + was(p) + '</td>' +
           '<td class="pr-num">' + num(p.s) + '</td><td class="pr-num">' + num(p.m) + '</td>' +
           '<td class="pr-num">' + num(p.a) + '</td><td class="pr-num">' + p.b.length + '</td>' +
           '<td class="pr-num">' + num(p.d) + '</td></tr>';
