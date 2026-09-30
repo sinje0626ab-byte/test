@@ -1854,3 +1854,7 @@ body.pl-playing .tr.on .tr-eq i:nth-child(3) { animation-delay: .6s; }
 }
 .rv--nothumb .rv-play { position: static; transform: none; }
 .rv--nothumb .rv-thumb:hover .rv-play { transform: scale(1.08); }
+
+/* 추모건이 아닌 전환 — 팬클럽 */
+.mm--club { border-left-color: var(--navy-line); background: var(--paper); border-style: dashed; }
+.mm--club .mm-badge { color: var(--navy); border-color: var(--navy-line); }
