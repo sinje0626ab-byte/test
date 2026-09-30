@@ -5,7 +5,7 @@
 
 | 파일명 | 인물 | 직위 |
 |---|---|---|
-| `president.png` | 민주시민 | 대통령 |
+| `president.webp` | 민주시민 | 대통령 |
 | `vice-president.webp` | 추모합니도 | 부통령 |
 | `prime-minister.webp` | 햄지 | 국무총리 |
 | `correction-chief.webp` | 베네수호자 | 추모교정국장 |
