@@ -6,13 +6,14 @@
 | 파일명 | 인물 | 직위 |
 |---|---|---|
 | `president.png` | 민주시민 | 대통령 |
-| `vice-president.png` | 추모합니도 | 부통령 |
-| `prime-minister.png` | 햄지 | 국무총리 |
-| `correction-chief.png` | 베네수호자 | 추모교정국장 |
+| `vice-president.webp` | 추모합니도 | 부통령 |
+| `prime-minister.webp` | 햄지 | 국무총리 |
+| `correction-chief.webp` | 베네수호자 | 추모교정국장 |
 | `audit-chief.webp` | 최무현 | 추모감사원장 |
 | `weather-chief.webp` | 어흥 | 추모기상청장 |
 | `culture-minister.webp` | 딸기 | 문화추모부장관 |
 | `rapper.webp` | 들너구리 | 국무위원 (래퍼) |
+| `security-chief.webp` | 부카니스탄 | 추모안보실장 |
 | `former-correction-chief.png` | 애국좌수 | 초대 추모교정국장 (전임) |
 
 ## 규칙
