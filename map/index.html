@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>국가 전도 · 추모공화국</title>
+<meta name="description" content="추모공화국 국가 전도. 사건이 있었던 자리만 지명으로 올린 지도이며, 지명을 누르면 그 땅의 기록이 펼쳐진다. 추모특별시·늑구숲·북항 해역·교정도와 영외의 땅을 담는다.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="국가 전도 · 추모공화국">
+<meta property="og:description" content="사건이 있었던 자리만 지명으로 올린 지도. 지도의 빈 곳은 아직 아무 일도 일어나지 않은 곳이다.">
+<link rel="icon" type="image/png" href="../assets/brand/favicon-flag.png">
+<link rel="stylesheet" href="../assets/common.css">
+<style>
+/* ==========================================================================
+   국가 전도 — 지도 판 · 지명 표지 · 지역 기록
+   좌표는 그림 기준 백분율이며, 표지와 라벨은 배율의 역수로 되돌려
+   확대하여도 화면상 크기가 변하지 아니한다.
+   ========================================================================== */
+
+.mapwrap { margin: 26px -18px 0; }
+@media (max-width: 760px) { .mapwrap { margin: 20px -12px 0; } }
+
+.mapstage {
+  position: relative; overflow: hidden;
+  aspect-ratio: 3 / 2; background: var(--navy);
+  border: 1px solid var(--gold);
+  outline: 3px double var(--gold-light); outline-offset: 2px;
+  border-radius: var(--radius);
+  touch-action: pan-y;                 /* 확대 전에는 세로 스크롤을 막지 아니한다 */
+  cursor: grab; user-select: none;
+}
+.mapstage.is-zoomed { touch-action: none; }
+.mapstage.is-drag { cursor: grabbing; }
+
+/* 전체 화면 — 판을 화면에 띄운다. 들어 있는 절의 z-index도 함께 올린다 */
+.mapstage.is-full {
+  position: fixed; inset: 0; z-index: 2000;
+  aspect-ratio: auto; width: 100vw; height: 100dvh;
+  border: none; outline: none; border-radius: 0; touch-action: none;
+}
+.map-sec.is-full { z-index: 2000; }
+body.map-locked { overflow: hidden; }
+
+.mapmove { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
+.mapmove.is-eased { transition: transform .42s cubic-bezier(.22,.61,.36,1); }
+.mapimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+
+/* --- 지명 표지 --- */
+.pin {
+  position: absolute; width: 13px; height: 13px; padding: 0;
+  margin: -6.5px 0 0 -6.5px; border-radius: 50%;
+  background: var(--paper); border: 1.5px solid var(--gold);
+  box-shadow: 0 0 0 1px rgba(32,28,20,.45), 0 1px 3px rgba(0,0,0,.5);
+  cursor: pointer; z-index: 3;
+  transform: scale(var(--inv, 1)); transform-origin: 50% 50%;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.pin:hover { background: var(--gold-pale); }
+.pin:focus-visible { outline: 2px solid var(--accent-red); outline-offset: 3px; }
+.pin.is-on {
+  background: var(--accent-red); border-color: var(--paper);
+  transform: scale(calc(var(--inv, 1) * 1.35));
+  box-shadow: 0 0 0 1px rgba(32,28,20,.5), 0 0 10px rgba(160,51,31,.75);
+}
+.mapstage.is-small .pin { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-width: 1.2px; }
+
+/* --- 라벨 (지도 위에 글로우로 얹는다. 박스 배경은 두지 아니한다) --- */
+.plabel, .alabel {
+  position: absolute; z-index: 2; pointer-events: none; white-space: nowrap;
+  color: var(--ink); text-align: center;
+  text-shadow:
+    0 0 3px var(--paper), 0 0 3px var(--paper), 0 0 6px var(--paper),
+    0 0 6px var(--paper), 0 0 11px var(--paper), 1px 1px 0 var(--paper), -1px -1px 0 var(--paper);
+}
+.plabel {
+  font-size: 12.5px; font-weight: 700; letter-spacing: .04em;
+  transform: translate(-50%, 9px) scale(var(--inv, 1)); transform-origin: 50% 0;
+  opacity: 0; transition: opacity .18s;
+}
+.plabel.is-shown { opacity: 1; }
+.plabel.is-on { color: var(--accent-red); }
+/* 판 가장자리의 지명은 가운데 정렬하면 잘리므로 안쪽으로 붙인다 */
+.plabel.at-left  { transform: translate(0, 9px) scale(var(--inv, 1)); transform-origin: 0 0; text-align: left; }
+.plabel.at-right { transform: translate(-100%, 9px) scale(var(--inv, 1)); transform-origin: 100% 0; text-align: right; }
+.alabel {
+  font-size: 15px; letter-spacing: .32em; color: var(--ink-sub); font-weight: 700;
+  transform: translate(-50%, -50%) scale(var(--inv, 1));
+}
+.alabel.is-outer { font-style: italic; font-weight: 400; color: var(--ink-soft); letter-spacing: .22em; }
+.mapstage.is-small .alabel { display: none; }
+
+/* --- 조작 단추 --- */
+.mapctl { position: absolute; right: 10px; bottom: 10px; z-index: 10; display: flex; gap: 6px; }
+.mapctl button {
+  width: 34px; height: 34px; padding: 0; border-radius: var(--radius);
+  background: rgba(44,40,31,.78); color: var(--navy-text);
+  border: 1px solid var(--gold); font-size: 15px; line-height: 1; cursor: pointer;
+}
+.mapctl button:hover { background: var(--navy); }
+.mapctl button:focus-visible { outline: 2px solid var(--gold-pale); outline-offset: 2px; }
+.mapstage.is-small .mapctl .ctl-zoom { display: none; }
+
+.maphint {
+  position: absolute; left: 12px; bottom: 14px; z-index: 10;
+  font-size: 12px; letter-spacing: .08em; color: var(--navy-muted);
+  background: rgba(44,40,31,.72); border: 1px solid var(--navy-line);
+  border-radius: var(--radius); padding: 5px 11px; pointer-events: none;
+  transition: opacity .4s;
+}
+.maphint.is-off { opacity: 0; }
+
+.mapdbg {
+  position: absolute; left: 12px; top: 12px; z-index: 11;
+  font-size: 12.5px; color: var(--navy-text); background: rgba(44,40,31,.9);
+  border: 1px solid var(--accent-red); border-radius: var(--radius); padding: 6px 10px;
+}
+.dbgdot { position: absolute; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%; background: var(--accent-red); z-index: 9; pointer-events: none; }
+
+/* --- 지역 기록 카드 --- */
+.plot {
+  margin-top: 22px; background: var(--paper-alt);
+  border: 1px solid var(--border-soft); border-left: 3px solid var(--gold);
+  border-radius: var(--radius-box); padding: 20px 24px 22px;
+}
+.plot-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.plot-reg { font-size: 12px; letter-spacing: .2em; color: var(--gold); font-weight: 700; }
+.plot-kind { font-size: 11.5px; letter-spacing: .14em; color: var(--ink-muted); }
+.plot-stat {
+  font-size: 11px; letter-spacing: .14em; color: var(--accent-red); font-weight: 700;
+  border: 1px solid var(--accent-red); border-radius: 2px; padding: 1px 7px;
+}
+.plot h3 { margin: 0 0 8px; padding: 0; border: none; font-size: 21px; letter-spacing: .1em; color: var(--ink); }
+.plot-when { font-size: 13px; color: var(--ink-muted); letter-spacing: .06em; margin: 0 0 14px; }
+.plot-body { margin: 0; font-size: var(--fs-small); line-height: 1.95; color: var(--ink-sub); }
+.plot-go { display: inline-block; margin-top: 16px; font-size: 13.5px; color: var(--gold); }
+.plot-empty { margin: 0; font-size: var(--fs-small); color: var(--ink-muted); line-height: 1.9; }
+
+/* 전체 화면일 때 — 기록을 지도 위에 띄운다 */
+.plot.is-float {
+  position: fixed; z-index: 2010; margin: 0;
+  left: 20px; top: 20px; width: 360px; max-height: calc(100dvh - 40px); overflow-y: auto;
+  box-shadow: 0 14px 40px rgba(0,0,0,.45);
+}
+@media (max-width: 760px) {
+  .plot.is-float {
+    left: 0; right: 0; top: auto; bottom: 0; width: auto;
+    max-height: 42dvh; border-radius: var(--radius-box) var(--radius-box) 0 0;
+    padding: 16px 18px 18px;
+  }
+  .plot.is-float h3 { font-size: 19px; }
+}
+.plot-x {
+  position: absolute; right: 10px; top: 10px; width: 30px; height: 30px; padding: 0;
+  background: none; border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--ink-muted); font-size: 15px; cursor: pointer; display: none;
+}
+.plot.is-float .plot-x { display: block; }
+
+/* --- 일람 표 --- */
+.areahead td { background: var(--paper-deep); font-weight: 700; letter-spacing: .14em; color: var(--ink); }
+.pbtn {
+  background: none; border: none; padding: 0; font: inherit; color: var(--ink);
+  text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: var(--border); cursor: pointer;
+}
+.pbtn:hover { color: var(--accent-red); text-decoration-color: var(--accent-red); }
+tr.is-on .pbtn { color: var(--accent-red); font-weight: 700; }
+tr.is-on td { background: var(--paper-deep); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mapmove.is-eased { transition: none; }
+}
+@media print {
+  .mapctl, .maphint, .mapdbg { display: none; }
+  .mapstage { outline: none; }
+  .plabel { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<header class="gnb noprint">
+  <div class="gnb-inner">
+    <a class="gnb-brand" href="../" data-home><img class="gnb-logo" src="../assets/brand/flag.webp" alt=""><span class="gnb-candle" aria-hidden="true">🕯️</span> <span class="gnb-wordmark">추모공화국</span></a>
+    <button class="gnb-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="gnbMenu">☰</button>
+    <nav class="gnb-nav" aria-label="주 메뉴">
+      <ul class="gnb-menu" id="gnbMenu">
+        <li><a class="gnb-link" href="../" data-home><span aria-hidden="true">🏠</span> 홈</a></li>
+        <li><a class="gnb-link" href="../about/"><span aria-hidden="true">🏛️</span> 소개</a></li>
+        <li><a class="gnb-link" href="../president/"><span class="ico-ribbon" role="img" aria-label="노란 리본"></span> 대통령</a></li>
+        <li><a class="gnb-link" href="../government/"><span aria-hidden="true">🏢</span> 정부조직</a></li>
+        <li><a class="gnb-link" href="../laws/" data-match="../cases/ ../chumo-constitution/ ../chumo-criminal-act/ ../chumo-correction-act/"><span aria-hidden="true">📜</span> 법률</a></li>
+        <li><a class="gnb-link" href="../memorials/"><span aria-hidden="true">🕯️</span> 추모건</a></li>
+        <li><a class="gnb-link" href="../officials/"><span aria-hidden="true">👥</span> 국무위원</a></li>
+        <li><a class="gnb-link" href="../hall/"><span aria-hidden="true">🏅</span> 명예의전당</a></li>
+        <li><a class="gnb-link" href="../history/"><span aria-hidden="true">📖</span> 역사</a></li>
+        <li><a class="gnb-link" href="../map/"><span aria-hidden="true">🗺️</span> 지도</a></li>
+        <li><a class="gnb-link" href="../anthem/"><span aria-hidden="true">🎵</span> 국가</a></li>
+        <li><a class="gnb-link" href="../mourners/"><span aria-hidden="true">📋</span> 추모꾼</a></li>
+      </ul>
+    <form class="gnb-find" role="search" action="../mourners/" method="get">
+      <input class="gnb-find-in" id="gnbFind" type="search" name="n" autocomplete="off"
+             placeholder="추모꾼 조회" aria-label="추모꾼 이름으로 조회">
+      <button class="gnb-find-go" type="submit" aria-label="조회"><span aria-hidden="true">🔎</span></button>
+      <ul class="gnb-find-list" id="gnbFindList" role="listbox" aria-label="조회 결과" hidden></ul>
+    </form>
+    </nav>
+  </div>
+</header>
+
+<main class="paper">
+<div class="watermark" aria-hidden="true"><img class="watermark-img" src="../assets/brand/flag.webp" alt=""><span class="watermark-fallback">🗺️</span></div>
+
+<header class="cover cover--page cover--long">
+  <figure class="natflag">
+  <img class="natflag-img" src="../assets/brand/flag.webp" alt="추모공화국 국기">
+  <span class="natflag-fallback" aria-hidden="true">🗺️</span>
+</figure>
+  <div class="org">추 모 공 화 국</div>
+  <h1>국 가 전 도</h1>
+  <div class="sub">MAP OF THE MEMORIAL REPUBLIC</div>
+</header>
+
+<section class="preamble" aria-label="범례">
+  <div class="ptitle">凡 例</div>
+  이 지도에는 <b>사건이 있었던 자리만 지명으로 올린다.</b>
+  산이 있어도 일이 없었으면 이름을 붙이지 아니하였고, 땅이 비어 있어도 일이 있었으면 이름을 적었다.
+  그래서 <b>지도의 빈 곳은 아직 아무 일도 일어나지 않은 곳이다.</b>
+  <table class="orgtable facts" style="margin-top:20px">
+    <tbody>
+      <tr><th scope="row">실선</th><td>확정된 국경</td></tr>
+      <tr><th scope="row">점선</th><td>편입이 유보된 경계. 북항 해역이 유일하다</td></tr>
+      <tr><th scope="row">영외</th><td>국경 밖이나 국가의 기록이 미치는 곳</td></tr>
+    </tbody>
+  </table>
+  실제 인물의 별세와 재난은 이 지도에 지명으로 오르지 아니한다.
+  그 기록은 땅이 아니라 <a href="../history/#h5">역사서 제5편</a>에 둔다.
+</section>
+
+<section class="map-sec" id="mapSec" aria-labelledby="h-map">
+<h2 id="h-map">전 도</h2>
+
+<div class="mapwrap">
+  <div class="mapstage" id="mapStage">
+    <div class="mapmove" id="mapMove">
+      <img class="mapimg" src="../assets/map/chumo-map.webp"
+           alt="추모공화국 국가 전도 — 가운데 수도와 성채, 왼쪽 숲과 국경 성벽, 오른쪽 바다와 부두, 위쪽 산맥을 담은 고지도풍 그림"
+           width="1536" height="1024" draggable="false">
+      <div id="mapMarks"></div>
+    </div>
+    <div class="maphint" id="mapHint">지명을 누르면 기록이 열린다</div>
+    <div class="mapctl noprint">
+      <button type="button" class="ctl-zoom" id="btnIn"  aria-label="확대">＋</button>
+      <button type="button" class="ctl-zoom" id="btnOut" aria-label="축소">－</button>
+      <button type="button" class="ctl-zoom" id="btnRst" aria-label="처음 배율로">⟲</button>
+      <button type="button" id="btnFull" aria-label="전체 화면">⛶</button>
+    </div>
+  </div>
+</div>
+
+<article class="plot" id="plot" aria-live="polite">
+  <button type="button" class="plot-x" id="plotX" aria-label="닫기">✕</button>
+  <p class="plot-empty">지도의 지명을 누르거나 아래 일람에서 고르면 그 땅의 기록이 여기에 펼쳐진다.</p>
+</article>
+</section>
+
+<section aria-labelledby="h-list">
+<h2 id="h-list">행 정 구 역 일 람</h2>
+<table class="orgtable">
+  <thead><tr><th style="width:34%;">지명</th><th>기원</th></tr></thead>
+  <tbody id="listBody"></tbody>
+</table>
+</section>
+
+<footer class="footer">
+  대한추모협회 공식 인증 · 추모공화국 정부 발행<br>
+  본 지도는 추모공화국 공공기록물 관리법 제14조에 의거 영구 보존되며, 국경이 바뀌면 다시 그린다.
+  <div class="fmotto">오직 추모</div>
+</footer>
+
+</main>
+
+<nav class="chapnav noprint" id="chapnav" aria-label="편 목차"></nav>
+
+<script src="../assets/nav.js" defer></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ======================================================================
+     자료 — 국경이 바뀌면 이 세 표만 고친다
+     ====================================================================== */
+
+  var REGIONS = [
+    { id: 'capital', name: '추모특별시',        kind: '수도' },
+    { id: 'forest',  name: '늑구숲 특별자치령',  kind: '특별자치령 · 구 영토' },
+    { id: 'harbor',  name: '북항 특별자치해역',  kind: '특별자치해역' },
+    { id: 'isle',    name: '교정도',            kind: '국가 직할 섬' },
+    { id: 'north',   name: '북부 산악',          kind: '본토' },
+    { id: 'outer',   name: '영외',              kind: '국경 밖' }
+  ];
+
+  var PLACES = [
+    /* ── 추모특별시 ───────────────────────────────────────────────── */
+    { id: 'palace', reg: 'capital', name: '촛불궁', x: 50, y: 44,
+      when: '2024년 1월 27일 건국과 함께',
+      body: '국가원수의 거처이며 추모국무회의가 열리는 곳이다. 방장이 곧 국가원수가 되는 이 나라에서 방을 연 사람이 그대로 나라를 맡았으므로, 궁은 건국과 같은 날에 생겼다. 국정의 방향은 대개 이 안에서 한 줄로 정해졌고, 국가 표어 「오직 추모」 역시 긴 회의 끝이 아니라 여기서 툭 던져진 네 글자였다. <b>첨탑의 불은 꺼진 적이 없으며, 큰 추모건이 들어오는 날에는 더 밝아져 북항에서도 보인다는 말이 있으나 확인한 사람은 없다.</b>',
+      ch: '../history/#h1', chLabel: '제1편 · 추모방의 시작과 국가의 형성' },
+
+    { id: 'podium', reg: 'capital', name: '장원대', x: 53.5, y: 56,
+      when: '2025년 10월 국가추모고시 시행과 함께',
+      body: '국가추모고시에 수석으로 급제한 자가 오르는 단이다. 고시는 2025년 10월부터 분기마다 치러 다섯 차례가 있었으나 <b>다섯 번 모두 급제자를 내지 못하였다.</b> 헌법 제13조의2 제3항이 「급제자가 없는 회차에는 급제자를 두지 아니한다. 정원을 채우기 위하여 기준을 낮추지 아니한다」고 적은 까닭이다. 그리하여 이 단에는 아직 아무도 선 적이 없다. <b>그럼에도 빈 채로 매일 쓸고 닦는다.</b>',
+      ch: '../history/#h1', chLabel: '제1편 · 국가추모고시 시행' },
+
+    { id: 'exam', reg: 'capital', name: '국가추모고시 고사장', x: 45, y: 60,
+      when: '2025년 10월부터 분기마다',
+      body: '등급의 제한 없이 누구나 치를 수 있는 시험장이다. 입국한 당일에 응시하여도 무방하며 교정 이력 또한 결격 사유가 되지 아니한다. 실적은 시간이 있어야 쌓이는데 시간이 없는 사람도 있다는 것이 이 자리의 취지다. 다만 응시자들은 <b>번번이 제3과 조문 작법에서 걸렸다.</b> 유일하게 답이 정해져 있지 아니한 과목이다. <b>창문이 장원대 쪽으로 나 있어, 답안을 쓰다 고개를 들면 아직 아무도 서지 아니한 단이 보인다.</b>',
+      ch: '../history/#h1', chLabel: '제1편 · 국가추모고시 시행' },
+
+    { id: 'tower', reg: 'capital', name: '대기의 탑', x: 61, y: 51,
+      when: '2026년 8월 31일 이후 공석',
+      body: '추모대기부 청사다. 장관 인선이 거론되었으나 끝내 결론에 이르지 못하여 자리가 비어 있다. 직위의 남발은 정부의 권위를 훼손한다는 헌법 제20조 제3항이 인사를 서두르지 아니한 근거로 거론된다. <b>탑은 불이 꺼진 채로 서 있으며, 불이 켜지는 날 장관이 정해진다고 한다.</b>',
+      ch: '../history/#h6', chLabel: '제6편 · 현 체제의 성립' },
+
+    /* ── 늑구숲 특별자치령 ───────────────────────────────────────── */
+    { id: 'wolfwood', reg: 'forest', name: '늑구숲', x: 16, y: 46,
+      when: '2026년 4월 21일 편입',
+      body: '늑구 시대의 옛 영토다. 하나의 대상을 중심으로 방이 운영되던 시기의 땅이며, 그 시대는 <b>열흘 만에 끝났다.</b> 방에서는 이를 「최단기 퇴물」이라 불렀다. <b>하나의 대상에 기대는 운영은 오래가지 못한다</b>는 것이 이 숲이 남긴 교훈이며, 뒷날 부캉이 팬클럽 전환을 재가할 때도 이 전례가 함께 거론되었다. <b>가장자리에서 아직 늑대 울음이 들린다는 말이 있다.</b>',
+      ch: '../history/#h2', chLabel: '제2편 · 늑구 시대와 쿠데타' },
+
+    { id: 'pen', reg: 'forest', name: '맹수사육원 터', x: 30, y: 58,
+      when: '2026년 4월 21일 직책 수여식',
+      body: '늑구 시대에 직책이 한꺼번에 내려진 자리다. 햄지·딸기·어흥·애국좌수·추모합니도가 이날 직책을 받았고, 받은 이들은 프로필을 늑대로 바꾸었다. 이 나라에서 <b>형상이 자리를 따라 바뀐 첫 기록</b>이다. <b>우리는 비어 있으나 문은 열어 둔다.</b>',
+      ch: '../history/#h2', chLabel: '제2편 · 늑구 시대와 쿠데타' },
+
+    /* ── 북항 특별자치해역 ───────────────────────────────────────── */
+    { id: 'horse', reg: 'harbor', name: '목마 부두', x: 77, y: 46,
+      when: '2026년 9월 28일',
+      body: '인수합병 작전이 상륙한 지점이다. 문을 부수고 들어간 것이 아니라 <b>이미 안에 들어가 있던 자가 문을 열었다.</b> 명령이 떨어진 지 <b>2분</b> 만에 완료 보고가 올라왔고, 그날 이후 추모공화국 인구는 건국 이래 처음으로 100명을 넘어섰다. 작전을 단독으로 수행한 부카니스탄은 이틀 뒤 초대 추모안보실장에 올랐다. <b>부두에 선 목마는 그 순서를 기념하여 세운 것이라 전한다.</b>',
+      ch: '../history/#h6', chLabel: '제6편 · 「북항 상어 현황 공유방」 인수합병' },
+
+    { id: 'letter', reg: 'harbor', name: '편지의 수변', x: 70, y: 40,
+      when: '2026년 9월 29일',
+      body: '대통령이 드론으로 마지막 편지를 올리겠다고 예고한 자리다. 그러나 그날 <b>배웅만 남고 당사자는 떠나지 아니하였다.</b> 선박과 워터펌프로 외해를 유도하였으나 끝내 나가지 아니하였고, 오후에는 <b>「부캉이의 거주 자유를 보장하라」</b>는 구호와 프리부캉운동이 방에서 나왔다. 보내려던 자리가 그대로 머물기를 비는 자리가 된 셈이다.',
+      ch: '../history/#h6', chLabel: '제6편 · 부캉이 방생 실패' },
+
+    { id: 'bukang', reg: 'harbor', name: '부캉이 해역', x: 81.5, y: 59.5, status: '편입 유보',
+      when: '2026년 9월 28일 편입 · 10월 2일 2차 방생 예정',
+      body: '이 지도에서 <b>국경이 점선으로 그려진 유일한 구역</b>이다. 팬클럽으로 전환하며 편입하였으나, 전환을 재가할 때 대통령이 단 조건 — 「추모하게 되면 즉시 추모방으로 전환시킨다」 — 은 아직 발동되지 아니하였다. <b>애도할 준비는 하되 아직 애도하지는 않는다 — 점선은 그 판단의 모양이다.</b> 9월 29일의 1차 방생이 실패한 뒤 <b>10월 2일 그물로 2차 시도</b>가 예정되어 있다.',
+      ch: '../history/#h6', chLabel: '제6편 · 부캉이 2차 방생' },
+
+    /* ── 교정도 ──────────────────────────────────────────────────── */
+    { id: 'jail', reg: 'isle', name: '특별추모교정실', x: 75, y: 79,
+      when: '2026년 4월 23일 개설',
+      body: '쿠데타 시도가 진압된 날에 문을 연 시설이다. 교정에는 <b>변호인과 고문감시관이 동석</b>하며, 변론의 기회를 생략한 처분은 인정되지 아니한다. 열나흘 동안 운영되었고, <b>입소자가 없는 날에는 열지 아니하였다.</b> 가둘 사람이 없으면 문을 닫는 감옥인 셈이다.',
+      ch: '../history/#h3', chLabel: '제3편 · 사법 체계의 확립' },
+
+    { id: 'hill', reg: 'isle', name: '새가 내려온 언덕', x: 77, y: 68,
+      when: '2026년 8월 31일',
+      body: '베네수호자가 제2대 추모교정국장에 취임한 자리다. 교육부장관 시절까지 <b>앵무새</b>였던 그의 형상이 이날 <b>토끼</b>로 바뀌었고, 앵무새는 지워지지 아니한 채 그 곁에 내려앉았다. 방에서는 이를 <b>「새가 내려오고 토끼가 섰다」</b>고 불렀다. 이름을 바꾸면 앞의 이름이 사라지는 이 나라에서 <b>형상만은 겹쳐 둘 수 있다는 것이 여기서 시작되었다.</b>',
+      ch: '../history/#h6', chLabel: '제6편 · 교정 대상자에서 국장으로' },
+
+    { id: 'stele', reg: 'isle', name: '과제의 비석', x: 81.5, y: 76,
+      when: '2025년 12월 10일',
+      body: '과제형 교정이 처음 쓰인 자리다. 하아언조비에게 5행시가 과제로 부과되었고, 벌 대신 숙제를 내는 방식이 이때 자리를 잡았다. 처분이 곧 처벌은 아니라는 원칙이 돌에 새겨진 셈이다. <b>비석의 뒷면은 비어 있는데, 다음 과제를 새기려고 남겨 둔 것이라 전한다.</b>',
+      ch: '../history/#h1', chLabel: '제1편 · 하아언조비 — 과제형 교정의 시작' },
+
+    { id: 'bridge', reg: 'isle', name: '귀환의 다리', x: 64, y: 72,
+      when: '교정법 제2조 제3항',
+      body: '교정의 목적이 격리가 아니라 복귀임을 적은 조문이 이 다리의 근거다. 늑구수호자가 이 다리를 건너 섬을 나갔고, <b>넉 달 뒤 섬의 주인이 되어 돌아왔다.</b> 교정을 받은 자가 교정을 집행하는 자리에 오른 유일한 사례이며, 그 길이 이 다리 하나로 이어져 있다. <b>섬 쪽에서만 건널 수 있다고 전한다.</b>',
+      ch: '../history/#h7', chLabel: '부록 · 교정 처분 일람' },
+
+    /* ── 북부 산악 ───────────────────────────────────────────────── */
+    { id: 'pass', reg: 'north', name: '반란의 고개', x: 54.5, y: 25,
+      when: '2026년 4월 20일 · 23일',
+      body: '건국 이래 <b>유일한 정권 탈취 시도</b>가 있었던 자리다. 파면이 선언되었으나 어느 질문에도 답은 돌아오지 아니하였고, 사흘 뒤 체포영장이 발부되며 시도는 끝났다. 이 일을 겪은 뒤에야 탄핵 절차가 문서로 적혔다 — <b>이 나라의 제도는 모두 사건 뒤에 왔다.</b> <b>쓰러진 깃발은 세우지 아니하고 그대로 누워 있다.</b>',
+      ch: '../history/#h2', chLabel: '제2편 · 늑구 시대와 쿠데타' },
+
+    { id: 'obs', reg: 'north', name: '추모기상청 관측소', x: 47.5, y: 12.5,
+      when: '기상캐스터 시절부터',
+      body: '추모기상청장 어흥이 아침마다 브리핑을 올리는 자리다. 기상캐스터에서 생태관측소장을 거쳐 청장에 이른 그의 이력이 이 관측소에 그대로 쌓여 있다. 그가 겪은 슬럼프에서 <b>휴가 제도</b>가 나왔다. 북항 편입안을 처음 올린 것도 그였는데, 방장이 오기 전에 스스로 지웠다 — <b>제안자가 지운 안건이 그대로 국책이 된 유일한 기록이다.</b>',
+      ch: '../history/#h4', chLabel: '제4편 · 제도의 정비' },
+
+    /* ── 영외 ────────────────────────────────────────────────────── */
+    { id: 'exile', reg: 'outer', name: '안개 너머 망명지', x: 11.5, y: 15,
+      when: '위치 미상',
+      body: '전임 추모교정국장이자 늑구포획대장이던 애국좌수가 떠난 곳이다. 기록은 <b>배가 안개로 들어가는 것까지만</b> 남아 있고, 그 너머는 적히지 아니하였다. 그가 비운 자리는 뒷날 <b>그가 판결한 사람이 이어받았다.</b> 가둔 자의 자리를 갇혔던 자가 물려받은 셈이다.',
+      ch: '../history/#h6', chLabel: '제6편 · 현 체제의 성립' },
+
+    { id: 'waste', reg: 'outer', name: '추방자의 황야', x: 12, y: 82,
+      when: '2026년 1월 이후 네 차례',
+      body: '닭모이형을 받은 자들이 나간 땅이다. 건국 이래 네 사람이 이 길을 지났으며, 재입장을 시도하면 즉시 차단된다. 국경 밖이나 국가의 기록은 여기까지 미친다. <b>이곳은 묘역이 아니다 — 나간 자들이 살아가는 땅이다.</b>',
+      ch: '../cases/', chLabel: '판례집 · 닭모이형 선고' },
+
+    { id: 'watch', reg: 'outer', name: '방첩 감시탑', x: 19, y: 67,
+      when: '2026년 8월 · 9월 15일 상시화',
+      body: '국경 성벽 위에서 <b>안이 아니라 바깥을 보는</b> 탑이다. 프로필 색으로 드나든 자를 가리고, 나간 자의 동향을 살핀다. 9월 15일 이후 상시 운용으로 바뀌었다. <b>나간 뒤에도 이력은 남는다</b>는 것이 이 탑의 전제이며, 그래서 탑은 성벽 안쪽을 등지고 서 있다.',
+      ch: '../history/#h6', chLabel: '제6편 · 현 체제의 성립' },
+
+    { id: 'fake', reg: 'outer', name: '사칭령', x: 87, y: 12,
+      when: '2025년 3월 19일 배격 선언',
+      body: '유사추모업체의 땅이다. 헌법 제5조 제1항이 이들을 배격한다고 적은 날 이 자리는 영외로 밀려났다. 뒷날 무현사칭사건에서 특별감찰관이 지명되는 계기가 되기도 하였다. <b>같은 첨탑을 세워 두었으나 그림자가 반대로 진다고 전한다.</b>',
+      ch: '../history/#h1', chLabel: '제1편 · 유사추모업체 배격' },
+
+    { id: 'silence', reg: 'outer', name: '침묵의 아홉 달', x: 2.8, y: 34,
+      when: '2024년 1월 27일 ~ 10월 22일 · 269일',
+      body: '건국일과 현존하는 첫 기록 사이의 <b>269일</b>이다. 방은 있었으나 남은 말이 없어, 이 자리는 지도에서 물감이 칠해지지 아니한 채로 둔다. 국가가 선포로 생긴 것이 아니라 기억을 되풀이하는 동안 쌓여 만들어졌다는 것을 이 공백이 보여준다. 지도의 이 가장자리에는 한 줄만 적혀 있다 — <b>「여기서부터 기록 없음.」</b>',
+      ch: '../history/#h1', chLabel: '제1편 · 추모방의 시작' }
+  ];
+
+  var AREA_LABELS = [
+    { name: '추모특별시',       x: 50,   y: 65.5 },
+    { name: '늑구숲 특별자치령', x: 22,   y: 31 },
+    { name: '북항 특별자치해역', x: 86,   y: 41 },
+    { name: '교정도',           x: 76,   y: 90 },
+    { name: '사칭령',           x: 88,   y: 24,  outer: true },
+    { name: '추방자의 황야',     x: 14,   y: 91,  outer: true },
+    { name: '망명지',           x: 12,   y: 26,  outer: true }
+  ];
+
+  /* ======================================================================
+     그리기
+     ====================================================================== */
+
+  var stage = document.getElementById('mapStage');
+  var move  = document.getElementById('mapMove');
+  var marks = document.getElementById('mapMarks');
+  var plot  = document.getElementById('plot');
+  var plotX = document.getElementById('plotX');
+  var hint  = document.getElementById('mapHint');
+  var listBody = document.getElementById('listBody');
+  var mapSec = document.getElementById('mapSec');
+  if (!stage || !move) return;
+
+  var REG = {};
+  REGIONS.forEach(function (r) { REG[r.id] = r; });
+
+  var MIN = 1, MAX = 5;
+  var sc = 1, tx = 0, ty = 0;
+  var cur = null, full = false;
+  var slim = false;                      /* 좁은 화면 (지도 폭 640px 미만) */
+  var debug = /[?&]debug=1/.test(location.search);
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* --- 표지와 라벨 --- */
+  var pinEl = {}, labEl = {};
+  PLACES.forEach(function (p) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pin';
+    b.style.left = p.x + '%';
+    b.style.top  = p.y + '%';
+    b.setAttribute('aria-label', p.name);
+    b.dataset.id = p.id;
+    marks.appendChild(b);
+    pinEl[p.id] = b;
+
+    var l = document.createElement('span');
+    l.className = 'plabel';
+    l.style.left = p.x + '%';
+    l.style.top  = p.y + '%';
+    l.textContent = p.name;
+    if (p.x < 8) l.classList.add('at-left');
+    else if (p.x > 92) l.classList.add('at-right');
+    marks.appendChild(l);
+    labEl[p.id] = l;
+  });
+
+  var areaEl = [];
+  AREA_LABELS.forEach(function (a) {
+    var l = document.createElement('span');
+    l.className = 'alabel' + (a.outer ? ' is-outer' : '');
+    l.style.left = a.x + '%';
+    l.style.top  = a.y + '%';
+    l.textContent = a.name;
+    l.dataset.outer = a.outer ? '1' : '';
+    marks.appendChild(l);
+    areaEl.push(l);
+  });
+
+  /* --- 일람 표 --- */
+  (function buildList() {
+    var html = '';
+    REGIONS.forEach(function (r) {
+      var rows = PLACES.filter(function (p) { return p.reg === r.id; });
+      if (!rows.length) return;
+      html += '<tr class="areahead"><td colspan="2">' + esc(r.name) + ' <span style="font-weight:400;letter-spacing:.1em;color:var(--ink-muted);font-size:13px">· ' + esc(r.kind) + '</span></td></tr>';
+      rows.forEach(function (p) {
+        html += '<tr data-row="' + p.id + '"><td><button type="button" class="pbtn" data-go="' + p.id + '">' + esc(p.name) + '</button></td>' +
+                '<td>' + esc(p.when) + '</td></tr>';
+      });
+    });
+    listBody.innerHTML = html;
+  }());
+
+  /* ======================================================================
+     배율과 이동
+     ====================================================================== */
+
+  /* 전체 화면에서는 3:2 그림을 판에 꽉 채운다(cover). 세로 폰에서 가로 띠가 되지 아니하도록 */
+  function baseFit() {
+    if (!full) return { w: stage.clientWidth, h: stage.clientHeight, ox: 0, oy: 0 };
+    var W = stage.clientWidth, H = stage.clientHeight, R = 1536 / 1024;
+    var w, h;
+    if (W / H > R) { w = W; h = W / R; } else { h = H; w = H * R; }
+    return { w: w, h: h, ox: (W - w) / 2, oy: (H - h) / 2 };
+  }
+
+  function layout() {
+    var f = baseFit();
+    move.style.width  = f.w + 'px';
+    move.style.height = f.h + 'px';
+    move.style.left = '0'; move.style.top = '0';
+    return f;
+  }
+
+  /* 좁은 화면의 전체 화면에서는 기록 카드가 아래를 덮으므로,
+     그 높이만큼은 지도가 비어도 무방하다 — 어차피 카드에 가려 보이지 아니한다 */
+  function padBottom() {
+    if (!(full && slim) || !cur) return 0;
+    return Math.round(plot.getBoundingClientRect().height);
+  }
+
+  function clampPan() {
+    var f = baseFit();
+    var W = stage.clientWidth, H = stage.clientHeight;
+    var w = f.w * sc, h = f.h * sc, pad = padBottom();
+    /* 판 밖으로 빠져 빈 자리가 드러나지 아니하도록 가둔다 */
+    if (w <= W) tx = (W - w) / 2; else tx = Math.min(0, Math.max(W - w, tx));
+    if (h <= H - pad) ty = (H - pad - h) / 2;
+    else ty = Math.min(0, Math.max(H - pad - h, ty));
+  }
+
+  function apply(eased) {
+    clampPan();
+    move.classList.toggle('is-eased', !!eased && !reduce);
+    move.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + sc + ')';
+    move.style.setProperty('--inv', (1 / sc).toFixed(4));
+    stage.classList.toggle('is-zoomed', sc > 1.001 || full);
+    paintLabels();
+  }
+
+  /* 라벨 표시 규칙 — 배율이 높거나 전체 화면에서 판이 넓으면 전부, 아니면 선택된 것만 */
+  function paintLabels() {
+    var wide = full && stage.clientWidth >= 1000;
+    var all = sc >= 1.7 || wide;
+    PLACES.forEach(function (p) {
+      var on = all || p.id === cur;
+      labEl[p.id].classList.toggle('is-shown', on);
+      labEl[p.id].classList.toggle('is-on', p.id === cur);
+    });
+    /* 지명이 다 보일 때는 영외 권역 라벨을 감춘다 — 같은 이름이 겹치지 아니하도록 */
+    areaEl.forEach(function (l) {
+      if (l.dataset.outer) l.style.display = all ? 'none' : '';
+    });
+  }
+
+  function zoomAt(ns, cx, cy, eased) {
+    ns = Math.min(MAX, Math.max(MIN, ns));
+    var r = ns / sc;
+    tx = cx - (cx - tx) * r;
+    ty = cy - (cy - ty) * r;
+    sc = ns;
+    apply(eased);
+  }
+
+  /* 그림 기준 백분율 지점을 판의 특정 높이에 오도록 옮긴다 */
+  function focusOn(px, py, ns, vy) {
+    var f = baseFit();
+    ns = Math.min(MAX, Math.max(MIN, ns));
+    sc = ns;
+    tx = stage.clientWidth / 2 - (px / 100) * f.w * sc;
+    ty = stage.clientHeight * (vy == null ? 0.5 : vy) - (py / 100) * f.h * sc;
+    apply(true);
+  }
+
+  function resize() { layout(); apply(false); sizeCheck(); }
+
+  function sizeCheck() {
+    slim = stage.clientWidth < 640;
+    stage.classList.toggle('is-small', slim);
+    paintLabels();
+  }
+
+  /* ======================================================================
+     기록 카드
+     ====================================================================== */
+
+  function render(p) {
+    if (!p) {
+      plot.innerHTML = '<button type="button" class="plot-x" id="plotX" aria-label="닫기">✕</button>' +
+        '<p class="plot-empty">지도의 지명을 누르거나 아래 일람에서 고르면 그 땅의 기록이 여기에 펼쳐진다.</p>';
+      bindX();
+      return;
+    }
+    var r = REG[p.reg] || { name: '', kind: '' };
+    plot.innerHTML =
+      '<button type="button" class="plot-x" id="plotX" aria-label="닫기">✕</button>' +
+      '<div class="plot-top"><span class="plot-reg">' + esc(r.name) + '</span>' +
+      '<span class="plot-kind">' + esc(r.kind) + '</span>' +
+      (p.status ? '<span class="plot-stat">' + esc(p.status) + '</span>' : '') + '</div>' +
+      '<h3>' + esc(p.name) + '</h3>' +
+      '<p class="plot-when">' + esc(p.when) + '</p>' +
+      '<p class="plot-body">' + p.body + '</p>' +
+      '<a class="plot-go" href="' + p.ch + '">역사서에서 보기 · ' + esc(p.chLabel) + ' &rarr;</a>';
+    bindX();
+  }
+
+  function bindX() {
+    var x = plot.querySelector('.plot-x');
+    if (x) x.addEventListener('click', function () { select(null); });
+  }
+
+  function select(id, opt) {
+    opt = opt || {};
+    cur = id;
+    PLACES.forEach(function (p) { pinEl[p.id].classList.toggle('is-on', p.id === id); });
+    [].forEach.call(listBody.querySelectorAll('tr[data-row]'), function (tr) {
+      tr.classList.toggle('is-on', tr.dataset.row === id);
+    });
+    var p = id ? PLACES.filter(function (q) { return q.id === id; })[0] : null;
+    render(p);
+    paintLabels();
+
+    if (p) {
+      try { history.replaceState(null, '', '#' + id); } catch (e) {}
+    } else if (location.hash) {
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    }
+
+    if (p && opt.zoom) {
+      /* 전체 화면 모바일에서는 카드에 가리지 아니하도록, 카드 위 공간의 가운데쯤에 둔다 */
+      var vy = 0.5;
+      if (full && slim) {
+        var H = stage.clientHeight;
+        vy = Math.max(0.2, Math.min(0.42, (H - padBottom()) * 0.45 / H));
+      }
+      focusOn(p.x, p.y, Math.max(sc, opt.zoom), vy);
+    }
+    if (p && opt.scroll && !full) {
+      try { stage.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); }
+      catch (e) { stage.scrollIntoView(); }
+    }
+  }
+
+  /* ======================================================================
+     조작
+     ====================================================================== */
+
+  function hideHint() { if (hint) hint.classList.add('is-off'); }
+
+  var down = null, moved = false, pts = {}, pinchD = 0, pinchS = 1;
+
+  stage.addEventListener('pointerdown', function (e) {
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var n = Object.keys(pts).length;
+    if (n === 2) {
+      var k = Object.keys(pts), a = pts[k[0]], b = pts[k[1]];
+      pinchD = Math.hypot(a.x - b.x, a.y - b.y);
+      pinchS = sc;
+      down = null;
+      return;
+    }
+    if (n > 2) return;
+    if (!(sc > 1.001 || full)) return;        /* 확대 전에는 끌지 아니한다 */
+    down = { x: e.clientX, y: e.clientY, tx: tx, ty: ty };
+    moved = false;
+    stage.classList.add('is-drag');
+    try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+
+  stage.addEventListener('pointermove', function (e) {
+    if (pts[e.pointerId]) { pts[e.pointerId].x = e.clientX; pts[e.pointerId].y = e.clientY; }
+    var k = Object.keys(pts);
+    if (k.length === 2 && pinchD) {
+      var a = pts[k[0]], b = pts[k[1]];
+      var d = Math.hypot(a.x - b.x, a.y - b.y);
+      var rc = stage.getBoundingClientRect();
+      zoomAt(pinchS * (d / pinchD), (a.x + b.x) / 2 - rc.left, (a.y + b.y) / 2 - rc.top, false);
+      moved = true;
+      e.preventDefault();
+      return;
+    }
+    if (!down) return;
+    var dx = e.clientX - down.x, dy = e.clientY - down.y;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+    tx = down.tx + dx; ty = down.ty + dy;
+    apply(false);
+    e.preventDefault();
+  });
+
+  function up(e) {
+    delete pts[e.pointerId];
+    if (Object.keys(pts).length < 2) pinchD = 0;
+    down = null;
+    stage.classList.remove('is-drag');
+  }
+  stage.addEventListener('pointerup', up);
+  stage.addEventListener('pointercancel', up);
+
+  stage.addEventListener('click', function (e) {
+    if (moved) { moved = false; return; }      /* 끌고 난 뒤의 클릭은 흘린다 */
+    hideHint();
+
+    if (debug) {
+      var f0 = baseFit(), rc0 = stage.getBoundingClientRect();
+      var px = ((e.clientX - rc0.left - tx) / (f0.w * sc)) * 100;
+      var py = ((e.clientY - rc0.top  - ty) / (f0.h * sc)) * 100;
+      var txt = px.toFixed(1) + ', ' + py.toFixed(1);
+      var box = document.getElementById('dbgBox');
+      if (!box) { box = document.createElement('div'); box.className = 'mapdbg'; box.id = 'dbgBox'; stage.appendChild(box); }
+      box.textContent = 'x: ' + txt;
+      try { navigator.clipboard.writeText(txt); } catch (err) {}
+      var dot = document.createElement('i');
+      dot.className = 'dbgdot';
+      dot.style.left = px + '%'; dot.style.top = py + '%';
+      marks.appendChild(dot);
+      return;
+    }
+
+    var pin = e.target.closest ? e.target.closest('.pin') : null;
+    if (pin) { select(pin.dataset.id, { zoom: (full && slim) ? 1.6 : 0 }); return; }
+    /* 좁은 화면에서 지도의 빈 곳을 누르면 바로 전체 화면으로 */
+    if (slim && !full) setFull(true);
+  });
+
+  /* 확대된 판 안에서 표지에 초점이 가면 브라우저가 내부를 스크롤하여 지도가 밀린다 */
+  stage.addEventListener('scroll', function () { stage.scrollLeft = 0; stage.scrollTop = 0; });
+
+  stage.addEventListener('wheel', function (e) {
+    if (!full && !e.ctrlKey) return;           /* 평소에는 본문 스크롤을 가로채지 아니한다 */
+    e.preventDefault();
+    var rc = stage.getBoundingClientRect();
+    zoomAt(sc * (e.deltaY < 0 ? 1.16 : 1 / 1.16), e.clientX - rc.left, e.clientY - rc.top, false);
+  }, { passive: false });
+
+  document.getElementById('btnIn').addEventListener('click', function () {
+    zoomAt(sc * 1.5, stage.clientWidth / 2, stage.clientHeight / 2, true); hideHint();
+  });
+  document.getElementById('btnOut').addEventListener('click', function () {
+    zoomAt(sc / 1.5, stage.clientWidth / 2, stage.clientHeight / 2, true); hideHint();
+  });
+  document.getElementById('btnRst').addEventListener('click', function () {
+    sc = 1; apply(true); hideHint();
+  });
+
+  var btnFull = document.getElementById('btnFull');
+  function setFull(on) {
+    full = on;
+    stage.classList.toggle('is-full', on);
+    mapSec.classList.toggle('is-full', on);
+    document.body.classList.toggle('map-locked', on);
+    plot.classList.toggle('is-float', on);
+    btnFull.textContent = on ? '✕' : '⛶';
+    btnFull.setAttribute('aria-label', on ? '전체 화면 닫기' : '전체 화면');
+    sc = 1;
+    requestAnimationFrame(function () { layout(); apply(false); sizeCheck(); });
+    if (!on) {
+      try { stage.scrollIntoView({ behavior: 'auto', block: 'center' }); } catch (e) {}
+    }
+  }
+  btnFull.addEventListener('click', function () { setFull(!full); hideHint(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && full) setFull(false); });
+
+  listBody.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.pbtn') : null;
+    if (!b) return;
+    select(b.dataset.go, { zoom: 2.4, scroll: true });
+    hideHint();
+  });
+
+  window.addEventListener('resize', resize);
+
+  /* 좁은 화면에서는 안내 문구를 바꾼다 */
+  function setHint() {
+    if (!hint) return;
+    hint.textContent = slim ? '눌러서 크게 보기' : '지명을 누르면 기록이 열린다';
+  }
+
+  /* --- 시작 --- */
+  layout(); apply(false); sizeCheck(); setHint();
+  window.addEventListener('resize', setHint);
+
+  var h = (location.hash || '').replace('#', '');
+  if (h && PLACES.some(function (p) { return p.id === h; })) {
+    select(h, { zoom: 2.4 });
+    requestAnimationFrame(function () {
+      try { stage.scrollIntoView({ behavior: 'auto', block: 'center' }); } catch (e) {}
+    });
+  }
+}());
+</script>
+</body>
+</html>
