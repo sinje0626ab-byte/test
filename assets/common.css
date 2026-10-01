@@ -665,6 +665,62 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 .oc-hi { color: var(--accent-red); font-weight: 700; font-style: normal; }
 
+/* 형상 쪽지 — 초상 오른쪽의 물음표를 짚거나 눌러 연다 */
+.hs { position: static; }
+.hs-btn {
+  position: absolute; z-index: 3;
+  top: 50%; right: -38px; transform: translateY(-50%);
+  width: 26px; height: 26px; padding: 0; border-radius: 50%;
+  border: 1px solid var(--gold-light); background: var(--paper);
+  color: var(--gold); font-size: 14px; font-weight: 700; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; letter-spacing: 0;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.hs-btn:hover,
+.hs-btn:focus-visible,
+.hs--open .hs-btn { background: var(--navy); color: var(--navy-text); border-color: var(--navy); }
+
+.hs-pop {
+  position: absolute; z-index: 4; display: none;
+  /* 물음표 바로 아래에 편다 — 쪽지가 제 단추를 덮지 아니하도록 */
+  top: calc(50% + 22px); left: 50%; transform: translateX(-50%);
+  box-sizing: border-box;
+  width: min(360px, calc(100vw - 40px));
+  max-height: min(62vh, 440px); overflow-y: auto;
+  padding: 15px 18px 17px; text-align: left;
+  background: var(--paper-deep);
+  border: 1px solid var(--navy); border-radius: var(--radius-box);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .24);
+  font-size: 13.5px; line-height: 1.95; font-weight: 400;
+  letter-spacing: 0; color: var(--ink-sub);
+}
+.hs--open .hs-pop { display: block; }
+.hs-ttl {
+  display: block; margin-bottom: 9px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--gold-light);
+  font-size: 11.5px; letter-spacing: 5px; color: var(--gold);
+}
+/* 머리말에서 물음표를 가리킬 때 쓰는 작은 표 */
+.hs-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%; vertical-align: -3px;
+  border: 1px solid var(--gold-light); background: var(--paper);
+  color: var(--gold); font-size: 11px; font-weight: 700;
+}
+@media (max-width: 430px) {
+  .hs-btn { right: -30px; width: 24px; height: 24px; font-size: 13px; }
+}
+/* 인쇄할 때는 쪽지를 펼쳐 둔다 — 종이에는 짚을 손이 없다 */
+@media print {
+  .hs-btn { display: none; }
+  .hs-pop {
+    display: block; position: static; transform: none;
+    width: auto; max-height: none; overflow: visible;
+    box-shadow: none; margin: 12px 0 0; page-break-inside: avoid;
+  }
+}
+
 /* 전임 공직자 아카이브 — 그레이스케일 + 점선 테두리 */
 .oc--former { filter: grayscale(.6); background: #eceae5; border: 1px dashed #a9a396; }
 .oc--former .oc-rank { background: #6f6a60; width: auto; height: auto; border-radius: 10px; padding: 4px 10px; font-size: 11.5px; letter-spacing: 2px; }
