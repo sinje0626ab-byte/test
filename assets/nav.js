@@ -472,5 +472,78 @@
     });
   }
 
-  ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); initBrandArt(); initFind(); });
+  /* ------------------------------------------------------------------
+     7) 형상 쪽지 — 초상 옆 물음표를 짚거나 눌러 연다
+     ------------------------------------------------------------------ */
+  function initForms() {
+    var wraps = [].slice.call(document.querySelectorAll('.hs'));
+    if (!wraps.length) return;
+
+    /* 짚을 수 있는 환경에서만 지나가기로 열고, 손가락은 눌러서 연다 */
+    var canHover = !!(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+    var cur = null;
+
+    function card(w) { return w.closest ? w.closest('.oc') : null; }
+
+    function open(w) {
+      if (cur && cur !== w) close(cur);
+      w.classList.add('hs--open');
+      var b = w.querySelector('.hs-btn');
+      if (b) b.setAttribute('aria-expanded', 'true');
+      /* 쪽지가 옆 카드에 가리지 않도록 그 카드만 위로 올린다 */
+      var c = card(w);
+      if (c) c.style.zIndex = '5';
+      cur = w;
+    }
+
+    function close(w) {
+      w.classList.remove('hs--open');
+      var b = w.querySelector('.hs-btn');
+      if (b) b.setAttribute('aria-expanded', 'false');
+      var c = card(w);
+      if (c) c.style.zIndex = '';
+      if (cur === w) cur = null;
+    }
+
+    wraps.forEach(function (w) {
+      var btn = w.querySelector('.hs-btn');
+      var pop = w.querySelector('.hs-pop');
+      if (!btn || !pop) return;
+
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (w.classList.contains('hs--open')) close(w); else open(w);
+      });
+      /* 쪽지 안을 눌러도 닫히지 아니한다 — 긁어 내려 읽을 수 있어야 한다 */
+      pop.addEventListener('click', function (e) { e.stopPropagation(); });
+
+      if (canHover) {
+        var hold = null;
+        var enter = function () { clearTimeout(hold); open(w); };
+        /* 물음표와 쪽지 사이를 건너갈 틈을 준다 */
+        var leave = function () {
+          clearTimeout(hold);
+          hold = setTimeout(function () {
+            if (!btn.matches(':hover') && !pop.matches(':hover')) close(w);
+          }, 180);
+        };
+        btn.addEventListener('mouseenter', enter);
+        btn.addEventListener('mouseleave', leave);
+        pop.addEventListener('mouseenter', enter);
+        pop.addEventListener('mouseleave', leave);
+        btn.addEventListener('focus', enter);
+      }
+    });
+
+    document.addEventListener('click', function () { if (cur) close(cur); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || !cur) return;
+      var b = cur.querySelector('.hs-btn');
+      close(cur);
+      if (b) b.focus();
+    });
+  }
+
+  ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); initBrandArt(); initFind(); initForms(); });
 })();
