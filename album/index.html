@@ -388,11 +388,11 @@ body.album-locked { overflow: hidden; }
       ],
       details: [
         { name: '말 머리 가면', note: '얼굴은 가면 뒤에 둔다. 형상이 곧 작전이었다.', pt: [40.5, 11.2] },
-        { name: '빛이 갈린 몸', note: '등은 아직 밤의 그늘에, 얼굴과 깃발은 새벽빛에. 「음지에서 일하고 양지에서 일할뿐입니다」를 빛으로 옮긴 것이다.' },
+        { name: '빛이 갈린 몸', note: '등은 아직 밤의 그늘에, 얼굴과 깃발은 새벽빛에. 「음지에서 일하고 양지에서 일할뿐입니다」를 빛으로 옮긴 것이다.', ref: 'p1', zoom: 1.8 },
         { name: '손에 든 등불', note: '그늘에서 일하는 자가 들고 다니는 유일한 빛.', pt: [37.8, 30.8] },
         { name: '안에서 열린 문', note: '문짝에 부서진 자국이 없다. 빗장은 안쪽에 있다.', pt: [42.2, 55.5] },
         { name: '국기', note: '촛불과 연꽃을 금실로 수놓았다.', pt: [56.6, 9.5] },
-        { name: '상어 지느러미', note: '점선 국경의 주인. 편입은 아직 유보 중이다. 표지 ③이 가리키는 자리와 같다.' },
+        { name: '상어 지느러미', note: '점선 국경의 주인. 편입은 아직 유보 중이다. 표지 ③이 가리키는 자리와 같다.', ref: 'p3', zoom: 3.5 },
         { name: '언덕 위 촛불 첨탑', note: '촛불궁. 수도는 이 새벽을 멀리서 지켜보고 있었다.', pt: [91, 44] }
       ],
       mystery: null,
@@ -458,8 +458,8 @@ body.album-locked { overflow: hidden; }
         { name: '빈 의자와 모피 망토', note: '떠난 자의 자리는 치우지 않는다. 복귀의 문은 닫히지 않았다.', pt: [4.9, 41] },
         { name: '귀환의 다리', note: '섬과 본토를 잇는 유일한 다리. 그는 이 다리를 건너 나갔다가 넉 달 뒤 섬의 주인이 되어 돌아왔다.', pt: [82.6, 30] },
         { name: '촛불궁 첨탑', note: '수도는 오늘도 멀리서 지켜본다.', pt: [89.6, 7.4] },
-        { name: '형상을 쓰지 아니한 둘', note: '관객석에서 사람의 얼굴 그대로 앉고 선 것은 이 둘뿐이다. 공보처는 이것도 보정하지 아니하였다.' },
-        { name: '낮인데도 켠 촛불', note: '관객들은 축하하는 자리에서도 촛불을 든다. 이 나라의 예법이다.' }
+        { name: '형상을 쓰지 아니한 둘', note: '관객석에서 사람의 얼굴 그대로 앉고 선 것은 이 둘뿐이다. 공보처는 이것도 보정하지 아니하였다.', pt: [18.8, 58], ref: ['p2', 'p3'], zoom: 1.9 },
+        { name: '낮인데도 켠 촛불', note: '관객들은 축하하는 자리에서도 촛불을 든다. 이 나라의 예법이다.', pt: [31.3, 78] }
       ],
       mystery: '이 취임식은 9월 1일의 일이다. 부카니스탄이 북항에서 입국한 것은 그로부터 27일 뒤인 9월 28일이다. ' +
                '그런데 사진에는 그가 말을 탄 채 도열 끝에 서 있다. 공보처는 <b>이 사진을 수정하지 않기로</b> 하였다. ' +
@@ -623,7 +623,7 @@ body.album-locked { overflow: hidden; }
       });
     });
     cur.details.forEach(function (d, i) {
-      if (!d.pt) return;
+      if (!d.pt || d.ref) return;      /* 남의 표지를 가리키는 항목은 제 표지를 두지 아니한다 */
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'mk mk--d';
@@ -660,7 +660,7 @@ body.album-locked { overflow: hidden; }
 
     h += '<div class="vw-h4">사 진 속 숨 은 기 록</div><ul class="vw-list">';
     cur.details.forEach(function (d, i) {
-      var on = !!d.pt;
+      var on = !!(d.pt || d.ref);
       h += '<li><button type="button" class="vw-it' + (on ? '' : ' is-flat') + '" data-key="d' + i + '"' +
            (on ? '' : ' tabindex="-1" aria-disabled="true"') + '>' +
            '<span class="vw-dia" aria-hidden="true"></span><span class="vw-tx">' +
@@ -682,11 +682,38 @@ body.album-locked { overflow: hidden; }
     panel.innerHTML = h;
   }
 
+  /* 항목이 밝힐 표지 — 숨은 기록은 제 표지를 두는 대신 남의 표지를 가리키기도 한다 */
+  function lit(key) {
+    if (!key) return [];
+    if (key.charAt(0) === 'p') return [key];
+    var d = cur.details[+key.slice(1)];
+    if (!d) return [];
+    return d.ref ? [].concat(d.ref) : [key];
+  }
+
+  /* 항목이 데려갈 자리와 배율 */
+  function spot(key) {
+    if (key.charAt(0) === 'p') {
+      var q = cur.people.filter(function (x) { return 'p' + x.n === key; })[0];
+      return (q && q.pts && q.pts.length) ? { pt: q.pts[0], z: 2.5 } : null;
+    }
+    var d = cur.details[+key.slice(1)];
+    if (!d) return null;
+    var pt = d.pt;
+    if (!pt && d.ref) {
+      var r = spot([].concat(d.ref)[0]);
+      pt = r && r.pt;
+    }
+    return pt ? { pt: pt, z: d.zoom || 2.5 } : null;
+  }
+
   function select(key, opt) {
     opt = opt || {};
     sel = key;
+    var on = lit(key);
     Object.keys(mkEl).forEach(function (k) {
-      mkEl[k].forEach(function (b) { b.classList.toggle('is-on', k === key); });
+      var yes = on.indexOf(k) >= 0;
+      mkEl[k].forEach(function (b) { b.classList.toggle('is-on', yes); });
     });
     [].forEach.call(panel.querySelectorAll('.vw-it'), function (b) {
       b.classList.toggle('is-on', b.dataset.key === key);
@@ -695,15 +722,8 @@ body.album-locked { overflow: hidden; }
 
     if (opt.zoom) {
       if (!showMarks) setMarks(true);
-      var pt = null;
-      if (key.charAt(0) === 'p') {
-        var q = cur.people.filter(function (x) { return 'p' + x.n === key; })[0];
-        if (q && q.pts && q.pts.length) pt = q.pts[0];
-      } else {
-        var d = cur.details[+key.slice(1)];
-        if (d && d.pt) pt = d.pt;
-      }
-      if (pt) focusOn(pt[0], pt[1], 2.5);
+      var s = spot(key);
+      if (s) focusOn(s.pt[0], s.pt[1], s.z);
     }
     if (opt.scroll) {
       var it = panel.querySelector('.vw-it[data-key="' + key + '"]');
