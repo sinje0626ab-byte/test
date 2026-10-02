@@ -199,6 +199,7 @@ tr.is-on td { background: var(--paper-deep); }
         <li><a class="gnb-link" href="../hall/"><span aria-hidden="true">🏅</span> 명예의전당</a></li>
         <li><a class="gnb-link" href="../history/"><span aria-hidden="true">📖</span> 역사</a></li>
         <li><a class="gnb-link" href="../map/"><span aria-hidden="true">🗺️</span> 지도</a></li>
+        <li><a class="gnb-link" href="../album/"><span aria-hidden="true">📷</span> 앨범</a></li>
         <li><a class="gnb-link" href="../anthem/"><span aria-hidden="true">🎵</span> 국가</a></li>
         <li><a class="gnb-link" href="../mourners/"><span aria-hidden="true">📋</span> 추모꾼</a></li>
       </ul>
@@ -731,7 +732,11 @@ tr.is-on td { background: var(--paper-deep); }
 
   var down = null, moved = false, pts = {}, pinchD = 0, pinchS = 1;
 
+  /* 판을 포획하면 그 위에 얹은 단추와 표지의 click 이 판으로 가 버린다 */
+  function onCtl(t) { return !!(t && t.closest && t.closest('.mapctl, .pin')); }
+
   stage.addEventListener('pointerdown', function (e) {
+    if (onCtl(e.target)) return;
     pts[e.pointerId] = { x: e.clientX, y: e.clientY };
     var n = Object.keys(pts).length;
     if (n === 2) {
