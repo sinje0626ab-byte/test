@@ -99,6 +99,7 @@
 body.album-locked { overflow: hidden; }
 
 .vw-shot {
+  --mkoff: 22px;                      /* 번호를 기준점에서 띄우는 거리 */
   position: relative; flex: 0 0 70%; overflow: hidden;
   background: var(--navy); touch-action: none; cursor: grab; user-select: none;
 }
@@ -146,9 +147,25 @@ body.album-locked { overflow: hidden; }
   background: var(--paper); border: 1.5px solid var(--gold); color: var(--ink);
   font-size: 13px; font-weight: 700; line-height: 1;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .55), 0 2px 7px rgba(0, 0, 0, .55);
-  transform: translate(-50%, -50%) scale(var(--inv, 1)); transform-origin: 50% 50%;
+  /* 기준점은 얼굴에 두되 번호는 그 바깥에 띄운다 — 얼굴을 가리지 아니하도록.
+     띄우는 거리에 배율의 역수를 곱해 두면 화면에서는 늘 같은 거리가 된다 */
+  transform: translate(-50%, calc(-50% - var(--mkoff) * var(--inv, 1))) scale(var(--inv, 1));
+  transform-origin: 50% 50%;
 }
 .mk--p.is-two { font-size: 11px; letter-spacing: -.03em; }
+/* 기준점 — 번호가 가리키는 자리에는 작은 점만 남긴다 */
+.mk--p::after {
+  content: ''; position: absolute; left: 50%; top: calc(50% + var(--mkoff));
+  width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%;
+  background: var(--gold); box-shadow: 0 0 0 1.5px rgba(253, 252, 249, .85);
+}
+.mk--p.dir-down  { transform: translate(-50%, calc(-50% + var(--mkoff) * var(--inv, 1))) scale(var(--inv, 1)); }
+.mk--p.dir-down::after  { top: calc(50% - var(--mkoff)); }
+.mk--p.dir-left  { transform: translate(calc(-50% - var(--mkoff) * var(--inv, 1)), -50%) scale(var(--inv, 1)); }
+.mk--p.dir-left::after  { left: calc(50% + var(--mkoff)); top: 50%; }
+.mk--p.dir-right { transform: translate(calc(-50% + var(--mkoff) * var(--inv, 1)), -50%) scale(var(--inv, 1)); }
+.mk--p.dir-right::after { left: calc(50% - var(--mkoff)); top: 50%; }
+.mk--p.is-on::after { background: var(--accent-red); }
 .mk--d {
   width: 14px; height: 14px; background: var(--gold-pale); border: 1.5px solid var(--navy);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, .5), 0 2px 6px rgba(0, 0, 0, .55);
@@ -213,6 +230,7 @@ body.album-locked { overflow: hidden; }
   .vw-panel h3 { font-size: 20px; }
   .vw-ctl { left: 8px; right: 8px; justify-content: center; }
   .vw-ctl button { width: 34px; height: 34px; }
+  .vw-shot { --mkoff: 18px; }
   .mk--p { width: 21px; height: 21px; font-size: 11.5px; }
   .mk--d { width: 12px; height: 12px; }
 }
@@ -362,14 +380,14 @@ body.album-locked { overflow: hidden; }
             '구도는 들라크루아의 「민중을 이끄는 자유의 여신」에서 가져왔으나, <b>그림 속 누구도 무기를 들지 아니하였다.</b> 든 것은 등불뿐이다.',
       people: [
         { n: 1, name: '부카니스탄', post: '추모안보실장 (작전 당시 추모사령관)',
-          note: '「저는 할일을 했을뿐입니다.」', pts: [[43, 22]] },
+          note: '「저는 할일을 했을뿐입니다.」', pts: [[43, 22]], dir: 'left' },
         { n: 2, name: '입국하는 추모꾼의 행렬', post: '북항 주민',
           note: '목마의 문에서 부두를 따라 뭍으로 이어지는 등불의 강.', pts: [[56, 83]] },
         { n: 3, name: '부캉이', post: '북항 해역의 상어',
           note: '이 모든 것을 물속에서 지켜본 유일한 목격자.', pts: [[80.4, 90]] }
       ],
       details: [
-        { name: '말 머리 가면', note: '얼굴은 가면 뒤에 둔다. 형상이 곧 작전이었다.', pt: [42.6, 12.6] },
+        { name: '말 머리 가면', note: '얼굴은 가면 뒤에 둔다. 형상이 곧 작전이었다.', pt: [40.5, 11.2] },
         { name: '빛이 갈린 몸', note: '등은 아직 밤의 그늘에, 얼굴과 깃발은 새벽빛에. 「음지에서 일하고 양지에서 일할뿐입니다」를 빛으로 옮긴 것이다.' },
         { name: '손에 든 등불', note: '그늘에서 일하는 자가 들고 다니는 유일한 빛.', pt: [37.8, 30.8] },
         { name: '안에서 열린 문', note: '문짝에 부서진 자국이 없다. 빗장은 안쪽에 있다.', pt: [42.2, 55.5] },
@@ -409,7 +427,7 @@ body.album-locked { overflow: hidden; }
             '대통령이 임명장을 직접 건넸고 국무위원 전원이 도열하였으며, 방에서는 이 장면을 <b>「새가 내려오고 토끼가 섰다」</b>고 불렀다.',
       people: [
         { n: 1, name: '빈 의자', post: '전임 추모교정국장 애국좌수의 자리',
-          note: '모피 깃의 교도관 망토만 남았다.', pts: [[8, 48.5]] },
+          note: '모피 깃의 교도관 망토만 남았다.', pts: [[8, 48.5]], dir: 'down' },
         { n: 2, name: '송은지', post: '내빈 · 위박의 매니저 (전 아이돌)',
           note: '무대에 서던 사람이 지금은 무대 아래에서 동선을 짠다. 식에 앞서 돌계단의 턱을 먼저 세어 둔 쪽이 그다.', pts: [[15.8, 54.2]] },
         { n: 3, name: '위박', post: '내빈 · 장애인인권활동가',
@@ -421,9 +439,9 @@ body.album-locked { overflow: hidden; }
         { n: 6, name: '추모합니도', post: '부통령',
           note: '식을 주재하는 자리.', pts: [[32.5, 27.5]] },
         { n: 7, name: '베네수호자', post: '제2대 추모교정국장',
-          note: '붉은 눈은 웃지 않는다.', pts: [[47.6, 25]] },
+          note: '붉은 눈은 웃지 않는다.', pts: [[47.6, 25]], dir: 'left' },
         { n: 8, name: '앵무새', post: '베네수호자의 옛 형상',
-          note: '어깨로 내려앉는 중.', pts: [[45.3, 9.2]] },
+          note: '어깨로 내려앉는 중.', pts: [[45.3, 9.2]], dir: 'left' },
         { n: 9, name: '민주시민', post: '대통령',
           note: '노란 리본, 빈 임명장을 두 손으로 건넨다.', pts: [[60, 39]] },
         { n: 10, name: '딸기', post: '문화추모부장관',
@@ -435,7 +453,7 @@ body.album-locked { overflow: hidden; }
       ],
       details: [
         { name: '흩어지는 깃털', note: '앵무새의 몸이 금빛으로 풀려 토끼가 서는 순간.', pt: [44, 42] },
-        { name: '붉은 눈', note: '잡는 자리에 서면서 잡히는 짐승의 몸을 택했다. 그러나 눈은 순하지 않다.', pt: [49.5, 12.3] },
+        { name: '붉은 눈', note: '잡는 자리에 서면서 잡히는 짐승의 몸을 택했다. 그러나 눈은 순하지 않다.', pt: [50.7, 11.2] },
         { name: '빈 임명장', note: '사진 속 문서에는 글자가 없다. 무엇이 적혔는지는 관보에 있다.', pt: [54.4, 45.6] },
         { name: '빈 의자와 모피 망토', note: '떠난 자의 자리는 치우지 않는다. 복귀의 문은 닫히지 않았다.', pt: [4.9, 41] },
         { name: '귀환의 다리', note: '섬과 본토를 잇는 유일한 다리. 그는 이 다리를 건너 나갔다가 넉 달 뒤 섬의 주인이 되어 돌아왔다.', pt: [82.6, 30] },
@@ -593,7 +611,7 @@ body.album-locked { overflow: hidden; }
       (q.pts || []).forEach(function (pt, j) {
         var b = document.createElement('button');
         b.type = 'button';
-        b.className = 'mk mk--p' + (q.n > 9 ? ' is-two' : '');
+        b.className = 'mk mk--p' + (q.n > 9 ? ' is-two' : '') + (q.dir ? ' dir-' + q.dir : '');
         b.style.left = pt[0] + '%';
         b.style.top = pt[1] + '%';
         b.textContent = q.n;
