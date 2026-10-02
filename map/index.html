@@ -47,22 +47,26 @@ body.map-locked { overflow: hidden; }
 
 /* --- 지명 표지 --- */
 .pin {
-  position: absolute; width: 13px; height: 13px; padding: 0;
-  margin: -6.5px 0 0 -6.5px; border-radius: 50%;
-  background: var(--paper); border: 1.5px solid var(--gold);
+  position: absolute; width: 16px; height: 16px; padding: 0;
+  margin: -8px 0 0 -8px; border-radius: 50%;
+  background: var(--paper); border: 2px solid var(--gold);
   box-shadow: 0 0 0 1px rgba(32,28,20,.45), 0 1px 3px rgba(0,0,0,.5);
   cursor: pointer; z-index: 3;
   transform: scale(var(--inv, 1)); transform-origin: 50% 50%;
   transition: background .15s, border-color .15s, box-shadow .15s;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
+/* 점은 그대로 두고 손가락이 닿는 자리만 넓힌다 */
+.pin::before { content: ''; position: absolute; inset: -18px; border-radius: 50%; }
 .pin:hover { background: var(--gold-pale); }
+.pin:active { transform: scale(calc(var(--inv, 1) * 1.3)); }
 .pin:focus-visible { outline: 2px solid var(--accent-red); outline-offset: 3px; }
 .pin.is-on {
   background: var(--accent-red); border-color: var(--paper);
   transform: scale(calc(var(--inv, 1) * 1.35));
   box-shadow: 0 0 0 1px rgba(32,28,20,.5), 0 0 10px rgba(160,51,31,.75);
 }
-.mapstage.is-small .pin { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-width: 1.2px; }
+.mapstage.is-small:not(.is-full) .pin { width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-width: 1.5px; }
 
 /* --- 라벨 (지도 위에 글로우로 얹는다. 박스 배경은 두지 아니한다) --- */
 .plabel, .alabel {
@@ -77,7 +81,7 @@ body.map-locked { overflow: hidden; }
   transform: translate(-50%, calc(9px + var(--dy, 0px))) scale(var(--inv, 1)); transform-origin: 50% 0;
   opacity: 0; transition: opacity .18s;
 }
-.plabel.is-shown { opacity: 1; }
+.plabel.is-shown { opacity: 1; pointer-events: auto; cursor: pointer; }
 .plabel.is-on { color: var(--accent-red); }
 /* 판 가장자리의 지명은 가운데 정렬하면 잘리므로 안쪽으로 붙인다 */
 .plabel.at-left  { transform: translate(0, calc(9px + var(--dy, 0px))) scale(var(--inv, 1)); transform-origin: 0 0; text-align: left; }
@@ -102,7 +106,7 @@ body.map-locked { overflow: hidden; }
 }
 .mapctl button:hover { background: var(--navy); }
 .mapctl button:focus-visible { outline: 2px solid var(--gold-pale); outline-offset: 2px; }
-.mapstage.is-small .mapctl .ctl-zoom { display: none; }
+.mapstage.is-small:not(.is-full) .mapctl .ctl-zoom { display: none; }
 
 .maphint {
   position: absolute; left: 12px; bottom: 14px; z-index: 10;
@@ -146,6 +150,8 @@ body.map-locked { overflow: hidden; }
   left: 20px; top: 20px; width: 360px; max-height: calc(100dvh - 40px); overflow-y: auto;
   box-shadow: 0 14px 40px rgba(0,0,0,.45);
 }
+/* 고른 것이 없으면 띄우지 아니한다 — 빈 카드가 지도를 덮지 아니하도록 */
+.plot.is-float.is-empty { display: none; }
 @media (max-width: 760px) {
   .plot.is-float {
     left: 0; right: 0; top: auto; bottom: 0; width: auto;
@@ -153,6 +159,8 @@ body.map-locked { overflow: hidden; }
     padding: 16px 18px 18px;
   }
   .plot.is-float h3 { font-size: 19px; }
+  /* 아래에서 카드가 올라오므로 조작 단추는 위로 비킨다 */
+  .mapstage.is-full .mapctl { top: calc(12px + env(safe-area-inset-top, 0px)); bottom: auto; }
 }
 .plot-x {
   position: absolute; right: 10px; top: 10px; width: 30px; height: 30px; padding: 0;
@@ -263,7 +271,7 @@ tr.is-on td { background: var(--paper-deep); }
   </div>
 </div>
 
-<article class="plot" id="plot" aria-live="polite">
+<article class="plot is-empty" id="plot" aria-live="polite">
   <button type="button" class="plot-x" id="plotX" aria-label="닫기">✕</button>
   <p class="plot-empty">지도의 지명을 누르거나 아래 일람에서 고르면 그 땅의 기록이 여기에 펼쳐진다.</p>
 </article>
@@ -508,6 +516,7 @@ tr.is-on td { background: var(--paper-deep); }
     l.style.left = p.x + '%';
     l.style.top  = p.y + '%';
     l.textContent = p.name;
+    l.dataset.id = p.id;
     /* labelPos 가 있으면 그것을 따르고, 없으면 판 가장자리만 안쪽으로 붙인다 */
     if (p.labelPos === 'up') l.classList.add('at-up');
     else if (p.labelPos === 'left') l.classList.add('at-right');
@@ -668,6 +677,7 @@ tr.is-on td { background: var(--paper-deep); }
      ====================================================================== */
 
   function render(p) {
+    plot.classList.toggle('is-empty', !p);
     if (!p) {
       plot.innerHTML = '<button type="button" class="plot-x" id="plotX" aria-label="닫기">✕</button>' +
         '<p class="plot-empty">지도의 지명을 누르거나 아래 일람에서 고르면 그 땅의 기록이 여기에 펼쳐진다.</p>';
@@ -730,12 +740,26 @@ tr.is-on td { background: var(--paper-deep); }
 
   function hideHint() { if (hint) hint.classList.add('is-off'); }
 
+  /* 손가락은 점보다 굵다 — 누른 자리에서 r 픽셀 안의 가장 가까운 표지를 집는다 */
+  function nearestPin(cx, cy, r) {
+    var best = null, bd = r * r;
+    PLACES.forEach(function (p) {
+      var b = pinEl[p.id].getBoundingClientRect();
+      if (!b.width) return;
+      var dx = b.left + b.width / 2 - cx, dy = b.top + b.height / 2 - cy;
+      var d = dx * dx + dy * dy;
+      if (d <= bd) { bd = d; best = p.id; }
+    });
+    return best;
+  }
+
   var down = null, moved = false, pts = {}, pinchD = 0, pinchS = 1;
 
   /* 판을 포획하면 그 위에 얹은 단추와 표지의 click 이 판으로 가 버린다 */
-  function onCtl(t) { return !!(t && t.closest && t.closest('.mapctl, .pin')); }
+  function onCtl(t) { return !!(t && t.closest && t.closest('.mapctl, .pin, .plabel.is-shown')); }
 
   stage.addEventListener('pointerdown', function (e) {
+    moved = false;                            /* 핀치 뒤에 남은 값이 다음 탭을 삼키지 아니하도록 */
     if (onCtl(e.target)) return;
     pts[e.pointerId] = { x: e.clientX, y: e.clientY };
     var n = Object.keys(pts).length;
@@ -768,7 +792,7 @@ tr.is-on td { background: var(--paper-deep); }
     }
     if (!down) return;
     var dx = e.clientX - down.x, dy = e.clientY - down.y;
-    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) moved = true;   /* 손가락 떨림은 끌기로 보지 아니한다 */
     tx = down.tx + dx; ty = down.ty + dy;
     apply(false);
     e.preventDefault();
@@ -803,10 +827,17 @@ tr.is-on td { background: var(--paper-deep); }
       return;
     }
 
-    var pin = e.target.closest ? e.target.closest('.pin') : null;
-    if (pin) { select(pin.dataset.id, { zoom: (full && slim) ? 1.6 : 0 }); return; }
-    /* 좁은 화면에서 지도의 빈 곳을 누르면 바로 전체 화면으로 */
-    if (slim && !full) setFull(true);
+    /* 좁은 화면의 작은 지도 — 한 번 누르면 전체 화면으로 가고, 누른 자리의 지명을 함께 편다 */
+    if (slim && !full) {
+      var near = nearestPin(e.clientX, e.clientY, 30);
+      setFull(true);
+      if (near) setTimeout(function () { select(near, { zoom: 1.6 }); }, 80);
+      return;
+    }
+
+    var hit = e.target.closest ? e.target.closest('.pin, .plabel.is-shown') : null;
+    var id = hit ? hit.dataset.id : nearestPin(e.clientX, e.clientY, 44);
+    if (id) select(id, { zoom: (full && slim) ? 1.6 : 0 });
   });
 
   /* 확대된 판 안에서 표지에 초점이 가면 브라우저가 내부를 스크롤하여 지도가 밀린다 */
