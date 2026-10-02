@@ -166,8 +166,14 @@ body.map-locked { overflow: hidden; }
   position: absolute; right: 10px; top: 10px; width: 30px; height: 30px; padding: 0;
   background: none; border: 1px solid var(--border); border-radius: var(--radius);
   color: var(--ink-muted); font-size: 15px; cursor: pointer; display: none;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
-.plot.is-float .plot-x { display: block; }
+/* 카드를 스크롤하여도 닫기 단추는 제자리를 지킨다 — 글과 함께 밀려 올라가 사라지지 아니하도록 */
+.plot.is-float .plot-x {
+  display: block; position: sticky; top: 0; z-index: 3;
+  margin: -4px -4px -30px auto; background: var(--paper-alt);
+}
+.plot.is-float .plot-x::before { content: ''; position: absolute; inset: -10px; }
 
 /* --- 일람 표 --- */
 .areahead td { background: var(--paper-deep); font-weight: 700; letter-spacing: .14em; color: var(--ink); }
@@ -808,6 +814,8 @@ tr.is-on td { background: var(--paper-deep); }
   stage.addEventListener('pointercancel', up);
 
   stage.addEventListener('click', function (e) {
+    /* 조작 단추에서 올라온 클릭은 여기서 끝낸다 — 단추가 한 일을 판이 되돌리지 아니하도록 */
+    if (e.target.closest && e.target.closest('.mapctl')) return;
     if (moved) { moved = false; return; }      /* 끌고 난 뒤의 클릭은 흘린다 */
     hideHint();
 
