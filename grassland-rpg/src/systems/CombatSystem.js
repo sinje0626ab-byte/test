@@ -60,9 +60,12 @@ export class CombatSystem {
     }
   }
 
-  calcDamage(attack, defense, critChance = 0, critMultiplier = 1) {
+  // 피해 = max(공격 × minDamageRatio, 공격 − 방어 × (1 − 방어 관통)). 방어가 높아도 공격의 35%는 들어간다.
+  // armorPierce 는 공격 쪽 값 (포탑 turrets.json, 플레이어 무기 weapons.json, 기본 0). 플레이어·몬스터 공격 모두 같은 공식
+  calcDamage(attack, defense, critChance = 0, critMultiplier = 1, armorPierce = 0) {
     const v = this.cfg.variance;
-    let dmg = (attack - defense) * (1 + (Math.random() * 2 - 1) * v);
+    const base = Math.max(attack * this.cfg.minDamageRatio, attack - defense * (1 - armorPierce));
+    let dmg = base * (1 + (Math.random() * 2 - 1) * v);
     const crit = Math.random() < critChance;
     if (crit) dmg *= critMultiplier;
     return { amount: Math.max(this.cfg.minDamage, Math.round(dmg)), crit };
@@ -91,7 +94,8 @@ export class CombatSystem {
   playerHits(m, a, d) {
     const s = this.ctx.player.stats;
     const night = (m.night || m.raid) && s.nightBonus ? 1 + s.nightBonus : 1;
-    const { amount, crit } = this.calcDamage(a.attack * night, m.stats.defense, a.critChance, a.critMultiplier);
+    const pierce = this.ctx.data.weapons[a.weapon]?.armorPierce ?? 0;
+    const { amount, crit } = this.calcDamage(a.attack * night, m.stats.defense, a.critChance, a.critMultiplier, pierce);
     const killed = m.takeDamage(amount, d.multiplyScalar(a.knockback));
     this.ctx.bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color });
     if (killed) {
@@ -103,11 +107,13 @@ export class CombatSystem {
   }
 
   // effect: 포탑 적중 효과 (독침·서리)
-  onProjectileHit({ monster, damage, dir: d, effect }) {
+  // turret: 쏜 포탑 (습격 몬스터가 일정 확률로 그 포탑을 노린다), armorPierce: 포탑 방어 관통
+  onProjectileHit({ monster, damage, dir: d, effect, turret, armorPierce = 0 }) {
     if (!monster.alive || monster.untargetable) return;
     // 명사수 포탑 스킬: 포탑 치명타
     const { player } = this.ctx;
-    const { amount, crit } = this.calcDamage(damage, monster.stats.defense, player.stats.turretCrit ?? 0, player.base.critMultiplier);
+    const { amount, crit } = this.calcDamage(damage, monster.stats.defense, player.stats.turretCrit ?? 0, player.base.critMultiplier, armorPierce);
+    if (monster.raid && turret?.alive && Math.random() < this.ctx.data.config.raid.retargetChance) monster.aggro = turret;
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
     this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster', source: 'turret', color: monster.def.color });
     if (killed) this.killed(monster);
@@ -143,7 +149,8 @@ export class CombatSystem {
     for (const s of this.ctx.structures) {
       if (!s.alive) continue;
       if (Math.hypot(s.position.x - position.x, s.position.z - position.z) > radius + s.radius) continue;
-      this.damageStructure(s, damage * multiplier);
+      // 폭발 상한: 건물 하나에 최대 체력의 blastStructureCap(40%)까지 (한 방에 터지지 않게)
+      this.damageStructure(s, damage * multiplier, s.stats.maxHp * this.cfg.blastStructureCap);
     }
   }
 
@@ -165,14 +172,14 @@ export class CombatSystem {
   }
 
   // 대포: 떨어진 곳 둘레 모두. 가장자리일수록 약하다.
-  onExplode({ position, radius, minFactor, damage, effect }) {
+  onExplode({ position, radius, minFactor, damage, effect, turret, armorPierce }) {
     for (const m of this.ctx.monsters) {
       if (!m.alive) continue;
       const d = Math.hypot(m.position.x - position.x, m.position.z - position.z);
       if (d > radius + m.radius) continue;
       const k = 1 - (1 - minFactor) * Math.min(1, d / radius);
       const dir = new THREE.Vector3(m.position.x - position.x, 0, m.position.z - position.z).normalize();
-      this.onProjectileHit({ monster: m, damage: damage * k, dir: dir.multiplyScalar(2), effect });
+      this.onProjectileHit({ monster: m, damage: damage * k, dir: dir.multiplyScalar(2), effect, turret, armorPierce });
     }
   }
 
@@ -185,9 +192,9 @@ export class CombatSystem {
     this.damageStructure(s, monster.stats.attack * mult);
   }
 
-  damageStructure(s, attack) {
+  damageStructure(s, attack, cap = Infinity) {
     const { bus } = this.ctx;
-    const { amount } = this.calcDamage(attack, 0);
+    const amount = Math.min(cap, this.calcDamage(attack, 0).amount);
     const destroyed = s.takeDamage(amount);
     bus.emit('combat:hit', { position: s.position.clone(), amount, crit: false, target: 'structure' });
     if (destroyed) {

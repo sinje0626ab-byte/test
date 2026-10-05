@@ -15,6 +15,7 @@ import { BaseSystem } from '../systems/BaseSystem.js';
 import { BuildSystem } from '../systems/BuildSystem.js';
 import { TurretSystem } from '../systems/TurretSystem.js';
 import { RaidSystem } from '../systems/RaidSystem.js';
+import { StructureHpSystem } from '../systems/StructureHpSystem.js';
 import { StatsSystem } from '../systems/StatsSystem.js';
 import { EquipmentSystem } from '../systems/EquipmentSystem.js';
 import { SkillSystem } from '../systems/SkillSystem.js';
@@ -117,6 +118,7 @@ export class Game {
       new WallSystem(ctx),
       new TurretSystem(ctx),
       new RaidSystem(ctx),
+      new StructureHpSystem(ctx),
       new StatsSystem(ctx),
       new EquipmentSystem(ctx),
       new SkillSystem(ctx),

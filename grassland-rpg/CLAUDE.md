@@ -141,6 +141,7 @@ src/
     NightLordSystem.js # 최종 보스 밤의 군주 등장·파도 패턴·해돋이
     WeatherSystem.js   # 하루 단위 날씨, 장식 생물
     TombstoneSystem.js # 쓰러진 자리 묘비 (잃은 골드 절반)
+    StructureHpSystem.js # 건물 최대 체력 × 진행도 (체력 비율 유지)
     SaveSystem.js
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
@@ -631,3 +632,8 @@ src/
   - 예측 사격: 비행시간 = 거리 / 투사체 속도를 두 번 다시 계산해 그때 자리를 겨눈다 (대포는 떨어질 자리). 돌진형(charger)은 행동의 `predict` 가 예고 남은 시간·돌진 방향·속도·남은 거리로 알려 준다. 예측 거리는 최대 `turret.maxLead`(4m). 땅속 두더지 같은 `untargetable` 은 그대로 제외
   - 초과 피해 방지: 한 대상 투사체는 피해를 대상 `incoming` 에 예약하고, 맞거나 사라지면 뺀다. 고를 때 `incoming` ≥ 남은 체력 × 1.1 이면 뒤로 미룬다(그것뿐이면 그래도 쏜다). 쏘려는 순간 대상이 그렇게 되면 다시 고른다. 대포·서리 범위는 예약 안 함
   - 개발용: 주소에 `?debug=turret` → 포탑 머리 위 명중/발사, `raid:end` 때 종류별 명중률 `console.table`
+- **3차 개선 B-3** 피해 공식·건물 체력·습격 목표
+  - 피해 = max(공격 × `combat.minDamageRatio`(0.35), 공격 − 방어 × (1 − 방어 관통)) × 변동. 방어 관통 `armorPierce` 는 공격 쪽 값(포탑 turrets.json: 석궁 0.6·총 0.3, 플레이어 무기 weapons.json, 기본 0). 플레이어·몬스터 공격 모두 같은 공식
+  - 건물 체력 진행도(`systems/StructureHpSystem.js`): 포탑·기지 중심 건물·부속 건물·벽 최대 체력 × (1 + 진행도 × `combat.structureHpPerProgress`(0.15)). 진행도는 습격과 같은 값(`ctx.progressOf(base)`, RaidSystem). 0.5초마다 맞추고 체력 비율 유지. 다른 코드가 최대 체력을 새로 정하면 그 값을 새 원래 값으로 본다. 저장엔 건물별 체력 비율 `structureHp`(없으면 불러온 체력 비율 그대로)
+  - 폭발 상한: `monster:blast` 의 건물 피해는 대상 최대 체력의 `combat.blastStructureCap`(40%)까지
+  - 습격 몬스터 목표(RaidMonster): 플레이어가 detectRange 안 → 플레이어 / 포탑에 맞으면 `raid.retargetChance`(25%)로 그 포탑 / 아니면 텐트로, 직선 길 옆 `raid.pathBlockRange`(1.5m) 안 포탑·부속 건물이 막으면 그것부터 / 벽은 기존 A* (완전히 막히면 부숨) / 텐트가 없으면 가장 가까운 건물
