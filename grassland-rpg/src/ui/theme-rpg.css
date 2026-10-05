@@ -1,0 +1,191 @@
+/* RPG 테마 (모든 CSS 중 맨 마지막에 읽음): 3D 월드는 아기자기하게 두고 UI만 판타지 RPG 질감으로.
+   짙은 나무·가죽 프레임 + 양피지 패널 + 금장 테두리 + 세리프 제목. 외부 이미지 없이 CSS·인라인 SVG(uiArt.js)만.
+   배치(위치·크기)는 다른 파일(mobile.css 등)이 정하고, 이 파일은 겉모양의 최종 모습을 정한다.
+   큰 영역에 backdrop-filter 금지 (휴대폰 프레임 하락). */
+:root {
+  /* 글꼴: 이 변수만 바꾸면 전체가 바뀐다 (제목이 딱딱하면 --font-display 를 Gowun Batang 으로 비교) */
+  --font-display: "Hahmlet", "Gowun Batang", "Noto Serif KR", serif;
+  --font-title: "Gowun Batang", "Noto Serif KR", "Batang", serif;
+  --font-body: "Noto Sans KR", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-number: "Bagel Fat One", "Noto Sans KR", system-ui, sans-serif;
+  --font-deco: "Cinzel", "Times New Roman", serif;
+  --heading: var(--font-title);
+
+  --wood-dark: #2a1f17;
+  --wood: #4a3424;
+  --wood-light: #6b4a30;
+  --parchment-top: #f3e6c4;
+  --parchment-bot: #e8d6a8;
+  --gold-light: #f6d77a;
+  --gold: #d9a640;
+  --gold-dark: #b8862b;
+  --ink: #3a2a1a;
+  --ink-soft: #7a6244;
+  --ink-light: #f3e6c4;
+  --hp: #c7423a;
+  --st: #e0a83a;
+  --xp: #5aa0d8;
+  /* 예전 변수들도 새 팔레트로 (안쪽 카드·칸 테두리 등) */
+  --panel-edge: #c9ad78;
+  --panel-deep: #8a6a40;
+}
+html, body { font-family: var(--font-body); }
+
+/* ── 창 프레임 ── */
+.window {
+  color: var(--ink);
+  background: linear-gradient(var(--parchment-top), var(--parchment-bot));
+  border: 5px solid var(--wood-dark); border-radius: 12px;
+  box-shadow: inset 0 0 0 2px var(--gold-dark), inset 0 0 0 4px var(--wood), inset 0 0 22px rgba(138, 95, 28, 0.18),
+    0 4px 0 rgba(20, 12, 6, 0.35), 0 14px 34px rgba(20, 12, 6, 0.45);
+  animation-name: rpg-win-in; animation-duration: 0.15s; animation-timing-function: ease-out;
+}
+.window.win-center, .window.win-dialogue { animation-name: rpg-win-in; }
+.window.closing { animation: rpg-win-out 0.15s ease-in forwards; pointer-events: none; }
+@keyframes rpg-win-in { from { opacity: 0; scale: 0.96; } }
+@keyframes rpg-win-out { to { opacity: 0; scale: 0.96; } }
+
+/* 제목: 가운데 금색 리본 (양끝 제비꼬리) */
+.win-head {
+  position: relative; justify-content: center; padding: 12px 46px 8px; background: none; border-radius: 0;
+  border-bottom: 1px solid rgba(138, 95, 28, 0.35); box-shadow: 0 1px 0 rgba(255, 248, 225, 0.6);
+}
+.win-head h2 {
+  font-family: var(--font-title); font-weight: 700; font-size: 17px; letter-spacing: 0.5px; color: var(--ink);
+  padding: 5px 30px 6px; line-height: 1.2; white-space: nowrap;
+  background: linear-gradient(var(--gold-light), var(--gold) 55%, var(--gold-dark));
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%, 12px 50%);
+  text-shadow: 0 1px 0 rgba(255, 245, 205, 0.7);
+}
+.win-head h2 kbd { font-size: 10px; line-height: 15px; padding: 0 4px; background: rgba(42, 31, 23, 0.18); color: var(--ink); border: 0; }
+/* 닫기: 둥근 금속 단추 */
+.win-close {
+  position: absolute; right: 10px; top: 50%; translate: 0 -50%;
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--wood-dark); padding: 0;
+  background: radial-gradient(circle at 35% 30%, #fbf8f0, #b9b2a6 55%, #6e675e); color: var(--wood-dark);
+  font-size: 13px; font-weight: 900; box-shadow: 0 2px 0 rgba(20, 12, 6, 0.4);
+  transition: filter 0.12s, transform 0.12s;
+}
+.win-close:hover { background: radial-gradient(circle at 35% 30%, #ffd8cc, #d96a5c 55%, #8a2e24); color: #fff; transform: rotate(90deg); }
+/* 네 모서리 금장식 */
+.win-corner { position: absolute; width: 30px; height: 30px; pointer-events: none; z-index: 3; display: block; }
+.win-corner svg { width: 100%; height: 100%; display: block; }
+.win-corner.tl { left: -8px; top: -8px; }
+.win-corner.tr { right: -8px; top: -8px; transform: scaleX(-1); }
+.win-corner.bl { left: -8px; bottom: -8px; transform: scaleY(-1); }
+.win-corner.br { right: -8px; bottom: -8px; transform: scale(-1, -1); }
+kbd { background: #e3d0a2; color: var(--ink-soft); }
+
+/* 탭: 책갈피 */
+.tabs { gap: 4px; border-bottom: 3px solid var(--wood); padding: 0 4px; }
+.tabs button {
+  border-radius: 8px 8px 0 0; padding: 6px 14px 5px; margin-bottom: -1px;
+  background: linear-gradient(var(--wood-light), var(--wood)); color: var(--ink-light);
+  font-family: var(--font-title); font-weight: 700; box-shadow: inset 0 1px 0 rgba(255, 230, 180, 0.2);
+}
+.tabs button.on {
+  background: linear-gradient(var(--gold-light), var(--gold)); color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255, 250, 220, 0.8), 0 -2px 0 var(--gold-dark);
+}
+
+/* ── 버튼 3종: 기본(나무) · 주요(금) · 위험(붉은 가죽) ──
+   창 안 일반 버튼 + 타이틀·메뉴 카드 버튼. 카드처럼 생긴 선택 버튼(건설 카드·스킬 칸·도감 칸 등)은 제외.
+   우선순위: 기본은 (창 안 버튼) 정도로, 주요·위험은 그보다 높게 — :where() 로 제외 목록의 무게를 뺀다 */
+:is(.window .win-body, .t-card) button:where(:not(.build-card, .sk-node, .bs-card, .sk-tab, .sk-arrow, .slot, .sslot, .tog, .cc-swatch, .cc-chip, .tabs button, .seg button, .gd-seeds button, [data-assign], .fg-row)),
+.t-menu-btn {
+  font-family: var(--font-title); font-weight: 700; color: var(--ink-light);
+  background: linear-gradient(var(--wood-light), var(--wood)); border: 1px solid var(--wood-dark); border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 230, 180, 0.28), 0 2px 0 #1d150f; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  transition: filter 0.12s, box-shadow 0.12s, transform 0.08s;
+}
+:is(.window .win-body, .t-card) button:where(:not(.build-card, .sk-node, .bs-card, .sk-tab, .sk-arrow, .slot, .sslot, .tog, .cc-swatch, .cc-chip, .tabs button, .seg button, .gd-seeds button, [data-assign], .fg-row)):hover:not(:disabled),
+.t-menu-btn:hover {
+  filter: brightness(1.12); box-shadow: inset 0 1px 0 rgba(255, 230, 180, 0.28), 0 2px 0 #1d150f, 0 0 10px rgba(246, 215, 122, 0.35);
+}
+:is(.window .win-body, .t-card) button:where(:not(.build-card, .sk-node, .bs-card, .sk-tab, .sk-arrow, .slot, .sslot, .tog, .cc-swatch, .cc-chip, .tabs button, .seg button, .gd-seeds button, [data-assign], .fg-row)):active:not(:disabled),
+.t-menu-btn:active { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255, 230, 180, 0.2); }
+:is(.window .win-body, .t-card) button:disabled { filter: saturate(0.2) brightness(0.92); opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+/* 주요: 금색 */
+:is(.window .win-body, .t-card) :is(.primary, .craft-row button, .shop-row button, .base-up-btn, .gd-harvest, .bt-card button, .cr-to button, .t-menu-btn.primary),
+.t-menu-btn.primary, .sk-actions button.primary {
+  background: linear-gradient(var(--gold-light), var(--gold) 60%, var(--gold-dark)); color: var(--ink); border-color: #6b4a1c;
+  text-shadow: 0 1px 0 rgba(255, 245, 205, 0.6); box-shadow: inset 0 1px 0 rgba(255, 252, 230, 0.8), 0 2px 0 #5a3d14;
+}
+/* 위험: 붉은 가죽 */
+:is(.window .win-body, .t-card) :is(.danger, .inv-trash, .t-menu-btn.danger), .t-menu-btn.danger {
+  background: linear-gradient(#b8503f, #7e2a22); color: #fde8d8; border: 1px solid #4a160f; border-style: solid;
+  box-shadow: inset 0 1px 0 rgba(255, 200, 180, 0.3), 0 2px 0 #3a120c;
+}
+.inv-trash.over { filter: brightness(1.25); transform: scale(1.08); }
+.tw-actions .danger { color: #fde8d8; }
+
+/* 메뉴 카드 (일시정지·설정·조작 방법·확인): 창과 같은 프레임 */
+.t-card {
+  color: var(--ink);
+  background: linear-gradient(var(--parchment-top), var(--parchment-bot));
+  border: 5px solid var(--wood-dark); border-radius: 12px;
+  box-shadow: inset 0 0 0 2px var(--gold-dark), inset 0 0 0 4px var(--wood), inset 0 0 22px rgba(138, 95, 28, 0.18), 0 16px 40px rgba(20, 12, 6, 0.5);
+}
+.t-card h2 { font-family: var(--font-title); font-weight: 700; color: var(--ink); }
+.t-card p { color: #5a4630; }
+.t-menu-btn { font-size: 17px; padding: 11px 18px; border-radius: 10px; }
+.t-menu-btn small { font-family: var(--font-body); font-weight: 400; }
+.seg { background: rgba(74, 52, 36, 0.18); box-shadow: inset 0 1px 3px rgba(42, 31, 23, 0.35); }
+.seg button { color: var(--ink-soft); font-family: var(--font-title); }
+.seg button.on { background: linear-gradient(var(--gold-light), var(--gold)); color: var(--ink); box-shadow: 0 1px 0 var(--gold-dark); }
+.tog { background: #b9a57e; box-shadow: inset 0 1px 3px rgba(42, 31, 23, 0.4); }
+.tog.on { background: linear-gradient(var(--gold), var(--gold-dark)); }
+
+/* ── 칸 (가방·장비·창고·상점·택배 공용): 움푹 들어간 칸, 등급 테두리, 희귀 이상은 안쪽 빛 ── */
+.slot {
+  border-radius: 9px; border: 1px solid #b39a68;
+  background: linear-gradient(#d6c193, #e4d3a7);
+  box-shadow: inset 0 2px 5px rgba(58, 42, 26, 0.45), inset 0 -1px 0 rgba(255, 250, 230, 0.45);
+}
+.slot.filled {
+  border: 2px solid color-mix(in srgb, var(--grade) 85%, var(--wood));
+  background: radial-gradient(circle at 50% 45%, #f7ecd0 0 38%, color-mix(in srgb, var(--grade) 16%, #dcc898));
+  box-shadow: inset 0 2px 5px rgba(58, 42, 26, 0.35), inset 0 -1px 0 rgba(255, 250, 230, 0.4);
+}
+.slot.filled:hover { background: radial-gradient(circle at 50% 45%, #fff6dd 0 40%, color-mix(in srgb, var(--grade) 24%, #e2cf9f)); }
+.slot.filled:has(> .item-svg:is([data-grade="rare"], [data-grade="epic"], [data-grade="legendary"])) {
+  box-shadow: inset 0 2px 5px rgba(58, 42, 26, 0.3), inset 0 0 12px color-mix(in srgb, var(--grade) 70%, transparent);
+}
+.count, .plus-badge { text-shadow: 0 0 2px #f7ecd0, 0 0 3px #f7ecd0; color: var(--ink); }
+.plus-badge { color: #a66a10; }
+
+/* 안쪽 카드·목록 줄: 양피지 위 살짝 밝은 종이 */
+.craft-row, .shop-row, .build-card, .base-up, .tw-actions button:not(.danger), .bs-card, .bt-card, .sk-node, .fg-row {
+  border-color: #c9ad78;
+}
+.craft-row, .shop-row, .build-card, .base-up, .bs-card, .bt-card { background: rgba(255, 249, 232, 0.6); box-shadow: 0 1px 0 rgba(255, 252, 240, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.25); }
+.build-card:hover, button.bs-card:hover { border-color: var(--gold-dark); background: rgba(255, 246, 220, 0.9); }
+.sk-node { background: rgba(255, 249, 232, 0.65); }
+
+/* ── 툴팁: 어두운 판 + 맨 위 등급 색 띠 + 금색 구분선 ── */
+.tooltip {
+  padding: 0; overflow: hidden; border-radius: 8px; color: var(--ink-light); font-family: var(--font-body);
+  background: rgba(30, 22, 16, 0.95); border: 1px solid rgba(217, 166, 64, 0.55);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+.tooltip > :not(.tt-item) { margin: 10px 12px; }
+.tt-item { padding: 12px 12px 10px; border-top: 4px solid var(--g); background: linear-gradient(color-mix(in srgb, var(--g) 16%, transparent), transparent 46px); }
+.tt-name { font-family: var(--font-title); font-weight: 700; font-size: 16px; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
+.tt-meta { color: #c8b48c; }
+.tt-item .tt-name + .tt-meta { padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid rgba(217, 166, 64, 0.45); }
+.tt-desc { font-style: italic; color: #b8ab92; }
+.tt-cmp-head { border-top: 1px solid rgba(217, 166, 64, 0.45); padding-top: 6px; margin-top: 6px; }
+.tt-cmp.up { color: #8fd27a; }
+.tt-cmp.down { color: #f08a7a; }
+.tt-hint { color: var(--gold-light); }
+
+/* PC: 키 큰 창(건설 등)이 화면을 넘지 않게, 본문만 스크롤 */
+body:not(.touch) .window { display: flex; flex-direction: column; max-height: calc(100vh - 40px); }
+body:not(.touch) .window[hidden] { display: none; }
+body:not(.touch) .window .win-body { min-height: 0; overflow-y: auto; }
+
+/* 작은 휴대폰 화면: 모서리 장식 생략 (창이 화면 폭에 붙어 잘린다) */
+@media (max-width: 600px), (max-height: 500px) and (orientation: landscape) {
+  body.touch .win-corner { display: none; }
+  body.touch .window { border-width: 4px; }
+}

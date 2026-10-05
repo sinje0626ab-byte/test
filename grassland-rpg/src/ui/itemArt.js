@@ -748,7 +748,7 @@ export function itemArt(id, def, cls = 'item-svg') {
   const draw = ART[id];
   const body = draw ? draw(b) : shadow(40, 10) + P('M24 8l12 14-12 16-12-16z', b.f(def?.color ?? M.stone)) + hl('M18 20l5-7', 0.7);
   const back = backplate(b, def?.grade);
-  return `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true"><defs>${b.defs.join('')}</defs>${back}${body}</svg>`;
+  return `<svg class="${cls}" data-grade="${def?.grade ?? 'common'}" viewBox="0 0 48 48" aria-hidden="true"><defs>${b.defs.join('')}</defs>${back}${body}</svg>`;
 }
 
 // 빈 장비 칸 안내 모양 (흐린 한 색 실루엣)
