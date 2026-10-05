@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Turret } from '../entities/Turret.js';
 import { ProjectilePool } from '../entities/Projectile.js';
 import { turretDamage, turretRange, upgradeCost, upgradeItems, repairCost, demolishRefund } from '../utils/build.js';
+import { josa } from '../utils/josa.js';
 
 const tmp = new THREE.Vector3();
 
@@ -35,7 +36,7 @@ export class TurretSystem {
       const t = near[Math.floor(Math.random() * near.length)];
       t.sleep = duration;
       bus.emit('turret:slept', { turret: t });
-      bus.emit('notify', { text: `${t.def.name}이(가) 잠들었습니다!`, kind: 'warn' });
+      bus.emit('notify', { text: `${josa(t.def.name, '이/가')} 잠들었습니다!`, kind: 'warn' });
     });
     bus.on('turret:overclock', ({ turrets, mult, duration }) => {
       for (const t of turrets) t.overclock = { mult, time: duration };

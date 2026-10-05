@@ -1,4 +1,5 @@
 import { shopPrice } from '../utils/shop.js';
+import { josa } from '../utils/josa.js';
 
 // 골드, 상점 사고팔기
 export class EconomySystem {
@@ -20,7 +21,7 @@ export class EconomySystem {
       bus.emit('economy:death-loss', { amount: loss, position }); // 묘비 (절반을 되찾을 수 있다)
       if (loss <= 0) return;
       this.change(-loss);
-      bus.emit('notify', { text: `쓰러져서 골드 ${loss}을(를) 잃었습니다. 묘비에서 절반을 되찾을 수 있어요`, kind: 'warn' });
+      bus.emit('notify', { text: `쓰러져서 골드 ${josa(loss, '을/를')} 잃었습니다. 묘비에서 절반을 되찾을 수 있어요`, kind: 'warn' });
     });
 
     // 포탑 설치 등: 골드가 충분하면 빼고 ok = true

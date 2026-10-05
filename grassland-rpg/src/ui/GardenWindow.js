@@ -1,5 +1,6 @@
 import { closeWhenFar } from './CraftWindow.js';
 import { itemIcon } from './icons.js';
+import { josa } from '../utils/josa.js';
 
 // 텃밭 창 (텃밭 앞에서 E): 씨앗 심기 · 자라는 중 · 거두기
 export class GardenWindow {
@@ -53,8 +54,8 @@ export class GardenWindow {
       const c = crops[f.crop.seed];
       const left = Math.max(0, c.days - (this.ctx.time.day - f.crop.day));
       html = g >= 1
-        ? `<p class="gd-note">${c.name}이(가) 다 자랐어요!</p><button type="button" class="gd-harvest" data-act="harvest">거두기</button>`
-        : `<p class="gd-note">${c.name}이(가) 자라는 중… <b>${left}일</b> 뒤 아침에 거둘 수 있어요.</p>
+        ? `<p class="gd-note">${josa(c.name, '이/가')} 다 자랐어요!</p><button type="button" class="gd-harvest" data-act="harvest">거두기</button>`
+        : `<p class="gd-note">${josa(c.name, '이/가')} 자라는 중… <b>${left}일</b> 뒤 아침에 거둘 수 있어요.</p>
            <div class="bar"><div class="fill" style="width:${g * 100}%"></div></div>`;
     }
     this.body.innerHTML = `<div class="gd">${html}</div>`;

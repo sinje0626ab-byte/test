@@ -1,3 +1,4 @@
+import { josa } from '../utils/josa.js';
 // E 상호작용: 가장 가까운 포탑·기지 건물을 찾아 안내하고, E를 누르면 알린다.
 export class InteractionSystem {
   constructor(ctx) {
@@ -32,7 +33,7 @@ export class InteractionSystem {
 
   hint(s) {
     if (!s) return '';
-    if (s.kind === 'npc') return `E  ${s.def.name}와(과) 이야기`;
+    if (s.kind === 'npc') return `E  ${josa(s.def.name, '과/와')} 이야기`;
     if (s.kind === 'tomb') return `E  묘비에서 골드 ${s.gold} 되찾기`;
     if (s.kind === 'turret') return `E  ${s.def.name}${s.alive ? '' : ' (부서짐)'} 관리`;
     if (s.kind === 'facility') {

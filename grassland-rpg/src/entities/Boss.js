@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Monster } from './Monster.js';
 import { PATTERNS } from './bossPatterns.js';
+import { josa } from '../utils/josa.js';
 
 const tmp = new THREE.Vector3();
 
@@ -144,7 +145,7 @@ export class Boss extends Monster {
       this.enraged = true;
       this.cdSpeed = b.enrage.speed;
       this.mat.color.set(b.enrage.color);
-      this.ctx.bus.emit('notify', { text: `${b.name}이(가) 분노했습니다!`, kind: 'warn' });
+      this.ctx.bus.emit('notify', { text: `${josa(b.name, '이/가')} 분노했습니다!`, kind: 'warn' });
       this.ctx.bus.emit('boss:enraged', { boss: this });
     }
   }

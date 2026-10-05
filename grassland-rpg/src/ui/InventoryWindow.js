@@ -1,13 +1,16 @@
 import { itemIcon } from './icons.js';
 import { itemTooltip, compareLines } from './itemText.js';
+import { pick } from '../utils/josa.js';
 
 // 인벤토리 창 (I): 격자 슬롯, 드래그로 이동, 우클릭 사용/장착, 툴팁
+// 버리기: 아이템을 '버리기' 칸에 끌어다 놓거나, 칸을 눌러 고른 뒤 '버리기' → 아래 확인 판에서 개수 선택
 export class InventoryWindow {
   constructor(ctx, ui, tooltip) {
     this.ctx = ctx;
     this.tooltip = tooltip;
     this.slots = [];
     this.drag = null;
+    this.selected = -1;
 
     const cfg = ctx.data.config.inventory;
     const win = ui.createWindow({ id: 'inventory', title: '가방', key: 'KeyI', hotkeyLabel: 'I' });
@@ -18,8 +21,23 @@ export class InventoryWindow {
         <span class="gold"><i class="coin"></i><b data-inv-gold>0</b></span>
         <span class="inv-hint">${ctx.input.touchMode ? '탭: 정보 · 두 번 탭: 사용 · 끌기: 옮기기' : '올리기: 정보 · 우클릭: 사용 · 드래그: 옮기기'}</span>
         <button type="button" class="inv-sort" data-sort>정리</button>
-      </footer>`;
+        <button type="button" class="inv-trash" data-trash>버리기</button>
+      </footer>
+      <div class="inv-confirm" hidden></div>`;
     win.body.querySelector('[data-sort]').addEventListener('click', () => ctx.bus.emit('inventory:sort'));
+    this.trashEl = win.body.querySelector('[data-trash]');
+    this.confirmEl = win.body.querySelector('.inv-confirm');
+    this.trashEl.addEventListener('click', () => {
+      if (this.slots[this.selected]) this.askDiscard(this.selected);
+      else ctx.bus.emit('notify', { text: '버릴 아이템을 먼저 누르거나, 버리기로 끌어다 놓으세요', kind: 'info' });
+    });
+    this.confirmEl.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-discard]');
+      if (!b) return;
+      const d = this.pendingDiscard;
+      this.closeConfirm();
+      if (b.dataset.discard !== 'cancel' && d && this.slots[d.slot]?.id === d.id) ctx.bus.emit('inventory:discard', { slot: d.slot, count: Number(b.dataset.discard) });
+    });
     this.grid = win.body.querySelector('.inv-grid');
     this.goldEl = win.body.querySelector('[data-inv-gold]');
     for (let i = 0; i < cfg.slots; i++) {
@@ -28,7 +46,7 @@ export class InventoryWindow {
       el.dataset.slot = String(i);
       this.grid.appendChild(el);
     }
-    win.onClose = () => { this.tooltip.hide(); this.cancelDrag(); };
+    win.onClose = () => { this.tooltip.hide(); this.cancelDrag(); this.closeConfirm(); this.select(-1); };
 
     this.bindEvents();
     ctx.bus.on('inventory:changed', ({ slots }) => this.render(slots));
@@ -54,7 +72,7 @@ export class InventoryWindow {
         return;
       }
       const def = this.def(s.id);
-      el.className = 'slot filled';
+      el.className = `slot filled${i === this.selected ? ' sel' : ''}`;
       el.style.setProperty('--grade', grades[def.grade]?.color ?? '#e8e8e8');
       el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}${s.fresh ? '<i class="new-dot"></i>' : ''}`;
     });
@@ -121,10 +139,17 @@ export class InventoryWindow {
       for (const el of grid.children) el.classList.remove('over');
       const i = this.slotIndexAt(e.clientX, e.clientY);
       if (i >= 0) grid.children[i].classList.add('over');
+      this.trashEl.classList.toggle('over', document.elementFromPoint(e.clientX, e.clientY)?.closest?.('[data-trash]') === this.trashEl);
     });
 
     window.addEventListener('pointerup', (e) => {
       if (!this.drag) return;
+      if (document.elementFromPoint(e.clientX, e.clientY)?.closest?.('[data-trash]') === this.trashEl) {
+        const { from } = this.drag;
+        this.cancelDrag();
+        this.askDiscard(from);
+        return;
+      }
       const to = this.slotIndexAt(e.clientX, e.clientY);
       const { from } = this.drag;
       this.cancelDrag();
@@ -145,8 +170,39 @@ export class InventoryWindow {
       return;
     }
     this.lastTap = { slot: i, time: now };
+    this.select(i);
     if (e.pointerType === 'touch') this.tooltip.pin(this.tooltipHtml(s), this.grid.children[i]);
     if (s.fresh) this.ctx.bus.emit('inventory:seen', { slot: i });
+  }
+
+  // 고른 칸 (버리기 버튼이 이 칸을 버린다)
+  select(i) {
+    this.grid.children[this.selected]?.classList.remove('sel');
+    this.selected = i;
+    this.grid.children[i]?.classList.add('sel');
+  }
+
+  askDiscard(slot) {
+    const s = this.slots[slot];
+    if (!s) return;
+    this.select(slot);
+    this.tooltip.hide();
+    const def = this.def(s.id);
+    const name = def.name + (s.plus ? ` +${s.plus}` : '');
+    const precious = s.plus || ['rare', 'epic', 'legendary'].includes(def.grade);
+    const opts = s.count > 1
+      ? [[1, '1개'], ...(s.count >= 4 ? [[Math.floor(s.count / 2), `절반 (${Math.floor(s.count / 2)})`]] : []), [s.count, `모두 (${s.count})`]]
+      : [[1, '버리기']];
+    this.pendingDiscard = { slot, id: s.id };
+    this.confirmEl.innerHTML = `
+      <p>${itemIcon(def)}<span><b>${name}</b>${s.count > 1 ? ` ×${s.count}` : ''}${pick(s.count > 1 ? s.count : name, '을/를')} 버릴까요?<br><small>${precious ? '<em>귀한 아이템이에요!</em> ' : ''}버린 아이템은 되찾을 수 없어요</small></span></p>
+      <div class="inv-actions"><button type="button" data-discard="cancel">취소</button>${opts.map(([n, label]) => `<button type="button" class="danger" data-discard="${n}">${label}</button>`).join('')}</div>`;
+    this.confirmEl.hidden = false;
+  }
+
+  closeConfirm() {
+    this.pendingDiscard = null;
+    this.confirmEl.hidden = true;
   }
 
   moveGhost(x, y) {
@@ -157,6 +213,7 @@ export class InventoryWindow {
     if (!this.drag) return;
     this.drag.ghost.remove();
     for (const el of this.grid.children) el.classList.remove('dragging', 'over');
+    this.trashEl.classList.remove('over');
     this.drag = null;
   }
 }
