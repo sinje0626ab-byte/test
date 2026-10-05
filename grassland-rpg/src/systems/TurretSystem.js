@@ -7,9 +7,15 @@ import { turretDamage, turretRange, upgradeCost, upgradeItems, repairCost, repai
 import { josa } from '../utils/josa.js';
 
 const tmp = new THREE.Vector3();
+const aim = new THREE.Vector3();
+const lead = new THREE.Vector3();
+const OVERKILL = 1.1; // 날아오는 피해가 남은 체력의 110% 이상이면 그 적은 뒤로 미룬다
 
 // 포탑 설치 반영, 조준·발사, 투사체 이동·명중, 업그레이드·수리(전체·원격)·우선순위·철거, 사거리 원
 // 대상 찾기는 포탑마다 retargetInterval 초 간격 (시작 시점은 흩어 둠). 대상이 죽거나 사거리 밖이면 바로 다시 찾는다.
+// 예측 사격: 몬스터 실제 속도(m.vel, 돌진형은 행동의 predict)로 투사체가 닿을 때의 자리를 겨눈다 (최대 maxLead m).
+// 초과 피해 방지: 직선 투사체 피해를 대상의 incoming 에 예약하고, 맞거나 사라지면 뺀다 (범위 피해는 예약 안 함).
+// 개발용: 주소에 ?debug=turret 이면 포탑 머리 위에 명중/발사, 습격이 끝나면 종류별 명중률을 콘솔에.
 export class TurretSystem {
   constructor(ctx) {
     this.ctx = ctx;
@@ -19,6 +25,12 @@ export class TurretSystem {
     this.blasts = [];
     this.rings = new RangeRings(ctx.scene);
     this.focus = null; // 포탑 창에서 보고 있는 포탑
+    this.lead = true; // 예측 사격 (비교 시험용으로 끌 수 있다)
+    this.spreadFire = true; // 초과 피해 방지 (비교 시험용으로 끌 수 있다)
+    this.debug = new URLSearchParams(location.search).get('debug') === 'turret';
+    this.tally = {}; // 종류별 { shots, hits } (습격 단위)
+    if (this.debug) this.setupDebug();
+    ctx.bus.on('raid:end', () => this.report());
     this.buildOpen = false; // 건설 창이 열려 있음
     const { bus } = ctx;
     bus.on('turret:focus', ({ turret }) => { this.focus = turret; });
@@ -176,10 +188,42 @@ export class TurretSystem {
       const d = Math.hypot(m.position.x - t.position.x, m.position.z - t.position.z);
       if (d > range) continue;
       // spread(독침): 최근에 쏜 적은 뒤로 미뤄 여러 적을 번갈아 노린다
-      const score = t.priority === 'lowestHp' ? m.stats.hp : t.priority === 'spread' ? d + (t.recent?.includes(m) ? 1000 : 0) : d;
+      let score = t.priority === 'lowestHp' ? m.stats.hp : t.priority === 'spread' ? d + (t.recent?.includes(m) ? 1000 : 0) : d;
+      if (this.doomed(m)) score += 1e6; // 이미 죽을 만큼 날아오고 있으면 뒤로 (그것뿐이면 그래도 쏜다)
       if (score < bestScore) { bestScore = score; best = m; }
     }
     return best;
+  }
+
+  doomed(m) {
+    return this.spreadFire && m.incoming >= m.stats.hp * OVERKILL;
+  }
+
+  // t 초 뒤 대상 자리 (예측). 돌진형 예고·돌진 중이면 행동이 알려 주는 자리, 아니면 실제 속도로. 최대 maxLead m
+  predict(m, t, out) {
+    if (!this.lead) return out.copy(m.position);
+    if (!m.behavior?.predict?.(m, t, out)) out.copy(m.position).addScaledVector(m.vel, t);
+    lead.subVectors(out, m.position).setY(0);
+    const max = this.cfg.maxLead;
+    if (lead.lengthSq() > max * max) out.copy(m.position).addScaledVector(lead.setLength(max), 1);
+    return out;
+  }
+
+  // 투사체가 닿는 시간을 두 번 다시 계산해 조준점을 맞춘다. time(거리) = 비행시간
+  aimAt(from, m, time) {
+    aim.copy(m.position);
+    for (let i = 0; i < 2; i++) {
+      const dist = Math.hypot(aim.x - from.x, aim.z - from.z);
+      this.predict(m, time(dist), aim);
+    }
+    return aim;
+  }
+
+  // 날아가던 투사체가 맞거나 사라질 때: 예약했던 피해를 대상에서 뺀다
+  unreserve(p) {
+    if (p.target && p.reserved) p.target.incoming = Math.max(0, p.target.incoming - p.reserved);
+    p.target = null;
+    p.reserved = 0;
   }
 
   fire(t, target) {
@@ -192,15 +236,29 @@ export class TurretSystem {
     if (def.splashRadius) {
       // 포물선: 지금 적 위치에 떨어지도록 날아가는 시간을 거리로 정한다.
       const g = this.cfg.gravity;
-      tmp.set(target.position.x - from.x, 0, target.position.z - from.z);
-      const time = Math.max(0.4, tmp.length() / def.projectileSpeed);
+      const flight = (dist) => Math.max(0.4, dist / def.projectileSpeed);
+      const at = this.aimAt(from, target, flight); // 떨어질 때 적이 있을 자리
+      tmp.set(at.x - from.x, 0, at.z - from.z);
+      const time = flight(tmp.length());
       const vel = tmp.divideScalar(time);
       vel.y = (0 - from.y + 0.5 * g * time * time) / time;
       p.fire(from, vel, damage, time + 1, { gravity: g, splash: { radius: def.splashRadius, minFactor: def.splashMinFactor } });
     } else {
-      tmp.set(target.position.x, 0.5, target.position.z).sub(from).normalize().multiplyScalar(def.projectileSpeed);
+      const at = this.aimAt(from, target, (dist) => dist / def.projectileSpeed);
+      tmp.set(at.x, 0.5, at.z).sub(from).normalize().multiplyScalar(def.projectileSpeed);
       p.fire(from, tmp, damage, (range * 1.3) / def.projectileSpeed);
     }
+    p.turret = t;
+    // 초과 피해 방지: 한 대상만 맞히는 투사체만 예약 (대포·서리 범위는 안 함)
+    p.target = null;
+    p.reserved = 0;
+    if (!def.splashRadius && !def.hitSplash) {
+      p.target = target;
+      p.reserved = damage;
+      target.incoming += damage;
+    }
+    t.shots = (t.shots ?? 0) + 1;
+    (this.tally[t.type] ??= { shots: 0, hits: 0 }).shots += 1;
     p.onHit = def.onHit ?? null;
     p.hitSplash = def.hitSplash ?? 0;
     if (t.priority === 'spread') t.recent = [target, ...(t.recent ?? [])].slice(0, 2);
@@ -226,6 +284,45 @@ export class TurretSystem {
     if (placing?.kind === 'turret') rings.show(placing.pos, turretRange(ctx.data.turrets[placing.type], stats, 1), true, !placing.check?.ok);
     if (this.focus && this.turrets.includes(this.focus)) rings.show(this.focus.position, turretRange(this.focus.def, stats, this.focus.level), true);
     rings.end();
+  }
+
+  counted(p) {
+    const t = p.turret;
+    if (!t) return;
+    t.hits = (t.hits ?? 0) + 1;
+    (this.tally[t.type] ??= { shots: 0, hits: 0 }).hits += 1;
+  }
+
+  // 개발용 명중률: 습격이 끝나면 종류별로 콘솔에 (그리고 새로 센다)
+  report() {
+    const rows = Object.entries(this.tally).map(([type, x]) => ({ 포탑: this.ctx.data.turrets[type]?.name ?? type, 발사: x.shots, 명중: x.hits, 명중률: x.shots ? `${Math.round((x.hits / x.shots) * 100)}%` : '-' }));
+    if (this.debug && rows.length) {
+      console.log('[포탑 명중률] 이번 습격');
+      console.table(rows);
+    }
+    this.tally = {};
+    return rows;
+  }
+
+  setupDebug() {
+    this.debugEl = document.createElement('div');
+    this.debugEl.className = 'turret-debug';
+    document.getElementById('ui')?.appendChild(this.debugEl);
+  }
+
+  // ?debug=turret: 포탑 머리 위에 명중/발사
+  drawDebug() {
+    const cam = this.ctx.camera;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    while (this.debugEl.children.length < this.turrets.length) this.debugEl.appendChild(document.createElement('b'));
+    this.turrets.forEach((t, i) => {
+      const el = this.debugEl.children[i];
+      tmp.copy(t.position).setY(2.6).project(cam);
+      el.style.transform = `translate(${(tmp.x * 0.5 + 0.5) * w}px, ${(-tmp.y * 0.5 + 0.5) * h}px) translate(-50%, -50%)`;
+      el.textContent = `${t.hits ?? 0}/${t.shots ?? 0}`;
+    });
+    for (let i = this.turrets.length; i < this.debugEl.children.length; i++) this.debugEl.children[i].textContent = '';
   }
 
   blast(position, radius, color = 0xffb35c) {
@@ -256,7 +353,7 @@ export class TurretSystem {
       const cur = t.target;
       const lost = cur && (!cur.alive || cur.untargetable
         || Math.hypot(cur.position.x - t.position.x, cur.position.z - t.position.z) > turretRange(t.def, this.ctx.player.stats, t.level));
-      if (lost || t.search <= 0) {
+      if (lost || t.search <= 0 || (t.cooldown <= 0 && cur && this.doomed(cur))) {
         t.target = this.pickTarget(t);
         t.search = this.cfg.retargetInterval;
       }
@@ -277,6 +374,7 @@ export class TurretSystem {
       if (p.splash) {
         if (p.position.y <= 0 || p.life <= 0) {
           p.position.y = 0;
+          if (monsters.some((m) => m.alive && !m.untargetable && Math.hypot(m.position.x - p.position.x, m.position.z - p.position.z) < p.splash.radius + m.radius)) this.counted(p);
           bus.emit('projectile:explode', { position: p.position.clone(), radius: p.splash.radius, minFactor: p.splash.minFactor, damage: p.damage });
           this.blast(p.position, p.splash.radius);
           p.release();
@@ -289,6 +387,8 @@ export class TurretSystem {
         // 이번 프레임 이동 구간 전체로 판정 (빠른 총알이 작은 적을 건너뛰지 않게). 높이 조건은 그대로
         if (p.position.y < m.radius * 2 + (m.def.flier ? 1.3 : 0) && p.sweepHits(m.position.x, m.position.z, m.radius + 0.15)) { hit = m; break; }
       }
+      if (hit || p.life <= 0 || p.position.y < 0) this.unreserve(p);
+      if (hit) this.counted(p);
       if (hit && p.hitSplash) {
         // 서리 포탑: 맞은 자리 둘레 모두 (감속)
         bus.emit('projectile:explode', { position: hit.position.clone(), radius: p.hitSplash, minFactor: 1, damage: p.damage, effect: p.onHit });
@@ -303,6 +403,7 @@ export class TurretSystem {
     }
 
     this.updateRings();
+    if (this.debug) this.drawDebug();
 
     for (const b of this.blasts) {
       if (b.t >= 1) continue;
