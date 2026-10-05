@@ -65,15 +65,8 @@ body.on-title #ui { display: none; }
     0 9px 0 var(--depth), 4px 7px 0 var(--depth), -4px 7px 0 var(--depth),
     0 14px 22px rgba(40, 60, 30, 0.35);
 }
-.logo .g { color: #5fb35c; --depth: #3f7a3c; }
-.logo .o { color: #f08a4b; --depth: #b35e2c; }
 @keyframes pop { 0% { opacity: 0; transform: translateY(40px) scale(0.4); } 100% { opacity: 1; transform: none; } }
 @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
-.logo-badge {
-  margin: 12px 0 0; padding: 4px 16px; border-radius: 999px; background: #ffcf5c; color: #7a5412;
-  font-weight: 900; font-size: clamp(16px, 4.4vw, 22px); letter-spacing: 0.1em; transform: rotate(-3deg); box-shadow: 0 3px 0 #d9a53a;
-  opacity: 0; animation: pop 0.5s 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
 .sprout { position: absolute; left: 18%; top: -26px; width: 30px; height: 30px; opacity: 0; animation: pop 0.5s 0.9s forwards; }
 .sprout b { position: absolute; bottom: 0; width: 16px; height: 16px; background: #7cc67a; border-radius: 0 100% 0 100%; }
 .sprout b:first-child { left: 0; transform: rotate(-15deg); }

@@ -271,7 +271,7 @@ body:not(.touch) .window .win-body { min-height: 0; overflow-y: auto; }
   background: linear-gradient(#4a3424, #2a1f17); border: 1px solid #120c08;
   box-shadow: inset 0 0 0 1px rgba(217, 166, 64, 0.5), inset 0 1px 0 rgba(255, 220, 170, 0.18), 0 6px 16px rgba(0, 0, 0, 0.35);
 }
-body:not(.touch) .actionbar :is(.quickbar, .skillbar) { position: static; transform: none; gap: 6px; }
+body:not(.touch) .actionbar :is(.quickbar, .skillbar) { position: static; transform: none; gap: 6px; height: 50px; align-items: center; }
 .actionbar .skillbar { padding-left: 10px; border-left: 1px solid rgba(217, 166, 64, 0.35); }
 .qslot, .sslot {
   width: 50px; height: 50px; border-radius: 8px; border: 1px solid #b39a68;
@@ -352,3 +352,123 @@ body.touch .hud-portrait .lv-badge small { font-size: 6px; }
 body.touch .qslot { box-shadow: inset 0 2px 4px rgba(58, 42, 26, 0.45), 0 0 0 1px #120c08, 0 3px 6px rgba(0, 0, 0, 0.3); }
 @media (max-height: 500px) and (orientation: landscape) {
   }
+
+/* ══ 연출·타이틀·커서 (A-2 3/3) ══ */
+/* 지역 진입 배너: 화면 위 1/4, 큰 지역명 + 위아래 금색 장식선 + 위험도 별. 페이드 + 자간이 살짝 벌어짐 */
+.region-banner {
+  position: absolute; top: 22%; left: 50%; transform: translateX(-50%); pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 70px; text-align: center;
+  background: radial-gradient(ellipse at center, rgba(26, 18, 10, 0.6), rgba(26, 18, 10, 0.3) 45%, transparent 72%);
+  animation: region-in 3.5s ease-out forwards;
+}
+.region-banner[hidden] { display: none; }
+.region-banner::before, .region-banner::after {
+  content: ''; width: 260px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold-light) 30%, var(--gold) 50%, var(--gold-light) 70%, transparent);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+.region-banner::after { order: 3; }
+.region-banner b {
+  order: 1; font: 900 46px/1.1 var(--font-display); color: #fff6dc; letter-spacing: 6px; white-space: nowrap;
+  text-shadow: 0 2px 0 #3a2a1a, 0 0 12px rgba(0, 0, 0, 0.55), 0 0 30px rgba(246, 215, 122, 0.35);
+  animation: region-spread 3.5s ease-out forwards; animation-duration: inherit;
+}
+.region-banner small { order: 2; font: 700 13px/1 var(--font-title); color: #f3e6c4; letter-spacing: 2px; text-shadow: 0 1px 2px #000; }
+.region-banner small i { font-style: normal; color: var(--gold-light); }
+.region-banner:not(.first) { top: 18%; }
+.region-banner:not(.first) b { font-size: 28px; letter-spacing: 4px; }
+.region-banner:not(.first)::before, .region-banner:not(.first)::after { width: 160px; }
+@keyframes region-in { 0% { opacity: 0; } 15%, 75% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes region-spread { from { letter-spacing: 1px; } to { letter-spacing: 8px; } }
+
+/* 레벨업: 가운데 LEVEL UP (금빛 글자) + Lv 숫자 + 방사형 빛 0.8초 */
+.levelup { position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: none; text-align: center; }
+.levelup[hidden] { display: none; }
+.levelup.play { animation: lu-in 2.2s ease-out forwards; }
+.lu-glow {
+  position: absolute; left: 50%; top: 45%; width: 420px; height: 420px; margin: -210px 0 0 -210px; border-radius: 50%; z-index: -1;
+  background: radial-gradient(circle, rgba(255, 236, 160, 0.75), rgba(246, 215, 122, 0.25) 35%, transparent 65%),
+    repeating-conic-gradient(rgba(255, 230, 150, 0.28) 0 6deg, transparent 6deg 18deg);
+  -webkit-mask: radial-gradient(circle, #000 30%, transparent 68%); mask: radial-gradient(circle, #000 30%, transparent 68%);
+  opacity: 0;
+}
+.levelup.play .lu-glow { animation: lu-glow 0.8s ease-out forwards; }
+.lu-title {
+  font: 700 clamp(30px, 9vw, 52px)/1 var(--font-deco); letter-spacing: 0.12em; white-space: nowrap;
+  background: linear-gradient(#fff6c8, #f6d77a 40%, #d9a640 60%, #8a5f1c); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 2px 0 #3a2a1a) drop-shadow(0 0 10px rgba(0, 0, 0, 0.45));
+}
+.lu-lv { font: 400 34px/1.1 var(--font-number); color: #fff; -webkit-text-stroke: 3px #3a2a1a; paint-order: stroke fill; }
+.levelup small { white-space: nowrap; margin-top: 4px; font: 700 13px/1 var(--font-title); color: #f3e6c4; text-shadow: 0 1px 2px #000; }
+@keyframes lu-in { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } 20% { transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -54%); } }
+@keyframes lu-glow { 0% { opacity: 0; scale: 0.4; rotate: 0deg; } 30% { opacity: 1; } 100% { opacity: 0; scale: 1.3; rotate: 25deg; } }
+
+/* 타이틀: 금박 한글 로고 + 짙은 갈색 외곽선 + 그림자, 아래 영문 장식. 글자가 하나씩 튀어나오는 연출은 그대로 */
+.logo { font-family: var(--font-display); font-weight: 900; font-size: clamp(52px, 14vw, 104px); letter-spacing: 4px; column-gap: 0.35em; }
+.logo .word span.k {
+  background: linear-gradient(#fff6c8 10%, #f6d77a 38%, #d9a640 58%, #a8741f 85%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: none;
+  /* 외곽선은 drop-shadow 네 방향으로 (text-stroke 는 얇은 글자를 덮어 어둡게 만든다) */
+  filter: drop-shadow(2px 0 0 #3a2412) drop-shadow(-2px 0 0 #3a2412) drop-shadow(0 2px 0 #3a2412) drop-shadow(0 -2px 0 #3a2412)
+    drop-shadow(0 5px 0 #3a2412) drop-shadow(0 12px 14px rgba(30, 20, 10, 0.4));
+}
+.logo-en {
+  margin-top: 8px; font: 700 clamp(13px, 3.4vw, 20px)/1 var(--font-deco); letter-spacing: 0.55em; padding-left: 0.55em; color: #fff3d0;
+  text-shadow: 0 2px 0 #3a2412, 0 0 10px rgba(0, 0, 0, 0.4); opacity: 0; animation: rise 0.6s 1s ease-out forwards;
+}
+.logo-sub { background: rgba(42, 31, 23, 0.72); color: #f3e6c4; font-family: var(--font-title); border: 1px solid rgba(217, 166, 64, 0.5); }
+.sprout { left: 10%; }
+/* 메뉴: 나무 명판 (네 귀퉁이 금 못), 마우스를 올리거나 주요 항목은 양옆에 ◆ */
+.title-menu .t-menu-btn {
+  position: relative; padding: 12px 40px;
+  background: radial-gradient(circle at 9px 9px, #f6d77a 2px, #6b4a1c 2.6px, transparent 3.2px),
+    radial-gradient(circle at calc(100% - 9px) 9px, #f6d77a 2px, #6b4a1c 2.6px, transparent 3.2px),
+    radial-gradient(circle at 9px calc(100% - 9px), #f6d77a 2px, #6b4a1c 2.6px, transparent 3.2px),
+    radial-gradient(circle at calc(100% - 9px) calc(100% - 9px), #f6d77a 2px, #6b4a1c 2.6px, transparent 3.2px),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(0, 0, 0, 0.06) 22px 23px),
+    linear-gradient(#7a5236, #4a3424);
+  border: 2px solid var(--wood-dark); box-shadow: inset 0 0 0 1px rgba(217, 166, 64, 0.55), inset 0 1px 0 rgba(255, 220, 170, 0.3), 0 4px 0 #1d150f, 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+.title-menu .t-menu-btn.primary {
+  background: radial-gradient(circle at 9px 9px, #fff6c8 2px, #6b4a1c 2.6px, transparent 3.2px),
+    radial-gradient(circle at calc(100% - 9px) 9px, #fff6c8 2px, #6b4a1c 2.6px, transparent 3.2px),
+    radial-gradient(circle at 9px calc(100% - 9px), #fff6c8 2px, #6b4a1c 2.6px, transparent 3.2px),
+    radial-gradient(circle at calc(100% - 9px) calc(100% - 9px), #fff6c8 2px, #6b4a1c 2.6px, transparent 3.2px),
+    linear-gradient(var(--gold-light), var(--gold) 60%, var(--gold-dark));
+}
+.title-menu .t-menu-btn::before, .title-menu .t-menu-btn::after {
+  content: '◆'; position: absolute; top: 50%; translate: 0 -50%; font-size: 12px; color: var(--gold-light); opacity: 0; transition: opacity 0.15s, transform 0.15s;
+  text-shadow: 0 1px 0 #1d150f;
+}
+.title-menu .t-menu-btn::before { left: 18px; transform: translateX(-6px); }
+.title-menu .t-menu-btn::after { right: 18px; transform: translateX(6px); }
+.title-menu .t-menu-btn.primary::before, .title-menu .t-menu-btn.primary::after { color: var(--wood-dark); text-shadow: none; }
+.title-menu .t-menu-btn:is(:hover, :focus-visible, .primary)::before, .title-menu .t-menu-btn:is(:hover, :focus-visible, .primary)::after { opacity: 1; transform: none; }
+.t-slot { background: rgba(42, 31, 23, 0.78); color: var(--ink-light); border: 1px solid rgba(217, 166, 64, 0.45); border-radius: 8px; font-family: var(--font-title); }
+.t-slot small { color: #d8c8a4; font-family: var(--font-body); }
+.t-slot.on { background: linear-gradient(var(--gold-light), var(--gold)); color: var(--ink); border-color: #6b4a1c; }
+.t-slot.on small { color: #5a4630; }
+.title-foot { background: rgba(42, 31, 23, 0.7); color: #e8d6a8; }
+.title-ver { position: absolute; right: 14px; bottom: max(14px, env(safe-area-inset-bottom)); font: 700 12px/1 var(--font-deco); letter-spacing: 1px; color: #fff3d0; text-shadow: 0 1px 2px #000; opacity: 0.85; }
+
+/* 대화: 아래 양피지 판, 이름은 금색 리본(창 제목), 다 나오면 ▼ 깜빡임 */
+.dlg { position: relative; }
+.dlg-text { font-size: 15.5px; color: var(--ink); }
+.dlg-face { border: 3px solid var(--gold); box-shadow: 0 0 0 2px var(--wood-dark), 0 3px 6px rgba(0, 0, 0, 0.3); }
+.dlg-next { position: absolute; right: 2px; bottom: -4px; font-size: 13px; color: var(--gold-dark); font-style: normal; animation: dlg-blink 0.9s steps(2, start) infinite; }
+.dlg-next[hidden] { display: none; }
+@keyframes dlg-blink { to { visibility: hidden; } }
+
+/* 마우스 커서 (PC만): 기본은 작은 칼, 버튼·상호작용 대상 위에선 손 */
+body:not(.touch) { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M2 2l4 1 13 13-3 3L3 6z' fill='%23e8eef5' stroke='%232a1f17' stroke-width='1.4' stroke-linejoin='round'/%3E%3Cpath d='M4 4l13 13' stroke='%23fff' stroke-width='1' opacity='.7'/%3E%3Cpath d='M14 21l7-7 2 2-7 7z' fill='%23d9a640' stroke='%232a1f17' stroke-width='1.3'/%3E%3Cpath d='M20 20l5 5' stroke='%232a1f17' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M20 20l5 5' stroke='%238a5a34' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") 2 2, auto; }
+body:not(.touch) :is(button, [role="button"], a, label, select, .slot.filled, .minimap, .qslot, .sslot, .bs-card, .sk-node.ready, .build-card, [data-act], [data-opt], .dlg),
+body.can-interact:not(.touch) #app canvas { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M9 3.5a2 2 0 0 1 4 0V12l1-.6V9.8a2 2 0 0 1 4 .2v2l.4-.2a2 2 0 0 1 3.6 1.2V19c0 4-3 6.5-6.8 6.5h-1.5c-2.6 0-4.4-1.2-5.8-3.4l-3.4-5.6a2 2 0 0 1 3.2-2.3L9 16z' fill='%23ffd9b8' stroke='%232a1f17' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M13 12v4M17 12v4M9 10v6' stroke='%23c08a62' stroke-width='1'/%3E%3C/svg%3E") 9 2, pointer; }
+body:not(.touch) :is(input[type="text"], textarea) { cursor: text; }
+
+/* 휴대폰: 레벨업·지역 배너를 퀘스트 표시 아래로, 작게 */
+@media (max-width: 600px) {
+  body.touch .levelup { top: 40%; }
+  body.touch .lu-glow { width: 300px; height: 300px; margin: -150px 0 0 -150px; }
+  body.touch .region-banner { top: 24%; padding: 12px 40px; }
+  body.touch .region-banner b { font-size: 36px; }
+  body.touch .region-banner::before, body.touch .region-banner::after { width: 200px; }
+}

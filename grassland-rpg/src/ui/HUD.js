@@ -40,6 +40,8 @@ export class HUD {
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
       <div class="hud-banner" data-banner hidden></div>
+      <div class="region-banner" data-region hidden></div>
+      <div class="levelup" data-levelup hidden><i class="lu-glow"></i><b class="lu-title">LEVEL UP</b><b class="lu-lv"></b><small>스킬 포인트 +1 · 스킬 창에서 배워요</small></div>
       <div class="hud-interact" data-interact hidden></div>
       <div class="actionbar" data-actionbar><div class="quickbar" data-quick></div></div>
       <div class="bossbar" data-boss hidden><b data-boss-name></b><div class="bar"><div class="fill" data-boss-fill></div></div></div>
@@ -52,7 +54,7 @@ export class HUD {
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), dial: $('[data-dial]'), day: $('[data-day]'), until: $('[data-until]'),
-      banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
+      banner: $('[data-banner]'), region: $('[data-region]'), levelup: $('[data-levelup]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
       buffs: $('[data-buffs]'), portrait: $('[data-portrait]'), hpGhost: $('[data-hp-ghost]'), boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
@@ -120,15 +122,13 @@ export class HUD {
     });
     bus.on('boss:defeated', ({ name }) => this.banner(`${name} 처치!`, '큰 보상을 떨어뜨렸어요', 'level'));
     bus.on('interact:hint', ({ text }) => {
+      document.body.classList.toggle('can-interact', !!text); // PC 커서: 손 모양
       this.el.interact.hidden = !text;
       this.el.interact.textContent = text;
     });
-    bus.on('region:entered', ({ name, first }) => {
-      if (first) this.banner(`${name}`, '처음 와 보는 곳이에요', 'day');
-      else this.notify({ text: `${name}에 들어섰습니다`, kind: 'info' });
-    });
+    bus.on('region:entered', ({ id, name, first }) => this.regionBanner(id, name, first));
     bus.on('stats:levelup', ({ level }) => {
-      this.banner(`레벨 업! Lv ${level}`, '스킬 포인트 +1 · 스킬 창(K)에서 배워요', 'level');
+      this.levelUp(level);
       this.pulse(this.el.lv.parentElement);
     });
     bus.on('raid:start', ({ count, bloodMoon }) => this.banner(bloodMoon ? '붉은 달의 습격!' : '밤 습격!', `몬스터 ${count}마리가 웨이브 3번에 나눠 옵니다`, 'night'));
@@ -178,6 +178,34 @@ export class HUD {
   }
 
   // 토스트: 오른쪽에서 미끄러져 들어온다. 아이콘 + 글자, 종류별 왼쪽 띠 색. 최대 3개 (오래된 것부터 사라짐)
+  // 지역 진입: 화면 위 1/4, 큰 지역명 + 금색 장식선 + 위험도 별. 처음 3.5초, 다시 오면 작게 2초
+  regionBanner(id, name, first) {
+    const el = this.el.region;
+    const diff = this.ctx.data.regions[id]?.difficulty ?? 1;
+    const max = Math.max(4, ...Object.values(this.ctx.data.regions).map((r) => r.difficulty ?? 1));
+    el.className = `region-banner${first ? ' first' : ''}`;
+    el.innerHTML = `<b>${name}</b><small>위험도 <i>${'★'.repeat(diff)}</i>${'☆'.repeat(Math.max(0, max - diff))}</small>`;
+    el.hidden = false;
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
+    el.style.animationDuration = first ? '3.5s' : '2s';
+    clearTimeout(this.regionTimer);
+    this.regionTimer = setTimeout(() => { el.hidden = true; }, first ? 3500 : 2000);
+  }
+
+  // 레벨업: 가운데 LEVEL UP + Lv 숫자, 방사형 빛 (레벨업 파티클·소리와 같은 순간)
+  levelUp(level) {
+    const el = this.el.levelup;
+    el.querySelector('.lu-lv').textContent = `Lv ${level}`;
+    el.hidden = false;
+    el.classList.remove('play');
+    void el.offsetWidth;
+    el.classList.add('play');
+    clearTimeout(this.levelTimer);
+    this.levelTimer = setTimeout(() => { el.hidden = true; }, 2200);
+  }
+
   notify({ text, kind = 'info', color }) {
     const n = document.createElement('div');
     n.className = `note ${kind}`;
