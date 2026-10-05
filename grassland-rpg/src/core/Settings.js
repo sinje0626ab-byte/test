@@ -7,6 +7,8 @@ const DEFAULTS = {
   shadows: 'high', // off | low | high (터치 기기는 처음에 low)
   decorDensity: 1, // 0.5 | 1
   damageNumbers: true,
+  controlHelp: 'auto', // auto(잠깐 보이고 숨김) | always | off — PC 조작 안내
+  seenHints: [], // 한 번 본 행동 힌트 id (세이브와 따로)
 };
 
 export class Settings {

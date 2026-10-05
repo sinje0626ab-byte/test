@@ -29,7 +29,6 @@ export class HUD {
       </div>
       <div class="hud-notify" data-notify></div>
       <div class="hud-float" data-float></div>
-      <div class="hud-help" data-help>WASD 이동 · Shift 달리기 · Space 구르기 · 좌클릭 공격 · Q·R 스킬 · I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도</div>
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-interact" data-interact hidden></div>
       <div class="quickbar" data-quick></div>
@@ -43,7 +42,7 @@ export class HUD {
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
-      help: $('[data-help]'), banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
+      banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
       buffs: $('[data-buffs]'), boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
@@ -104,11 +103,6 @@ export class HUD {
     bus.on('stats:levelup', ({ level }) => {
       this.banner(`레벨 업! Lv ${level}`, '스킬 포인트 +1 · 스킬 창(K)에서 배워요', 'level');
       this.pulse(this.el.lv.parentElement);
-    });
-    this.helpText = this.el.help.textContent;
-    bus.on('build:hint', ({ text, ok }) => {
-      this.el.help.textContent = text || this.helpText;
-      this.el.help.classList.toggle('bad', !!text && !ok);
     });
     bus.on('raid:start', ({ count, bloodMoon }) => this.banner(bloodMoon ? '붉은 달의 습격!' : '밤 습격!', `몬스터 ${count}마리가 웨이브 3번에 나눠 옵니다`, 'night'));
     bus.on('time:day', ({ day }) => this.banner(`${day}일차 아침`, '', 'day'));

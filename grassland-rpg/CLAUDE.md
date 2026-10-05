@@ -699,6 +699,9 @@ src/
 - 우상단: 골드, 날짜, 낮/밤 시계
 - 하단: 퀵슬롯 1~5 (소모품), 그 옆 스킬 슬롯 Q·R
 - 알림: 아이템 획득, 레벨업, 습격 결과
+- **조작 안내**(PC, `ui/ControlHelp.js`): 퀵슬롯 바로 위 어두운 띠에 키캡 칩([W][A][S][D] 이동 · … · [H] 도움말). 새 게임은 환영 카드를 닫은 뒤 12초, 이어하기는 6초 보이다가 0.6초 페이드. H·F1 로 8초 다시. 창이 열려 있거나 일시정지면 타이머가 멈춘다. 설정 '조작 안내' 자동/항상/끄기(`controlHelp`). 터치 기기는 숨김. 시간은 `config.hud.help`
+- **행동 힌트**(한 번씩, 4초): 처음 기지 안 "[B] 건설", 첫 레벨업 "[K] 스킬 포인트", 첫 장비 획득 "[I] 가방에서 장착". 터치는 버튼 이름("건설 메뉴", "스킬 창"). 본 힌트는 설정 저장소(`grassland-rpg-settings`)의 `seenHints` — 세이브와 따로. 여러 개면 차례로
+- **건설 안내**(`.hud-buildhint`): `build:hint` 를 받아 건설 모드 동안만, 배치 불가면 빨강. 조작 안내와 별개 요소
 
 ---
 
@@ -801,6 +804,8 @@ src/
 | `base:travel` | MapWindow | BaseSystem |
 | `player:teleport` | BaseSystem | Player, Game (카메라) |
 | `interact:hint` | InteractionSystem | HUD (E 안내) |
+| `build:hint` | BuildSystem, WallSystem | ControlHelp (건설 안내 `.hud-buildhint`) |
+| `play:started` `{ fresh }` | TitleScreen(새 게임 환영 카드 닫음, fresh) / Game.continueGame | ControlHelp (조작 안내 표시 시간) |
 | `interact:turret` / `interact:base` | InteractionSystem | TurretWindow / BuildMenu |
 | `base:upgrade` → `base:upgraded` | BuildMenu → BaseSystem | StatsSystem(경험치), HUD |
 | `inventory:spend` | BaseSystem | InventorySystem (재료가 다 있으면 빼고 `ok`) |

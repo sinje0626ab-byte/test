@@ -32,7 +32,7 @@
 .t-build button { padding: 14px 18px; font-size: 15px; }
 .t-build .ok { background: #7cc67a; color: #fff; border-color: #6ab468; }
 body.touch .hud-help { display: none; }
-body.touch .hud-help.bad { display: block; left: 50%; transform: translateX(-50%); bottom: auto; top: 118px; max-width: 70vw; }
+body.touch .hud-buildhint, body.touch .hud-tip { white-space: normal; text-align: center; max-width: calc(100vw - 40px); }
 body.touch .quickbar { bottom: 168px; }
 body.touch .qslot { width: 42px; height: 42px; }
 body.touch .hud-interact { bottom: 214px; font-size: 12px; }

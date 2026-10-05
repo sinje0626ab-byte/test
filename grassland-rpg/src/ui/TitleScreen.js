@@ -149,6 +149,7 @@ export class TitleScreen {
         this.el.remove();
         document.body.classList.remove('in-intro');
         this.ctx.state = 'play';
+        this.ctx.bus.emit('play:started', { fresh: true });
         break;
     }
   }

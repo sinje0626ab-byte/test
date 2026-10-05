@@ -132,6 +132,9 @@
     "range": 2.8
   },
   "quickslots": 5,
+  "hud": {
+    "help": { "newGameSec": 12, "continueSec": 6, "recallSec": 8, "fadeSec": 0.6, "tipSec": 4 }
+  },
   "touch": {
     "joystickRadius": 56,
     "runThreshold": 0.9,
