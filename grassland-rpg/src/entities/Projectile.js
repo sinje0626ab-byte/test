@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 const fwd = new THREE.Vector3(0, 0, 1);
+const dir = new THREE.Vector3(); // sync 용 임시 벡터 (매 프레임 새로 만들지 않는다)
 const mat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true });
 
 const glow = (color) => new THREE.MeshBasicMaterial({ color });
@@ -56,12 +57,14 @@ export class Projectile {
     scene.add(this.mesh);
     this.position = new THREE.Vector3();
     this.velocity = new THREE.Vector3();
+    this.prev = new THREE.Vector3(); // 이번 프레임 시작 위치 (빠른 탄이 적을 뚫고 지나가지 않게 구간으로 판정)
     this.active = false;
   }
 
   // opts: { gravity, splash: { radius, minFactor } }
   fire(from, velocity, damage, life, opts = {}) {
     this.position.copy(from);
+    this.prev.copy(from);
     this.velocity.copy(velocity);
     this.damage = damage;
     this.life = life;
@@ -73,6 +76,7 @@ export class Projectile {
   }
 
   step(dt) {
+    this.prev.copy(this.position);
     this.velocity.y -= this.gravity * dt;
     this.position.addScaledVector(this.velocity, dt);
     this.life -= dt;
@@ -81,7 +85,17 @@ export class Projectile {
 
   sync() {
     this.mesh.position.copy(this.position);
-    this.mesh.quaternion.setFromUnitVectors(fwd, this.velocity.clone().normalize());
+    this.mesh.quaternion.setFromUnitVectors(fwd, dir.copy(this.velocity).normalize());
+  }
+
+  // 이번 프레임 이동 구간(prev → position)이 (x,z) 중심 반지름 r 원에 닿았나 (바닥 평면에서)
+  sweepHits(x, z, r) {
+    const ax = this.prev.x; const az = this.prev.z;
+    const dx = this.position.x - ax; const dz = this.position.z - az;
+    const len2 = dx * dx + dz * dz;
+    const t = len2 > 0 ? Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / len2)) : 0;
+    const px = ax + dx * t - x; const pz = az + dz * t - z;
+    return px * px + pz * pz < r * r;
   }
 
   release() {

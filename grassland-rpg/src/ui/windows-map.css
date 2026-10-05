@@ -170,3 +170,13 @@ button.bs-card:active { transform: translateY(1px); }
 .bs-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; margin: 6px 0 0; }
 .bs-stats dt { grid-row: 1; font-size: 11px; color: #8a7f63; }
 .bs-stats dd { grid-row: 2; margin: 0; font-weight: 800; font-size: 15px; }
+
+/* 포탑 전체 수리 줄 (건설 창 위) · 지도 원격 수리 */
+.repair-all { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; margin-bottom: 4px; border-radius: 10px; border: 1px dashed #c9a46a; background: rgba(255, 244, 214, 0.6); }
+.repair-all span { display: flex; flex-direction: column; min-width: 0; font-size: 13px; }
+.repair-all small { color: #8a7f63; font-size: 11px; }
+.repair-all button { flex: none; padding: 7px 12px; display: inline-flex; align-items: center; gap: 4px; }
+.repair-all .coin { width: 14px; height: 14px; display: inline-block; }
+.map-bases li { gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.map-bases li > span { flex: 1 1 100%; min-width: 0; }
+.map-bases button[data-remote-repair] small { font-size: 11px; margin-left: 2px; }

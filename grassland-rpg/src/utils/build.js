@@ -9,7 +9,15 @@ export const turretMaxHp = (def, level = 1) => Math.round(def.hp * (1 + def.hpPe
 export const upgradeCost = (def, level) => def.upgradeCosts[level - 1] ?? null;
 // Lv4·Lv5 업그레이드는 골드 + 지역 재료
 export const upgradeItems = (def, level) => def.upgradeItems?.[level - 1] ?? null;
-export const repairCost = (t) => Math.ceil((t.stats.maxHp - t.stats.hp) * t.def.repairCostPerHp);
+export const repairCost = (t, mult = 1) => Math.ceil((t.stats.maxHp - t.stats.hp) * t.def.repairCostPerHp * mult);
+// 한 기지 포탑 전체 수리: 수리비 적은 포탑부터 (골드가 모자라면 앞에서부터 가능한 만큼). mult = 원격 배율
+export function repairList(structures, baseId, mult = 1) {
+  return structures
+    .filter((s) => s.kind === 'turret' && s.baseId === baseId && repairCost(s) > 0)
+    .map((t) => ({ turret: t, cost: repairCost(t, mult) }))
+    .sort((a, b) => a.cost - b.cost);
+}
+export const repairAllCost = (structures, baseId, mult = 1) => repairList(structures, baseId, mult).reduce((a, x) => a + x.cost, 0);
 // 철거 환급: 설치비 + 지금까지 쓴 업그레이드비의 일부
 export const demolishRefund = (t, stats, ratio) => {
   const spent = turretCost(t.def, stats) + t.def.upgradeCosts.slice(0, t.level - 1).reduce((a, b) => a + b, 0);

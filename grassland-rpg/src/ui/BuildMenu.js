@@ -1,5 +1,5 @@
 import { baseAt } from '../utils/bases.js';
-import { turretCost, maxTurrets, turretDamage, turretRange, materialCost, structureHp } from '../utils/build.js';
+import { turretCost, maxTurrets, turretDamage, turretRange, materialCost, structureHp, repairList } from '../utils/build.js';
 import { itemIcon } from './icons.js';
 import { buildArt } from './uiArt.js';
 import { josa } from '../utils/josa.js';
@@ -45,6 +45,12 @@ export class BuildMenu {
       if (tab) { this.tab = tab; this.render(); }
     });
     this.list.addEventListener('click', (e) => {
+      const fix = e.target.closest('[data-repair-all]');
+      if (fix && !fix.disabled) {
+        ctx.bus.emit('turret:repair-all', { baseId: Number(fix.dataset.repairAll) });
+        this.render();
+        return;
+      }
       const up = e.target.closest('[data-upgrade-base]');
       if (up && !up.disabled) {
         ctx.bus.emit('base:upgrade', { baseId: Number(up.dataset.upgradeBase) });
@@ -71,6 +77,7 @@ export class BuildMenu {
       if (ui.isOpen('build')) this.render();
     });
     ctx.bus.on('facility:changed', () => { if (ui.isOpen('build')) this.render(); });
+    ctx.bus.on('turret:changed', () => { if (ui.isOpen('build')) this.render(); });
     ctx.bus.on('interact:base', () => {
       this.tab = 'building';
       if (ui.isOpen('build')) this.render();
@@ -94,7 +101,7 @@ export class BuildMenu {
     this.infoEl.textContent = `${base.label} (${base.name} Lv${base.level}) · 포탑 ${count}/${max}`;
 
     if (this.tab === 'building') {
-      this.list.innerHTML = this.baseUpgradeCard(base) + this.facilityCards(base) + this.wallCards(base);
+      this.list.innerHTML = this.repairAllBar(base) + this.baseUpgradeCard(base) + this.facilityCards(base) + this.wallCards(base);
       return;
     }
     const cards = Object.entries(ctx.data.turrets).map(([id, t]) => {
@@ -118,7 +125,20 @@ export class BuildMenu {
           <span class="build-cost"><i class="coin"></i>${cost}<small>${why}</small></span>
         </button>`;
     });
-    this.list.innerHTML = cards.join('');
+    this.list.innerHTML = this.repairAllBar(base) + cards.join('');
+  }
+
+  // 포탑 전체 수리: 이 기지에서 다친 포탑 모두 (골드가 모자라면 수리비 적은 것부터 가능한 만큼)
+  repairAllBar(base) {
+    const list = repairList(this.ctx.structures, base.id);
+    if (!list.length) return '';
+    const total = list.reduce((a, x) => a + x.cost, 0);
+    const broken = list.filter((x) => !x.turret.alive).length;
+    return `
+      <div class="repair-all">
+        <span><b>포탑 ${list.length}개가 다쳤어요</b><small>${broken ? `부서짐 ${broken}개 · ` : ''}수리비 적은 것부터 고쳐요</small></span>
+        <button type="button" class="primary" data-repair-all="${base.id}" ${this.gold < list[0].cost ? 'disabled' : ''}>전체 수리 <small><i class="coin"></i>${total}</small></button>
+      </div>`;
   }
 
   // 부속 건물 카드: 해금 단계·비용(재료)·이미 지었는지

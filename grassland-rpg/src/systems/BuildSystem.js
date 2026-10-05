@@ -46,6 +46,7 @@ export class BuildSystem {
     const start = pl.position.clone().addScaledVector(pl.facing, kind === 'tent' ? 4 : 3);
     this.placing = { kind, type, item, ghost, mats, pos: this.snap(start), check: { ok: false } };
     ghost.position.copy(this.placing.pos);
+    this.ctx.placing = this.placing; // 사거리 원(TurretSystem)이 읽는다
     this.ctx.mode = 'build';
     this.ctx.input.consumeMouse();
   }
@@ -71,6 +72,7 @@ export class BuildSystem {
     if (!this.placing) return;
     this.ctx.scene.remove(this.placing.ghost);
     this.placing = null;
+    this.ctx.placing = null;
     this.ctx.mode = 'play';
     this.hint('');
   }

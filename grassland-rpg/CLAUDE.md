@@ -619,6 +619,13 @@ src/
   - 독침 포탑(움막, 골드 80 + 선인장 가시 8): 사거리 9, 초당 1.5, 데미지 4 + 독 3초. 우선순위 `spread`(최근에 쏜 적은 뒤로) — 여러 적을 번갈아 노린다
   - 서리 포탑(집, 골드 140 + 서리 수정 2): 사거리 10, 초당 0.8, 데미지 10, 맞은 자리 1.5m 안 모두 감속 40% 2초 (`hitSplash`)
   - 설치 재료는 `buildItems`, 적중 효과는 `onHit`
+- **3차 개선 B-1** (`docs/UPDATE_GUIDE3.pdf`)
+  - 우선순위: 포탑 종류마다 허용 목록 `turrets.json` `priorities` 안에서 순환 (독침은 spread → nearest → lowestHp). 창 문구는 `config.turret.priorityLabels` ("번갈아 노리기" 등). 예전 저장의 허용되지 않는 값은 목록 첫 값으로
+  - 업그레이드: 골드와 재료를 둘 다 먼저 확인하고 둘 다 있을 때만 한 번에 뺀다 (재료가 사라지지 않음)
+  - 투사체 명중: 이번 프레임 이동 구간(이전 위치 → 새 위치) 선분과 몬스터 원(반지름 + 0.15)의 최단 거리로 판정. 높이 조건은 그대로
+  - 성능: 투사체 방향 계산은 공용 임시 벡터, 대상 찾기는 포탑마다 `turret.retargetInterval`(0.15)초 간격(첫 시점은 흩음), 대상이 죽거나 사거리 밖이면 바로 다시. 조준 회전은 매 프레임
+  - 사거리 원(`entities/RangeRings.js`, 풀): 놓을 포탑(배치 불가면 빨강) · 포탑 창에서 보는 포탑 · 건설 창/건설 모드 중엔 그 기지 포탑 모두(반투명). 스킬·레벨 반영 `turretRange`
+  - 전체 수리: 건설 창(기지 중심 건물 E) 위에 "전체 수리 (골드 N)". 골드가 모자라면 수리비 적은 포탑부터 가능한 만큼. 지도 창 기지 목록의 "원격 수리"는 다른 기지, 비용 × `turret.remoteRepairMultiplier`(1.25)
 
 ### 4-8. 밤 습격
 - 밤이 되면 각 기지에 습격 웨이브 발생
@@ -831,7 +838,9 @@ src/
 | `base:upgrade` → `base:upgraded` | BuildMenu → BaseSystem | StatsSystem(경험치), HUD |
 | `inventory:spend` | BaseSystem | InventorySystem (재료가 다 있으면 빼고 `ok`) |
 | `turret:upgrade` / `turret:repair` / `turret:priority` / `turret:demolish` | TurretWindow | TurretSystem |
-| `turret:changed` | TurretSystem | TurretWindow |
+| `turret:changed` | TurretSystem | TurretWindow, BuildMenu, MapWindow |
+| `turret:repair-all` `{ baseId, remote }` | BuildMenu(전체 수리) / MapWindow(원격 수리) | TurretSystem |
+| `turret:focus` `{ turret \| null }` | TurretWindow (열기·닫기) | TurretSystem (사거리 원) |
 | `projectile:explode` | TurretSystem | CombatSystem (범위 피해) |
 | `interact:facility` | InteractionSystem | CraftWindow / StorageWindow / ShopWindow |
 | `facility:changed` | FacilitySystem | BuildMenu |

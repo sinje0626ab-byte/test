@@ -126,7 +126,10 @@
   },
   "turret": {
     "demolishRefund": 0.5,
-    "gravity": 18
+    "gravity": 18,
+    "retargetInterval": 0.15,
+    "remoteRepairMultiplier": 1.25,
+    "priorityLabels": { "nearest": "가장 가까운 적", "lowestHp": "체력 낮은 적", "spread": "번갈아 노리기" }
   },
   "interact": {
     "range": 2.8
