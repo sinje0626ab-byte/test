@@ -24,6 +24,8 @@ export class Monster {
     this.target = null;
     this.facing = new THREE.Vector3(rand.range(-1, 1), 0, rand.range(-1, 1)).normalize();
     this.knock = new THREE.Vector3();
+    this.vel = new THREE.Vector3(); // 실제 이동 속도 (부드럽게 평균)
+    this.incoming = 0; // 날아오는 중인 포탑 투사체 피해 합 (초과 피해 방지)
 
     this.alive = true;
     this.done = false;
@@ -121,6 +123,8 @@ export class Monster {
       return;
     }
 
+    const px = this.position.x;
+    const pz = this.position.z;
     const { move, speed } = this.think(dt);
 
     if (speed > 0 && move.lengthSq() > 1e-6) {
@@ -136,6 +140,12 @@ export class Monster {
     else {
       this.ctx.world.resolveCollision(this.position, this.radius);
       this.ctx.wallGrid?.resolve(this.position, this.radius); // 벽은 몬스터만 막는다
+    }
+    // 실제 이동 속도 (포탑 예측 사격용): 이번 프레임 이동량 / dt 를 부드럽게 평균
+    if (dt > 0) {
+      const k = Math.min(1, dt * 10);
+      this.vel.x += ((this.position.x - px) / dt - this.vel.x) * k;
+      this.vel.z += ((this.position.z - pz) / dt - this.vel.z) * k;
     }
 
     this.animate(dt, speed);

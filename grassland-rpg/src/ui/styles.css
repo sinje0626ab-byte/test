@@ -253,3 +253,8 @@ html, body {
 .sslot .s-icon { display: flex; }
 .sslot .skill-svg { width: 42px; height: 42px; display: block; }
 .buff .item-svg { width: 18px; height: 18px; filter: none; }
+
+/* 개발용 ?debug=turret: 포탑 명중/발사 */
+.turret-debug { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+.turret-debug b { position: absolute; left: 0; top: 0; padding: 1px 5px; border-radius: 4px; font: 700 11px/1.3 monospace; color: #fff; background: rgba(0, 0, 0, 0.6); }
+.turret-debug b:empty { display: none; }

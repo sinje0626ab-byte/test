@@ -66,6 +66,21 @@ export const charger = {
     return { move, speed };
   },
 
+  // 포탑 예측 사격: t 초 뒤 자리. 예고 중이면 남은 예고 시간 뒤 돌진 방향·속도로, 돌진 중이면 남은 거리까지
+  predict(m, t, out) {
+    const d = m.def;
+    const bs = m.bs;
+    if (m.state === 'aim') {
+      const go = Math.max(0, t - Math.max(0, d.chargeWindup - m.stateTime));
+      return out.copy(m.position).addScaledVector(bs.dir, Math.min(d.chargeDistance, go * d.chargeSpeed));
+    }
+    if (m.state === 'charge') {
+      return out.copy(m.position).addScaledVector(bs.dir, Math.min(d.chargeDistance - bs.traveled, t * d.chargeSpeed));
+    }
+    if (m.state === 'stun') return out.copy(m.position);
+    return null; // 그 밖엔 실제 속도로
+  },
+
   animate(m, dt) {
     if (m.state === 'aim') {
       m.body.scale.set(1.1, 0.8, 1.1); // 몸을 낮춰 힘 모으기
