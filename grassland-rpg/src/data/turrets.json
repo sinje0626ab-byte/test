@@ -67,6 +67,7 @@
     "range": 11,
     "fireRate": 0.5,
     "damage": 24,
+    "armorPierce": 0.6,
     "projectileSpeed": 28,
     "priority": "lowestHp",
     "priorities": [
@@ -123,6 +124,7 @@
     "range": 8.5,
     "fireRate": 4,
     "damage": 5,
+    "armorPierce": 0.3,
     "projectileSpeed": 42,
     "priority": "nearest",
     "priorities": [

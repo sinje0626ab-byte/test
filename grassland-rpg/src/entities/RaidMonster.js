@@ -3,7 +3,13 @@ import { Monster } from './Monster.js';
 
 const tmp = new THREE.Vector3();
 
-// 밤 습격 몬스터: 기지로 와서 가까운 플레이어 → 포탑·텐트 순으로 부순다. 도망치지 않는다.
+// 밤 습격 몬스터: 도망치지 않는다. 노리는 순서
+//  1) 플레이어가 detectRange 안이면 플레이어
+//  2) 포탑에 맞아 화가 났으면(retargetChance) 그 포탑
+//  3) 기지 중심 건물(텐트)로 간다. 가는 길(직선 pathBlockRange m 안)을 포탑·부속 건물이 막고 있으면 그것부터
+//     (벽은 격자 A* 로 돌아가고, 완전히 막혔을 때만 부순다 — navigate)
+//  4) 텐트가 없으면 가장 가까운 건물
+// → 포탑이 일부러 탱커가 되지 않고, 벽으로 길을 막는 배치가 의미 있다.
 export class RaidMonster extends Monster {
   constructor(ctx, type, position, base) {
     super(ctx, type, position);
@@ -25,12 +31,39 @@ export class RaidMonster extends Monster {
     const d = this.def;
     const player = this.ctx.player;
     if (player.alive && this.position.distanceTo(player.position) < d.detectRange) return player;
+    if (this.aggro?.alive) return this.aggro;
+    this.aggro = null;
+    const tent = this.base.tent;
+    if (tent?.alive) return this.blocker(tent) ?? tent;
     let best = null;
     let bestD = Infinity;
     for (const s of this.ctx.structures) {
       if (!s.alive || s.baseId !== this.base.id || s.kind === 'wall') continue;
       const dist = this.position.distanceTo(s.position) - s.radius;
       if (dist < bestD) { bestD = dist; best = s; }
+    }
+    return best;
+  }
+
+  // 텐트까지 직선 길 옆 pathBlockRange 안에 있는 포탑·부속 건물 중 가장 가까운 것 (텐트보다 먼 것은 제외)
+  blocker(tent) {
+    const range = this.ctx.data.config.raid.pathBlockRange;
+    const ax = this.position.x; const az = this.position.z;
+    const dx = tent.position.x - ax; const dz = tent.position.z - az;
+    const len = Math.hypot(dx, dz);
+    if (len < 1e-3) return null;
+    const ux = dx / len; const uz = dz / len;
+    let best = null;
+    let bestAlong = len;
+    for (const s of this.ctx.structures) {
+      if (!s.alive || s === tent || s.baseId !== this.base.id || (s.kind !== 'turret' && s.kind !== 'facility')) continue;
+      const rx = s.position.x - ax; const rz = s.position.z - az;
+      const along = rx * ux + rz * uz;
+      if (along < 0 || along > bestAlong) continue;
+      const side = Math.abs(rx * uz - rz * ux);
+      if (side - s.radius > range) continue;
+      bestAlong = along;
+      best = s;
     }
     return best;
   }

@@ -17,6 +17,8 @@ export class RaidSystem {
     const { bus } = ctx;
     bus.on('stats:changed', ({ level }) => { this.playerLevel = level; });
     bus.on('boss:status', ({ list }) => { this.bossesCleared = list.filter((b) => b.cleared).length; });
+    // 진행도는 건물 체력(StructureHpSystem)도 같이 쓴다
+    ctx.progressOf = (base) => raidProgress(ctx.data.config.raid, base.level, this.playerLevel, this.bossesCleared);
 
     bus.on('time:dusk', () => {
       const text = ctx.bases.length ? '곧 해가 집니다. 습격에 대비하세요!' : '곧 해가 집니다. 밤엔 몬스터가 강해져요';

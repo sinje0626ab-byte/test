@@ -375,7 +375,7 @@ export class TurretSystem {
         if (p.position.y <= 0 || p.life <= 0) {
           p.position.y = 0;
           if (monsters.some((m) => m.alive && !m.untargetable && Math.hypot(m.position.x - p.position.x, m.position.z - p.position.z) < p.splash.radius + m.radius)) this.counted(p);
-          bus.emit('projectile:explode', { position: p.position.clone(), radius: p.splash.radius, minFactor: p.splash.minFactor, damage: p.damage });
+          bus.emit('projectile:explode', { position: p.position.clone(), radius: p.splash.radius, minFactor: p.splash.minFactor, damage: p.damage, turret: p.turret, armorPierce: p.turret?.def.armorPierce ?? 0 });
           this.blast(p.position, p.splash.radius);
           p.release();
         }
@@ -391,11 +391,11 @@ export class TurretSystem {
       if (hit) this.counted(p);
       if (hit && p.hitSplash) {
         // 서리 포탑: 맞은 자리 둘레 모두 (감속)
-        bus.emit('projectile:explode', { position: hit.position.clone(), radius: p.hitSplash, minFactor: 1, damage: p.damage, effect: p.onHit });
+        bus.emit('projectile:explode', { position: hit.position.clone(), radius: p.hitSplash, minFactor: 1, damage: p.damage, effect: p.onHit, turret: p.turret, armorPierce: p.turret?.def.armorPierce ?? 0 });
         this.blast(hit.position, p.hitSplash, 0x8fd0ff);
         p.release();
       } else if (hit) {
-        bus.emit('projectile:hit', { monster: hit, damage: p.damage, dir: p.velocity.clone().setY(0).normalize(), effect: p.onHit });
+        bus.emit('projectile:hit', { monster: hit, damage: p.damage, dir: p.velocity.clone().setY(0).normalize(), effect: p.onHit, turret: p.turret, armorPierce: p.turret?.def.armorPierce ?? 0 });
         p.release();
       } else if (p.life <= 0 || p.position.y < 0) {
         p.release();

@@ -42,6 +42,9 @@
   },
   "combat": {
     "minDamage": 1,
+    "minDamageRatio": 0.35,
+    "blastStructureCap": 0.4,
+    "structureHpPerProgress": 0.15,
     "variance": 0.15,
     "projectileKnockback": 1.5
   },
@@ -86,6 +89,8 @@
     "structureGap": 0.3
   },
   "raid": {
+    "retargetChance": 0.25,
+    "pathBlockRange": 1.5,
     "baseCount": 2,
     "perRegionDifficulty": 1,
     "maxCount": 30,
