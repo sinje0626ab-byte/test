@@ -1,4 +1,4 @@
-import { turretDamage, turretRange, upgradeCost, upgradeItems, repairCost, demolishRefund } from '../utils/build.js';
+import { turretInfo, upgradeCost, upgradeItems, repairCost, demolishRefund } from '../utils/build.js';
 
 // 포탑 관리 창 (포탑 앞에서 E): 업그레이드 · 수리 · 우선순위(종류별 허용 목록 순환) · 철거. 열려 있는 동안 사거리 원
 export class TurretWindow {
@@ -65,24 +65,38 @@ export class TurretWindow {
     const itemsText = upItems.map((c) => `<span class="${(this.counts[c.id] ?? 0) >= c.count ? '' : 'bad'}">${this.ctx.data.items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}</span>`).join(' · ');
     const fix = repairCost(t);
     const refund = demolishRefund(t, stats, this.ctx.data.config.turret.demolishRefund);
-    const line = (label, now, next) => `<dt>${label}</dt><dd>${now}${next != null ? ` <i>→ ${next}</i>` : ''}</dd>`;
-    const dmg = (lv) => +turretDamage(def, stats, lv).toFixed(1);
-    const rng = (lv) => +turretRange(def, stats, lv).toFixed(1);
-    const hpAt = (lv) => Math.round(def.hp * (1 + def.hpPerLevel * (lv - 1)));
+    const line = (label, now, next) => `<dt>${label}</dt><dd>${now}${next != null && next !== now ? ` <i>→ ${next}</i>` : ''}</dd>`;
+    const at = (lv) => turretInfo(def, stats, lv);
+    const cur = at(t.level);
     const nx = up != null ? t.level + 1 : null;
+    const nxt = nx && at(nx);
+    // 실효 화력(초당, 방어 0 기준): 한 발 × 연사 × 발 수 (+ 독은 중첩 최대치)
+    const dps = (i) => +(i.damage * i.fireRate * i.shots + (i.effect?.type === 'poison' ? i.effect.amount * i.effect.maxStacks : 0)).toFixed(1);
+    const hpAt = (lv) => Math.round(t.stats.maxHp / (1 + def.hpPerLevel * (t.level - 1)) * (1 + def.hpPerLevel * (lv - 1)));
+    // 특수 효과 한 줄
+    const special = (i) => [
+      i.shots > 1 && `${i.shots}발 동시`,
+      i.pierce > 1 && `관통 ${i.pierce}마리`,
+      i.armorPierce && `방어 관통 ${Math.round(i.armorPierce * 100)}%`,
+      i.effect?.type === 'poison' && `독 초당 ${+i.effect.amount.toFixed(1)} ×${i.effect.maxStacks}중첩`,
+      i.effect?.type === 'slow' && `감속 ${Math.round(i.effect.amount * 100)}%`,
+      i.effect?.freeze && `빙결 ${Math.round(i.effect.freeze.chance * 100)}%`,
+      def.splashRadius && `폭발 ${def.splashRadius}m`,
+    ].filter(Boolean).join(' · ');
+    const nextSpecial = nxt && special(nxt) !== special(cur) ? special(nxt) : null;
 
     this.win.body.innerHTML = `
       <div class="tw">
         <div class="tw-head"><b>${def.name}</b><span class="lv-badge">Lv ${t.level}/${def.maxLevel}</span></div>
         <div class="bar hp"><div class="fill" style="width:${(t.stats.hp / t.stats.maxHp) * 100}%"></div><span>${Math.ceil(t.stats.hp)} / ${t.stats.maxHp}${t.alive ? '' : ' · 부서짐'}</span></div>
         <dl class="tw-stats">
-          ${line('데미지', dmg(t.level), nx && dmg(nx))}
-          ${line('사거리', rng(t.level), nx && rng(nx))}
+          ${line('초당 화력', dps(cur), nxt && dps(nxt))}
+          ${line('한 발 피해', +cur.damage.toFixed(1), nxt && +nxt.damage.toFixed(1))}
+          ${line('사거리', +cur.range.toFixed(1), nxt && +nxt.range.toFixed(1))}
+          ${line('초당 발사', cur.fireRate, null)}
           ${line('체력', t.stats.maxHp, nx && hpAt(nx))}
-          ${line('초당 발사', def.fireRate, null)}
-          ${def.splashRadius ? line('폭발 범위', def.splashRadius, null) : ''}
-          ${def.onHit ? line('적중 효과', def.onHit.type === 'poison' ? `독 ${def.onHit.duration}초` : `감속 ${Math.round(def.onHit.amount * 100)}%`, null) : ''}
         </dl>
+        ${special(cur) || nextSpecial ? `<p class="tw-special">${special(cur) || '특수 효과 없음'}${nextSpecial ? `<i>다음 레벨: ${nextSpecial}</i>` : ''}</p>` : ''}
         <div class="tw-actions">
           <button type="button" data-act="upgrade" ${up == null || !t.alive || this.gold < up || !itemsOk ? 'disabled' : ''}>
             ${up == null ? '최고 레벨' : `업그레이드 <small><i class="coin"></i>${up}</small>`}</button>

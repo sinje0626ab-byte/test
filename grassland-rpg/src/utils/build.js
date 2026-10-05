@@ -5,6 +5,19 @@ export const turretDamage = (def, stats, level = 1) =>
   def.damage * (1 + (stats.turretDamage ?? 0)) * (1 + def.damagePerLevel * (level - 1));
 export const turretRange = (def, stats, level = 1) =>
   def.range + (stats.turretRange ?? 0) + def.rangePerLevel * (level - 1);
+// 한 레벨의 포탑 성능 요약 (발사·포탑 창·원격 계산 공용): 한 발 피해, 사거리, 연사, 한 번에 쏘는 발 수, 관통, 적중 효과
+export function turretInfo(def, stats, level = 1) {
+  const damage = turretDamage(def, stats, level);
+  const shots = def.multishot && level >= def.multishot.level ? def.multishot.count : 1;
+  const h = def.onHit;
+  let effect = null;
+  if (h?.type === 'poison') effect = { type: 'poison', duration: h.duration, amount: damage * (h.dpsRatio ?? 0), maxStacks: h.maxStacks ?? 1 };
+  if (h?.type === 'slow') {
+    effect = { type: 'slow', duration: h.duration, amount: h.amount + (h.amountPerLevel ?? 0) * (level - 1) };
+    if (h.freeze && level >= h.freeze.level) effect.freeze = { chance: h.freeze.chance, duration: h.freeze.duration };
+  }
+  return { damage, range: turretRange(def, stats, level), fireRate: def.fireRate, shots, pierce: def.pierce ?? 1, armorPierce: def.armorPierce ?? 0, effect };
+}
 export const turretMaxHp = (def, level = 1) => Math.round(def.hp * (1 + def.hpPerLevel * (level - 1)));
 export const upgradeCost = (def, level) => def.upgradeCosts[level - 1] ?? null;
 // Lv4·Lv5 업그레이드는 골드 + 지역 재료

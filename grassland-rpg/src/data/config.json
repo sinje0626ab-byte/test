@@ -135,7 +135,7 @@
     "retargetInterval": 0.15,
     "maxLead": 4,
     "remoteRepairMultiplier": 1.25,
-    "priorityLabels": { "nearest": "가장 가까운 적", "lowestHp": "체력 낮은 적", "spread": "번갈아 노리기" }
+    "priorityLabels": { "nearest": "가장 가까운 적", "lowestHp": "체력 낮은 적", "highestHp": "체력 높은 적", "first": "텐트에 가장 가까운 적", "flier": "비행 우선", "spread": "번갈아 노리기" }
   },
   "interact": {
     "range": 2.8

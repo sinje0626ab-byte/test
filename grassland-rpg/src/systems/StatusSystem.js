@@ -1,9 +1,13 @@
 import * as THREE from 'three';
 
-const ICON_COLORS = { poison: 0x7cd67a, slow: 0x8fd0ff };
+const ICON_COLORS = { poison: 0x7cd67a, slow: 0x8fd0ff, freeze: 0xd6f4ff };
+const ICE = new THREE.IcosahedronGeometry(1, 1);
 
-// 상태 이상: 독(초당 피해), 감속(이동 속도 배율). 같은 상태는 시간만 새로.
+// 상태 이상: 독(초당 피해), 감속(이동 속도 배율), 빙결(이동·공격 정지). 같은 상태는 시간만 새로.
 // 몬스터(Phase 9)와 플레이어(Phase 10). 플레이어는 독 저항·감속 면역을 따진다.
+// - 독침 포탑 독(maxStacks 있음): 출처별 세기(포탑 피해 × 0.8)를 최대 3중첩, 중첩마다 지속시간 새로.
+//   플레이어 무기 독은 예전처럼 poisonDps (세기만 더 센 쪽)
+// - 보스는 감속 절반, 빙결 면역. 빙결은 하늘색 얼음 껍질
 export class StatusSystem {
   constructor(ctx) {
     this.ctx = ctx;
@@ -12,8 +16,13 @@ export class StatusSystem {
     ctx.bus.on('status:apply', (e) => this.apply(e));
   }
 
-  apply({ target, type, duration, amount }) {
+  apply({ target, type, duration, amount, maxStacks, freeze }) {
     if (!target.alive) return;
+    const boss = target.boss || target.raidBoss;
+    if (type === 'slow' && boss) amount = (amount ?? this.cfg.slowDefault) * 0.5;
+    if (type === 'freeze' && boss) return;
+    // 서리 Lv5: 일정 확률로 빙결 (감속과 함께)
+    if (freeze && !boss && Math.random() < freeze.chance) this.apply({ target, type: 'freeze', duration: freeze.duration });
     if (target === this.ctx.player) {
       const s = target.stats;
       if (type === 'slow' && s.slowImmune) return;
@@ -32,7 +41,25 @@ export class StatusSystem {
       this.list.push(st);
     }
     st.time = duration;
-    st.amount = amount ?? (type === 'poison' ? this.cfg.poisonDps : this.cfg.slowDefault);
+    if (type === 'poison' && maxStacks) {
+      // 출처별 세기를 쌓는다 (오래된 것부터 밀려남)
+      st.stacks = [...(st.stacks ?? []), amount].slice(-maxStacks);
+      st.amount = Math.max(st.base ?? 0, st.stacks.reduce((a, b) => a + b, 0));
+    } else if (type === 'poison') {
+      st.base = amount ?? this.cfg.poisonDps;
+      st.amount = Math.max(st.base, (st.stacks ?? []).reduce((a, b) => a + b, 0));
+    } else {
+      st.amount = amount ?? (type === 'poison' ? this.cfg.poisonDps : this.cfg.slowDefault);
+    }
+    if (type === 'freeze') {
+      target.frozen = duration;
+      if (!st.shell) {
+        st.shell = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: '#cfefff', transparent: true, opacity: 0.55, roughness: 0.1, metalness: 0.1, flatShading: true, emissive: '#5aa8d8', emissiveIntensity: 0.25, depthWrite: false }));
+        st.shell.scale.set(target.radius * 1.35, target.radius * 1.6, target.radius * 1.35);
+        st.shell.position.y = target.radius * 1.1;
+        target.mesh.add(st.shell);
+      }
+    }
     this.layout(target);
   }
 
@@ -46,6 +73,10 @@ export class StatusSystem {
   remove(st) {
     st.target.mesh.remove(st.icon);
     if (st.type === 'slow') st.target.speedMult = 1;
+    if (st.type === 'freeze') {
+      st.target.frozen = 0;
+      if (st.shell) { st.target.mesh.remove(st.shell); st.shell.material.dispose(); }
+    }
     this.list = this.list.filter((x) => x !== st);
     this.layout(st.target);
   }
