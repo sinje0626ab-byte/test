@@ -1,4 +1,5 @@
 import { baseAt } from '../utils/bases.js';
+import { repairAllCost } from '../utils/build.js';
 
 const MAX_H = 480; // 지도 캔버스 최대 높이(px). 월드가 길면 그만큼 줄여 그린다.
 let SCALE = 1.1;
@@ -42,7 +43,16 @@ export class MapWindow {
       this.draw();
     };
 
+    this.gold = 0;
+    ctx.bus.on('gold:changed', ({ gold }) => { this.gold = gold; if (ui.isOpen('map')) this.render(); });
+    ctx.bus.on('turret:changed', () => { if (ui.isOpen('map')) this.render(); });
     this.list.addEventListener('click', (e) => {
+      const fix = e.target.closest('[data-remote-repair]');
+      if (fix && !fix.disabled) {
+        ctx.bus.emit('turret:repair-all', { baseId: Number(fix.dataset.remoteRepair), remote: true });
+        this.render();
+        return;
+      }
       const id = e.target.closest('[data-travel]')?.dataset.travel;
       if (!id) return;
       ctx.bus.emit('base:travel', { baseId: Number(id) });
@@ -151,9 +161,12 @@ export class MapWindow {
       ? bases.map((b) => {
         const turrets = structures.filter((s) => s.kind === 'turret' && s.baseId === b.id).length;
         const can = here && here !== b;
+        // 원격 수리: 다른 기지의 다친 포탑 전체 (비용 config.turret.remoteRepairMultiplier 배)
+        const fix = here === b ? 0 : repairAllCost(structures, b.id, this.ctx.data.config.turret.remoteRepairMultiplier);
         return `
           <li class="${here === b ? 'here' : ''}">
             <span><b>${b.label}</b><small>${b.name} Lv${b.level} · 포탑 ${turrets}${here === b ? ' · 지금 여기' : ''}</small></span>
+            ${fix ? `<button type="button" class="primary" data-remote-repair="${b.id}" ${this.gold > 0 ? '' : 'disabled'}>원격 수리 <small>${fix}</small></button>` : ''}
             <button type="button" data-travel="${b.id}" ${can ? '' : 'disabled'}>이동</button>
           </li>`;
       }).join('')

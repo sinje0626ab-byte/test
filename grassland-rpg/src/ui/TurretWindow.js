@@ -1,6 +1,6 @@
 import { turretDamage, turretRange, upgradeCost, upgradeItems, repairCost, demolishRefund } from '../utils/build.js';
 
-// 포탑 관리 창 (포탑 앞에서 E): 업그레이드 · 수리 · 우선순위 · 철거
+// 포탑 관리 창 (포탑 앞에서 E): 업그레이드 · 수리 · 우선순위(종류별 허용 목록 순환) · 철거. 열려 있는 동안 사거리 원
 export class TurretWindow {
   constructor(ctx, ui) {
     this.ctx = ctx;
@@ -12,7 +12,10 @@ export class TurretWindow {
     const win = ui.createWindow({ id: 'turret', title: '포탑 관리' });
     win.el.classList.add('win-left');
     this.win = win;
-    win.onClose = () => { this.turret = null; };
+    win.onClose = () => {
+      this.turret = null;
+      ctx.bus.emit('turret:focus', { turret: null }); // 사거리 원 끄기
+    };
     // 멀리 걸어가면 닫는다.
     win.onUpdate = () => {
       const t = this.turret;
@@ -36,6 +39,7 @@ export class TurretWindow {
       this.turret = turret;
       this.confirmDemolish = false;
       ui.open('turret');
+      ctx.bus.emit('turret:focus', { turret }); // 이 포탑 사거리 원
       this.render();
     });
     ctx.bus.on('turret:changed', () => { if (this.turret) this.render(); });
@@ -85,7 +89,7 @@ export class TurretWindow {
           ${itemsText ? `<p class="tw-items">재료: ${itemsText}</p>` : ''}
           <button type="button" data-act="repair" ${fix <= 0 || this.gold < fix ? 'disabled' : ''}>
             ${fix <= 0 ? '멀쩡함' : `수리 <small><i class="coin"></i>${fix}</small>`}</button>
-          <button type="button" data-act="priority">노리는 적: <b>${t.priority === 'nearest' ? '가장 가까운 적' : '체력 낮은 적'}</b></button>
+          <button type="button" data-act="priority" ${(def.priorities ?? []).length > 1 ? '' : 'disabled'}>노리는 적: <b>${this.ctx.data.config.turret.priorityLabels[t.priority] ?? t.priority}</b></button>
           <button type="button" class="danger" data-act="demolish">${this.confirmDemolish ? `정말 철거? (골드 +${refund})` : '철거'}</button>
         </div>
         ${t.alive ? '' : '<p class="tw-note">부서진 포탑은 수리해야 다시 쏩니다.</p>'}
