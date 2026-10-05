@@ -9,6 +9,7 @@ const NIGHT_GLOW = new THREE.Color(0.015, 0.01, 0.035);
 const ELITE_GLOW = new THREE.Color(0.32, 0.23, 0.04);
 
 const tmp = new THREE.Vector3();
+const FROZEN = { move: new THREE.Vector3(), speed: 0 };
 
 // 필드 몬스터. 행동(AI)은 def.behavior 모듈(entities/behaviors)이 정한다.
 export class Monster {
@@ -125,7 +126,9 @@ export class Monster {
 
     const px = this.position.x;
     const pz = this.position.z;
-    const { move, speed } = this.think(dt);
+    // 빙결(서리 포탑 Lv5): 생각·이동·공격을 멈춘다 (예비동작 시간도 흐르지 않음)
+    if (this.frozen > 0) this.stateTime -= dt;
+    const { move, speed } = this.frozen > 0 ? FROZEN : this.think(dt);
 
     if (speed > 0 && move.lengthSq() > 1e-6) {
       move.normalize();

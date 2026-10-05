@@ -3,7 +3,7 @@ import { Turret } from '../entities/Turret.js';
 import { ProjectilePool } from '../entities/Projectile.js';
 import { RangeRings } from '../entities/RangeRings.js';
 import { baseAt } from '../utils/bases.js';
-import { turretDamage, turretRange, upgradeCost, upgradeItems, repairCost, repairList, demolishRefund } from '../utils/build.js';
+import { turretRange, turretInfo, upgradeCost, upgradeItems, repairCost, repairList, demolishRefund } from '../utils/build.js';
 import { josa } from '../utils/josa.js';
 
 const tmp = new THREE.Vector3();
@@ -179,16 +179,26 @@ export class TurretSystem {
   }
 
   // 사거리 안의 적 중 그 포탑의 우선순위(가장 가까운 적 / 체력 낮은 적)대로 고른다.
-  pickTarget(t) {
+  // 우선순위: nearest 가까운 적 / lowestHp 체력 낮은 / highestHp 체력 높은 / first 텐트에 가장 가까운 / flier 비행 우선 /
+  // spread(독침) 최근에 쏜 적은 뒤로. exclude 는 다중 사격 두 번째 대상 고를 때 첫 대상
+  pickTarget(t, exclude = null) {
     const range = turretRange(t.def, this.ctx.player.stats, t.level);
+    const tent = t.priority === 'first' ? this.ctx.bases.find((b) => b.id === t.baseId)?.position : null;
     let best = null;
     let bestScore = Infinity;
     for (const m of this.ctx.monsters) {
-      if (!m.alive || m.untargetable) continue;
+      if (!m.alive || m.untargetable || m === exclude) continue;
       const d = Math.hypot(m.position.x - t.position.x, m.position.z - t.position.z);
       if (d > range) continue;
-      // spread(독침): 최근에 쏜 적은 뒤로 미뤄 여러 적을 번갈아 노린다
-      let score = t.priority === 'lowestHp' ? m.stats.hp : t.priority === 'spread' ? d + (t.recent?.includes(m) ? 1000 : 0) : d;
+      let score;
+      switch (t.priority) {
+        case 'lowestHp': score = m.stats.hp; break;
+        case 'highestHp': score = -m.stats.hp; break;
+        case 'first': score = tent ? Math.hypot(m.position.x - tent.x, m.position.z - tent.z) : d; break;
+        case 'flier': score = (m.def.flier ? 0 : 1000) + d; break;
+        case 'spread': score = d + (t.recent?.includes(m) ? 1000 : 0); break;
+        default: score = d;
+      }
       if (this.doomed(m)) score += 1e6; // 이미 죽을 만큼 날아오고 있으면 뒤로 (그것뿐이면 그래도 쏜다)
       if (score < bestScore) { bestScore = score; best = m; }
     }
@@ -226,18 +236,27 @@ export class TurretSystem {
     p.reserved = 0;
   }
 
+  // 한 번 쏘기: 다중 사격(나무 활 Lv5)이면 다른 대상(없으면 같은 대상)에게 한 발 더
   fire(t, target) {
     const def = t.def;
-    const stats = this.ctx.player.stats;
+    const info = turretInfo(def, this.ctx.player.stats, t.level);
+    this.shoot(t, target, info);
+    for (let i = 1; i < info.shots; i++) this.shoot(t, this.pickTarget(t, target) ?? target, info);
+    if (t.priority === 'spread') t.recent = [target, ...(t.recent ?? [])].slice(0, 2);
+    t.recoil = 1;
+    this.ctx.bus.emit('turret:fired', { type: t.type, position: t.position, muzzle: t.muzzle, target: def.splashRadius ? target.position.clone() : null, splash: def.splashRadius ?? 0 });
+  }
+
+  shoot(t, target, info) {
+    const def = t.def;
     const from = t.muzzle;
-    const damage = turretDamage(def, stats, t.level);
-    const range = turretRange(def, stats, t.level);
+    const { damage, range } = info;
     const p = this.pool.acquire(def.projectile);
     if (def.splashRadius) {
-      // 포물선: 지금 적 위치에 떨어지도록 날아가는 시간을 거리로 정한다.
+      // 포물선: 떨어질 때 적이 있을 자리로, 날아가는 시간은 거리로 정한다.
       const g = this.cfg.gravity;
       const flight = (dist) => Math.max(0.4, dist / def.projectileSpeed);
-      const at = this.aimAt(from, target, flight); // 떨어질 때 적이 있을 자리
+      const at = this.aimAt(from, target, flight);
       tmp.set(at.x - from.x, 0, at.z - from.z);
       const time = flight(tmp.length());
       const vel = tmp.divideScalar(time);
@@ -249,6 +268,8 @@ export class TurretSystem {
       p.fire(from, tmp, damage, (range * 1.3) / def.projectileSpeed);
     }
     p.turret = t;
+    p.pierceLeft = info.pierce; // 석궁: 한 줄로 몇 마리까지
+    p.hitSet = info.pierce > 1 ? new Set() : null;
     // 초과 피해 방지: 한 대상만 맞히는 투사체만 예약 (대포·서리 범위는 안 함)
     p.target = null;
     p.reserved = 0;
@@ -259,11 +280,8 @@ export class TurretSystem {
     }
     t.shots = (t.shots ?? 0) + 1;
     (this.tally[t.type] ??= { shots: 0, hits: 0 }).shots += 1;
-    p.onHit = def.onHit ?? null;
+    p.onHit = info.effect;
     p.hitSplash = def.hitSplash ?? 0;
-    if (t.priority === 'spread') t.recent = [target, ...(t.recent ?? [])].slice(0, 2);
-    t.recoil = 1;
-    this.ctx.bus.emit('turret:fired', { type: t.type, position: t.position, muzzle: from, target: def.splashRadius ? target.position.clone() : null, splash: def.splashRadius ?? 0 });
   }
 
   // 사거리 원: (a) 놓을 포탑 (b) 포탑 창에서 보는 포탑 (c) 건설 창·건설 모드 중엔 그 기지 포탑 모두(반투명)
@@ -383,7 +401,7 @@ export class TurretSystem {
       }
       let hit = null;
       for (const m of monsters) {
-        if (!m.alive || m.untargetable) continue;
+        if (!m.alive || m.untargetable || p.hitSet?.has(m)) continue;
         // 이번 프레임 이동 구간 전체로 판정 (빠른 총알이 작은 적을 건너뛰지 않게). 높이 조건은 그대로
         if (p.position.y < m.radius * 2 + (m.def.flier ? 1.3 : 0) && p.sweepHits(m.position.x, m.position.z, m.radius + 0.15)) { hit = m; break; }
       }
@@ -396,7 +414,15 @@ export class TurretSystem {
         p.release();
       } else if (hit) {
         bus.emit('projectile:hit', { monster: hit, damage: p.damage, dir: p.velocity.clone().setY(0).normalize(), effect: p.onHit, turret: p.turret, armorPierce: p.turret?.def.armorPierce ?? 0 });
-        p.release();
+        // 관통(석궁): 맞힌 적은 다시 맞히지 않고 계속 날아간다
+        p.pierceLeft -= 1;
+        if (p.pierceLeft > 0 && p.hitSet) {
+          p.hitSet.add(hit);
+          // 맞힌 높이 그대로 수평으로 계속 (비스듬히 내려가던 탄이 땅에 박히지 않게), 남은 거리는 사거리만큼
+          const sp = p.velocity.length();
+          p.velocity.setY(0).setLength(sp);
+          p.life = Math.max(p.life, (p.turret.def.range * 0.6) / sp);
+        } else p.release();
       } else if (p.life <= 0 || p.position.y < 0) {
         p.release();
       }

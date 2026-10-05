@@ -10,12 +10,19 @@
     "radius": 0.6,
     "range": 9,
     "fireRate": 1.1,
-    "damage": 8,
+    "damage": 9,
+    "multishot": {
+      "level": 5,
+      "count": 2
+    },
     "projectileSpeed": 20,
     "priority": "nearest",
     "priorities": [
       "nearest",
-      "lowestHp"
+      "lowestHp",
+      "highestHp",
+      "first",
+      "flier"
     ],
     "color": "#c58b4f",
     "xp": 10,
@@ -68,11 +75,15 @@
     "fireRate": 0.5,
     "damage": 24,
     "armorPierce": 0.6,
+    "pierce": 2,
     "projectileSpeed": 28,
     "priority": "lowestHp",
     "priorities": [
       "nearest",
-      "lowestHp"
+      "lowestHp",
+      "highestHp",
+      "first",
+      "flier"
     ],
     "color": "#8a6440",
     "xp": 15,
@@ -122,14 +133,17 @@
     "hp": 130,
     "radius": 0.7,
     "range": 8.5,
-    "fireRate": 4,
-    "damage": 5,
+    "fireRate": 3,
+    "damage": 7,
     "armorPierce": 0.3,
     "projectileSpeed": 42,
-    "priority": "nearest",
+    "priority": "flier",
     "priorities": [
       "nearest",
-      "lowestHp"
+      "lowestHp",
+      "highestHp",
+      "first",
+      "flier"
     ],
     "color": "#6f7d8c",
     "xp": 20,
@@ -188,7 +202,10 @@
     "priority": "nearest",
     "priorities": [
       "nearest",
-      "lowestHp"
+      "lowestHp",
+      "highestHp",
+      "first",
+      "flier"
     ],
     "color": "#4a4f5a",
     "xp": 30,
@@ -249,13 +266,18 @@
     "projectileSpeed": 24,
     "onHit": {
       "type": "poison",
-      "duration": 3
+      "duration": 3,
+      "dpsRatio": 0.8,
+      "maxStacks": 3
     },
     "priority": "spread",
     "priorities": [
       "spread",
       "nearest",
-      "lowestHp"
+      "lowestHp",
+      "highestHp",
+      "first",
+      "flier"
     ],
     "color": "#7cc67a",
     "xp": 15,
@@ -314,12 +336,21 @@
     "onHit": {
       "type": "slow",
       "duration": 2,
-      "amount": 0.4
+      "amount": 0.35,
+      "amountPerLevel": 0.05,
+      "freeze": {
+        "level": 5,
+        "chance": 0.1,
+        "duration": 1
+      }
     },
     "priority": "nearest",
     "priorities": [
       "nearest",
-      "lowestHp"
+      "lowestHp",
+      "highestHp",
+      "first",
+      "flier"
     ],
     "color": "#8fd0ff",
     "xp": 25,
