@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { createMonsterModel } from '../entities/MonsterModel.js';
 
-// 몬스터 도감 사진: 실제 3D 모델을 작은 캔버스에 비스듬히 찍어 그림 주소(dataURL)로 돌려준다.
-// 못 만난 몬스터는 검은 그림자(silhouette). 한 번 찍은 사진은 기억해 두고, 렌더러는 하나만 만든다.
+// 모델 사진: 3D 모델을 작은 캔버스에 찍어 그림 주소(dataURL)로 돌려준다. 렌더러는 하나만 만들어 같이 쓴다.
+// - monsterPortrait: 도감 사진 (못 만난 몬스터는 검은 그림자, 한 번 찍은 사진은 기억)
+// - snapshot: 아무 모델이나 (HUD 플레이어 초상화)
 const SIZE = 256;
 const cache = new Map();
 let stage = null;
@@ -22,28 +23,37 @@ function setup() {
   return { renderer, scene, camera, shadow };
 }
 
+// obj 를 잠깐 무대에 올려 찍는다. place(camera) 가 카메라를 놓는다. obj 의 기하·재질은 건드리지 않는다
+export function snapshot(obj, place, { silhouette = false } = {}) {
+  stage ??= setup();
+  const { renderer, scene, camera, shadow } = stage;
+  scene.add(obj);
+  place(camera);
+  scene.overrideMaterial = silhouette ? shadow : null;
+  renderer.render(scene, camera);
+  scene.remove(obj);
+  return renderer.domElement.toDataURL('image/png');
+}
+
 // def: monsters.json 항목, id: 몬스터 종류, known: 만나 봤는지
 export function monsterPortrait(def, id, known = true) {
   const key = `${id}:${known ? 1 : 0}`;
   if (cache.has(key)) return cache.get(key);
-  stage ??= setup();
-  const { renderer, scene, camera, shadow } = stage;
   const model = createMonsterModel(def, id);
   const g = new THREE.Group();
   g.add(model.body);
   g.rotation.y = -0.45; // 정면에서 살짝 옆으로
-  scene.add(g);
   // 몸 크기에 맞춰 카메라 거리를 정한다 (조금 위에서 내려다봄)
   const box = new THREE.Box3().setFromObject(g);
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3()).length();
-  const dist = size / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.02;
-  camera.position.set(center.x, center.y + dist * 0.32, center.z + dist);
-  camera.lookAt(center);
-  scene.overrideMaterial = known ? null : shadow;
-  renderer.render(scene, camera);
-  const url = renderer.domElement.toDataURL('image/png');
-  scene.remove(g);
+  const url = snapshot(g, (camera) => {
+    camera.fov = 30;
+    camera.updateProjectionMatrix();
+    const dist = size / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.02;
+    camera.position.set(center.x, center.y + dist * 0.32, center.z + dist);
+    camera.lookAt(center);
+  }, { silhouette: !known });
   g.traverse((o) => { if (o.isMesh) o.geometry.dispose(); });
   for (const m of [model.mat, ...(model.extraMats ?? [])]) m?.dispose?.();
   cache.set(key, url);

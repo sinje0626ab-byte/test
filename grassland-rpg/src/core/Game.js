@@ -164,7 +164,7 @@ export class Game {
     new BountyWindow(ctx, this.ui);
     this.ending = new EndingScreen(ctx, this);
     this.touch = new TouchControls(ctx, uiRoot);
-    this.skillBar = new SkillBar(ctx, uiRoot);
+    this.skillBar = new SkillBar(ctx, this.hud.actionBar);
     this.raidInd = new RaidIndicator(ctx, uiRoot);
     new QuestTracker(ctx, uiRoot);
     this.minimap = new Minimap(ctx, uiRoot);

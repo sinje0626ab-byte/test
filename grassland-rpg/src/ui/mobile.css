@@ -86,12 +86,14 @@
   body.touch .saved { position: fixed; top: 186px; right: 60px; margin: 0; }
 
   /* 가운데: 알림은 퀘스트 아래 가운데, 배너는 그 아래 (미니맵·메뉴 줄과 겹치지 않게) */
-  body.touch .hud-notify { top: 238px; left: 50%; right: auto; transform: translateX(-50%); align-items: center; width: max-content; max-width: calc(100vw - 124px); }
-  body.touch .hud-banner { top: 330px; padding: 10px 22px; max-width: calc(100vw - 150px); }
+  body.touch .hud-notify { top: 284px; left: 50%; right: auto; transform: translateX(-50%); align-items: center; width: max-content; max-width: calc(100vw - 124px); }
+  body.touch .hud-banner { top: 360px; padding: 10px 22px; max-width: calc(100vw - 150px); }
   body.touch .hud-banner b { font-size: 20px; }
   body.touch .hud-banner small { font-size: 12px; }
-  body.touch .raid-wave { top: 150px; font-size: 13px; }
-  body.touch .bossbar { top: 150px; width: calc(100vw - 150px); }
+  /* 습격 웨이브·보스 바는 퀘스트 표시 아래, 알림은 그 아래 */
+  body.touch .raid-wave { top: 196px; font-size: 13px; }
+  body.touch .bossbar { top: 228px; width: calc(100vw - 150px); }
+  body.touch .bossbar b { font-size: 16px; }
 
   /* 창 크기 */
   body.touch .window, body.touch .window.win-left, body.touch .window.win-center {
@@ -141,15 +143,20 @@
   body.touch .t-menu button { min-width: 0; padding: 7px 10px; font-size: 12px; border-radius: 11px; }
   body.touch .minimap { top: 76px; right: 8px; }
   body.touch .saved { display: none; }
-  body.touch .hud-notify { top: 54px; left: 50%; right: auto; transform: translateX(-50%); align-items: center; width: max-content; max-width: 46vw; }
+  body.touch .hud-notify { top: 96px; left: auto; right: 150px; transform: none; align-items: flex-end; width: max-content; max-width: 40vw; }
   body.touch .hud-banner { top: 30%; padding: 8px 20px; }
   body.touch .hud-banner b { font-size: 20px; }
-  body.touch .raid-wave, body.touch .bossbar { top: 50px; }
+  body.touch .raid-wave { top: 48px; }
+  body.touch .bossbar { top: 86px; width: 46vw; }
+  body.touch .bossbar b { font-size: 15px; }
+  /* 스킬 버튼: 미니맵과 겹치지 않게 구르기 버튼 왼쪽에 가로로 */
+  body.touch .sslot[data-slot="0"] { right: 204px; bottom: 34px; }
+  body.touch .sslot[data-slot="1"] { right: 270px; bottom: 34px; }
   body.touch .quickbar { bottom: 10px; left: 178px; gap: 5px; }
   body.touch .qslot { width: 42px; height: 42px; }
   body.touch .loot-log { left: 178px; bottom: 62px; }
   body.touch .hud-interact { bottom: 64px; }
-  body.touch .hud-buildhint, body.touch .hud-tip { bottom: auto; top: 96px; font-size: 13px; max-width: 46vw; }
+  body.touch .hud-buildhint, body.touch .hud-tip { bottom: auto; top: 214px; font-size: 13px; max-width: 46vw; }
 
   /* 창: 조이스틱과 공격 버튼 사이, 높이는 화면에 맞춰 */
   body.touch .window, body.touch .window.win-left, body.touch .window.win-center {
