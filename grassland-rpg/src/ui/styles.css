@@ -231,7 +231,7 @@ html, body {
 }
 .minimap canvas { display: block; border-radius: 50%; }
 .mm-n { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #fff; background: #e0645a; border-radius: 6px; padding: 0 4px; }
-.hud-notify { top: 252px; }
+
 
 /* 획득 로그 (왼쪽 아래) */
 .loot-log { position: absolute; left: 16px; bottom: 76px; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; pointer-events: none; }

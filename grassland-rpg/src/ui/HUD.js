@@ -1,9 +1,16 @@
 import * as THREE from 'three';
 import { itemIcon } from './icons.js';
+import { playerPortrait } from './playerPortrait.js';
 
 const v = new THREE.Vector3();
 
-// 항상 떠 있는 정보: 좌상단 HP/스태미나/레벨, 우상단 골드, 알림, 데미지 숫자
+// 항상 떠 있는 정보 (모양은 theme-rpg.css)
+// - 좌상단: 초상화(금테) + 방패 레벨 배지, 이름, HP(잔상 바)·스태미나·경험치
+// - 우상단: 해/달 다이얼 시계, 가죽 띠 골드, 미니맵
+// - 아래: 액션바(퀵슬롯 1~5 + 스킬 Q·R, SkillBar 가 actionBar 에 붙는다)
+// - 오른쪽 가운데: 토스트 알림 (최대 3개), 데미지 숫자(요소 풀 재사용)
+const NOTE_MAX = 3;
+const FLOAT_LIFE = 0.7;
 export class HUD {
   constructor(ctx, root) {
     this.ctx = ctx;
@@ -16,14 +23,17 @@ export class HUD {
     this.root = root;
     root.innerHTML = `
       <div class="hud-tl">
-        <div class="hud-level"><span class="lv-badge">Lv <b data-lv>1</b></span><b class="hud-name" data-hud-name></b><span class="sp-pip" data-sp hidden></span></div>
-        <div class="bar hp"><div class="fill" data-hp></div><span data-hp-text></span></div>
-        <div class="bar st"><div class="fill" data-st></div></div>
-        <div class="bar xp"><div class="fill" data-xp></div></div>
-        <div class="buffs" data-buffs></div>
+        <div class="hud-portrait"><img data-portrait alt=""><span class="lv-badge"><small>Lv</small><b data-lv>1</b></span></div>
+        <div class="hud-main">
+          <div class="hud-level"><b class="hud-name" data-hud-name></b><span class="sp-pip" data-sp hidden></span></div>
+          <div class="bar hp"><div class="ghost" data-hp-ghost></div><div class="fill" data-hp></div><span data-hp-text></span></div>
+          <div class="bar st"><div class="fill" data-st></div></div>
+          <div class="bar xp"><div class="fill" data-xp></div></div>
+          <div class="buffs" data-buffs></div>
+        </div>
       </div>
       <div class="hud-tr">
-        <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">☰</button><div class="clock" data-clock><i class="sun" data-sun></i><b data-day>1일차</b><span data-until></span></div></div>
+        <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">☰</button><div class="clock" data-clock><i class="dial"><i class="dial-wheel" data-dial><i class="dial-sun"></i><i class="dial-moon"></i></i></i><b data-day>1일차</b><span data-until></span></div></div>
         <div class="gold"><i class="coin"></i><b data-gold>0</b></div>
         <div class="saved" data-saved>저장됨</div>
       </div>
@@ -31,7 +41,7 @@ export class HUD {
       <div class="hud-float" data-float></div>
       <div class="hud-banner" data-banner hidden></div>
       <div class="hud-interact" data-interact hidden></div>
-      <div class="quickbar" data-quick></div>
+      <div class="actionbar" data-actionbar><div class="quickbar" data-quick></div></div>
       <div class="bossbar" data-boss hidden><b data-boss-name></b><div class="bar"><div class="fill" data-boss-fill></div></div></div>
       <div class="hud-death" data-death hidden><div>쓰러졌습니다…</div><small>곧 시작 지점에서 일어납니다</small></div>
       <div class="hud-vignette" data-vignette></div>
@@ -41,12 +51,29 @@ export class HUD {
       hp: $('[data-hp]'), hpText: $('[data-hp-text]'), st: $('[data-st]'), xp: $('[data-xp]'),
       gold: $('[data-gold]'), notify: $('[data-notify]'), float: $('[data-float]'),
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
-      clock: $('[data-clock]'), sun: $('[data-sun]'), day: $('[data-day]'), until: $('[data-until]'),
+      clock: $('[data-clock]'), dial: $('[data-dial]'), day: $('[data-day]'), until: $('[data-until]'),
       banner: $('[data-banner]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
-      buffs: $('[data-buffs]'), boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
+      buffs: $('[data-buffs]'), portrait: $('[data-portrait]'), hpGhost: $('[data-hp-ghost]'), boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
+    this.actionBar = $('[data-actionbar]');
+    this.pool = []; // 데미지 숫자 요소 재사용
+    this.hpGhost = 1;
+
     const { bus } = ctx;
+    // 초상화: 외형·장비가 바뀔 때만 한 장 다시 찍는다 (같은 프레임에 여러 번 와도 한 번)
+    const portrait = () => {
+      if (this.portraitQueued) return;
+      this.portraitQueued = true;
+      requestAnimationFrame(() => {
+        this.portraitQueued = false;
+        this.el.portrait.src = playerPortrait(ctx.player);
+      });
+    };
+    bus.on('player:named', portrait);
+    bus.on('equipment:changed', portrait);
+    bus.on('save:loaded', portrait);
+    portrait();
     bus.on('gold:changed', ({ gold, delta }) => {
       this.el.gold.textContent = gold.toLocaleString();
       if (delta > 0) this.pulse(this.el.gold.parentElement);
@@ -150,27 +177,34 @@ export class HUD {
     this.bannerTimer = setTimeout(() => { b.hidden = true; }, 2800);
   }
 
+  // 토스트: 오른쪽에서 미끄러져 들어온다. 아이콘 + 글자, 종류별 왼쪽 띠 색. 최대 3개 (오래된 것부터 사라짐)
   notify({ text, kind = 'info', color }) {
     const n = document.createElement('div');
     n.className = `note ${kind}`;
-    n.textContent = text;
+    n.innerHTML = `<i class="note-ic"></i><span></span>`;
+    n.lastChild.textContent = text;
     if (color) n.style.setProperty('--accent', color);
-    this.el.notify.prepend(n);
-    while (this.el.notify.children.length > 5) this.el.notify.lastChild.remove();
-    setTimeout(() => n.classList.add('out'), 2200);
-    setTimeout(() => n.remove(), 2700);
+    this.el.notify.append(n);
+    while (this.el.notify.children.length > NOTE_MAX) this.el.notify.firstChild.remove();
+    setTimeout(() => n.classList.add('out'), 2600);
+    setTimeout(() => n.remove(), 3000);
   }
 
-  floatText({ position, amount, crit, target }) {
+  // 데미지 숫자: 일반 흰색, 치명타 노랑 1.5배 + 흔들림, 플레이어 피격 빨강, 회복 초록, 포탑 피해는 작게
+  floatText({ position, amount, crit, target, source }) {
     if (this.hideNumbers && target !== 'xp') return;
-    const el = document.createElement('div');
-    el.className = `dmg ${target}${crit ? ' crit' : ''}`;
+    let el = this.pool.pop();
+    if (!el) {
+      el = document.createElement('div');
+      this.el.float.appendChild(el);
+    }
+    el.className = `dmg ${target}${crit ? ' crit' : ''}${source === 'turret' ? ' turret' : ''}${source === 'status' ? ' dot' : ''}`;
     el.textContent = crit ? `${amount}!` : `${amount}`;
-    this.el.float.appendChild(el);
+    el.style.display = '';
     const pos = position.clone();
     pos.y += 1.4;
     pos.x += (Math.random() - 0.5) * 0.5;
-    this.floats.push({ el, pos, age: 0 });
+    this.floats.push({ el, pos, age: 0, crit });
   }
 
   update(dt) {
@@ -184,7 +218,14 @@ export class HUD {
       this.el.bossFill.style.width = `${(sum((s) => s.hp) / sum((s) => s.maxHp)) * 100}%`;
     }
     const s = this.ctx.player.stats;
-    this.el.hp.style.width = `${(s.hp / s.maxHp) * 100}%`;
+    const hpPct = s.hp / s.maxHp;
+    this.el.hp.style.width = `${hpPct * 100}%`;
+    // 잔상 바: 줄어들 땐 잠깐 남았다가 따라가고(CSS 지연), 늘어날 땐 바로 맞춘다
+    if (Math.abs(hpPct - this.hpGhost) > 1e-4) {
+      this.el.hpGhost.classList.toggle('instant', hpPct > this.hpGhost);
+      this.hpGhost = hpPct;
+      this.el.hpGhost.style.width = `${hpPct * 100}%`;
+    }
     this.el.hpText.textContent = `${Math.ceil(s.hp)} / ${s.maxHp}`;
     this.el.st.style.width = `${(s.stamina / s.maxStamina) * 100}%`;
 
@@ -194,6 +235,10 @@ export class HUD {
     this.el.day.textContent = `${t.day}일차 · ${this.ctx.world.regionAt(p.x, p.z).name}`;
     this.el.until.textContent = `${t.isNight ? '아침까지' : '밤까지'} ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
     this.el.clock.classList.toggle('night', t.isNight);
+    // 다이얼: 낮엔 해가, 밤엔 달이 왼쪽에서 떠서 꼭대기를 지나 오른쪽으로 진다
+    const { dayLength } = t.cfg;
+    const rot = t.isNight ? 90 + ((t.clock - dayLength) / (t.cycle - dayLength)) * 180 : -90 + (t.clock / dayLength) * 180;
+    this.el.dial.style.transform = `rotate(${rot.toFixed(1)}deg)`;
 
     const cam = this.ctx.camera;
     const w = window.innerWidth;
@@ -205,10 +250,14 @@ export class HUD {
       v.copy(f.pos).project(cam);
       const x = (v.x * 0.5 + 0.5) * w;
       const y = (-v.y * 0.5 + 0.5) * h;
-      f.el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${1 + Math.max(0, 0.25 - f.age) * 2})`;
-      f.el.style.opacity = String(Math.min(1, 2.5 - f.age * 3));
-      if (f.age > 0.8) {
-        f.el.remove();
+      // 튀어오르며 커졌다가 제 크기로, 치명타는 처음 0.25초 좌우로 흔들림. 끝 0.25초 동안 흐려짐
+      const pop = 1 + Math.max(0, 0.18 - f.age) * 3;
+      const shake = f.crit && f.age < 0.25 ? Math.sin(f.age * 90) * 4 * (1 - f.age / 0.25) : 0;
+      f.el.style.transform = `translate(${x + shake}px, ${y}px) translate(-50%, -50%) scale(${pop})`;
+      f.el.style.opacity = String(Math.min(1, (FLOAT_LIFE - f.age) / 0.25));
+      if (f.age > FLOAT_LIFE) {
+        f.el.style.display = 'none';
+        this.pool.push(f.el);
         this.floats.splice(i, 1);
       }
     }
