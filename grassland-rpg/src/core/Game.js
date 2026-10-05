@@ -51,6 +51,7 @@ import { QuestTracker } from '../ui/QuestTracker.js';
 import { DialogueWindow } from '../ui/DialogueWindow.js';
 import { CourierWindow } from '../ui/CourierWindow.js';
 import { BuffSystem } from '../systems/BuffSystem.js';
+import { ControlHelp } from '../ui/ControlHelp.js';
 import { HUD } from '../ui/HUD.js';
 import { UIManager } from '../ui/UIManager.js';
 import { Tooltip } from '../ui/Tooltip.js';
@@ -172,6 +173,7 @@ export class Game {
     // 연출·소리·설정 (게임 로직과 따로)
     this.settings = new Settings(bus);
     this.settingsPanel = new SettingsPanel(this.settings, this.save, ctx);
+    this.help = new ControlHelp(ctx, this.hud.root, this.ui, this.settings);
     this.synth = new Synth();
     this.feedback = new FeedbackSystem(ctx, this.camera);
     this.sound = new SoundSystem(ctx, this.synth);
@@ -206,6 +208,7 @@ export class Game {
     this.save.disabled = false;
     if (!this.save.load()) this.ctx.bus.emit('game:new');
     this.beginPlay();
+    this.ctx.bus.emit('play:started', { fresh: false });
   }
 
   newGame() {
@@ -287,6 +290,7 @@ export class Game {
     ctx.world.update(dt, ctx.player.position);
     this.camera.update(dt, ctx.player.position);
     this.hud.update(dt);
+    this.help.update(realDt);
     this.ui.update(dt);
     this.touch.update();
     this.skillBar.update();

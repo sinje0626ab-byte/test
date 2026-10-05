@@ -2,6 +2,7 @@
 const OPTIONS = {
   shadows: [['off', '끄기'], ['low', '낮음'], ['high', '높음']],
   decorDensity: [[0.5, '50%'], [1, '100%']],
+  controlHelp: [['auto', '자동'], ['always', '항상'], ['off', '끄기']],
 };
 
 export class SettingsPanel {
@@ -29,6 +30,7 @@ export class SettingsPanel {
         <div class="set-row"><span>데미지 숫자</span>${toggle('damageNumbers')}</div>
         <div class="set-row"><span>그림자</span>${seg('shadows')}</div>
         <div class="set-row"><span>풀·꽃 장식</span>${seg('decorDensity')}</div>
+        ${this.ctx.input.touchMode ? '' : `<div class="set-row"><span>조작 안내</span>${seg('controlHelp')}</div>`}
       </div>
       <p class="set-note">휴대폰이 느리면 그림자를 낮추고 장식을 50%로 줄여 보세요.</p>
       <h3 class="set-h">저장 옮기기 <small>(슬롯 ${this.save.slot})</small></h3>

@@ -95,7 +95,6 @@ kbd {
 .clock.night { background: #2f3558; color: #eef; border-color: #4a5185; }
 .clock.night span { color: #b9bde8; }
 .clock.night .sun { background: radial-gradient(circle at 65% 35%, transparent 38%, #f3f0c8 40%); box-shadow: none; }
-.hud-help.bad { background: rgba(255, 123, 123, 0.9); color: #fff; font-weight: 700; }
 
 .hud-banner {
   position: absolute; top: 22%; left: 50%; transform: translateX(-50%);

@@ -97,11 +97,29 @@ html, body {
 .dmg.crit { color: #ffd23f; font-size: 26px; }
 .dmg.player { color: #ff6b6b; }
 
-.hud-help {
-  position: absolute; bottom: 16px; left: 16px; max-width: calc(50% - 150px);
-  padding: 6px 14px; border-radius: 999px; font-size: 13px;
-  background: rgba(255, 252, 240, 0.75); color: #6b6453;
+.hud-help, .hud-tip {
+  position: absolute; bottom: 76px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px);
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; padding: 7px 16px; border-radius: 12px;
+  background: rgba(30, 24, 18, 0.72); color: #f3e6c4; font-size: 12.5px; font-weight: 700; white-space: nowrap;
+  transition: opacity var(--help-fade, 0.6s), transform var(--help-fade, 0.6s); pointer-events: none;
 }
+.hud-help.hide, .hud-tip.hide { opacity: 0; transform: translate(-50%, 8px); }
+.hud-tip { display: block; text-align: center; bottom: 76px; font-size: 13.5px; padding: 8px 18px; background: rgba(42, 31, 23, 0.85); border: 1px solid rgba(246, 215, 122, 0.45); }
+.hud-help .kc { display: inline-flex; align-items: center; gap: 3px; }
+.hud-help kbd, .hud-tip kbd {
+  display: inline-block; min-width: 20px; padding: 1px 5px 2px; margin-right: 1px; border-radius: 5px; text-align: center;
+  font: 800 11px/1.4 inherit; font-family: inherit; color: #3a2a1a; background: linear-gradient(#fdf6e2, #e7d6ad);
+  border: 1px solid #b8a172; border-bottom-width: 3px;
+}
+.hud-tip kbd { margin-right: 6px; }
+/* 건설 안내: 건설 모드 동안만, 배치 불가면 빨강 */
+.hud-buildhint {
+  position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px);
+  padding: 7px 16px; border-radius: 999px; font-size: 14px; font-weight: 700; pointer-events: none;
+  background: rgba(30, 24, 18, 0.8); color: #fff4d6;
+}
+.hud-buildhint[hidden] { display: none; }
+.hud-buildhint.bad { background: rgba(214, 84, 72, 0.92); color: #fff; }
 
 .hud-death {
   position: absolute; inset: 0; display: flex; flex-direction: column;
@@ -129,7 +147,7 @@ html, body {
 
 /* E 상호작용 안내 */
 .hud-interact {
-  position: absolute; bottom: 84px; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: 122px; left: 50%; transform: translateX(-50%);
   padding: 7px 16px; border-radius: 999px; font-size: 14px; font-weight: 700;
   background: #2f2a24; color: #fff4d6; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
 }

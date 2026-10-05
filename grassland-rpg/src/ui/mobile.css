@@ -114,6 +114,8 @@
   body.touch .qslot .item-svg { width: 32px; height: 32px; }
   body.touch .loot-log { bottom: 224px; left: 10px; }
   body.touch .hud-interact { bottom: 226px; }
+  /* 건설 안내·행동 힌트: 퀵슬롯 위 (배너·퀘스트와 안 겹치게) */
+  body.touch .hud-buildhint, body.touch .hud-tip { bottom: 270px; font-size: 13px; }
 }
 
 /* 아주 좁은 세로 화면 (360px 이하) */
@@ -147,6 +149,7 @@
   body.touch .qslot { width: 42px; height: 42px; }
   body.touch .loot-log { left: 178px; bottom: 62px; }
   body.touch .hud-interact { bottom: 64px; }
+  body.touch .hud-buildhint, body.touch .hud-tip { bottom: auto; top: 96px; font-size: 13px; max-width: 46vw; }
 
   /* 창: 조이스틱과 공격 버튼 사이, 높이는 화면에 맞춰 */
   body.touch .window, body.touch .window.win-left, body.touch .window.win-center {
