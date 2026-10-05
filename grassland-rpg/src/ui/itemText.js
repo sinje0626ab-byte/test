@@ -1,4 +1,5 @@
 import { enhancedBonus } from '../utils/enhance.js';
+import { pick } from '../utils/josa.js';
 
 // 능력치 이름·값 표기와 아이템 툴팁 내용
 export function formatStat(items, key, value, sign = true) {
@@ -27,7 +28,7 @@ export function compareLines(data, def, plus, cur, curPlus) {
     const up = LOWER_BETTER.includes(k) ? d < 0 : d > 0;
     return `<div class="tt-cmp ${up ? 'up' : 'down'}">${items.statLabels[k] ?? k} ${up ? '▲' : '▼'} ${formatStat(items, k, Math.abs(d), false)}</div>`;
   }).join('');
-  return `<div class="tt-cmp-head">${cur ? `${cur.name}${curPlus ? ` +${curPlus}` : ''}와(과) 비교` : '지금 빈 칸'}</div>${rows || '<div class="tt-cmp">차이 없음</div>'}`;
+  return `<div class="tt-cmp-head">${cur ? `${cur.name}${curPlus ? ` +${curPlus}` : ''}${pick(curPlus ? curPlus : cur.name, '과/와')} 비교` : '지금 빈 칸'}</div>${rows || '<div class="tt-cmp">차이 없음</div>'}`;
 }
 
 export function itemTooltip(data, id, { count, hint, plus = 0, compare } = {}) {

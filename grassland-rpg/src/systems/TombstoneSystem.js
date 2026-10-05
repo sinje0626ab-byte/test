@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { josa } from '../utils/josa.js';
 
 // 묘비: 쓰러진 자리에 남고, 잃은 골드의 절반(config.tombstone.ratio)이 들어 있다. E로 되찾는다.
 // 다시 쓰러지면 예전 묘비는 사라진다. ctx.tomb (하나뿐)
@@ -42,7 +43,7 @@ export class TombstoneSystem {
     const t = this.ctx.tomb;
     if (!t) return;
     this.ctx.bus.emit('economy:reward', { amount: t.gold });
-    this.ctx.bus.emit('notify', { text: `묘비에서 골드 ${t.gold}을(를) 되찾았어요!`, kind: 'gold' });
+    this.ctx.bus.emit('notify', { text: `묘비에서 골드 ${josa(t.gold, '을/를')} 되찾았어요!`, kind: 'gold' });
     this.remove();
   }
 

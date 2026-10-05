@@ -1,4 +1,5 @@
 import { enhanceCost } from '../utils/enhance.js';
+import { josa } from '../utils/josa.js';
 
 // 대장간 장비 강화: 골드 + 철광석, 실패 없음. 대상은 가방 칸 또는 장비 슬롯.
 // forge:enhance { from: 'bag' | 'equip', slot, id, plus } → inventory:set-plus / equipment:set-plus
@@ -16,7 +17,7 @@ export class ForgeSystem {
     const items = { items: cost.items, ok: false };
     bus.emit('inventory:spend', items);
     if (!items.ok) {
-      bus.emit('notify', { text: `${data.items.items[cost.items[0].id].name}이(가) 부족합니다`, kind: 'warn' });
+      bus.emit('notify', { text: `${josa(data.items.items[cost.items[0].id].name, '이/가')} 부족합니다`, kind: 'warn' });
       return;
     }
     const gold = { amount: cost.gold, ok: false };

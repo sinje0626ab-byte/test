@@ -3,6 +3,7 @@ import { RaidMonster } from '../entities/RaidMonster.js';
 import { rand } from '../utils/random.js';
 import { turretDamage } from '../utils/build.js';
 import { raidProgress, raidStatScale, raidCount, pickWeighted, poolAverageHp, splitWaves, isBloodMoon } from '../utils/raid.js';
+import { josa } from '../utils/josa.js';
 
 // 밤 습격: 실시간(웨이브 3개) + 원격 계산. 5일마다 붉은 달.
 export class RaidSystem {
@@ -131,7 +132,7 @@ export class RaidSystem {
       raid.status = 'partial';
     } else {
       raid.status = 'failed';
-      this.loseGoods(raid.base, `${raid.base.label}이(가) 습격에 무너졌습니다!`);
+      this.loseGoods(raid.base, `${josa(raid.base.label, '이/가')} 습격에 무너졌습니다!`);
     }
   }
 

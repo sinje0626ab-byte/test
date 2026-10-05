@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Facility } from '../entities/Facility.js';
+import { josa } from '../utils/josa.js';
 
 // 부속 건물 설치·목록·아침 수리
 export class FacilitySystem {
@@ -50,7 +51,7 @@ export class FacilitySystem {
     if (!spend.ok) return;
     facility.crop = { seed, day: this.ctx.time.day };
     const c = this.ctx.data.config.garden.crops[seed];
-    bus.emit('notify', { text: `${c.name}을(를) 심었어요. ${c.days}일 뒤 아침에 거둘 수 있어요`, kind: 'item' });
+    bus.emit('notify', { text: `${josa(c.name, '을/를')} 심었어요. ${c.days}일 뒤 아침에 거둘 수 있어요`, kind: 'item' });
     bus.emit('garden:changed', { facility });
   }
 

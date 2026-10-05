@@ -1,4 +1,5 @@
 import { maxStackOf, countIn, roomFor, addTo, removeFrom } from '../utils/slots.js';
+import { josa } from '../utils/josa.js';
 
 // 가방: 정해진 칸 수, 칸마다 { id, count } 또는 null.
 export class InventorySystem {
@@ -53,6 +54,8 @@ export class InventorySystem {
       this.changed();
     });
     bus.on('inventory:sort', () => this.sort());
+    // 버리기: 그 칸에서 count 개를 없앤다 (되찾을 수 없음, 창에서 확인을 받고 부른다)
+    bus.on('inventory:discard', ({ slot, count }) => this.discard(slot, count));
     // 새 아이템 점: 마우스를 올리거나 탭하면 지운다
     bus.on('inventory:seen', ({ slot }) => {
       if (!this.slots[slot]?.fresh) return;
@@ -148,6 +151,17 @@ export class InventorySystem {
     const n = removeFrom(this.slots, id, count);
     this.changed();
     return n;
+  }
+
+  discard(slot, count) {
+    const s = this.slots[slot];
+    if (!s) return;
+    const n = Math.max(1, Math.min(s.count, Math.floor(count ?? s.count)));
+    s.count -= n;
+    if (s.count <= 0) this.slots[slot] = null;
+    const name = this.def(s.id).name + (s.plus ? ` +${s.plus}` : '');
+    this.ctx.bus.emit('notify', { text: `${josa(name, '을/를')}${n > 1 ? ` ${n}개` : ''} 버렸어요`, kind: 'info' });
+    this.changed();
   }
 
   // 가방 정리: 같은 아이템 합치고 종류 → 등급 → 이름 순

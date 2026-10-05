@@ -2,6 +2,7 @@ import { baseAt } from '../utils/bases.js';
 import { turretCost, maxTurrets, turretDamage, turretRange, materialCost, structureHp } from '../utils/build.js';
 import { itemIcon } from './icons.js';
 import { buildArt } from './uiArt.js';
+import { josa } from '../utils/josa.js';
 
 // 건설 창 (B): 기지 영역 안에서만 열린다. 건물/포탑 탭, 비용 표시.
 export class BuildMenu {
@@ -163,7 +164,7 @@ export class BuildMenu {
   baseUpgradeCard(base) {
     const { buildings, items, turrets } = this.ctx.data;
     const next = buildings.baseLevels[String(base.level + 1)];
-    if (!next) return `<p class="empty">${base.label}은(는) 이미 최고 단계(${base.name})예요.</p>`;
+    if (!next) return `<p class="empty">${josa(base.label, '은/는')} 이미 최고 단계(${base.name})예요.</p>`;
     const cur = buildings.baseLevels[String(base.level)];
     const stats = this.ctx.player.stats;
     const ncost = materialCost(next.cost, stats);
@@ -183,7 +184,7 @@ export class BuildMenu {
           ${unlocks.length ? `<li>새 포탑: ${unlocks.join(', ')}</li>` : ''}
         </ul>
         <ul class="base-up-cost">${cost}</ul>
-        <button type="button" class="base-up-btn" data-upgrade-base="${base.id}" ${enough ? '' : 'disabled'}>${enough ? `${next.name}(으)로 올리기` : '재료가 부족해요'}</button>
+        <button type="button" class="base-up-btn" data-upgrade-base="${base.id}" ${enough ? '' : 'disabled'}>${enough ? `${josa(next.name, '으로/로')} 올리기` : '재료가 부족해요'}</button>
       </div>`;
   }
 }

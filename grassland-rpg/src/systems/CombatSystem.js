@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { josa } from '../utils/josa.js';
 
 const dir = new THREE.Vector3();
 
@@ -193,7 +194,7 @@ export class CombatSystem {
       bus.emit('structure:destroyed', { structure: s });
       if (s.kind === 'wall') return; // 벽은 조용히 무너진다
       const name = s.kind === 'tent' ? s.base.name : s.def.name;
-      bus.emit('notify', { text: `${name}이(가) 부서졌습니다!`, kind: 'warn' });
+      bus.emit('notify', { text: `${josa(name, '이/가')} 부서졌습니다!`, kind: 'warn' });
     }
   }
 

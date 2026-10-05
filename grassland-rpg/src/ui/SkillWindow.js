@@ -1,5 +1,6 @@
 import { formatStat } from './itemText.js';
 import { skillArt } from './uiArt.js';
+import { pick } from '../utils/josa.js';
 
 // 스킬 창 (K): 갈래(전투·생존·건축)마다 한 쪽. 위 탭·‹ › 로 고르거나 옆으로 밀어 넘긴다.
 // 남은 포인트, 선행 조건 표시, 찍기 전 확인
@@ -150,7 +151,7 @@ export class SkillWindow {
     const s = skills[id];
     const next = (this.ranks[id] ?? 0) + 1;
     this.confirmEl.innerHTML = `
-      <p><b>${s.name}</b>을(를) <b>${next}랭크</b>로 올릴까요?<br><small>누적 효과: ${this.effectText(s, next)} · 포인트 1 사용</small></p>
+      <p><b>${s.name}</b>${pick(s.name, '을/를')} <b>${next}랭크</b>로 올릴까요?<br><small>누적 효과: ${this.effectText(s, next)} · 포인트 1 사용</small></p>
       <div class="sk-actions"><button type="button" data-act="cancel">취소</button><button type="button" class="primary" data-act="learn">배우기</button></div>`;
   }
 }

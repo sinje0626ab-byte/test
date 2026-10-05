@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Boss } from '../entities/Boss.js';
 import { ProjectilePool } from '../entities/Projectile.js';
+import { josa } from '../utils/josa.js';
 
 const tmp = new THREE.Vector3();
 
@@ -83,7 +84,7 @@ export class BossSystem {
     }
     for (const b of parts) b.parts = parts; // HUD 체력바는 조각 합계
     this.active.set(boss.bossId, parts);
-    this.ctx.bus.emit('notify', { text: `${boss.bdef.name}이(가) 둘로 갈라졌습니다!`, kind: 'warn' });
+    this.ctx.bus.emit('notify', { text: `${josa(boss.bdef.name, '이/가')} 둘로 갈라졌습니다!`, kind: 'warn' });
   }
 
   isDefeated(id) {

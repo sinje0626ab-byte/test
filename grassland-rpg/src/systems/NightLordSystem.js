@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Boss } from '../entities/Boss.js';
 import { markCircle } from '../entities/behaviors/common.js';
+import { josa } from '../utils/josa.js';
 
 // 밤의 군주 (config.nightLord): 네 지역 보스를 모두 잡으면 다음 붉은 달에 가장 큰 기지로 온다.
 // 하늘이 캄캄해지고 별이 쏟아진다. 3페이즈 파도 패턴도 여기서. 쓰러뜨리면 해돋이 → 엔딩.
@@ -40,7 +41,7 @@ export class NightLordSystem {
       raid.remote = false;
       raid.toSpawn = raid.waves[0];
     }
-    this.ctx.bus.emit('notify', { text: `밤의 군주가 ${raid.base.label}(으)로 오고 있습니다!`, kind: 'warn' });
+    this.ctx.bus.emit('notify', { text: `밤의 군주가 ${josa(raid.base.label, '으로/로')} 오고 있습니다!`, kind: 'warn' });
   }
 
   spawn({ raid, spot }) {

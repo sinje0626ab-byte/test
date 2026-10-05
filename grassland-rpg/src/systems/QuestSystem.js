@@ -1,3 +1,4 @@
+import { pick } from '../utils/josa.js';
 // 메인 퀘스트 (quests.json): 하나씩 차례로. 조건을 채우면 부엉 박사에게 보고 → 보상 → 다음.
 // 설계도 해금은 ctx.unlocks(Set)에 넣는다 (건설 창·건설이 읽는다).
 export class QuestSystem {
@@ -86,7 +87,7 @@ export class QuestSystem {
       return;
     }
     if (this.ready) {
-      talk.lines.push(`「${q.title}」을(를) 해냈군요!`);
+      talk.lines.push(`「${q.title}」${pick(q.title, '을/를')} 해냈군요!`);
       talk.options.unshift({ label: '보고하기', event: 'quest:report' });
     } else {
       talk.lines.push(`지금 부탁할 일은 「${q.title}」 — ${q.goal}.`);
