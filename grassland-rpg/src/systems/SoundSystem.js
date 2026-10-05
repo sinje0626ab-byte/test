@@ -51,8 +51,19 @@ export class SoundSystem {
     bus.on('ui:close', () => this.play('close'));
     bus.on('raid:start', () => this.play('horn'));
     bus.on('time:day', () => this.play('birds'));
-    // 버튼 누르는 소리 (타이틀·메뉴·창 모두)
-    document.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) this.play('click'); });
+    // UI 소리 (타이틀·메뉴·창 모두): 누름 = click, 탭 전환 = tab, 마우스를 올리면 아주 작은 tick (PC)
+    const TABS = '.tabs button, .sk-tab, .seg button, .t-slot';
+    document.addEventListener('pointerdown', (e) => {
+      const b = e.target.closest('button');
+      if (b) this.play(b.matches(TABS) ? 'tab' : 'click');
+    });
+    let hovered = null;
+    document.addEventListener('pointerover', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const b = e.target.closest('button:not(:disabled)');
+      if (b && b !== hovered) this.play('tick');
+      hovered = b;
+    });
   }
 
   applyVolume() {

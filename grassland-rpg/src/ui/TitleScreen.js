@@ -1,7 +1,9 @@
 import { CharacterCreator } from './CharacterCreator.js';
+import pkg from '../../package.json';
 // 타이틀 화면: 로고 · 이어하기 / 새 게임 / 조작 방법, 새 게임 환영 안내 카드
-// 게임 이름: Meadow Pioneers (초원 개척단). 단어마다 줄바꿈될 수 있게 나눈다
-const LOGO = [['Meadow', 'g'], ['Pioneers', 'o']];
+// 게임 이름: 초원 개척단 (Meadow Pioneers). 로고는 한글 금박 글자가 하나씩 튀어나오고 아래 영문 장식 한 줄.
+// 단어마다 줄바꿈될 수 있게 나눈다
+const LOGO = [['초원', 'k'], ['개척단', 'k']];
 
 // 조작 방법 표 (타이틀·게임 메뉴 공용)
 export function helpHtml() {
@@ -69,12 +71,13 @@ export class TitleScreen {
             let i = 0;
             return LOGO.map(([word, c]) => `<span class="word">${[...word].map((ch) => `<span class="${c}" style="--i:${i++}">${ch}</span>`).join('')}</span>`).join('');
           })()}</h1>
-          <span class="logo-badge">초원 개척단</span>
+          <span class="logo-en">MEADOW PIONEERS</span>
         </div>
         <p class="logo-sub">작은 텐트 하나로 시작하는 초원 모험</p>
         <div class="title-menu" data-menu></div>
       </div>
-      <footer class="title-foot">저장은 이 브라우저에 자동으로 돼요 · v1.0</footer>
+      <footer class="title-foot">저장은 이 브라우저에 자동으로 돼요</footer>
+      <span class="title-ver">v${pkg.version}</span>
       <div class="t-dialog" data-dialog hidden><div class="t-card" data-card></div></div>`;
     document.body.appendChild(el);
     this.el = el;
@@ -178,6 +181,7 @@ export class TitleScreen {
     this.step = 0;
     this.el.querySelector('.title-center').remove();
     this.el.querySelector('.title-foot').remove();
+    this.el.querySelector('.title-ver').remove();
     // 먼저 캐릭터 만들기 (카드는 옆으로 비켜서 가운데 캐릭터가 보이게)
     this.dialog.classList.add('side');
     this.dialog.hidden = false;

@@ -1,4 +1,5 @@
-// 대화 창: 화면 아래 말풍선 + 주민 얼굴(색 동그라미·이름 첫 글자), 글자는 타자기처럼.
+// 대화 창: 화면 아래 양피지 판 + 금색 리본 이름 + 주민 얼굴(색 동그라미·이름 첫 글자), 글자는 타자기처럼.
+// 다 나오면 ▼ 가 깜빡이고 선택지가 뜬다.
 // 누르면 바로 전체 표시. 다 나오면 선택지 (선택지는 event를 보내고 창을 닫는다, stay면 안 닫음)
 export class DialogueWindow {
   constructor(ctx, ui) {
@@ -39,10 +40,12 @@ export class DialogueWindow {
       <div class="dlg">
         <i class="dlg-face" style="--c:${d.color};--a:${d.accent}">${d.name[0]}</i>
         <p class="dlg-text"></p>
+        <i class="dlg-next" hidden>▼</i>
       </div>
       <div class="dlg-opts" hidden>${talk.options.map((o, i) => `<button type="button" data-opt="${i}">${o.label}</button>`).join('')}</div>`;
     this.textEl = this.body.querySelector('.dlg-text');
     this.optsEl = this.body.querySelector('.dlg-opts');
+    this.nextEl = this.body.querySelector('.dlg-next');
     this.ui.close('dialogue');
     this.ui.open('dialogue');
   }
@@ -61,6 +64,7 @@ export class DialogueWindow {
     if (this.shown >= this.full.length) {
       this.done = true;
       this.optsEl.hidden = false;
+      this.nextEl.hidden = false; // 다 나왔다는 표시 (깜빡임)
     }
   }
 }
