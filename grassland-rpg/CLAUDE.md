@@ -180,6 +180,10 @@ src/
     windows-map.css    # 포탑 관리·기지 업그레이드·지도 창
     touch.css          # 모바일 터치 조작
     title.css          # 타이틀·게임 메뉴
+    polish.css         # HUD 마감 (막대·패널·퀵슬롯)
+    mobile.css         # 모바일 배치 (body.touch)
+    theme-rpg.css      # RPG 테마 — 맨 마지막에 읽어 창·버튼·칸·툴팁·글꼴의 최종 모습을 정한다
+    ControlHelp.js     # PC 조작 안내·행동 힌트·건설 안내
   utils/
     random.js          # 시드 난수 (월드 배치 재현용)
     slots.js           # 칸 목록에 넣기·빼기·세기 (가방·창고 공용)
@@ -365,7 +369,14 @@ src/
 - **강화 외형**: 무기 +3 금 테, +4 보석, +5 은은한 금빛 기운 (`addEnhanceLook`)
 - **주민**: 몬스터와 같은 얼굴 규칙(하이라이트·볼), 역할 소품(도토리·망치·책·꿀단지·택배 가방), 숨쉬기·눈 깜빡임·말할 때 끄덕임·졸 때 꾸벅
 - **환경**: 나무 머리·덤불은 덩어리 여럿, 바위는 두 개, 꽃은 꽃잎 다섯 장 (한 모양으로 합쳐 인스턴스 그대로), 장식 색은 채도를 조금 낮춘다
-- **UI**(`ui/polish.css`, 마지막에 읽음): 제목 글꼴 Jua·본문 Noto Sans KR, 종이 카드 패널(안쪽 흰 선 + 바닥 그림자), 누르는 버튼, 막대 위 밝은 줄, 짙은 밤색 툴팁
+- **UI 테마**(`ui/theme-rpg.css`, 모든 CSS 중 맨 마지막 — 겉모양의 최종 모습. 배치는 mobile.css 등): 3D 월드는 아기자기하게, UI는 판타지 RPG 질감. 외부 이미지 없이 CSS·인라인 SVG만
+  - 글꼴 변수: `--font-display`(Hahmlet, 로고·큰 제목) · `--font-title`(Gowun Batang 700, 창 제목·버튼·이름) · `--font-body`(Noto Sans KR) · `--font-number`(Bagel Fat One, 숫자) · `--font-deco`(Cinzel, 짧은 영문 장식). `index.html` 의 Google Fonts 링크 하나(display=swap), 모두 폴백
+  - 색 변수: `--wood-dark` #2a1f17 · `--wood` #4a3424 · `--parchment-top/bot` #f3e6c4→#e8d6a8 · `--gold-light/gold/gold-dark` #f6d77a→#b8862b · `--ink` #3a2a1a · `--ink-light` #f3e6c4 · HP #c7423a · 스태미나 #e0a83a · 경험치 #5aa0d8. 등급 색은 items.json 그대로
+  - 창: 짙은 나무 프레임 + 양피지, 가운데 금색 리본 제목, 네 모서리 금장식(`uiArt.cornerArt`, UIManager 가 넣음), 둥근 금속 닫기, 책갈피 탭. 열기 0.15초 scale 0.96→1 + fade, 닫기는 `.closing` 0.15초 뒤 hidden. PC 는 창 높이를 화면에 맞추고 본문만 스크롤
+  - 버튼 3종: 기본(나무) · 주요(금, `.primary`·구매·제작·업그레이드 등) · 위험(붉은 가죽, `.danger`·버리기·철거). 카드형 선택 버튼(건설 카드·스킬 칸·도감 칸…)은 제외
+  - 칸: 움푹 들어간 칸, 등급 테두리, 희귀 이상은 안쪽 빛(아이콘 SVG `data-grade`). 툴팁: 어두운 판 + 맨 위 등급 색 띠(`.tt-item --g`) + 금색 구분선
+  - 작은 휴대폰 화면은 모서리 장식 생략. 큰 영역 backdrop-filter 금지
+- **HUD 마감**(`ui/polish.css`): 막대·HUD 패널·퀵슬롯
 - **팔·손**(`PlayerModel.js`): 오른팔은 `swordPivot` 에 달려 무기와 같이 휘두르고, 손은 무기 `userData.grip`(종류별 손잡이 위치)을 쥔다. 무기를 바꾸면 `fitArm` 이 손을 옮긴다. 활은 몸 쪽으로 당겨 든다(모양만). 왼팔은 걸을 때 흔든다
 - **아이템 설명**(`Tooltip.js`): PC 는 마우스를 올리면 따라다니는 설명(`show`), 모바일은 한 번 탭하면 칸 위에 고정(`pin`)되고 다음 터치에서 닫힌다. 터치의 `pointerleave`(손 뗄 때 생김)로 닫지 않게 `hover(e)` 를 쓴다. 가방·캐릭터 창
 - **스킬 창 쪽 넘기기**: 갈래(전투·생존·채집·건축)마다 한 쪽. 위 탭(갈래에 쓴 포인트 표시)·‹ › 화살표, 모바일은 옆으로 밀기(scroll-snap). 다시 그려도 보던 쪽 유지

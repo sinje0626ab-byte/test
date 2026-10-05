@@ -62,3 +62,17 @@ export function buildArt(id, cls = 'build-svg') {
   const b = new Brush();
   return svg(b, (BUILD[id] ?? BUILD.storage)(b), cls);
 }
+
+// 창 모서리 금장식 (왼쪽 위 기준, CSS 로 돌려 네 모서리에 쓴다): 꺾인 금테 + 둥근 덩굴 + 마름모 보석
+// (gradient id 는 숨은 창 안에서 깨질 수 있어 단색 두 겹으로 입체감)
+export function cornerArt() {
+  return `<svg class="win-corner-svg" viewBox="0 0 34 34" aria-hidden="true">
+    <path d="M2 32V8a6 6 0 0 1 6-6h24" fill="none" stroke="#2a1f17" stroke-width="6.4" stroke-linecap="round"/>
+    <path d="M2 32V8a6 6 0 0 1 6-6h24" fill="none" stroke="#c9952f" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M3.4 30V8.4a5 5 0 0 1 5-5H30" fill="none" stroke="#fbe7a1" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M10 21c0-6 5-11 11-11" fill="none" stroke="#2a1f17" stroke-width="3.6" stroke-linecap="round"/>
+    <path d="M10 21c0-6 5-11 11-11" fill="none" stroke="#d9a640" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M13.5 4.5l4.5 4.5-4.5 4.5L9 9z" fill="#e0b34a" stroke="#2a1f17" stroke-width="1.3"/>
+    <path d="M13.5 6.2l2.6 2.6-2.6 1z" fill="#fff3c4"/>
+  </svg>`;
+}

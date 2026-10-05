@@ -39,7 +39,8 @@ export function itemTooltip(data, id, { count, hint, plus = 0, compare } = {}) {
     : def.equipSlot ? ` · ${data.items.equipSlots[def.equipSlot] ?? data.items.equipSlots.accessory1}` : '';
   const set = Object.values(data.items.sets ?? {}).find((st) => st.pieces.includes(id));
   const max = def.stackable ? def.maxStack ?? data.config.inventory.defaultMaxStack : null;
-  return `
+  // 툴팁 맨 위 등급 색 띠는 --g 로 (theme-rpg.css)
+  return `<div class="tt-item" style="--g:${grade?.color ?? '#e8e8e8'}">
     <div class="tt-name" style="color:${grade?.color ?? '#fff'}">${def.name}${plus ? ` <b class="tt-plus">+${plus}</b>` : ''}</div>
     <div class="tt-meta">${grade ? `${grade.name} · ` : ''}${categories[def.category] ?? ''}${slotName}</div>
     ${bonusLines(data.items, enhancedBonus(data, def.bonus, plus))}
@@ -48,5 +49,5 @@ export function itemTooltip(data, id, { count, hint, plus = 0, compare } = {}) {
     ${def.description ? `<p class="tt-desc">${def.description}</p>` : ''}
     ${count != null && max ? `<div class="tt-meta">수량 ${count} / ${max}</div>` : ''}
     ${compare ?? ''}
-    ${hint ? `<div class="tt-hint">${hint}</div>` : ''}`;
+    ${hint ? `<div class="tt-hint">${hint}</div>` : ''}</div>`;
 }

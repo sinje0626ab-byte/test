@@ -1,4 +1,8 @@
+import { cornerArt } from './uiArt.js';
+
 // 창 열기/닫기, 단축키, 겹침 순서. ESC는 가장 위의 창을 닫는다.
+// 모양(theme-rpg.css): 나무 프레임 + 양피지, 금색 리본 제목, 네 모서리 금장식. 닫을 때 0.15초 줄어들며 사라진다.
+const CLOSE_MS = 150;
 export class UIManager {
   constructor(ctx, root) {
     this.ctx = ctx;
@@ -23,7 +27,8 @@ export class UIManager {
         <h2>${title}${hotkeyLabel ? ` <kbd>${hotkeyLabel}</kbd>` : ''}</h2>
         <button class="win-close" type="button" aria-label="닫기">✕</button>
       </header>
-      <div class="win-body"></div>`;
+      <div class="win-body"></div>
+      ${['tl', 'tr', 'bl', 'br'].map((c) => `<i class="win-corner ${c}">${cornerArt()}</i>`).join('')}`;
     this.layer.appendChild(el);
     const win = { id, key, el, body: el.querySelector('.win-body'), onOpen: null, onClose: null, canOpen: null, onUpdate: null };
     el.addEventListener('pointerdown', () => this.focus(win));
@@ -40,6 +45,8 @@ export class UIManager {
     const win = this.windows.get(id);
     if (!win || this.isOpen(id)) return;
     if (win.canOpen && !win.canOpen()) return;
+    clearTimeout(win.closing);
+    win.el.classList.remove('closing');
     win.el.hidden = false;
     this.stack.push(win);
     this.restack();
@@ -50,7 +57,9 @@ export class UIManager {
   close(id) {
     const win = this.windows.get(id);
     if (!win || !this.isOpen(id)) return;
-    win.el.hidden = true;
+    // 상태는 바로 닫고, 모양만 잠깐 줄어들며 사라진다
+    win.el.classList.add('closing');
+    win.closing = setTimeout(() => { win.el.hidden = true; win.el.classList.remove('closing'); }, CLOSE_MS);
     this.stack = this.stack.filter((w) => w !== win);
     this.restack();
     win.onClose?.();
