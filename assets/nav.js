@@ -102,6 +102,7 @@
     var chaps = [].slice.call(paper.querySelectorAll('h2'));
     var articles = [].slice.call(paper.querySelectorAll('.article'));
     if (!chaps.length) { nav.style.display = 'none'; return; }
+    nav.setAttribute('data-built', '1');
 
     var reArt = /제\s*\d+\s*조(?:의\s*\d+)?/;
     var reHead = /^(제\d+편|제\d+장|부칙)\s*(.*)$/;
@@ -544,6 +545,16 @@
       if (b) b.focus();
     });
   }
+
+  /* 본문이 나중에 들어오는 쪽(비밀번호로 잠긴 문서 등)에서 목차를 다시 세울 수 있게 열어 둔다 */
+  window.ChumoNav = {
+    chapnav: function () {
+      var nav = document.getElementById('chapnav');
+      if (!nav || nav.getAttribute('data-built')) return;
+      nav.style.display = '';
+      initChapnav();
+    }
+  };
 
   ready(function () { initGnb(); initChapnav(); initPortraits(); initCounters(); initBrandArt(); initFind(); initForms(); });
 })();
