@@ -1964,3 +1964,45 @@ body.pl-playing .tr.on .tr-eq i:nth-child(3) { animation-delay: .6s; }
 /* 추모건이 아닌 전환 — 팬클럽 */
 .mm--club { border-left-color: var(--navy-line); background: var(--paper); border-style: dashed; }
 .mm--club .mm-badge { color: var(--navy); border-color: var(--navy-line); }
+
+/* --- 추모계급 사다리 (헌법 제12조의2) — 소개·추모봇 안내 공용 --- */
+.ladder {
+  list-style: none; margin: 6px 0 26px; padding: 0;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px 8px; counter-reset: none;
+}
+.ladder li {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 4px 9px; text-align: center; box-sizing: border-box;
+  background: var(--paper-alt); border: 1px solid var(--border-soft); border-radius: var(--radius-box);
+}
+.ladder li:not(:nth-child(6n)):not(:last-child)::after {
+  content: '›'; position: absolute; right: -8px; top: 50%; transform: translateY(-55%);
+  font-size: 16px; color: var(--gold); line-height: 1;
+}
+.ld-n { font-size: 10.5px; color: var(--ink-muted); letter-spacing: .1em; }
+.ld-ico { font-size: 24px; line-height: 1.2; }
+.ld-name { font-size: 12.5px; font-weight: 700; color: var(--ink); word-break: keep-all; line-height: 1.35; }
+.ladder li:nth-child(n+8) { border-color: var(--gold-light); }
+.ladder li:nth-child(n+10) { background: var(--paper-deep); }
+.ladder li.ld-top { background: var(--navy); border-color: var(--navy); }
+.ladder li.ld-top .ld-name { color: var(--navy-text); }
+.ladder li.ld-top .ld-n { color: var(--navy-muted); }
+@media (max-width: 760px) {
+  .ladder { grid-template-columns: repeat(4, 1fr); }
+  .ladder li:not(:nth-child(6n)):not(:last-child)::after { content: none; }
+}
+@media (max-width: 460px) {
+  /* 세로 사다리 — 아래에서 위로 오르는 대신 위에서 아래로 읽는다 */
+  .ladder { grid-template-columns: 1fr; gap: 0; border-left: 2px solid var(--gold-light); margin-left: 10px; }
+  .ladder li { flex-direction: row; gap: 10px; padding: 7px 10px; border: none; background: none; border-radius: 0; text-align: left; }
+  .ladder li::before {
+    content: ''; position: absolute; left: -7px; top: 50%; width: 10px; height: 10px; margin-top: -5px;
+    border-radius: 50%; background: var(--paper); border: 2px solid var(--gold);
+  }
+  .ladder li.ld-top { background: var(--navy); border-radius: var(--radius-box); }
+  .ladder li.ld-top::before { background: var(--accent-red); border-color: var(--accent-red); }
+  .ladder li:nth-child(n+10):not(.ld-top) { background: var(--paper-deep); }
+  .ld-n { width: 20px; text-align: right; }
+  .ld-ico { font-size: 20px; }
+  .ld-name { font-size: 14px; }
+}
