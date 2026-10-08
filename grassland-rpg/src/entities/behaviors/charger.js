@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { toPlayer, wander, giveUp, markLine } from './common.js';
 
 // 돌진: 멈춰서 예고선 → 일직선으로 돌진 → 나무·바위에 박으면 기절
+// 맞으면 플레이어가 크게 밀려난다 (combat.chargeKnockback). 돌진 중에 맞히거나 부딪히는 순간 그쪽으로
+// 휘둘렀으면 '반격' → 적이 combat.counterStun 초 기절하고 플레이어는 맞지 않는다
 export const charger = {
   init(m) {
     const d = m.def;
@@ -49,21 +51,39 @@ export const charger = {
         const step = d.chargeSpeed * dt;
         const nx = m.position.x + bs.dir.x * (step + m.radius);
         const nz = m.position.z + bs.dir.z * (step + m.radius);
-        if (m.ctx.world.isBlocked(nx, nz, 0.1)) { m.setState('stun'); m.ctx.bus.emit('monster:stunned', { monster: m }); break; }
+        if (m.ctx.world.isBlocked(nx, nz, 0.1)) { stun(m, d.stunTime); m.ctx.bus.emit('monster:stunned', { monster: m }); break; }
         m.position.addScaledVector(bs.dir, step);
         bs.traveled += step;
         if (!bs.hit && player.alive && m.position.distanceTo(player.position) < m.radius + player.radius + 0.2) {
           bs.hit = true;
+          if (parrying(m, player)) { charger.countered(m); break; }
           m.ctx.bus.emit('monster:charge-hit', { monster: m, dir: bs.dir.clone() });
+          // 부딪히면 그 자리에서 멈춘다 (몸을 뚫고 지나가지 않게)
+          m.cooldown = d.chargeCooldown;
+          m.setState('chase');
+          break;
         }
         if (bs.traveled >= d.chargeDistance) { m.cooldown = d.chargeCooldown; m.setState('chase'); }
         break;
       }
       case 'stun':
-        if (m.stateTime >= d.stunTime) { m.cooldown = d.chargeCooldown * 0.5; m.setState('chase'); }
+        if (m.stateTime >= (bs.stunFor ?? d.stunTime)) { m.cooldown = d.chargeCooldown * 0.5; m.setState('chase'); }
         break;
     }
     return { move, speed };
+  },
+
+  // 플레이어 공격이 지금 맞으면 반격인지 (CombatSystem.playerHits)
+  counterable(m) {
+    return m.alive && m.state === 'charge';
+  },
+
+  countered(m) {
+    if (m.alive) {
+      m.bs.line.visible = false;
+      stun(m, m.ctx.data.config.combat.counterStun);
+    }
+    m.ctx.bus.emit('monster:countered', { monster: m });
   },
 
   // 포탑 예측 사격: t 초 뒤 자리. 예고 중이면 남은 예고 시간 뒤 돌진 방향·속도로, 돌진 중이면 남은 거리까지
@@ -94,3 +114,19 @@ export const charger = {
     return false;
   },
 };
+
+function stun(m, t) {
+  m.bs.stunFor = t;
+  m.setState('stun');
+}
+
+// 부딪히기 직전(combat.parryWindow 초 안, 돌진이 시작된 뒤)에 그쪽으로 휘둘렀으면 막아 낸다 (근접 무기만)
+function parrying(m, player) {
+  const a = player.attack;
+  const win = Math.min(m.ctx.data.config.combat.parryWindow, m.stateTime);
+  if (a.type === 'bow' || a.since > win) return false;
+  const dx = m.position.x - player.position.x;
+  const dz = m.position.z - player.position.z;
+  const len = Math.hypot(dx, dz) || 1;
+  return (a.dir.x * dx + a.dir.z * dz) / len >= m.ctx.data.config.combat.parryArcDot;
+}

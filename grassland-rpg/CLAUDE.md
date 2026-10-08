@@ -245,6 +245,8 @@ src/
 - 상호작용: E (채집, 건물 사용, NPC)
 - 능력치: HP, 스태미나, 공격력, 방어력, 이동속도, 치명타 확률
 - 사망 시: 가장 가까운 기지에서 부활, 소지 골드 일부 손실 (기지가 없으면 시작 지점)
+- **몸 충돌**: 몬스터는 플레이어 몸(반지름 합)을 파고들지 못한다 — `Monster.separate` 가 몬스터끼리 민 뒤 마지막에 플레이어와 겹친 몬스터를 비켜 세운다 (보스는 무거워서 플레이어가 밀린다). 근접 몬스터는 반지름 합 + 0.1m 앞에서 멈춘다. 땅속(`untargetable`)은 예외
+- **터치 조이스틱**(`TouchControls.bindJoystick`): 고리 안을 누르면 고리 가운데 기준(누른 방향으로 바로), 고리 밖 왼쪽 아래 빈 곳(`.joy-zone`, 보이지 않음)을 누르면 고리가 손가락 자리로 온다. 반지름(`touch.joystickRadius`) 밖으로 끌면 고리가 손가락을 따라와 반대로 꺾으면 바로 돈다. 무시 구간 `Input.deadzone` 0.12. 걷기 속도는 0.55 + 민 정도(절반쯤 밀면 다 걷는다), `touch.runThreshold` 이상이면 달리기. 몸 돌리기 dt × 24
 
 ### 4-1-1. 회피 구르기 (Phase 7)
 - PC `Space`, 모바일은 공격 버튼 왼쪽 구르기 버튼
@@ -316,7 +318,7 @@ src/
 | behavior | 동작 | 추가 필드 |
 |---|---|---|
 | melee | 다가와서 때림 (기존) | - |
-| charger | 멈춰서 바닥에 돌진 예고선 → 일직선 돌진. 나무·바위에 박으면 `stunTime`초 기절 | chargeWindup, chargeSpeed, chargeDistance, chargeCooldown |
+| charger | 멈춰서 바닥에 돌진 예고선 → 일직선 돌진. 나무·바위에 박으면 `stunTime`초 기절. 플레이어에 부딪히면 그 자리에서 멈추고 플레이어가 크게 밀려난다(`combat.chargeKnockback` 20 ≈ 2m). **반격**: 돌진 중인 적을 맞히거나, 부딪히기 직전 `combat.parryWindow`(0.3초, 돌진 시작 뒤) 안에 그쪽(`parryArcDot`)으로 근접 무기를 휘둘렀으면 → 플레이어는 안 맞고 적이 `combat.counterStun`(3초) 기절, 그 타격은 확정 치명타 × `counterBonus`(1.5). 연출 `monster:countered`(길게 멈칫·금빛 고리·별·"반격!" 글씨·소리) | chargeWindup, chargeSpeed, chargeDistance, chargeCooldown |
 | ranged | 거리를 유지하며 투사체. 가까이 오면 뒷걸음 | keepDistance, shotSpeed, shotCooldown, shotWindup, shotEffect |
 | darter | 빠르게 날아와 한 번 쏘고 멀리 빠짐 (반복) | dartSpeed, retreatDistance |
 | burrower | 땅속으로 숨어 이동(맞지 않음) → 발밑 흙더미 예고 → 튀어나오며 범위 공격 | burrowTime, emergeWindup, emergeRadius |

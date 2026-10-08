@@ -112,6 +112,7 @@
 
   /* 조작: 퀵슬롯은 조이스틱 위, 획득 로그는 그 위 */
   body.touch .quickbar { left: 10px; bottom: 170px; gap: 5px; }
+  body.touch .joy-zone { width: 48vw; height: 166px; }
   body.touch .qslot { width: 44px; height: 44px; }
   body.touch .qslot .item-svg { width: 32px; height: 32px; }
   body.touch .loot-log { bottom: 224px; left: 10px; }
@@ -153,6 +154,7 @@
   body.touch .sslot[data-slot="0"] { right: 204px; bottom: 34px; }
   body.touch .sslot[data-slot="1"] { right: 270px; bottom: 34px; }
   body.touch .quickbar { bottom: 10px; left: 178px; gap: 5px; }
+  body.touch .joy-zone { width: 172px; height: 62vh; }
   body.touch .qslot { width: 42px; height: 42px; }
   body.touch .loot-log { left: 178px; bottom: 62px; }
   body.touch .hud-interact { bottom: 64px; }

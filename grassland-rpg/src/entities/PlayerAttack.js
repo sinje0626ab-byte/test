@@ -8,6 +8,7 @@ export class PlayerAttack {
     this.p = player;
     this.time = -1; // 휘두르는 중이면 0 이상
     this.timer = 0; // 다음 공격까지
+    this.since = 99; // 마지막으로 휘두른 지 몇 초 (돌진 반격 판정)
     this.hitDone = true;
     this.dir = new THREE.Vector3(0, 0, 1);
     this.count = 0;
@@ -49,6 +50,7 @@ export class PlayerAttack {
     const w = this.w;
     const input = p.ctx.input;
     this.timer = Math.max(0, this.timer - dt);
+    this.since += dt;
 
     if (p.ctx.mode === 'play' && input.attackHeld && this.timer <= 0 && s.stamina >= w.staminaCost) {
       // 누른 순간 마우스(터치는 가까운 적) 쪽으로 몸을 돌린다.
@@ -59,6 +61,7 @@ export class PlayerAttack {
       }
       this.dir.copy(p.facing);
       this.time = 0;
+      this.since = 0;
       this.hitDone = false;
       this.count += 1;
       // 회전 공격 스킬: 근접 무기로 N번째 공격마다 한 바퀴

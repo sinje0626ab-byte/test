@@ -26,6 +26,7 @@ export class TouchControls {
     const el = document.createElement('div');
     el.className = 'touch-ui';
     el.innerHTML = `
+      <div class="joy-zone" data-joyzone></div>
       <div class="joy" data-joy><div class="joy-knob" data-knob></div></div>
       <button type="button" class="t-btn t-attack" data-attack aria-label="공격"><span class="t-label">공격</span></button>
       <button type="button" class="t-btn t-use" data-use hidden aria-label="상호작용"><span class="t-label">E</span></button>
@@ -37,7 +38,7 @@ export class TouchControls {
       </div>`;
     root.appendChild(el);
     const $ = (q) => el.querySelector(q);
-    this.el = { joy: $('[data-joy]'), knob: $('[data-knob]'), attack: $('[data-attack]'), use: $('[data-use]'), build: $('[data-build]'), menu: $('.t-menu'), roll: $('.t-roll') };
+    this.el = { zone: $('[data-joyzone]'), joy: $('[data-joy]'), knob: $('[data-knob]'), attack: $('[data-attack]'), use: $('[data-use]'), build: $('[data-build]'), menu: $('.t-menu'), roll: $('.t-roll') };
 
     this.bindJoystick();
 
@@ -61,18 +62,32 @@ export class TouchControls {
     });
   }
 
+  // 조이스틱: 고리 안을 누르면 고리 가운데가 기준(바로 그 방향으로), 고리 밖 빈 곳(joy-zone)을 누르면
+  // 고리가 손가락 자리로 옮겨 온다. 고리 밖으로 멀리 끌면 고리가 손가락을 따라와서 반대로 꺾으면 바로 돈다.
   bindJoystick() {
-    const { joy, knob } = this.el;
+    const { joy, knob, zone } = this.el;
     const input = this.ctx.input;
     const R = this.cfg.joystickRadius;
     let id = null;
-    let cx = 0;
+    let hx = 0; // 고리 원래 가운데
+    let hy = 0;
+    let cx = 0; // 지금 기준 가운데
     let cy = 0;
+    const place = () => {
+      joy.style.transform = cx === hx && cy === hy ? '' : `translate(${cx - hx}px, ${cy - hy}px)`;
+    };
     const move = (e) => {
       let dx = e.clientX - cx;
       let dy = e.clientY - cy;
       const d = Math.hypot(dx, dy);
-      if (d > R) { dx = (dx / d) * R; dy = (dy / d) * R; }
+      if (d > R) {
+        // 고리가 손가락을 따라온다
+        cx += (dx / d) * (d - R);
+        cy += (dy / d) * (d - R);
+        dx = (dx / d) * R;
+        dy = (dy / d) * R;
+        place();
+      }
       knob.style.transform = `translate(${dx}px, ${dy}px)`;
       // 화면 위 = 북쪽(-z) = W
       input.virtualMove.x = dx / R;
@@ -82,21 +97,34 @@ export class TouchControls {
       if (e.pointerId !== id) return;
       id = null;
       knob.style.transform = '';
+      joy.style.transform = '';
+      joy.classList.remove('active');
       input.virtualMove.x = 0;
       input.virtualMove.z = 0;
     };
-    joy.addEventListener('pointerdown', (e) => {
+    const down = (e) => {
+      if (id !== null) return;
       e.preventDefault();
       id = e.pointerId;
-      joy.setPointerCapture(id);
+      e.currentTarget.setPointerCapture(id);
+      joy.style.transform = '';
       const r = joy.getBoundingClientRect();
-      cx = r.left + r.width / 2;
-      cy = r.top + r.height / 2;
+      hx = r.left + r.width / 2;
+      hy = r.top + r.height / 2;
+      const inside = Math.hypot(e.clientX - hx, e.clientY - hy) <= r.width / 2 + 8;
+      cx = inside ? hx : e.clientX;
+      cy = inside ? hy : e.clientY;
+      place();
+      joy.classList.add('active');
       move(e);
-    });
-    joy.addEventListener('pointermove', (e) => { if (e.pointerId === id) move(e); });
-    joy.addEventListener('pointerup', end);
-    joy.addEventListener('pointercancel', end);
+    };
+    for (const t of [joy, zone]) {
+      t.addEventListener('pointerdown', down);
+      t.addEventListener('pointermove', (e) => { if (e.pointerId === id) move(e); });
+      t.addEventListener('pointerup', end);
+      t.addEventListener('pointercancel', end);
+      t.addEventListener('lostpointercapture', end);
+    }
   }
 
   update() {

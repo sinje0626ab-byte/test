@@ -145,6 +145,7 @@ export class HUD {
       }
     });
     bus.on('combat:hit', (h) => this.floatText(h));
+    bus.on('monster:countered', ({ monster }) => this.floatText({ position: monster.position.clone().setY(0.6), amount: '반격!', target: 'counter' }));
     bus.on('player:damaged', () => this.pulse(this.el.vignette, 'hit'));
     bus.on('player:died', () => { this.el.death.hidden = false; });
     bus.on('player:respawned', () => { this.el.death.hidden = true; });
@@ -260,7 +261,7 @@ export class HUD {
 
   // 데미지 숫자: 일반 흰색, 치명타 노랑 1.5배 + 흔들림, 플레이어 피격 빨강, 회복 초록, 포탑 피해는 작게
   floatText({ position, amount, crit, target, source }) {
-    if (this.hideNumbers && target !== 'xp') return;
+    if (this.hideNumbers && target !== 'xp' && target !== 'counter') return;
     let el = this.pool.pop();
     if (!el) {
       el = document.createElement('div');

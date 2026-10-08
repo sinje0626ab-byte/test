@@ -45,6 +45,7 @@ export class SoundSystem {
     bus.on('monster:emerge', (e) => this.play('slam', e.position, { pitch: 1.4, gain: 0.6 }));
     bus.on('monster:shoot', (e) => this.play('shoot', e.origin, { pitch: 1.3, gain: 0.5 }));
     bus.on('monster:stunned', ({ monster }) => this.play('hit', monster.position, { pitch: 0.7 }));
+    bus.on('monster:countered', ({ monster }) => { this.play('crit', monster.position, { pitch: 1.5 }); this.play('hit', monster.position, { pitch: 0.6 }); });
     bus.on('build:place', () => this.play('build'));
     bus.on('base:upgraded', () => this.play('build'));
     bus.on('ui:open', () => this.play('open'));

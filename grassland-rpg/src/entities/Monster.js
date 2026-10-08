@@ -191,7 +191,7 @@ export class Monster {
     }
   }
 
-  // 몬스터끼리 겹치지 않게 밀어낸다.
+  // 몬스터끼리, 그리고 플레이어와 겹치지 않게 밀어낸다 (보통 몬스터가 비켜 서고, 보스면 플레이어가 밀린다).
   separate() {
     for (const o of this.ctx.monsters) {
       if (o === this || !o.alive) continue;
@@ -204,6 +204,28 @@ export class Monster {
         const push = (min - dd) * 0.5;
         this.position.x += (dx / dd) * push;
         this.position.z += (dz / dd) * push;
+      }
+    }
+    const p = this.ctx.player;
+    if (p?.alive && !this.untargetable) {
+      const dx = this.position.x - p.position.x;
+      const dz = this.position.z - p.position.z;
+      const min = this.radius + p.radius;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < min * min) {
+        const dd = Math.sqrt(d2);
+        // 정확히 겹쳤으면 바라보는 반대쪽으로
+        const nx = dd > 1e-4 ? dx / dd : -this.facing.x;
+        const nz = dd > 1e-4 ? dz / dd : -this.facing.z;
+        if (this.boss) {
+          // 보스는 무거워서 플레이어가 밀려난다
+          p.position.x = this.position.x - nx * min;
+          p.position.z = this.position.z - nz * min;
+          this.ctx.world.resolveCollision(p.position, p.radius);
+        } else {
+          this.position.x = p.position.x + nx * min;
+          this.position.z = p.position.z + nz * min;
+        }
       }
     }
   }

@@ -97,6 +97,14 @@ export class FeedbackSystem {
     bus.on('monster:stunned', ({ monster }) => {
       this.particles.burst(monster.position.clone().setY(monster.radius * 2 + 0.3), { color: ['#fff27a', '#ffffff'], count: 6, speed: 1.5, up: 1.5, gravity: 0, life: 0.8, size: 0.09, drag: 2 });
     });
+    // 돌진 반격: 길게 멈칫 + 금빛 두 겹 고리 + 별
+    bus.on('monster:countered', ({ monster }) => {
+      this.stop(H.crit * 1.8);
+      this.shake(S.crit * 2);
+      this.fx.ring(monster.position, { color: '#ffd27a', to: 2.4, life: 0.45 });
+      this.fx.ring(monster.position, { color: '#ffffff', from: 0.2, to: 1.4, life: 0.3, opacity: 0.6 });
+      this.particles.burst(monster.position.clone().setY(monster.radius * 2 + 0.3), { color: ['#fff27a', '#ffd27a', '#ffffff'], count: 12, speed: 2.5, up: 2, gravity: 0, life: 0.9, size: 0.1, drag: 2 });
+    });
     bus.on('boss:line', (e) => {
       this.shake(S.bossAoe * 0.5);
       for (let i = 1; i <= 6; i++) {

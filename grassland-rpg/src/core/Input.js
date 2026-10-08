@@ -10,6 +10,7 @@ export class Input {
     this.rightPressed = false;
     this.hasMouse = false;
     this.virtualMove = { x: 0, z: 0 };
+    this.deadzone = 0.12; // 조이스틱 이만큼(반지름 비율)은 무시
     this.virtualAttack = false;
     this.touchMode = window.matchMedia?.('(pointer: coarse)').matches || 'ontouchstart' in window;
 
@@ -66,7 +67,7 @@ export class Input {
     let stick = false;
     const v = this.virtualMove;
     const vl = Math.hypot(v.x, v.z);
-    if (!amount && vl > 0.15) {
+    if (!amount && vl > this.deadzone) {
       x = v.x;
       z = v.z;
       amount = Math.min(1, vl);
