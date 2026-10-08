@@ -1,7 +1,7 @@
 import { cornerArt } from './uiArt.js';
 
 // 창 열기/닫기, 단축키, 겹침 순서. ESC는 가장 위의 창을 닫는다.
-// 모양(theme-rpg.css): 나무 프레임 + 양피지, 금색 리본 제목, 네 모서리 금장식. 닫을 때 0.15초 줄어들며 사라진다.
+// 모양(theme-cozy.css): 크림색 둥근 판, 새싹 알약 제목 (모서리 장식은 숨김). 닫을 때 0.15초 줄어들며 사라진다.
 const CLOSE_MS = 150;
 export class UIManager {
   constructor(ctx, root) {

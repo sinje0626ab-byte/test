@@ -4,7 +4,7 @@ import { playerPortrait } from './playerPortrait.js';
 
 const v = new THREE.Vector3();
 
-// 항상 떠 있는 정보 (모양은 theme-rpg.css)
+// 항상 떠 있는 정보 (모양은 theme-cozy.css)
 // - 좌상단: 초상화(금테) + 방패 레벨 배지, 이름, HP(잔상 바)·스태미나·경험치
 // - 우상단: 해/달 다이얼 시계, 가죽 띠 골드, 미니맵
 // - 아래: 액션바(퀵슬롯 1~5 + 스킬 Q·R, SkillBar 가 actionBar 에 붙는다)
