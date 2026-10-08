@@ -1,43 +1,54 @@
 import { CharacterCreator } from './CharacterCreator.js';
 import pkg from '../../package.json';
+import { PAINTED } from './painted.js';
 // 타이틀 화면: 로고 · 이어하기 / 새 게임 / 조작 방법, 새 게임 환영 안내 카드
 // 게임 이름: 초원 개척단 (Meadow Pioneers). 로고는 한글 금박 글자가 하나씩 튀어나오고 아래 영문 장식 한 줄.
 // 단어마다 줄바꿈될 수 있게 나눈다
 const LOGO = [['초원', 'k'], ['개척단', 'k']];
 
-// 조작 방법 표 (타이틀·게임 메뉴 공용)
+// 조작 방법 (타이틀·게임 메뉴 공용): PC·휴대폰 탭 + 아이콘 카드. 탭은 라디오 버튼 + CSS 만으로 바꾼다 (theme-cozy.css)
+// 아이콘은 새로 그린 그림(art/ui/help_* · btn_*), 없으면 글자 키캡
+const HELP = {
+  pc: [
+    ['help_wasd', '이동', 'W A S D'],
+    ['help_shift', '달리기', 'Shift 를 누른 채 이동'],
+    ['help_space', '구르기', 'Space · 잠깐 무적'],
+    ['help_mouse', '공격', '마우스 왼쪽 클릭 · 마우스 쪽으로 휘둘러요'],
+    ['help_e', '상호작용', 'E · 주민·포탑·건물 앞에서'],
+    ['help_qr', '스킬', 'Q · R · 배운 액티브 스킬'],
+    ['help_bag', '창 열기', 'I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도'],
+    ['help_numbers', '퀵슬롯', '숫자 1~5 · 물약·장비를 바로'],
+    ['help_mouse', '아이템', '우클릭 사용·장착 · 끌어서 옮기기', 'flip'],
+    ['help_esc', '메뉴', 'ESC · 잠깐 멈추기'],
+  ],
+  touch: [
+    ['help_joystick', '이동', '왼쪽 조이스틱 · 끝까지 밀면 달리기'],
+    ['btn_roll', '구르기', '연두 버튼 · 잠깐 무적'],
+    ['btn_attack', '공격', '산호 버튼 · 가까운 적을 자동 조준'],
+    ['btn_use', '상호작용', '꿀색 버튼 · 가까이 가면 나타나요'],
+    ['skill_ring', '스킬', '공격 버튼 위 둥근 버튼'],
+    ['help_bag', '창 열기', '오른쪽 메뉴 버튼'],
+    ['help_tap', '퀵슬롯', '아래 칸을 톡'],
+    ['help_doubletap', '아이템', '가방 칸을 두 번 톡 · 사용·장착'],
+    ['help_tap', '건설', '화면을 톡 해서 자리 → "설치"'],
+  ],
+};
+let helpSeq = 0;
 export function helpHtml() {
-  const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
+  const id = `help-${++helpSeq}`;
+  const touch = document.body.classList.contains('touch');
+  const card = ([icon, title, desc, mod]) => {
+    const url = PAINTED.ui[icon];
+    const pic = url ? `<img src="${url}" alt="" class="${mod ?? ''}">` : `<b class="help-key">${title.slice(0, 1)}</b>`;
+    return `<li class="help-card"><span class="help-ic">${pic}</span><span class="help-tx"><b>${title}</b><small>${desc}</small></span></li>`;
+  };
   return `
-    <div class="help-cols">
-      <section>
-        <h3>PC</h3>
-        <table>
-          ${row('이동', 'W A S D · Shift 달리기')}
-          ${row('구르기', 'Space (잠깐 무적)')}
-          ${row('공격', '마우스 왼쪽 클릭 (마우스 쪽으로)')}
-          ${row('상호작용', 'E (포탑·건물 앞에서)')}
-          ${row('스킬', 'Q · R (스킬 창에서 등록한 액티브 스킬)')}
-          ${row('창', 'I 가방 · C 캐릭터 · K 스킬 · B 건설 · M 지도')}
-          ${row('물약', '숫자 1~5')}
-          ${row('아이템', '우클릭: 사용·장착 · 끌어서 옮기기')}
-          ${row('메뉴', 'ESC')}
-        </table>
-      </section>
-      <section>
-        <h3>휴대폰</h3>
-        <table>
-          ${row('이동', '왼쪽 조이스틱 (끝까지 밀면 달리기)')}
-          ${row('구르기', '초록 구르기 버튼 (잠깐 무적)')}
-          ${row('공격', '빨간 공격 버튼 (가까운 적 자동 조준)')}
-          ${row('상호작용', '나타나는 E 버튼')}
-          ${row('스킬', '공격 버튼 위 둥근 버튼 (액티브 스킬을 배우면)')}
-          ${row('창', '오른쪽 메뉴 버튼')}
-          ${row('물약', '아래 퀵슬롯 탭')}
-          ${row('아이템', '두 번 탭: 사용·장착')}
-          ${row('건설', '화면 탭으로 자리 → "설치"')}
-        </table>
-      </section>
+    <div class="help">
+      <input type="radio" name="${id}" id="${id}-pc" class="help-pick pc" ${touch ? '' : 'checked'}>
+      <input type="radio" name="${id}" id="${id}-touch" class="help-pick touch" ${touch ? 'checked' : ''}>
+      <div class="help-tabs"><label for="${id}-pc">PC</label><label for="${id}-touch">휴대폰</label></div>
+      <ul class="help-grid pc">${HELP.pc.map(card).join('')}</ul>
+      <ul class="help-grid touch">${HELP.touch.map(card).join('')}</ul>
     </div>`;
 }
 
