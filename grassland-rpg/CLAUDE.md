@@ -195,7 +195,7 @@ src/
     title.css          # 타이틀·게임 메뉴
     polish.css         # HUD 마감 (막대·패널·퀵슬롯)
     mobile.css         # 모바일 배치 (body.touch)
-    theme-rpg.css      # RPG 테마 — 맨 마지막에 읽어 창·버튼·칸·툴팁·글꼴의 최종 모습을 정한다
+    theme-cozy.css     # 아기자기 테마 — 맨 마지막에 읽어 창·버튼·칸·툴팁·HUD·글꼴의 최종 모습을 정한다
     ControlHelp.js     # PC 조작 안내·행동 힌트·건설 안내
     playerPortrait.js  # HUD 초상화 (플레이어 모델 한 장)
     monsterPortrait.js # 모델 사진 무대(snapshot) + 도감 사진 (새 그림이 있으면 그것)
@@ -389,18 +389,19 @@ src/
 - **강화 외형**: 무기 +3 금 테, +4 보석, +5 은은한 금빛 기운 (`addEnhanceLook`)
 - **주민**: 몬스터와 같은 얼굴 규칙(하이라이트·볼), 역할 소품(도토리·망치·책·꿀단지·택배 가방), 숨쉬기·눈 깜빡임·말할 때 끄덕임·졸 때 꾸벅
 - **환경**: 나무 머리·덤불은 덩어리 여럿, 바위는 두 개, 꽃은 꽃잎 다섯 장 (한 모양으로 합쳐 인스턴스 그대로), 장식 색은 채도를 조금 낮춘다
-- **UI 테마**(`ui/theme-rpg.css`, 모든 CSS 중 맨 마지막 — 겉모양의 최종 모습. 배치는 mobile.css 등): 3D 월드는 아기자기하게, UI는 판타지 RPG 질감. 외부 이미지 없이 CSS·인라인 SVG만
-  - 글꼴 변수: `--font-display`(Hahmlet, 로고·큰 제목) · `--font-title`(Gowun Batang 700, 창 제목·버튼·이름) · `--font-body`(Noto Sans KR) · `--font-number`(Bagel Fat One, 숫자) · `--font-deco`(Cinzel, 짧은 영문 장식). `index.html` 의 Google Fonts 링크 하나(display=swap), 모두 폴백
-  - 색 변수: `--wood-dark` #2a1f17 · `--wood` #4a3424 · `--parchment-top/bot` #f3e6c4→#e8d6a8 · `--gold-light/gold/gold-dark` #f6d77a→#b8862b · `--ink` #3a2a1a · `--ink-light` #f3e6c4 · HP #c7423a · 스태미나 #e0a83a · 경험치 #5aa0d8. 등급 색은 items.json 그대로
-  - 창: 짙은 나무 프레임 + 양피지, 가운데 금색 리본 제목, 네 모서리 금장식(`uiArt.cornerArt`, UIManager 가 넣음), 둥근 금속 닫기, 책갈피 탭. 열기 0.15초 scale 0.96→1 + fade, 닫기는 `.closing` 0.15초 뒤 hidden. PC 는 창 높이를 화면에 맞추고 본문만 스크롤
-  - 버튼 3종: 기본(나무) · 주요(금, `.primary`·구매·제작·업그레이드 등) · 위험(붉은 가죽, `.danger`·버리기·철거). 카드형 선택 버튼(건설 카드·스킬 칸·도감 칸…)은 제외
-  - 칸: 움푹 들어간 칸, 등급 테두리, 희귀 이상은 안쪽 빛(아이콘 SVG `data-grade`). 툴팁: 어두운 판 + 맨 위 등급 색 띠(`.tt-item --g`) + 금색 구분선
-  - 작은 휴대폰 화면은 모서리 장식 생략. 큰 영역 backdrop-filter 금지
-  - 연출(A-2 3/3): 지역 진입 배너(화면 위 1/4, 큰 지역명 + 금색 장식선 + "위험도 ★★☆☆" = regions.json `difficulty`, 처음 3.5초·재방문 작게 2초, 자간이 벌어지며 페이드) · 레벨업(가운데 Cinzel 금빛 "LEVEL UP" + "Lv N" + 방사형 빛 0.8초)
-  - 타이틀: 한글 금박 로고 "초원 개척단"(`--font-display` 900, 글자가 하나씩 튀어나옴) + "MEADOW PIONEERS"(`--font-deco`, 넓은 자간). 메뉴는 금 못이 박힌 나무 명판, 마우스를 올리거나 주요 항목은 양옆 ◆. 오른쪽 아래 버전(`package.json` version)
+- **UI 테마**(`ui/theme-cozy.css`, 모든 CSS 중 맨 마지막 — 겉모양의 최종 모습. 배치는 mobile.css 등): 3D 월드처럼 UI도 아기자기하게 (동물의 숲 같은 크림색 말랑한 판). 외부 이미지 없이 CSS·인라인 SVG만
+  - 글꼴 변수: `--font-display`·`--font-title`(Jua, 로고·제목·버튼·이름) · `--font-body`(Noto Sans KR) · `--font-number`(Bagel Fat One, 숫자·LEVEL UP). `index.html` 의 Google Fonts 링크 하나(display=swap), 모두 폴백
+  - 색 변수: 크림 `--cream` #fffaf0 · `--cream-2` #fdf2dc · `--cream-3` #f6e7c8 · 테두리 `--line` #efdcb8 · 아래 그림자 `--lip` #e3c999 · 글씨 `--ink` #5b4232 / `--ink-soft` #9a7f64 · 포인트 새싹 `--leaf` #8bcf6d(`--leaf-dark` #5ea54a) · 꿀 `--honey` #ffd166 · 하늘 `--sky` #8fd0f2 · 산호 `--coral` #ff8f7c · 밤 `--night` #3e4675 · HP #ff7f72 · 스태미나 #ffc94f · 경험치 #7cc6ef. 예전 변수(`--wood*`·`--gold*`·`--parchment*`·`--panel*`)도 새 팔레트 값으로 남겨 둔다. 등급 색은 items.json 그대로
+  - 판(창·메뉴 카드·HUD·툴팁·액션바): 크림 바탕 + 2~3px `--line` 테두리 + 둥근 모서리(창 24px, HUD 22px, 알약 999px) + 아래 두툼한 그림자(`0 4~6px 0 --lip`) + 위쪽 안 흰 선. 창 제목은 새싹색 알약 스티커, 아래 점선. 닫기는 산호색 동그란 단추(올리면 돈다). 탭·고르기(seg)는 둥근 트랙 안 알약(고른 것은 하얗게). 창은 통통 튀며 열린다(0.22초). 모서리 금장식(`.win-corner`)은 숨긴다
+  - 버튼 3종: 기본(크림) · 주요(새싹, `.primary`·구매·제작·업그레이드 등) · 위험(산호, `.danger`·버리기·철거). 누르면 아래 그림자만큼 쏙 들어가고(3px), 못 누르는 버튼은 옅은 회크림. 카드형 선택 버튼(건설 카드·스킬 칸·도감 칸…)은 제외
+  - 칸: 말랑한 둥근 칸(14px), 빈 칸은 연크림, 찬 칸은 하얀 가운데 + 등급 색 테두리·아래 그림자, 올리면 살짝 떠오른다. 퀵슬롯 빈 칸은 점선, 숫자키는 하늘색 동그라미(스킬은 새싹색)
+  - HUD: 초상화는 하얀 테 + 새싹 고리, 레벨은 꿀색 알약. 막대는 둥근 크림 홈 + 사탕색 채움 + 위쪽 흰 반짝 줄. 시계·골드·알림·힌트는 크림 알약(밤 시계는 남색). 미니맵은 하얀 테
+  - 연출: 지역 배너·보스 이름·레벨업은 하얀 글씨 + 두꺼운 갈색 외곽선(`-webkit-text-stroke` + `paint-order`), 위아래 흰 점선. LEVEL UP 은 꿀색 Bagel Fat One
+  - 타이틀: 하얀 Jua 로고 + 갈색 외곽선 + 새싹색 그림자, 영문은 외곽선 글씨. 메뉴는 사탕 버튼(새 게임·이어하기 새싹, 나머지 크림), 올리면 양옆 🌱. 슬롯은 크림 알약(고른 것은 꿀색). 오른쪽 아래 버전(`package.json` version)
+  - 휴대폰 터치 버튼: 하얀 테 사탕 버튼 (공격 산호 · 구르기 새싹 · E 꿀), 메뉴 단추는 크림 알약
   - 커서(PC만): 기본 작은 칼, 버튼·칸·상호작용 대상 위(E 안내가 뜬 동안 `body.can-interact`)에선 손. SVG data URI
   - UI 효과음: 누름 click, 탭 전환 tab, 마우스 올림 tick(아주 작게). `sounds.json` sfx
-  - 대화창: 양피지 판 + 금색 리본 이름(창 제목), 타자기, 다 나오면 ▼ 깜빡임. 얼굴은 주민 초상화(`art/portraits/npc_<id>`, 없으면 색 동그라미)
+  - 대화창: 크림 판 + 새싹 알약 이름(창 제목), 타자기, 다 나오면 ▼ 통통. 얼굴은 주민 초상화(`art/portraits/npc_<id>`, 없으면 색 동그라미)
 - **HUD 마감**(`ui/polish.css`): 막대·HUD 패널·퀵슬롯
 - **팔·손**(`PlayerModel.js`): 오른팔은 `swordPivot` 에 달려 무기와 같이 휘두르고, 손은 무기 `userData.grip`(종류별 손잡이 위치)을 쥔다. 무기를 바꾸면 `fitArm` 이 손을 옮긴다. 활은 몸 쪽으로 당겨 든다(모양만). 왼팔은 걸을 때 흔든다
 - **아이템 설명**(`Tooltip.js`): PC 는 마우스를 올리면 따라다니는 설명(`show`), 모바일은 한 번 탭하면 칸 위에 고정(`pin`)되고 다음 터치에서 닫힌다. 터치의 `pointerleave`(손 뗄 때 생김)로 닫지 않게 `hover(e)` 를 쓴다. 가방·캐릭터 창

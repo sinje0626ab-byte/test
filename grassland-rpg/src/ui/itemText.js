@@ -39,7 +39,7 @@ export function itemTooltip(data, id, { count, hint, plus = 0, compare } = {}) {
     : def.equipSlot ? ` · ${data.items.equipSlots[def.equipSlot] ?? data.items.equipSlots.accessory1}` : '';
   const set = Object.values(data.items.sets ?? {}).find((st) => st.pieces.includes(id));
   const max = def.stackable ? def.maxStack ?? data.config.inventory.defaultMaxStack : null;
-  // 툴팁 맨 위 등급 색 띠는 --g 로 (theme-rpg.css)
+  // 툴팁 맨 위 등급 색 띠는 --g 로 (theme-cozy.css)
   return `<div class="tt-item" style="--g:${grade?.color ?? '#e8e8e8'}">
     <div class="tt-name" style="color:${grade?.color ?? '#fff'}">${def.name}${plus ? ` <b class="tt-plus">+${plus}</b>` : ''}</div>
     <div class="tt-meta">${grade ? `${grade.name} · ` : ''}${categories[def.category] ?? ''}${slotName}</div>

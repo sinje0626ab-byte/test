@@ -1,4 +1,4 @@
-/* HUD 마감: 막대·HUD 패널·퀵슬롯. 창·버튼·칸·툴팁·글꼴 변수의 최종 모습은 theme-rpg.css (맨 마지막에 읽음). */
+/* HUD 마감: 막대·HUD 패널·퀵슬롯. 창·버튼·칸·툴팁·글꼴 변수의 최종 모습은 theme-cozy.css (맨 마지막에 읽음). */
 :root {
   --ink: #3b3328;
   --ink-soft: #85775d;
@@ -11,7 +11,7 @@
   --gold: #e0b34a;
   --ok: #6aa85a;
 }
-/* 제목 글꼴 (--heading 은 theme-rpg.css): 로고·배지·배너 */
+/* 제목 글꼴 (--heading 은 theme-cozy.css): 로고·배지·배너 */
 .logo, .lv-badge, .hud-banner b, .raid-wave, .bossbar, .sk-branch h3, .cc-card h2, .ending h1 { font-family: var(--heading); font-weight: 700; letter-spacing: 0.3px; }
 
 /* 패널: 얇은 안쪽 흰 선 + 두툼한 바닥 그림자 = 종이 카드 느낌 */
@@ -27,7 +27,7 @@
 .bar.xp .fill { background-color: var(--xp); }
 .lv-badge { background: var(--ok); box-shadow: 0 2px 0 #4f8a42; padding: 1px 10px 0; }
 
-/* HUD 버튼: 누르는 느낌 (창 안 버튼은 theme-rpg.css) */
+/* HUD 버튼: 누르는 느낌 (창 안 버튼은 theme-cozy.css) */
 .choice, .menu-btn { box-shadow: 0 2px 0 rgba(60, 45, 25, 0.22); transition: transform 0.08s, filter 0.12s, box-shadow 0.08s; }
 .choice:hover { filter: brightness(1.06); }
 .choice:active { transform: translateY(2px); box-shadow: 0 0 0 rgba(0, 0, 0, 0); }
