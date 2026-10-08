@@ -45,7 +45,7 @@ export class PlayerRoll {
     const speed = b.rollDistance / b.rollDuration;
     p.velocity.copy(this.dir).multiplyScalar(speed);
     p.position.addScaledVector(p.velocity, dt);
-    p.ctx.world.resolveCollision(p.position, p.radius);
+    p.ctx.world.resolveCollision(p.position, p.radius); p.ctx.world.resolveStructures(p.position, p.radius);
     // 앞으로 한 바퀴 구르는 모습
     const t = Math.min(1, this.time / b.rollDuration);
     p.inner.rotation.x = t * Math.PI * 2;

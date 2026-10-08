@@ -93,15 +93,18 @@ export class HUD {
       this.el.sp.innerHTML = `<span class="sp-long">스킬 </span>+${skillPoints}<span class="sp-long"> (K)</span>`; // 좁은 화면에선 '+5'만 (mobile.css)
     });
     bus.on('xp:gain', ({ amount, position }) => this.floatText({ position, amount: `+${amount} XP`, target: 'xp' }));
-    // 퀵슬롯: 가방에 있는 소모품 종류를 순서대로 최대 N개
+    // 퀵슬롯 (QuickslotSystem): 등록한 아이템 + 가방 개수. 탭 = 사용, 끌어서 다른 칸 = 바꾸기, 바 밖으로 = 비우기
     this.quick = [];
-    bus.on('inventory:changed', ({ slots }) => this.renderQuick(slots));
-    root.querySelector('[data-menu]').addEventListener('click', () => bus.emit('pause:open'));
-    // 퀵슬롯 탭/클릭으로도 사용
-    this.el.quick.addEventListener('pointerdown', (e) => {
-      const i = [...this.el.quick.children].indexOf(e.target.closest('.qslot'));
-      if (i >= 0 && this.quick[i]) bus.emit('inventory:use-item', { item: this.quick[i] });
+    this.invCounts = new Map();
+    bus.on('quick:changed', ({ slots }) => { this.quick = slots; this.renderQuick(); });
+    bus.on('inventory:changed', ({ slots }) => {
+      this.invCounts = new Map();
+      for (const sl of slots) if (sl) this.invCounts.set(sl.id, (this.invCounts.get(sl.id) ?? 0) + sl.count);
+      this.renderQuick();
     });
+    bus.on('equipment:changed', ({ slots }) => { this.equipped = new Set(Object.values(slots ?? {}).filter(Boolean)); this.renderQuick(); });
+    root.querySelector('[data-menu]').addEventListener('click', () => bus.emit('pause:open'));
+    this.bindQuickDrag();
     this.boss = null;
     // 이름 (+ 도감 칭호)
     const nameEl = root.querySelector('[data-hud-name]');
@@ -153,19 +156,56 @@ export class HUD {
     el.classList.add(cls);
   }
 
-  renderQuick(slots) {
+  renderQuick() {
     const { items, config } = this.ctx.data;
-    const counts = new Map();
-    for (const s of slots) {
-      if (!s || items.items[s.id].category !== 'consumable') continue;
-      counts.set(s.id, (counts.get(s.id) ?? 0) + s.count);
-    }
-    this.quick = [...counts.keys()].slice(0, config.quickslots);
     this.el.quick.innerHTML = Array.from({ length: config.quickslots }, (_, i) => {
       const id = this.quick[i];
       const def = id && items.items[id];
-      return `<div class="qslot"><kbd>${i + 1}</kbd>${def ? `${itemIcon(def)}<b class="count">${counts.get(id)}</b>` : ''}</div>`;
+      if (!def) return `<div class="qslot" data-q="${i}"><kbd>${i + 1}</kbd></div>`;
+      const n = this.invCounts.get(id) ?? 0;
+      const worn = this.equipped?.has(id);
+      const badge = def.category === 'equipment' ? (worn && !n ? '<b class="q-worn">E</b>' : '') : `<b class="count">${n}</b>`;
+      return `<div class="qslot${n || worn ? '' : ' empty'}${worn ? ' worn' : ''}" data-q="${i}" title="${def.name}"><kbd>${i + 1}</kbd>${itemIcon(def)}${badge}</div>`;
     }).join('');
+  }
+
+  // 퀵슬롯 끌기: 놓은 곳이 다른 칸이면 바꾸고, 바 밖이면 비운다. 거의 안 움직이고 떼면 사용
+  bindQuickDrag() {
+    const bar = this.el.quick;
+    const { bus } = this.ctx;
+    const slotAt = (x, y) => document.elementFromPoint(x, y)?.closest?.('[data-q]');
+    let drag = null;
+    bar.addEventListener('pointerdown', (e) => {
+      const el = e.target.closest('[data-q]');
+      if (!el) return;
+      e.preventDefault();
+      drag = { from: Number(el.dataset.q), x: e.clientX, y: e.clientY, moved: false, ghost: null, el };
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8 && this.quick[drag.from]) {
+        drag.moved = true;
+        drag.ghost = document.createElement('div');
+        drag.ghost.className = 'drag-ghost';
+        drag.ghost.innerHTML = drag.el.querySelector('svg')?.outerHTML ?? '';
+        document.body.appendChild(drag.ghost);
+        drag.el.classList.add('dragging');
+      }
+      if (drag.ghost) drag.ghost.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+    });
+    window.addEventListener('pointerup', (e) => {
+      if (!drag) return;
+      const d = drag;
+      drag = null;
+      d.ghost?.remove();
+      d.el.classList.remove('dragging');
+      if (!d.moved) { bus.emit('quick:use', { index: d.from }); return; }
+      const to = slotAt(e.clientX, e.clientY);
+      if (to && bar.contains(to)) {
+        const t = Number(to.dataset.q);
+        if (t !== d.from) bus.emit('quick:swap', { from: d.from, to: t });
+      } else bus.emit('quick:clear', { index: d.from });
+    });
   }
 
   banner(title, sub, kind) {
@@ -238,7 +278,7 @@ export class HUD {
   update(dt) {
     const input = this.ctx.input;
     for (let i = 0; i < this.quick.length; i++) {
-      if (input.wasPressed(`Digit${i + 1}`)) this.ctx.bus.emit('inventory:use-item', { item: this.quick[i] });
+      if (input.wasPressed(`Digit${i + 1}`)) this.ctx.bus.emit('quick:use', { index: i });
     }
     if (this.boss) {
       const parts = this.boss.parts ?? [this.boss];

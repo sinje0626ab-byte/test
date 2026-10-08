@@ -26,6 +26,11 @@ export class ActiveSkillSystem {
       this.changed();
     });
     bus.on('skill:assign', ({ id, slot }) => this.assign(id, slot));
+    bus.on('skill:unassign', ({ slot }) => {
+      if (slot < 0 || slot >= this.state.slots.length) return;
+      this.state.slots[slot] = null;
+      this.changed();
+    });
     bus.on('skill:cast', ({ slot }) => this.cast(slot));
     bus.on('player:died', () => { this.heals = []; });
     bus.on('save:collect', (save) => { save.skills = { ...(save.skills ?? {}), slots: [...this.state.slots] }; });

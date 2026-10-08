@@ -19,14 +19,19 @@ export class InventoryWindow {
       <div class="inv-grid" style="--cols:${cfg.columns}"></div>
       <footer class="inv-foot">
         <span class="gold"><i class="coin"></i><b data-inv-gold>0</b></span>
-        <span class="inv-hint">${ctx.input.touchMode ? '탭: 정보 · 두 번 탭: 사용 · 끌기: 옮기기' : '올리기: 정보 · 우클릭: 사용 · 드래그: 옮기기'}</span>
+        <span class="inv-hint">${ctx.input.touchMode ? '탭: 정보 · 두 번 탭: 사용 · 끌기: 옮기기·퀵슬롯' : '올리기: 정보 · 우클릭: 사용 · 끌기: 옮기기·퀵슬롯에 놓기'}</span>
         <button type="button" class="inv-sort" data-sort>정리</button>
+        <button type="button" class="inv-sort" data-quick-add title="고른 칸을 퀵슬롯에 등록 (끌어다 놓아도 된다)">퀵슬롯</button>
         <button type="button" class="inv-trash" data-trash>버리기</button>
       </footer>
       <div class="inv-confirm" hidden></div>`;
     win.body.querySelector('[data-sort]').addEventListener('click', () => ctx.bus.emit('inventory:sort'));
     this.trashEl = win.body.querySelector('[data-trash]');
     this.confirmEl = win.body.querySelector('.inv-confirm');
+    win.body.querySelector('[data-quick-add]').addEventListener('click', () => {
+      const s = this.slots[this.selected];
+      if (s) ctx.bus.emit('quick:add', { item: s.id });
+    });
     this.trashEl.addEventListener('click', () => {
       if (this.slots[this.selected]) this.askDiscard(this.selected);
       else ctx.bus.emit('notify', { text: '버릴 아이템을 먼저 누르거나, 버리기로 끌어다 놓으세요', kind: 'info' });
@@ -140,6 +145,9 @@ export class InventoryWindow {
       const i = this.slotIndexAt(e.clientX, e.clientY);
       if (i >= 0) grid.children[i].classList.add('over');
       this.trashEl.classList.toggle('over', document.elementFromPoint(e.clientX, e.clientY)?.closest?.('[data-trash]') === this.trashEl);
+      const q = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('[data-q]');
+      for (const el of document.querySelectorAll('.qslot.over')) if (el !== q) el.classList.remove('over');
+      q?.classList.add('over');
     });
 
     window.addEventListener('pointerup', (e) => {
@@ -148,6 +156,14 @@ export class InventoryWindow {
         const { from } = this.drag;
         this.cancelDrag();
         this.askDiscard(from);
+        return;
+      }
+      // 퀵슬롯 칸에 놓으면 등록 (소모품·장비)
+      const q = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('[data-q]');
+      if (q) {
+        const { from } = this.drag;
+        this.cancelDrag();
+        this.ctx.bus.emit('quick:set', { index: Number(q.dataset.q), item: this.slots[from]?.id });
         return;
       }
       const to = this.slotIndexAt(e.clientX, e.clientY);
@@ -214,6 +230,7 @@ export class InventoryWindow {
     this.drag.ghost.remove();
     for (const el of this.grid.children) el.classList.remove('dragging', 'over');
     this.trashEl.classList.remove('over');
+    for (const el of document.querySelectorAll('.qslot.over')) el.classList.remove('over');
     this.drag = null;
   }
 }

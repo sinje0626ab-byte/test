@@ -30,6 +30,7 @@ export class BuildMenu {
       <nav class="tabs">
         <button type="button" data-tab="building">건물</button>
         <button type="button" data-tab="turret">포탑</button>
+        <button type="button" data-tab="merc">용병</button>
       </nav>
       <div class="build-list"></div>
       <footer class="inv-foot">
@@ -56,15 +57,26 @@ export class BuildMenu {
         ctx.bus.emit('base:auto-repair', { baseId: Number(auto.dataset.autoRepair), on: auto.checked });
         return;
       }
+      const hire = e.target.closest('[data-hire]');
+      if (hire && !hire.disabled) { ctx.bus.emit('mercenary:hire', { baseId: Number(hire.dataset.base), role: hire.dataset.hire }); this.render(); return; }
+      const fire = e.target.closest('[data-dismiss]');
+      if (fire) {
+        if (fire.dataset.confirm) { ctx.bus.emit('mercenary:dismiss', { baseId: Number(fire.dataset.base), role: fire.dataset.dismiss }); this.render(); }
+        else { fire.dataset.confirm = '1'; fire.textContent = '정말 내보낼까요? (환불 없음)'; }
+        return;
+      }
+      const vault = e.target.closest('[data-vault]');
+      if (vault) { ctx.bus.emit('vault:withdraw', { baseId: Number(vault.dataset.vault) }); this.render(); return; }
       const up = e.target.closest('[data-upgrade-base]');
       if (up && !up.disabled) {
         ctx.bus.emit('base:upgrade', { baseId: Number(up.dataset.upgradeBase) });
         this.render();
         return;
       }
-      const wall = e.target.closest('[data-wall]');
-      if (wall && !wall.classList.contains('disabled')) {
-        ctx.bus.emit('build:start', { kind: 'wall', type: wall.dataset.wall });
+      const wall = e.target.closest('[data-wall-buy]');
+      if (wall && !wall.disabled) {
+        ctx.bus.emit('walls:buy', { baseId: baseAt(ctx.bases, ctx.player.position)?.id, type: wall.dataset.wallBuy, count: Number(wall.dataset.count) });
+        this.render();
         return;
       }
       const fac = e.target.closest('[data-facility]');
@@ -82,6 +94,8 @@ export class BuildMenu {
       if (ui.isOpen('build')) this.render();
     });
     ctx.bus.on('facility:changed', () => { if (ui.isOpen('build')) this.render(); });
+    ctx.bus.on('walls:changed', () => { if (ui.isOpen('build') && this.tab === 'building') this.render(); });
+    ctx.bus.on('mercenary:changed', () => { if (ui.isOpen('build') && this.tab === 'merc') this.render(); });
     ctx.bus.on('turret:changed', () => { if (ui.isOpen('build')) this.render(); });
     ctx.bus.on('interact:base', () => {
       this.tab = 'building';
@@ -105,6 +119,10 @@ export class BuildMenu {
     const max = maxTurrets(base, stats);
     this.infoEl.textContent = `${base.label} (${base.name} Lv${base.level}) · 포탑 ${count}/${max}`;
 
+    if (this.tab === 'merc') {
+      this.list.innerHTML = this.mercCards(base);
+      return;
+    }
     if (this.tab === 'building') {
       this.list.innerHTML = this.repairAllBar(base) + this.autoRepairBar(base) + this.baseUpgradeCard(base) + this.facilityCards(base) + this.wallCards(base);
       return;
@@ -177,26 +195,62 @@ export class BuildMenu {
     }).join('');
   }
 
-  // 벽 카드: 한 칸 비용, 이 기지 벽 수
+  // 성벽 카드: 사면 기지 둘레 원에 한 칸씩 쌓인다 (+1 · +5 · 가득)
   wallCards(base) {
-    const { buildings, items, config } = this.ctx.data;
-    const have = this.ctx.structures.filter((s) => s.kind === 'wall' && s.baseId === base.id).length;
-    return Object.entries(buildings.walls).map(([id, w]) => {
+    const { buildings, items } = this.ctx.data;
+    const ring = this.ctx.wallRing?.(base);
+    if (!ring) return '';
+    const head = `<div class="wall-ring-head"><b>성벽 ${ring.built}/${ring.total}칸</b><small>${ring.built >= ring.total ? '원이 다 둘러졌어요 (남쪽은 입구)' : '사면 뒤쪽부터 양옆으로 쌓여 남쪽 입구에서 만나요'}</small></div>`;
+    return head + Object.entries(buildings.walls).map(([id, w]) => {
       const locked = base.level < w.unlockBaseLevel;
       const cost = materialCost(w.cost, this.ctx.player.stats);
-      const enough = cost.every((c) => (this.counts[c.id] ?? 0) >= c.count);
-      const text = cost.map((c) => `${items.items[c.id].name} ${c.count}`).join(' · ');
-      const why = locked ? `${buildings.baseLevels[String(w.unlockBaseLevel)].name} 필요` : enough ? `끌어서 설치 (${have}/${config.walls.maxPerBase}칸)` : '재료 부족';
+      const can = Math.min(...cost.map((c) => Math.floor((this.counts[c.id] ?? 0) / c.count)));
+      const swap = w.replaces ? ring.walls.filter((x) => x.type === w.replaces).length : 0;
+      const room = ring.free.length + swap;
+      const text = cost.map((c) => `${items.items[c.id].name} ${this.counts[c.id] ?? 0}/${c.count}`).join(' · ');
+      const why = locked ? `${buildings.baseLevels[String(w.unlockBaseLevel)].name} 필요` : !room ? '가득 참' : can <= 0 ? '재료 부족' : `${Math.min(can, room)}칸까지 가능`;
+      const btn = (n, label) => `<button type="button" class="wall-buy" data-wall-buy="${id}" data-count="${n}" ${locked || !room || can <= 0 ? 'disabled' : ''}>${label}</button>`;
       return `
-        <button type="button" class="build-card${locked || !enough ? ' disabled' : ''}" data-wall="${id}">
+        <div class="build-card wall-card${locked ? ' disabled' : ''}">
           ${buildArt(id)}
-          <span class="build-text"><b>${w.name}</b><small>${w.description}</small><small class="stats">1칸: ${text} · 체력 ${w.hp}</small></span>
-          <span class="build-cost"><small>${why}</small></span>
-        </button>`;
+          <span class="build-text"><b>${w.name}</b><small>${w.description}</small><small class="stats">1칸: ${text} · 체력 ${w.hp}${swap ? ` · 바꿔 낄 울타리 ${swap}칸` : ''}</small></span>
+          <span class="build-cost wall-btns">${btn(1, '+1칸')}${btn(5, '+5칸')}${btn(999, '가득')}<small>${why}</small></span>
+        </div>`;
     }).join('');
   }
 
   // 기지 업그레이드 카드: 다음 단계 효과와 필요한 재료
+  // 용병 탭: 금고 + 종류별 카드 (기지마다 종류별 1명)
+  mercCards(base) {
+    const c = this.ctx.data.config.mercenary;
+    const hired = (this.ctx.mercenaries ?? []).filter((m) => m.base === base);
+    const vault = base.vault ?? 0;
+    const STATE = { idle: '쉬는 중', seek: '골드 주우러 가는 중', return: '금고로 가는 중', fight: '싸우는 중', repair: '수리하는 중' };
+    const bar = `
+      <div class="repair-all vault">
+        <span><b>금고 ${vault.toLocaleString()} 골드</b><small>채집가가 주워 온 골드가 모여요</small></span>
+        <button type="button" class="primary" data-vault="${base.id}" ${vault ? '' : 'disabled'}>꺼내기</button>
+      </div>`;
+    const cards = Object.entries(c.roles).map(([role, r]) => {
+      const m = hired.find((x) => x.role === role);
+      let status = '';
+      if (m) {
+        status = STATE[m.state] ?? '일하는 중';
+        if (role === 'gatherer') status += ` · 들고 있는 골드 ${m.carry}/${c.gatherer.capacity}`;
+        if (role === 'repairer' && m.fix) status += ` · ${m.fix.def?.name ?? '건물'} ${Math.floor((m.fix.stats.hp / m.fix.stats.maxHp) * 100)}%`;
+      }
+      return `
+        <div class="build-card merc${m ? ' hired' : ''}">
+          ${mercArt(role)}
+          <span class="build-text"><b>${r.name}</b><small>${r.desc}</small>${m ? `<small class="stats">고용됨 · ${status}</small>` : ''}</span>
+          <span class="build-cost">${m
+    ? `<button type="button" class="danger merc-btn" data-dismiss="${role}" data-base="${base.id}">내보내기</button>`
+    : `<button type="button" class="primary merc-btn" data-hire="${role}" data-base="${base.id}" ${this.gold < c.cost ? 'disabled' : ''}><i class="coin"></i>${c.cost.toLocaleString()}</button><small>${this.gold < c.cost ? '골드 부족' : '고용하기'}</small>`}</span>
+        </div>`;
+    }).join('');
+    return bar + cards + '<p class="empty">용병은 쓰러지지 않고, 기지마다 종류별로 한 명씩 고용할 수 있어요.</p>';
+  }
+
   baseUpgradeCard(base) {
     const { buildings, items, turrets } = this.ctx.data;
     const next = buildings.baseLevels[String(base.level + 1)];
@@ -223,4 +277,21 @@ export class BuildMenu {
         <button type="button" class="base-up-btn" data-upgrade-base="${base.id}" ${enough ? '' : 'disabled'}>${enough ? `${josa(next.name, '으로/로')} 올리기` : '재료가 부족해요'}</button>
       </div>`;
   }
+}
+
+// 용병 그림: 둥근 머리 + 직업 색 옷 + 도구 (활·검·망치)
+function mercArt(role) {
+  const COL = { gatherer: '#7cc67a', warrior: '#c9584e', repairer: '#e9a35b' };
+  const TOOL = {
+    gatherer: '<path d="M33 12c7 5 7 17 0 22" fill="none" stroke="#7c5236" stroke-width="2.6" stroke-linecap="round"/><path d="M33 12v22" stroke="#efe2bd" stroke-width="1"/>',
+    warrior: '<path d="M30 33l10-18" stroke="#c9d3dd" stroke-width="3.4" stroke-linecap="round"/><path d="M28 29l5 3" stroke="#e0b34a" stroke-width="2.4" stroke-linecap="round"/>',
+    repairer: '<path d="M31 34l7-14" stroke="#7c5236" stroke-width="2.6" stroke-linecap="round"/><rect x="33" y="14" width="10" height="6" rx="1.5" transform="rotate(25 38 17)" fill="#9ea1a3" stroke="#3b2d22" stroke-width="1.2"/>',
+  };
+  return `<svg class="build-svg" viewBox="0 0 48 48" aria-hidden="true">
+    <ellipse cx="22" cy="43" rx="13" ry="3" fill="#3b2d22" opacity=".18"/>
+    <path d="M10 42c0-10 5-16 12-16s12 6 12 16z" fill="${COL[role]}" stroke="#3b2d22" stroke-width="1.6"/>
+    <circle cx="22" cy="17" r="9" fill="#f3d2b0" stroke="#3b2d22" stroke-width="1.6"/>
+    <circle cx="19" cy="17" r="1.3" fill="#3b2d22"/><circle cx="25" cy="17" r="1.3" fill="#3b2d22"/>
+    ${TOOL[role]}
+  </svg>`;
 }

@@ -10,6 +10,8 @@ import { MonsterSpawner } from '../systems/MonsterSpawner.js';
 import { LootSystem } from '../systems/LootSystem.js';
 import { EconomySystem } from '../systems/EconomySystem.js';
 import { InventorySystem } from '../systems/InventorySystem.js';
+import { QuickslotSystem } from '../systems/QuickslotSystem.js';
+import { MercenarySystem } from '../systems/MercenarySystem.js';
 import { SaveSystem } from '../systems/SaveSystem.js';
 import { BaseSystem } from '../systems/BaseSystem.js';
 import { BuildSystem } from '../systems/BuildSystem.js';
@@ -114,9 +116,11 @@ export class Game {
       new LootSystem(ctx),
       new EconomySystem(ctx),
       new InventorySystem(ctx),
+      new QuickslotSystem(ctx),
       new BuildSystem(ctx),
       new WallSystem(ctx),
       new TurretSystem(ctx),
+      new MercenarySystem(ctx),
       new RaidSystem(ctx),
       new StructureHpSystem(ctx),
       new StatsSystem(ctx),

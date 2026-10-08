@@ -16,18 +16,19 @@ export class WallGrid {
     return this.cells.get(this.key(cx, cz));
   }
 
+  // 벽 하나가 여러 칸을 차지할 수 있다 (원형 성벽 한 자리)
   set(wall) {
-    this.cells.set(this.key(wall.cx, wall.cz), wall);
+    for (const [cx, cz] of wall.cells) this.cells.set(this.key(cx, cz), wall);
   }
 
   delete(wall) {
-    if (this.get(wall.cx, wall.cz) === wall) this.cells.delete(this.key(wall.cx, wall.cz));
+    for (const [cx, cz] of wall.cells) if (this.get(cx, cz) === wall) this.cells.delete(this.key(cx, cz));
   }
 
   countFor(baseId) {
-    let n = 0;
-    for (const w of this.cells.values()) if (w.baseId === baseId) n += 1;
-    return n;
+    const seen = new Set();
+    for (const w of this.cells.values()) if (w.baseId === baseId) seen.add(w);
+    return seen.size;
   }
 
   // 벽 칸(정사각형) 밖으로 밀어낸다

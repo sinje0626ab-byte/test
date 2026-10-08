@@ -36,7 +36,7 @@ export class PlayerDash {
     this.time += dt;
     p.velocity.copy(this.dir).multiplyScalar(a.distance / a.duration);
     p.position.addScaledVector(p.velocity, dt);
-    p.ctx.world.resolveCollision(p.position, p.radius);
+    p.ctx.world.resolveCollision(p.position, p.radius); p.ctx.world.resolveStructures(p.position, p.radius);
     p.inner.rotation.x = -0.35; // 앞으로 숙인 자세
     if (this.time >= a.duration) {
       this.time = -1;
