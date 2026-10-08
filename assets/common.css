@@ -2006,3 +2006,21 @@ body.pl-playing .tr.on .tr-eq i:nth-child(3) { animation-delay: .6s; }
   .ld-ico { font-size: 20px; }
   .ld-name { font-size: 14px; }
 }
+
+/* --- 개정 표시 — 신설·개정 조문 옆의 작은 꼬리표와 법전 머리의 개정 안내 --- */
+.amend {
+  display: inline-block; margin-left: 8px; padding: 1px 7px; vertical-align: 2px;
+  border: 1px solid var(--accent-red); border-radius: 3px; color: var(--accent-red);
+  font-size: 11.5px; font-weight: 700; letter-spacing: .04em; line-height: 1.6; white-space: nowrap;
+}
+.amend-box {
+  margin: 0 0 28px; padding: 14px 18px; border: 1px solid var(--border); border-left: 4px solid var(--accent-red);
+  background: var(--paper-alt); border-radius: var(--radius-box); font-size: var(--fs-small); line-height: 1.85;
+}
+.amend-box .ab-title { display: block; margin-bottom: 4px; font-weight: 700; letter-spacing: .3em; color: var(--accent-red); }
+.amend-box ul { margin: 0; padding-left: 18px; }
+@media print { .amend { border-color: #000; color: #000; } }
+.amend-table th, .amend-table .at-date, .amend-table .at-law { white-space: nowrap; }
+.amend-table .at-law a { color: var(--navy); font-weight: 700; text-decoration: none; }
+.amend-table .at-law a:hover { text-decoration: underline; }
+@media (max-width: 460px) { .amend-table td { padding: 8px 8px; } .amend-table .at-date { white-space: normal; min-width: 4.2em; } }
