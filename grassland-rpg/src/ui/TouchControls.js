@@ -1,5 +1,7 @@
 // 모바일 터치 조작: 조이스틱(이동) · 공격 · E · 메뉴 버튼 · 건설 설치/취소.
 // 전부 Input에 키보드·마우스와 같은 입력을 넣을 뿐, 게임 로직은 따로 없다.
+import { PAINTED } from './painted.js';
+
 const MENU = [
   ['KeyI', '가방'], ['KeyC', '캐릭터'], ['KeyK', '스킬'], ['KeyB', '건설'], ['KeyM', '지도'],
 ];
@@ -12,6 +14,9 @@ export class TouchControls {
     this.enabled = input.touchMode;
     if (!this.enabled) return;
     document.body.classList.add('touch');
+    // 새로 그린 터치 버튼 그림(art/ui/btn_attack 등) → CSS 변수 --art-<id>. 다 있으면 body.painted-ui (theme-cozy.css)
+    for (const [id, url] of Object.entries(PAINTED.ui)) document.body.style.setProperty(`--art-${id}`, `url("${url}")`);
+    if (['btn_attack', 'btn_roll', 'btn_use', 'joy_base', 'joy_knob'].every((id) => PAINTED.ui[id])) document.body.classList.add('painted-ui');
     // 핀치·두 번 탭 확대 막기 (iOS 사파리는 viewport 설정만으로 안 막힌다)
     const block = (e) => e.preventDefault();
     document.addEventListener('gesturestart', block, { passive: false });
@@ -22,9 +27,9 @@ export class TouchControls {
     el.className = 'touch-ui';
     el.innerHTML = `
       <div class="joy" data-joy><div class="joy-knob" data-knob></div></div>
-      <button type="button" class="t-btn t-attack" data-attack>공격</button>
-      <button type="button" class="t-btn t-use" data-use hidden>E</button>
-      <button type="button" class="t-btn t-roll" data-key="Space">구르기</button>
+      <button type="button" class="t-btn t-attack" data-attack aria-label="공격"><span class="t-label">공격</span></button>
+      <button type="button" class="t-btn t-use" data-use hidden aria-label="상호작용"><span class="t-label">E</span></button>
+      <button type="button" class="t-btn t-roll" data-key="Space" aria-label="구르기"><span class="t-label">구르기</span></button>
       <nav class="t-menu">${MENU.map(([code, label]) => `<button type="button" data-key="${code}">${label}</button>`).join('')}</nav>
       <div class="t-build" data-build hidden>
         <button type="button" class="ok" data-key="BuildConfirm">설치</button>
