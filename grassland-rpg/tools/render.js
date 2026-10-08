@@ -71,7 +71,8 @@ window.renderAll = () => {
   for (const [id, def] of Object.entries(monsters)) {
     const model = createMonsterModel(def, id);
     const { body } = model;
-    if (window.nightRender) body.add(nightLook(model, def.radius, id.startsWith('night')));
+    // 밤 몬스터(night_*)는 게임처럼 항상 밤 모습 (빛나는 눈·빛 조각)
+    if (window.nightRender || id.startsWith('night_')) body.add(nightLook(model, def.radius, id.startsWith('night')));
     const g = new THREE.Group();
     g.add(body);
     if (def.flier) body.position.y = 0.9;
@@ -101,6 +102,10 @@ window.renderAll = () => {
   out.player_forest = look('#2f2a28', null, 'sprout', { head: I.mushroom_hat, body: I.leather_vest, feet: I.leather_boots }, I.mossy_mace);
   out.player_desert = look('#7a4b2a', null, 'sprout', { head: I.desert_hood, body: I.desert_cloak, feet: I.sand_sandals }, I.dune_bow);
   out.player_royal = look('#f2a7c3', null, 'sprout', { head: I.royal_jelly_crown, body: I.grass_tunic, feet: I.leather_boots }, I.dawn_blade);
+  // 캐릭터 만들기 선택지: 머리 장식 · 머리색 · 옷색 (아트 카탈로그)
+  for (const a of C.accessories) out[`char_acc_${a.id}`] = look(C.default.hair, C.default.clothes, a.id);
+  C.hairColors.forEach((h, i) => { out[`char_hair_${i}`] = look(h, C.default.clothes, C.default.accessory); });
+  C.clothesColors.forEach((c, i) => { out[`char_clothes_${i}`] = look(C.default.hair, c, C.default.accessory); });
   out.player_cactus = look('#7a4b2a', '#5b8def', 'sprout', { head: I.cactus_crown }, I.sun_blade);
   // 무기 (3D)
   for (const [id, def] of Object.entries(I)) {
