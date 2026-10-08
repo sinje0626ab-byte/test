@@ -114,7 +114,7 @@ File name: {id}.png
 | ice_shard | 얼음 조각 | uncommon | #9fd8ff | a cluster of pale-blue ice crystals, translucent with inner light |
 | wood | 나무 토막 | common | #b88452 | a short chopped log lying on its side, visible tree rings and bark |
 | stone | 돌멩이 | common | #a9adb6 | a rounded grey rock with a few chips and a light top highlight |
-| fiber | 풀 섬유 | common | #b5d67a | a neat bunch of long dry grass fibers bound in the middle |
+| fiber | 풀 섬유 | common | #b5d67a | a small coil of twisted yellow-green grass twine (like a rope spool), clearly a thread, NOT a bundle of spines |
 | herb | 약초 | common | #6fbf5f | a fresh green medicinal herb sprig with several leaves |
 | resin | 송진 | uncommon | #e9b44f | a big glossy amber drop of tree resin, honey-like |
 | iron_ore | 철광석 | uncommon | #8a7f8f | a dark rock chunk with shiny metallic iron veins |

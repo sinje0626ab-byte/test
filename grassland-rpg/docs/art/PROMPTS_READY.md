@@ -103,7 +103,7 @@ File name: stone.png
 
 ```
 Item icon for my game, same style as the approved style anchor.
-Subject: a neat bunch of long dry grass fibers bound in the middle
+Subject: a small coil of twisted yellow-green grass twine (like a rope spool), clearly a thread, NOT a bundle of spines
 Main color: #b5d67a. Rarity: common — plain everyday materials, no glow.
 The attached image is the CURRENT placeholder icon: keep the same object and idea, but redraw it much better.
 Transparent background, single centered object, 3/4 view from slightly above, filling ~80% of a square canvas,

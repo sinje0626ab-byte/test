@@ -36,9 +36,39 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
   c.width = W; c.height = H;
   const g = c.getContext('2d');
   g.drawImage(img, 0, 0);
-  const a = g.getImageData(0, 0, W, H).data;
-  const on = (x, y) => a[(y * W + x) * 4 + 3] > 16;
-  // 빈 줄(가로) → 빈 칸(세로) 순서로 나눈다. 틈이 크기의 2% 이상일 때만
+  // 배경 지우기: 가장자리에서 이어진 '거의 흰색(또는 거의 투명)' 픽셀을 투명으로.
+  // 그림은 짙은 외곽선으로 둘러싸여 있어서 안쪽 흰 반짝임은 남는다 (흰 배경·흰 안개 배경 모두)
+  const im = g.getImageData(0, 0, W, H);
+  const a = im.data;
+  const bg = (i) => a[i * 4 + 3] < 20 || (Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) > 228);
+  const seen = new Uint8Array(W * H);
+  const stack = [];
+  for (let x = 0; x < W; x++) stack.push(x, (H - 1) * W + x);
+  for (let y = 0; y < H; y++) stack.push(y * W, y * W + W - 1);
+  let cleared = 0;
+  while (stack.length) {
+    const i = stack.pop();
+    if (seen[i] || !bg(i)) continue;
+    seen[i] = 1;
+    a[i * 4 + 3] = 0;
+    cleared++;
+    const x = i % W;
+    if (x > 0) stack.push(i - 1);
+    if (x < W - 1) stack.push(i + 1);
+    if (i >= W) stack.push(i - W);
+    if (i < W * (H - 1)) stack.push(i + W);
+  }
+  // 지운 자리 바로 옆의 밝은 반투명 테두리(흰 번짐)도 정리
+  for (let i = 0; i < W * H; i++) {
+    if (seen[i] || a[i * 4 + 3] === 0) continue;
+    const x = i % W;
+    const near = (x > 0 && seen[i - 1]) || (x < W - 1 && seen[i + 1]) || seen[i - W] || seen[i + W];
+    if (near && Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) > 200) a[i * 4 + 3] = Math.round(a[i * 4 + 3] * 0.3);
+  }
+  g.putImageData(im, 0, 0);
+  // 나누기·자르기는 또렷한 부분(불투명)만 본다 — 옅은 그림자·안개가 그림끼리 잇지 않게
+  const on = (x, y) => a[(y * W + x) * 4 + 3] > 100;
+  // 빈 줄(가로) → 빈 칸(세로) 순서로 나눈다. 틈이 6px(또는 크기의 0.6%) 이상일 때만
   const runs = (n, filled, minGap) => {
     const out = [];
     let start = -1;
@@ -56,14 +86,21 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
     return out;
   };
   const boxes = [];
-  for (const [y0, y1] of runs(H, (y) => { for (let x = 0; x < W; x++) if (on(x, y)) return true; return false; }, Math.round(H * 0.02))) {
-    for (const [x0, x1] of runs(W, (x) => { for (let y = y0; y <= y1; y++) if (on(x, y)) return true; return false; }, Math.round(W * 0.02))) {
+  for (const [y0, y1] of runs(H, (y) => { for (let x = 0; x < W; x++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(H * 0.006)))) {
+    const cols = runs(W, (x) => { for (let y = y0; y <= y1; y++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(W * 0.006)));
+    cols.forEach(([x0, x1], k) => {
       // 세로로 다시 좁힌다
       let t = y1; let b = y0;
       for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (on(x, y)) { t = Math.min(t, y); b = Math.max(b, y); }
       const w = x1 - x0 + 1; const h = b - t + 1;
-      if (w * h > W * H * 0.004) boxes.push({ x: x0, y: t, w, h });
-    }
+      if (w * h <= W * H * 0.004) return;
+      // 옅은 그림자·외곽 번짐이 잘리지 않게 조금 넓힌다 (이웃 그림과의 틈 절반까지만)
+      const pad = Math.round(Math.max(w, h) * 0.04);
+      const left = Math.max(0, x0 - Math.min(pad, k > 0 ? Math.floor((x0 - cols[k - 1][1]) / 2) : pad));
+      const right = Math.min(W, x1 + 1 + Math.min(pad, k < cols.length - 1 ? Math.floor((cols[k + 1][0] - x1) / 2) : pad));
+      const top = Math.max(0, t - pad);
+      boxes.push({ x: left, y: top, w: right - left, h: Math.min(H, b + 1 + pad) - top });
+    });
   }
   const o = document.createElement('canvas');
   o.width = o.height = SIZE;
@@ -74,7 +111,7 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
     const s = (SIZE * FILL) / Math.max(bx.w, bx.h);
     og.drawImage(c, bx.x, bx.y, bx.w, bx.h, (SIZE - bx.w * s) / 2, (SIZE - bx.h * s) / 2, bx.w * s, bx.h * s);
     return { box: bx, url: o.toDataURL('image/webp', 0.92) };
-  });
+  }).map((r) => ({ ...r, cleared: +(cleared / (W * H)).toFixed(2) }));
 }, { data, SIZE, FILL });
 await browser.close();
 
@@ -82,5 +119,5 @@ if (res.length !== ids.length) console.warn(`⚠ 그림 ${res.length}개를 찾�
 res.slice(0, ids.length).forEach((r, i) => {
   const f = path.join(outDir, `${ids[i]}.webp`);
   fs.writeFileSync(f, Buffer.from(r.url.split(',')[1], 'base64'));
-  console.log(`${ids[i]} ← (${r.box.x},${r.box.y}) ${r.box.w}×${r.box.h} → ${path.relative(process.cwd(), f)} ${fs.statSync(f).size}B`);
+  console.log(`${ids[i]} ← (${r.box.x},${r.box.y}) ${r.box.w}×${r.box.h} 배경 ${Math.round(r.cleared * 100)}% → ${path.relative(process.cwd(), f)} ${fs.statSync(f).size}B`);
 });
