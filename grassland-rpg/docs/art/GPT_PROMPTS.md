@@ -7,6 +7,7 @@
   - 아이콘: `item_<id>` · `slot_<slot>` · `skill_<id>` · `build_<id>`
   - 3D 렌더: `monster_<id>` · `npc_<id>` · `weapon_<id>` · `turret_<id>`(+`_lv5`) · `base_<1~4>` · `facility_<id>` · `wall_<id>` · `node_<id>` · `char_*` · `player_*`
 - `docs/art/ArtCatalog.pdf` — 전체 카탈로그 (사람이 보기용)
+- `docs/art/PROMPTS_READY.md` — 그림 137개의 프롬프트를 미리 다 채워 둔 완성본 (복사해서 바로 쓰기)
 
 ---
 
