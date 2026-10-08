@@ -15,13 +15,14 @@ export class LootSystem {
     ctx.bus.on('loot:table', ({ drops, position }) => this.roll(drops, position));
   }
 
-  onKilled({ type, position, elite, noLoot }) {
+  onKilled({ type, position, elite, noLoot, reward = 1 }) {
     if (noLoot) return;
-    this.roll(this.ctx.data.monsters[type].drops, position, elite ? this.ctx.data.config.elite : null);
+    this.roll(this.ctx.data.monsters[type].drops, position, elite ? this.ctx.data.config.elite : null, reward);
   }
 
   // 드롭 테이블 굴리기. { oneOf: [...] }는 그중 하나. 정예면 골드·장비 확률이 오른다.
-  roll(drops, position, elite = null) {
+  // goldMult: 지역 field.reward (골드 개수에만)
+  roll(drops, position, elite = null, goldMult = 1) {
     const items = this.ctx.data.items.items;
     for (const entry of drops) {
       const item = entry.oneOf ? rand.pick(entry.oneOf) : entry.item;
@@ -32,6 +33,7 @@ export class LootSystem {
       if (Math.random() >= chance) continue;
       let count = entry.oneOf ? 1 : rand.int(entry.min, entry.max);
       if (elite && item === 'gold') count = Math.round(count * elite.gold);
+      if (item === 'gold' && goldMult !== 1) count = Math.round(count * goldMult);
       if (count > 0) this.spawn(item, count, position);
     }
   }

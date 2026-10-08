@@ -1,5 +1,6 @@
 {
   "cactus_king": {
+    "damageMult": 2.7,
     "name": "선인장왕",
     "monster": "cactus_king",
     "region": "desert",
@@ -32,6 +33,7 @@
     ]
   },
   "ice_giant": {
+    "damageMult": 3.1,
     "name": "얼음 거인",
     "monster": "ice_giant",
     "region": "snow",
@@ -64,6 +66,7 @@
     ]
   },
   "king_slime": {
+    "damageMult": 2.0,
     "name": "왕슬라임",
     "monster": "king_slime",
     "region": "grassland",
@@ -111,6 +114,7 @@
     }
   },
   "elder_treant": {
+    "damageMult": 2.3,
     "name": "고목 수호자",
     "monster": "elder_treant",
     "region": "forest",

@@ -349,6 +349,7 @@
     ]
   },
   "nightLord": {
+    "damageMult": 3.3,
     "name": "밤의 군주",
     "monster": "night_lord",
     "regionBosses": [

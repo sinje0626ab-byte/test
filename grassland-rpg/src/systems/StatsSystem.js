@@ -12,8 +12,9 @@ export class StatsSystem {
     this.buffEffects = {};
     const { bus, data } = ctx;
 
-    bus.on('monster:killed', ({ type, elite, noLoot }) => {
-      if (!noLoot) this.gain(Math.round((data.monsters[type]?.xp ?? 0) * (elite ? data.config.elite.xp : 1)));
+    bus.on('monster:killed', ({ type, elite, noLoot, reward = 1 }) => {
+      // reward: 지역 field.reward (먼 지역일수록 경험치·골드 많이)
+      if (!noLoot) this.gain(Math.round((data.monsters[type]?.xp ?? 0) * (elite ? data.config.elite.xp : 1) * reward));
     });
     bus.on('build:place', ({ kind, type }) => {
       const xp = kind === 'tent' ? data.buildings.baseLevels['1'].xp
