@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createMonsterModel } from '../entities/MonsterModel.js';
+import { PAINTED } from './painted.js';
 
 // 모델 사진: 3D 모델을 작은 캔버스에 찍어 그림 주소(dataURL)로 돌려준다. 렌더러는 하나만 만들어 같이 쓴다.
 // - monsterPortrait: 도감 사진 (못 만난 몬스터는 검은 그림자, 한 번 찍은 사진은 기억)
@@ -36,7 +37,10 @@ export function snapshot(obj, place, { silhouette = false } = {}) {
 }
 
 // def: monsters.json 항목, id: 몬스터 종류, known: 만나 봤는지
+// 새로 그린 초상화(art/portraits/monster_<id>)가 있으면 그것 (못 만난 몬스터는 도감 CSS 가 검게 칠한다)
 export function monsterPortrait(def, id, known = true) {
+  const painted = PAINTED.portraits[`monster_${id}`];
+  if (painted) return painted;
   const key = `${id}:${known ? 1 : 0}`;
   if (cache.has(key)) return cache.get(key);
   const model = createMonsterModel(def, id);

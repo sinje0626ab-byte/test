@@ -1,4 +1,5 @@
 import { art, M } from './itemArt.js';
+import { PAINTED } from './painted.js';
 
 // 스킬 배지·건설 아이콘. 아이템 아이콘과 같은 외곽선·명암·팔레트(itemArt.js)를 쓴다.
 const { Brush, P, hl, ln, circ, dot, shadow, O, THIN, INK, dark } = art;
@@ -27,14 +28,8 @@ const GLYPH = {
   overclock: '<path d="M13 2L5 14h6l-2 8 8-12h-6z" fill="#fff"/>',
 };
 
-// 새로 그린 배지(src/art/skills/<id>.webp)가 있으면 그 그림 (노드 도구에선 늘 SVG)
-const PAINTED = import.meta.env
-  ? Object.fromEntries(Object.entries(import.meta.glob('../art/skills/*.{webp,png}', { eager: true, query: '?url', import: 'default' }))
-    .map(([f, url]) => [f.split('/').pop().replace(/\.\w+$/, ''), url]))
-  : {};
-
 export function skillArt(id, color, cls = 'skill-svg') {
-  if (PAINTED[id]) return `<svg class="${cls} painted" viewBox="0 0 48 48" aria-hidden="true"><image href="${PAINTED[id]}" x="0" y="0" width="48" height="48"/></svg>`;
+  if (PAINTED.skills[id]) return `<svg class="${cls} painted" viewBox="0 0 48 48" aria-hidden="true"><image href="${PAINTED.skills[id]}" x="0" y="0" width="48" height="48"/></svg>`;
   const b = new Brush();
   let s = circ(24, 25, 21, dark(color, 0.35), '');
   s += circ(24, 24, 21, b.f(color));
@@ -66,6 +61,7 @@ const BUILD = {
 };
 
 export function buildArt(id, cls = 'build-svg') {
+  if (PAINTED.build[id]) return `<svg class="${cls} painted" viewBox="0 0 48 48" aria-hidden="true"><image href="${PAINTED.build[id]}" x="0" y="0" width="48" height="48"/></svg>`;
   const b = new Brush();
   return svg(b, (BUILD[id] ?? BUILD.storage)(b), cls);
 }
