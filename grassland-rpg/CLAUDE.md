@@ -203,6 +203,7 @@ src/
     raid.js            # 습격 난이도 공식·웨이브 나누기·가중치 뽑기
     pathfind.js        # 격자 A*
     wallRing.js        # 성벽 원형 자리 (순서·입구·격자 칸)
+    navigator.js       # 아군(용병·주민) 길 찾기: 직진 / 격자 A* 우회 / 막힘 감지
     enhance.js         # 장비 강화 능력치·비용
   data/
     config.json        # 월드·카메라·스포너·전투 공통 수치
@@ -604,6 +605,11 @@ src/
 
 ### 4-5-5. 건물 충돌
 - 기지 중심 건물·부속 건물·포탑은 플레이어(구르기·돌진 포함)·주민·용병이 통과하지 못한다 (`World.resolveStructures`, 반지름 × `world.structureCollide` 0.9). 몬스터는 예전처럼 건물을 공격 대상으로만 본다. 벽은 몬스터만 막는다
+
+### 4-5-5-1. 아군 길 찾기 (`utils/navigator.js`, `config.nav`)
+- 용병·주민이 쓴다. 앞이 트여 있으면 곧장, 기지 건물(중심 건물·부속 건물·포탑)이나 나무·바위가 가로막으면 1m 격자 A*(`pathfind.js`)로 돌아간다. 보이는 경유점은 건너뛰어 부드럽게, 목적지가 `goalMove` 넘게 움직이거나 `repathInterval`초마다 다시 찾는다. 먼 길은 `maxGrid` 안 구간만 찾고 가면서 이어 찾는다
+- 제자리걸음(`stuckTime` 동안 기대 이동의 `stuckRatio` 미만)이면 길을 다시 찾고 `sidestepTime` 동안 옆으로 비켜 선다(좌우 번갈아)
+- 목적지가 건물·나무 위면 `blockedArrive` 안에 오면 도착으로 친다. 주민·용병의 서성이기 자리는 막힌 곳을 피해 고르고, `giveUp`초(용병은 절반) 넘게 못 가면 다른 자리로
 
 ### 4-5-6. 용병 (`systems/MercenarySystem.js`, `entities/Mercenary.js`, `config.mercenary`)
 - 건설 창 **용병** 탭에서 고용. 골드 `cost`(2000), 기지마다 종류별 1명, 쓰러지지 않는다(몬스터도 노리지 않음). 내보내기 가능(환불 없음, 들고 있던 골드는 금고로)

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import items from '../data/items.json';
 import { createPlayerModel, applyAppearance, createWeaponMesh, fitArm } from './PlayerModel.js';
+import { Navigator } from '../utils/navigator.js';
 
 // 용병 한 명 (MercenarySystem 이 움직임을 정한다). 플레이어와 같은 모양에 직업별 옷·도구.
 // 체력은 없다(쓰러지지 않는다). 몬스터도 노리지 않는다.
@@ -25,6 +26,7 @@ export class Mercenary {
     this.cooldown = 0;
     this.wait = Math.random() * 2;
     this.walkPhase = 0;
+    this.nav = new Navigator(ctx, this.radius);
     this.swing = 0;
     const look = LOOKS[role];
     const m = createPlayerModel(ctx.data.player);
@@ -43,18 +45,12 @@ export class Mercenary {
     ctx.scene.add(this.mesh);
   }
 
-  // 목표 자리로 걷는다. 다 왔으면 true
+  // 목표 자리로 걷는다 (건물·나무·바위는 돌아간다, utils/navigator.js). 다 왔으면 true
   walkTo(dest, dt, speed) {
-    const d = new THREE.Vector3(dest.x - this.position.x, 0, dest.z - this.position.z);
-    const len = d.length();
-    if (len < 0.35) { this.moving = false; return true; }
-    d.multiplyScalar(Math.min(len, speed * dt) / len);
-    this.position.add(d);
-    this.ctx.world.resolveCollision(this.position, this.radius);
-    this.ctx.world.resolveStructures(this.position, this.radius);
-    this.facing = Math.atan2(d.x, d.z);
-    this.moving = true;
-    return false;
+    const done = this.nav.move(this.position, dest, dt, speed);
+    this.moving = this.nav.moving && !done;
+    if (this.moving) this.facing = Math.atan2(this.nav.dir.x, this.nav.dir.z);
+    return done;
   }
 
   // 도구 휘두르기 (공격·수리)

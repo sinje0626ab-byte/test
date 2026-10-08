@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Navigator } from '../utils/navigator.js';
 import { rand } from '../utils/random.js';
 import { createNpcModel } from './NpcModel.js';
 
@@ -48,20 +49,26 @@ export class Npc {
       if (!this.target) {
         this.pause -= dt;
         if (this.pause <= 0) {
-          const a = rand.range(0, Math.PI * 2);
-          const r = rand.range(0.5, this.cfg.wanderRadius);
-          this.target = this.anchor.clone().add(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r));
+          // 건물·나무 위가 아닌 자리를 고른다 (몇 번 굴려 보고, 안 되면 제자리)
+          this.nav ??= new Navigator(this.ctx, this.radius);
+          for (let i = 0; i < 6 && !this.target; i++) {
+            const a = rand.range(0, Math.PI * 2);
+            const r = rand.range(0.5, this.cfg.wanderRadius);
+            const t = this.anchor.clone().add(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r));
+            if (!this.nav.blockedAt(t.x, t.z, 0.2)) this.target = t;
+          }
+          this.walkTime = 0;
+          if (!this.target) this.pause = rand.range(1, 3);
         }
       } else {
-        const d = this.target.clone().sub(this.position).setY(0);
-        if (d.length() < 0.2) {
+        // 건물·나무를 돌아서 간다 (utils/navigator.js). 너무 오래 걸리면 포기하고 쉰다
+        this.walkTime = (this.walkTime ?? 0) + dt;
+        if (this.nav.move(this.position, this.target, dt, this.cfg.speed) || this.walkTime > this.ctx.data.config.nav.giveUp) {
           this.target = null;
+          this.nav.reset();
           this.pause = rand.range(2, 5);
         } else {
-          d.normalize();
-          this.position.addScaledVector(d, this.cfg.speed * dt);
-          this.ctx.world.resolveCollision(this.position, this.radius); this.ctx.world.resolveStructures(this.position, this.radius);
-          this.mesh.rotation.y = Math.atan2(d.x, d.z);
+          this.mesh.rotation.y = Math.atan2(this.nav.dir.x, this.nav.dir.z);
           moving = true;
         }
       }
