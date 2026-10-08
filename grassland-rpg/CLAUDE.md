@@ -69,6 +69,8 @@ src/
     Camera.js          # 탑다운 추적 카메라
     EventBus.js        # 시스템 간 이벤트 통신
     Settings.js        # 설정 (세이브와 별도 localStorage)
+    toon.js            # 툰 명암 (ShaderChunk 고침, main.js 에서 한 번)
+    OutlinePass.js     # 툰 외곽선 (물체 번호 그림 + 깊이)
     Synth.js           # Web Audio 합성 (효과음·악기)
     Time.js            # 게임 내 시간, 낮/밤
   world/
@@ -404,6 +406,7 @@ src/
 - **가방 버리기**: 칸을 눌러 고르고 '버리기', 또는 '버리기'로 끌어다 놓기 → 확인 판(1개·절반·모두·취소) → `inventory:discard`. 버린 아이템은 사라진다(바닥에 두면 자석 줍기로 바로 돌아오고 강화 수치가 없어지므로)
 - **도감 사진**(`ui/monsterPortrait.js`): 실제 몬스터 모델을 작은 전용 렌더러로 찍어 dataURL 로 기억. 못 만난 몬스터는 그림자. 도감 칸을 누르면 큰 사진·설명·처치 수·능력치 상세 화면
 - **모바일 배치**(`ui/mobile.css`, polish 다음에 읽음, `body.touch` 전용): 세로(≤600px)·아주 좁음(≤370px)·가로(높이 ≤500px) 세 경우로 HUD·☰·알림·창 크기를 정한다. 스킬 포인트는 `✦ +N` 만(`.sp-long` 숨김), 창은 화면 폭에 맞춘 세로 열 + 본문 스크롤, 스킬 창은 한 쪽 안 2열(가로 3열) + 아래 고정 확인 바. `.window[hidden]` 은 반드시 `display:none` 을 다시 적어 둔다 (flex 가 hidden 을 덮는다).
+- **툰 렌더**(`config.render`): `core/toon.js` 가 Standard·Lambert 재질의 직사광 명암을 `toon.steps` 단계로 끊는다(경계는 `soft` 로 살짝 흐림, 그늘색·그림자는 그대로). `main.js` 에서 `new Game` 전에 한 번 부른다. `core/OutlinePass.js` 는 장면을 MSAA 그림판(색+깊이)에 그리고, 같은 장면을 물체 번호 색(`Object3D.id` 해시, `scene.overrideMaterial`)으로 한 번 더 그려 이웃 번호가 다르고 내가 더 가까운 곳에 짙은 갈색 선(`outline.color`)을 긋는다. 멀어지면 옅게(`fadeStart~fadeEnd`). 스프라이트·입자·선·투명 재질은 선 없음, `userData.outline === false` 인 메시(땅·꽃·풀포기)는 번호 0. 설정 '외곽선'(`outline`)으로 끌 수 있다. 새 메시도 자동으로 선이 생기므로 따로 할 일은 없다 (선이 필요 없으면 `userData.outline = false`)
 - **이펙트**: 파티클 조각 + 바닥 고리·반짝 별(`FxPool`). 타격 = 작은 별, 치명타 = 금빛 별+고리, 처치 = 몬스터 색 고리, 폭발 = 주황 고리(서리 포탑은 하늘색), 레벨업 = 금빛 고리+빛기둥, 보스 등장 = 두 겹 고리. 색은 몬스터 모델과 같은 차분한 색
 
 ### 4-3. 아이템

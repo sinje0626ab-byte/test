@@ -5,6 +5,7 @@ const DEFAULTS = {
   sfxVolume: 0.8,
   shake: true,
   shadows: 'high', // off | low | high (터치 기기는 처음에 low)
+  outline: true, // 툰 외곽선 (core/OutlinePass.js)
   decorDensity: 1, // 0.5 | 1
   damageNumbers: true,
   controlHelp: 'auto', // auto(잠깐 보이고 숨김) | always | off — PC 조작 안내

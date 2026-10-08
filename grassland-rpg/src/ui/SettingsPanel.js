@@ -29,6 +29,7 @@ export class SettingsPanel {
         <div class="set-row"><span>화면 흔들림</span>${toggle('shake')}</div>
         <div class="set-row"><span>데미지 숫자</span>${toggle('damageNumbers')}</div>
         <div class="set-row"><span>그림자</span>${seg('shadows')}</div>
+        <div class="set-row"><span>외곽선</span>${toggle('outline')}</div>
         <div class="set-row"><span>풀·꽃 장식</span>${seg('decorDensity')}</div>
         ${this.ctx.input.touchMode ? '' : `<div class="set-row"><span>조작 안내</span>${seg('controlHelp')}</div>`}
       </div>
