@@ -23,6 +23,13 @@ export class BaseSystem {
 
     bus.on('base:travel', ({ baseId }) => this.travel(baseId));
     bus.on('base:upgrade', ({ baseId }) => this.upgrade(baseId));
+    // 요새(config.base.autoRepairLevel) 옵션: 아침 자동 수리 켜기/끄기. 실제 수리는 TurretSystem(raid:result 뒤)
+    bus.on('base:auto-repair', ({ baseId, on }) => {
+      const base = ctx.bases.find((b) => b.id === baseId);
+      if (!base || base.level < ctx.data.config.base.autoRepairLevel) return;
+      base.autoRepair = on;
+      bus.emit('notify', { text: `${base.label} 아침 자동 수리 ${on ? '켬' : '끔'}`, kind: 'info' });
+    });
     bus.on('stats:changed', () => { for (const b of ctx.bases) b.tent.refreshMaxHp(); }); // 석공 스킬
     // 귀환 두루마리: 가장 가까운 기지로 (영역 밖에서도)
     bus.on('item:use', (e) => {
@@ -44,12 +51,13 @@ export class BaseSystem {
 
     bus.on('save:collect', (save) => {
       save.bases = ctx.bases.map((b) => ({
-        id: b.id, level: b.level, position: [b.position.x, b.position.z], hp: b.tent.stats.hp,
+        id: b.id, level: b.level, position: [b.position.x, b.position.z], hp: b.tent.stats.hp, autoRepair: b.autoRepair || undefined,
       }));
     });
     bus.on('save:apply', (save) => {
       for (const b of save.bases ?? []) {
-        this.createBase({ id: b.id, level: b.level, position: new THREE.Vector3(b.position[0], 0, b.position[1]), hp: b.hp });
+        const base = this.createBase({ id: b.id, level: b.level, position: new THREE.Vector3(b.position[0], 0, b.position[1]), hp: b.hp });
+        base.autoRepair = !!b.autoRepair;
       }
     });
   }

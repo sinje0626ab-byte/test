@@ -51,6 +51,11 @@ export class BuildMenu {
         this.render();
         return;
       }
+      const auto = e.target.closest('[data-auto-repair]');
+      if (auto) {
+        ctx.bus.emit('base:auto-repair', { baseId: Number(auto.dataset.autoRepair), on: auto.checked });
+        return;
+      }
       const up = e.target.closest('[data-upgrade-base]');
       if (up && !up.disabled) {
         ctx.bus.emit('base:upgrade', { baseId: Number(up.dataset.upgradeBase) });
@@ -101,7 +106,7 @@ export class BuildMenu {
     this.infoEl.textContent = `${base.label} (${base.name} Lv${base.level}) · 포탑 ${count}/${max}`;
 
     if (this.tab === 'building') {
-      this.list.innerHTML = this.repairAllBar(base) + this.baseUpgradeCard(base) + this.facilityCards(base) + this.wallCards(base);
+      this.list.innerHTML = this.repairAllBar(base) + this.autoRepairBar(base) + this.baseUpgradeCard(base) + this.facilityCards(base) + this.wallCards(base);
       return;
     }
     const cards = Object.entries(ctx.data.turrets).map(([id, t]) => {
@@ -139,6 +144,17 @@ export class BuildMenu {
         <span><b>포탑 ${list.length}개가 다쳤어요</b><small>${broken ? `부서짐 ${broken}개 · ` : ''}수리비 적은 것부터 고쳐요</small></span>
         <button type="button" class="primary" data-repair-all="${base.id}" ${this.gold < list[0].cost ? 'disabled' : ''}>전체 수리 <small><i class="coin"></i>${total}</small></button>
       </div>`;
+  }
+
+  // 요새 옵션: 아침 자동 수리 (켜면 아침마다 수리비를 자동으로 낸다)
+  autoRepairBar(base) {
+    const need = this.ctx.data.config.base.autoRepairLevel;
+    if (base.level < need) return '';
+    return `
+      <label class="auto-repair">
+        <span><b>아침 자동 수리</b><small>아침마다 다친 포탑을 고쳐요 · 골드가 모자라면 수리비 적은 것부터</small></span>
+        <input type="checkbox" class="switch" data-auto-repair="${base.id}" ${base.autoRepair ? 'checked' : ''}>
+      </label>`;
   }
 
   // 부속 건물 카드: 해금 단계·비용(재료)·이미 지었는지

@@ -75,6 +75,7 @@
     "autosaveInterval": 30
   },
   "base": {
+    "autoRepairLevel": 4,
     "minBaseDistance": 45,
     "startingKit": "tent_kit"
   },
@@ -91,7 +92,7 @@
   "raid": {
     "retargetChance": 0.25,
     "pathBlockRange": 1.5,
-    "baseCount": 2,
+    "baseCount": 8,
     "perRegionDifficulty": 1,
     "maxCount": 30,
     "spawnInterval": 2.5,
@@ -100,13 +101,13 @@
     "rewardPerMonster": 6,
     "failGoldLossRatio": 0.1,
     "presenceMargin": 20,
-    "remoteFightSeconds": 25,
+    "remoteFightSeconds": 19, "remoteAccuracy": 0.85, "remotePierceChance": 0.5, "remotePoisonStacks": 2, "remoteFrostBonus": 0.4,
     "remotePartialRatio": 0.5,
     "remoteTurretDamage": 0.8,
     "failStorageLossRatio": 0.3,
     "progressPerPlayerLevels": 5,
-    "statPerProgress": 0.15,
-    "dayFactorEarly": 0.08,
+    "statPerProgress": 0.1, "regionWeight": 0.25,
+    "dayFactorEarly": 0.04,
     "dayEarlyCap": 12,
     "dayFactorLate": 0.02,
     "countPerProgress": 2,
