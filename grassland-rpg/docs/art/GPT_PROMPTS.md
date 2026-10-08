@@ -28,6 +28,38 @@
 
 ---
 
+## 0-1. 다른 계정·새 대화에서 이어서 할 때
+
+새 계정은 앞에서 정한 그림체를 모릅니다. **이미 완성된 그림을 "승인된 예시"로 보여 주는 것**이 가장 확실합니다.
+
+**첫 메시지** — 첨부: `style_anchor.webp`, `style_reference.png` (지금까지 게임에 넣은 새 그림 18개 모음)
+
+```
+You are the lead 2D artist for my cozy indie game "Meadow Pioneers" (초원 개척단).
+We are in the middle of redrawing all of the game's art, and the art style is ALREADY APPROVED and LOCKED.
+
+Attached:
+1) style_anchor.webp — the approved style anchor.
+2) style_reference.png — 18 finished icons that are already in the game (items, gear, skill badges).
+Every new image must look like it belongs in this exact same set: same outline thickness and color (dark warm brown #3b2d22),
+same soft cel shading, same top-left light, same saturation, same chunky cute proportions, same level of detail.
+
+About the game: a cute, warm, storybook-style survival/base-building RPG. A chibi pioneer explores grassland, forest, desert
+and snowfield, hunts cute monsters, builds a base and defends it at night with turrets. Never scary or realistic.
+
+Rules for every image unless I say otherwise:
+- Fully TRANSPARENT background (no white, no grey haze). No frames, no text, no numbers, no labels.
+- When I ask for several objects in one image: a clean grid in exactly the listed order (left to right, top row first),
+  every object the same size in its own cell, with wide empty space between them — never touching or overlapping.
+- Keep each object's identity from the attached current placeholder images, but redraw it much better.
+
+Reply in Korean with a 3-line summary of the style, then wait for my request.
+```
+
+ChatGPT가 요약해 주면, `PROMPTS_BATCH.md`에서 할 차례의 묶음을 그대로 보내면 됩니다.
+
+---
+
 ## 1. 첫 메시지 (프로젝트 설명 — 새 대화마다 맨 처음에)
 
 ```

@@ -45,7 +45,7 @@
 ### 아트 카탈로그 (`docs/art/`) — 그림 교체(외부 생성 이미지)용
 - `tools/artbook.mjs <출력 폴더>`(+`artbook.css`): 모든 그림(아이템·장비 칸·스킬·건설 SVG, 3D 렌더 `img/`, 게임 화면 `shots/`)을 카드(이름·id·교체 경로)로 모은 `artbook.html`. `.sheet` 마다 PNG 시트, 전체는 A4 PDF
 - `docs/art/ArtCatalog.pdf` · `sheets/*.png`(11장) · `ref/*.png`(그림 한 장씩) · `GPT_PROMPTS.md`(ChatGPT 의뢰 프롬프트, 파일 이름 규칙 `art/<종류>/<id>.png`)
-- **새 그림 넣기**: `node tools/art-import.mjs <그림> items <id...>` — 투명 배경 그림(한 장에 여러 개면 빈 틈으로 나눠 왼쪽 위부터 순서대로)을 여백 자르고 256×256 webp 로 `src/art/items/<id>.webp`. `itemArt()` 는 그 파일이 있으면 SVG 대신 그림(`<image>`, 등급 받침·CSS 크기 그대로, 클래스 `painted`). 노드 도구에선(`import.meta.env` 없음) 늘 SVG
+- **새 그림 넣기**: `node tools/art-import.mjs <그림> items <id...>` — 투명 배경 그림(한 장에 여러 개면 빈 틈으로 나눠 왼쪽 위부터 순서대로)을 여백 자르고 256×256 webp 로 `src/art/items/<id>.webp`. 흰 배경·회색 안개는 지우고 밝은 반투명 빛 번짐은 옅게(어두운 퀵슬롯용). 스킬 배지는 `skills`(`skillArt()`), 색이 틀린 배지는 `tools/art-recolor.mjs`. `itemArt()` 는 그 파일이 있으면 SVG 대신 그림(`<image>`, 등급 받침·CSS 크기 그대로, 클래스 `painted`). 노드 도구에선(`import.meta.env` 없음) 늘 SVG
 - render.js 는 캐릭터 만들기 선택지(`char_acc_*`·`char_hair_*`·`char_clothes_*`)도 그리고, `night_*` 몬스터는 게임처럼 밤 모습으로 그린다
 
 ### 실행
