@@ -406,6 +406,7 @@ src/
   - 타이틀: 하얀 Jua 로고 + 갈색 외곽선 + 새싹색 그림자, 영문은 외곽선 글씨. 메뉴는 사탕 버튼(새 게임·이어하기 새싹, 나머지 크림), 올리면 양옆 🌱. 슬롯은 크림 알약(고른 것은 꿀색). 오른쪽 아래 버전(`package.json` version)
   - 휴대폰 터치 버튼: 하얀 테 사탕 버튼 (공격 산호 · 구르기 새싹 · E 꿀), 메뉴 단추는 크림 알약
   - 새로 그린 터치 버튼 그림(`src/art/ui/`: btn_attack · btn_roll · btn_use · skill_ring · joy_base · joy_knob, `PAINTED.ui`): `TouchControls` 가 `--art-<id>` CSS 변수로 넣고, 다 있으면 `body.painted-ui` → 그림이 단추 전체(CSS 테두리·그림자 끔), 이름은 단추 아래 작은 크림 알약(`.t-label`, E 는 이름 없음). 스킬 단추는 연두 고리 그림 안에 스킬 배지
+  - 조작 방법(`TitleScreen.helpHtml`, 타이틀·게임 메뉴 공용): PC·휴대폰 탭(라디오 버튼 + CSS, 터치 기기는 휴대폰 탭이 먼저) + 아이콘 카드(그림 + 이름 + 한 줄 설명) 2열(좁은 화면 1열). 아이콘은 새로 그린 그림 `art/ui/help_*`(wasd·shift·space·mouse·e·qr·bag·numbers·esc·joystick·tap·doubletap)과 터치 버튼 그림, 없으면 글자 키캡
   - 커서(PC만): 기본 작은 칼, 버튼·칸·상호작용 대상 위(E 안내가 뜬 동안 `body.can-interact`)에선 손. SVG data URI
   - UI 효과음: 누름 click, 탭 전환 tab, 마우스 올림 tick(아주 작게). `sounds.json` sfx
   - 대화창: 크림 판 + 새싹 알약 이름(창 제목), 타자기, 다 나오면 ▼ 통통. 얼굴은 주민 초상화(`art/portraits/npc_<id>`, 없으면 색 동그라미)
