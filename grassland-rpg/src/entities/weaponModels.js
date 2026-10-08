@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import items from '../data/items.json';
+import { M as PALETTE } from '../ui/itemArt.js';
 
 // 무기 3D 모양. 아이템마다 재질(나무·금속·얼음·금·젤리)과 장식이 다르다.
 // 아이콘(ui/itemArt.js)과 같은 팔레트를 쓴다. 피벗 기준 오른손 자리에서 앞(+z)으로 뻗는다.
@@ -197,9 +199,20 @@ const SPECS = {
 };
 const BUILD = { sword, spear, hammer, bow };
 
+// 데이터로 정한 모양 (items.json style: { type, 재질 옵션… }). 재질 이름(MAT)·팔레트 이름(itemArt M)·#색 모두 받는다
+function styleSpec(st) {
+  const o = {};
+  for (const [k, v] of Object.entries(st)) {
+    if (k === 'type') continue;
+    o[k] = typeof v === 'string' && !MAT[v] && !v.startsWith('#') && PALETTE[v] ? PALETTE[v] : v;
+  }
+  return [st.type, o];
+}
+
 // 아이템 id 로 모양을 고른다. 아트가 없는 무기는 종류 기본형 + 아이템 색
 export function buildWeapon(type, color, id) {
-  const spec = SPECS[id] ?? (type === 'sword' || !type
+  const st = items.items[id]?.style;
+  const spec = SPECS[id] ?? (st?.type ? styleSpec(st) : null) ?? (type === 'sword' || !type
     ? ['sword', { blade: mat({ color, roughness: 0.35, metalness: 0.4 }), guard: 'bronze' }]
     : [type, { head: mat({ color, roughness: 0.4, metalness: 0.3 }), limb: mat({ color, roughness: 0.8 }), kind: 'block' }]);
   return BUILD[spec[0]](spec[1]);

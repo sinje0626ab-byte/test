@@ -99,25 +99,25 @@
         "item": "iron_sword",
         "min": 1,
         "max": 1,
-        "chance": 0.04
+        "chance": 0.015
       },
       {
         "item": "leather_vest",
         "min": 1,
         "max": 1,
-        "chance": 0.05
+        "chance": 0.015
       },
       {
         "item": "jelly_charm",
         "min": 1,
         "max": 1,
-        "chance": 0.04
+        "chance": 0.015
       },
       {
         "item": "clover_ring",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.005
       }
     ],
     "structureDamageMultiplier": 1.5,
@@ -172,7 +172,7 @@
         "item": "leather_vest",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.015
       },
       {
         "item": "straw_shoes",
@@ -227,13 +227,13 @@
         "item": "iron_sword",
         "min": 1,
         "max": 1,
-        "chance": 0.04
+        "chance": 0.015
       },
       {
         "item": "clover_ring",
         "min": 1,
         "max": 1,
-        "chance": 0.03
+        "chance": 0.005
       }
     ],
     "structureDamageMultiplier": 1.5,
@@ -336,7 +336,7 @@
         "item": "desert_cloak",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.005
       }
     ],
     "shape": "cactus",
@@ -482,7 +482,7 @@
         "item": "ice_sword",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.005
       }
     ],
     "shape": "golem",
@@ -695,7 +695,7 @@
         "item": "bee_ring",
         "min": 1,
         "max": 1,
-        "chance": 0.03
+        "chance": 0.015
       }
     ],
     "shape": "bee",
@@ -748,7 +748,7 @@
         "item": "rabbit_foot",
         "min": 1,
         "max": 1,
-        "chance": 0.03
+        "chance": 0.015
       }
     ],
     "shape": "rabbit",
@@ -845,7 +845,7 @@
         "item": "spore_pendant",
         "min": 1,
         "max": 1,
-        "chance": 0.03
+        "chance": 0.015
       }
     ],
     "shape": "puff",
@@ -904,7 +904,7 @@
         "item": "leather_boots",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.015
       }
     ],
     "shape": "wolf",
@@ -1000,7 +1000,7 @@
         "item": "scorpion_pike",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.005
       }
     ],
     "shape": "scorpion",
@@ -1155,7 +1155,7 @@
         "item": "wisp_lantern",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.005
       }
     ],
     "shape": "wisp",
@@ -1216,13 +1216,13 @@
         "item": "fur_hat",
         "min": 1,
         "max": 1,
-        "chance": 0.03
+        "chance": 0.005
       },
       {
         "item": "yeti_coat",
         "min": 1,
         "max": 1,
-        "chance": 0.02
+        "chance": 0.005
       }
     ],
     "shape": "yeti",

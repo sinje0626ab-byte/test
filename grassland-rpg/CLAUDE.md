@@ -266,7 +266,7 @@ src/
 - 브라우저 정책상 첫 클릭/터치(타이틀 화면) 때 AudioContext를 시작한다
 - **곡 파일**(`src/music/<이름>.mp3`, Suno 로 만든 곡): 그 상황의 곡이 있으면 합성 음악 대신 튼다 (`MusicSystem`). 고르는 순서: 타이틀 `title` · 엔딩 `ending` · 밤의 군주 `nightlord` · 보스전 `boss` · 습격 `raid` · 기지 생활 창(상점·대장간·작업대·창고·텃밭·택배) `village` · 밤 `night` · 낮에 기지 영역 안 `village` · 그 밖엔 지역 이름(`grassland`·`forest`·`desert`·`snow`)
   - 지금 있는 곡: title(Map of Wonders) · grassland(Sunny Meadow Play) · forest(Mossy Path) · desert(Dune Dash) · snow(Cozy Winter Game) · night(Campfire Lullaby) · village(Morning in the Village) · boss(Goblin Gorge March) · nightlord(The Starry Night's Final Stand) · ending(A New Day Begins). 곡이 없는 상황은 비슷한 곡을 빌린다(`ALIAS`: 습격 → boss), 그것도 없으면 예전 합성 음악. 일시정지(`state === 'paused'`) 중엔 멈추고 풀면 그 자리부터
-  - 바꿀 땐 1.5초 크로스페이드, 같은 곡을 2초 동안 원해야 바꾼다(기지 경계 들락날락 방지, 오디오 시계로 잰다). 보스·습격·타이틀·엔딩은 바로. 곡마다 듣던 자리를 기억해 이어서 튼다. 반복 재생
+  - 곡 파일 음량은 `TRACK_GAIN`(0.5, 합성 음악보다 커서 절반). 바꿀 땐 1.5초 크로스페이드, 같은 곡을 2초 동안 원해야 바꾼다(기지 경계 들락날락 방지, 오디오 시계로 잰다). 보스·습격·타이틀·엔딩은 바로. 곡마다 듣던 자리를 기억해 이어서 튼다. 반복 재생
   - 볼륨은 Web Audio(`createMediaElementSource` → 곡별 gain → musicBus)로 (iOS 는 audio.volume 을 무시). 합성 음악은 `synthOut` gain 을 거쳐 곡을 틀 때 0으로. 탭을 숨기면 곡도 멈춘다
   - 새 곡을 넣으려면 파일만 `src/music/` 에 같은 이름으로 넣으면 된다
 
@@ -560,6 +560,13 @@ src/
 - 아이템의 `equipSlot`(weapon / head / body / feet / accessory)과 `bonus`(능력치 증가)로 정의
 - 가방에서 우클릭 → 장착 (원래 끼던 장비는 그 가방 칸으로 돌아온다). 캐릭터 창에서 장비 칸 우클릭 → 해제 (가방이 차 있으면 해제 불가)
 - 장비는 몬스터 드롭으로 얻는다 (낮은 확률). 제작·상점은 Phase 6
+
+### 4-4-1-1. 장비 확장 (175종) · 지역 장비 풀
+- 지역마다 무기 9(검 3·창 2·망치 2·활 2) · 머리 5 · 몸 5 ·신발 4 · 장신구 10 = 33종씩 132종을 더했다 (기존 43 → 175). 등급은 일반·고급·희귀·영웅 고르게
+- 능력치 기준(같은 지역·등급이면 비슷하게): 무기 공격 = 지역 {초원 4·숲 7·사막 10·설원 13} × 등급 {0.8·1.0·1.2·1.45} × 종류 {검 1·창 0.95·망치 1.4·활 0.85}, 고급 이상은 부가 능력 1~2개(치명·독·감속·처치 회복·공속·화살 추가·밤 피해…). 머리 방어·HP {1·10 / 2·20 / 3·30 / 4·40}, 몸 {2·10 / 3.5·18 / 6·30 / 9·45}, 신발 이속·스태미나(숲·설원은 방어 조금) × 등급, 장신구는 지역 배수 {1·1.6·2.3·3}
+- **모양은 데이터로** (`items.json` 의 `style`): 무기 `{ type: sword|spear|hammer|bow, blade/guard/grip/head/shaft/limb/gem/rune/kind… }` → 아이콘(`itemArt.styleArt`)과 3D(`weaponModels.styleSpec`)가 같은 옵션으로 그린다 (재질 이름 MAT·팔레트 이름 M·#색). 방어구·장신구 `{ from: 기존 아이템 id, hue, sat }` → 그 아이콘(새 그림이 있으면 그 그림)에 SVG 색 돌리기, 3D 모자·옷 장식·신발은 그 모양을 복제해 색상만 돌린다(`gearModels.addVariants`). 옷·신발 색은 `color`(미리 돌린 색)
+- **지역 장비 풀**(`pool`): 필드 몬스터를 잡으면 그 지역 풀에서 등급마다 굴려 가장 높은 하나 (`config.gearDrop.chances` 일반 2.5% · 고급 1.2% · 희귀 0.4% · 영웅 0.1%, 정예 × `elite.dropBonus`, 밤 × 1.3, 보스 × 25, 박사의 돋보기 드롭률 반영). 습격 몬스터는 굴리지 않는다. 기존 지역 장비도 풀에 들어 있고, 보스 전용(선인장 왕관·거인의 심장·고목 활·고목 씨앗·왕젤리 왕관·새벽검 등)은 풀에 없다
+- 몬스터 드롭표의 장비 확률도 등급으로 낮췄다: 일반 3% · 고급 1.5% · 희귀 0.5% (보스 확정 드롭은 그대로)
 
 ### 4-4-3. 장비 강화 (Phase 12, 대장간)
 - +1 ~ +5. 단계마다 기본 능력치 +12% (`config.enhance`). 켜고 끄는 능력치(감속 면역·화살 추가)는 그대로

@@ -15,9 +15,34 @@ export class LootSystem {
     ctx.bus.on('loot:table', ({ drops, position }) => this.roll(drops, position));
   }
 
-  onKilled({ type, position, elite, noLoot, reward = 1 }) {
+  onKilled({ type, position, elite, noLoot, reward = 1, raid, boss, night }) {
     if (noLoot) return;
     this.roll(this.ctx.data.monsters[type].drops, position, elite ? this.ctx.data.config.elite : null, reward);
+    if (!raid) this.rollGear(position, { elite, boss, night });
+  }
+
+  // 지역 장비 풀: 등급마다 한 번씩 굴려 가장 높은 등급 하나만 (희귀할수록 낮은 확률, config.gearDrop)
+  rollGear(position, { elite, boss, night }) {
+    const cfg = this.ctx.data.config.gearDrop;
+    if (!cfg) return;
+    const region = this.ctx.world.regionAt(position.x, position.z).id;
+    const pools = (this.pools ??= this.buildPools());
+    const k = (elite ? this.ctx.data.config.elite.dropBonus : 1) * (boss ? cfg.boss : 1) * (night ? cfg.night : 1) * (1 + (this.ctx.player.stats.dropRate ?? 0));
+    for (const grade of ['epic', 'rare', 'uncommon', 'common']) {
+      const list = pools[region]?.[grade];
+      if (!list?.length || Math.random() >= cfg.chances[grade] * k) continue;
+      this.spawn(rand.pick(list), 1, position);
+      return;
+    }
+  }
+
+  buildPools() {
+    const out = {};
+    for (const [id, def] of Object.entries(this.ctx.data.items.items)) {
+      if (!def.pool) continue;
+      ((out[def.pool] ??= {})[def.grade] ??= []).push(id);
+    }
+    return out;
   }
 
   // 드롭 테이블 굴리기. { oneOf: [...] }는 그중 하나. 정예면 골드·장비 확률이 오른다.

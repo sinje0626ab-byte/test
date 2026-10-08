@@ -752,10 +752,39 @@ export function itemArt(id, def, cls = 'item-svg') {
     const back = backplate(b, def?.grade);
     return `<svg class="${cls} painted" data-grade="${def?.grade ?? 'common'}" viewBox="0 0 48 48" aria-hidden="true"><defs>${b.defs.join('')}</defs>${back}<image href="${PAINTED.items[id]}" x="1" y="1" width="46" height="46"/></svg>`;
   }
-  const draw = ART[id];
+  // 색만 돌린 변형(style.from)은 원래 아이템의 새 그림이 있으면 그 그림에 같은 색 돌리기를 씌운다
+  const from = def?.style?.from;
+  if (from && PAINTED.items[from]) {
+    const back = backplate(b, def?.grade);
+    const fid = hueFilter(b, def.style);
+    return `<svg class="${cls} painted" data-grade="${def?.grade ?? 'common'}" viewBox="0 0 48 48" aria-hidden="true"><defs>${b.defs.join('')}</defs>${back}<image href="${PAINTED.items[from]}" x="1" y="1" width="46" height="46" filter="url(#${fid})"/></svg>`;
+  }
+  const draw = ART[id] ?? styleArt(def?.style);
   const body = draw ? draw(b) : shadow(40, 10) + P('M24 8l12 14-12 16-12-16z', b.f(def?.color ?? M.stone)) + hl('M18 20l5-7', 0.7);
   const back = backplate(b, def?.grade);
   return `<svg class="${cls}" data-grade="${def?.grade ?? 'common'}" viewBox="0 0 48 48" aria-hidden="true"><defs>${b.defs.join('')}</defs>${back}${body}</svg>`;
+}
+
+// 데이터로 정한 모양 (items.json style): 무기 { type: sword|spear|hammer|bow, 재질 옵션… } 은 같은 붓으로,
+// 방어구·장신구 { from: 기존 아이템 id, hue, sat } 는 그 그림의 색만 돌린다 (SVG feColorMatrix)
+const WEAPON_DRAW = { sword, spear, hammer, bow };
+const pal = (v) => (typeof v === 'string' && M[v] ? M[v] : v);
+function styleArt(st) {
+  if (!st) return null;
+  if (st.type) {
+    const o = Object.fromEntries(Object.entries(st).filter(([k]) => k !== 'type').map(([k, v]) => [k, pal(v)]));
+    // 활의 보석은 작은 동그라미 장식으로
+    if (st.type === 'bow' && o.gem) { const gem = o.gem; o.deco = (bb) => circ(33.9, 24, 1.6, bb.f(gem), THIN); }
+    return (b) => WEAPON_DRAW[st.type](b, o);
+  }
+  const base = ART[st.from];
+  if (!base) return null;
+  return (b) => `<g filter="url(#${hueFilter(b, st)})">${base(b)}</g>`;
+}
+function hueFilter(b, st) {
+  const fid = `${b.id}h`;
+  b.defs.push(`<filter id="${fid}" color-interpolation-filters="sRGB"><feColorMatrix type="hueRotate" values="${st.hue ?? 0}"/><feColorMatrix type="saturate" values="${st.sat ?? 1}"/></filter>`);
+  return fid;
 }
 
 // 빈 장비 칸 안내 모양 (흐린 한 색 실루엣)
