@@ -104,10 +104,21 @@ export class MercenarySystem {
     return new THREE.Vector3(b.position.x + Math.cos(a) * r, 0, b.position.z + Math.sin(a) * r);
   }
 
+  // 서성이기: 건물·나무 위가 아닌 자리를 골라 걷는다. 오래 못 가면 다른 자리로
   idle(m, dt, pick) {
     m.wait -= dt;
-    if (!m.target || m.walkTo(m.target, dt, this.cfg.speed * 0.6)) {
-      if (m.wait <= 0) { m.target = pick(); m.wait = 1.5 + Math.random() * 2.5; }
+    m.idleWalk = (m.idleWalk ?? 0) + dt;
+    if (!m.target || m.walkTo(m.target, dt, this.cfg.speed * 0.6) || m.idleWalk > this.ctx.data.config.nav.giveUp / 2) {
+      if (m.wait <= 0 || m.idleWalk > this.ctx.data.config.nav.giveUp / 2) {
+        let t = null;
+        for (let i = 0; i < 6 && !t; i++) {
+          const p = pick();
+          if (!m.nav?.blockedAt(p.x, p.z, 0.2)) t = p;
+        }
+        m.target = t;
+        m.idleWalk = 0;
+        m.wait = 1.5 + Math.random() * 2.5;
+      }
     }
   }
 
