@@ -265,7 +265,7 @@ src/
 - 배경음: 펜타토닉 음계를 느린 템포로 합성하는 루프. 지역·낮밤마다 조성·음높이·템포가 다르고(초원 낮 = 밝은 장조, 밤 = 단조·저음), 습격 중엔 북 리듬, 보스전은 빠른 템포
 - 브라우저 정책상 첫 클릭/터치(타이틀 화면) 때 AudioContext를 시작한다
 - **곡 파일**(`src/music/<이름>.mp3`, Suno 로 만든 곡): 그 상황의 곡이 있으면 합성 음악 대신 튼다 (`MusicSystem`). 고르는 순서: 타이틀 `title` · 엔딩 `ending` · 밤의 군주 `nightlord` · 보스전 `boss` · 습격 `raid` · 기지 생활 창(상점·대장간·작업대·창고·텃밭·택배) `village` · 밤 `night` · 낮에 기지 영역 안 `village` · 그 밖엔 지역 이름(`grassland`·`forest`·`desert`·`snow`)
-  - 지금 있는 곡: title(Map of Wonders) · grassland(Sunny Meadow Play) · forest(Mossy Path) · night(Campfire Lullaby) · village(Morning in the Village). 없는 곡은 예전 합성 음악
+  - 지금 있는 곡: title(Map of Wonders) · grassland(Sunny Meadow Play) · forest(Mossy Path) · desert(Dune Dash) · snow(Cozy Winter Game) · night(Campfire Lullaby) · village(Morning in the Village) · boss(Goblin Gorge March) · nightlord(The Starry Night's Final Stand) · ending(A New Day Begins). 곡이 없는 상황은 비슷한 곡을 빌린다(`ALIAS`: 습격 → boss), 그것도 없으면 예전 합성 음악. 일시정지(`state === 'paused'`) 중엔 멈추고 풀면 그 자리부터
   - 바꿀 땐 1.5초 크로스페이드, 같은 곡을 2초 동안 원해야 바꾼다(기지 경계 들락날락 방지, 오디오 시계로 잰다). 보스·습격·타이틀·엔딩은 바로. 곡마다 듣던 자리를 기억해 이어서 튼다. 반복 재생
   - 볼륨은 Web Audio(`createMediaElementSource` → 곡별 gain → musicBus)로 (iOS 는 audio.volume 을 무시). 합성 음악은 `synthOut` gain 을 거쳐 곡을 틀 때 0으로. 탭을 숨기면 곡도 멈춘다
   - 새 곡을 넣으려면 파일만 `src/music/` 에 같은 이름으로 넣으면 된다
@@ -405,6 +405,7 @@ src/
   - 연출: 지역 배너·보스 이름·레벨업은 하얀 글씨 + 두꺼운 갈색 외곽선(`-webkit-text-stroke` + `paint-order`), 위아래 흰 점선. LEVEL UP 은 꿀색 Bagel Fat One
   - 타이틀: 하얀 Jua 로고 + 갈색 외곽선 + 새싹색 그림자, 영문은 외곽선 글씨. 메뉴는 사탕 버튼(새 게임·이어하기 새싹, 나머지 크림), 올리면 양옆 🌱. 슬롯은 크림 알약(고른 것은 꿀색). 오른쪽 아래 버전(`package.json` version)
   - 휴대폰 터치 버튼: 하얀 테 사탕 버튼 (공격 산호 · 구르기 새싹 · E 꿀), 메뉴 단추는 크림 알약
+  - 새로 그린 터치 버튼 그림(`src/art/ui/`: btn_attack · btn_roll · btn_use · skill_ring · joy_base · joy_knob, `PAINTED.ui`): `TouchControls` 가 `--art-<id>` CSS 변수로 넣고, 다 있으면 `body.painted-ui` → 그림이 단추 전체(CSS 테두리·그림자 끔), 이름은 단추 아래 작은 크림 알약(`.t-label`, E 는 이름 없음). 스킬 단추는 연두 고리 그림 안에 스킬 배지
   - 커서(PC만): 기본 작은 칼, 버튼·칸·상호작용 대상 위(E 안내가 뜬 동안 `body.can-interact`)에선 손. SVG data URI
   - UI 효과음: 누름 click, 탭 전환 tab, 마우스 올림 tick(아주 작게). `sounds.json` sfx
   - 대화창: 크림 판 + 새싹 알약 이름(창 제목), 타자기, 다 나오면 ▼ 통통. 얼굴은 주민 초상화(`art/portraits/npc_<id>`, 없으면 색 동그라미)

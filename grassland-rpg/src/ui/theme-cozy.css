@@ -507,3 +507,30 @@ body.touch :is(.t-attack, .t-roll, .t-use):active { transform: translateY(3px) s
 body.touch :is(.t-menu, .t-build) button { font-family: var(--font-title); font-weight: 400; font-size: 13px; border: 2px solid var(--line); border-radius: 999px; background: var(--panel); box-shadow: inset 0 2px 0 #fff, 0 3px 0 rgba(214, 186, 138, 0.85); }
 body.touch .t-build button { font-size: 16px; }
 body.touch .t-build .ok { background: linear-gradient(#a6e08a, var(--leaf)); color: #fff; border-color: var(--leaf-dark); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), 0 3px 0 var(--leaf-dark); }
+
+/* 새로 그린 터치 버튼 그림 (art/ui, TouchControls 가 --art-<id> 와 body.painted-ui 를 넣는다).
+   그림이 단추 전체(테두리·그림자 포함)라 CSS 테두리·그림자는 끄고, 글자는 단추 아래 작은 알약으로 */
+body.touch.painted-ui :is(.t-attack, .t-roll, .t-use) {
+  border: 0; box-shadow: none; text-shadow: none; color: transparent; overflow: visible;
+  background: transparent center / 100% 100% no-repeat; filter: drop-shadow(0 5px 6px rgba(60, 40, 20, 0.3));
+  transition: transform 0.08s;
+}
+body.touch.painted-ui .t-attack { background-image: var(--art-btn_attack); }
+body.touch.painted-ui .t-roll { background-image: var(--art-btn_roll); }
+body.touch.painted-ui .t-use { background-image: var(--art-btn_use); }
+body.touch.painted-ui :is(.t-attack, .t-roll, .t-use):active { transform: scale(0.92); filter: drop-shadow(0 2px 3px rgba(60, 40, 20, 0.3)) brightness(0.97); }
+body.touch.painted-ui .t-label {
+  position: absolute; left: 50%; bottom: -9px; translate: -50% 0; white-space: nowrap; pointer-events: none;
+  font: 400 12px/1 var(--font-title); color: var(--ink); padding: 3px 9px 2px; border-radius: 999px;
+  background: var(--cream); border: 2px solid var(--line); box-shadow: 0 2px 0 rgba(214, 186, 138, 0.85);
+}
+body.touch.painted-ui .t-use .t-label { display: none; }
+body.touch:not(.painted-ui) .t-label { font: inherit; color: inherit; }
+body.touch.painted-ui .joy { border: 0; background: var(--art-joy_base) center / 100% 100% no-repeat; filter: drop-shadow(0 4px 6px rgba(60, 40, 20, 0.22)); opacity: 0.92; }
+body.touch.painted-ui .joy-knob { width: 64px; height: 64px; border-radius: 0; box-shadow: none; background: var(--art-joy_knob) center / 100% 100% no-repeat; filter: drop-shadow(0 3px 4px rgba(60, 40, 20, 0.3)); }
+/* 스킬 단추: 연두 고리 그림 안에 스킬 배지 */
+body.touch.painted-ui .sslot:not(.empty) {
+  border: 0; border-radius: 50%; box-shadow: none; overflow: visible;
+  background: var(--art-skill_ring) center / 100% 100% no-repeat; filter: drop-shadow(0 4px 5px rgba(60, 40, 20, 0.25));
+}
+body.touch.painted-ui .sslot .skill-svg { width: 38px; height: 38px; }

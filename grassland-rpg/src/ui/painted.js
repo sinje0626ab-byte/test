@@ -9,5 +9,6 @@ export const PAINTED = import.meta.env
     skills: byId(import.meta.glob('../art/skills/*.{webp,png}', { eager: true, query: '?url', import: 'default' })),
     build: byId(import.meta.glob('../art/build/*.{webp,png}', { eager: true, query: '?url', import: 'default' })),
     portraits: byId(import.meta.glob('../art/portraits/*.{webp,png}', { eager: true, query: '?url', import: 'default' })),
+    ui: byId(import.meta.glob('../art/ui/*.{webp,png}', { eager: true, query: '?url', import: 'default' })),
   }
-  : { items: {}, skills: {}, build: {}, portraits: {} };
+  : { items: {}, skills: {}, build: {}, portraits: {}, ui: {} };

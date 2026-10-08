@@ -9,6 +9,8 @@ const FILES = import.meta.glob('../music/*.mp3', { query: '?url', import: 'defau
 const TRACKS = Object.fromEntries(Object.entries(FILES).map(([f, url]) => [f.split('/').pop().replace('.mp3', ''), url]));
 // 기지 생활 창(상점·대장간·작업대·창고·텃밭)을 열면 마을 곡
 const VILLAGE_WINDOWS = new Set(['shop', 'forge', 'craft', 'storage', 'garden', 'courier']);
+// 곡이 아직 없는 상황은 비슷한 곡을 빌려 쓴다 (습격 → 보스전 행진곡)
+const ALIAS = { raid: 'boss', nightlord: 'boss' };
 const FADE = 1.5; // 곡 바꾸는 시간(초)
 const SETTLE = 2; // 이 시간 동안 같은 곡을 원해야 바꾼다 (기지 경계를 들락날락할 때 왔다 갔다 하지 않게). 보스·습격은 바로
 
@@ -47,7 +49,7 @@ export class MusicSystem {
     document.addEventListener('visibilitychange', () => {
       const p = this.current && this.players.get(this.current);
       if (!p) return;
-      if (document.hidden) p.audio.pause();
+      if (document.hidden || this.paused) p.audio.pause();
       else p.audio.play().catch(() => {});
     });
   }
@@ -119,12 +121,13 @@ export class MusicSystem {
 
   // 곡 파일 고르기: 원하는 곡이 SETTLE 초 동안 같으면 바꾼다(오디오 시계로 잰다). 파일이 없으면 합성 음악(null)
   updateTrack() {
-    const name = this.trackName();
+    const want = this.trackName();
+    const name = TRACKS[want] ? want : ALIAS[want] ?? want;
     const target = TRACKS[name] ? name : null;
     const now = this.synth.now;
     if (target === this.current) { this.wanted = target; return; }
     if (target !== this.wanted) { this.wanted = target; this.wantedSince = now; }
-    const urgent = ['boss', 'nightlord', 'raid', 'title', 'ending'].includes(name) || this.current === 'title';
+    const urgent = ['boss', 'nightlord', 'raid', 'title', 'ending'].includes(want) || this.current === 'title';
     if (urgent || now - this.wantedSince >= SETTLE) this.switchTo(target);
   }
 
@@ -177,6 +180,15 @@ export class MusicSystem {
   update() {
     const s = this.synth;
     if (!s.ready || this.volume <= 0) return;
+    // 일시정지 중엔 곡을 멈춘다 (풀면 그 자리부터)
+    const paused = this.ctx.state === 'paused';
+    const p = this.current && this.players.get(this.current);
+    if (paused !== this.paused) {
+      this.paused = paused;
+      if (p) { if (paused) p.audio.pause(); else if (!document.hidden) p.audio.play().catch(() => {}); }
+      if (this.synthGain) this.synthGain.gain.value = paused || this.current ? 0 : 1;
+    }
+    if (paused) return;
     this.updateTrack();
     if (this.current) return; // 곡 파일을 트는 중엔 합성하지 않는다
     const mood = this.mood();
