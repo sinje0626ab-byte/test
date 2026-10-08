@@ -2,10 +2,18 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { SHAPES } from './monsterShapes.js';
 import { BOSS_SHAPES } from './bossShapes.js';
+import { hasModel, createModel } from '../core/Models.js';
 
 // 몬스터 모양. def.shape 으로 고르고, id 로 같은 모양 안의 변형(모래·눈·밤 슬라임, 보스 장식)을 고른다.
 // 돌려주는 mat 은 피격 번쩍임·사라짐 연출에 쓰는 본체 재질, eyeMat 은 밤에 빛나는 눈
+// def.model 이 있고 그 3D 모델(src/models)이 읽혀 있으면 뼈대·동작이 있는 모델을 쓴다 (animator 를 함께 돌려준다)
 export function createMonsterModel(def, id) {
+  if (hasModel(def.model)) {
+    const { object, mats, animator } = createModel(def.model);
+    const body = new THREE.Group();
+    body.add(object);
+    return { body, mat: mats[0], extraMats: mats.slice(1), wings: [], eyeMat: null, animator };
+  }
   const make = SHAPES[def.shape] ?? BOSS_SHAPES[def.shape] ?? SHAPES.slime;
   const { body, mat, extraMats, wings, eyeMat } = make(def, id);
   bake(body, new Set(wings ?? []));

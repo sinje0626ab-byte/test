@@ -44,6 +44,8 @@ export function monsterPortrait(def, id, known = true) {
   const key = `${id}:${known ? 1 : 0}`;
   if (cache.has(key)) return cache.get(key);
   const model = createMonsterModel(def, id);
+  // 뼈대 모델은 가만히 선 자세로 (모양 조각은 다른 몬스터와 같이 쓰므로 버리지 않는다)
+  if (model.animator) { model.animator.play('idle'); model.animator.update(0.4); }
   const g = new THREE.Group();
   g.add(model.body);
   g.rotation.y = -0.45; // 정면에서 살짝 옆으로
@@ -58,7 +60,7 @@ export function monsterPortrait(def, id, known = true) {
     camera.position.set(center.x, center.y + dist * 0.32, center.z + dist);
     camera.lookAt(center);
   }, { silhouette: !known });
-  g.traverse((o) => { if (o.isMesh) o.geometry.dispose(); });
+  g.traverse((o) => { if (o.isMesh && !o.userData.shared) o.geometry.dispose(); });
   for (const m of [model.mat, ...(model.extraMats ?? [])]) m?.dispose?.();
   cache.set(key, url);
   return url;

@@ -66,6 +66,7 @@ export class Monster {
     this.mat = model.mat;
     this.extraMats = model.extraMats;
     this.eyeMat = model.eyeMat;
+    this.animator = model.animator; // 뼈대 모델(src/models)만. 없으면 몸을 늘였다 줄였다 하는 움직임
     const outer = new THREE.Group();
     outer.add(this.body);
     // 나는 몬스터: 바닥 그림자 원
@@ -104,6 +105,7 @@ export class Monster {
 
   setState(state) {
     this.state = state;
+    this.stateSerial = (this.stateSerial ?? 0) + 1;
     this.stateTime = 0;
     this.attacked = false;
   }
@@ -114,6 +116,18 @@ export class Monster {
     this.flash = Math.max(0, this.flash - dt);
     this.hpBarTimer = Math.max(0, this.hpBarTimer - dt);
 
+    if (this.state === 'dead' && this.animator) {
+      // 쓰러지는 동작을 다 보여 준 뒤 흐려지며 사라진다
+      const a = this.animator;
+      a.play('death', { once: true, fade: 0.1 });
+      a.update(dt);
+      this.body.scale.setScalar(1);
+      const fall = Math.min(1.4, a.duration('death'));
+      const t = Math.max(0, (this.stateTime - fall) / 0.5);
+      this.setOpacity(Math.max(0, 1 - t));
+      if (t >= 1) this.done = true;
+      return;
+    }
     if (this.state === 'dead') {
       // 납작하게 눌리며 사라진다 (조각·연기는 FeedbackSystem)
       const t = Math.min(1, this.stateTime / this.ctx.data.config.feedback.deathSquash);
@@ -199,6 +213,10 @@ export class Monster {
     this.body.rotation.y = Math.atan2(this.facing.x, this.facing.z);
     this.glow(dt);
     this.hpBar.update(this.stats.hp / this.stats.maxHp, this.ctx.camera, this.hpBarTimer > 0);
+    if (this.animator) {
+      this.animateModel(dt, speed);
+      return;
+    }
     if (this.behavior.animate?.(this, dt, speed)) return;
     if (d.flier) {
       // 둥실둥실 떠다닌다
@@ -227,6 +245,38 @@ export class Monster {
     this.body.scale.set(1 / Math.sqrt(sy), sy, 1 / Math.sqrt(sy));
   }
 
+  // 뼈대 모델: 상태에 맞는 동작을 고른다. 공격 동작은 예비동작 시간에 맞춰 빠르기를 바꾼다(가운데쯤이 타격)
+  animateModel(dt, speed) {
+    const d = this.def;
+    const a = this.animator;
+    const windup = { attack: d.attackWindup, shoot: d.shotWindup, cast: this.cast ? this.windupOf?.(this.cast) / (this.cdSpeed ?? 1) : 0 }[this.state];
+    const key = `${this.state}:${this.stateSerial}`;
+    this.hitAnim = Math.max(0, (this.hitAnim ?? 0) - dt);
+    if (windup) {
+      if (this.animKey !== key) {
+        const clip = this.state === 'cast' && a.has('attack2') && this.stateSerial % 2 ? 'attack2' : 'attack';
+        a.play(clip, { once: true, restart: true, fade: 0.08, speed: THREE.MathUtils.clamp((a.duration(clip) * 0.45) / windup, 0.6, 2.5) });
+      }
+    } else if (this.state === 'retreat' && this.animKey !== key) {
+      a.play('attack', { once: true, restart: true, fade: 0.05, speed: 1.6 }); // 치고 빠지기: 막 찌르고 돌아선다
+      this.hitAnim = a.duration('attack') / 1.6;
+    } else if (this.hitAnim > 0) {
+      // 맞는 동작 중
+    } else if (speed > 0) {
+      const run = a.has('run') && speed > d.moveSpeed * 1.4;
+      const base = run ? (d.chaseSpeed ?? d.moveSpeed * 1.6) : d.moveSpeed;
+      a.play(run ? 'run' : 'walk', { speed: THREE.MathUtils.clamp(speed / Math.max(0.1, base), 0.6, 1.8) });
+    } else {
+      a.play('idle');
+    }
+    this.animKey = key;
+    a.update(dt * (this.frozen > 0 ? 0 : 1));
+    // 행동별 연출(힘 모으기 웅크림·부풀기·기절 흔들림)은 몸 크기로 그대로
+    this.body.scale.setScalar(1);
+    this.body.position.y = d.flier ? 1.1 + Math.sin((this.hopPhase += dt * 3)) * 0.12 : 0;
+    this.behavior.animate?.(this, dt, speed);
+  }
+
   // 피격 번쩍임(흰색) > 정예(금빛) > 밤 몬스터(보랏빛)
   glow(dt = 0) {
     // 밤 몬스터(밤에 태어난 필드 몬스터·습격 몬스터)는 처음 한 번 밤 모습으로
@@ -249,6 +299,7 @@ export class Monster {
     else if (this.elite) e.copy(ELITE_GLOW);
     else if (this.night) e.copy(NIGHT_GLOW);
     else e.setRGB(0, 0, 0);
+    if (this.animator) for (const m of this.extraMats) if (m.emissive) m.emissive.copy(e); // 뼈대 모델은 재질이 여럿
   }
 
   // 데미지를 받고 죽었으면 true
@@ -260,6 +311,10 @@ export class Monster {
     s.hp = Math.max(0, s.hp - amount);
     this.flash = 0.12;
     this.hpBarTimer = 4;
+    // 뼈대 모델: 공격 중이 아니면 움찔
+    if (this.animator && !['attack', 'shoot', 'cast'].includes(this.state) && amount > 0 && this.hitAnim <= 0 && this.animator.play('hit', { once: true, restart: true, fade: 0.05, speed: 1.4 })) {
+      this.hitAnim = this.animator.duration('hit') / 1.4;
+    }
     if (knockVec) this.knock.copy(knockVec).multiplyScalar(1 - this.def.knockbackResist);
     if (s.hp <= 0) {
       this.alive = false;
@@ -285,7 +340,7 @@ export class Monster {
     this.ctx.scene.remove(this.mesh);
     this.mesh.traverse((o) => {
       if (o.isMesh) {
-        o.geometry.dispose();
+        if (!o.userData.shared) o.geometry.dispose(); // 뼈대 모델(core/Models.js)의 모양 조각은 같이 쓴다
         o.material.dispose();
       }
     });
