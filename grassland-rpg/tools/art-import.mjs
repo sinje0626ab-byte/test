@@ -70,6 +70,13 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
     const near = (x > 0 && seen[i - 1]) || (x < W - 1 && seen[i + 1]) || seen[i - W] || seen[i + W];
     if (near && Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) > 200) a[i * 4 + 3] = Math.round(a[i * 4 + 3] * 0.3);
   }
+  // 흰 바탕 위에서 그린 빛 번짐은 밝고 반투명하다 → 어두운 칸(퀵슬롯)에서 뿌연 구름처럼 보이지 않게 많이 옅게
+  for (let i = 0; i < W * H; i++) {
+    const al = a[i * 4 + 3];
+    if (!al || al > 170) continue;
+    const l = (a[i * 4] + a[i * 4 + 1] + a[i * 4 + 2]) / 3;
+    if (l > 185) a[i * 4 + 3] = Math.round(al * 0.3);
+  }
   g.putImageData(im, 0, 0);
   // 나누기·자르기는 또렷한 부분(불투명)만 본다 — 옅은 그림자·안개가 그림끼리 잇지 않게
   const on = (x, y) => a[(y * W + x) * 4 + 3] > 100;
