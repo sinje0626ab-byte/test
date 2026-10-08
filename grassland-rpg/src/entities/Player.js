@@ -145,7 +145,9 @@ export class Player {
       return;
     }
 
-    let speed = s.moveSpeed * this.speedMult * (moving ? Math.max(0.35, mv.amount) : 1);
+    // 조이스틱은 살짝만 밀어도 거의 제 속도 (절반쯤 밀면 다 걷는다) — 느릿하게 따라오는 느낌을 없앤다
+    const walk = mv.stick ? Math.min(1, 0.55 + mv.amount) : mv.amount;
+    let speed = s.moveSpeed * this.speedMult * (moving ? walk : 1);
     const wantsRun = input.isDown('ShiftLeft') || input.isDown('ShiftRight')
       || (mv.stick && mv.amount >= this.ctx.data.config.touch.runThreshold);
     if (moving && wantsRun && s.stamina > 0) {
@@ -204,7 +206,8 @@ export class Player {
     return pick(this.ctx.monsters, config.touch.autoAimRange) ?? pick(this.ctx.nodes ?? [], config.gather.autoAimRange);
   }
 
-  takeDamage(amount, knockDir) {
+  // knockPower: 밀려나는 세기 (없으면 player.json knockback, 돌진 적중은 combat.chargeKnockback)
+  takeDamage(amount, knockDir, knockPower = this.base.knockback) {
     if (!this.alive || this.invuln > 0 || this.roll.invulnerable || this.dash.active) return false;
     const s = this.stats;
     // 받는 피해 감소 (설원 세트 등)
@@ -212,7 +215,7 @@ export class Player {
     s.hp = Math.max(0, s.hp - dmg);
     this.invuln = this.base.invulnTime;
     this.flash = 0.18;
-    if (knockDir) this.knock.copy(knockDir).multiplyScalar(this.base.knockback);
+    if (knockDir) this.knock.copy(knockDir).multiplyScalar(knockPower);
     this.ctx.bus.emit('player:damaged', { amount: dmg, hp: s.hp });
     if (s.hp <= 0) this.die();
     return true;
@@ -257,7 +260,7 @@ export class Player {
     const target = Math.atan2(this.facing.x, this.facing.z);
     let diff = target - m.rotation.y;
     diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-    m.rotation.y += diff * Math.min(1, dt * 18);
+    m.rotation.y += diff * Math.min(1, dt * 24);
 
     const moving = this.velocity.lengthSq() > 0.01;
     const bob = moving ? Math.abs(Math.sin(this.walkPhase)) * 0.08 : 0;

@@ -365,6 +365,7 @@ body:not(.touch) .hud-notify { top: 50%; right: 16px; transform: translateY(-50%
 .dmg.dot { color: #b2e88e; font-size: 15px; }
 .dmg.structure { color: #ffbe7a; font-size: 16px; }
 .dmg.xp { color: #d2c4ff; font-size: 13px; }
+.dmg.counter { font-family: var(--font-display); color: #ffe08a; font-size: 30px; -webkit-text-stroke: 4px #7a3b1c; }
 
 /* 휴대폰: 상태창·초상화 작게, 액션바는 투명(퀵슬롯·스킬 버튼은 원래 자리) */
 body.touch .actionbar { display: contents; }

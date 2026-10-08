@@ -47,7 +47,12 @@
     "blastStructureCap": 0.4,
     "structureHpPerProgress": 0.15,
     "variance": 0.15,
-    "projectileKnockback": 1.5
+    "projectileKnockback": 1.5,
+    "chargeKnockback": 20,
+    "counterBonus": 1.5,
+    "counterStun": 3,
+    "parryArcDot": 0.3,
+    "parryWindow": 0.3
   },
   "loot": {
     "pickupDelay": 0.45,

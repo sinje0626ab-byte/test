@@ -20,7 +20,8 @@ export const melee = {
         if (!player.alive || dist > d.loseRange) { giveUp(m); break; }
         if (dist <= d.attackRange + player.radius && m.cooldown <= 0) { m.setState('attack'); break; }
         move.copy(v);
-        speed = dist > d.attackRange * 0.8 ? d.chaseSpeed : 0;
+        // 몸이 닿기 전에 멈춘다 (공격 사거리가 짧아도 겹치지 않게)
+        speed = dist > Math.max(d.attackRange * 0.8, m.radius + player.radius + 0.1) ? d.chaseSpeed : 0;
         break;
       case 'attack':
         m.attackStep('chase');

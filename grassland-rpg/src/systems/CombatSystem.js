@@ -25,8 +25,9 @@ export class CombatSystem {
     ctx.bus.on('monster:blast', (a) => this.onBlast(a));
     ctx.bus.on('boss:line', (a) => this.onLine(a));
     ctx.bus.on('player:sweep', (a) => this.onSweep(a));
+    // 돌진 적중: 크게 밀려난다 (반격 타이밍이면 charger 가 먼저 막아 이 이벤트가 오지 않는다)
     ctx.bus.on('monster:charge-hit', ({ monster, dir: d }) => {
-      if (monster.alive) this.hitPlayer(monster.stats.attack, d, monster.def.hitEffect);
+      if (monster.alive) this.hitPlayer(monster.stats.attack, d, monster.def.hitEffect, this.cfg.chargeKnockback);
     });
     ctx.bus.on('enemy:hit-player', (a) => this.hitPlayer(a.damage, a.dir, a.effect));
     ctx.bus.on('arrow:hit', ({ monster, shot, dir: d }) => {
@@ -95,8 +96,12 @@ export class CombatSystem {
     const s = this.ctx.player.stats;
     const night = (m.night || m.raid) && s.nightBonus ? 1 + s.nightBonus : 1;
     const pierce = this.ctx.data.weapons[a.weapon]?.armorPierce ?? 0;
-    const { amount, crit } = this.calcDamage(a.attack * night, m.stats.defense, a.critChance, a.critMultiplier, pierce);
+    // 반격: 돌진해 오는 적을 맞히면 확정 치명타 × counterBonus, 맞은 적은 오래 기절 (charger.counterable)
+    const counter = !!m.behavior?.counterable?.(m);
+    const atk = a.attack * night * (counter ? this.cfg.counterBonus : 1);
+    const { amount, crit } = this.calcDamage(atk, m.stats.defense, counter ? 1 : a.critChance, a.critMultiplier, pierce);
     const killed = m.takeDamage(amount, d.multiplyScalar(a.knockback));
+    if (counter) m.behavior.countered(m);
     this.ctx.bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color });
     if (killed) {
       this.killed(m, true);
@@ -130,11 +135,11 @@ export class CombatSystem {
   }
 
   // effect: 맞으면 걸리는 상태 이상 { type, duration, amount }
-  hitPlayer(attack, dir, effect) {
+  hitPlayer(attack, dir, effect, knockPower) {
     const { player, bus } = this.ctx;
     if (!player.alive) return;
     const { amount } = this.calcDamage(attack, player.stats.defense);
-    if (player.takeDamage(amount, dir)) {
+    if (player.takeDamage(amount, dir, knockPower)) {
       bus.emit('combat:hit', { position: player.position.clone(), amount, crit: false, target: 'player' });
       if (effect) bus.emit('status:apply', { target: player, ...effect });
     }
