@@ -52,7 +52,7 @@ export class CombatSystem {
     const heal = this.ctx.player.stats.onKillHeal;
     if (byPlayer && heal) bus.emit('player:heal', { amount: heal });
     bus.emit('monster:killed', {
-      type: m.type, position: m.position.clone(), color: m.def.color, radius: m.radius, boss: !!m.boss, elite: !!m.elite, noLoot, reward: m.reward ?? 1,
+      type: m.type, position: m.position.clone(), color: m.def.color, radius: m.radius, boss: !!m.boss, elite: !!m.elite, noLoot, reward: m.reward ?? 1, raid: !!m.raid, night: !!m.night,
     });
     // 분열: 작은 개체로 갈라진다
     if (m.def.splitInto) {

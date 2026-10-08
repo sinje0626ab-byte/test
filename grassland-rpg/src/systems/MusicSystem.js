@@ -12,6 +12,7 @@ const VILLAGE_WINDOWS = new Set(['shop', 'forge', 'craft', 'storage', 'garden', 
 // 곡이 아직 없는 상황은 비슷한 곡을 빌려 쓴다 (습격 → 보스전 행진곡)
 const ALIAS = { raid: 'boss', nightlord: 'boss' };
 const FADE = 1.5; // 곡 바꾸는 시간(초)
+const TRACK_GAIN = 0.5; // 곡 파일 음량 (Suno 곡은 합성 음악보다 커서 절반으로)
 const SETTLE = 2; // 이 시간 동안 같은 곡을 원해야 바꾼다 (기지 경계를 들락날락할 때 왔다 갔다 하지 않게). 보스·습격은 바로
 
 export class MusicSystem {
@@ -114,7 +115,7 @@ export class MusicSystem {
       const p = this.player(name);
       clearTimeout(p.stopTimer);
       p.audio.play().catch(() => {});
-      ramp(p.gain, 1);
+      ramp(p.gain, TRACK_GAIN);
     }
     ramp(this.synthOut, name ? 0 : 1);
   }

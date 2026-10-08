@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import items from '../data/items.json';
 
 // 장비 외형: 머리 장비는 아이템마다 모양이 다른 모자, 몸 장비는 옷 색 + 세트 장식(잎 깃·망토·털 칼라…),
 // 신발은 색 + 장식. 아이콘(ui/itemArt.js)과 같은 팔레트.
@@ -146,9 +147,39 @@ function shoes() {
   };
 }
 
+// 색만 돌린 변형 (items.json style { from, hue, sat }): 원래 모양을 복제해 재질 색의 색상을 hue 도 돌린다
+const variantCache = new Map();
+function variant(base, st) {
+  const g = base.clone();
+  g.traverse((o) => {
+    if (!o.isMesh) return;
+    const key = `${o.material.uuid}:${st.hue ?? 0}:${st.sat ?? 1}`;
+    if (!variantCache.has(key)) {
+      const mat = o.material.clone();
+      const hsl = {};
+      mat.color.getHSL(hsl);
+      mat.color.setHSL((hsl.h + (st.hue ?? 0) / 360 + 1) % 1, Math.min(1, hsl.s * (st.sat ?? 1)), hsl.l);
+      variantCache.set(key, mat);
+    }
+    o.material = variantCache.get(key);
+  });
+  g.visible = false;
+  return g;
+}
+function addVariants(gear) {
+  for (const [id, def] of Object.entries(items.items)) {
+    const from = def.style?.from;
+    if (!from) continue;
+    for (const set of [gear.hats, gear.outfits, gear.shoes]) {
+      if (set[from] && !set[id]) set[id] = variant(set[from], def.style);
+    }
+  }
+}
+
 // 플레이어 모델에 모든 장비 모양을 붙여 두고, 낀 장비만 보인다
 export function createGear(inner) {
   const gear = { hats: hats(), outfits: outfits(), shoes: shoes() };
+  addVariants(gear);
   for (const set of Object.values(gear)) for (const g of Object.values(set)) inner.add(g);
   return gear;
 }
