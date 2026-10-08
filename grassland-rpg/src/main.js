@@ -26,6 +26,10 @@ import dialogues from './data/dialogues.json';
 import quests from './data/quests.json';
 import bounties from './data/bounties.json';
 import { Game } from './core/Game.js';
+import { installToonShading } from './core/toon.js';
+
+// 툰 명암은 재질이 처음 그려지기 전에 (셰이더 조각을 고친다)
+installToonShading(config.render.toon);
 
 const game = new Game({
   container: document.getElementById('app'),

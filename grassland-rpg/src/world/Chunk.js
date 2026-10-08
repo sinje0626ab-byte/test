@@ -18,7 +18,8 @@ export class Chunk {
       mesh.castShadow = !noShadow.has(kind);
       mesh.receiveShadow = true;
       mesh.computeBoundingSphere(); // 띠마다 따로 화면 밖이면 안 그린다
-      mesh.userData = { kind, total: list.length };
+      // 풀·꽃은 외곽선 없이 (core/OutlinePass.js) — 땅과 한 덩어리로
+      mesh.userData = { kind, total: list.length, outline: !noShadow.has(kind) };
       this.group.add(mesh);
     }
   }

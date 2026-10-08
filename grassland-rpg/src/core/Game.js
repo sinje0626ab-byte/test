@@ -76,6 +76,7 @@ import { FeedbackSystem } from '../systems/FeedbackSystem.js';
 import { SoundSystem } from '../systems/SoundSystem.js';
 import { MusicSystem } from '../systems/MusicSystem.js';
 import { PauseMenu } from '../ui/PauseMenu.js';
+import { OutlinePass } from './OutlinePass.js';
 
 // 메인 루프. 모든 엔티티·시스템이 공유하는 ctx를 만들고 매 프레임 update → render.
 export class Game {
@@ -87,6 +88,9 @@ export class Game {
     renderer.shadowMap.type = THREE.PCFShadowMap;
     container.appendChild(renderer.domElement);
     this.renderer = renderer;
+    // 외곽선(설정에서 끌 수 있다, core/OutlinePass.js)
+    this.outline = new OutlinePass(renderer, data.config.render.outline);
+    this.outlineOn = true;
 
     this.camera = new Camera(data.config.camera, window.innerWidth / window.innerHeight);
     this.raycaster = new THREE.Raycaster();
@@ -184,7 +188,10 @@ export class Game {
     this.feedback = new FeedbackSystem(ctx, this.camera);
     this.sound = new SoundSystem(ctx, this.synth);
     this.music = new MusicSystem(ctx, this.synth);
-    bus.on('settings:changed', ({ key, value }) => { if (key === 'shadows') this.applyShadows(value); });
+    bus.on('settings:changed', ({ key, value }) => {
+      if (key === 'shadows') this.applyShadows(value);
+      if (key === 'outline') this.outlineOn = value;
+    });
     this.settings.broadcast();
     bus.on('player:teleport', () => this.camera.snapTo(ctx.player.position));
 
@@ -234,7 +241,8 @@ export class Game {
   loop(now) {
     const dt = this.time.tick(now);
     this.update(dt);
-    this.renderer.render(this.ctx.scene, this.ctx.camera);
+    if (this.outlineOn) this.outline.render(this.ctx.scene, this.ctx.camera);
+    else this.renderer.render(this.ctx.scene, this.ctx.camera);
     requestAnimationFrame(this.loop);
   }
 
@@ -318,5 +326,6 @@ export class Game {
   resize() {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.camera.resize(window.innerWidth / window.innerHeight);
+    this.outline.setSize();
   }
 }

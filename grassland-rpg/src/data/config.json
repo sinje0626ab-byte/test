@@ -521,5 +521,9 @@
       "repairer": { "name": "수리공", "short": "다친 건물을 천천히 고쳐요", "desc": "기지 안의 다친 포탑·건물을 아주 천천히 무료로 고쳐요. 부서진 포탑도 다시 세워요." }
     }
   },
-  "nav": { "arrive": 0.35, "blockedArrive": 2.5, "margin": 0.15, "probeStep": 0.4, "searchPad": 6, "maxGrid": 90, "maxNodes": 6000, "repathInterval": 2, "goalMove": 1.2, "stuckRatio": 0.3, "stuckTime": 0.6, "sidestepTime": 0.5, "giveUp": 25 }
+  "nav": { "arrive": 0.35, "blockedArrive": 2.5, "margin": 0.15, "probeStep": 0.4, "searchPad": 6, "maxGrid": 90, "maxNodes": 6000, "repathInterval": 2, "goalMove": 1.2, "stuckRatio": 0.3, "stuckTime": 0.6, "sidestepTime": 0.5, "giveUp": 25 },
+  "render": {
+    "toon": { "steps": 3, "soft": 0.08, "top": 1.0 },
+    "outline": { "color": "#2e2118", "strength": 0.9, "thickness": 1.5, "fadeStart": 45, "fadeEnd": 90, "samples": 4 }
+  }
 }
