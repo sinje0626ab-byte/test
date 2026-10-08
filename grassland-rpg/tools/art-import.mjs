@@ -40,7 +40,12 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
   // 그림은 짙은 외곽선으로 둘러싸여 있어서 안쪽 흰 반짝임은 남는다 (흰 배경·흰 안개 배경 모두)
   const im = g.getImageData(0, 0, W, H);
   const a = im.data;
-  const bg = (i) => a[i * 4 + 3] < 20 || (Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) > 228);
+  // 배경 = 거의 투명 / 거의 흰색 / 반투명한 밝은 회색 안개(채도 낮음)
+  const bg = (i) => {
+    const r = a[i * 4]; const gg = a[i * 4 + 1]; const bb = a[i * 4 + 2]; const al = a[i * 4 + 3];
+    const lo = Math.min(r, gg, bb); const hi = Math.max(r, gg, bb);
+    return al < 20 || lo > 228 || (al < 140 && hi - lo < 25 && (r + gg + bb) / 3 > 150);
+  };
   const seen = new Uint8Array(W * H);
   const stack = [];
   for (let x = 0; x < W; x++) stack.push(x, (H - 1) * W + x);
