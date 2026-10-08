@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import { RaidMonster } from '../entities/RaidMonster.js';
 import { rand } from '../utils/random.js';
-import { turretDamage } from '../utils/build.js';
-import { raidProgress, raidStatScale, raidCount, pickWeighted, poolAverageHp, splitWaves, isBloodMoon } from '../utils/raid.js';
+import { turretInfo } from '../utils/build.js';
+import { raidProgress, raidStatScale, raidCount, pickWeighted, poolAverageHp, splitWaves, isBloodMoon, remoteFirepower } from '../utils/raid.js';
 import { josa } from '../utils/josa.js';
 
 // 밤 습격: 실시간(웨이브 3개) + 원격 계산. 5일마다 붉은 달.
+// 개발용: 주소에 ?debug=raid 이면 아침 원격 정산 때 기지별 계산 내역을 콘솔에.
+const DEBUG = typeof location !== 'undefined' && new URLSearchParams(location.search).get('debug') === 'raid';
+
 export class RaidSystem {
   constructor(ctx) {
     this.ctx = ctx;
@@ -110,17 +113,20 @@ export class RaidSystem {
     this.ctx.bus.emit('boss:engaged', { boss: m });
   }
 
-  // 원격 기지: 포탑 화력 × 시간 vs 습격 몬스터 체력 합
+  // 원격 기지: 포탑 실효 화력 × 시간 + 벽 vs 습격 몬스터 체력 합 (utils/raid.js remoteFirepower)
   resolveRemote(raid) {
     const c = this.cfg;
+    const { data } = this.ctx;
     const stats = this.ctx.player.stats;
     const turrets = this.ctx.structures.filter((s) => s.kind === 'turret' && s.baseId === raid.base.id && s.alive);
-    const dps = turrets.reduce((sum, t) => sum + turretDamage(t.def, stats, t.level) * t.def.fireRate * (t.def.aoeFactor ?? 1), 0);
-    const waveHp = raid.total * poolAverageHp(raid.base.region.raidPool, this.ctx.data.monsters) * raid.scale;
+    const list = turrets.map((t) => ({ id: t.type, level: t.level, info: turretInfo(t.def, stats, t.level), aoeFactor: t.def.aoeFactor ?? 1 }));
+    const fp = remoteFirepower(list, raid.base.region.raidPool, data.monsters, data.config);
+    const waveHp = raid.total * poolAverageHp(raid.base.region.raidPool, data.monsters) * raid.scale;
     // 벽 총 체력의 일부를 방어력에 더한다
     const wallHp = this.ctx.structures.filter((s) => s.kind === 'wall' && s.baseId === raid.base.id).reduce((a, w) => a + w.stats.hp, 0);
-    const defense = dps * c.remoteFightSeconds + wallHp * this.ctx.data.config.walls.remoteHpRatio;
+    const defense = fp.total * c.remoteFightSeconds + wallHp * data.config.walls.remoteHpRatio;
     const ratio = waveHp > 0 ? defense / waveHp : 1;
+    if (DEBUG) this.debugRemote(raid, fp, wallHp, waveHp, defense, ratio);
     raid.killed = Math.min(raid.total, Math.floor(raid.total * ratio));
     if (ratio >= 1) {
       raid.status = 'cleared';
@@ -136,6 +142,17 @@ export class RaidSystem {
       raid.status = 'failed';
       this.loseGoods(raid.base, `${josa(raid.base.label, '이/가')} 습격에 무너졌습니다!`);
     }
+  }
+
+  debugRemote(raid, fp, wallHp, waveHp, defense, ratio) {
+    const c = this.cfg;
+    console.groupCollapsed(`[raid] ${raid.base.label} ${raid.day}일차 원격: 비율 ${ratio.toFixed(2)}`);
+    console.table(fp.rows.map((r) => ({ 포탑: r.id, 레벨: r.level, '한 발': +r.hit.toFixed(1), 직격: +r.direct.toFixed(1), 독: +r.poison.toFixed(1) })));
+    console.table({
+      '초당 화력': +fp.total.toFixed(1), '서리 보너스': +fp.slowBonus.toFixed(1), '전투 시간': c.remoteFightSeconds, '벽 체력': wallHp,
+      '방어 합': Math.round(defense), '습격 마리': raid.total, '능력치 배율': +raid.scale.toFixed(2), '습격 체력': Math.round(waveHp), '비율': +ratio.toFixed(2),
+    });
+    console.groupEnd();
   }
 
   // 창고가 있으면 창고 재료를, 없으면 소지 골드 일부를 잃는다.

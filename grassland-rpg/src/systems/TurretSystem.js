@@ -37,6 +37,10 @@ export class TurretSystem {
     bus.on('ui:open', ({ id }) => { if (id === 'build') this.buildOpen = true; });
     bus.on('ui:close', ({ id }) => { if (id === 'build') this.buildOpen = false; });
     bus.on('turret:repair-all', ({ baseId, remote }) => this.repairAll(baseId, remote));
+    // 요새 아침 자동 수리: 습격 정산(raid:result) 뒤, 켜 둔 기지마다 (골드가 모자라면 가능한 만큼)
+    bus.on('raid:result', () => {
+      for (const b of ctx.bases) if (b.autoRepair && b.level >= ctx.data.config.base.autoRepairLevel) this.repairAll(b.id, false, b.label);
+    });
 
     bus.on('build:place', (e) => {
       if (e.kind !== 'turret') return;
@@ -139,7 +143,8 @@ export class TurretSystem {
   }
 
   // 한 기지 포탑 전체 수리: 수리비 적은 포탑부터, 골드가 모자라면 가능한 만큼. 원격이면 비용 배율
-  repairAll(baseId, remote) {
+  // auto = 아침 자동 수리하는 기지 이름 (알림 문구만 다름)
+  repairAll(baseId, remote, auto) {
     const list = repairList(this.ctx.structures, baseId, remote ? this.cfg.remoteRepairMultiplier : 1);
     if (!list.length) return;
     let n = 0;
@@ -154,6 +159,11 @@ export class TurretSystem {
       this.changed(turret);
     }
     const { bus } = this.ctx;
+    if (auto) {
+      if (!n) bus.emit('notify', { text: `${auto} 자동 수리: 골드가 부족해요 (${list[0].cost} 필요)`, kind: 'warn' });
+      else bus.emit('notify', { text: `${auto} 자동 수리: 포탑 ${n}/${list.length}개 (골드 ${paid})`, kind: n < list.length ? 'warn' : 'item' });
+      return;
+    }
     if (!n) bus.emit('notify', { text: `골드가 부족합니다 (${list[0].cost} 필요)`, kind: 'warn' });
     else if (n < list.length) bus.emit('notify', { text: `골드가 모자라 포탑 ${n}/${list.length}개만 수리했어요 (골드 ${paid})`, kind: 'warn' });
     else bus.emit('notify', { text: `포탑 ${n}개 ${remote ? '원격 ' : ''}수리 완료 (골드 ${paid})`, kind: 'item' });

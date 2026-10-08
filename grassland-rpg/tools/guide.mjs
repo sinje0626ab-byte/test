@@ -339,7 +339,7 @@ chapter('밤 습격', 'Night Raids', `
   ${box('습격 세기 공식', `<ul>
     <li>진행도 = max(기지 레벨, 플레이어 레벨 ÷ ${R.progressPerPlayerLevels}) + 처치해 본 보스 수</li>
     <li>날짜 배율 = min(날짜−1, ${R.dayEarlyCap}) × ${R.dayFactorEarly} + max(0, 날짜−${R.dayEarlyCap + 1}) × ${R.dayFactorLate}</li>
-    <li>능력치 배율 = (1 + 진행도 × ${R.statPerProgress} + 날짜 배율) × 지역 배율</li>
+    <li>능력치 배율 = (1 + 진행도 × ${R.statPerProgress} + 날짜 배율) × (1 + (지역 배율 − 1) × ${R.regionWeight})</li>
     <li>마릿수 = ${R.baseCount} + 진행도 × ${R.countPerProgress} + 지역 난이도 + min(날짜−1, ${R.countDayCap}) (최대 ${R.maxCount})</li></ul>`)}
   <h2>웨이브</h2>
   <p>습격은 웨이브 ${R.waves}개로 나눠 옵니다. 웨이브를 다 잡거나 ${R.waveTimeout}초가 지나면 ${R.waveRest}초 쉬고 다음 웨이브. 모두 막으면 아침에 보상 골드(${R.rewardBase} + 마리당 ${R.rewardPerMonster}).</p>
@@ -347,7 +347,7 @@ chapter('밤 습격', 'Night Raids', `
   <p>${R.bloodMoon.every}일마다(${R.bloodMoon.every}·${R.bloodMoon.every * 2}·${R.bloodMoon.every * 3}…) 하늘이 붉어집니다. 습격 몬스터의 ${pct(R.bloodMoon.eliteChance)}가 정예, 마지막 웨이브에 그 지역 보스의 그림자(HP ${pct(R.bloodMoon.bossHp)})가 오고, 막으면 보상 ×${R.bloodMoon.rewardMultiplier}.</p>
   ${shot('bloodmoon', '붉은 달의 습격')}
   <h2>원격 계산과 실패</h2>
-  <p>방어력 = 멀쩡한 포탑 초당 데미지 합 × ${R.remoteFightSeconds}초 (대포처럼 범위 포탑은 더 쳐 줌) + 벽 체력 합의 ${pct(C.walls.remoteHpRatio)}. 습격 체력보다 크면 방어 성공, ${pct(R.remotePartialRatio)} 이상이면 부분 피해(포탑이 깎임), 그 아래면 실패. 실패하면 그 기지 창고 재료의 ${pct(R.failStorageLossRatio)}를 잃고, 창고가 없으면 소지 골드의 ${pct(R.failGoldLossRatio)}를 잃습니다.</p>
+  <p>방어력 = 멀쩡한 포탑 실효 화력 합 × ${R.remoteFightSeconds}초 (실전 피해 공식 × 명중률 ${pct(R.remoteAccuracy)}, 2발·관통·대포 범위 반영, 독은 ${R.remotePoisonStacks}중첩, 서리는 다른 포탑 화력 × 감속 × ${R.remoteFrostBonus}) + 벽 체력 합의 ${pct(C.walls.remoteHpRatio)}. 습격 체력보다 크면 방어 성공, ${pct(R.remotePartialRatio)} 이상이면 부분 피해(포탑이 깎임), 그 아래면 실패. 실패하면 그 기지 창고 재료의 ${pct(R.failStorageLossRatio)}를 잃고, 창고가 없으면 소지 골드의 ${pct(R.failGoldLossRatio)}를 잃습니다.</p>
   ${tip('멀리 있는 기지도 포탑과 벽을 충분히 세워 두면 혼자서 버팁니다. 창고는 실패해도 일부만 잃어요.')}
 `);
 
