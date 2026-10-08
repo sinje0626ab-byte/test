@@ -8,6 +8,7 @@ export class LootSystem {
     this.ctx = ctx;
     this.cfg = ctx.data.config.loot;
     this.drops = [];
+    ctx.drops = this.drops; // 용병 채집가가 바닥 골드를 찾는다
     this.fullNotice = 0;
     ctx.bus.on('monster:killed', (e) => this.onKilled(e));
     ctx.bus.on('loot:spawn', ({ item, count, position }) => this.spawn(item, count, position));

@@ -29,7 +29,7 @@ export class BuildSystem {
 
   start({ kind, type, item }) {
     this.end();
-    if (kind === 'wall') return; // 벽은 WallSystem (드래그로 한 줄)
+    if (kind === 'wall') return; // 벽은 WallSystem (건설 창에서 사면 원형으로 쌓인다)
     const ghost = kind === 'tent' ? this.tentGhost()
       : kind === 'facility' ? createFacilityModel(this.ctx.data.buildings.buildings[type].model).group
         : Turret.createMesh(this.ctx.data.turrets[type]).group;

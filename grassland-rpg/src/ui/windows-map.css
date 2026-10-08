@@ -113,6 +113,8 @@
   background: radial-gradient(circle at 50% 92%, var(--a) 0 22%, var(--c) 24%); color: #fff; font-style: normal; font-weight: 800; font-size: 20px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
 }
+.dlg-face.painted { width: 76px; height: 76px; overflow: hidden; background: radial-gradient(circle at 50% 35%, #fffaf0, color-mix(in srgb, var(--c) 35%, #f6e7c8)); }
+.dlg-face.painted img { width: 112%; height: 112%; object-fit: cover; object-position: 50% 15%; }
 .dlg-text { margin: 4px 0 0; min-height: 3.2em; font-size: 15px; line-height: 1.6; white-space: pre-line; }
 .dlg-opts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin-top: 10px; }
 .dlg-opts[hidden] { display: none; }
@@ -192,3 +194,18 @@ button.bs-card:active { transform: translateY(1px); }
 .map-bases button[data-remote-repair] small { font-size: 11px; margin-left: 2px; }
 .tw-special { margin: -4px 0 10px; font-size: 12px; color: #6b5a3e; line-height: 1.5; }
 .tw-special i { display: block; font-style: normal; color: #6b8f5a; }
+
+/* 용병 탭 */
+.build-card.merc { cursor: default; }
+.build-card.merc.hired { border-color: #6aa85a; background: rgba(234, 245, 223, 0.7); }
+.build-card.merc .build-cost { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.merc-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; font-size: 13px; white-space: nowrap; }
+.merc-btn .coin { width: 14px; height: 14px; display: inline-block; }
+
+/* 성벽 카드: +1 · +5 · 가득 */
+.wall-ring-head { display: flex; flex-direction: column; padding: 6px 4px 2px; font-size: 13px; }
+.wall-ring-head small { color: #8a7f63; font-size: 11px; }
+.build-card.wall-card { cursor: default; }
+.wall-btns { display: grid !important; grid-template-columns: repeat(3, auto); gap: 4px; align-items: center; justify-items: stretch; }
+.wall-btns small { grid-column: 1 / -1; text-align: right; }
+.wall-buy { padding: 5px 7px; font-size: 12px; white-space: nowrap; }

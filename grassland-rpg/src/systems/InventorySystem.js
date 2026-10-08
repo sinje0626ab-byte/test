@@ -54,6 +54,7 @@ export class InventorySystem {
       this.changed();
     });
     bus.on('inventory:sort', () => this.sort());
+    bus.on('inventory:peek', (e) => { e.slots = this.slots; }); // 읽기 전용 (퀵슬롯)
     // 버리기: 그 칸에서 count 개를 없앤다 (되찾을 수 없음, 창에서 확인을 받고 부른다)
     bus.on('inventory:discard', ({ slot, count }) => this.discard(slot, count));
     // 새 아이템 점: 마우스를 올리거나 탭하면 지운다

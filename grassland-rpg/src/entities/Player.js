@@ -111,7 +111,7 @@ export class Player {
   applySave(p) {
     if (!p) return;
     this.position.set(p.position[0], 0, p.position[1]);
-    this.ctx.world.resolveCollision(this.position, this.radius);
+    this.ctx.world.resolveCollision(this.position, this.radius); this.ctx.world.resolveStructures(this.position, this.radius);
     this.loadedVitals = { hp: p.hp, stamina: p.stamina };
     this.setAppearance(p.appearance ?? {});
   }
@@ -161,7 +161,7 @@ export class Player {
     this.position.addScaledVector(this.velocity, dt);
     this.position.addScaledVector(this.knock, dt);
     this.knock.multiplyScalar(Math.exp(-10 * dt));
-    this.ctx.world.resolveCollision(this.position, this.radius);
+    this.ctx.world.resolveCollision(this.position, this.radius); this.ctx.world.resolveStructures(this.position, this.radius);
 
     if (moving && !this.attack.swinging) this.facing.copy(dir);
     if (moving) this.walkPhase += dt * speed * 2.2;

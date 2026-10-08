@@ -255,7 +255,7 @@
   "walls": {
     "wall": {
       "name": "나무 울타리",
-      "description": "1칸 벽. 몬스터 길을 막아 포탑 앞으로 유도한다. 드래그로 여러 칸.",
+      "description": "사면 기지 둘레에 원을 따라 한 칸씩 쌓인다. 몬스터를 남쪽 입구로 몰아 준다.",
       "unlockBaseLevel": 1,
       "cost": [
         {
@@ -269,7 +269,7 @@
     },
     "stone_wall": {
       "name": "돌담",
-      "description": "튼튼한 벽. 나무 울타리 위에 지으면 바꿔 끼운다.",
+      "description": "튼튼한 벽. 사면 나무 울타리부터 바꿔 끼우고, 빈 자리에도 쌓인다.",
       "unlockBaseLevel": 3,
       "cost": [
         {

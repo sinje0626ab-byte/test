@@ -60,7 +60,7 @@ export class Npc {
         } else {
           d.normalize();
           this.position.addScaledVector(d, this.cfg.speed * dt);
-          this.ctx.world.resolveCollision(this.position, this.radius);
+          this.ctx.world.resolveCollision(this.position, this.radius); this.ctx.world.resolveStructures(this.position, this.radius);
           this.mesh.rotation.y = Math.atan2(d.x, d.z);
           moving = true;
         }

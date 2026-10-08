@@ -1,4 +1,6 @@
-// 대화 창: 화면 아래 양피지 판 + 금색 리본 이름 + 주민 얼굴(색 동그라미·이름 첫 글자), 글자는 타자기처럼.
+import { PAINTED } from './painted.js';
+
+// 대화 창: 화면 아래 양피지 판 + 금색 리본 이름 + 주민 얼굴(그린 초상화, 없으면 색 동그라미·이름 첫 글자), 글자는 타자기처럼.
 // 다 나오면 ▼ 가 깜빡이고 선택지가 뜬다.
 // 누르면 바로 전체 표시. 다 나오면 선택지 (선택지는 event를 보내고 창을 닫는다, stay면 안 닫음)
 export class DialogueWindow {
@@ -35,10 +37,11 @@ export class DialogueWindow {
     this.shown = 0;
     this.done = false;
     const d = talk.npc.def;
+    const pic = PAINTED.portraits[`npc_${talk.npc.id}`];
     this.win.el.querySelector('.win-head h2').textContent = `${d.name} · ${d.animal}`;
     this.body.innerHTML = `
       <div class="dlg">
-        <i class="dlg-face" style="--c:${d.color};--a:${d.accent}">${d.name[0]}</i>
+        ${pic ? `<i class="dlg-face painted" style="--c:${d.color};--a:${d.accent}"><img src="${pic}" alt=""></i>` : `<i class="dlg-face" style="--c:${d.color};--a:${d.accent}">${d.name[0]}</i>`}
         <p class="dlg-text"></p>
         <i class="dlg-next" hidden>▼</i>
       </div>

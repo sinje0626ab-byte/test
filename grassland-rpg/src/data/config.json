@@ -1,5 +1,6 @@
 {
   "world": {
+    "structureCollide": 0.9,
     "seed": 20260924,
     "spawnPoint": [
       0,
@@ -207,6 +208,7 @@
     "leafHeight": 1.0
   },
   "activeSkills": {
+    "holdMs": 450,
     "keys": [
       "KeyQ",
       "KeyR"
@@ -262,7 +264,7 @@
     ]
   },
   "walls": {
-    "maxPerBase": 40,
+    "ringInset": 1.2, "segment": 1.0, "gateSlots": 3,
     "remoteHpRatio": 0.3,
     "collideRadius": 0.5,
     "repathInterval": 1,
@@ -506,5 +508,17 @@
   },
   "tombstone": {
     "ratio": 0.5
+  },
+  "mercenary": {
+    "cost": 2000,
+    "speed": 3.4,
+    "gatherer": { "capacity": 100, "searchRadius": 70, "pickRange": 0.9, "idleOutside": 4, "returnAfter": 4 },
+    "warrior": { "attackRatio": 0.2, "range": 1.6, "cooldown": 0.9 },
+    "repairer": { "perSecond": 1.0, "range": 1.2 },
+    "roles": {
+      "gatherer": { "name": "채집가", "short": "기지 밖 바닥 골드를 주워 금고에 모아요", "desc": "기지 밖으로 나가 몬스터가 떨군 골드를 주워 와요. 한 번에 100골드까지 들고, 금고에 넣으면 다시 나가요." },
+      "warrior": { "name": "전사", "short": "기지 안에 들어온 적과 싸워요", "desc": "기지 영역 안에서만 다니며 들어온 몬스터와 싸워요. 공격력은 내 공격력의 20%, 쓰러지지 않아요." },
+      "repairer": { "name": "수리공", "short": "다친 건물을 천천히 고쳐요", "desc": "기지 안의 다친 포탑·건물을 아주 천천히 무료로 고쳐요. 부서진 포탑도 다시 세워요." }
+    }
   }
 }

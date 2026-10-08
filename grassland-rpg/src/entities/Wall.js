@@ -3,17 +3,21 @@ import { HpBar } from './HpBar.js';
 
 const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.9 });
 
-// 1칸(1m) 벽: 나무 울타리 / 돌담. 부서지면 사라진다 (WallSystem). 몬스터만 막는다.
+// 성벽 한 칸(1m): 나무 울타리 / 돌담. 기지 둘레 원의 한 자리(slot, utils/wallRing.js)에 원을 따라 돌려 놓는다.
+// 몬스터 충돌·길찾기는 그 자리의 격자 칸들(cells). 부서지면 사라진다 (WallSystem). 몬스터만 막는다.
+// slot 없이 (cx, cz) 만 주면 예전처럼 그 격자 한 칸 (가이드 그림용)
 export class Wall {
-  constructor(ctx, type, baseId, cx, cz, hp) {
+  constructor(ctx, type, baseId, cx, cz, hp, slot = null) {
     this.ctx = ctx;
     this.kind = 'wall';
     this.type = type;
     this.def = ctx.data.buildings.walls[type];
     this.baseId = baseId;
-    this.cx = cx;
-    this.cz = cz;
-    this.position = new THREE.Vector3(cx + 0.5, 0, cz + 0.5);
+    this.slot = slot?.k ?? null;
+    this.cells = slot ? slot.cells : [[cx, cz]];
+    [this.cx, this.cz] = this.cells[0] ?? [cx, cz];
+    this.position = slot ? new THREE.Vector3(slot.x, 0, slot.z) : new THREE.Vector3(cx + 0.5, 0, cz + 0.5);
+    this.rot = slot?.rot ?? 0;
     this.radius = 0.5;
     this.stats = { maxHp: this.def.hp, hp: Math.min(this.def.hp, hp ?? this.def.hp) };
     this.alive = true;
@@ -49,6 +53,7 @@ export class Wall {
     this.hpBar.group.position.y = 1.5;
     g.add(this.hpBar.group);
     g.position.copy(this.position);
+    g.rotation.y = this.rot;
     this.mesh = g;
     this.ctx.scene.add(g);
   }

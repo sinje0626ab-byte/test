@@ -10,6 +10,7 @@ export class EquipmentSystem {
     const { bus } = ctx;
 
     bus.on('item:equip', ({ item, slot, plus }) => this.equip(item, slot, plus));
+    bus.on('equipment:peek', (e) => { e.slots = this.slots; }); // 읽기 전용 (퀵슬롯)
     bus.on('equipment:unequip', ({ slot }) => this.unequip(slot));
     // 대장간 강화
     bus.on('equipment:set-plus', ({ slot, plus }) => {
