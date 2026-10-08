@@ -229,6 +229,7 @@ src/
     quests.json        # 메인 퀘스트 8단계
     bounties.json      # 현상금 의뢰 템플릿
     models.json        # 3D 모델 목록 (원본·키·색 바꾸기·지울 소품·동작 이름)
+  music/               # 배경음 곡 파일 *.mp3 (title·grassland·forest·night·village …, 4-1-3)
   models/              # *.glb (tools/model-import.mjs 가 만든다, CC0, CREDITS.md)
 ```
 
@@ -263,6 +264,11 @@ src/
 - 같은 효과음은 한 프레임에 1번만, 동시 재생 최대 `maxVoices`, 플레이어에서 `maxDistance` m 넘으면 무음 (가까울수록 크게)
 - 배경음: 펜타토닉 음계를 느린 템포로 합성하는 루프. 지역·낮밤마다 조성·음높이·템포가 다르고(초원 낮 = 밝은 장조, 밤 = 단조·저음), 습격 중엔 북 리듬, 보스전은 빠른 템포
 - 브라우저 정책상 첫 클릭/터치(타이틀 화면) 때 AudioContext를 시작한다
+- **곡 파일**(`src/music/<이름>.mp3`, Suno 로 만든 곡): 그 상황의 곡이 있으면 합성 음악 대신 튼다 (`MusicSystem`). 고르는 순서: 타이틀 `title` · 엔딩 `ending` · 밤의 군주 `nightlord` · 보스전 `boss` · 습격 `raid` · 기지 생활 창(상점·대장간·작업대·창고·텃밭·택배) `village` · 밤 `night` · 낮에 기지 영역 안 `village` · 그 밖엔 지역 이름(`grassland`·`forest`·`desert`·`snow`)
+  - 지금 있는 곡: title(Map of Wonders) · grassland(Sunny Meadow Play) · forest(Mossy Path) · night(Campfire Lullaby) · village(Morning in the Village). 없는 곡은 예전 합성 음악
+  - 바꿀 땐 1.5초 크로스페이드, 같은 곡을 2초 동안 원해야 바꾼다(기지 경계 들락날락 방지, 오디오 시계로 잰다). 보스·습격·타이틀·엔딩은 바로. 곡마다 듣던 자리를 기억해 이어서 튼다. 반복 재생
+  - 볼륨은 Web Audio(`createMediaElementSource` → 곡별 gain → musicBus)로 (iOS 는 audio.volume 을 무시). 합성 음악은 `synthOut` gain 을 거쳐 곡을 틀 때 0으로. 탭을 숨기면 곡도 멈춘다
+  - 새 곡을 넣으려면 파일만 `src/music/` 에 같은 이름으로 넣으면 된다
 
 ### 4-1-4. 채집 (Phase 8)
 - 채집 노드는 장식과 따로, 시드 난수로 자리가 고정된다 (`nodes.json`의 `density`, 지역별 1000㎡당 개수)
