@@ -125,6 +125,7 @@
     "lore": "밤이면 보랏빛으로 물드는 슬라임."
   },
   "mushroom": {
+    "model": "mushroom",
     "name": "숲 버섯",
     "hp": 46,
     "attack": 10,
@@ -185,6 +186,7 @@
     "lore": "숲 그늘에서 자라는 성미 급한 버섯."
   },
   "night_mushroom": {
+    "model": "night_mushroom",
     "name": "밤 버섯",
     "hp": 56,
     "attack": 11,
@@ -287,6 +289,7 @@
     "lore": "모래알을 삼켜 까끌까끌해진 슬라임."
   },
   "cactus": {
+    "model": "cactus",
     "name": "선인장 몬스터",
     "hp": 42,
     "attack": 9,
@@ -342,6 +345,7 @@
     "lore": "가시를 세우고 다가오는 선인장."
   },
   "night_cactus": {
+    "model": "night_cactus",
     "name": "밤 선인장",
     "hp": 48,
     "attack": 10,
@@ -528,6 +532,7 @@
     "lore": "밤하늘 빛을 머금은 골렘."
   },
   "cactus_king": {
+    "model": "cactus_king",
     "name": "선인장왕",
     "hp": 900,
     "attack": 18,
@@ -649,6 +654,7 @@
     "lore": "설원 끝의 거인. 얼음덩이를 던진다."
   },
   "bee": {
+    "model": "bee",
     "name": "붕붕벌",
     "hp": 18,
     "attack": 6,
@@ -701,6 +707,7 @@
     "lore": "붕붕 날아와 콕 쏘고 달아난다."
   },
   "horn_rabbit": {
+    "model": "horn_rabbit",
     "name": "뿔토끼",
     "hp": 40,
     "attack": 11,
@@ -797,6 +804,7 @@
     "lore": "큰 슬라임은 쓰러지면 작은 슬라임 둘이 된다."
   },
   "spore_puff": {
+    "model": "spore_puff",
     "name": "포자 버섯",
     "hp": 36,
     "attack": 7,
@@ -855,6 +863,7 @@
     "lore": "멀리서 독 포자를 뿜는 버섯."
   },
   "thorn_wolf": {
+    "model": "thorn_wolf",
     "name": "가시 늑대",
     "hp": 38,
     "attack": 10,
@@ -1166,6 +1175,7 @@
     "lore": "얼음탄을 쏘는 눈꽃 요정. 맞으면 느려진다."
   },
   "yeti_cub": {
+    "model": "yeti_cub",
     "name": "설인 새끼",
     "hp": 55,
     "attack": 13,

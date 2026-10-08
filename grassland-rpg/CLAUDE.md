@@ -30,7 +30,7 @@
 
 - **빌드**: Vite
 - **언어**: JavaScript (ES Modules)
-- **3D**: three.js (로우폴리, 기본 도형 위주, 외부 모델은 나중에)
+- **3D**: three.js (로우폴리, 기본 도형 위주 + 일부 몬스터는 뼈대·동작이 있는 외부 모델 `.glb`, 4-14 '3D 모델')
 - **UI**: HTML/CSS 오버레이 (캔버스 위에 DOM으로 창 띄우기)
 - **저장**: localStorage (JSON 직렬화, 세이브 버전 필드 포함)
 - **배포**: `vite build` → 결과물을 GitHub Pages에 배포 (`vite.config.js`에 base 경로 설정)
@@ -71,6 +71,7 @@ src/
     Settings.js        # 설정 (세이브와 별도 localStorage)
     toon.js            # 툰 명암 (ShaderChunk 고침, main.js 에서 한 번)
     OutlinePass.js     # 툰 외곽선 (물체 번호 그림 + 깊이)
+    Models.js          # 3D 모델(.glb) 미리 읽기·복제(뼈대 포함)·동작 재생기(Animator)
     Synth.js           # Web Audio 합성 (효과음·악기)
     Time.js            # 게임 내 시간, 낮/밤
   world/
@@ -227,6 +228,8 @@ src/
     dialogues.json     # 주민 대사 (인사·상황별: 졸음·습격 전·보스 처치 후·레벨업 직후·비)
     quests.json        # 메인 퀘스트 8단계
     bounties.json      # 현상금 의뢰 템플릿
+    models.json        # 3D 모델 목록 (원본·키·색 바꾸기·지울 소품·동작 이름)
+  models/              # *.glb (tools/model-import.mjs 가 만든다, CC0, CREDITS.md)
 ```
 
 파일은 필요해지는 Phase에서 만든다. 아직 없는 파일은 해당 Phase 전까지 만들지 않는다.
@@ -407,6 +410,12 @@ src/
 - **도감 사진**(`ui/monsterPortrait.js`): 실제 몬스터 모델을 작은 전용 렌더러로 찍어 dataURL 로 기억. 못 만난 몬스터는 그림자. 도감 칸을 누르면 큰 사진·설명·처치 수·능력치 상세 화면
 - **모바일 배치**(`ui/mobile.css`, polish 다음에 읽음, `body.touch` 전용): 세로(≤600px)·아주 좁음(≤370px)·가로(높이 ≤500px) 세 경우로 HUD·☰·알림·창 크기를 정한다. 스킬 포인트는 `✦ +N` 만(`.sp-long` 숨김), 창은 화면 폭에 맞춘 세로 열 + 본문 스크롤, 스킬 창은 한 쪽 안 2열(가로 3열) + 아래 고정 확인 바. `.window[hidden]` 은 반드시 `display:none` 을 다시 적어 둔다 (flex 가 hidden 을 덮는다).
 - **툰 렌더**(`config.render`): `core/toon.js` 가 Standard·Lambert 재질의 직사광 명암을 `toon.steps` 단계로 끊는다(경계는 `soft` 로 살짝 흐림, 그늘색·그림자는 그대로). `main.js` 에서 `new Game` 전에 한 번 부른다. `core/OutlinePass.js` 는 장면을 MSAA 그림판(색+깊이)에 그리고, 같은 장면을 물체 번호 색(`Object3D.id` 해시, `scene.overrideMaterial`)으로 한 번 더 그려 이웃 번호가 다르고 내가 더 가까운 곳에 짙은 갈색 선(`outline.color`)을 긋는다. 멀어지면 옅게(`fadeStart~fadeEnd`). 스프라이트·입자·선·투명 재질은 선 없음, `userData.outline === false` 인 메시(땅·꽃·풀포기)는 번호 0. 설정 '외곽선'(`outline`)으로 끌 수 있다. 새 메시도 자동으로 선이 생기므로 따로 할 일은 없다 (선이 필요 없으면 `userData.outline = false`)
+- **3D 모델**(`core/Models.js`, `data/models.json`, `src/models/*.glb`): 생김새가 닮은 몬스터만 무료(CC0) 모델로 바꾼다 — 숲 버섯·밤 버섯·포자 버섯·선인장·밤 선인장·선인장왕·붕붕벌·뿔토끼·설인 새끼(Quaternius Ultimate Monsters), 가시 늑대(Ultimate Animated Animals). 나머지 몬스터·플레이어·주민·용병은 코드 모양 그대로(움직임만 다듬는다)
+  - 만들기: `node tools/model-import.mjs <원본 폴더> [id...]` — 원본 glTF 에서 아틀라스 칸 색 바꾸기(`recolor`, 눈은 공통 `eyes`)·재질 색(`materials`)·맞지 않는 소품 지우기(`remove`: 그 색이 반 넘는 붙은 조각째, 선인장 솜브레로)·쓰는 동작만 남기고 게임 이름으로(`clips`: idle·walk·run·attack·attack2·hit·death)·양자화 → `src/models/<id>.glb`. 원본 폴더 안 `um/`(Ultimate Monsters 의 Big·Blob·Flying)·`animals/`
+  - 게임: `main.js` 가 `loadModels()` 를 기다린 뒤 시작(못 읽은 모델은 코드 모양으로). 키 `height` 에 맞추고 발을 y=0, 앞은 +Z. `monsters.json` 의 `model` 이 있으면 `createMonsterModel` 이 복제본(재질도 복제, 모양 조각은 같이 쓰니 `userData.shared` 는 버리지 않는다)과 `animator` 를 돌려준다
+  - 동작(`Monster.animateModel`): 이동 walk(빠르면 run, 속도에 맞춰 재생 빠르기) · 서 있으면 idle · 공격·포자 쏘기·보스 패턴은 attack(보스는 attack2 와 번갈아)을 예비동작 시간에 맞춰 가운데쯤이 타격이 되게 · 맞으면 hit · 죽으면 death 를 다 보여 주고 0.5초 동안 흐려진다. 힘 모으기·부풀기·기절 흔들림 같은 행동 연출은 몸 크기로 그대로 얹는다
+  - 외곽선: 몬스터 재질은 사라짐 연출 때문에 transparent 지만 투명도 1이면 선을 그린다 (`depthTest:false` 인 체력바는 선 없음)
+  - 가이드 그림(`tools/render.js`)은 `window.modelsReady` 뒤에 `renderAll()`
 - **이펙트**: 파티클 조각 + 바닥 고리·반짝 별(`FxPool`). 타격 = 작은 별, 치명타 = 금빛 별+고리, 처치 = 몬스터 색 고리, 폭발 = 주황 고리(서리 포탑은 하늘색), 레벨업 = 금빛 고리+빛기둥, 보스 등장 = 두 겹 고리. 색은 몬스터 모델과 같은 차분한 색
 
 ### 4-3. 아이템

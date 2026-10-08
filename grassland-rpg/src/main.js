@@ -27,16 +27,20 @@ import quests from './data/quests.json';
 import bounties from './data/bounties.json';
 import { Game } from './core/Game.js';
 import { installToonShading } from './core/toon.js';
+import { loadModels } from './core/Models.js';
 
 // 툰 명암은 재질이 처음 그려지기 전에 (셰이더 조각을 고친다)
 installToonShading(config.render.toon);
 
-const game = new Game({
-  container: document.getElementById('app'),
-  uiRoot: document.getElementById('ui'),
-  data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds, nodes, weapons, npcs, dialogues, quests, bounties },
-});
-game.start();
+// 3D 모델(.glb)을 다 읽은 뒤 시작한다 (몬스터가 모델을 바로 복제할 수 있게). 못 읽은 모델은 예전 모양으로
+loadModels().finally(() => {
+  const game = new Game({
+    container: document.getElementById('app'),
+    uiRoot: document.getElementById('ui'),
+    data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds, nodes, weapons, npcs, dialogues, quests, bounties },
+  });
+  game.start();
 
-// 개발 중 콘솔에서 상태 확인용
-if (import.meta.env.DEV) window.game = game;
+  // 개발 중 콘솔에서 상태 확인용
+  if (import.meta.env.DEV) window.game = game;
+});

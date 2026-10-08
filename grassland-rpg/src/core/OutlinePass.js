@@ -4,7 +4,7 @@ import * as THREE from 'three';
 // 1) 장면을 그림판(렌더 타깃, MSAA)에 그린다 — 색 + 깊이
 // 2) 같은 장면을 '물체 번호 색'으로 한 번 더 그린다 (scene.overrideMaterial, 그림자·하늘 없이)
 //    각 메시는 Object3D.id 를 색으로 바꿔 칠한다. 땅·풀·꽃(userData.outline === false)은 0번
-//    투명한 것(입자·체력바·이름표·스프라이트)은 이 그림에서 빼서 선이 생기지 않게 한다
+//    비치는 것(입자·체력바·이름표·스프라이트, 투명도 < 0.98 또는 더하기 섞기)은 이 그림에서 빼서 선이 생기지 않게 한다
 // 3) 이웃 픽셀과 번호가 다르고 내가 더 가까우면(깊이) 그 자리에 선. 멀어질수록 옅게(fadeStart~fadeEnd m)
 // 위에서 내려다보는 카메라라 깊이만으로는 땅 위 물체 옆면 윤곽이 잡히지 않아서 번호 그림을 쓴다.
 const VERT = `
@@ -77,8 +77,9 @@ const tmp = new THREE.Color();
 // 모든 물체 공통: 번호 그림 중이면 이 물체의 번호 색을 재질에 넣는다
 THREE.Object3D.prototype.onBeforeRender = function (renderer, scene, camera, geometry, material) {
   if (!idPass || material !== idPass) return;
-  const own = this.material;
-  const hide = this.isSprite || this.isPoints || this.isLine || (own && (Array.isArray(own) ? own[0] : own).transparent);
+  const own = this.material && (Array.isArray(this.material) ? this.material[0] : this.material);
+  // 실제로 비치는 것만 뺀다 (몬스터 재질은 사라짐 연출 때문에 transparent 이지만 평소엔 불투명)
+  const hide = this.isSprite || this.isPoints || this.isLine || (own && (own.depthTest === false || (own.transparent && (own.opacity < 0.98 || own.blending !== THREE.NormalBlending))));
   material.uniforms.skip.value = hide ? 1 : 0;
   if (!hide) {
     const n = this.userData.outline === false ? 0 : this.id;

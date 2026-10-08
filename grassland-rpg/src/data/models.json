@@ -1,0 +1,230 @@
+{
+  "_doc": "3D 모델(.glb, src/models). tools/model-import.mjs 가 src(원본 glTF, CC0)를 읽어 색을 바꾸고 필요한 동작만 남겨 만든다. height = 게임 속 키(m), clips = 게임 동작 → 원본 동작 이름. monsters.json 의 model 로 고른다",
+  "sources": {
+    "um": "Quaternius Ultimate Monsters (CC0) https://quaternius.com/packs/ultimatemonsters.html",
+    "animals": "Quaternius Ultimate Animated Animals (CC0) https://quaternius.com/packs/ultimateanimatedanimals.html"
+  },
+  "eyes": [
+    "#8f92a0",
+    "#f4f2ee"
+  ],
+  "models": {
+    "mushroom": {
+      "src": "um/Blob/glTF/Mushnub.gltf",
+      "height": 1.15,
+      "recolor": [
+        [
+          "#2a6f8b",
+          "#c8473c"
+        ],
+        [
+          "#a58c72",
+          "#efe0c4"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "attack": "Bite_Front",
+        "hit": "HitRecieve",
+        "death": "Death"
+      }
+    },
+    "night_mushroom": {
+      "src": "um/Blob/glTF/Mushnub_Evolved.gltf",
+      "height": 1.35,
+      "recolor": [
+        [
+          "#2a6f8b",
+          "#6a4fa8"
+        ],
+        [
+          "#cc9129",
+          "#e9e2f7"
+        ],
+        [
+          "#a58c72",
+          "#d9cdb8"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "attack": "Bite_Front",
+        "hit": "HitRecieve",
+        "death": "Death"
+      }
+    },
+    "spore_puff": {
+      "src": "um/Blob/glTF/Mushnub.gltf",
+      "height": 1.1,
+      "recolor": [
+        [
+          "#2a6f8b",
+          "#9a63c9"
+        ],
+        [
+          "#a58c72",
+          "#efe0c4"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "attack": "Bite_Front",
+        "hit": "HitRecieve",
+        "death": "Death"
+      }
+    },
+    "cactus": {
+      "src": "um/Blob/glTF/Cactoro.gltf",
+      "height": 1.25,
+      "recolor": [
+        [
+          "#5d8132",
+          "#5f9a3e"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "attack": "Bite_Front",
+        "hit": "HitRecieve",
+        "death": "Death"
+      },
+      "remove": [
+        "#9e632a",
+        "#721923"
+      ]
+    },
+    "night_cactus": {
+      "src": "um/Blob/glTF/Cactoro.gltf",
+      "height": 1.35,
+      "recolor": [
+        [
+          "#5d8132",
+          "#3f6a4a"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "attack": "Bite_Front",
+        "hit": "HitRecieve",
+        "death": "Death"
+      },
+      "remove": [
+        "#9e632a",
+        "#721923"
+      ]
+    },
+    "cactus_king": {
+      "src": "um/Big/glTF/Cactoro.gltf",
+      "height": 3.6,
+      "recolor": [
+        [
+          "#5d8132",
+          "#5f9a3e"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "run": "Run",
+        "attack": "Punch",
+        "attack2": "Weapon",
+        "hit": "HitReact",
+        "death": "Death"
+      },
+      "remove": [
+        "#9e632a",
+        "#721923"
+      ]
+    },
+    "bee": {
+      "src": "um/Flying/glTF/Armabee.gltf",
+      "height": 0.9,
+      "fly": true,
+      "recolor": [
+        [
+          "#a5831c",
+          "#f0c23c"
+        ],
+        [
+          "#818181",
+          "#e8eef2"
+        ]
+      ],
+      "clips": {
+        "idle": "Flying_Idle",
+        "walk": "Fast_Flying",
+        "attack": "Headbutt",
+        "hit": "HitReact",
+        "death": "Death"
+      }
+    },
+    "horn_rabbit": {
+      "src": "um/Big/glTF/Bunny.gltf",
+      "height": 1.25,
+      "recolor": [
+        [
+          "#afbbb0",
+          "#f1eee6"
+        ],
+        [
+          "#98719b",
+          "#f0b9c4"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "run": "Run",
+        "attack": "Punch",
+        "hit": "HitReact",
+        "death": "Death"
+      }
+    },
+    "yeti_cub": {
+      "src": "um/Blob/glTF/Yeti.gltf",
+      "height": 1.3,
+      "recolor": [
+        [
+          "#477d8d",
+          "#eef2f5"
+        ],
+        [
+          "#c2a586",
+          "#b9d7e6"
+        ],
+        [
+          "#a2a3a1",
+          "#ffffff"
+        ]
+      ],
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "attack": "Bite_Front",
+        "hit": "HitRecieve",
+        "death": "Death"
+      }
+    },
+    "thorn_wolf": {
+      "src": "animals/Wolf.gltf",
+      "height": 1.15,
+      "materials": {
+        "Main": "#4f7a3a",
+        "Main_Light": "#a3bf7e"
+      },
+      "clips": {
+        "idle": "Idle",
+        "walk": "Walk",
+        "run": "Gallop",
+        "attack": "Attack",
+        "hit": "Idle_HitReact1",
+        "death": "Death"
+      }
+    }
+  }
+}

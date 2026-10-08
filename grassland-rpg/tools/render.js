@@ -9,6 +9,7 @@ import turrets from '../src/data/turrets.json';
 import nodes from '../src/data/nodes.json';
 import npcs from '../src/data/npcs.json';
 import { createMonsterModel } from '../src/entities/MonsterModel.js';
+import { loadModels } from '../src/core/Models.js';
 import { nightLook } from '../src/entities/monsterKit.js';
 import { createNpcModel } from '../src/entities/NpcModel.js';
 import { createPlayerModel, applyAppearance, createWeaponMesh } from '../src/entities/PlayerModel.js';
@@ -65,12 +66,16 @@ function snap(obj, { yaw = 0.55, pitch = 0.42, pad = 1.15, ground = true } = {})
 const fakeScene = { add() {}, remove() {} };
 const fakeCtx = { data: { buildings }, scene: fakeScene, camera: new THREE.PerspectiveCamera() };
 
+// 3D 모델(.glb)을 먼저 읽는다 → 다 읽으면 window.modelsReady
+loadModels().finally(() => { window.modelsReady = true; });
+
 window.renderAll = () => {
   const out = {};
   // 몬스터
   for (const [id, def] of Object.entries(monsters)) {
     const model = createMonsterModel(def, id);
     const { body } = model;
+    if (model.animator) { model.animator.play('idle'); model.animator.update(0.4); } // 뼈대 모델은 선 자세로
     // 밤 몬스터(night_*)는 게임처럼 항상 밤 모습 (빛나는 눈·빛 조각)
     if (window.nightRender || id.startsWith('night_')) body.add(nightLook(model, def.radius, id.startsWith('night')));
     const g = new THREE.Group();
