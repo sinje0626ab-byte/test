@@ -742,9 +742,21 @@ function backplate(b, grade) {
   return s;
 }
 
+// 새로 그린 그림(src/art/items/<id>.webp, tools/art-import.mjs)이 있으면 SVG 대신 그 그림.
+// 노드 도구(가이드·카탈로그)에선 import.meta.env 가 없으므로 늘 SVG
+const PAINTED = import.meta.env
+  ? Object.fromEntries(Object.entries(import.meta.glob('../art/items/*.{webp,png}', { eager: true, query: '?url', import: 'default' }))
+    .map(([f, url]) => [f.split('/').pop().replace(/\.\w+$/, ''), url]))
+  : {};
+
 // 아이콘 SVG 문자열. 아트가 없는 아이템은 재질 보석 모양.
 export function itemArt(id, def, cls = 'item-svg') {
   const b = new Brush();
+  if (PAINTED[id]) {
+    // 등급 받침(backplate)은 그대로 두고 그림만 바꾼다. 크기·CSS 는 SVG 그대로
+    const back = backplate(b, def?.grade);
+    return `<svg class="${cls} painted" data-grade="${def?.grade ?? 'common'}" viewBox="0 0 48 48" aria-hidden="true"><defs>${b.defs.join('')}</defs>${back}<image href="${PAINTED[id]}" x="1" y="1" width="46" height="46"/></svg>`;
+  }
   const draw = ART[id];
   const body = draw ? draw(b) : shadow(40, 10) + P('M24 8l12 14-12 16-12-16z', b.f(def?.color ?? M.stone)) + hl('M18 20l5-7', 0.7);
   const back = backplate(b, def?.grade);
