@@ -94,13 +94,14 @@ export class Monster {
     for (const m of this.extraMats) m.opacity = o;
   }
 
-  // 밤에 태어난 몬스터·날짜가 지난 습격 몬스터를 강하게 만든다.
-  scaleStats(mult) {
+  // 지역(필드 배율)·밤·날짜가 지난 습격으로 강하게 만든다. 체력과 공격 배율을 따로 줄 수 있다
+  scaleStats(mult, attackMult = mult) {
     const s = this.stats;
     s.maxHp = Math.round(s.maxHp * mult);
     s.hp = s.maxHp;
-    s.attack = Math.round(s.attack * mult);
+    s.attack = Math.round(s.attack * attackMult);
     this.statMult = (this.statMult ?? 1) * mult; // 분열한 조각도 같은 세기로
+    this.attackMult = (this.attackMult ?? 1) * attackMult;
   }
 
   setState(state) {

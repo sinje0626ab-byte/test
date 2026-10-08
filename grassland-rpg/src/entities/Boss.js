@@ -25,8 +25,14 @@ export class Boss extends Monster {
     this.sceneMarks = [];
     this.hpBar.group.visible = false;
     // 패턴마다 따로 쿨다운 (처음엔 조금씩 어긋나게)
-    this.patterns = (opts.patterns ?? def.patterns).map((p, i) => ({ ...p, cd: 1.2 + i * 1.3 }));
+    // 패턴 피해는 보스마다 damageMult 배 (bosses.json · config.nightLord, 플레이어 성장에 맞춘 세기)
+    this.dmgMult = def.damageMult ?? 1;
+    this.patterns = (opts.patterns ?? def.patterns).map((p, i) => this.scaled(p, 1.2 + i * 1.3));
     this.setState(this.part ? 'chase' : 'idle');
+  }
+
+  scaled(p, cd) {
+    return p.damage == null ? { ...p, cd } : { ...p, cd, damage: Math.round(p.damage * this.dmgMult) };
   }
 
   setEngaged(on) {
@@ -129,7 +135,7 @@ export class Boss extends Monster {
       this.phaseDone ??= new Set();
       if (this.phaseDone.has(i) || ratio > ph.at) return;
       this.phaseDone.add(i);
-      ph.add.forEach((p, j) => this.patterns.push({ ...p, cd: 1 + j * 1.5 }));
+      ph.add.forEach((p, j) => this.patterns.push(this.scaled(p, 1 + j * 1.5)));
       this.ctx.bus.emit('notify', { text: ph.text, kind: 'warn' });
       this.ctx.bus.emit('boss:phase', { boss: this, phase: i + 2 });
     });

@@ -13,21 +13,26 @@ export class MonsterSpawner {
     ctx.bus.on('monster:spawn', (e) => this.spawnAt(e));
   }
 
-  // 지역 배율 × 밤 배율
+  // 필드 몬스터 세기: 지역 field 배율(체력·공격 따로, 없으면 statMultiplier) × 밤 배율. reward 는 경험치·골드 배율
+  // (지역 statMultiplier 는 습격 공식이 쓰므로 그대로 두고, 필드만 field 로 차등을 크게 준다)
   multAt(pos, night) {
     const region = this.ctx.world.regionAt(pos.x, pos.z);
-    return region.statMultiplier * (night ? this.cfg.nightStatMultiplier : 1);
+    const f = region.field ?? { hp: region.statMultiplier, attack: region.statMultiplier, reward: 1 };
+    const n = night ? this.cfg.nightStatMultiplier : 1;
+    return { hp: f.hp * n, attack: f.attack * n, reward: f.reward ?? 1 };
   }
 
   create(type, pos, mult, night) {
     const m = new Monster(this.ctx, type, pos);
-    if (mult !== 1) m.scaleStats(mult);
+    const k = typeof mult === 'number' ? { hp: mult, attack: mult, reward: 1 } : mult;
+    if (k.hp !== 1 || k.attack !== 1) m.scaleStats(k.hp, k.attack);
+    m.reward = k.reward ?? 1;
     m.night = night; // 밤 몬스터 (새벽검 추가 피해, 보랏빛)
     this.ctx.monsters.push(m);
     return m;
   }
 
-  // { type, count, position, mult?, night?, spread? } — 둘레에 흩어 놓는다
+  // { type, count, position, mult?, night?, spread? } — 둘레에 흩어 놓는다. mult 는 숫자 또는 { hp, attack, reward }
   spawnAt({ type, count = 1, position, mult, night, spread = 1 }) {
     const n = night ?? this.ctx.time.isNight;
     const k = mult ?? this.multAt(position, n);
