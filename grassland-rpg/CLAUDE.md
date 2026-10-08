@@ -42,6 +42,11 @@
 - `tools/guide.mjs <출력 폴더>`: `src/data/*.json`에서 모든 표·도감을 뽑아 `<출력 폴더>/guide.html`을 만든다 (그림은 `<출력 폴더>/img/`, 스타일 `tools/guide.css`). 브라우저로 A4 PDF 인쇄
 - 데이터가 바뀌면 그림·PDF를 다시 만든다
 
+### 아트 카탈로그 (`docs/art/`) — 그림 교체(외부 생성 이미지)용
+- `tools/artbook.mjs <출력 폴더>`(+`artbook.css`): 모든 그림(아이템·장비 칸·스킬·건설 SVG, 3D 렌더 `img/`, 게임 화면 `shots/`)을 카드(이름·id·교체 경로)로 모은 `artbook.html`. `.sheet` 마다 PNG 시트, 전체는 A4 PDF
+- `docs/art/ArtCatalog.pdf` · `sheets/*.png`(11장) · `ref/*.png`(그림 한 장씩) · `GPT_PROMPTS.md`(ChatGPT 의뢰 프롬프트, 파일 이름 규칙 `art/<종류>/<id>.png`)
+- render.js 는 캐릭터 만들기 선택지(`char_acc_*`·`char_hair_*`·`char_clothes_*`)도 그리고, `night_*` 몬스터는 게임처럼 밤 모습으로 그린다
+
 ### 실행
 ```bash
 cd grassland-rpg

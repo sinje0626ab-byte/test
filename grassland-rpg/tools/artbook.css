@@ -1,0 +1,78 @@
+/* 초원 개척단 아트 카탈로그 — A4 인쇄 + 시트 PNG */
+@page { size: A4; margin: 12mm 11mm 14mm; }
+:root { --ink: #3b2d22; --soft: #7a6c58; --line: #e6dcc6; --paper: #fffcf4; --card: #fff; --gold: #c99a3a; --green: #5a9a48; --wood: #8a5f3c; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font: 9pt/1.5 'Noto Sans KR', sans-serif; color: var(--ink); background: var(--paper); }
+h1, h2, h3, .cover-ko, .cover-title, .sh-no { font-family: 'Jua', 'Noto Sans KR', sans-serif; font-weight: 400; }
+h2 { font-size: 12.5pt; margin: 12pt 0 6pt; color: var(--wood); break-after: avoid; display: flex; align-items: center; gap: 6pt; }
+h2::before { content: ''; width: 7pt; height: 7pt; transform: rotate(45deg); background: var(--gold); border-radius: 1.5pt; }
+h2 .cnt { font: 700 8pt 'Noto Sans KR'; color: #fff; background: var(--gold); border-radius: 8pt; padding: 0 6pt; }
+h3 { font-size: 11pt; margin: 0 0 5pt; color: #a8642a; }
+code { font: 7.5pt/1.3 ui-monospace, 'DejaVu Sans Mono', monospace; color: #6f5a44; background: #f4ecda; padding: 0 3pt; border-radius: 3pt; }
+ul { margin: 0 0 6pt; padding-left: 14pt; } li { margin: 1.5pt 0; }
+img { display: block; }
+
+/* 표지 */
+.cover { height: 268mm; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-radius: 18pt;
+  background: radial-gradient(120% 80% at 50% 0%, #fdf3d4, #f1e3bf 55%, #e1c995); border: 3pt solid #6b4a2e; box-shadow: inset 0 0 0 5pt #f7e8c2, inset 0 0 0 6.5pt #c99a3a; padding: 20pt; }
+.cover-en { font: 700 13pt 'Noto Sans KR'; letter-spacing: .4em; color: #8a6a3c; margin: 0; }
+.cover-ko { font-size: 54pt; margin: 4pt 0 0; color: #f6c24a; text-shadow: 0 3pt 0 #6b3d18, 2pt 2pt 0 #6b3d18, -2pt 2pt 0 #6b3d18, 2pt -2pt 0 #6b3d18, -2pt -2pt 0 #6b3d18; }
+.cover-title { font-size: 26pt; margin: 6pt 0 2pt; color: var(--wood); }
+.cover-sub { color: var(--soft); margin: 0 0 16pt; font-size: 11pt; }
+.cover-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6pt 10pt; margin-bottom: 18pt; }
+.cover-stats span { background: rgba(255, 255, 255, .7); border: 1pt solid #d8c08a; border-radius: 10pt; padding: 5pt 12pt; font-size: 9pt; color: var(--soft); }
+.cover-stats b { display: block; font: 400 18pt 'Jua'; color: var(--ink); }
+.cover-shot img { width: 150mm; border-radius: 10pt; border: 2pt solid #6b4a2e; box-shadow: 0 4pt 10pt rgba(60, 40, 20, .25); }
+
+/* 장 */
+.sheet { break-before: page; }
+.sh-head { display: flex; align-items: center; gap: 10pt; padding: 8pt 12pt; margin-bottom: 8pt; border-radius: 12pt;
+  background: linear-gradient(115deg, #6b4a2e, #8a5f3c 60%, #a7764a); color: #fdf3d4; border: 1.5pt solid #3b2d22; box-shadow: inset 0 0 0 2pt rgba(246, 194, 74, .45); }
+.sh-head h1 { font-size: 19pt; margin: 0; line-height: 1.1; }
+.sh-no { font-size: 20pt; width: 36pt; height: 36pt; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none;
+  background: #f6c24a; color: #5a3a1c; box-shadow: 0 2pt 0 #6b3d18; }
+.sh-en { margin: 1pt 0 0; font-size: 8pt; letter-spacing: .14em; text-transform: uppercase; color: #f1d9a6; }
+.intro { margin: 0 0 4pt; color: var(--soft); font-size: 9.5pt; }
+
+/* 카드 격자 */
+.grid { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 6pt; margin: 4pt 0 8pt; }
+.card { margin: 0; background: var(--card); border: 1pt solid var(--line); border-radius: 9pt; padding: 5pt; break-inside: avoid; display: flex; flex-direction: column; }
+.card .pic { aspect-ratio: 1; border-radius: 7pt; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #ffffff, #f3ead6); }
+.card .pic > * { width: 88%; height: 88%; object-fit: contain; }
+.card .pic .px { width: 56%; height: 56%; }
+.card[class*='g-'] .pic { box-shadow: inset 0 0 0 1.5pt var(--gc), inset 0 0 10pt color-mix(in srgb, var(--gc) 45%, transparent); }
+.g-uncommon { --gc: #6aa85a; } .g-rare { --gc: #4f8fd6; } .g-epic { --gc: #9a6ad2; } .g-legendary { --gc: #e39a35; } .g-common { --gc: #cfc4ad; }
+.card figcaption { display: flex; flex-direction: column; gap: 1pt; margin-top: 4pt; font-size: 8pt; line-height: 1.3; min-width: 0; }
+.card figcaption b { font-size: 9pt; }
+.card figcaption code { align-self: flex-start; max-width: 100%; overflow-wrap: anywhere; }
+.card .target { font: 6.8pt/1.25 ui-monospace, 'DejaVu Sans Mono', monospace; color: var(--green); overflow-wrap: anywhere; }
+.card small { color: var(--soft); font-size: 7pt; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.card.wide { grid-column: span 2; } .card.wide .pic { aspect-ratio: 2.4; }
+.missing { color: #c0b49c; font-size: 8pt; }
+.coin-demo { width: 46% !important; height: 46% !important; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff3b0, #f0c040 45%, #b8862b 80%); box-shadow: 0 0 0 2.5pt #6b4a1c, inset 0 -4pt 0 rgba(0, 0, 0, .2); }
+
+/* 상자·표 */
+.cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; margin: 6pt 0; align-items: start; }
+.box { background: #fff; border: 1pt solid var(--line); border-radius: 10pt; padding: 8pt 10pt; break-inside: avoid; margin-bottom: 6pt; }
+.box .grid { max-width: 40%; }
+.spec { border-collapse: collapse; width: 100%; font-size: 8.5pt; }
+.spec th, .spec td { border-bottom: 1pt solid var(--line); padding: 4pt 6pt; text-align: left; vertical-align: top; }
+.spec th { background: #f6ecd6; color: var(--wood); }
+.swatches { display: flex; flex-wrap: wrap; gap: 4pt; }
+.sw { display: flex; align-items: center; gap: 4pt; background: #fff; border: 1pt solid var(--line); border-radius: 7pt; padding: 3pt 6pt 3pt 3pt; font-size: 8pt; }
+.sw i { width: 16pt; height: 16pt; border-radius: 4pt; border: 1pt solid rgba(0, 0, 0, .25); }
+.shot { width: 100%; border-radius: 8pt; border: 1pt solid var(--line); }
+.shot.half { width: 70%; }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
+.shots figure { margin: 0; break-inside: avoid; }
+.shots img { width: 100%; border-radius: 7pt; border: 1pt solid var(--line); }
+.shots figcaption { font-size: 8.5pt; color: var(--soft); margin-top: 2pt; }
+
+/* 시트 PNG 로 뽑을 때(화면): 한 장씩 */
+@media screen {
+  body { width: 1240px; padding: 24px; font-size: 13px; }
+  .sheet { padding: 22px; margin-bottom: 24px; background: var(--paper); }
+  .cover { height: auto; min-height: 1600px; }
+}
