@@ -26,7 +26,10 @@ const data = `data:image/${ext};base64,${fs.readFileSync(file).toString('base64'
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
-const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
+if (process.env.ART_DEBUG) page.on('console', (m) => console.log(m.text()));
+// ART_BG=<밝기> : 흰색이 아닌 옅은 크림·회색 바탕(가장자리 어두워짐 포함)일 때, 그 밝기 넘고 채도가 낮은 픽셀도 바탕으로 본다
+const LOOSE = Number(process.env.ART_BG) || 0;
+const res = await page.evaluate(async ({ data, SIZE, FILL, LOOSE }) => {
   const img = new Image();
   img.src = data;
   await img.decode();
@@ -44,7 +47,7 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
   const bg = (i) => {
     const r = a[i * 4]; const gg = a[i * 4 + 1]; const bb = a[i * 4 + 2]; const al = a[i * 4 + 3];
     const lo = Math.min(r, gg, bb); const hi = Math.max(r, gg, bb);
-    return al < 20 || lo > 228 || (al < 140 && hi - lo < 25 && (r + gg + bb) / 3 > 150);
+    return al < 20 || lo > 228 || (al < 140 && hi - lo < 25 && (r + gg + bb) / 3 > 150) || (LOOSE > 0 && lo > LOOSE && hi - lo < 45);
   };
   const seen = new Uint8Array(W * H);
   const stack = [];
@@ -99,7 +102,34 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
   };
   const boxes = [];
   for (const [y0, y1] of runs(H, (y) => { for (let x = 0; x < W; x++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(H * 0.006)))) {
-    const cols = runs(W, (x) => { for (let y = y0; y <= y1; y++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(W * 0.006)));
+    let cols = runs(W, (x) => { for (let y = y0; y <= y1; y++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(W * 0.006)));
+    // 반짝이·빛 번짐으로 그림 여럿이 붙었으면(한 줄에서 다른 것보다 1.6배 넘게 넓음) 폭으로 몇 개인지 어림해
+    // 나눌 자리 근처(±15%)에서 가장 가는 세로줄을 골라 나눈다
+    const widths = cols.map(([x0, x1]) => x1 - x0 + 1).sort((p, q) => p - q);
+    const med = widths[Math.floor(widths.length / 2)];
+    if (cols.length > 1) {
+      cols = cols.flatMap(([x0, x1]) => {
+        const w = x1 - x0 + 1;
+        if (w < med * 1.6) return [[x0, x1]];
+        const k = Math.max(2, Math.round(w / med));
+        const cuts = [];
+        for (let j = 1; j < k; j++) {
+          const mid = x0 + Math.round((w * j) / k);
+          let best = mid; let bestN = Infinity;
+          for (let x = mid - Math.round(w * 0.15 / k * 2); x <= mid + Math.round(w * 0.15 / k * 2); x++) {
+            let n = 0;
+            for (let y = y0; y <= y1; y++) if (on(x, y)) n++;
+            if (n < bestN) { bestN = n; best = x; }
+          }
+          cuts.push(best);
+        }
+        const out = [];
+        let a = x0;
+        for (const c of cuts) { out.push([a, c - 1]); a = c + 1; }
+        out.push([a, x1]);
+        return out;
+      });
+    }
     cols.forEach(([x0, x1], k) => {
       // 세로로 다시 좁힌다
       let t = y1; let b = y0;
@@ -124,7 +154,7 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
     og.drawImage(c, bx.x, bx.y, bx.w, bx.h, (SIZE - bx.w * s) / 2, (SIZE - bx.h * s) / 2, bx.w * s, bx.h * s);
     return { box: bx, url: o.toDataURL('image/webp', 0.92) };
   }).map((r) => ({ ...r, cleared: +(cleared / (W * H)).toFixed(2) }));
-}, { data, SIZE, FILL });
+}, { data, SIZE, FILL, LOOSE });
 await browser.close();
 
 if (res.length !== ids.length) console.warn(`⚠ 그림 ${res.length}개를 찾았는데 이름은 ${ids.length}개입니다. 앞에서부터 맞춥니다.`);

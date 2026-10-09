@@ -71,7 +71,7 @@ function sword(o) {
     return g;
   }
   const w = o.width ?? 0.1;
-  const len = o.long ? 0.82 : 0.7;
+  const len = o.long ? 0.82 : o.short ? 0.5 : 0.7;
   gripOf(add, o.grip ?? 'leather', -0.02, 0.2);
   add(new THREE.OctahedronGeometry(0.05, 0), o.pommel ?? o.guard ?? 'bronze', 0, 0, -0.06);
   // 가로대: 가운데 굵고 끝은 둥글게
@@ -79,13 +79,40 @@ function sword(o) {
   add(new THREE.BoxGeometry(gw, 0.06, 0.06), o.guard ?? 'bronze', 0, 0, 0.24);
   if (o.guardTips) for (const s of [-1, 1]) add(new THREE.SphereGeometry(0.04, 6, 4), o.guard, (s * gw) / 2, 0, 0.24);
   if (o.gem) add(new THREE.OctahedronGeometry(0.035, 0), glowMat(o.gem, 0.5), 0, 0.035, 0.24);
-  // 날: 몸통 + 납작한 뾰족 끝 + 가운데 홈
+  if (o.guardKind === 'mushroom') {
+    add(new THREE.SphereGeometry(0.14, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2).rotateX(-Math.PI / 2), o.guard, 0, 0, 0.2).scale.set(1, 0.6, 0.8);
+    for (const [x, y] of [[0.06, 0.04], [-0.06, 0.03], [0, -0.06]]) add(new THREE.SphereGeometry(0.022, 5, 4), mat({ color: '#f1e6cf' }), x, y, 0.29);
+  }
+  if (o.guardKind === 'leaf') for (const s of [-1, 1]) add(new THREE.IcosahedronGeometry(0.07, 0), 'moss', s * 0.12, 0, 0.24).scale.set(1.6, 0.4, 0.9);
   const bm = o.blade;
+  // 휜 날(곡도·사브르·송곳니): 마디를 조금씩 꺾어 잇는다
+  if (o.curve) {
+    const n = 5;
+    const seg = len / n;
+    let x = 0; let z = 0.27; let a = 0;
+    for (let i = 0; i < n; i++) {
+      const ww = w * (o.fang ? 1.25 - i * 0.18 : 1 - i * 0.06);
+      const m = add(new THREE.BoxGeometry(ww, 0.028, seg * 1.08), bm, x + Math.sin(a) * seg / 2, 0, z + Math.cos(a) * seg / 2);
+      m.rotation.y = a;
+      x += Math.sin(a) * seg; z += Math.cos(a) * seg;
+      a += o.curve * (0.05 + i * 0.03);
+    }
+    const tip = add(new THREE.ConeGeometry(w * 0.5, w * 1.6, 4).rotateX(Math.PI / 2).rotateZ(Math.PI / 4), bm, x + Math.sin(a) * w * 0.7, 0, z + Math.cos(a) * w * 0.7);
+    tip.rotation.y = a;
+    tip.scale.set(1, 0.28, 1);
+    if (o.rune) add(new THREE.OctahedronGeometry(0.03, 0), glowMat(o.rune, 0.9), 0, 0.02, 0.4);
+    return g;
+  }
+  // 날: 몸통 + 납작한 뾰족 끝 + 가운데 홈
   add(new THREE.BoxGeometry(w, 0.028, len), bm, 0, 0, 0.27 + len / 2);
   const tip = add(new THREE.ConeGeometry(w * 0.72, w * 1.8, 4).rotateX(Math.PI / 2).rotateZ(Math.PI / 4), bm, 0, 0, 0.27 + len + w * 0.9);
   tip.scale.set(1, 0.28, 1);
   add(new THREE.BoxGeometry(w * 0.22, 0.034, len * 0.8), o.fuller ?? mat({ color: '#8f9aa4', roughness: 0.4, metalness: 0.5 }), 0, 0, 0.27 + len * 0.45);
   if (o.rune) add(new THREE.OctahedronGeometry(0.03, 0), glowMat(o.rune, 0.9), 0, 0.02, 0.4);
+  // 덩굴 감기 / 선인장 가시 / 꿀 방울
+  if (o.vines) for (let i = 0; i < 4; i++) add(new THREE.TorusGeometry(w * 0.62, 0.012, 4, 8), o.vines, 0, 0, 0.36 + i * len * 0.2).rotation.set(0.5, 0.4 * i, 0);
+  if (o.spines) for (let i = 0; i < 6; i++) for (const sd of [-1, 1]) add(new THREE.ConeGeometry(0.012, 0.05, 4).rotateZ(-sd * Math.PI / 2), mat({ color: '#f1e6cf' }), sd * (w / 2 + 0.02), 0, 0.35 + i * len * 0.14);
+  if (o.drip) add(new THREE.SphereGeometry(0.03, 6, 4), mat({ color: '#f2a33a', roughness: 0.2, transparent: true, opacity: 0.9 }), w / 2 + 0.01, -0.02, 0.27 + len * 0.7).scale.set(1, 1, 1.6);
   return g;
 }
 
@@ -109,6 +136,22 @@ function spear(o) {
     const sting = add(new THREE.ConeGeometry(0.045, 0.22, 5).rotateX(Math.PI / 2), h, 0, 0.07, 1.76);
     sting.rotation.x = -0.45;
     add(new THREE.SphereGeometry(0.018, 5, 4), glowMat('#b7e05a', 0.8), 0, 0.1, 1.84);
+  } else if (o.kind === 'cone') {
+    // 줄무늬 벌침 창: 굵은 원뿔 + 띠
+    add(new THREE.ConeGeometry(0.11, 0.4, 8).rotateX(Math.PI / 2), h, 0, 0, 1.68);
+    for (const z of [1.56, 1.66]) add(cyl(0.1 - (z - 1.56) * 0.5, 0.1 - (z - 1.56) * 0.5, 0.04, 8), o.stripe ?? 'darkwood', 0, 0, z);
+  } else if (o.kind === 'sun') {
+    // 태양 창: 금 구슬 + 사방 빛살 + 뾰족 끝
+    add(new THREE.SphereGeometry(0.07, 8, 6), glowMat('#ffb02a', 0.4), 0, 0, 1.56);
+    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; add(new THREE.ConeGeometry(0.025, 0.1, 4), h, Math.cos(a) * 0.1, Math.sin(a) * 0.1, 1.56).rotation.z = a - Math.PI / 2; }
+    add(new THREE.OctahedronGeometry(0.07, 0), h, 0, 0, 1.74).scale.set(0.8, 0.4, 2.2);
+  } else if (o.kind === 'glaive') {
+    // 언월창: 한쪽으로 휜 넓은 날 + 포자 빛
+    for (let i = 0; i < 4; i++) add(new THREE.BoxGeometry(0.16 - i * 0.025, 0.025, 0.1), h, 0.04 + i * 0.025, 0, 1.52 + i * 0.09).rotation.y = -0.15 * i;
+    add(new THREE.ConeGeometry(0.04, 0.12, 4).rotateX(Math.PI / 2), h, 0.13, 0, 1.9).scale.set(1, 0.3, 1);
+    if (o.glow) for (const [x, y, z] of [[0.15, 0.05, 1.6], [-0.05, 0.06, 1.75], [0.18, -0.04, 1.8]]) add(new THREE.SphereGeometry(0.018, 5, 4), glowMat(o.glow, 0.9), x, y, z);
+  } else if (o.kind === 'horn') {
+    add(new THREE.ConeGeometry(0.06, 0.38, 6).rotateX(Math.PI / 2), h, 0, 0.02, 1.66).rotation.x = -0.12;
   } else if (o.kind === 'ice') {
     add(new THREE.OctahedronGeometry(0.12, 0), 'ice', 0, 0, 1.68).scale.set(0.8, 0.6, 2.6);
     add(new THREE.OctahedronGeometry(0.04, 0), 'ice', 0.05, 0, 1.47).scale.set(0.6, 0.6, 1.6);
@@ -137,9 +180,22 @@ function hammer(o) {
   } else if (o.kind === 'mace') {
     add(new THREE.IcosahedronGeometry(0.17, 0), h, 0, 0, 0.84);
     for (const [x, y, z] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0.6, 0.6, 0.5], [-0.6, -0.6, 0.5]]) {
-      add(new THREE.OctahedronGeometry(0.045, 0), 'iron', x * 0.17, y * 0.17, 0.84 + z * 0.17);
+      add(new THREE.OctahedronGeometry(0.045, 0), o.spike ?? 'iron', x * 0.17, y * 0.17, 0.84 + z * 0.17);
     }
-    add(new THREE.IcosahedronGeometry(0.1, 0), 'moss', 0.06, 0.1, 0.9).scale.set(1, 0.5, 1);
+    if (o.moss) add(new THREE.IcosahedronGeometry(0.1, 0), 'moss', 0.06, 0.1, 0.9).scale.set(1, 0.5, 1);
+    if (o.emblem) add(new THREE.CylinderGeometry(0.08, 0.08, 0.03, 8), glowMat(o.emblem, 0.3), 0, 0.17, 0.84);
+  } else if (o.kind === 'log' || o.kind === 'stump') {
+    // 통나무·그루터기 머리: 가로로 누운 원기둥 + 밝은 나이테 면 (그루터기는 뿌리·이끼)
+    add(new THREE.CylinderGeometry(0.17, 0.17, 0.44, 9).rotateZ(Math.PI / 2), h, 0, 0, 0.84);
+    for (const sd of [-1, 1]) add(new THREE.CylinderGeometry(0.15, 0.15, 0.02, 9).rotateZ(Math.PI / 2), mat({ color: '#e2c08a', roughness: 0.9 }), sd * 0.225, 0, 0.84);
+    if (o.kind === 'stump') {
+      for (const a of [0.4, 2.2, 4]) add(new THREE.ConeGeometry(0.035, 0.18, 4), h, 0.15, Math.sin(a) * 0.17, 0.84 + Math.cos(a) * 0.17).rotation.set(a, 0, 0.3);
+      add(new THREE.IcosahedronGeometry(0.1, 0), 'moss', -0.05, 0.15, 0.84).scale.set(1.5, 0.5, 1);
+    }
+  } else if (o.kind === 'ball') {
+    // 눈덩이: 둥근 머리 + 박힌 얼음
+    add(new THREE.IcosahedronGeometry(0.2, 1), h, 0, 0, 0.86);
+    for (const [x, y, z] of [[0.15, 0.1, 0.05], [-0.12, 0.12, -0.06], [0.05, -0.16, 0.08], [-0.1, -0.05, 0.15]]) add(new THREE.OctahedronGeometry(0.05, 0), 'ice', x, y, 0.86 + z);
   } else if (o.kind === 'ice') {
     add(new THREE.OctahedronGeometry(0.22, 0), 'ice', 0, 0, 0.82).scale.set(1.35, 0.85, 0.85);
     add(new THREE.BoxGeometry(0.08, 0.2, 0.2), 'iron', 0, 0, 0.82);
@@ -167,6 +223,9 @@ function bow(o) {
   add(new THREE.CylinderGeometry(0.006, 0.006, 1.0, 3), mat({ color: '#f3ecd8', roughness: 0.9 }), 0, 0, 0.35);
   if (o.gem) add(new THREE.OctahedronGeometry(0.035, 0), glowMat(o.gem, 0.8), 0, 0, 0.9);
   if (o.leaves) for (const s of [-1, 1]) add(new THREE.IcosahedronGeometry(0.05, 0), 'moss', 0.03, s * 0.36, 0.72).scale.set(1, 1.6, 0.6);
+  // 하프 활: 빛나는 줄 둘 더 / 깃털 장식
+  if (o.harp) for (const z of [0.47, 0.6]) add(new THREE.CylinderGeometry(0.006, 0.006, 0.82 - (z - 0.35) * 1.1, 3), glowMat('#c8f5a0', 0.9), 0, 0, z);
+  if (o.feathers) for (const s of [-1, 1]) add(new THREE.ConeGeometry(0.03, 0.16, 4), mat({ color: '#e8dcc8', roughness: 1 }), 0.03, s * 0.2, 0.72).rotation.z = s * 0.3;
   return g;
 }
 
@@ -187,7 +246,7 @@ const SPECS = {
   frost_lance: ['spear', { kind: 'ice', shaft: mat({ color: '#7a8ea4', roughness: 0.6 }), socket: mat({ color: '#cfe2ee', roughness: 0.3, metalness: 0.5 }), tassel: mat({ color: '#ece6da', roughness: 1 }) }],
 
   stone_hammer: ['hammer', { kind: 'rock', head: 'stone', grip: 'twine' }],
-  mossy_mace: ['hammer', { kind: 'mace', head: 'iron', shaft: 'darkwood' }],
+  mossy_mace: ['hammer', { kind: 'mace', head: 'iron', shaft: 'darkwood', moss: true }],
   sandstone_maul: ['hammer', { kind: 'block', head: 'sand', grip: mat({ color: '#b0613f', roughness: 0.9 }) }],
   glacier_hammer: ['hammer', { kind: 'ice', shaft: mat({ color: '#7a8ea4', roughness: 0.6 }), grip: mat({ color: '#5a6e8a', roughness: 0.9 }), glow: '#bfefff' }],
 

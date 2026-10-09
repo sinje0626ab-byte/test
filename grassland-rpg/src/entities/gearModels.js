@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import items from '../data/items.json';
+import { LOOKS, buildLook, buildFoot } from './gearLooks.js';
 
 // 장비 외형: 머리 장비는 아이템마다 모양이 다른 모자, 몸 장비는 옷 색 + 세트 장식(잎 깃·망토·털 칼라…),
 // 신발은 색 + 장식. 아이콘(ui/itemArt.js)과 같은 팔레트.
@@ -169,18 +170,28 @@ function variant(base, st) {
 function addVariants(gear) {
   for (const [id, def] of Object.entries(items.items)) {
     const from = def.style?.from;
-    if (!from) continue;
+    if (!from || LOOKS[id]) continue; // 모양이 따로 있는 장비(gearLooks.js)는 색 돌리기 대신 그 모양
     for (const set of [gear.hats, gear.outfits, gear.shoes]) {
       if (set[from] && !set[id]) set[id] = variant(set[from], def.style);
     }
   }
 }
 
-// 플레이어 모델에 모든 장비 모양을 붙여 두고, 낀 장비만 보인다
-export function createGear(inner) {
+// 플레이어 모델에 모든 장비 모양을 붙여 두고, 낀 장비만 보인다.
+// 새 장비(gearLooks.js LOOKS)의 머리·몸 장식은 inner 에, 신발은 양발(feet = [왼발, 오른발])에 붙여 걸을 때 같이 움직인다
+export function createGear(inner, feet = []) {
   const gear = { hats: hats(), outfits: outfits(), shoes: shoes() };
+  for (const [id, s] of Object.entries(LOOKS)) {
+    if (s.slot === 'head') gear.hats[id] = buildLook(id);
+    if (s.slot === 'body') gear.outfits[id] = buildLook(id);
+  }
   addVariants(gear);
   for (const set of Object.values(gear)) for (const g of Object.values(set)) inner.add(g);
+  gear.footwear = {};
+  for (const [id, s] of Object.entries(LOOKS)) {
+    if (s.slot !== 'feet' || feet.length < 2) continue;
+    gear.footwear[id] = feet.map((foot, i) => foot.add(buildFoot(id, i ? 1 : -1)).children.at(-1));
+  }
   return gear;
 }
 
@@ -193,4 +204,5 @@ export function showGear(gear, ids, headColor) {
   }
   for (const [id, g] of Object.entries(gear.outfits)) g.visible = id === ids.body;
   for (const [id, g] of Object.entries(gear.shoes)) g.visible = id === ids.feet;
+  for (const [id, pair] of Object.entries(gear.footwear ?? {})) for (const g of pair) g.visible = id === ids.feet;
 }

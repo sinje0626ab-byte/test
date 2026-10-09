@@ -1019,7 +1019,9 @@
         "type": "sword",
         "blade": "steel",
         "guard": "leaf",
-        "grip": "twine"
+        "grip": "twine",
+        "short": true,
+        "guardKind": "leaf"
       },
       "weaponType": "sword"
     },
@@ -1041,7 +1043,8 @@
         "type": "sword",
         "blade": "amber",
         "guard": "darkwood",
-        "grip": "leather"
+        "grip": "leather",
+        "drip": true
       },
       "weaponType": "sword"
     },
@@ -1065,7 +1068,8 @@
         "guard": "gold",
         "grip": "leather",
         "gem": "pink",
-        "clear": true
+        "clear": true,
+        "curve": 1
       },
       "weaponType": "sword"
     },
@@ -1105,10 +1109,11 @@
       "pool": "grassland",
       "style": {
         "type": "spear",
-        "kind": "stinger",
+        "kind": "cone",
         "head": "amber",
         "shaft": "wood",
-        "socket": "bronze"
+        "socket": "bronze",
+        "stripe": "darkwood"
       },
       "weaponType": "spear"
     },
@@ -1127,7 +1132,7 @@
       "pool": "grassland",
       "style": {
         "type": "hammer",
-        "kind": "block",
+        "kind": "log",
         "head": "wood",
         "shaft": "darkwood",
         "grip": "twine"
@@ -1152,7 +1157,8 @@
         "type": "hammer",
         "kind": "mace",
         "head": "iron",
-        "shaft": "darkwood"
+        "shaft": "darkwood",
+        "emblem": "#4fb04a"
       },
       "weaponType": "hammer"
     },
@@ -1197,7 +1203,9 @@
         "limb": "#8fbf6a",
         "grip": "leather",
         "recurve": true,
-        "gem": "pink"
+        "gem": "pink",
+        "harp": true,
+        "leaves": true
       },
       "weaponType": "bow"
     },
@@ -1218,7 +1226,8 @@
         "type": "sword",
         "blade": "#8a9a6a",
         "guard": "moss",
-        "grip": "leather"
+        "grip": "leather",
+        "vines": "moss"
       },
       "weaponType": "sword"
     },
@@ -1240,7 +1249,8 @@
         "type": "sword",
         "blade": "steel",
         "guard": "red",
-        "grip": "darkwood"
+        "grip": "darkwood",
+        "guardKind": "mushroom"
       },
       "weaponType": "sword"
     },
@@ -1263,7 +1273,9 @@
         "blade": "fur",
         "guard": "darkwood",
         "grip": "leather",
-        "guardTips": true
+        "guardTips": true,
+        "curve": 1,
+        "fang": true
       },
       "weaponType": "sword"
     },
@@ -1305,10 +1317,11 @@
       "pool": "forest",
       "style": {
         "type": "spear",
-        "kind": "stinger",
+        "kind": "glaive",
         "head": "violet",
         "shaft": "darkwood",
-        "socket": "bronze"
+        "socket": "bronze",
+        "glow": "#c88aff"
       },
       "weaponType": "spear"
     },
@@ -1328,7 +1341,7 @@
       "pool": "forest",
       "style": {
         "type": "hammer",
-        "kind": "block",
+        "kind": "stump",
         "head": "bark",
         "shaft": "darkwood"
       },
@@ -1374,7 +1387,8 @@
       "style": {
         "type": "bow",
         "limb": "darkwood",
-        "grip": "cloth"
+        "grip": "cloth",
+        "feathers": true
       },
       "weaponType": "bow"
     },
@@ -1417,7 +1431,8 @@
         "type": "sword",
         "blade": "steel",
         "guard": "bronze",
-        "grip": "#b0613f"
+        "grip": "#b0613f",
+        "curve": 1
       },
       "weaponType": "sword"
     },
@@ -1439,7 +1454,8 @@
         "type": "sword",
         "blade": "cactus",
         "guard": "sand",
-        "grip": "leather"
+        "grip": "leather",
+        "spines": true
       },
       "weaponType": "sword"
     },
@@ -1466,7 +1482,8 @@
         "gem": "amber",
         "rune": "#f3a04a",
         "guardTips": true,
-        "long": true
+        "long": true,
+        "curve": 0.7
       },
       "weaponType": "sword"
     },
@@ -1489,7 +1506,8 @@
         "head": "gold",
         "shaft": "wood",
         "socket": "bronze",
-        "tassel": "red"
+        "tassel": "red",
+        "kind": "sun"
       },
       "weaponType": "spear"
     },
@@ -1555,7 +1573,9 @@
         "type": "hammer",
         "kind": "mace",
         "head": "gold",
-        "shaft": "darkwood"
+        "shaft": "darkwood",
+        "spike": "gold",
+        "emblem": "#ffb02a"
       },
       "weaponType": "hammer"
     },
@@ -1690,7 +1710,8 @@
         "type": "spear",
         "head": "fur",
         "shaft": "#7a8ea4",
-        "socket": "iron"
+        "socket": "iron",
+        "kind": "horn"
       },
       "weaponType": "spear"
     },
@@ -1735,7 +1756,7 @@
       "pool": "snow",
       "style": {
         "type": "hammer",
-        "kind": "rock",
+        "kind": "ball",
         "head": "frost",
         "shaft": "#7a8ea4"
       },
