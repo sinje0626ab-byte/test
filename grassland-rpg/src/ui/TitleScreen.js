@@ -6,6 +6,11 @@ import { PAINTED } from './painted.js';
 // 단어마다 줄바꿈될 수 있게 나눈다
 const LOGO = [['초원', 'k'], ['개척단', 'k']];
 
+// 새로 그린 타이틀 그림 (src/art/ui/title_* + 중단 화면 버튼·아이콘). 다 있으면 그림 타이틀(.ta)
+const TA = ['title_bg_wide', 'title_bg_tall', 'title_sign', 'title_slot', 'title_slot_on', 'title_card', 'title_ic_new', 'title_pioneer', 'title_owl', 'pause_btn', 'pause_btn_main', 'pause_ic_play', 'pause_ic_controls', 'pause_ic_settings'];
+const hasTA = TA.every((k) => PAINTED.ui[k]);
+const taIc = (k) => (hasTA ? `<i class="ta-ic" style="background-image:url(${PAINTED.ui[k]})"></i>` : '');
+
 // 조작 방법 (타이틀·게임 메뉴 공용): PC·휴대폰 탭 + 아이콘 카드. 탭은 라디오 버튼 + CSS 만으로 바꾼다 (theme-cozy.css)
 // 아이콘은 새로 그린 그림(art/ui/help_* · btn_*), 없으면 글자 키캡
 const HELP = {
@@ -69,8 +74,10 @@ export class TitleScreen {
     document.body.classList.add('on-title');
 
     const el = document.createElement('div');
-    el.className = 'title-screen';
+    el.className = `title-screen${hasTA ? ' ta' : ''}`;
+    if (hasTA) for (const k of TA) el.style.setProperty(`--${k.replace(/_/g, '-')}`, `url(${PAINTED.ui[k]})`);
     el.innerHTML = `
+      ${hasTA ? '<div class="ta-bg" aria-hidden="true"></div>' : ''}
       <div class="title-sky" aria-hidden="true">
         ${[1, 2, 3, 4].map((i) => `<i class="cloud c${i}"></i>`).join('')}
         ${[1, 2, 3, 4, 5, 6, 7].map((i) => `<i class="leaf l${i}"></i>`).join('')}
@@ -83,6 +90,7 @@ export class TitleScreen {
             return LOGO.map(([word, c]) => `<span class="word">${[...word].map((ch) => `<span class="${c}" style="--i:${i++}">${ch}</span>`).join('')}</span>`).join('');
           })()}</h1>
           <span class="logo-en">MEADOW PIONEERS</span>
+          ${hasTA ? '<i class="ta-owl" aria-hidden="true"></i>' : ''}
         </div>
         <p class="logo-sub">작은 텐트 하나로 시작하는 초원 모험</p>
         <div class="title-menu" data-menu></div>
@@ -119,11 +127,14 @@ export class TitleScreen {
     this.hasSave = !!info;
     this.menu.innerHTML = `
       <div class="t-slots">${slots}</div>
-      ${has ? `<button type="button" class="t-menu-btn primary" data-act="continue">이어하기<small>${summary}</small></button>` : ''}
+      <div class="ta-card">
+      ${hasTA ? '<i class="ta-pioneer" aria-hidden="true"></i>' : ''}
+      ${has ? `<button type="button" class="t-menu-btn primary" data-act="continue">${taIc('pause_ic_play')}<span>이어하기<small>${summary}</small></span></button>` : ''}
       ${info?.broken ? `<p class="t-warn">${info.newer ? '더 새로운 버전에서 만든 저장이 있어요' : '저장을 읽지 못했어요'}</p>` : ''}
-      <button type="button" class="t-menu-btn${has ? '' : ' primary'}" data-act="new">새 게임</button>
-      <button type="button" class="t-menu-btn" data-act="help">조작 방법</button>
-      <button type="button" class="t-menu-btn" data-act="settings">설정</button>`;
+      <button type="button" class="t-menu-btn${has ? '' : ' primary'}" data-act="new">${taIc('title_ic_new')}<span>새 게임</span></button>
+      <button type="button" class="t-menu-btn" data-act="help">${taIc('pause_ic_controls')}<span>조작 방법</span></button>
+      <button type="button" class="t-menu-btn" data-act="settings">${taIc('pause_ic_settings')}<span>설정</span></button>
+      </div>`;
   }
 
   act(act) {

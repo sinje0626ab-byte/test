@@ -198,7 +198,8 @@ src/
     polish.css         # HUD 마감 (막대·패널·퀵슬롯)
     mobile.css         # 모바일 배치 (body.touch)
     theme-cozy.css     # 아기자기 테마 — 창·버튼·칸·툴팁·HUD·글꼴의 최종 모습을 정한다
-    pause-art.css      # 중단 화면 그림 판 (theme-cozy 다음, 맨 마지막)
+    pause-art.css      # 중단 화면 그림 판 (theme-cozy 다음)
+    title-art.css      # 그림 타이틀 화면 (맨 마지막)
     ControlHelp.js     # PC 조작 안내·행동 힌트·건설 안내
     playerPortrait.js  # HUD 초상화 (플레이어 모델 한 장)
     monsterPortrait.js # 모델 사진 무대(snapshot) + 도감 사진 (새 그림이 있으면 그것)
@@ -436,6 +437,7 @@ src/
   - UI 효과음: 누름 click, 탭 전환 tab, 마우스 올림 tick(아주 작게). `sounds.json` sfx
   - 대화창: 크림 판 + 새싹 알약 이름(창 제목), 타자기, 다 나오면 ▼ 통통. 얼굴은 주민 초상화(`art/portraits/npc_<id>`, 없으면 색 동그라미)
   - **중단 화면 그림 판**(`PauseMenu`, `ui/pause-art.css`, 그림 `src/art/ui/pause_*` — ChatGPT 시안·부품, 원본 `docs/art/incoming/pause_*.webp`): 그림 11장(frame·ribbon·owl·btn·btn_main·btn_title·ic_play·ic_save·ic_controls·ic_settings·ic_title)이 다 있으면 `.pause.pp` — 나무 틀(카드 전체에 깔기, 비율 626:968) + 꿀색 리본 위 제목 + 위에서 조는 부엉이(숨쉬듯 들썩) + 사탕 버튼(`border-image`: 양 끝 둥근 부분은 그대로·가운데만 늘임, 계속하기 새싹·타이틀로 산호·나머지 크림) 왼쪽에 아이콘. 글씨는 게임 글꼴(Jua)로 얹는다. 카드 안쪽 여백은 카드 폭(`--cw`) 기준(% 는 화면 폭 기준이라 PC 에서 틀어짐). 가로 휴대폰(높이 ≤500px)은 비율을 풀어 넓고 낮게. 조작 방법·설정을 열면 `.pp` 를 떼고 예전 크림 카드
+  - **그림 타이틀**(`TitleScreen`, `ui/title-art.css`, 그림 `src/art/ui/title_*` + 중단 화면 `pause_btn`·`pause_btn_main`·`pause_ic_*`, 원본 `docs/art/incoming/title_*.webp`): 다 있으면 `.title-screen.ta` — 그린 초원 배경(가로 `title_bg_wide` / 세로 화면 `title_bg_tall`, 처음에 살짝 줌아웃, CSS 구름은 숨기고 떨어지는 잎만), 나무 간판(`title_sign`) 위에 로고 글자 + 간판 오른쪽 위에 부엉이(`title_owl`, 살랑), 매달린 슬롯 카드(`title_slot`/`title_slot_on`, 고른 것은 살짝 기울어 커짐), 크림 카드(`title_card`) 안 사탕 버튼 + 아이콘(이어하기 ▶잎 · 새 게임 새싹 화분 `title_ic_new` · 조작 방법 · 설정), 카드 왼쪽에 손 흔드는 개척자(`title_pioneer`, 세로 화면은 카드 아래). 크기는 `--u`(가로 min(1px, 0.135vh, 0.24vw) / 세로 min(0.82px, 0.205vw, 0.1vh)) 배수. 새 게임을 누르면(`leaving`) 배경이 사라지고 3D 월드가 보인다
   - UI 그림 자르기: `ART_KEEP=<긴 변 px> node tools/art-import.mjs <그림> ui <id...>` — 정사각 칸에 넣지 않고 원래 비율로 (판·버튼·리본), 그다음 sharp `trim()` 으로 여백을 바짝 자른다
 - **HUD 마감**(`ui/polish.css`): 막대·HUD 패널·퀵슬롯
 - **팔·손**(`PlayerModel.js`): 오른팔은 `swordPivot` 에 달려 무기와 같이 휘두르고, 손은 무기 `userData.grip`(종류별 손잡이 위치)을 쥔다. 무기를 바꾸면 `fitArm` 이 손을 옮긴다. 활은 몸 쪽으로 당겨 든다(모양만). 왼팔은 걸을 때 흔든다
