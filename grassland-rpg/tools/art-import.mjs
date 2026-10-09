@@ -29,7 +29,9 @@ const page = await browser.newPage();
 if (process.env.ART_DEBUG) page.on('console', (m) => console.log(m.text()));
 // ART_BG=<밝기> : 흰색이 아닌 옅은 크림·회색 바탕(가장자리 어두워짐 포함)일 때, 그 밝기 넘고 채도가 낮은 픽셀도 바탕으로 본다
 const LOOSE = Number(process.env.ART_BG) || 0;
-const res = await page.evaluate(async ({ data, SIZE, FILL, LOOSE }) => {
+// ART_KEEP=<긴 변 px> : 정사각 칸에 넣지 않고 원래 비율 그대로 (UI 판·버튼·리본처럼 늘여 쓰는 그림)
+const KEEP = Number(process.env.ART_KEEP) || 0;
+const res = await page.evaluate(async ({ data, SIZE, FILL, LOOSE, KEEP }) => {
   const img = new Image();
   img.src = data;
   await img.decode();
@@ -149,12 +151,20 @@ const res = await page.evaluate(async ({ data, SIZE, FILL, LOOSE }) => {
   const og = o.getContext('2d');
   og.imageSmoothingQuality = 'high';
   return boxes.map((bx) => {
+    if (KEEP) {
+      const k = Math.min(1, KEEP / Math.max(bx.w, bx.h));
+      o.width = Math.round(bx.w * k);
+      o.height = Math.round(bx.h * k);
+      og.imageSmoothingQuality = 'high';
+      og.drawImage(c, bx.x, bx.y, bx.w, bx.h, 0, 0, o.width, o.height);
+      return { box: bx, url: o.toDataURL('image/webp', 0.92) };
+    }
     og.clearRect(0, 0, SIZE, SIZE);
     const s = (SIZE * FILL) / Math.max(bx.w, bx.h);
     og.drawImage(c, bx.x, bx.y, bx.w, bx.h, (SIZE - bx.w * s) / 2, (SIZE - bx.h * s) / 2, bx.w * s, bx.h * s);
     return { box: bx, url: o.toDataURL('image/webp', 0.92) };
   }).map((r) => ({ ...r, cleared: +(cleared / (W * H)).toFixed(2) }));
-}, { data, SIZE, FILL, LOOSE });
+}, { data, SIZE, FILL, LOOSE, KEEP });
 await browser.close();
 
 if (res.length !== ids.length) console.warn(`⚠ 그림 ${res.length}개를 찾았는데 이름은 ${ids.length}개입니다. 앞에서부터 맞춥니다.`);

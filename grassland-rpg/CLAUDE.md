@@ -197,7 +197,8 @@ src/
     title.css          # 타이틀·게임 메뉴
     polish.css         # HUD 마감 (막대·패널·퀵슬롯)
     mobile.css         # 모바일 배치 (body.touch)
-    theme-cozy.css     # 아기자기 테마 — 맨 마지막에 읽어 창·버튼·칸·툴팁·HUD·글꼴의 최종 모습을 정한다
+    theme-cozy.css     # 아기자기 테마 — 창·버튼·칸·툴팁·HUD·글꼴의 최종 모습을 정한다
+    pause-art.css      # 중단 화면 그림 판 (theme-cozy 다음, 맨 마지막)
     ControlHelp.js     # PC 조작 안내·행동 힌트·건설 안내
     playerPortrait.js  # HUD 초상화 (플레이어 모델 한 장)
     monsterPortrait.js # 모델 사진 무대(snapshot) + 도감 사진 (새 그림이 있으면 그것)
@@ -434,6 +435,8 @@ src/
   - 커서(PC만): 기본 작은 칼, 버튼·칸·상호작용 대상 위(E 안내가 뜬 동안 `body.can-interact`)에선 손. SVG data URI
   - UI 효과음: 누름 click, 탭 전환 tab, 마우스 올림 tick(아주 작게). `sounds.json` sfx
   - 대화창: 크림 판 + 새싹 알약 이름(창 제목), 타자기, 다 나오면 ▼ 통통. 얼굴은 주민 초상화(`art/portraits/npc_<id>`, 없으면 색 동그라미)
+  - **중단 화면 그림 판**(`PauseMenu`, `ui/pause-art.css`, 그림 `src/art/ui/pause_*` — ChatGPT 시안·부품, 원본 `docs/art/incoming/pause_*.webp`): 그림 11장(frame·ribbon·owl·btn·btn_main·btn_title·ic_play·ic_save·ic_controls·ic_settings·ic_title)이 다 있으면 `.pause.pp` — 나무 틀(카드 전체에 깔기, 비율 626:968) + 꿀색 리본 위 제목 + 위에서 조는 부엉이(숨쉬듯 들썩) + 사탕 버튼(`border-image`: 양 끝 둥근 부분은 그대로·가운데만 늘임, 계속하기 새싹·타이틀로 산호·나머지 크림) 왼쪽에 아이콘. 글씨는 게임 글꼴(Jua)로 얹는다. 카드 안쪽 여백은 카드 폭(`--cw`) 기준(% 는 화면 폭 기준이라 PC 에서 틀어짐). 가로 휴대폰(높이 ≤500px)은 비율을 풀어 넓고 낮게. 조작 방법·설정을 열면 `.pp` 를 떼고 예전 크림 카드
+  - UI 그림 자르기: `ART_KEEP=<긴 변 px> node tools/art-import.mjs <그림> ui <id...>` — 정사각 칸에 넣지 않고 원래 비율로 (판·버튼·리본), 그다음 sharp `trim()` 으로 여백을 바짝 자른다
 - **HUD 마감**(`ui/polish.css`): 막대·HUD 패널·퀵슬롯
 - **팔·손**(`PlayerModel.js`): 오른팔은 `swordPivot` 에 달려 무기와 같이 휘두르고, 손은 무기 `userData.grip`(종류별 손잡이 위치)을 쥔다. 무기를 바꾸면 `fitArm` 이 손을 옮긴다. 활은 몸 쪽으로 당겨 든다(모양만). 왼팔은 걸을 때 흔든다
 - **아이템 설명**(`Tooltip.js`): PC 는 마우스를 올리면 따라다니는 설명(`show`), 모바일은 한 번 탭하면 칸 위에 고정(`pin`)되고 다음 터치에서 닫힌다. 터치의 `pointerleave`(손 뗄 때 생김)로 닫지 않게 `hover(e)` 를 쓴다. 가방·캐릭터 창
