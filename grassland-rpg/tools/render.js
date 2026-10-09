@@ -69,6 +69,36 @@ const fakeCtx = { data: { buildings }, scene: fakeScene, camera: new THREE.Persp
 // 3D 모델(.glb)을 먼저 읽는다 → 다 읽으면 window.modelsReady
 loadModels().finally(() => { window.modelsReady = true; });
 
+// 건물만: 포탑 Lv1·Lv5, 기지 단계, 부속 건물, 벽 → { key: dataURL }
+window.renderBuild = () => {
+  const out = {};
+  // 포탑 Lv1 / Lv5
+  for (const [id, def] of Object.entries(turrets)) {
+    const m = createTurretModel(def);
+    out[`turret_${id}`] = snap(m.group);
+    const m5 = createTurretModel(def);
+    m5.stars.forEach((s) => { s.visible = true; });
+    m5.crown.visible = true;
+    out[`turret_${id}_lv5`] = snap(m5.group);
+  }
+  // 기지 단계
+  for (const [lv, def] of Object.entries(buildings.baseLevels)) out[`base_${lv}`] = snap(createBaseModel(def.model).group);
+  // 부속 건물
+  for (const [id, def] of Object.entries(buildings.buildings)) out[`facility_${id}`] = snap(createFacilityModel(def.model).group);
+  // 벽
+  for (const id of Object.keys(buildings.walls)) {
+    const g = new THREE.Group();
+    for (let i = 0; i < 3; i++) {
+      const w = new Wall(fakeCtx, id, 1, i, 0);
+      w.hpBar.group.visible = false;
+      w.mesh.position.set(i - 1, 0, 0);
+      g.add(w.mesh);
+    }
+    out[`wall_${id}`] = snap(g, { yaw: 0.6 });
+  }
+  return out;
+};
+
 window.renderAll = () => {
   const out = {};
   // 몬스터
@@ -120,30 +150,7 @@ window.renderAll = () => {
     g.rotation.y = -Math.PI / 2;
     out[`weapon_${id}`] = snap(g, { yaw: 0.9, pitch: 0.7, ground: false });
   }
-  // 포탑 Lv1 / Lv5
-  for (const [id, def] of Object.entries(turrets)) {
-    const m = createTurretModel(def);
-    out[`turret_${id}`] = snap(m.group);
-    const m5 = createTurretModel(def);
-    m5.stars.forEach((s) => { s.visible = true; });
-    m5.crown.visible = true;
-    out[`turret_${id}_lv5`] = snap(m5.group);
-  }
-  // 기지 단계
-  for (const [lv, def] of Object.entries(buildings.baseLevels)) out[`base_${lv}`] = snap(createBaseModel(def.model).group);
-  // 부속 건물
-  for (const [id, def] of Object.entries(buildings.buildings)) out[`facility_${id}`] = snap(createFacilityModel(def.model).group);
-  // 벽
-  for (const id of Object.keys(buildings.walls)) {
-    const g = new THREE.Group();
-    for (let i = 0; i < 3; i++) {
-      const w = new Wall(fakeCtx, id, 1, i, 0);
-      w.hpBar.group.visible = false;
-      w.mesh.position.set(i - 1, 0, 0);
-      g.add(w.mesh);
-    }
-    out[`wall_${id}`] = snap(g, { yaw: 0.6 });
-  }
+  Object.assign(out, window.renderBuild());
   // 채집 노드
   let seed = 7;
   const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);

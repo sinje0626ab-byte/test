@@ -40,12 +40,12 @@ export class Building {
     this.model = createBaseModel(levelDef.model);
     this.mesh.add(this.model.group);
 
-    const lamp = new THREE.Mesh(new THREE.OctahedronGeometry(0.14, 0), new THREE.MeshBasicMaterial({ color: 0xffd98a }));
+    const lamp = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.19, 0.13), new THREE.MeshBasicMaterial({ color: 0xffd98a }));
     lamp.position.set(...this.model.lantern);
     this.model.group.add(lamp);
     this.lanternMesh = lamp;
     this.light.position.set(this.model.lantern[0], this.model.lantern[1] + 0.5, this.model.lantern[2] + 0.2);
-    this.hpBar.group.position.y = levelDef.model === 'tent' ? 3.4 : 4.2;
+    this.hpBar.group.position.y = (this.model.top ?? 3) + 0.5;
 
     const ringGeo = new THREE.RingGeometry(levelDef.areaRadius - 0.12, levelDef.areaRadius, 96, 1);
     ringGeo.rotateX(-Math.PI / 2);
@@ -82,7 +82,7 @@ export class Building {
     const night = 1 - this.ctx.time.daylight;
     this.light.intensity = night * 9;
     this.lanternMesh.visible = night > 0.1;
-    this.model.flag.rotation.y = Math.sin(this.ctx.time.elapsed * 3) * 0.3;
+    this.model.flags.forEach((f, i) => { f.rotation.y = Math.sin(this.ctx.time.elapsed * 3 + i * 1.7) * 0.3; });
     this.model.group.rotation.z = this.alive ? 0 : 0.12; // 무너진 건물은 기울어진다
     const e = this.flash > 0 ? 0.6 : 0;
     for (const m of this.model.mats) m.emissive.setRGB(e, e * 0.3, e * 0.3);
