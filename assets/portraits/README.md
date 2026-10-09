@@ -15,7 +15,7 @@
 | `rapper.webp` | 들너구리 | 명예 국무위원 · 국가 래퍼 |
 | `security-chief.webp` | 부카니스탄 | 추모안보실장 (서열 5위) |
 | `former-correction-chief.webp` | 애국좌수 | 초대 추모교정국장 (전임) |
-| `info-chief.webp` | 추모열사 | 추모정보원장 · 국무위원 (서열 7위) |
+| `info-chief.webp` | 추모열사 | 추모정보원장 (서열 7위) |
 
 ## 규칙
 
