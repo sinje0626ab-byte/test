@@ -3,6 +3,7 @@ const KEY = 'grassland-rpg-settings';
 const DEFAULTS = {
   musicVolume: 0.7,
   sfxVolume: 0.8,
+  ambVolume: 0.8, // 환경음 (새·바람·벌레 소리)
   shake: true,
   shadows: 'high', // off | low | high (터치 기기는 처음에 low)
   outline: true, // 툰 외곽선 (core/OutlinePass.js)

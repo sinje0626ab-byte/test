@@ -125,7 +125,7 @@ src/
     StatusSystem.js    # 상태 이상 (독·감속)
     BuffSystem.js      # 소모품 버프 (남은 시간·효과)
     FeedbackSystem.js  # 타격 연출 (히트스톱·화면 흔들림·파티클). 게임 로직은 건드리지 않는다
-    SoundSystem.js     # 효과음 (이벤트 → 합성음)
+    SoundSystem.js     # 효과음 (이벤트 → 녹음 파일 src/sfx, 없으면 합성음) · 발소리 · 환경음
     MusicSystem.js     # 배경음 (지역·낮밤·습격·보스에 따라 합성 루프)
     LootSystem.js
     InventorySystem.js
@@ -230,6 +230,7 @@ src/
     bounties.json      # 현상금 의뢰 템플릿
     models.json        # 3D 모델 목록 (원본·키·색 바꾸기·지울 소품·동작 이름)
   music/               # 배경음 곡 파일 *.mp3 (title·grassland·forest·night·village …, 4-1-3)
+  sfx/                 # 효과음 파일 <키>_<번호>.mp3 (tools/sfx-import.mjs 가 만든다, CC0, CREDITS.md)
   models/              # *.glb (tools/model-import.mjs 가 만든다, CC0, CREDITS.md)
 ```
 
@@ -264,6 +265,13 @@ src/
 ### 4-1-3. 사운드 (Phase 7)
 - 외부 파일 없이 Web Audio로 합성. 효과음 정의는 `sounds.json`의 `sfx` (음 여러 개: 파형·주파수·끝 주파수·길이·지연·음량, 노이즈)
 - 같은 효과음은 한 프레임에 1번만, 동시 재생 최대 `maxVoices`, 플레이어에서 `maxDistance` m 넘으면 무음 (가까울수록 크게)
+- **녹음 효과음 (`src/sfx/`, 효과음 전면 개편)**: 키마다 파일이 있으면 합성음 대신 튼다(없으면 `sfx` 합성음, 새 키는 `fallback` 의 합성음). 모두 CC0 (Kenney Impact·RPG·Interface·UI·Jingles·Sci-fi, OpenGameArt RPG Sound Pack·80/100/25 CC0·Swishes·Battle·Tinysized·Cure·Horn·Birds·Park·Crickets — `src/sfx/CREDITS.md`)
+  - 만들기: `node tools/sfx-import.mjs <원본 폴더> [ffmpeg]` — 표(`MAP`)대로 원본을 골라 앞 침묵 자르기·길이 제한(끝은 짧게 사라짐)·크기 맞추기(평균 음량 목표, 최대 −1dB)·모노 mp3 96k(환경음 64k) → `src/sfx/<키>_<번호>.mp3`. ffmpeg 이 없으면 `npm i ffmpeg-static` 의 것
+  - 재생(`SoundSystem.sample`): 같은 키 여러 파일 중 무작위(바로 전 것 피함), 음높이 ±`pitchVar`·크기 ±`gainVar` 흔들기, 거리 감쇠 + 좌우(`panDistance` m 에서 끝까지, 최대 0.7), 동시 재생 `maxSampleVoices`(16) 넘으면 `priority` 낮은(같으면 오래된) 소리를 끈다. 키별 값은 `sounds.json` `samples`(`default` 위에 덮음)
+  - 파일은 첫 클릭으로 오디오가 켜진 뒤 뒤에서 읽는다(시작을 막지 않음, 다 읽기 전엔 합성음). 환경음은 마지막
+  - 키: 휘두르기 swing(창은 높게)·swing_heavy(망치·돌진·회전) / 활 bow / 타격 hit_<재질>(soft 슬라임류·wood 버섯·선인장·그루터기·나무 정령·굴렁덤불·stone 밤 골렘·전갈·ice 얼음 골렘·거인·요정·눈사람, 그 밖 flesh — `sounds.json` `materials`) + 치명타 crit 겹침 / 처치 pop(작을수록 높게, 슬라임류는 squish 겹침) / 피격 hurt / 구르기 roll / 반격 counter+crit / 기절 stunned / 몬스터 투사체 spit / 두더지 dirt / 폭발 boom / 포탑 bow·bow(석궁 낮게)·gun·cannon·spit(독침)·hit_ice(서리) / 보스 등장·페이즈·분노 roar, 처치 victory, 패턴 slam / 채집 chop·mine(얼음 기둥 mine_ice)·rustle, 완료 gathered / 동전 coin(상점 사고팔기도), 줍기 pickup, 희귀 이상 rare / 레벨업 levelup · 퀘스트 quest · 의뢰·기지 업그레이드 jingle / 마시기 drink · 응급 처치 heal / 강화·제작 anvil / 건설 build · 습격 horn · 아침 birds / 창 open·close, 버튼 click·tab·tick, 대화 글자 3개마다 talk(`dialogue:blip`), `notify` kind error → error
+  - **발소리**: 플레이어 다리 흔들림(`walkPhase`) 반 바퀴마다 바닥 소리 — 초원 step_grass · 숲 step_dirt · 사막 step_sand · 설원 step_snow (달리면 조금 크게, 구르는 중엔 없음)
+  - **환경음**: 게임 중(`state === 'play'`)에만. 밤 amb_night(벌레), 낮 초원 amb_birds · 숲 amb_forest · 사막·설원 amb_wind. 바뀌면 `ambience.fade`초 엇갈려 바꾸고, 끝나기 `overlap`초 전에 다음 판을 겹쳐 시작해 끊김 없이 반복. 크기 `ambience.gain` × 설정 **환경음**(`ambVolume`) — 효과음 볼륨에도 따른다
 - 배경음: 펜타토닉 음계를 느린 템포로 합성하는 루프. 지역·낮밤마다 조성·음높이·템포가 다르고(초원 낮 = 밝은 장조, 밤 = 단조·저음), 습격 중엔 북 리듬, 보스전은 빠른 템포
 - 브라우저 정책상 첫 클릭/터치(타이틀 화면) 때 AudioContext를 시작한다
 - **곡 파일**(`src/music/<이름>.mp3`, Suno 로 만든 곡): 그 상황의 곡이 있으면 합성 음악 대신 튼다 (`MusicSystem`). 고르는 순서: 타이틀 `title` · 엔딩 `ending` · 밤의 군주 `nightlord` · 보스전 `boss` · 습격 `raid` · 기지 생활 창(상점·대장간·작업대·창고·텃밭·택배) `village` · 밤 `night` · 낮에 기지 영역 안 `village` · 그 밖엔 지역 이름(`grassland`·`forest`·`desert`·`snow`)

@@ -26,6 +26,7 @@ export class SettingsPanel {
       <div class="set-list">
         <label><span>배경음</span>${slider('musicVolume')}</label>
         <label><span>효과음</span>${slider('sfxVolume')}</label>
+        <label><span>환경음</span>${slider('ambVolume')}</label>
         <div class="set-row"><span>화면 흔들림</span>${toggle('shake')}</div>
         <div class="set-row"><span>데미지 숫자</span>${toggle('damageNumbers')}</div>
         <div class="set-row"><span>그림자</span>${seg('shadows')}</div>

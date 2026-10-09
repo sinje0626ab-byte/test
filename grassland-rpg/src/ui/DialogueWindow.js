@@ -62,7 +62,11 @@ export class DialogueWindow {
       return;
     }
     if (this.done) return;
+    const before = Math.floor(this.shown);
     this.shown = Math.min(this.full.length, this.shown + this.speed * dt);
+    // 글자 3개마다 작은 '뽁' (빈칸은 건너뜀)
+    const now = Math.floor(this.shown);
+    if (Math.floor(now / 3) > Math.floor(before / 3) && this.full[now - 1]?.trim()) this.ctx.bus.emit('dialogue:blip');
     this.textEl.textContent = this.full.slice(0, Math.floor(this.shown));
     if (this.shown >= this.full.length) {
       this.done = true;
