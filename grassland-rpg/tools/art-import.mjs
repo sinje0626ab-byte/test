@@ -99,7 +99,23 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
   };
   const boxes = [];
   for (const [y0, y1] of runs(H, (y) => { for (let x = 0; x < W; x++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(H * 0.006)))) {
-    const cols = runs(W, (x) => { for (let y = y0; y <= y1; y++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(W * 0.006)));
+    let cols = runs(W, (x) => { for (let y = y0; y <= y1; y++) if (on(x, y)) return true; return false; }, Math.max(6, Math.round(W * 0.006)));
+    // 반짝이·빛 번짐으로 두 그림이 붙었으면(한 줄에서 다른 것보다 1.6배 넘게 넓음) 가운데쯤 가장 가는 세로줄에서 나눈다
+    const widths = cols.map(([x0, x1]) => x1 - x0 + 1).sort((p, q) => p - q);
+    const med = widths[Math.floor(widths.length / 2)];
+    if (cols.length > 2) {
+      cols = cols.flatMap(([x0, x1]) => {
+        const w = x1 - x0 + 1;
+        if (w < med * 1.6) return [[x0, x1]];
+        let best = -1; let bestN = Infinity;
+        for (let x = x0 + Math.round(w * 0.3); x <= x0 + Math.round(w * 0.7); x++) {
+          let n = 0;
+          for (let y = y0; y <= y1; y++) if (on(x, y)) n++;
+          if (n < bestN) { bestN = n; best = x; }
+        }
+        return [[x0, best - 1], [best + 1, x1]];
+      });
+    }
     cols.forEach(([x0, x1], k) => {
       // 세로로 다시 좁힌다
       let t = y1; let b = y0;
