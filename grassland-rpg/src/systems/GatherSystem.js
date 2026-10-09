@@ -81,7 +81,7 @@ export class GatherSystem {
       if (dist - n.radius > a.range) continue;
       if (dist > n.radius && dir.divideScalar(dist).angleTo(a.dir) > half) continue;
       const done = n.hit(dmg);
-      this.ctx.bus.emit('gather:hit', { position: n.position.clone().setY(0.8), color: n.def.color, sound: n.def.sound });
+      this.ctx.bus.emit('gather:hit', { position: n.position.clone().setY(0.8), color: n.def.color, sound: n.def.sound, node: n.type });
       if (done) this.deplete(n);
     }
   }

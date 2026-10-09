@@ -102,7 +102,7 @@ export class CombatSystem {
     const { amount, crit } = this.calcDamage(atk, m.stats.defense, counter ? 1 : a.critChance, a.critMultiplier, pierce);
     const killed = m.takeDamage(amount, d.multiplyScalar(a.knockback));
     if (counter) m.behavior.countered(m);
-    this.ctx.bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color });
+    this.ctx.bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color, type: m.type });
     if (killed) {
       this.killed(m, true);
       return;
@@ -120,7 +120,7 @@ export class CombatSystem {
     const { amount, crit } = this.calcDamage(damage, monster.stats.defense, player.stats.turretCrit ?? 0, player.base.critMultiplier, armorPierce);
     if (monster.raid && turret?.alive && Math.random() < this.ctx.data.config.raid.retargetChance) monster.aggro = turret;
     const killed = monster.takeDamage(amount, d.clone().multiplyScalar(this.cfg.projectileKnockback));
-    this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster', source: 'turret', color: monster.def.color });
+    this.ctx.bus.emit('combat:hit', { position: monster.position.clone(), amount, crit, target: 'monster', source: 'turret', color: monster.def.color, type: monster.type });
     if (killed) this.killed(monster);
     else if (effect) this.ctx.bus.emit('status:apply', { target: monster, ...effect });
   }
