@@ -154,4 +154,27 @@ window.renderAll = () => {
   }
   return out;
 };
+// 장비 입은 플레이어 한 장씩: [{ key, head, body, feet, weapon }] (아이템 id) → { key: dataURL }
+window.renderGear = (list, { yaw = 0.35 } = {}) => {
+  const I = items.items;
+  const out = {};
+  for (const w of list) {
+    if (w.weaponOnly) {
+      const g = new THREE.Group();
+      g.add(createWeaponMesh(I[w.weaponOnly].weaponType ?? 'sword', I[w.weaponOnly].color, w.weaponOnly));
+      out[w.key] = snap(g, { yaw: 0.9, pitch: 0.7, ground: false });
+      continue;
+    }
+    const m = createPlayerModel(player);
+    applyAppearance(m, { head: I[w.head], body: I[w.body], feet: I[w.feet] }, { hair: '#7a4b2a', clothes: '#8fc4e8', accessory: 'none' });
+    if (w.weapon) {
+      m.swordPivot.remove(m.weapon);
+      m.swordPivot.add(createWeaponMesh(I[w.weapon].weaponType ?? 'sword', I[w.weapon].color, w.weapon));
+    }
+    m.group.remove(m.trail, m.spinTrail);
+    if (w.hideWeapon) m.swordPivot.visible = false;
+    out[w.key] = snap(m.group, { yaw: w.yaw ?? yaw });
+  }
+  return out;
+};
 window.renderReady = true;

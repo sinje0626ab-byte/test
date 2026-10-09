@@ -45,7 +45,8 @@
 ### 아트 카탈로그 (`docs/art/`) — 그림 교체(외부 생성 이미지)용
 - `tools/artbook.mjs <출력 폴더>`(+`artbook.css`): 모든 그림(아이템·장비 칸·스킬·건설 SVG, 3D 렌더 `img/`, 게임 화면 `shots/`)을 카드(이름·id·교체 경로)로 모은 `artbook.html`. `.sheet` 마다 PNG 시트, 전체는 A4 PDF
 - `docs/art/ArtCatalog.pdf` · `sheets/*.png`(11장) · `ref/*.png`(그림 한 장씩) · `GPT_PROMPTS.md`(ChatGPT 의뢰 프롬프트, 파일 이름 규칙 `art/<종류>/<id>.png`)
-- **새 그림 넣기**: `node tools/art-import.mjs <그림> items <id...>` — 투명 배경 그림(한 장에 여러 개면 빈 틈으로 나눠 왼쪽 위부터 순서대로)을 여백 자르고 256×256 webp 로 `src/art/items/<id>.webp`. 흰 배경·회색 안개는 지우고 밝은 반투명 빛 번짐은 옅게(어두운 퀵슬롯용). 목록은 `src/ui/painted.js`(`PAINTED.items/skills/build/portraits`). 스킬 배지 `skills`(`skillArt()`), 건설 `build`(`buildArt()`), 몬스터 초상화 `portraits/monster_<id>`(`monsterPortrait()`, 못 만난 몬스터는 도감 CSS 가 검은 그림자로), 색이 틀린 배지는 `tools/art-recolor.mjs`. `itemArt()` 는 그 파일이 있으면 SVG 대신 그림(`<image>`, 등급 받침·CSS 크기 그대로, 클래스 `painted`). 노드 도구에선(`import.meta.env` 없음) 늘 SVG
+- **새 그림 넣기**: `node tools/art-import.mjs <그림> items <id...>` (반짝이·빛 번짐으로 그림 여럿이 붙으면 한 줄에서 다른 것보다 1.6배 넘게 넓은 덩어리를 폭으로 개수를 어림해 가장 가는 세로줄에서 나눈다) (바탕이 흰색이 아니라 옅은 크림·회색이면 `ART_BG=170` 처럼 밝기 기준을 준다) — 투명 배경 그림(한 장에 여러 개면 빈 틈으로 나눠 왼쪽 위부터 순서대로)을 여백 자르고 256×256 webp 로 `src/art/items/<id>.webp`. 흰 배경·회색 안개는 지우고 밝은 반투명 빛 번짐은 옅게(어두운 퀵슬롯용). 목록은 `src/ui/painted.js`(`PAINTED.items/skills/build/portraits`). 스킬 배지 `skills`(`skillArt()`), 건설 `build`(`buildArt()`), 몬스터 초상화 `portraits/monster_<id>`(`monsterPortrait()`, 못 만난 몬스터는 도감 CSS 가 검은 그림자로), 색이 틀린 배지는 `tools/art-recolor.mjs`. `itemArt()` 는 그 파일이 있으면 SVG 대신 그림(`<image>`, 등급 받침·CSS 크기 그대로, 클래스 `painted`). 노드 도구에선(`import.meta.env` 없음) 늘 SVG
+- render.js `window.renderGear([{ key, head, body, feet, weapon, hideWeapon, weaponOnly }])` — 장비 입은 플레이어·무기 한 장씩 (외형 확인용)
 - render.js 는 캐릭터 만들기 선택지(`char_acc_*`·`char_hair_*`·`char_clothes_*`)도 그리고, `night_*` 몬스터는 게임처럼 밤 모습으로 그린다
 
 ### 실행
@@ -87,6 +88,7 @@ src/
     PlayerModel.js     # 플레이어 모양, 장비 외형 반영
     weaponModels.js    # 무기 아이템별 3D 모양 (재질·장식)
     gearModels.js      # 머리 장비별 모자, 몸 장비 세트 장식(잎 깃·망토·털 칼라), 신발 장식
+    gearLooks.js       # 확장 장비 56종(머리·몸·신발)의 3D 모양 — 종류별 만들기 + 아이템별 색·장식 표(LOOKS)
     PlayerAttack.js    # 무기 종류별 공격 (베기·찌르기·내려치기·활 쏘기)
     PlayerRoll.js      # 회피 구르기
     PlayerDash.js      # 돌진 베기 (액티브 스킬) 이동·판정
@@ -577,6 +579,10 @@ src/
 - **모양은 데이터로** (`items.json` 의 `style`): 무기 `{ type: sword|spear|hammer|bow, blade/guard/grip/head/shaft/limb/gem/rune/kind… }` → 아이콘(`itemArt.styleArt`)과 3D(`weaponModels.styleSpec`)가 같은 옵션으로 그린다 (재질 이름 MAT·팔레트 이름 M·#색). 방어구·장신구 `{ from: 기존 아이템 id, hue, sat }` → 그 아이콘(새 그림이 있으면 그 그림)에 SVG 색 돌리기, 3D 모자·옷 장식·신발은 그 모양을 복제해 색상만 돌린다(`gearModels.addVariants`). 옷·신발 색은 `color`(미리 돌린 색)
 - **지역 장비 풀**(`pool`): 필드 몬스터를 잡으면 그 지역 풀에서 등급마다 굴려 가장 높은 하나 (`config.gearDrop.chances` 일반 2.5% · 고급 1.2% · 희귀 0.4% · 영웅 0.1%, 정예 × `elite.dropBonus`, 밤 × 1.3, 보스 × 25, 박사의 돋보기 드롭률 반영). 습격 몬스터는 굴리지 않는다. 기존 지역 장비도 풀에 들어 있고, 보스 전용(선인장 왕관·거인의 심장·고목 활·고목 씨앗·왕젤리 왕관·새벽검 등)은 풀에 없다
 - 몬스터 드롭표의 장비 확률도 등급으로 낮췄다: 일반 3% · 고급 1.5% · 희귀 0.5% (보스 확정 드롭은 그대로)
+- **새 그림 132종**(`src/art/items/<id>.webp`, ChatGPT 묶음 1~14, 원본 `docs/art/incoming/gear_batch_NN.webp`, 의뢰문 `docs/art/PROMPTS_GEAR.md`). 아이콘은 자기 그림이 있으면 그것(색 돌리기 없음)
+- **입었을 때 3D**(`entities/gearLooks.js`): 머리·몸·신발 56종은 색만 돌린 복제가 아니라 그림과 같은 생김새 — 머리 `kind` brim(챙 모자)·cap(둥근 모자: 줄무늬·더듬이·방울·귀덮개·젤리 점)·hood(두건: 털 테·귀·뿔·브로치·베일, 머리카락 숨김 `hideHair`)·crown(wreath 들꽃·branch 가지·spikes 태양·crystals 얼음)·mushroom·turban / 몸: 옷 색 + 허리띠·버클·줄무늬·칼라(fur·turtle·wrap·leaf·petal·spikes)·밑단·긴 자락(robe)·등 망토(cape)·등 두건·어깨받이·판갑·비늘·단추·주머니·보석 / 신발: 발 색 + 장화 껍데기·털 테·금 테·줄무늬·끈·밑창·샌들 끈·방울·새싹·리본·털 덩어리·말린 코·발톱·날개·보석. 신발 장식은 발 메시에 붙어 걸을 때 같이 움직인다 (`createGear(inner, [footL, footR])`, `gear.footwear`). 옷·발 색은 `LOOKS[id].color`
+- **무기 3D 모양 옵션**(`items.json` style → `weaponModels`): 검 `curve`(휜 날, 0.7~1)·`fang`(끝이 가늘어짐)·`short`·`guardKind`(leaf·mushroom)·`vines`·`spines`·`drip` / 창 `kind` cone(줄무늬 벌침, `stripe`)·sun(빛살)·glaive(휜 언월도 + 포자 빛 `glow`)·horn·stinger·ice·point / 망치 `kind` log·stump(뿌리·이끼)·ball(눈덩이)·rock·mace(`spike` 재질, `emblem` 빛 문양, `moss`)·ice·block / 활 `harp`(빛나는 줄)·`feathers`·`leaves`
+- 게임의 아이템 정의(ctx.data)와 PlayerModel 이 읽은 items.json 은 다른 객체일 수 있어서, 외형은 부위+이름으로도 id 를 찾는다 (`itemId`) — 예전엔 이 때문에 모든 모자가 둥근 기본 모자로 보였다
 
 ### 4-4-3. 장비 강화 (Phase 12, 대장간)
 - +1 ~ +5. 단계마다 기본 능력치 +12% (`config.enhance`). 켜고 끄는 능력치(감속 면역·화살 추가)는 그대로

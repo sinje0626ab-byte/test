@@ -27,7 +27,9 @@ const data = `data:image/${ext};base64,${fs.readFileSync(file).toString('base64'
 const browser = await chromium.launch();
 const page = await browser.newPage();
 if (process.env.ART_DEBUG) page.on('console', (m) => console.log(m.text()));
-const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
+// ART_BG=<밝기> : 흰색이 아닌 옅은 크림·회색 바탕(가장자리 어두워짐 포함)일 때, 그 밝기 넘고 채도가 낮은 픽셀도 바탕으로 본다
+const LOOSE = Number(process.env.ART_BG) || 0;
+const res = await page.evaluate(async ({ data, SIZE, FILL, LOOSE }) => {
   const img = new Image();
   img.src = data;
   await img.decode();
@@ -45,7 +47,7 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
   const bg = (i) => {
     const r = a[i * 4]; const gg = a[i * 4 + 1]; const bb = a[i * 4 + 2]; const al = a[i * 4 + 3];
     const lo = Math.min(r, gg, bb); const hi = Math.max(r, gg, bb);
-    return al < 20 || lo > 228 || (al < 140 && hi - lo < 25 && (r + gg + bb) / 3 > 150);
+    return al < 20 || lo > 228 || (al < 140 && hi - lo < 25 && (r + gg + bb) / 3 > 150) || (LOOSE > 0 && lo > LOOSE && hi - lo < 45);
   };
   const seen = new Uint8Array(W * H);
   const stack = [];
@@ -152,7 +154,7 @@ const res = await page.evaluate(async ({ data, SIZE, FILL }) => {
     og.drawImage(c, bx.x, bx.y, bx.w, bx.h, (SIZE - bx.w * s) / 2, (SIZE - bx.h * s) / 2, bx.w * s, bx.h * s);
     return { box: bx, url: o.toDataURL('image/webp', 0.92) };
   }).map((r) => ({ ...r, cleared: +(cleared / (W * H)).toFixed(2) }));
-}, { data, SIZE, FILL });
+}, { data, SIZE, FILL, LOOSE });
 await browser.close();
 
 if (res.length !== ids.length) console.warn(`⚠ 그림 ${res.length}개를 찾았는데 이름은 ${ids.length}개입니다. 앞에서부터 맞춥니다.`);

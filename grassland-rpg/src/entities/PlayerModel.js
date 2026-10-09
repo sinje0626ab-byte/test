@@ -2,8 +2,12 @@ import * as THREE from 'three';
 import items from '../data/items.json';
 import { buildWeapon, addEnhanceLook } from './weaponModels.js';
 import { createGear, showGear, CLOTH, SHOES } from './gearModels.js';
+import { LOOKS } from './gearLooks.js';
 
 const idOf = new Map(Object.entries(items.items).map(([id, def]) => [def, id]));
+// 게임 쪽 아이템 정의(ctx.data)는 이 모듈이 읽은 items.json 과 다른 객체일 수 있다 → 부위+이름으로도 찾는다
+const idByName = new Map(Object.entries(items.items).map(([id, def]) => [`${def.equipSlot}|${def.name}`, id]));
+const itemId = (def) => def && (idOf.get(def) ?? idByName.get(`${def.equipSlot}|${def.name}`));
 
 const flat = (color) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.8 });
 const DEFAULT = { body: '#5b8def', feet: '#6b4a36', blade: '#e8eef5' };
@@ -147,7 +151,7 @@ export function createPlayerModel(base) {
   inner.add(body, head, hair, leaf, flower, ribbon, eyeL, eyeR, face, footL, footR, swordPivot, armL.group);
   inner.traverse((o) => { if (o.isMesh) o.castShadow = true; });
   face.traverse((o) => { o.castShadow = false; });
-  const gear = createGear(inner);
+  const gear = createGear(inner, [footL, footR]);
   g.add(inner);
 
   const trail = createTrail(base.attackRange, base.attackArcDeg);
@@ -167,13 +171,13 @@ export function createPlayerModel(base) {
 // look = { hair, clothes, accessory }
 export function applyAppearance(model, items, look = {}) {
   const { head, body, feet } = items;
-  const ids = { head: idOf.get(head), body: idOf.get(body), feet: idOf.get(feet) };
+  const ids = { head: itemId(head), body: itemId(body), feet: itemId(feet) };
   showGear(model.gear, ids, head?.color);
   for (const [id, m] of Object.entries(model.accessories)) m.visible = !head && id === (look.accessory ?? 'sprout');
   model.hair.material.color.set(look.hair ?? '#7a4b2a');
-  model.hair.visible = !head || ids.head !== 'desert_hood';
-  model.bodyMat.color.set(body ? CLOTH[ids.body] ?? body.color : look.clothes ?? DEFAULT.body);
-  model.footMat.color.set(feet ? SHOES[ids.feet] ?? feet.color : DEFAULT.feet);
+  model.hair.visible = !head || (ids.head !== 'desert_hood' && !LOOKS[ids.head]?.hideHair);
+  model.bodyMat.color.set(body ? LOOKS[ids.body]?.color ?? CLOTH[ids.body] ?? body.color : look.clothes ?? DEFAULT.body);
+  model.footMat.color.set(feet ? LOOKS[ids.feet]?.color ?? SHOES[ids.feet] ?? feet.color : DEFAULT.feet);
 }
 
 export const DEFAULT_BLADE = DEFAULT.blade;
