@@ -1,0 +1,58 @@
+/* 중단 화면 그림 판 (.pause.pp, 그림: src/art/ui/pause_*, ChatGPT) — theme-cozy 다음에 읽는다
+   나무 틀 그림을 카드 전체에 깔고, 리본 위에 제목, 그 위에 조는 부엉이, 버튼은 사탕 그림(양 끝은 늘이지 않음) + 아이콘 */
+.pause.pp .t-card {
+  position: relative; overflow: visible; max-height: none;
+  --cw: min(360px, 90vw, calc(86vh * 0.6)); /* 안쪽 여백도 카드 폭 기준 (% 는 화면 폭 기준이라 PC 에서 틀어진다) */
+  width: var(--cw); aspect-ratio: 626 / 968;
+  padding: calc(var(--cw) * 0.25) calc(var(--cw) * 0.105) calc(var(--cw) * 0.08); box-sizing: border-box;
+  background: var(--pp-frame) center / 100% 100% no-repeat; border: 0; border-radius: 0; box-shadow: none;
+  filter: drop-shadow(0 14px 22px rgba(40, 25, 10, 0.35));
+  display: flex; flex-direction: column; justify-content: center;
+}
+.pause.pp .pp-ribbon {
+  position: absolute; left: -4%; right: -4%; top: 1%; aspect-ratio: 707 / 246;
+  background: var(--pp-ribbon) center / 100% 100% no-repeat;
+  display: flex; align-items: center; justify-content: center; pointer-events: none;
+}
+.pause.pp .pp-ribbon h2 {
+  margin: -6% 0 0; font-size: clamp(19px, 6.6vw, 26px); color: #5b3a26; letter-spacing: 0.02em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.pause.pp .pp-owl {
+  position: absolute; left: 33%; width: 40%; top: -13%; aspect-ratio: 519 / 359; z-index: 1;
+  background: var(--pp-owl) center / contain no-repeat; pointer-events: none;
+  transform-origin: 50% 90%; animation: pp-doze 3.2s ease-in-out infinite;
+}
+@keyframes pp-doze { 50% { transform: translateY(2px) scale(1.03, 0.97); } }
+.pause.pp .pause-menu { width: 100%; align-self: stretch; gap: clamp(6px, 1.6vh, 11px); }
+.pause.pp .pp-btn span { white-space: nowrap; }
+/* 사탕 버튼: 양 끝 둥근 부분(그림 높이의 절반)은 그대로, 가운데만 늘인다 */
+.pause.pp .t-card button.pp-btn {
+  --h: clamp(46px, 7.4vh, 58px);
+  display: flex; align-items: center; height: var(--h); width: 100%; padding: 0; margin: 0;
+  border-style: solid; border-width: 0 calc(var(--h) * 0.5); border-color: transparent;
+  border-image: var(--pp-btn) 0 124 fill / 0 calc(var(--h) * 0.5) stretch;
+  background: none; box-shadow: none; border-radius: 0; filter: none;
+  font-family: var(--font-title); font-size: clamp(16px, 4.8vw, 20px); color: #5b3a26; text-shadow: none;
+  transition: transform 0.08s, filter 0.12s;
+}
+.pause.pp .t-card button.pp-btn[data-kind="main"] { border-image-source: var(--pp-btn-main); color: #fff; text-shadow: 0 2px 0 #4f9a3a, 0 0 2px #4f9a3a; }
+.pause.pp .t-card button.pp-btn[data-kind="title"] { border-image-source: var(--pp-btn-title); }
+.pause.pp .t-card button.pp-btn:hover { transform: translateY(-1px); filter: brightness(1.05) saturate(1.06); }
+.pause.pp .t-card button.pp-btn:active { transform: translateY(2px) scale(0.98); filter: brightness(0.97); }
+.pause.pp .pp-ic {
+  flex: none; width: calc(var(--h) * 0.86); height: calc(var(--h) * 0.86); margin-left: calc(var(--h) * -0.18);
+  background: center / contain no-repeat; filter: drop-shadow(0 2px 1px rgba(60, 40, 20, 0.2));
+}
+.pause.pp .pp-btn span { flex: 1; text-align: center; padding-right: calc(var(--h) * 0.5); line-height: 1.05; }
+.pause.pp .pp-btn small { display: block; margin-top: 1px; font-family: var(--font-body); font-size: 11px; color: #7a5a44; }
+.pause.pp .pp-btn[data-kind="title"] small { color: #7a4a3a; }
+/* 가로 휴대폰(높이 ≤ 500px): 비율을 풀어 카드를 넓고 낮게 (틀 그림은 늘여 깐다), 리본·부엉이는 작게 */
+@media (max-height: 500px) {
+  .pause.pp .t-card { --cw: 330px; aspect-ratio: auto; height: min(94vh, 380px); padding: 62px 34px 24px; }
+  .pause.pp .pp-ribbon { left: 12%; right: 12%; top: 2px; }
+  .pause.pp .pp-ribbon h2 { font-size: 18px; }
+  .pause.pp .pp-owl { width: 26%; left: 37%; top: -34px; }
+  .pause.pp .t-card button.pp-btn { --h: 44px; font-size: 16px; }
+  .pause.pp .pause-menu { gap: 5px; }
+}

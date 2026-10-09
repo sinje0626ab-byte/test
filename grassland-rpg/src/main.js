@@ -6,6 +6,7 @@ import './ui/title.css';
 import './ui/polish.css';
 import './ui/mobile.css';
 import './ui/theme-cozy.css';
+import './ui/pause-art.css';
 import config from './data/config.json';
 import player from './data/player.json';
 import monsters from './data/monsters.json';
