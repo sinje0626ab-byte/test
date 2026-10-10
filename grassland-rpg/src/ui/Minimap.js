@@ -1,6 +1,6 @@
 import { marker, preloadMarkers } from './mapIcons.js';
 // 미니맵: HUD 오른쪽 위(골드 아래) 둥근 지도. 지도 창과 같은 탐험 칸·지역 색을 쓰고,
-// 기지·보스 둥지·주민·퀘스트 목표를 점으로. 플레이어는 가운데 (위 = 북쪽).
+// 기지·보스 둥지·주민·보물상자·몬스터(빨강, 습격 보라)·퀘스트 목표를 점으로. 플레이어는 가운데 (위 = 북쪽).
 export class Minimap {
   constructor(ctx, root) {
     this.ctx = ctx;
@@ -113,6 +113,18 @@ export class Minimap {
       if (c.opened) continue;
       const [qx, qy] = at(c.position.x, c.position.z);
       if (!marker(g, 'map_chest', qx, qy, 13, { pin: true })) dot(c.position.x, c.position.z, c.type === 'gold' ? '#ffd166' : c.type === 'silver' ? '#dfeaf2' : '#c8955a', 2.4, '#6b4a2a');
+    }
+    // 몬스터 (보스는 둥지 표시가 있으니 크게, 정예는 금빛 테, 습격은 보라)
+    for (const m of this.ctx.monsters ?? []) {
+      if (m.state === 'dead' || m.untargetable || Math.abs(m.position.x - px) > this.cfg.range || Math.abs(m.position.z - pz) > this.cfg.range) continue;
+      const [mx, my] = at(m.position.x, m.position.z);
+      g.fillStyle = m.raid ? '#9b7be0' : '#e0574a';
+      g.strokeStyle = m.elite || m.boss ? '#ffd166' : '#fff6e6';
+      g.lineWidth = m.elite || m.boss ? 1.6 : 1;
+      g.beginPath();
+      g.arc(mx, my, m.boss ? 4.5 : m.elite ? 3.2 : 2.4, 0, Math.PI * 2);
+      g.fill();
+      g.stroke();
     }
     if (this.ctx.tomb) {
       const [tx, ty] = at(this.ctx.tomb.position.x, this.ctx.tomb.position.z);

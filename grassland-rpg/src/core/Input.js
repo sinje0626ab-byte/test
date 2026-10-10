@@ -1,3 +1,5 @@
+const typing = (e) => /^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName ?? '') || e.target?.isContentEditable;
+
 // 키보드·마우스·터치 상태. 마우스 클릭은 캔버스에서만 받는다 (UI 창이 우선).
 // 터치 조작(TouchControls)은 virtualMove·virtualAttack·press()로 같은 입력을 만든다.
 export class Input {
@@ -15,7 +17,7 @@ export class Input {
     this.touchMode = window.matchMedia?.('(pointer: coarse)').matches || 'ontouchstart' in window;
 
     window.addEventListener('keydown', (e) => {
-      if (e.repeat) return;
+      if (e.repeat || typing(e)) return; // 글자 입력 칸(채팅 등)에 쓰는 동안은 게임 키가 아니다
       this.keys.add(e.code);
       this.pressed.add(e.code);
     });
@@ -52,6 +54,13 @@ export class Input {
 
   wasPressed(code) {
     return this.pressed.has(code);
+  }
+
+  // 채팅을 열 때: 누르고 있던 이동 키를 놓은 것으로
+  releaseAll() {
+    this.keys.clear();
+    this.pressed.clear();
+    this.mouseDown = false;
   }
 
   // 화면 버튼이 키를 한 번 누른 것처럼

@@ -9,6 +9,7 @@ import './ui/theme-cozy.css';
 import './ui/pause-art.css';
 import './ui/title-art.css';
 import './ui/ui-art.css';
+import './ui/hud-plus.css';
 import config from './data/config.json';
 import player from './data/player.json';
 import monsters from './data/monsters.json';

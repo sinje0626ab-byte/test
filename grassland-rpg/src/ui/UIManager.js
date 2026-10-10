@@ -34,8 +34,51 @@ export class UIManager {
     const win = { id, key, el, body: el.querySelector('.win-body'), onOpen: null, onClose: null, canOpen: null, onUpdate: null };
     el.addEventListener('pointerdown', () => this.focus(win));
     el.querySelector('.win-close').addEventListener('click', () => this.close(id));
+    this.bindDrag(win);
     this.windows.set(id, win);
     return win;
+  }
+
+  // PC: 제목줄을 잡고 끌면 창이 따라온다 (놓은 자리는 닫았다 열어도 그대로). 제목줄 두 번 누르면 원래 자리
+  bindDrag(win) {
+    const { el } = win;
+    const head = el.querySelector('.win-head');
+    head.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || e.pointerType === 'touch' || document.body.classList.contains('touch') || e.target.closest('button')) return;
+      const layer = this.layer.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      const ox = e.clientX - r.left;
+      const oy = e.clientY - r.top;
+      let moved = false;
+      const move = (ev) => {
+        if (!moved && Math.hypot(ev.clientX - e.clientX, ev.clientY - e.clientY) < 3) return;
+        if (!moved) {
+          moved = true;
+          el.classList.add('moved', 'dragging');
+          Object.assign(el.style, { right: 'auto', bottom: 'auto', transform: 'none' });
+        }
+        // 제목줄이 화면 밖으로 나가지 않게
+        const x = Math.min(Math.max(ev.clientX - ox, 60 - r.width), layer.width - 60);
+        const y = Math.min(Math.max(ev.clientY - oy, 0), layer.height - 48);
+        el.style.left = `${Math.round(x - layer.left)}px`;
+        el.style.top = `${Math.round(y - layer.top)}px`;
+      };
+      const up = () => {
+        el.classList.remove('dragging');
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', up);
+        window.removeEventListener('pointercancel', up);
+      };
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', up);
+      window.addEventListener('pointercancel', up);
+      e.preventDefault(); // 글자 고르기 막기
+    });
+    head.addEventListener('dblclick', (e) => {
+      if (e.target.closest('button') || !el.classList.contains('moved')) return;
+      el.classList.remove('moved');
+      for (const k of ['left', 'top', 'right', 'bottom', 'transform']) el.style[k] = '';
+    });
   }
 
   isOpen(id) {

@@ -1,0 +1,89 @@
+/* 채팅 말풍선 · 가까운 몬스터 · 창 끌기 · 가방 폭 (맨 마지막) */
+
+/* ── 채팅 입력 칸: 아래 가운데 유리 판 ── */
+.chat-bar {
+  position: absolute; left: 50%; bottom: 196px; transform: translateX(-50%); z-index: 60;
+  width: min(440px, calc(100vw - 32px)); pointer-events: auto;
+  display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+  animation: chat-in 0.18s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+.chat-bar[hidden] { display: none; }
+.chat-bar input {
+  width: 100%; box-sizing: border-box; padding: 11px 18px; border-radius: 999px; outline: none;
+  font: 500 15px/1.2 var(--font-body); color: #fff; caret-color: #ffe39a;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06)), rgba(48, 36, 22, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 10px 28px rgba(30, 22, 12, 0.3);
+  backdrop-filter: blur(14px) saturate(1.5); -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  text-shadow: 0 1px 2px rgba(30, 20, 10, 0.45);
+}
+.chat-bar input::placeholder { color: rgba(255, 255, 255, 0.72); }
+.chat-bar input:focus { border-color: rgba(255, 233, 170, 0.9); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 0 3px rgba(255, 220, 140, 0.25), 0 10px 28px rgba(30, 22, 12, 0.3); }
+.chat-bar small { align-self: center; font-size: 11px; color: rgba(255, 255, 255, 0.85); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); letter-spacing: 0.3px; }
+@keyframes chat-in { from { opacity: 0; translate: 0 8px; } }
+
+/* ── 머리 위 말풍선: 반투명 유리 + 금빛 이름 + 꼬리 ── */
+.chat-bubble {
+  position: absolute; left: 0; top: 0; z-index: 5; pointer-events: none; will-change: transform;
+  max-width: 260px; width: max-content; padding: 7px 14px 9px; border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px; margin-top: -12px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08) 55%, rgba(255, 246, 225, 0.14)), rgba(48, 36, 22, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -1px 0 rgba(255, 255, 255, 0.15), 0 8px 22px rgba(30, 22, 12, 0.28);
+  backdrop-filter: blur(10px) saturate(1.6); -webkit-backdrop-filter: blur(10px) saturate(1.6);
+}
+.chat-bubble[hidden] { display: none; }
+.chat-bubble::after {
+  content: ''; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px; translate: -50% 0; rotate: 45deg;
+  background: rgba(120, 105, 85, 0.35); border: solid rgba(255, 255, 255, 0.6); border-width: 0 1px 1px 0;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom-right-radius: 3px; clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+.chat-bubble .cb-name { font: 400 11px/1.2 var(--font-title); color: #ffe7a3; letter-spacing: 0.4px; text-shadow: 0 1px 2px rgba(60, 35, 10, 0.6); }
+.chat-bubble .cb-text { font: 600 14px/1.35 var(--font-body); color: #fff; text-align: center; word-break: keep-all; overflow-wrap: anywhere; text-shadow: 0 1px 2px rgba(25, 18, 8, 0.55); }
+.chat-bubble.pop { animation: bubble-pop 0.32s cubic-bezier(0.2, 1.5, 0.4, 1); }
+@keyframes bubble-pop { from { scale: 0.6; opacity: 0; } }
+body.touch .chat-bar { bottom: auto; top: 30%; }
+
+/* ── 가까운 몬스터 (미니맵 아래, top·right 는 NearbyMobs 가 정한다) ── */
+.near-mobs { position: absolute; right: 16px; top: 260px; width: 176px; display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
+.near-mobs[hidden] { display: none; }
+.nm-row {
+  display: flex; align-items: center; gap: 7px; padding: 4px 9px 5px 4px; border-radius: 14px;
+  background: rgba(255, 250, 240, 0.86); border: 2px solid var(--line, #efdcb8);
+  box-shadow: 0 3px 0 var(--lip, #e3c999), 0 6px 12px rgba(60, 40, 20, 0.15);
+  transition: border-color 0.2s, background 0.2s;
+}
+.nm-row[hidden] { display: none; }
+.nm-face { width: 30px; height: 30px; flex: none; border-radius: 50%; object-fit: cover; background: #f6e7c8; box-shadow: inset 0 0 0 2px #fff; }
+.nm-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.nm-top { display: flex; align-items: baseline; gap: 4px; }
+.nm-name { flex: 1; min-width: 0; font: 400 12.5px/1.15 var(--font-title); color: var(--ink, #5b4232); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nm-dist { flex: none; display: inline-flex; align-items: center; gap: 2px; font: 700 10.5px/1 var(--font-body); color: var(--ink-soft, #9a7f64); }
+.nm-arrow { width: 0; height: 0; border: 4px solid transparent; border-bottom: 7px solid currentColor; border-top-width: 0; display: inline-block; transform-origin: 50% 60%; }
+.nm-bar { height: 7px; border-radius: 999px; background: #efe1c5; box-shadow: inset 0 1px 1px rgba(120, 80, 30, 0.2); overflow: hidden; }
+.nm-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(#ff9a8c, #ec6a5c); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5); transition: width 0.15s; }
+.nm-row.angry { border-color: #f4b3a6; }
+.nm-row.elite { border-color: #f2cc6b; background: rgba(255, 248, 226, 0.92); }
+.nm-row.elite .nm-name::before { content: '정예 '; color: #d18a1c; }
+.nm-row.boss { border-color: #e5876f; background: rgba(255, 240, 232, 0.94); }
+.nm-row.boss .nm-name { color: #b5452f; }
+.nm-row.raid .nm-bar i { background: linear-gradient(#bfa5f2, #8f6fd8); }
+body.touch .near-mobs { width: 132px; gap: 4px; }
+body.touch .nm-row { padding: 3px 7px 4px 3px; gap: 5px; border-radius: 12px; }
+body.touch .nm-face { width: 22px; height: 22px; }
+body.touch .nm-name { font-size: 11px; }
+body.touch .nm-bar { height: 5px; }
+
+/* ── 창 끌기 (PC): 제목줄을 잡는다 ── */
+body:not(.touch) .window .win-head { cursor: grab; user-select: none; -webkit-user-select: none; }
+body:not(.touch) .window.dragging { transition: none; }
+body:not(.touch) .window.dragging .win-head { cursor: grabbing; }
+body:not(.touch) .window.dragging { box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.95), 0 6px 0 var(--lip), 0 26px 44px rgba(90, 60, 30, 0.34); }
+
+/* ── 가방 (PC): 창 폭을 칸에 맞춘다 — 안내 글은 아래 줄로 ── */
+body:not(.touch) .win-inventory .win-body { width: min-content; }
+body:not(.touch) .win-inventory .inv-grid { grid-template-columns: repeat(var(--cols), 58px); gap: 7px; }
+body:not(.touch) .win-inventory .inv-grid .slot { width: 58px; height: 58px; }
+body:not(.touch) .win-inventory .inv-foot { flex-wrap: wrap; gap: 8px 6px; justify-content: flex-start; }
+body:not(.touch) .win-inventory .inv-foot .gold { margin-right: auto; }
+body:not(.touch) .win-inventory .inv-hint { order: 9; flex: 1 1 100%; text-align: center; font-size: 11.5px; }
