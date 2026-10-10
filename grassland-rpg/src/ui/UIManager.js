@@ -13,6 +13,10 @@ export class UIManager {
     this.windows = new Map();
     this.stack = [];
     // 배치 모드에 들어가면 창을 모두 닫아 땅이 보이게 한다.
+    // 화면 크기가 바뀌면 옮겨 둔 창을 다시 화면 안으로
+    window.addEventListener('resize', () => {
+      for (const w of this.windows.values()) if (!w.el.hidden) this.clamp(w.el);
+    });
     ctx.bus.on('build:start', () => {
       for (const w of [...this.stack]) this.close(w.id);
     });
@@ -57,9 +61,11 @@ export class UIManager {
           el.classList.add('moved', 'dragging');
           Object.assign(el.style, { right: 'auto', bottom: 'auto', transform: 'none' });
         }
-        // 제목줄이 화면 밖으로 나가지 않게
-        const x = Math.min(Math.max(ev.clientX - ox, 60 - r.width), layer.width - 60);
-        const y = Math.min(Math.max(ev.clientY - oy, 0), layer.height - 48);
+        // 창 모서리가 화면 밖으로 나가지 않게 (창이 화면보다 크면 왼쪽·위에 붙인다)
+        const w = el.offsetWidth;
+        const h = el.offsetHeight;
+        const x = Math.max(0, Math.min(ev.clientX - ox, layer.width - w));
+        const y = Math.max(0, Math.min(ev.clientY - oy, layer.height - h));
         el.style.left = `${Math.round(x - layer.left)}px`;
         el.style.top = `${Math.round(y - layer.top)}px`;
       };
@@ -81,6 +87,13 @@ export class UIManager {
     });
   }
 
+  // 옮겨 둔 창이 화면 밖으로 나가 있으면 안으로 (열 때·화면 크기가 바뀔 때, 내용이 커졌을 수도 있다)
+  clamp(el) {
+    if (!el.classList.contains('moved')) return;
+    el.style.left = `${Math.round(Math.max(0, Math.min(parseFloat(el.style.left) || 0, this.layer.clientWidth - el.offsetWidth)))}px`;
+    el.style.top = `${Math.round(Math.max(0, Math.min(parseFloat(el.style.top) || 0, this.layer.clientHeight - el.offsetHeight)))}px`;
+  }
+
   isOpen(id) {
     return this.stack.some((w) => w.id === id);
   }
@@ -95,6 +108,7 @@ export class UIManager {
     this.stack.push(win);
     this.restack();
     win.onOpen?.();
+    this.clamp(win.el);
     this.ctx.bus.emit('ui:open', { id });
   }
 

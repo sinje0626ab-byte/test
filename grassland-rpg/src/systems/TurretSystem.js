@@ -44,6 +44,15 @@ export class TurretSystem {
 
     bus.on('build:place', (e) => {
       if (e.kind !== 'turret') return;
+      if (e.move) {
+        // 옮기기: 자리만 바꾼다 (체력·레벨·우선순위 그대로)
+        e.move.position.copy(e.position);
+        e.move.mesh.position.copy(e.position);
+        e.move.target = null;
+        bus.emit('notify', { text: `${josa(e.move.def.name, '을/를')} 옮겼어요`, kind: 'item' });
+        this.changed(e.move);
+        return;
+      }
       this.add(e.type, e.baseId, e.position);
       bus.emit('notify', { text: `${ctx.data.turrets[e.type].name} 설치!`, kind: 'item' });
     });

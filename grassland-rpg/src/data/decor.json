@@ -1,0 +1,42 @@
+{
+  "config": {
+    "maxPerBase": 80,
+    "refund": 0.5,
+    "rotateStep": 45
+  },
+  "categories": {
+    "light": "조명",
+    "rest": "쉼터",
+    "garden": "정원",
+    "water": "물가",
+    "village": "마을 소품"
+  },
+  "decor": {
+    "street_lamp": { "name": "가로등", "category": "light", "cost": 60, "radius": 0.3, "solid": true, "desc": "밤이면 따뜻하게 빛나는 쇠 가로등" },
+    "torch": { "name": "횃불", "category": "light", "cost": 30, "radius": 0.2, "solid": true, "desc": "나무 기둥 위 일렁이는 불꽃" },
+    "mushroom_lamp": { "name": "버섯 등", "category": "light", "cost": 80, "radius": 0.35, "solid": false, "desc": "점박이 갓 아래 은은한 빛" },
+    "lantern_posts": { "name": "등불 줄", "category": "light", "cost": 120, "radius": 1.3, "solid": false, "desc": "두 기둥 사이에 매단 작은 등불들" },
+    "bench": { "name": "나무 벤치", "category": "rest", "cost": 50, "radius": 0.6, "solid": true, "desc": "잠깐 쉬어 가는 등받이 벤치" },
+    "picnic_table": { "name": "피크닉 테이블", "category": "rest", "cost": 110, "radius": 0.9, "solid": true, "desc": "체크 무늬 천을 깐 긴 탁자" },
+    "parasol": { "name": "파라솔 탁자", "category": "rest", "cost": 140, "radius": 0.8, "solid": true, "desc": "줄무늬 파라솔과 둥근 탁자" },
+    "swing": { "name": "그네", "category": "rest", "cost": 180, "radius": 0.9, "solid": true, "desc": "바람에 살랑 흔들리는 나무 그네" },
+    "flowerbed": { "name": "꽃밭 화단", "category": "garden", "cost": 40, "radius": 0.7, "solid": false, "desc": "알록달록 들꽃이 가득한 나무 화단" },
+    "topiary": { "name": "둥근 정원수", "category": "garden", "cost": 45, "radius": 0.45, "solid": true, "desc": "동글동글 다듬은 화분 나무" },
+    "hedge": { "name": "덤불 울타리", "category": "garden", "cost": 35, "radius": 0.7, "solid": true, "desc": "가지런히 다듬은 낮은 덤불" },
+    "cherry_tree": { "name": "벚꽃 나무", "category": "garden", "cost": 220, "radius": 0.5, "solid": true, "desc": "분홍 꽃잎이 소복한 작은 나무" },
+    "flower_arch": { "name": "꽃 아치", "category": "garden", "cost": 160, "radius": 1.1, "solid": false, "desc": "덩굴장미가 감긴 나무 아치 (지나갈 수 있다)" },
+    "barrel_planter": { "name": "통 화분", "category": "garden", "cost": 30, "radius": 0.35, "solid": true, "desc": "낡은 통에 심은 꽃" },
+    "stepping_stones": { "name": "디딤돌 길", "category": "garden", "cost": 20, "radius": 0.8, "solid": false, "desc": "납작한 돌을 놓은 작은 길" },
+    "mini_pond": { "name": "미니 호수", "category": "water", "cost": 260, "radius": 1.5, "solid": true, "desc": "연잎과 조약돌이 있는 작은 연못" },
+    "fountain": { "name": "돌 분수", "category": "water", "cost": 380, "radius": 1.1, "solid": true, "desc": "물이 솟는 둥근 돌 분수" },
+    "well": { "name": "우물", "category": "water", "cost": 200, "radius": 0.7, "solid": true, "desc": "기와 지붕과 두레박이 달린 우물" },
+    "bird_bath": { "name": "새 물그릇", "category": "water", "cost": 70, "radius": 0.35, "solid": true, "desc": "작은 새들이 쉬어 가는 돌 그릇" },
+    "signpost": { "name": "이정표", "category": "village", "cost": 25, "radius": 0.25, "solid": true, "desc": "여러 방향을 가리키는 나무 팻말" },
+    "mailbox": { "name": "우체통", "category": "village", "cost": 55, "radius": 0.25, "solid": true, "desc": "빨간 깃발이 달린 귀여운 우체통" },
+    "scarecrow": { "name": "허수아비", "category": "village", "cost": 65, "radius": 0.35, "solid": true, "desc": "밀짚모자를 쓴 웃는 허수아비" },
+    "haystack": { "name": "건초 더미", "category": "village", "cost": 35, "radius": 0.6, "solid": true, "desc": "포근한 노란 건초 더미" },
+    "cart": { "name": "나무 수레", "category": "village", "cost": 120, "radius": 0.8, "solid": true, "desc": "호박과 상자를 실은 수레" },
+    "windmill": { "name": "작은 풍차", "category": "village", "cost": 600, "radius": 0.9, "solid": true, "desc": "날개가 천천히 도는 돌 풍차" },
+    "owl_statue": { "name": "부엉이 석상", "category": "village", "cost": 300, "radius": 0.45, "solid": true, "desc": "부엉 박사를 닮은 이끼 낀 석상" }
+  }
+}

@@ -29,6 +29,7 @@ import npcs from './data/npcs.json';
 import dialogues from './data/dialogues.json';
 import quests from './data/quests.json';
 import bounties from './data/bounties.json';
+import decor from './data/decor.json';
 import { Game } from './core/Game.js';
 import { installToonShading } from './core/toon.js';
 import { loadModels } from './core/Models.js';
@@ -44,7 +45,7 @@ loadModels().finally(() => {
   const game = new Game({
     container: document.getElementById('app'),
     uiRoot: document.getElementById('ui'),
-    data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds, nodes, weapons, npcs, dialogues, quests, bounties },
+    data: { config, player, monsters, items, buildings, turrets, regions, levels, skills, recipes, shop, bosses, sounds, nodes, weapons, npcs, dialogues, quests, bounties, decor },
   });
   game.start();
 
