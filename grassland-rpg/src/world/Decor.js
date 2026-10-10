@@ -1,15 +1,7 @@
 import * as THREE from 'three';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Chunk } from './Chunk.js';
+import { propGeometries } from './decorProps.js';
 
-// 여러 조각을 한 모양으로 합친다 (인스턴스 하나 = 그리기 호출 그대로). 위치·법선만 남긴다.
-function merged(parts) {
-  return mergeGeometries(parts.map(([geo, x, y, z, sx = 1, sy = sx, sz = sx]) => {
-    const g = (geo.index ? geo.toNonIndexed() : geo.clone()).scale(sx, sy, sz).translate(x, y, z);
-    for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k);
-    return g;
-  }));
-}
 // 장식 색을 조금 차분하게 (원색 줄이기)
 const calm = (c) => { const col = new THREE.Color(c); const h = {}; col.getHSL(h); return col.setHSL(h.h, h.s * 0.86, h.l); };
 
@@ -35,39 +27,22 @@ export function buildDecor(world) {
     (kinds[kind] ??= []).push({ m: new THREE.Matrix4().compose(v.set(x, y, z), q, sc.set(sx, sy, sz)), c: calm(color) });
   };
 
-  const trunkGeo = new THREE.CylinderGeometry(0.16, 0.24, 1, 6).translate(0, 0.5, 0);
-  const coneGeo = new THREE.ConeGeometry(1, 1.8, 7).translate(0, 0.9, 0);
-  const ico = new THREE.IcosahedronGeometry(1, 0);
-  // 둥근 나무 머리: 큰 덩어리 + 옆 두 덩어리 + 위 작은 덩어리 (뭉게뭉게 실루엣)
-  const crownGeo = merged([[ico, 0, 0, 0, 0.9], [ico, 0.55, -0.15, 0.2, 0.62], [ico, -0.5, -0.1, -0.25, 0.6], [ico, 0.05, 0.5, -0.05, 0.55]]);
-  // 바위: 큰 돌 + 기대 선 작은 돌
-  const dode = new THREE.DodecahedronGeometry(0.6, 0);
-  const rockGeo = merged([[dode, 0, 0, 0, 1], [dode, 0.5, -0.12, 0.25, 0.45, 0.55, 0.5]]);
-  // 덤불: 낮은 덩어리 셋
-  const bushGeo = merged([[ico, 0, 0, 0, 0.85], [ico, 0.6, -0.1, 0.1, 0.6], [ico, -0.55, -0.12, -0.1, 0.55]]);
-  // 꽃: 꽃잎 다섯 장 + 가운데
-  const petal = new THREE.SphereGeometry(0.055, 5, 3);
-  const flowerGeo = merged([...[0, 1, 2, 3, 4].map((i) => [petal, Math.cos(i * 1.257) * 0.07, 0, Math.sin(i * 1.257) * 0.07, 1, 0.45, 1]), [petal, 0, 0.02, 0, 0.7, 0.6, 0.7]]);
-  const geos = {
-    trunk: trunkGeo, pineLow: coneGeo, pineTop: coneGeo, crown: crownGeo,
-    rock: rockGeo, bush: bushGeo,
-    flower: flowerGeo,
-    tuft: new THREE.ConeGeometry(0.07, 0.34, 3).translate(0, 0.17, 0),
-    stem: new THREE.CylinderGeometry(0.07, 0.09, 0.3, 6).translate(0, 0.15, 0),
-    cap: new THREE.SphereGeometry(0.22, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2),
-    snowCap: new THREE.ConeGeometry(0.62, 0.7, 7).translate(0, 0.35, 0),
-    cactus: new THREE.CylinderGeometry(0.28, 0.32, 1, 7).translate(0, 0.5, 0),
-    cactusArm: new THREE.CylinderGeometry(0.16, 0.16, 1, 6).translate(0, 0.5, 0),
-  };
-  const noShadow = new Set(['flower', 'tuft']);
+  // 모양: 시안 그림체의 소품 (decorProps.js, 꼭짓점 색). 인스턴스 색은 밝기 흔들기 또는 지역 팔레트(풀포기·꽃)
+  const geos = propGeometries();
+  const noShadow = new Set(['flower', 'tuft', 'pebbles', 'bells']);
+  const shade = () => { const l = r.range(0.88, 1.0); return new THREE.Color(l, l, l); };
+  const place = (kind, x, z, s, color = shade(), sy = s) => push(kind, x, 0, z, s, sy, s, color, r.range(0, Math.PI * 2));
 
-  const pine = (x, z, s, pal, collide = true) => {
-    const ry = r.range(0, Math.PI);
-    const col = new THREE.Color(r.pick(pal.pine));
-    push('trunk', x, 0, z, s, s * 0.9, s, 0x9a6a45, ry);
-    push('pineLow', x, 0.75 * s, z, s * 1.05, s, s * 1.05, col, ry);
-    push('pineTop', x, 1.75 * s, z, s * 0.72, s * 0.85, s * 0.72, col.clone().offsetHSL(0, 0, 0.04), ry + 0.4);
-    if (pal.snow) push('snowCap', x, 2.55 * s, z, s * 0.75, s * 0.75, s * 0.75, '#ffffff', ry);
+  // 지역마다 쓰는 소품 (같은 자리 종류가 지역마다 다른 모양)
+  const SET = {
+    grassland: { pine: 'pine', tree: () => (r.next() < 0.18 ? 'blossomTree' : r.next() < 0.35 ? 'treeSmall' : 'tree'), rock: 'rockMoss', bush: 'flowerBush' },
+    forest: { pine: 'pine', tree: () => 'oak', rock: 'rockMoss', bush: 'fern' },
+    desert: { pine: 'pine', tree: () => 'dryBush', rock: () => (r.next() < 0.12 ? 'arch' : 'sandRock'), bush: 'dryBush' },
+    snow: { pine: 'snowPine', tree: () => 'frostTree', rock: 'iceRock', bush: 'snowBush' },
+  };
+  const pick = (v) => (typeof v === 'function' ? v() : v);
+  const pine = (x, z, s, reg, collide = true) => {
+    place((SET[reg.id] ?? SET.grassland).pine, x, z, s);
     if (collide) world.addCollider(x, z, 0.4 * s);
   };
 
@@ -77,8 +52,9 @@ export function buildDecor(world) {
     const z1 = Math.min(reg.zTo, bounds.maxZ);
     if (z1 <= z0) continue;
     const area = (bounds.maxX - bounds.minX) * (z1 - z0);
-    const count = (k) => Math.round((reg.decor[k] * area) / 1000);
+    const count = (k) => Math.round(((reg.decor[k] ?? 0) * area) / 1000);
     const pal = reg.palette;
+    const set = SET[reg.id] ?? SET.grassland;
     const spot = (gap) => {
       for (let tries = 0; tries < 20; tries++) {
         const x = r.range(bounds.minX - 4, bounds.maxX + 4);
@@ -93,67 +69,73 @@ export function buildDecor(world) {
 
     for (let i = 0; i < count('pines'); i++) {
       const p = spot(1.4);
-      if (p) pine(p[0], p[1], r.range(0.8, 1.35), pal);
+      if (p) pine(p[0], p[1], r.range(0.8, 1.35), reg);
     }
     for (let i = 0; i < count('roundTrees'); i++) {
       const p = spot(1.6);
       if (!p) continue;
       const s = r.range(0.85, 1.3);
-      push('trunk', p[0], 0, p[1], s, s * 1.3, s, 0x9a6a45);
-      const color = r.next() < 0.18 ? r.pick(pal.blossom) : r.pick(pal.round);
-      push('crown', p[0], 1.9 * s, p[1], s * 1.15, s, s * 1.15, color, r.range(0, 3), r.range(-0.2, 0.2));
+      place(pick(set.tree), p[0], p[1], s);
       world.addCollider(p[0], p[1], 0.4 * s);
     }
     for (let i = 0; i < count('rocks'); i++) {
       const p = spot(1.2);
       if (!p) continue;
-      const s = r.range(0.6, 1.5);
-      push('rock', p[0], 0.18 * s, p[1], s, s * r.range(0.55, 0.8), s * r.range(0.8, 1.1), r.pick(pal.rock), r.range(0, 6), r.range(-0.3, 0.3));
-      world.addCollider(p[0], p[1], 0.55 * s);
+      const kind = pick(set.rock);
+      const s = kind === 'arch' ? r.range(0.9, 1.2) : r.range(0.7, 1.4);
+      place(kind, p[0], p[1], s);
+      if (kind === 'arch') for (const d of [-0.95, 0.95]) world.addCollider(p[0] + d * s, p[1], 0.4 * s);
+      else world.addCollider(p[0], p[1], 0.55 * s);
     }
     for (let i = 0; i < count('bushes'); i++) {
       const p = spot(0.8);
-      if (!p) continue;
-      const s = r.range(0.45, 0.75);
-      push('bush', p[0], 0.3 * s, p[1], s * 1.2, s * 0.8, s, r.pick(pal.round), r.range(0, 6));
+      if (p) place(set.bush, p[0], p[1], r.range(0.75, 1.15));
     }
     for (let i = 0; i < count('flowers'); i++) {
       const p = spot(0);
-      if (p) push('flower', p[0], 0.12, p[1], 1, 0.6, 1, r.pick(pal.flower), r.range(0, 6));
+      if (!p) continue;
+      if (reg.id === 'forest' && r.next() < 0.4) place('bells', p[0], p[1], r.range(0.8, 1.2));
+      else place('flower', p[0], p[1], r.range(0.8, 1.1), new THREE.Color(r.pick(pal.flower)));
     }
     for (let i = 0; i < count('tufts'); i++) {
       const p = spot(0);
-      if (!p) continue;
-      const col = r.pick(pal.tuft);
-      for (let k = 0; k < 3; k++) {
-        push('tuft', p[0] + r.range(-0.12, 0.12), 0, p[1] + r.range(-0.12, 0.12), 1, r.range(0.7, 1.3), 1, col, r.range(0, 6), r.range(-0.35, 0.35));
-      }
+      if (p) place('tuft', p[0], p[1], r.range(0.8, 1.3), new THREE.Color(r.pick(pal.tuft)));
     }
     for (let i = 0; i < count('cacti'); i++) {
       const p = spot(1.0);
       if (!p) continue;
-      const s = r.range(0.8, 1.6);
-      const col = r.pick(['#5fa85a', '#6fb866', '#4f9a4a']);
-      push('cactus', p[0], 0, p[1], s, s * r.range(1.4, 2.2), s, col);
-      const arms = r.int(0, 2);
-      for (let k = 0; k < arms; k++) {
-        const side = k === 0 ? 1 : -1;
-        push('cactusArm', p[0] + side * 0.32 * s, s * r.range(0.8, 1.3), p[1], s, s * r.range(0.5, 0.9), s, col, 0, 0);
-      }
+      const s = r.range(0.9, 1.6);
+      place('cactusSmall', p[0], p[1], s, shade(), s * r.range(1.0, 1.5));
       world.addCollider(p[0], p[1], 0.35 * s);
     }
     for (let i = 0; i < count('mushrooms'); i++) {
       const p = spot(0.5);
+      if (p) place('mushrooms', p[0], p[1], r.range(0.8, 1.4));
+    }
+    for (let i = 0; i < count('logs'); i++) {
+      const p = spot(1.2);
       if (!p) continue;
-      const s = r.range(0.7, 1.4);
-      push('stem', p[0], 0, p[1], s, s, s, '#f4e6cf');
-      push('cap', p[0], 0.28 * s, p[1], s, s * 0.8, s, r.pick(['#e0574f', '#f08a4b', '#c9a0ff']));
+      const s = r.range(0.8, 1.2);
+      place('log', p[0], p[1], s);
+      world.addCollider(p[0], p[1], 0.5 * s);
+    }
+    for (let i = 0; i < count('pebbles'); i++) {
+      const p = spot(0.3);
+      if (p) place('pebbles', p[0], p[1], r.range(0.8, 1.4));
+    }
+    for (let i = 0; i < count('skulls'); i++) {
+      const p = spot(0.6);
+      if (p) place('skull', p[0], p[1], r.range(0.9, 1.2));
+    }
+    for (let i = 0; i < count('drifts'); i++) {
+      const p = spot(0.8);
+      if (p) place('drift', p[0], p[1], r.range(0.7, 1.3));
     }
   }
 
   // 월드 가장자리 침엽수 벽 (밖으로 몇 겹)
   const edge = world.cfg.edgeTrees;
-  const ring = (x, z) => pine(x, z, r.range(1, 1.5), regions.at(x, z).palette, false);
+  const ring = (x, z) => pine(x, z, r.range(1, 1.5), regions.at(x, z), false);
   for (let layer = 0; layer < edge.layers; layer++) {
     const o = 2 + layer * edge.layerGap;
     for (let x = bounds.minX - o; x <= bounds.maxX + o; x += edge.spacing) {
@@ -166,7 +148,7 @@ export function buildDecor(world) {
     }
   }
 
-  const mats = Object.fromEntries(Object.keys(geos).map((k) => [k, new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, roughness: 0.9 })]));
+  const mats = Object.fromEntries(Object.keys(geos).map((k) => [k, new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, flatShading: true, roughness: 0.9 })]));
   const chunks = [];
   for (const [ci, kinds] of byChunk) {
     const chunk = new Chunk(scene, ci, size);

@@ -18,6 +18,7 @@ import { createFacilityModel } from '../src/entities/FacilityModels.js';
 import { createBaseModel } from '../src/entities/BaseModels.js';
 import { ResourceNode } from '../src/entities/ResourceNode.js';
 import { Wall } from '../src/entities/Wall.js';
+import { propGeometries } from '../src/world/decorProps.js';
 
 const SIZE = 420;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -181,6 +182,27 @@ window.renderGear = (list, { yaw = 0.35 } = {}) => {
     m.group.remove(m.trail, m.spinTrail);
     if (w.hideWeapon) m.swordPivot.visible = false;
     out[w.key] = snap(m.group, { yaw: w.yaw ?? yaw });
+  }
+  return out;
+};
+// 지역 장식 소품 + 채집 노드(살아 있는 모습·캔 모습) → { key: dataURL }
+window.renderProps = () => {
+  const out = {};
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.9 });
+  for (const [k, geo] of Object.entries(propGeometries())) {
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(geo, mat));
+    out[`prop_${k}`] = snap(g);
+  }
+  let seed = 7;
+  const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (const [id, def] of Object.entries(nodes.nodes)) {
+    for (const dead of [false, true]) {
+      const n = new ResourceNode(fakeScene, id, id, def, new THREE.Vector3(), rng);
+      n.group.rotation.y = 0.4;
+      if (dead) { n.alive = false; n.applyLook(); }
+      out[`node_${id}${dead ? '_cut' : ''}`] = snap(n.group);
+    }
   }
   return out;
 };

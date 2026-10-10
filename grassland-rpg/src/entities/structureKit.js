@@ -129,6 +129,24 @@ export class Kit {
   cone(rad, h, seg, name, p, r) { return this.add(new THREE.ConeGeometry(rad, h, seg), name, p, r); }
   ball(rad, name, p, s = 1, detail = 0) { return this.add(new THREE.IcosahedronGeometry(rad, detail), name, p, [0, 0, 0], s); }
 
+  // 한 덩어리로 합치고 재질 색을 꼭짓점 색으로 (장식 InstancedMesh 용, 재질은 vertexColors)
+  bakeColored() {
+    const c = new THREE.Color();
+    const geos = this.list.map(({ geo, name }) => {
+      c.set((PAL[name] ?? { color: name }).color);
+      const n = geo.attributes.position.count;
+      const col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+      geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      return geo;
+    });
+    const out = mergeGeometries(geos);
+    for (const g of geos) g.dispose();
+    out.computeBoundingSphere();
+    this.list = [];
+    return out;
+  }
+
   // 재질 이름별로 합친다 → [{ name, geo }]
   bake() {
     const by = new Map();

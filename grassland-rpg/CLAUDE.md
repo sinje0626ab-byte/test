@@ -78,6 +78,7 @@ src/
   world/
     World.js           # 지면·조명·충돌·경계, 청크 보이기/숨기기
     Decor.js           # 지역별 나무·바위·꽃 배치 (시드 난수)
+    decorProps.js      # 장식 소품 모양 (시안 그림체, 꼭짓점 색 한 덩어리 → 종류마다 InstancedMesh)
     Chunk.js           # z 띠 하나의 장식 묶음 (따로 그리고 따로 숨긴다)
     Regions.js         # 지역(초원/숲/사막/설원) 찾기·색 섞기
     WallGrid.js        # 벽 칸 목록 (ctx.wallGrid): 몬스터 충돌, 기지 둘레 격자 길찾기
@@ -425,7 +426,9 @@ src/
 - **포탑**: 재질 팔레트로 만든 받침(판자·돌 이음새)·머리. 레벨은 색이 아니라 구조로 자란다: Lv2 청동 테 → Lv3 쇠 보강판·징 → Lv4 깃발·두 번째 테 → Lv5 금 테 + 금관. 투사체는 꼬리 빛줄기, 대포는 떨어질 자리에 예고 고리
 - **강화 외형**: 무기 +3 금 테, +4 보석, +5 은은한 금빛 기운 (`addEnhanceLook`)
 - **주민**: 몬스터와 같은 얼굴 규칙(하이라이트·볼), 역할 소품(도토리·망치·책·꿀단지·택배 가방), 숨쉬기·눈 깜빡임·말할 때 끄덕임·졸 때 꾸벅
-- **환경**: 나무 머리·덤불은 덩어리 여럿, 바위는 두 개, 꽃은 꽃잎 다섯 장 (한 모양으로 합쳐 인스턴스 그대로), 장식 색은 채도를 조금 낮춘다
+- **환경**(`world/decorProps.js`, 시안 `docs/art/incoming/concept_environment.webp`): 소품은 건물 키트(`Kit`)로 조각을 모아 `bakeColored()` 로 재질 색을 꼭짓점 색으로 구운 한 덩어리 → 종류마다 청크별 InstancedMesh 하나(재질 `vertexColors`). 인스턴스 색은 밝기 흔들기, 풀포기·꽃만 하얀 모양에 지역 팔레트 색을 곱한다
+  - 지역마다 같은 자리 종류가 다른 소품(`Decor.js` `SET`): 초원 뭉게 나무(작은 나무·꽃 핀 나무)·꽃 덤불·이끼 바위·조약돌 / 숲 층층 전나무·뿌리 굵은 참나무·고사리·빨간 점박이 버섯·이끼 통나무·초롱꽃 / 사막 층층 사암·사암 아치(가끔, 기둥 둘 충돌)·마른 덤불·꽃 핀 선인장·뿔 해골 / 설원 눈 쌓인 전나무·서리 나무(고드름)·얼음 결정 바위·눈 덤불·눈 더미. 새 개수 키 `regions.json` decor `pebbles`·`logs`·`skulls`·`drifts`
+  - 채집 노드(`ResourceNode.js`, 시안 `concept_nodes.webp`): 작은 풀밭(사막 모래·설원 눈) 받침 위, 받침은 흔들리지 않고 캔 뒤에도 남는다. 사과 나무 / 송진 방울 전나무 / 주황 철광석 바위 / 흰 꽃 약초 / 이삭 달린 긴 풀 / 꽃 핀 선인장 / 금빛 태양 수정 사암 / 얼음 기둥 → 캔 뒤 나이테 그루터기·돌 조각·새싹·잘린 풀·얼음 조각. 모양은 종류마다 한 번(`baked`)
 - **UI 테마**(`ui/theme-cozy.css`, 모든 CSS 중 맨 마지막 — 겉모양의 최종 모습. 배치는 mobile.css 등): 3D 월드처럼 UI도 아기자기하게 (동물의 숲 같은 크림색 말랑한 판). 외부 이미지 없이 CSS·인라인 SVG만
   - 글꼴 변수: `--font-display`·`--font-title`(Jua, 로고·제목·버튼·이름) · `--font-body`(Noto Sans KR) · `--font-number`(Bagel Fat One, 숫자·LEVEL UP). `index.html` 의 Google Fonts 링크 하나(display=swap), 모두 폴백
   - 색 변수: 크림 `--cream` #fffaf0 · `--cream-2` #fdf2dc · `--cream-3` #f6e7c8 · 테두리 `--line` #efdcb8 · 아래 그림자 `--lip` #e3c999 · 글씨 `--ink` #5b4232 / `--ink-soft` #9a7f64 · 포인트 새싹 `--leaf` #8bcf6d(`--leaf-dark` #5ea54a) · 꿀 `--honey` #ffd166 · 하늘 `--sky` #8fd0f2 · 산호 `--coral` #ff8f7c · 밤 `--night` #3e4675 · HP #ff7f72 · 스태미나 #ffc94f · 경험치 #7cc6ef. 예전 변수(`--wood*`·`--gold*`·`--parchment*`·`--panel*`)도 새 팔레트 값으로 남겨 둔다. 등급 색은 items.json 그대로
