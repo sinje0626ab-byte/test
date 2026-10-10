@@ -208,7 +208,7 @@ export class Player {
 
   // knockPower: 밀려나는 세기 (없으면 player.json knockback, 돌진 적중은 combat.chargeKnockback)
   takeDamage(amount, knockDir, knockPower = this.base.knockback) {
-    if (!this.alive || this.invuln > 0 || this.roll.invulnerable || this.dash.active) return false;
+    if (!this.alive || this.invuln > 0 || this.roll.invulnerable || this.dash.active || this.ctx.godMode) return false;
     const s = this.stats;
     // 받는 피해 감소 (설원 세트 등)
     const dmg = Math.max(1, Math.round(amount * (1 + (s.damageTaken ?? 0))));
@@ -223,7 +223,7 @@ export class Player {
 
   // 독 같은 지속 피해: 무적 시간·넉백 없이 깎는다. 깎였으면 true
   applyDot(amount) {
-    if (!this.alive) return false;
+    if (!this.alive || this.ctx.godMode) return false;
     const s = this.stats;
     s.hp = Math.max(0, s.hp - amount);
     if (s.hp <= 0) this.die();
