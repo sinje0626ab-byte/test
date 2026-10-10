@@ -1,3 +1,4 @@
+import { uiImg } from './painted.js';
 import { itemIcon } from './icons.js';
 import { itemTooltip, compareLines } from './itemText.js';
 import { pick } from '../utils/josa.js';
@@ -79,7 +80,7 @@ export class InventoryWindow {
       const def = this.def(s.id);
       el.className = `slot filled${i === this.selected ? ' sel' : ''}`;
       el.style.setProperty('--grade', grades[def.grade]?.color ?? '#e8e8e8');
-      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}${s.opts?.length ? `<i class="opt-dots">${'◆'.repeat(s.opts.length)}</i>` : ''}${s.fresh ? '<i class="new-dot"></i>' : ''}`;
+      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}${s.opts?.length ? `<i class="opt-dots">${uiImg('opt_gem', '◆', 'dot').repeat(s.opts.length)}</i>` : ''}${s.fresh ? '<i class="new-dot"></i>' : ''}`;
     });
   }
 

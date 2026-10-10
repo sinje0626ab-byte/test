@@ -1,4 +1,4 @@
-import { PAINTED } from './painted.js';
+import { PAINTED, uiImg } from './painted.js';
 
 // 대화 창: 화면 아래 크림 말풍선 판 + 새싹 알약 이름 + 주민 얼굴(그린 초상화, 없으면 색 동그라미·이름 첫 글자), 글자는 타자기처럼.
 // 다 나오면 ▼ 가 깜빡이고 선택지가 뜬다.
@@ -43,7 +43,7 @@ export class DialogueWindow {
       <div class="dlg">
         ${pic ? `<i class="dlg-face painted" style="--c:${d.color};--a:${d.accent}"><img src="${pic}" alt=""></i>` : `<i class="dlg-face" style="--c:${d.color};--a:${d.accent}">${d.name[0]}</i>`}
         <p class="dlg-text"></p>
-        <i class="dlg-next" hidden>▼</i>
+        <i class="dlg-next" hidden>${uiImg('ic_next', '▼')}</i>
       </div>
       <div class="dlg-opts" hidden>${talk.options.map((o, i) => `<button type="button" data-opt="${i}">${o.label}</button>`).join('')}</div>`;
     this.textEl = this.body.querySelector('.dlg-text');

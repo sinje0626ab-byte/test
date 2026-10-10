@@ -98,6 +98,7 @@ export class ActiveSkillSystem {
     const total = p.stats.maxHp * (a.healPct + a.healPctPerRank * (rank - 1));
     const ticks = Math.round(a.duration / this.cfg.healTick);
     this.heals.push({ left: ticks, perTick: total / ticks, tick: 0 });
+    this.ctx.firstAidUntil = this.ctx.time.elapsed + a.duration; // HUD 버프 줄
     return true;
   }
 
@@ -111,6 +112,7 @@ export class ActiveSkillSystem {
     }
     const duration = a.duration + a.durationPerRank * (rank - 1);
     this.ctx.bus.emit('turret:overclock', { turrets: near, mult: a.fireRate, duration });
+    this.ctx.overclockUntil = this.ctx.time.elapsed + duration;
     this.ctx.bus.emit('notify', { text: `포탑 ${near.length}개 과부하! (${duration}초)`, kind: 'item' });
     return true;
   }
