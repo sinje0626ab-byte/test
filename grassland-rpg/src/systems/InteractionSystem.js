@@ -22,6 +22,11 @@ export class InteractionSystem {
       const d = player.position.distanceTo(dc.position) - dc.radius + 0.3;
       if (d < this.cfg.range && d < bestD) { bestD = d; best = dc; }
     }
+    // 기지 안 나무·바위 (치우기, 다른 것보다 한 발 더 가까이)
+    for (const o of this.ctx.obstaclesNear?.(player.position, this.cfg.range + 1) ?? []) {
+      const d = player.position.distanceTo(o.position) - o.radius + 0.5;
+      if (d < this.cfg.range && d < bestD) { bestD = d; best = o; }
+    }
     // 묘비
     const t = this.ctx.tomb;
     if (t) {
@@ -46,6 +51,7 @@ export class InteractionSystem {
     if (!s) return '';
     if (s.kind === 'npc') return `E  ${josa(s.def.name, '과/와')} 이야기`;
     if (s.kind === 'decor') return `E  ${s.def.name} 옮기기·치우기`;
+    if (s.kind === 'obstacle') return `E  ${s.label} 치우기 (골드 ${this.ctx.data.config.clear.cost})`;
     if (s.kind === 'chest') return `E  ${this.ctx.data.config.chests.kinds[s.type].name} 열기`;
     if (s.kind === 'tomb') return `E  묘비에서 골드 ${s.gold} 되찾기`;
     if (s.kind === 'turret') return `E  ${s.def.name}${s.alive ? '' : ' (부서짐)'} 관리`;
@@ -65,6 +71,7 @@ export class InteractionSystem {
     if (!s || !this.ctx.input.wasPressed('KeyE')) return;
     if (s.kind === 'npc') this.ctx.bus.emit('interact:npc', { npc: s });
     else if (s.kind === 'tomb') this.ctx.bus.emit('interact:tomb', {});
+    else if (s.kind === 'obstacle') { this.ctx.bus.emit('interact:obstacle', { obstacle: s }); this.target = null; }
     else if (s.kind === 'decor') { this.ctx.bus.emit('interact:decor', { decor: s }); this.target = null; }
     else if (s.kind === 'chest') { this.ctx.bus.emit('interact:chest', { chest: s }); this.target = null; }
     else if (s.kind === 'turret') this.ctx.bus.emit('interact:turret', { turret: s });

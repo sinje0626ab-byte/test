@@ -25,6 +25,7 @@ import { ExplorationSystem } from '../systems/ExplorationSystem.js';
 import { InteractionSystem } from '../systems/InteractionSystem.js';
 import { FacilitySystem } from '../systems/FacilitySystem.js';
 import { DecorSystem } from '../systems/DecorSystem.js';
+import { ClearSystem } from '../systems/ClearSystem.js';
 import { SkillPlusSystem } from '../systems/SkillPlusSystem.js';
 import { CraftingSystem } from '../systems/CraftingSystem.js';
 import { StorageSystem } from '../systems/StorageSystem.js';
@@ -151,6 +152,7 @@ export class Game {
       new InteractionSystem(ctx),
       new FacilitySystem(ctx),
       new DecorSystem(ctx),
+      new ClearSystem(ctx),
       new SkillPlusSystem(ctx),
       new CraftingSystem(ctx),
       new StorageSystem(ctx),

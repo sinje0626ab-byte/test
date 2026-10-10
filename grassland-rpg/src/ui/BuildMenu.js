@@ -1,3 +1,4 @@
+import { uiImg } from './painted.js';
 import { baseAt } from '../utils/bases.js';
 import { turretCost, maxTurrets, turretDamage, turretRange, materialCost, structureHp, repairList } from '../utils/build.js';
 import { itemIcon } from './icons.js';
@@ -254,7 +255,7 @@ export class BuildMenu {
         </button>`;
     }).join('');
     return `
-      <div class="decor-head"><b>기지 꾸미기 ${used}/${max}</b><small>골라서 원하는 자리에 놓아요 · R·휠로 돌리기 · 놓은 소품 앞에서 E 로 옮기기·치우기(값 절반 돌려받기)</small></div>
+      <div class="decor-head"><b>기지 꾸미기 ${used}/${max}</b><small>골라서 원하는 자리에 놓아요 · R·휠로 돌리기 · 놓은 소품 앞에서 E 로 옮기기·치우기(값 절반 돌려받기)</small><small class="decor-clear">${uiImg('ic_clear', '')}기지 안 나무·바위가 거슬리면 그 앞에서 E 두 번 → 골드 ${this.ctx.data.config.clear.cost}로 치워요</small></div>
       <nav class="seg decor-cats">${chips}</nav>
       <div class="decor-grid">${cards}</div>`;
   }

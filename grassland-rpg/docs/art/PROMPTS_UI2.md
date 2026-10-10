@@ -165,3 +165,42 @@ UI sheet 10, 13 small icons in 2 rows (7 + 6), in this exact order, NO text:
 12. Accessory slot: a pale cream silhouette of a ring with a gem.
 13. Set bonus crest: a small round leaf-green crest with three leaves and a gold rim.
 ```
+
+---
+
+# 4차 — 스킬 개편·채팅 단추 (묶음 11~13)
+
+## 묶음 11 — 핵심 별·궁극기 (7개)
+```
+UI sheet 11, 7 round badge icons in 2 rows (4 + 3), in this exact order, NO text:
+1. Keystone "Vampire Swordsman": a coral-red round badge with a small sword whose blade drips one pink heart drop, gold star rim.
+2. Keystone "Wind Pioneer": a leaf-green round badge with a swirling breeze, a little boot and two leaves riding the wind, gold star rim.
+3. Keystone "Turret Commander": a honey-orange round badge with a tiny wooden watchtower and a red target mark, gold star rim.
+4. Ultimate "Meteor Shower": a deep-navy round badge with three golden falling stars with soft trails.
+5. Ultimate "Forest Sanctuary": a soft-green round badge with a glowing leaf dome / shield of leaves.
+6. Ultimate "Turret Barrage": a warm-orange round badge with a cannon tower firing three little sparks.
+7. Ultimate "Blizzard": an icy-blue round badge with a big swirling snowflake and wind.
+```
+
+## 묶음 12 — 각인 (9개)
+```
+UI sheet 12, 9 small rune gem icons in 3 rows of 3, each a faceted diamond-shaped gem with a tiny symbol engraved inside, NO text, in this exact order:
+1. Green gem with a poison drop (venom slash).
+2. Sky-blue gem with two ghostly arrows (echo dash).
+3. Orange gem with a cracked ground shockwave (quake finish).
+4. Tan gem with a rolled bandage (sturdy bandage).
+5. Coral gem with a quick plus sign and speed lines (quick aid).
+6. Leaf-green gem with two small hearts sharing (shared aid).
+7. Ice-blue gem with a snowflake (frost overclock).
+8. Honey-gold gem with a long hourglass (long overclock).
+9. Pink-violet gem with a chain of three lightning links (wide overclock).
+```
+
+## 묶음 13 — 휴대폰 채팅·건설 단추 (4개)
+```
+UI sheet 13, 4 round button icons in one row, chunky and readable at 40 px, NO text, in this exact order:
+1. Chat button: a round cream button with a cute white speech bubble containing three dots, soft leaf-green rim.
+2. Send button: a small round leaf-green button with a white paper airplane.
+3. Clear obstacle: a small wooden axe crossed with a pickaxe over a tree stump, with a little gold coin.
+4. Rotate button: a round cream button with a curved honey-gold arrow circling around.
+```

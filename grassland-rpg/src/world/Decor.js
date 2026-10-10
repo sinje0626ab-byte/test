@@ -25,6 +25,7 @@ export function buildDecor(world) {
     if (!byChunk.has(ci)) byChunk.set(ci, {});
     const kinds = byChunk.get(ci);
     (kinds[kind] ??= []).push({ m: new THREE.Matrix4().compose(v.set(x, y, z), q, sc.set(sx, sy, sz)), c: calm(color) });
+    return { ci, kind, i: kinds[kind].length - 1 }; // 치우기(ClearSystem)가 이 인스턴스를 찾을 수 있게
   };
 
   // 모양: 시안 그림체의 소품 (decorProps.js, 꼭짓점 색). 인스턴스 색은 밝기 흔들기 또는 지역 팔레트(풀포기·꽃)
@@ -32,6 +33,9 @@ export function buildDecor(world) {
   const noShadow = new Set(['flower', 'tuft', 'pebbles', 'bells']);
   const shade = () => { const l = r.range(0.88, 1.0); return new THREE.Color(l, l, l); };
   const place = (kind, x, z, s, color = shade(), sy = s) => push(kind, x, 0, z, s, sy, s, color, r.range(0, Math.PI * 2));
+  // 충돌체 + 어떤 장식인지 (기지 안이면 골드로 치울 수 있다)
+  const LABEL = { pine: '나무', snowPine: '나무', tree: '나무', treeSmall: '나무', blossomTree: '나무', oak: '나무', frostTree: '나무', dryBush: '마른 덤불', rockMoss: '바위', sandRock: '바위', iceRock: '얼음 바위', arch: '바위 아치', cactusSmall: '선인장', log: '통나무' };
+  const solid = (ref, x, z, rad) => world.addCollider(x, z, rad, { ref, label: LABEL[ref.kind] ?? '장애물' });
 
   // 지역마다 쓰는 소품 (같은 자리 종류가 지역마다 다른 모양)
   const SET = {
@@ -42,8 +46,8 @@ export function buildDecor(world) {
   };
   const pick = (v) => (typeof v === 'function' ? v() : v);
   const pine = (x, z, s, reg, collide = true) => {
-    place((SET[reg.id] ?? SET.grassland).pine, x, z, s);
-    if (collide) world.addCollider(x, z, 0.4 * s);
+    const ref = place((SET[reg.id] ?? SET.grassland).pine, x, z, s);
+    if (collide) solid(ref, x, z, 0.4 * s);
   };
 
   // 지역마다 면적에 비례한 개수를 뿌린다. 경계는 조금씩 흔들어 자연스럽게.
@@ -75,17 +79,17 @@ export function buildDecor(world) {
       const p = spot(1.6);
       if (!p) continue;
       const s = r.range(0.85, 1.3);
-      place(pick(set.tree), p[0], p[1], s);
-      world.addCollider(p[0], p[1], 0.4 * s);
+      const ref = place(pick(set.tree), p[0], p[1], s);
+      solid(ref, p[0], p[1], 0.4 * s);
     }
     for (let i = 0; i < count('rocks'); i++) {
       const p = spot(1.2);
       if (!p) continue;
       const kind = pick(set.rock);
       const s = kind === 'arch' ? r.range(0.9, 1.2) : r.range(0.7, 1.4);
-      place(kind, p[0], p[1], s);
-      if (kind === 'arch') for (const d of [-0.95, 0.95]) world.addCollider(p[0] + d * s, p[1], 0.4 * s);
-      else world.addCollider(p[0], p[1], 0.55 * s);
+      const ref = place(kind, p[0], p[1], s);
+      if (kind === 'arch') for (const d of [-0.95, 0.95]) solid(ref, p[0] + d * s, p[1], 0.4 * s);
+      else solid(ref, p[0], p[1], 0.55 * s);
     }
     for (let i = 0; i < count('bushes'); i++) {
       const p = spot(0.8);
@@ -105,8 +109,8 @@ export function buildDecor(world) {
       const p = spot(1.0);
       if (!p) continue;
       const s = r.range(0.9, 1.6);
-      place('cactusSmall', p[0], p[1], s, shade(), s * r.range(1.0, 1.5));
-      world.addCollider(p[0], p[1], 0.35 * s);
+      const ref = place('cactusSmall', p[0], p[1], s, shade(), s * r.range(1.0, 1.5));
+      solid(ref, p[0], p[1], 0.35 * s);
     }
     for (let i = 0; i < count('mushrooms'); i++) {
       const p = spot(0.5);
@@ -116,8 +120,8 @@ export function buildDecor(world) {
       const p = spot(1.2);
       if (!p) continue;
       const s = r.range(0.8, 1.2);
-      place('log', p[0], p[1], s);
-      world.addCollider(p[0], p[1], 0.5 * s);
+      const ref = place('log', p[0], p[1], s);
+      solid(ref, p[0], p[1], 0.5 * s);
     }
     for (let i = 0; i < count('pebbles'); i++) {
       const p = spot(0.3);
