@@ -473,6 +473,11 @@
     "range": 48,
     "redraw": 0.25
   },
+  "nearby": {
+    "range": 22,
+    "max": 4,
+    "refresh": 0.15
+  },
   "lootLog": {
     "max": 5,
     "life": 3.5
