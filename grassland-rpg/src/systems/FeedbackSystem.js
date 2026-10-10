@@ -131,6 +131,11 @@ export class FeedbackSystem {
     bus.on('turret:overclock', ({ turrets }) => {
       for (const t of turrets) this.particles.burst(t.position.clone().setY(1.6), { color: ['#fff27a', '#8fd0ff'], count: 10, speed: 2.5, up: 3, life: 0.6, size: 0.09 });
     });
+    // 보물상자 열림: 색 고리 + 반짝 조각
+    bus.on('fx:ring', ({ position, color }) => {
+      this.fx.ring(position, { color, from: 0.3, to: 2.4, life: 0.6, opacity: 0.7 });
+      this.particles.burst(position.clone().setY(0.8), { color: [color, '#ffffff', '#fff27a'], count: 18, speed: 3, up: 4, life: 0.8, size: 0.1 });
+    });
     // 밤의 군주 (Phase 13)
     bus.on('fx:stars', ({ position }) => {
       this.particles.burst(position, { color: ['#ffffff', '#fff27a', '#d6b3ff'], count: 2, speed: 0.4, up: -6, gravity: 4, life: 1.4, size: 0.1 });

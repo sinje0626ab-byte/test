@@ -39,7 +39,7 @@ export class StorageWindow {
       grid.addEventListener('pointermove', (e) => {
         const i = Number(e.target.closest('[data-slot]')?.dataset.slot);
         const s = (side === 'bag' ? this.bag : this.store)[i];
-        if (s) tooltip.show(itemTooltip(ctx.data, s.id, { count: s.count, plus: s.plus ?? 0, hint: side === 'bag' ? '클릭: 창고에 넣기' : '클릭: 가방으로' }), e.clientX, e.clientY);
+        if (s) tooltip.show(itemTooltip(ctx.data, s.id, { count: s.count, plus: s.plus ?? 0, opts: s.opts, hint: side === 'bag' ? '클릭: 창고에 넣기' : '클릭: 가방으로' }), e.clientX, e.clientY);
         else tooltip.hide();
       });
       grid.addEventListener('pointerleave', () => tooltip.hide());

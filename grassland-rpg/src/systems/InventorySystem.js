@@ -1,7 +1,8 @@
-import { maxStackOf, countIn, roomFor, addTo, removeFrom } from '../utils/slots.js';
+import { maxStackOf, countIn, roomFor, addTo, removeFrom, extraOf } from '../utils/slots.js';
+import { rollOpts } from '../utils/affix.js';
 import { josa } from '../utils/josa.js';
 
-// 가방: 정해진 칸 수, 칸마다 { id, count } 또는 null.
+// 가방: 정해진 칸 수, 칸마다 { id, count, plus?, opts? } 또는 null.
 export class InventorySystem {
   constructor(ctx) {
     this.ctx = ctx;
@@ -22,12 +23,12 @@ export class InventorySystem {
     });
     // 장비 장착: 그 칸을 원래 끼던 장비(없으면 빈칸)로 바꾼다.
     bus.on('inventory:replace-slot', ({ slot, item }) => {
-      this.slots[slot] = item ? { id: item.id, count: 1, ...(item.plus ? { plus: item.plus } : {}) } : null;
+      this.slots[slot] = item ? { id: item.id, count: 1, ...extraOf(item) } : null;
       this.changed();
     });
     // 장비 해제 등: 받은 만큼 e.taken 에 더한다.
     bus.on('inventory:add', (e) => {
-      const added = this.add(e.item, e.count, e.plus ?? 0);
+      const added = this.add(e.item, e.count, { plus: e.plus ?? 0, opts: e.opts, extraLines: e.extraLines });
       e.taken += added;
       if (added) this.changed();
     });
@@ -51,6 +52,12 @@ export class InventorySystem {
     bus.on('inventory:set-plus', ({ slot, plus }) => {
       if (!this.slots[slot]) return;
       this.slots[slot].plus = plus;
+      this.changed();
+    });
+    // 대장간 재련 (옵션 다시)
+    bus.on('inventory:set-opts', ({ slot, opts }) => {
+      if (!this.slots[slot]) return;
+      this.slots[slot].opts = opts;
       this.changed();
     });
     bus.on('inventory:sort', () => this.sort());
@@ -86,14 +93,25 @@ export class InventorySystem {
   }
 
   // 들어간 개수를 돌려준다 (가방이 차면 일부만 들어갈 수 있다).
-  add(id, count, plus = 0) {
-    return addTo(this.slots, id, count, this.maxStack(id), plus);
+  // extra: 강화 단계(숫자) 또는 { plus, opts, extraLines }. 옵션이 정해지지 않은 장비는 여기서 한 개씩 굴린다 (utils/affix.js)
+  add(id, count, extra = 0) {
+    const x = typeof extra === 'number' ? { plus: extra } : extra;
+    if (this.def(id)?.category === 'equipment' && x.opts === undefined) {
+      let n = 0;
+      for (let i = 0; i < count; i++) {
+        const got = addTo(this.slots, id, 1, 1, { plus: x.plus ?? 0, opts: rollOpts(this.ctx.data, id, { extra: x.extraLines ?? 0 }) });
+        if (!got) break;
+        n += got;
+      }
+      return n;
+    }
+    return addTo(this.slots, id, count, this.maxStack(id), x);
   }
 
   onPicked(e) {
     const def = this.def(e.item);
     if (!def || def.category === 'currency') return;
-    const added = this.add(e.item, e.count);
+    const added = this.add(e.item, e.count, { extraLines: e.extraLines ?? 0 });
     if (added <= 0) return;
     e.taken += added;
     if (!this.seen.has(e.item)) {
@@ -140,11 +158,12 @@ export class InventorySystem {
       s.count -= 1;
       if (s.count <= 0) this.slots[index] = null;
       this.changed();
+      this.ctx.bus.emit('item:used', { item: e.item });
     } else if (def.category === 'kit') {
       // 실제로 설치됐을 때 inventory:consume 으로 하나 줄어든다.
       this.ctx.bus.emit('build:start', { kind: def.builds, item: s.id });
     } else if (def.category === 'equipment') {
-      this.ctx.bus.emit('item:equip', { item: s.id, plus: s.plus ?? 0, slot: index });
+      this.ctx.bus.emit('item:equip', { item: s.id, plus: s.plus ?? 0, opts: s.opts ?? [], slot: index });
     }
   }
 
@@ -173,7 +192,7 @@ export class InventorySystem {
     const list = [];
     for (const s of this.slots) {
       if (!s) continue;
-      const same = list.find((x) => x.id === s.id && (x.plus ?? 0) === (s.plus ?? 0) && x.count < this.maxStack(s.id));
+      const same = !s.opts?.length && list.find((x) => x.id === s.id && !x.opts?.length && (x.plus ?? 0) === (s.plus ?? 0) && x.count < this.maxStack(s.id));
       if (same) {
         const n = Math.min(s.count, this.maxStack(s.id) - same.count);
         same.count += n;
@@ -199,8 +218,10 @@ export class InventorySystem {
     this.slots = new Array(this.cfg.slots).fill(null);
     inv.slots.forEach((s, i) => {
       if (!s || !this.def(s.id)) return;
-      if (i < this.slots.length) this.slots[i] = { id: s.id, count: s.count, ...(s.plus ? { plus: s.plus } : {}), ...(s.fresh ? { fresh: true } : {}) };
-      else this.add(s.id, s.count, s.plus ?? 0); // 칸 수가 줄었으면 앞쪽 빈칸으로
+      // 예전 장비(옵션 기록 없음)는 옵션 없이 [] 로
+      const x = { ...extraOf(s), ...(this.def(s.id).category === 'equipment' && !s.opts ? { opts: [] } : {}) };
+      if (i < this.slots.length) this.slots[i] = { id: s.id, count: s.count, ...x, ...(s.fresh ? { fresh: true } : {}) };
+      else this.add(s.id, s.count, x); // 칸 수가 줄었으면 앞쪽 빈칸으로
     });
     this.changed();
   }

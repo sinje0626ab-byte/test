@@ -27,6 +27,7 @@ export class CraftingSystem {
       return;
     }
     bus.emit('inventory:add', { item: r.result, count: r.count, taken: 0 });
+    bus.emit('craft:done', { item: r.result, count: r.count });
     bus.emit('notify', { text: `${name}${r.count > 1 ? ` ${r.count}개` : ''} 제작!`, kind: 'item' });
   }
 }

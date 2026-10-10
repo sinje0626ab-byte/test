@@ -3702,6 +3702,42 @@
         "from": "snow_charm",
         "hue": 220
       }
+    },
+    "chest_wood": {
+      "name": "나무 보물상자",
+      "category": "consumable",
+      "grade": "uncommon",
+      "stackable": true,
+      "maxStack": 20,
+      "value": 15,
+      "use": {
+        "chest": "wood"
+      },
+      "description": "열면 골드·재료가 나오고, 가끔 장비도 들어 있다. 지금 있는 지역의 것이 나온다."
+    },
+    "chest_silver": {
+      "name": "은 보물상자",
+      "category": "consumable",
+      "grade": "rare",
+      "stackable": true,
+      "maxStack": 20,
+      "value": 40,
+      "use": {
+        "chest": "silver"
+      },
+      "description": "장비가 꼭 하나 들어 있고, 옵션이 한 줄 더 붙는다."
+    },
+    "chest_gold": {
+      "name": "황금 보물상자",
+      "category": "consumable",
+      "grade": "epic",
+      "stackable": true,
+      "maxStack": 20,
+      "value": 100,
+      "use": {
+        "chest": "gold"
+      },
+      "description": "희귀 이상 장비 두 개와 수정이 들어 있는 큰 상자."
     }
   },
   "statLabels": {

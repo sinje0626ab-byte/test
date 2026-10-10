@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 12;
+export const SAVE_VERSION = 13;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -43,6 +43,8 @@ const migrations = {
   10: (s) => ({ ...s, saveVersion: 11, player: { ...s.player, appearance: null }, npcs: null, quests: null, bestiary: null, bounties: null }),
   // v11 → v12: 날씨(없으면 그날 새로 굴림), 묘비(없음), 가방 seen(없으면 지금 가방 아이템)
   11: (s) => ({ ...s, saveVersion: 12, weather: null, tomb: null }),
+  // v12 → v13: 장비 랜덤 옵션(칸 opts, 예전 장비는 불러올 때 [] = 옵션 없음), 보물상자(chests), 임무·출석(missions)
+  12: (s) => ({ ...s, saveVersion: 13, chests: null, missions: null }),
 };
 
 export class SaveSystem {

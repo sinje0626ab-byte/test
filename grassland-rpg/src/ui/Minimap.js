@@ -104,6 +104,8 @@ export class Minimap {
       dot(l.lair[0], l.lair[1], l.defeated ? '#9a958c' : '#c9584e', 4, '#fff');
     }
     for (const n of npcs ?? []) dot(n.position.x, n.position.z, n.def.color, 2.6, '#fff4d6');
+    // 보물상자 (안 연 것)
+    for (const c of this.ctx.chests ?? []) if (!c.opened) dot(c.position.x, c.position.z, c.type === 'gold' ? '#ffd166' : c.type === 'silver' ? '#dfeaf2' : '#c8955a', 2.4, '#6b4a2a');
     if (this.ctx.tomb) dot(this.ctx.tomb.position.x, this.ctx.tomb.position.z, '#9a958c', 3.5, '#ffcf5c');
     g.restore();
     // 퀘스트 목표: 안에 있으면 별, 밖이면 가장자리 화살표

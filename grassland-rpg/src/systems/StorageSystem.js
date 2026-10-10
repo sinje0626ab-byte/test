@@ -1,4 +1,4 @@
-import { maxStackOf, addTo } from '../utils/slots.js';
+import { extraOf, maxStackOf, addTo } from '../utils/slots.js';
 
 // 기지별 창고. 기지 id → 칸 목록
 export class StorageSystem {
@@ -23,8 +23,8 @@ export class StorageSystem {
       this.changed(e.baseId);
     });
     bus.on('storage:put', (e) => {
-      const { id, count, plus = 0 } = e.item;
-      const put = addTo(this.get(e.baseId), id, count, maxStackOf(ctx.data, id), plus);
+      const { id, count } = e.item;
+      const put = addTo(this.get(e.baseId), id, count, maxStackOf(ctx.data, id), extraOf(e.item));
       e.left = count - put;
       this.changed(e.baseId);
     });
@@ -51,7 +51,7 @@ export class StorageSystem {
     bus.on('save:apply', (save) => {
       for (const [id, slots] of Object.entries(save.storages ?? {})) {
         const list = this.get(Number(id));
-        slots.forEach((s, i) => { if (s && ctx.data.items.items[s.id] && i < list.length) list[i] = { ...s }; });
+        slots.forEach((s, i) => { if (s && ctx.data.items.items[s.id] && i < list.length) list[i] = { ...s, ...(ctx.data.items.items[s.id].category === 'equipment' && !s.opts ? { opts: [] } : {}) }; }); // 예전 장비는 옵션 없이
       }
     });
   }
@@ -73,10 +73,11 @@ export class StorageSystem {
     const take = { slot, item: null };
     bus.emit('inventory:take-slot', take);
     if (!take.item) return;
-    const { id, count, plus = 0 } = take.item;
-    const put = addTo(this.get(baseId), id, count, maxStackOf(data, id), plus);
+    const { id, count } = take.item;
+    const x = extraOf(take.item);
+    const put = addTo(this.get(baseId), id, count, maxStackOf(data, id), x);
     if (put < count) {
-      bus.emit('inventory:add', { item: id, count: count - put, taken: 0, plus });
+      bus.emit('inventory:add', { item: id, count: count - put, taken: 0, ...x, opts: x.opts ?? (data.items.items[id].category === 'equipment' ? [] : undefined) });
       bus.emit('notify', { text: '창고가 가득 찼습니다', kind: 'warn' });
     }
     this.changed(baseId);
@@ -87,7 +88,7 @@ export class StorageSystem {
     const slots = this.get(baseId);
     const s = slots[slot];
     if (!s) return;
-    const e = { item: s.id, count: s.count, taken: 0, plus: s.plus ?? 0 };
+    const e = { item: s.id, count: s.count, taken: 0, plus: s.plus ?? 0, opts: s.opts ?? (this.ctx.data.items.items[s.id].category === 'equipment' ? [] : undefined) };
     this.ctx.bus.emit('inventory:add', e);
     if (!e.taken) this.ctx.bus.emit('notify', { text: '가방이 가득 찼습니다', kind: 'warn' });
     s.count -= e.taken;

@@ -101,6 +101,8 @@ export class SoundSystem {
       else this.play('pickup');
     });
     bus.on('stats:levelup', () => this.play('levelup'));
+    bus.on('chest:opened', () => { this.play('rare'); this.play('coin'); });
+    bus.on('chest:mimic', () => this.play('roar'));
     bus.on('quest:completed', () => this.play('quest'));
     bus.on('bounty:claimed', () => this.play('jingle'));
     bus.on('item:use', (e) => { if (items[e.item]?.category === 'consumable') this.play('drink'); });

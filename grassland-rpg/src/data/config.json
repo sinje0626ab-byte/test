@@ -107,12 +107,17 @@
     "rewardPerMonster": 6,
     "failGoldLossRatio": 0.1,
     "presenceMargin": 20,
-    "remoteFightSeconds": 19, "remoteAccuracy": 0.85, "remotePierceChance": 0.5, "remotePoisonStacks": 2, "remoteFrostBonus": 0.4,
+    "remoteFightSeconds": 19,
+    "remoteAccuracy": 0.85,
+    "remotePierceChance": 0.5,
+    "remotePoisonStacks": 2,
+    "remoteFrostBonus": 0.4,
     "remotePartialRatio": 0.5,
     "remoteTurretDamage": 0.8,
     "failStorageLossRatio": 0.3,
     "progressPerPlayerLevels": 5,
-    "statPerProgress": 0.1, "regionWeight": 0.25,
+    "statPerProgress": 0.1,
+    "regionWeight": 0.25,
     "dayFactorEarly": 0.04,
     "dayEarlyCap": 12,
     "dayFactorLate": 0.02,
@@ -142,14 +147,27 @@
     "retargetInterval": 0.15,
     "maxLead": 4,
     "remoteRepairMultiplier": 1.25,
-    "priorityLabels": { "nearest": "가장 가까운 적", "lowestHp": "체력 낮은 적", "highestHp": "체력 높은 적", "first": "텐트에 가장 가까운 적", "flier": "비행 우선", "spread": "번갈아 노리기" }
+    "priorityLabels": {
+      "nearest": "가장 가까운 적",
+      "lowestHp": "체력 낮은 적",
+      "highestHp": "체력 높은 적",
+      "first": "텐트에 가장 가까운 적",
+      "flier": "비행 우선",
+      "spread": "번갈아 노리기"
+    }
   },
   "interact": {
     "range": 2.8
   },
   "quickslots": 5,
   "hud": {
-    "help": { "newGameSec": 12, "continueSec": 6, "recallSec": 8, "fadeSec": 0.6, "tipSec": 4 }
+    "help": {
+      "newGameSec": 12,
+      "continueSec": 6,
+      "recallSec": 8,
+      "fadeSec": 0.6,
+      "tipSec": 4
+    }
   },
   "touch": {
     "joystickRadius": 56,
@@ -199,7 +217,12 @@
   },
   "gearDrop": {
     "_doc": "필드 몬스터를 잡으면 그 지역 장비 풀(items.json pool)에서 등급별 확률로 하나. 정예는 elite.dropBonus 배, 보스는 boss 배, 밤 몬스터는 night 배",
-    "chances": { "common": 0.025, "uncommon": 0.012, "rare": 0.004, "epic": 0.001 },
+    "chances": {
+      "common": 0.025,
+      "uncommon": 0.012,
+      "rare": 0.004,
+      "epic": 0.001
+    },
     "night": 1.3,
     "boss": 25
   },
@@ -275,7 +298,9 @@
     ]
   },
   "walls": {
-    "ringInset": 1.2, "segment": 1.0, "gateSlots": 3,
+    "ringInset": 1.2,
+    "segment": 1.0,
+    "gateSlots": 3,
     "remoteHpRatio": 0.3,
     "collideRadius": 0.5,
     "repathInterval": 1,
@@ -524,18 +549,540 @@
   "mercenary": {
     "cost": 2000,
     "speed": 3.4,
-    "gatherer": { "capacity": 100, "searchRadius": 70, "pickRange": 0.9, "idleOutside": 4, "returnAfter": 4 },
-    "warrior": { "attackRatio": 0.2, "range": 1.6, "cooldown": 0.9 },
-    "repairer": { "perSecond": 1.0, "range": 1.2 },
+    "gatherer": {
+      "capacity": 100,
+      "searchRadius": 70,
+      "pickRange": 0.9,
+      "idleOutside": 4,
+      "returnAfter": 4
+    },
+    "warrior": {
+      "attackRatio": 0.2,
+      "range": 1.6,
+      "cooldown": 0.9
+    },
+    "repairer": {
+      "perSecond": 1.0,
+      "range": 1.2
+    },
     "roles": {
-      "gatherer": { "name": "채집가", "short": "기지 밖 바닥 골드를 주워 금고에 모아요", "desc": "기지 밖으로 나가 몬스터가 떨군 골드를 주워 와요. 한 번에 100골드까지 들고, 금고에 넣으면 다시 나가요." },
-      "warrior": { "name": "전사", "short": "기지 안에 들어온 적과 싸워요", "desc": "기지 영역 안에서만 다니며 들어온 몬스터와 싸워요. 공격력은 내 공격력의 20%, 쓰러지지 않아요." },
-      "repairer": { "name": "수리공", "short": "다친 건물을 천천히 고쳐요", "desc": "기지 안의 다친 포탑·건물을 아주 천천히 무료로 고쳐요. 부서진 포탑도 다시 세워요." }
+      "gatherer": {
+        "name": "채집가",
+        "short": "기지 밖 바닥 골드를 주워 금고에 모아요",
+        "desc": "기지 밖으로 나가 몬스터가 떨군 골드를 주워 와요. 한 번에 100골드까지 들고, 금고에 넣으면 다시 나가요."
+      },
+      "warrior": {
+        "name": "전사",
+        "short": "기지 안에 들어온 적과 싸워요",
+        "desc": "기지 영역 안에서만 다니며 들어온 몬스터와 싸워요. 공격력은 내 공격력의 20%, 쓰러지지 않아요."
+      },
+      "repairer": {
+        "name": "수리공",
+        "short": "다친 건물을 천천히 고쳐요",
+        "desc": "기지 안의 다친 포탑·건물을 아주 천천히 무료로 고쳐요. 부서진 포탑도 다시 세워요."
+      }
     }
   },
-  "nav": { "arrive": 0.35, "blockedArrive": 2.5, "margin": 0.15, "probeStep": 0.4, "searchPad": 6, "maxGrid": 90, "maxNodes": 6000, "repathInterval": 2, "goalMove": 1.2, "stuckRatio": 0.3, "stuckTime": 0.6, "sidestepTime": 0.5, "giveUp": 25 },
+  "nav": {
+    "arrive": 0.35,
+    "blockedArrive": 2.5,
+    "margin": 0.15,
+    "probeStep": 0.4,
+    "searchPad": 6,
+    "maxGrid": 90,
+    "maxNodes": 6000,
+    "repathInterval": 2,
+    "goalMove": 1.2,
+    "stuckRatio": 0.3,
+    "stuckTime": 0.6,
+    "sidestepTime": 0.5,
+    "giveUp": 25
+  },
   "render": {
-    "toon": { "steps": 3, "soft": 0.08, "top": 1.0 },
-    "outline": { "color": "#2e2118", "strength": 0.9, "thickness": 1.5, "fadeStart": 45, "fadeEnd": 90, "samples": 4 }
+    "toon": {
+      "steps": 3,
+      "soft": 0.08,
+      "top": 1.0
+    },
+    "outline": {
+      "color": "#2e2118",
+      "strength": 0.9,
+      "thickness": 1.5,
+      "fadeStart": 45,
+      "fadeEnd": 90,
+      "samples": 4
+    }
+  },
+  "affix": {
+    "_": "장비 랜덤 옵션 (utils/affix.js). 줄 수는 등급별 [최소, 최대], 가끔 한 줄 더(luckyLine). 값 = (min~max) × (scale 이면 지역 단계)",
+    "lines": {
+      "common": [
+        0,
+        1
+      ],
+      "uncommon": [
+        1,
+        1
+      ],
+      "rare": [
+        1,
+        2
+      ],
+      "epic": [
+        2,
+        2
+      ],
+      "legendary": [
+        3,
+        3
+      ]
+    },
+    "luckyLine": 0.06,
+    "maxLines": 4,
+    "tierByPool": {
+      "grassland": 1,
+      "forest": 2,
+      "desert": 3,
+      "snow": 4
+    },
+    "tierByGrade": {
+      "common": 1,
+      "uncommon": 1,
+      "rare": 2,
+      "epic": 3,
+      "legendary": 4
+    },
+    "goodRoll": 0.85,
+    "stats": {
+      "attack": {
+        "slots": [
+          "weapon",
+          "accessory"
+        ],
+        "min": 1,
+        "max": 2.5,
+        "scale": 1,
+        "step": 1
+      },
+      "defense": {
+        "slots": [
+          "armor",
+          "accessory"
+        ],
+        "min": 1,
+        "max": 2,
+        "scale": 1,
+        "step": 1
+      },
+      "maxHp": {
+        "slots": [
+          "armor",
+          "accessory"
+        ],
+        "min": 6,
+        "max": 12,
+        "scale": 1,
+        "step": 1
+      },
+      "critChance": {
+        "slots": [
+          "weapon",
+          "accessory",
+          "armor"
+        ],
+        "min": 0.01,
+        "max": 0.03,
+        "scale": 0.25,
+        "step": 0.005
+      },
+      "critDamage": {
+        "slots": [
+          "weapon",
+          "accessory"
+        ],
+        "min": 0.05,
+        "max": 0.12,
+        "scale": 0.25,
+        "step": 0.01
+      },
+      "attackSpeed": {
+        "slots": [
+          "weapon",
+          "accessory"
+        ],
+        "min": 0.02,
+        "max": 0.05,
+        "scale": 0.2,
+        "step": 0.01
+      },
+      "moveSpeed": {
+        "slots": [
+          "armor",
+          "accessory"
+        ],
+        "min": 0.05,
+        "max": 0.15,
+        "scale": 0.25,
+        "step": 0.05
+      },
+      "maxStamina": {
+        "slots": [
+          "armor",
+          "accessory"
+        ],
+        "min": 5,
+        "max": 10,
+        "scale": 0.5,
+        "step": 1
+      },
+      "hpRegen": {
+        "slots": [
+          "armor",
+          "accessory"
+        ],
+        "min": 0.2,
+        "max": 0.5,
+        "scale": 0.5,
+        "step": 0.1
+      },
+      "onHitPoison": {
+        "slots": [
+          "weapon"
+        ],
+        "min": 1,
+        "max": 2,
+        "scale": 0,
+        "step": 0.5
+      },
+      "onHitSlow": {
+        "slots": [
+          "weapon"
+        ],
+        "min": 0.1,
+        "max": 0.2,
+        "scale": 0,
+        "step": 0.05
+      },
+      "onKillHeal": {
+        "slots": [
+          "weapon"
+        ],
+        "min": 1,
+        "max": 3,
+        "scale": 1,
+        "step": 1
+      },
+      "nightBonus": {
+        "slots": [
+          "weapon",
+          "accessory"
+        ],
+        "min": 0.05,
+        "max": 0.12,
+        "scale": 0.2,
+        "step": 0.01
+      },
+      "poisonResist": {
+        "slots": [
+          "armor",
+          "accessory"
+        ],
+        "min": 0.08,
+        "max": 0.2,
+        "scale": 0,
+        "step": 0.01
+      },
+      "dropRate": {
+        "slots": [
+          "accessory",
+          "armor"
+        ],
+        "min": 0.02,
+        "max": 0.05,
+        "scale": 0,
+        "step": 0.01
+      },
+      "damageTaken": {
+        "slots": [
+          "armor"
+        ],
+        "min": -0.02,
+        "max": -0.04,
+        "scale": 0.2,
+        "step": 0.005
+      }
+    },
+    "reroll": {
+      "gold": [
+        60,
+        140,
+        280,
+        450
+      ],
+      "item": "iron_ore",
+      "count": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "chests": {
+    "_": "보물상자 (ChestSystem). 아침마다 지역마다 perRegion 개, 종류는 weights. mimic 확률이면 열 때 미믹이 튀어나온다",
+    "perRegion": {
+      "grassland": 6,
+      "forest": 6,
+      "desert": 5,
+      "snow": 5
+    },
+    "weights": {
+      "wood": 0.75,
+      "silver": 0.21,
+      "gold": 0.04
+    },
+    "mimicChance": 0.12,
+    "mimicType": "mimic",
+    "openRange": 1.8,
+    "minPlayerDist": 25,
+    "kinds": {
+      "wood": {
+        "name": "나무 보물상자",
+        "gold": [
+          20,
+          45
+        ],
+        "materials": 2,
+        "gearChance": 0.4,
+        "gear": {
+          "common": 0.55,
+          "uncommon": 0.35,
+          "rare": 0.1
+        },
+        "extraLines": 0,
+        "consumable": 0.35
+      },
+      "silver": {
+        "name": "은 보물상자",
+        "gold": [
+          60,
+          120
+        ],
+        "materials": 3,
+        "gearChance": 1,
+        "gear": {
+          "uncommon": 0.45,
+          "rare": 0.45,
+          "epic": 0.1
+        },
+        "extraLines": 1,
+        "consumable": 0.6
+      },
+      "gold": {
+        "name": "황금 보물상자",
+        "gold": [
+          150,
+          300
+        ],
+        "materials": 4,
+        "gearChance": 1,
+        "gearCount": 2,
+        "gear": {
+          "rare": 0.55,
+          "epic": 0.45
+        },
+        "extraLines": 1,
+        "consumable": 1,
+        "crystal": 0.6
+      }
+    },
+    "materials": {
+      "grassland": [
+        "wood",
+        "stone",
+        "fiber",
+        "herb",
+        "slime_jelly",
+        "iron_ore"
+      ],
+      "forest": [
+        "wood",
+        "resin",
+        "mushroom_cap",
+        "herb",
+        "iron_ore"
+      ],
+      "desert": [
+        "sandstone",
+        "cactus_spine",
+        "cactus_pulp",
+        "iron_ore"
+      ],
+      "snow": [
+        "ice_shard",
+        "stone",
+        "iron_ore",
+        "resin"
+      ]
+    },
+    "materialCount": [
+      2,
+      5
+    ],
+    "consumables": [
+      "potion",
+      "big_potion",
+      "herb_tea",
+      "honey_jar",
+      "fire_tonic",
+      "return_scroll"
+    ],
+    "crystals": [
+      "sun_crystal",
+      "frost_crystal"
+    ],
+    "mimicLoot": "silver"
+  },
+  "missions": {
+    "_": "매일·주간 임무와 출석 (MissionSystem). 날짜는 실제 날짜(기기 시각), 주간은 월요일부터",
+    "dailyCount": 3,
+    "weeklyCount": 3,
+    "daily": [
+      {
+        "type": "kill",
+        "target": 25,
+        "text": "몬스터 {n}마리 물리치기"
+      },
+      {
+        "type": "gather",
+        "target": 20,
+        "text": "채집물 {n}번 캐기"
+      },
+      {
+        "type": "chest",
+        "target": 2,
+        "text": "보물상자 {n}개 열기"
+      },
+      {
+        "type": "elite",
+        "target": 1,
+        "text": "정예 몬스터 {n}마리 물리치기"
+      },
+      {
+        "type": "raid",
+        "target": 1,
+        "text": "밤 습격 {n}번 막아 내기"
+      },
+      {
+        "type": "bounty",
+        "target": 1,
+        "text": "현상금 의뢰 {n}개 완료"
+      },
+      {
+        "type": "gold",
+        "target": 300,
+        "text": "골드 {n} 벌기"
+      },
+      {
+        "type": "craft",
+        "target": 2,
+        "text": "작업대에서 {n}번 제작"
+      },
+      {
+        "type": "forge",
+        "target": 1,
+        "text": "대장간에서 강화·재련 {n}번"
+      },
+      {
+        "type": "consume",
+        "target": 3,
+        "text": "소모품 {n}개 쓰기"
+      }
+    ],
+    "weekly": [
+      {
+        "type": "kill",
+        "target": 250,
+        "text": "몬스터 {n}마리 물리치기"
+      },
+      {
+        "type": "gather",
+        "target": 150,
+        "text": "채집물 {n}번 캐기"
+      },
+      {
+        "type": "chest",
+        "target": 12,
+        "text": "보물상자 {n}개 열기"
+      },
+      {
+        "type": "boss",
+        "target": 1,
+        "text": "보스 {n}마리 쓰러뜨리기"
+      },
+      {
+        "type": "raid",
+        "target": 5,
+        "text": "밤 습격 {n}번 막아 내기"
+      },
+      {
+        "type": "elite",
+        "target": 8,
+        "text": "정예 몬스터 {n}마리 물리치기"
+      },
+      {
+        "type": "bounty",
+        "target": 6,
+        "text": "현상금 의뢰 {n}개 완료"
+      }
+    ],
+    "dailyReward": {
+      "gold": [
+        40,
+        18
+      ],
+      "item": "chest_wood"
+    },
+    "dailyAllReward": {
+      "item": "chest_silver"
+    },
+    "weeklyReward": {
+      "gold": [
+        150,
+        60
+      ],
+      "item": "chest_silver"
+    },
+    "weeklyAllReward": {
+      "item": "chest_gold"
+    },
+    "attendance": [
+      {
+        "gold": 100
+      },
+      {
+        "item": "chest_wood",
+        "count": 1
+      },
+      {
+        "item": "big_potion",
+        "count": 3
+      },
+      {
+        "item": "chest_silver",
+        "count": 1
+      },
+      {
+        "item": "iron_ore",
+        "count": 10
+      },
+      {
+        "gold": 500
+      },
+      {
+        "item": "chest_gold",
+        "count": 1
+      }
+    ]
   }
 }

@@ -1,6 +1,7 @@
 import { enhancedBonus } from '../utils/enhance.js';
+import { optsBonus } from '../utils/affix.js';
 
-// 장비 슬롯 6개. 칸마다 { id, plus } 또는 null. 장착하면 가방 칸과 맞바꾸고, 해제하면 가방으로 돌려보낸다.
+// 장비 슬롯 6개. 칸마다 { id, plus, opts } 또는 null (opts = 랜덤 옵션, utils/affix.js). 장착하면 가방 칸과 맞바꾸고, 해제하면 가방으로 돌려보낸다.
 const SLOTS = ['weapon', 'head', 'body', 'feet', 'accessory1', 'accessory2'];
 
 export class EquipmentSystem {
@@ -9,13 +10,18 @@ export class EquipmentSystem {
     this.slots = Object.fromEntries(SLOTS.map((s) => [s, null]));
     const { bus } = ctx;
 
-    bus.on('item:equip', ({ item, slot, plus }) => this.equip(item, slot, plus));
+    bus.on('item:equip', ({ item, slot, plus, opts }) => this.equip(item, slot, plus, opts));
     bus.on('equipment:peek', (e) => { e.slots = this.slots; }); // 읽기 전용 (퀵슬롯)
     bus.on('equipment:unequip', ({ slot }) => this.unequip(slot));
     // 대장간 강화
     bus.on('equipment:set-plus', ({ slot, plus }) => {
       if (!this.slots[slot]) return;
       this.slots[slot].plus = plus;
+      this.changed();
+    });
+    bus.on('equipment:set-opts', ({ slot, opts }) => {
+      if (!this.slots[slot]) return;
+      this.slots[slot].opts = opts;
       this.changed();
     });
     bus.on('save:collect', (save) => {
@@ -26,7 +32,7 @@ export class EquipmentSystem {
       for (const s of SLOTS) {
         const v = saved[s];
         const e = typeof v === 'string' ? { id: v, plus: 0 } : v; // 예전 형식(문자열)도 받는다
-        this.slots[s] = e && this.def(e.id) ? { id: e.id, plus: e.plus ?? 0 } : null;
+        this.slots[s] = e && this.def(e.id) ? { id: e.id, plus: e.plus ?? 0, opts: e.opts ?? [] } : null;
       }
       this.changed();
     });
@@ -44,12 +50,12 @@ export class EquipmentSystem {
     return 'accessory1';
   }
 
-  equip(itemId, invSlot, plus = 0) {
+  equip(itemId, invSlot, plus = 0, opts = []) {
     const def = this.def(itemId);
     if (def?.category !== 'equipment') return;
     const slot = this.targetSlot(def);
     const prev = this.slots[slot];
-    this.slots[slot] = { id: itemId, plus };
+    this.slots[slot] = { id: itemId, plus, opts };
     this.ctx.bus.emit('inventory:replace-slot', { slot: invSlot, item: prev });
     this.ctx.bus.emit('notify', { text: `${def.name}${plus ? ` +${plus}` : ''} 장착`, kind: 'item', color: this.ctx.data.items.grades[def.grade]?.color });
     this.changed();
@@ -58,7 +64,7 @@ export class EquipmentSystem {
   unequip(slot) {
     const cur = this.slots[slot];
     if (!cur) return;
-    const e = { item: cur.id, count: 1, taken: 0, plus: cur.plus };
+    const e = { item: cur.id, count: 1, taken: 0, plus: cur.plus, opts: cur.opts ?? [] };
     this.ctx.bus.emit('inventory:add', e);
     if (!e.taken) {
       this.ctx.bus.emit('notify', { text: '가방이 가득 차서 해제할 수 없습니다', kind: 'warn' });
@@ -73,9 +79,10 @@ export class EquipmentSystem {
     const { data } = this.ctx;
     const bonus = {};
     const add = (b) => { for (const [k, v] of Object.entries(b ?? {})) bonus[k] = (bonus[k] ?? 0) + v; };
-    for (const e of Object.values(this.slots)) if (e) add(enhancedBonus(data, this.def(e.id).bonus, e.plus));
+    for (const e of Object.values(this.slots)) if (e) { add(enhancedBonus(data, this.def(e.id).bonus, e.plus)); add(optsBonus(e.opts)); }
     const ids = Object.fromEntries(SLOTS.map((s) => [s, this.slots[s]?.id ?? null]));
     const plus = Object.fromEntries(SLOTS.map((s) => [s, this.slots[s]?.plus ?? 0]));
+    const opts = Object.fromEntries(SLOTS.map((s) => [s, this.slots[s]?.opts ?? []]));
     // 세트: 머리·몸·발을 모두 같은 지역 세트로 끼면 보너스
     const worn = new Set(Object.values(ids));
     const sets = Object.entries(data.items.sets).map(([id, set]) => {
@@ -83,6 +90,6 @@ export class EquipmentSystem {
       if (have === set.pieces.length) add(set.bonus);
       return { id, name: set.name, have, total: set.pieces.length, bonus: set.bonus };
     });
-    this.ctx.bus.emit('equipment:changed', { slots: ids, plus, bonus, sets });
+    this.ctx.bus.emit('equipment:changed', { slots: ids, plus, opts, bonus, sets });
   }
 }
