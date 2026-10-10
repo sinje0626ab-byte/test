@@ -1,4 +1,5 @@
 import { baseAt } from '../utils/bases.js';
+import { marker } from './mapIcons.js';
 import { repairAllCost } from '../utils/build.js';
 
 const MAX_H = 480; // 지도 캔버스 최대 높이(px). 월드가 길면 그만큼 줄여 그린다.
@@ -112,6 +113,12 @@ export class MapWindow {
       const r = Math.floor((l.lair[1] - bounds.minZ) / cs);
       if (!ex || !ex.cells[r * ex.cols + c]) continue;
       const [mx, my] = this.toMap(l.lair[0], l.lair[1]);
+      if (marker(g, 'map_boss', mx, my, 24, { pin: true, gray: l.defeated, alpha: l.defeated ? 0.7 : 1 })) {
+        g.fillStyle = '#fff';
+        g.font = '700 10px system-ui, sans-serif';
+        g.fillText(l.name, mx, my - 28);
+        continue;
+      }
       g.fillStyle = l.defeated ? '#9a958c' : '#d9403a';
       g.beginPath();
       g.arc(mx, my, 6, 0, Math.PI * 2);
@@ -129,17 +136,23 @@ export class MapWindow {
       g.beginPath();
       g.arc(mx, my, b.areaRadius * SCALE, 0, Math.PI * 2);
       g.stroke();
-      g.fillStyle = '#e9835b';
-      g.beginPath();
-      g.moveTo(mx, my - 7); g.lineTo(mx + 6, my + 5); g.lineTo(mx - 6, my + 5);
-      g.closePath();
-      g.fill();
+      if (!marker(g, 'map_base', mx, my, 24, { pin: true })) {
+        g.fillStyle = '#e9835b';
+        g.beginPath();
+        g.moveTo(mx, my - 7); g.lineTo(mx + 6, my + 5); g.lineTo(mx - 6, my + 5);
+        g.closePath();
+        g.fill();
+      }
       g.fillStyle = '#fff';
       g.font = '700 10px system-ui, sans-serif';
       g.fillText(`#${b.id}`, mx, my + 16);
     }
 
+    // 주민·묘비·보물상자 (그림이 있을 때만)
+    for (const n of this.ctx.npcs ?? []) { const [nx, ny] = this.toMap(n.position.x, n.position.z); marker(g, 'map_npc', nx, ny, 16, { pin: true }); }
+    if (this.ctx.tomb) { const [tx, ty] = this.toMap(this.ctx.tomb.position.x, this.ctx.tomb.position.z); marker(g, 'map_tomb', tx, ty, 18, { pin: true }); }
     const [px, py] = this.toMap(player.position.x, player.position.z);
+    if (marker(g, 'map_player', px, py, 20, { rot: Math.atan2(player.facing.z, player.facing.x) + Math.PI / 2 })) return;
     g.strokeStyle = '#fff';
     g.lineWidth = 2;
     g.beginPath();

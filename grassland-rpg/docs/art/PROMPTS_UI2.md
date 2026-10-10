@@ -106,3 +106,62 @@ UI sheet 7, 9 round illustrations in 2 rows (5 + 4), each inside a soft circle, 
 8. Sandstorm: swirling tan sand with a small cactus.
 9. Snow: a puffy cloud with snowflakes.
 ```
+
+---
+
+# 3차 — 창 제목·소제목·창 아이콘·캐릭터 창 (묶음 8~10)
+
+글씨는 게임이 얹는다(그림에는 글씨 없음). 판·리본은 가운데를 늘려 쓰므로 양 끝 장식과 가운데 민무늬가 분명해야 한다.
+
+## 묶음 8 — 제목 리본·소제목 판·임무 창 기호 (7개)
+```
+UI sheet 8, 7 objects in this exact order (2 rows: 3 + 4), plain flat light-cream background, NO text anywhere:
+1. A wide horizontal window-title ribbon banner, about 5:1 wide: soft leaf-green fabric with a slightly lighter top edge,
+   darker folded tails at both ends, a tiny cream leaf sprig on each end, and a long EMPTY plain middle (it will be stretched).
+2. A small horizontal section-header label, about 3.5:1: a light honey-wood plank tag with rounded ends,
+   a tiny green leaf on the left end, EMPTY plain middle.
+3. A small round cream keycap button with a soft brown rim, empty face (for a hotkey letter).
+4. A very wide thin divider, about 10:1: a delicate green vine with small leaves and two tiny white flowers.
+5. Daily icon: a cheerful rising sun peeking over a small green hill.
+6. Bonus icon: a small gift box wrapped in cream paper with a leaf-green ribbon bow and a tiny sparkle.
+7. Attendance icon: a small open stamp book with a red leaf stamp on one page.
+```
+
+## 묶음 9 — 창 제목 아이콘 (16개)
+```
+UI sheet 9, 16 small icons in 2 rows of 8, in this exact order, NO text:
+1. Bag: a cute brown leather backpack with a leaf patch.
+2. Character: a little pioneer face (brown hair, blue collar) in a round cream frame.
+3. Skills: an open green spell book with a glowing leaf.
+4. Build: a hammer crossed with a wooden plank and a small brick.
+5. Map: a rolled-open parchment map with a red X and a dotted path.
+6. Missions: a clipboard with a checklist and a leaf clip.
+7. Forge: an iron anvil with a small hammer and orange sparks.
+8. Shop: a little striped red-and-cream market awning stall.
+9. Workbench craft: a saw and a hand plane over a wooden board.
+10. Storage: a wooden crate with a small barrel beside it.
+11. Garden: a watering can with a sprout.
+12. Bestiary: a brown monster encyclopedia book with a slime face on the cover.
+13. Bounty board: a small wooden board with a pinned wanted paper.
+14. Courier: a sky-blue mail envelope with little wings.
+15. Turret: a tiny wooden watchtower with a bow on top.
+16. Settings: a cream gear with a small leaf.
+```
+
+## 묶음 10 — 캐릭터 창 능력치·장비 칸 (13개)
+```
+UI sheet 10, 13 small icons in 2 rows (7 + 6), in this exact order, NO text:
+1. Max HP: a plump red heart.
+2. Max stamina: a honey-yellow lightning drop.
+3. Attack: a small sword with a spark.
+4. Defense: a round wooden shield with a leaf emblem.
+5. Move speed: a little boot with tiny wings.
+6. Critical chance: a golden burst star with a target dot.
+7. HP regen: a green leaf with a small pink heart.
+8. Weapon slot: a pale cream silhouette of a sword (empty-slot hint, very soft, low contrast).
+9. Head slot: a pale cream silhouette of a hat.
+10. Body slot: a pale cream silhouette of a tunic.
+11. Feet slot: a pale cream silhouette of a pair of boots.
+12. Accessory slot: a pale cream silhouette of a ring with a gem.
+13. Set bonus crest: a small round leaf-green crest with three leaves and a gold rim.
+```

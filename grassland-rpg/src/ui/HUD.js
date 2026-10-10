@@ -35,7 +35,7 @@ export class HUD {
         </div>
       </div>
       <div class="hud-tr">
-        <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">${uiImg('ic_menu', '☰')}</button><div class="clock" data-clock><i class="dial"><i class="dial-wheel" data-dial><i class="dial-sun"></i><i class="dial-moon"></i></i></i><b data-day>1일차</b><span data-until></span></div></div>
+        <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">${uiImg('ic_menu', '☰')}</button><div class="clock" data-clock><i class="dial"><i class="dial-wheel" data-dial><i class="dial-sun"></i><i class="dial-moon"></i></i></i><i class="wx" data-wx hidden></i><b data-day>1일차</b><span data-until></span></div></div>
         <div class="gold"><i class="coin"></i><b data-gold>0</b></div>
         <div class="saved" data-saved>저장됨</div>
       </div>
@@ -84,6 +84,12 @@ export class HUD {
     });
     bus.on('notify', (n) => this.notify(n));
     bus.on('player:aura', ({ hpRegen }) => { this.aura = hpRegen; });
+    // 날씨 작은 그림 (시계 옆): rain · sandstorm · snow
+    bus.on('weather:changed', ({ type }) => {
+      const wx = this.root.querySelector('[data-wx]');
+      wx.hidden = !type;
+      wx.dataset.wx = type ?? '';
+    });
     bus.on('buffs:changed', ({ list }) => {
       this.el.buffs.innerHTML = list.map((b) => `<span class="buff" title="${b.name}">${b.item ? itemIcon(this.ctx.data.items.items[b.item]) : `<i style="--c:${b.color}"></i>`}${Math.ceil(b.time)}</span>`).join('');
     });
@@ -325,6 +331,7 @@ export class HUD {
     this.el.day.textContent = `${t.day}일차 · ${this.ctx.world.regionAt(p.x, p.z).name}`;
     this.el.until.textContent = `${t.isNight ? '아침까지' : '밤까지'} ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
     this.el.clock.classList.toggle('night', t.isNight);
+    this.el.clock.classList.toggle('blood', t.isNight && !!this.ctx.bloodMoon); // 붉은 달 (그림 시계)
     // 다이얼: 낮엔 해가, 밤엔 달이 왼쪽에서 떠서 꼭대기를 지나 오른쪽으로 진다
     const { dayLength } = t.cfg;
     const rot = t.isNight ? 90 + ((t.clock - dayLength) / (t.cycle - dayLength)) * 180 : -90 + (t.clock / dayLength) * 180;
