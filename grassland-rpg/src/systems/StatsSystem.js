@@ -37,6 +37,7 @@ export class StatsSystem {
       this.skillPoints += count;
       this.emitChanged();
     });
+    bus.on('stats:cheat-level', () => this.gain(Math.max(1, this.xpToNext() - this.xp))); // 치트
     bus.on('stats:spend-point', (e) => {
       if (this.skillPoints <= 0) return;
       this.skillPoints -= 1;

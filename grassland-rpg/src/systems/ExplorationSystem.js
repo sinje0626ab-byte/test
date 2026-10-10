@@ -14,6 +14,7 @@ export class ExplorationSystem {
     const { bus } = ctx;
 
     bus.on('base:created', ({ base }) => this.reveal(base.position.x, base.position.z, base.areaRadius + 6));
+    bus.on('map:reveal-all', () => { this.cells.fill(1); this.emit(); }); // 치트
     bus.on('player:teleport', ({ position }) => this.reveal(position.x, position.z, this.cfg.revealRadius));
     bus.on('save:collect', (save) => {
       save.exploration = { cells: Array.from(this.cells).join(''), visited: [...this.visited] };

@@ -31,6 +31,8 @@ export class SkillPlusSystem {
       this.changed();
     });
     bus.on('ult:cast', () => this.cast());
+    bus.on('ult:fill', () => this.gain(this.cfg.max)); // 치트
+    bus.on('rune:cheat', () => this.grant('치트'));
 
     // 각인 얻기
     const drops = this.data.runeDrops;

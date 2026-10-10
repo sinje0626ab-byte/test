@@ -79,6 +79,10 @@ export class Chat {
   say(raw) {
     const text = String(raw ?? '').replace(/\s+/g, ' ').trim().slice(0, MAX_LEN);
     if (!text) return;
+    // 치트키면 말풍선 없이 (CheatSystem)
+    const cmd = { text, handled: false };
+    this.ctx.bus.emit('chat:command', cmd);
+    if (cmd.handled) return;
     this.nameEl.textContent = this.name || '개척자';
     this.textEl.textContent = text;
     this.life = Math.min(9, 3.2 + text.length * 0.12);

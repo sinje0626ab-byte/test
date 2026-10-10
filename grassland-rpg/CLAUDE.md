@@ -160,6 +160,7 @@ src/
     WeatherSystem.js   # 하루 단위 날씨, 장식 생물
     TombstoneSystem.js # 쓰러진 자리 묘비 (잃은 골드 절반)
     DecorSystem.js     # 기지 꾸미기 소품 (놓기·옮기기·치우기·저장)
+    CheatSystem.js     # 운영자 치트키 (채팅 창에 입력)
     ClearSystem.js     # 기지 안 나무·바위·채집 노드를 골드로 치우기
     ChestSystem.js     # 들판 보물상자 (아침마다 지역별 배치·E로 열기·미믹)·상자 아이템 열기
     MissionSystem.js   # 매일·주간 임무와 출석 도장 (실제 날짜 기준)
@@ -521,6 +522,11 @@ src/
 - **창 끌기**(PC, `UIManager.bindDrag`): 창 제목줄을 잡고 끌면 창이 따라온다. 창 네 모서리가 화면 밖으로 나가지 않는다(창이 화면보다 크면 왼쪽·위에 붙는다, 열 때·화면 크기가 바뀔 때도 `clamp`). 놓은 자리는 닫았다 열어도 그대로, 제목줄을 두 번 누르면 원래 자리. 터치 기기에서는 끌리지 않는다
 - **가방 폭**(PC): 창 폭을 칸(58px × 6)에 맞추고 안내 글은 아래 줄로
 - **세로 휴대폰 퀵슬롯**: 화면 맨 아래 가운데 얇은 줄(34px 칸, 숫자 없음, 살짝 투명). 조이스틱·공격·구르기·E·스킬 단추는 그만큼(40px) 위로
+
+### 4-18. 운영자 치트키 (`systems/CheatSystem.js`)
+- 채팅(Enter, 휴대폰 채팅 단추)에 치면 말풍선 대신 「치트: …」 알림 한 줄. 대소문자·띄어쓰기·문장부호는 가리지 않는다. 게임 화면·도움말엔 목록을 보여 주지 않는다
+- `show me the money` 골드 +10,000 · `something for nothing` 스킬 포인트 +1 · `there is no cow level` 레벨 +1 · `power overwhelming` 무적 켜고 끄기(`ctx.godMode`, 피해·독 무시, 저장 안 됨) · `the gathering` 궁극기 게이지 가득 · `black sheep wall` 지도 모두 밝히기 · `modify the phase variance` 각인 하나 얻기
+- `chat:command { text, handled }` 로 Chat.say 가 먼저 묻는다
 
 ### 4-17. 기지 꾸미기 · 옮기기
 - **꾸미기 소품**(`data/decor.json`, `systems/DecorSystem.js`, 모양 `entities/decorModels.js`): 건설 창 「꾸미기」 탭(갈래 조명·쉼터·정원·물가·마을 소품, 카드에 모델 사진 `decorThumb`) → 골드로 사서 기지 영역 안 원하는 자리에 마우스로 놓는다. R·휠(휴대폰 「돌리기」)로 45°씩 돌리고, 놓은 뒤에도 같은 소품을 계속 놓는다(우클릭·ESC 로 그만). 칸은 반 칸(`gridSnap/2`)씩
