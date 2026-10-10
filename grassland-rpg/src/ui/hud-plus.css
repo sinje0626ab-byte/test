@@ -140,7 +140,7 @@ body.touch .ultslot kbd { display: none; }
 .sky-lines line.key { stroke-dasharray: 2 5; stroke: rgba(200, 180, 255, 0.35); }
 .sky-lines line.key.lit { stroke: #d9c4ff; }
 .window .win-body button.sk2-star {
-  position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 1px;
+  position: absolute; translate: -50% -50%; transform: none; display: flex; flex-direction: column; align-items: center; gap: 1px;
   background: none; border: 0; padding: 0; cursor: pointer; width: 76px; color: #fff; box-shadow: none; font: inherit;
 }
 .sk2-star .st-orb { position: relative; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), filter 0.2s;
@@ -149,6 +149,8 @@ body.touch .ultslot kbd { display: none; }
 .sk2-star .st-rank { font: 400 11px/1 var(--font-number); color: rgba(255, 255, 255, 0.7); margin-top: 2px; }
 .sk2-star .st-name { font: 400 11px/1.15 var(--font-title); color: rgba(255, 255, 255, 0.78); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); white-space: nowrap; }
 .sk2-star:hover .st-orb { transform: scale(1.1); }
+/* 공통 버튼의 올림·누름 움직임(transform)을 별에는 쓰지 않는다 — 가운데 맞춤은 translate 로 따로 (예전엔 올리면 별이 밀려 떨렸다) */
+.window .win-body button.sk2-star:is(:hover, :active) { transform: none; box-shadow: none; filter: none; }
 .sk2-star.some .st-orb, .sk2-star.max .st-orb { filter: none; box-shadow: 0 0 0 2px #fff, 0 0 14px 3px rgba(255, 220, 130, 0.65); }
 .sk2-star.max .st-orb { box-shadow: 0 0 0 2px #ffe39a, 0 0 18px 5px rgba(255, 210, 110, 0.85); }
 .sk2-star.some .st-rank, .sk2-star.max .st-rank { color: #ffe39a; }
