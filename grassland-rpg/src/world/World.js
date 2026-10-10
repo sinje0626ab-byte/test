@@ -112,10 +112,32 @@ export class World {
     return Math.hypot(x - this.spawnPoint.x, z - this.spawnPoint.z) < this.cfg.clearRadius;
   }
 
-  addCollider(x, z, r) {
+  // info: { ref: { ci, kind, i } 장식 인스턴스, label } 또는 { node } — 기지 안이면 골드로 치울 수 있다 (ClearSystem)
+  addCollider(x, z, r, info = null) {
     const key = `${Math.floor(x / GRID)},${Math.floor(z / GRID)}`;
     if (!this.colliders.has(key)) this.colliders.set(key, []);
-    this.colliders.get(key).push({ x, z, r });
+    const c = { x, z, r, info };
+    this.colliders.get(key).push(c);
+    return c;
+  }
+
+  removeCollider(c) {
+    const list = this.colliders.get(`${Math.floor(c.x / GRID)},${Math.floor(c.z / GRID)}`);
+    const i = list?.indexOf(c) ?? -1;
+    if (i >= 0) list.splice(i, 1);
+  }
+
+  // 장식 인스턴스 하나를 지운다 (크기 0) + 같은 장식의 충돌체 모두 (아치는 둘)
+  removeDecor(ref, near) {
+    const chunk = this.chunks.find((c) => c.index === ref.ci);
+    const mesh = chunk?.group.children.find((m) => m.userData.kind === ref.kind);
+    if (mesh) {
+      mesh.setMatrixAt(ref.i, new THREE.Matrix4().makeScale(0, 0, 0));
+      mesh.instanceMatrix.needsUpdate = true;
+    }
+    for (const c of [...this.nearby(near.x, near.z, 3)]) {
+      if (c.info?.ref && c.info.ref.ci === ref.ci && c.info.ref.kind === ref.kind && c.info.ref.i === ref.i) this.removeCollider(c);
+    }
   }
 
   // (x, z) 둘레 radius 안에 걸칠 수 있는 충돌체들

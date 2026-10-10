@@ -467,6 +467,10 @@
     "creditsPerBase": 4.5,
     "noHeal": true
   },
+  "clear": {
+    "cost": 500,
+    "confirmTime": 3
+  },
   "minimap": {
     "size": 128,
     "mobileSize": 84,

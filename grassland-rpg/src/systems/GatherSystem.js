@@ -14,6 +14,7 @@ export class GatherSystem {
     this.byId = new Map();
     this.visTimer = 0;
     ctx.nodes = this.nodes;
+    ctx.removeNode = (n) => this.removeNode(n);
     this.generate();
 
     const { bus } = ctx;
@@ -21,10 +22,11 @@ export class GatherSystem {
     bus.on('time:day', ({ day }) => this.restore(day));
     bus.on('save:collect', (save) => {
       const depleted = {};
-      for (const n of this.nodes) if (!n.alive) depleted[n.id] = n.depletedDay;
-      save.gather = { depleted };
+      for (const n of this.nodes) if (!n.alive && !n.removed) depleted[n.id] = n.depletedDay;
+      save.gather = { depleted, removed: this.nodes.filter((n) => n.removed).map((n) => n.id) };
     });
     bus.on('save:apply', (save) => {
+      for (const id of save.gather?.removed ?? []) this.removeNode(this.byId.get(id));
       for (const [id, day] of Object.entries(save.gather?.depleted ?? {})) {
         const n = this.byId.get(id);
         if (!n) continue;
@@ -61,12 +63,21 @@ export class GatherSystem {
             node.region = reg.id;
             this.nodes.push(node);
             this.byId.set(node.id, node);
-            if (def.collide) world.addCollider(x, z, def.radius * 0.8);
+            if (def.collide) node.collider = world.addCollider(x, z, def.radius * 0.8, { node });
             break;
           }
         }
       }
     }
+  }
+
+  // 기지 안에서 골드로 치운 노드: 영영 사라진다 (ClearSystem)
+  removeNode(n) {
+    if (!n || n.removed) return;
+    n.removed = true;
+    n.alive = false;
+    n.group.visible = false;
+    if (n.collider) this.ctx.world.removeCollider(n.collider);
   }
 
   // 칼 부채꼴 안의 살아 있는 노드를 친다.
@@ -101,7 +112,7 @@ export class GatherSystem {
 
   restore(day) {
     for (const n of this.nodes) {
-      if (!n.alive && day - n.depletedDay >= n.def.respawnDays) n.restore();
+      if (!n.alive && !n.removed && day - n.depletedDay >= n.def.respawnDays) n.restore();
     }
   }
 
@@ -114,6 +125,7 @@ export class GatherSystem {
     const vis = this.cfg.visibleRange;
     const near = this.cfg.sparkleRange;
     for (const n of this.nodes) {
+      if (n.removed) continue;
       const dx = n.position.x - p.x;
       const dz = n.position.z - p.z;
       const d2 = dx * dx + dz * dz;

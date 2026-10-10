@@ -1,6 +1,6 @@
 // 모바일 터치 조작: 조이스틱(이동) · 공격 · E · 메뉴 버튼 · 건설 설치/취소.
 // 전부 Input에 키보드·마우스와 같은 입력을 넣을 뿐, 게임 로직은 따로 없다.
-import { PAINTED } from './painted.js';
+import { PAINTED, uiImg } from './painted.js';
 
 const MENU = [
   ['KeyI', '가방'], ['KeyC', '캐릭터'], ['KeyK', '스킬'], ['KeyB', '건설'], ['KeyM', '지도'], ['KeyJ', '임무'],
@@ -34,7 +34,7 @@ export class TouchControls {
       <nav class="t-menu">${MENU.map(([code, label]) => `<button type="button" data-key="${code}">${label}</button>`).join('')}</nav>
       <div class="t-build" data-build hidden>
         <button type="button" class="ok" data-key="BuildConfirm">설치</button>
-        <button type="button" data-key="BuildRotate" data-rot hidden>돌리기</button>
+        <button type="button" data-key="BuildRotate" data-rot hidden>${uiImg('ic_rotate', '')}돌리기</button>
         <button type="button" class="danger" data-key="BuildRemove" data-rm hidden>치우기</button>
         <button type="button" data-key="BuildCancel">취소</button>
       </div>`;

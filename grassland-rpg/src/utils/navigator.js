@@ -3,7 +3,7 @@ import { findPath } from './pathfind.js';
 
 // 걸어 다니는 아군(용병·주민)용 길 찾기.
 // - 앞이 트여 있으면 곧장 간다
-// - 기지 건물(중심 건물·부속 건물·포탑)이나 나무·바위가 가로막으면 1m 격자 A*(utils/pathfind.js)로 돌아간다
+// - 기지 건물(중심 건물·부속 건물·포탑)·막히는 꾸미기 소품이나 나무·바위가 가로막으면 1m 격자 A*(utils/pathfind.js)로 돌아간다
 //   (경로는 보이는 데까지 건너뛰어 부드럽게, 목적지가 움직이면 다시 찾는다)
 // - 제자리걸음이 이어지면(막힘) 길을 다시 찾고, 그래도 안 되면 옆으로 비켜 선다
 // 설정 config.nav
@@ -27,7 +27,7 @@ export class Navigator {
     const r = this.radius + extra;
     if (this.ctx.world.isBlocked(x, z, r)) return true;
     const k = this.ctx.data.config.world.structureCollide;
-    for (const s of this.ctx.structures ?? []) {
+    for (const s of this.ctx.world.solidsAround()) { // 건물 + 막히는 꾸미기 소품
       if (s.kind === 'wall' || !s.radius) continue;
       const min = s.radius * k + r;
       const dx = x - s.position.x;

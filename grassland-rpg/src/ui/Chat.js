@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { uiImg } from './painted.js';
 
 const v = new THREE.Vector3();
 const MAX_LEN = 60;
@@ -13,9 +14,21 @@ export class Chat {
     this.bar = document.createElement('form');
     this.bar.className = 'chat-bar';
     this.bar.hidden = true;
-    this.bar.innerHTML = `<input type="text" maxlength="${MAX_LEN}" autocomplete="off" enterkeyhint="send" placeholder="하고 싶은 말을 적어요" aria-label="채팅"><small>Enter 말하기 · Esc 닫기</small>`;
+    this.bar.innerHTML = `<div class="chat-row"><input type="text" maxlength="${MAX_LEN}" autocomplete="off" enterkeyhint="send" placeholder="하고 싶은 말을 적어요" aria-label="채팅"><button type="submit" class="chat-send" aria-label="말하기">${uiImg('ic_send', SEND_SVG)}</button></div><small>${ctx.input.touchMode ? '보내기 단추로 말하기 · 바깥을 누르면 닫기' : 'Enter 말하기 · Esc 닫기'}</small>`;
     root.appendChild(this.bar);
     this.input = this.bar.querySelector('input');
+    // 보내기 단추를 눌러도 입력 칸이 먼저 닫히지 않게 (blur 로 닫힘)
+    this.bar.querySelector('.chat-send').addEventListener('pointerdown', (e) => e.preventDefault());
+
+    // 휴대폰 채팅 단추: 오른쪽 메뉴 단추 줄 맨 끝 (없으면 HUD 에)
+    this.btn = document.createElement('button');
+    this.btn.type = 'button';
+    this.btn.className = 'chat-btn';
+    this.btn.setAttribute('aria-label', '채팅');
+    this.btn.innerHTML = uiImg('btn_chat', CHAT_SVG);
+    this.btn.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); });
+    this.btn.addEventListener('click', () => { if (ctx.state === 'play' && ctx.player.alive) this.open(); });
+    (document.querySelector('.t-menu') ?? root).appendChild(this.btn);
 
     this.bubble = document.createElement('div');
     this.bubble.className = 'chat-bubble';
@@ -92,3 +105,10 @@ export class Chat {
     this.bubble.style.opacity = String(Math.min(1, (this.life - this.age) / 0.5));
   }
 }
+
+// 그림이 오기 전 임시 그림 (art/ui/btn_chat · ic_send 가 있으면 그것)
+const CHAT_SVG = `<svg class="chat-svg" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#fffaf0" stroke="#8bcf6d" stroke-width="3"/>
+<path d="M13 17c0-3 2-5 5-5h12c3 0 5 2 5 5v8c0 3-2 5-5 5h-7l-6 5v-5c-2-.4-4-2.3-4-5z" fill="#fff" stroke="#5b4232" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="19" cy="21" r="1.8" fill="#5b4232"/><circle cx="24" cy="21" r="1.8" fill="#5b4232"/><circle cx="29" cy="21" r="1.8" fill="#5b4232"/></svg>`;
+const SEND_SVG = `<svg class="chat-svg" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#8bcf6d" stroke="#5ea54a" stroke-width="2"/>
+<path d="M13 24l22-10-7 21-4-8z" fill="#fff" stroke="#3f7a2c" stroke-width="1.8" stroke-linejoin="round"/><path d="M24 27l11-13" stroke="#3f7a2c" stroke-width="1.6"/></svg>`;
