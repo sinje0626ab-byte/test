@@ -1,5 +1,5 @@
 // localStorage 저장/불러오기. 각 시스템은 save:collect / save:apply 이벤트로 자기 몫을 처리한다.
-export const SAVE_VERSION = 13;
+export const SAVE_VERSION = 14;
 
 // 이전 버전 → 다음 버전 변환
 const migrations = {
@@ -45,6 +45,17 @@ const migrations = {
   11: (s) => ({ ...s, saveVersion: 12, weather: null, tomb: null }),
   // v12 → v13: 장비 랜덤 옵션(칸 opts, 예전 장비는 불러올 때 [] = 옵션 없음), 보물상자(chests), 임무·출석(missions)
   12: (s) => ({ ...s, saveVersion: 13, chests: null, missions: null }),
+  // v13 → v14: 스킬 개편(별자리·각인·궁극기) — 찍어 둔 스킬을 모두 돌려받고 처음부터 (skillsRefunded 만큼 알림)
+  13: (s) => {
+    const spent = Object.values(s.skills?.ranks ?? {}).reduce((a, b) => a + b, 0);
+    return {
+      ...s,
+      saveVersion: 14,
+      stats: s.stats ? { ...s.stats, skillPoints: (s.stats.skillPoints ?? 0) + spent } : s.stats,
+      skills: { ranks: {}, slots: [null, null] },
+      skillsRefunded: spent,
+    };
+  },
 };
 
 export class SaveSystem {

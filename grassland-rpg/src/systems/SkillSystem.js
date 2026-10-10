@@ -1,4 +1,5 @@
 // 스킬 랭크와 효과 합계. 선행 스킬(requires)이 있어야 배울 수 있다.
+// 핵심 별(keystone): 셋 중 하나만, 그 갈래에 포인트 requiresSpent 이상 써야 한다.
 export class SkillSystem {
   constructor(ctx) {
     this.ctx = ctx;
@@ -35,10 +36,21 @@ export class SkillSystem {
     return this.ranks[id] ?? 0;
   }
 
+  // 그 갈래에 쓴 포인트
+  spentIn(branch) {
+    return Object.entries(this.ranks).reduce((t, [id, r]) => t + (this.defs[id]?.branch === branch ? r : 0), 0);
+  }
+
   // 배울 수 없으면 이유 문자열, 배울 수 있으면 null
   blockReason(id) {
     const def = this.defs[id];
     if (this.rank(id) >= def.maxRank) return '최대 랭크';
+    // 핵심 별: 셋 중 하나만, 그 갈래에 포인트 requiresSpent 이상
+    if (def.keystone) {
+      const other = Object.keys(this.ranks).find((k) => this.ranks[k] && this.defs[k]?.keystone && k !== id);
+      if (other) return `핵심 별은 하나만 (${this.defs[other].name})`;
+    }
+    if (def.requiresSpent && this.spentIn(def.branch) < def.requiresSpent) return `이 별자리에 포인트 ${def.requiresSpent} 필요 (${this.spentIn(def.branch)})`;
     for (const req of def.requires) {
       if (this.rank(req.id) < req.rank) return `${this.defs[req.id].name} ${req.rank}랭크 필요`;
     }

@@ -11,6 +11,11 @@
     "building": {
       "name": "건축",
       "color": "#e9a35b"
+    },
+    "ultimate": {
+      "name": "궁극기",
+      "color": "#b48cf0",
+      "special": true
     }
   },
   "skills": {
@@ -23,7 +28,11 @@
       "requires": [],
       "effects": {
         "attack": 2
-      }
+      },
+      "pos": [
+        50,
+        10
+      ]
     },
     "combo": {
       "branch": "combat",
@@ -39,7 +48,11 @@
       ],
       "effects": {
         "attackSpeed": 0.1
-      }
+      },
+      "pos": [
+        28,
+        32
+      ]
     },
     "whirl": {
       "branch": "combat",
@@ -55,7 +68,11 @@
       ],
       "effects": {
         "spin": 1
-      }
+      },
+      "pos": [
+        40,
+        58
+      ]
     },
     "crit": {
       "branch": "combat",
@@ -71,7 +88,11 @@
       ],
       "effects": {
         "critChance": 0.05
-      }
+      },
+      "pos": [
+        74,
+        36
+      ]
     },
     "gatherSpeed": {
       "branch": "survival",
@@ -82,7 +103,11 @@
       "requires": [],
       "effects": {
         "gatherSpeed": 0.15
-      }
+      },
+      "pos": [
+        22,
+        10
+      ]
     },
     "vitality": {
       "branch": "survival",
@@ -93,7 +118,11 @@
       "requires": [],
       "effects": {
         "hpRegen": 1
-      }
+      },
+      "pos": [
+        64,
+        10
+      ]
     },
     "gatherAmount": {
       "branch": "survival",
@@ -109,7 +138,11 @@
       ],
       "effects": {
         "gatherAmount": 1
-      }
+      },
+      "pos": [
+        14,
+        38
+      ]
     },
     "swift": {
       "branch": "survival",
@@ -125,7 +158,11 @@
       ],
       "effects": {
         "moveSpeedPct": 0.06
-      }
+      },
+      "pos": [
+        52,
+        36
+      ]
     },
     "thrift": {
       "branch": "building",
@@ -136,7 +173,11 @@
       "requires": [],
       "effects": {
         "buildCost": 0.1
-      }
+      },
+      "pos": [
+        26,
+        10
+      ]
     },
     "turretPower": {
       "branch": "building",
@@ -148,7 +189,11 @@
       "effects": {
         "turretDamage": 0.15,
         "turretRange": 0.8
-      }
+      },
+      "pos": [
+        70,
+        10
+      ]
     },
     "turretCount": {
       "branch": "building",
@@ -164,7 +209,11 @@
       ],
       "effects": {
         "extraTurrets": 1
-      }
+      },
+      "pos": [
+        58,
+        36
+      ]
     },
     "weapon_master": {
       "branch": "combat",
@@ -182,7 +231,11 @@
         "spearRange": 0.3,
         "hammerCooldown": 0.08,
         "arrowSpeedPct": 0.15
-      }
+      },
+      "pos": [
+        12,
+        58
+      ]
     },
     "dash_slash": {
       "branch": "combat",
@@ -208,7 +261,11 @@
         "damagePerRank": 0.3,
         "knockback": 6
       },
-      "rankText": "피해 +30%"
+      "rankText": "피해 +30%",
+      "pos": [
+        78,
+        64
+      ]
     },
     "thick_skin": {
       "branch": "survival",
@@ -219,7 +276,11 @@
       "requires": [],
       "effects": {
         "defense": 2
-      }
+      },
+      "pos": [
+        88,
+        30
+      ]
     },
     "forager": {
       "branch": "survival",
@@ -235,7 +296,11 @@
       ],
       "effects": {
         "healPct": 0.15
-      }
+      },
+      "pos": [
+        24,
+        64
+      ]
     },
     "first_aid": {
       "branch": "survival",
@@ -258,7 +323,11 @@
         "healPct": 0.3,
         "healPctPerRank": 0.08
       },
-      "rankText": "회복량 +최대 HP 8%"
+      "rankText": "회복량 +최대 HP 8%",
+      "pos": [
+        72,
+        60
+      ]
     },
     "mason": {
       "branch": "building",
@@ -275,7 +344,11 @@
       "effects": {
         "structureHp": 0.2,
         "buildMaterialCost": 0.1
-      }
+      },
+      "pos": [
+        12,
+        40
+      ]
     },
     "sharpshooter": {
       "branch": "building",
@@ -291,7 +364,11 @@
       ],
       "effects": {
         "turretCrit": 0.1
-      }
+      },
+      "pos": [
+        38,
+        62
+      ]
     },
     "overclock": {
       "branch": "building",
@@ -315,7 +392,212 @@
         "duration": 8,
         "durationPerRank": 2
       },
-      "rankText": "지속 +2초"
+      "rankText": "지속 +2초",
+      "pos": [
+        82,
+        60
+      ]
+    },
+    "vampire": {
+      "branch": "combat",
+      "tier": 5,
+      "keystone": true,
+      "name": "흡혈 검사",
+      "description": "핵심 별. 적을 쓰러뜨릴 때마다 최대 HP의 3%를 되찾고, 치명타가 더 아프다.",
+      "maxRank": 1,
+      "requires": [],
+      "requiresSpent": 8,
+      "effects": {
+        "killHealPct": 0.03,
+        "critDamage": 0.3
+      },
+      "pos": [
+        50,
+        88
+      ]
+    },
+    "windwalker": {
+      "branch": "survival",
+      "tier": 5,
+      "keystone": true,
+      "name": "바람 개척자",
+      "description": "핵심 별. 구르기가 싸지고, 구른 뒤 2초 동안 바람을 타 빨라지고 세진다 (이동 +30% · 공격 +20%).",
+      "maxRank": 1,
+      "requires": [],
+      "requiresSpent": 8,
+      "effects": {
+        "rollStaminaPct": -0.3,
+        "rollRush": 1
+      },
+      "pos": [
+        50,
+        88
+      ]
+    },
+    "commander": {
+      "branch": "building",
+      "tier": 5,
+      "keystone": true,
+      "name": "포탑 지휘관",
+      "description": "핵심 별. 포탑 피해 +20%, 내가 때린 적을 사거리 안 포탑이 4초 동안 먼저 노린다.",
+      "maxRank": 1,
+      "requires": [],
+      "requiresSpent": 8,
+      "effects": {
+        "turretDamage": 0.2,
+        "focusFire": 1
+      },
+      "pos": [
+        52,
+        88
+      ]
     }
+  },
+  "keystoneNote": "핵심 별은 셋 중 하나만 고를 수 있다. 그 갈래에 포인트 8 이상",
+  "runes": {
+    "rune_venom": {
+      "skill": "dash_slash",
+      "name": "맹독 베기",
+      "desc": "돌진에 베인 적이 4초 동안 맹독에 걸린다 (초당 공격력 35%).",
+      "color": "#7cd67a",
+      "dps": 0.35,
+      "duration": 4
+    },
+    "rune_echo": {
+      "skill": "dash_slash",
+      "name": "메아리 돌진",
+      "desc": "돌진이 끝나고 0.35초 뒤 같은 방향으로 한 번 더 돌진한다 (피해 70%, 스태미나 없음).",
+      "color": "#8fd0f2",
+      "delay": 0.35,
+      "damage": 0.7
+    },
+    "rune_quake": {
+      "skill": "dash_slash",
+      "name": "충격 마무리",
+      "desc": "돌진이 끝난 자리에 충격파 (반경 3m, 공격력 120%, 크게 밀쳐냄).",
+      "color": "#e9a35b",
+      "radius": 3,
+      "damage": 1.2,
+      "knockback": 12
+    },
+    "rune_guard": {
+      "skill": "first_aid",
+      "name": "단단한 붕대",
+      "desc": "회복하는 5초 동안 받는 피해 -35%.",
+      "color": "#c9a46b",
+      "damageTaken": -0.35
+    },
+    "rune_quick": {
+      "skill": "first_aid",
+      "name": "급속 처치",
+      "desc": "회복량의 절반을 바로 채우고, 쿨다운 -30%.",
+      "color": "#ff8f7c",
+      "instant": 0.5,
+      "cooldown": 0.7
+    },
+    "rune_share": {
+      "skill": "first_aid",
+      "name": "나눔 처치",
+      "desc": "주변 12m 포탑·건물도 최대 체력의 25%를 되찾는다.",
+      "color": "#7cc67a",
+      "radius": 12,
+      "pct": 0.25
+    },
+    "rune_frost": {
+      "skill": "overclock",
+      "name": "냉각 과부하",
+      "desc": "과부하된 포탑의 탄이 적을 2초 동안 35% 느리게 한다.",
+      "color": "#9fd6fb",
+      "slow": 0.35,
+      "duration": 2
+    },
+    "rune_long": {
+      "skill": "overclock",
+      "name": "긴 과부하",
+      "desc": "과부하 지속 시간 +60%.",
+      "color": "#ffd166",
+      "duration": 1.6
+    },
+    "rune_wide": {
+      "skill": "overclock",
+      "name": "연쇄 과부하",
+      "desc": "반경 2배, 스태미나 절반.",
+      "color": "#e889d6",
+      "radius": 2,
+      "stamina": 0.5
+    }
+  },
+  "runeDrops": {
+    "boss": 1,
+    "gold": 0.3,
+    "silver": 0.08,
+    "elite": 0.02,
+    "dupGold": 250
+  },
+  "ultimates": {
+    "meteor": {
+      "name": "별똥별 낙하",
+      "desc": "주변 9m 적 위로 별똥별이 쏟아진다 (최대 6개, 반경 2.2m, 공격력 260%).",
+      "unlock": {
+        "level": 5
+      },
+      "unlockText": "레벨 5",
+      "color": "#ffd166",
+      "range": 9,
+      "count": 6,
+      "radius": 2.2,
+      "damage": 2.6,
+      "interval": 0.12
+    },
+    "sanctuary": {
+      "name": "숲의 결계",
+      "desc": "6초 동안 받는 피해 -60%, 매초 최대 HP 6% 회복, 둘레 6m 적을 느리게 한다.",
+      "unlock": {
+        "boss": "elder_treant"
+      },
+      "unlockText": "고목 수호자 처치",
+      "color": "#7cc67a",
+      "duration": 6,
+      "damageTaken": -0.6,
+      "healPct": 0.06,
+      "radius": 6,
+      "slow": 0.5
+    },
+    "barrage": {
+      "name": "포탑 총공격",
+      "desc": "25m 안 포탑 모두 10초 동안 연사 ×2.5, 포탑 피해 +50%.",
+      "unlock": {
+        "boss": "cactus_king"
+      },
+      "unlockText": "선인장왕 처치",
+      "color": "#e9a35b",
+      "radius": 25,
+      "duration": 10,
+      "fireRate": 2.5,
+      "turretDamage": 0.5
+    },
+    "blizzard": {
+      "name": "눈보라",
+      "desc": "10m 안 적 모두 공격력 180% 피해 + 3초 빙결 (보스는 느려진다).",
+      "unlock": {
+        "boss": "ice_giant"
+      },
+      "unlockText": "얼음 거인 처치",
+      "color": "#9fd6fb",
+      "radius": 10,
+      "damage": 1.8,
+      "freeze": 3
+    }
+  },
+  "ultimate": {
+    "key": "KeyF",
+    "label": "F",
+    "max": 100,
+    "kill": 4,
+    "elite": 12,
+    "boss": 30,
+    "hit": 0.6,
+    "hitCap": 3,
+    "damaged": 0.8
   }
 }

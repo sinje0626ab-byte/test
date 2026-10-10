@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 // 액티브 스킬: Q / R 슬롯에 등록해서 쓴다. 쿨다운·스태미나는 skills.json의 active.
 // UI는 ctx.activeSkills { slots, cd }를 읽어 쿨다운 원을 그린다.
+// 각인(skills.json runes, 끼운 것은 ctx.skillRunes[스킬 id]): 스킬마다 하나. cooldown·stamina 배율 + 스킬별 효과
 export class ActiveSkillSystem {
   constructor(ctx) {
     this.ctx = ctx;
@@ -11,6 +12,7 @@ export class ActiveSkillSystem {
     this.state = { slots: [null, null], cd: {} };
     ctx.activeSkills = this.state;
     this.heals = []; // 응급 처치: { left, perTick, tick }
+    this.later = []; // 잠시 뒤에 할 일 (메아리 돌진): { t, fn }
     const { bus } = ctx;
 
     bus.on('skills:changed', ({ ranks }) => {
@@ -32,7 +34,7 @@ export class ActiveSkillSystem {
       this.changed();
     });
     bus.on('skill:cast', ({ slot }) => this.cast(slot));
-    bus.on('player:died', () => { this.heals = []; });
+    bus.on('player:died', () => { this.heals = []; this.later = []; });
     bus.on('save:collect', (save) => { save.skills = { ...(save.skills ?? {}), slots: [...this.state.slots] }; });
     bus.on('save:apply', (save) => {
       const saved = save.skills?.slots ?? [null, null];
@@ -65,19 +67,29 @@ export class ActiveSkillSystem {
     const rank = this.ranks[id] ?? 0;
     if (!rank) return;
     if ((this.state.cd[id] ?? 0) > 0) return;
-    if (p.stats.stamina < a.stamina) {
+    const rune = this.rune(id);
+    const stamina = a.stamina * (rune?.stamina ?? 1);
+    if (p.stats.stamina < stamina) {
       ctx.bus.emit('notify', { text: '스태미나가 부족합니다', kind: 'warn' });
       return;
     }
-    if (!this[id]?.(a, rank)) return;
-    p.stats.stamina -= a.stamina;
-    if (a.stamina) p.staminaDelay = ctx.data.player.staminaRegenDelay;
-    this.state.cd[id] = a.cooldown;
+    if (!this[id]?.(a, rank, rune)) return;
+    p.stats.stamina -= stamina;
+    if (stamina) p.staminaDelay = ctx.data.player.staminaRegenDelay;
+    this.state.cd[id] = a.cooldown * (rune?.cooldown ?? 1);
+    this.state.cdMax = { ...(this.state.cdMax ?? {}), [id]: this.state.cd[id] };
     ctx.bus.emit('skill:used', { id, position: p.position.clone() });
   }
 
+  // 끼운 각인 정의 (없으면 null)
+  rune(id) {
+    const r = this.ctx.skillRunes?.[id];
+    return r ? { id: r, ...this.ctx.data.skills.runes[r] } : null;
+  }
+
   // 돌진 베기: 바라보는(PC는 마우스) 방향으로 돌진. 끝나면 지나간 길 위의 적을 벤다 (Player).
-  dash_slash(a, rank) {
+  // 각인: 맹독(베인 적 독) · 메아리(잠시 뒤 한 번 더) · 충격(끝자리 충격파)
+  dash_slash(a, rank, rune) {
     const p = this.ctx.player;
     const aim = this.ctx.input.hasMouse && !this.ctx.input.touchMode ? this.ctx.mouseGround : p.nearestEnemy(a.distance + 2)?.position;
     const dir = p.facing.clone();
@@ -86,32 +98,59 @@ export class ActiveSkillSystem {
       if (d.lengthSq() > 0.01) dir.copy(d.normalize());
     }
     const s = p.stats;
-    return p.startDash(dir, a, {
+    const hit = {
       attack: s.attack * (a.damage + a.damagePerRank * (rank - 1)),
       critChance: s.critChance, critMultiplier: p.base.critMultiplier + (s.critDamage ?? 0), knockback: a.knockback, weapon: 'dash',
-    });
+    };
+    if (rune?.id === 'rune_venom') hit.venom = { amount: s.attack * rune.dps, duration: rune.duration };
+    if (rune?.id === 'rune_quake') hit.quake = { radius: rune.radius, attack: s.attack * rune.damage, knockback: rune.knockback };
+    if (!p.startDash(dir, a, hit)) return false;
+    if (rune?.id === 'rune_echo') {
+      this.later.push({ t: a.duration + rune.delay, fn: () => p.startDash(dir, a, { ...hit, attack: hit.attack * rune.damage }) });
+    }
+    return true;
   }
 
   // 응급 처치: duration초 동안 나눠서 회복
-  first_aid(a, rank) {
-    const p = this.ctx.player;
-    const total = p.stats.maxHp * (a.healPct + a.healPctPerRank * (rank - 1));
+  // 각인: 단단한 붕대(받는 피해 감소) · 급속(절반 바로, 쿨 감소) · 나눔(둘레 포탑·건물도)
+  first_aid(a, rank, rune) {
+    const { ctx } = this;
+    const p = ctx.player;
+    let total = p.stats.maxHp * (a.healPct + a.healPctPerRank * (rank - 1));
+    if (rune?.instant) {
+      ctx.bus.emit('player:heal', { amount: total * rune.instant });
+      total *= 1 - rune.instant;
+    }
     const ticks = Math.round(a.duration / this.cfg.healTick);
     this.heals.push({ left: ticks, perTick: total / ticks, tick: 0 });
-    this.ctx.firstAidUntil = this.ctx.time.elapsed + a.duration; // HUD 버프 줄
+    ctx.firstAidUntil = ctx.time.elapsed + a.duration; // HUD 버프 줄
+    if (rune?.id === 'rune_guard') ctx.bus.emit('buff:add', { id: 'aid_guard', name: rune.name, color: rune.color, duration: a.duration, effects: { damageTaken: rune.damageTaken } });
+    if (rune?.id === 'rune_share') {
+      let n = 0;
+      for (const st of ctx.structures) {
+        if (!st.alive || !st.stats || st.position.distanceTo(p.position) > rune.radius) continue;
+        st.stats.hp = Math.min(st.stats.maxHp, st.stats.hp + st.stats.maxHp * rune.pct);
+        n += 1;
+      }
+      ctx.bus.emit('fx:ring', { position: p.position.clone(), color: rune.color });
+      if (n) ctx.bus.emit('notify', { text: `나눔 처치: 건물 ${n}개 회복`, kind: 'item' });
+    }
     return true;
   }
 
   // 포탑 과부하: 주변 포탑 연사 속도 배율 (TurretSystem)
-  overclock(a, rank) {
+  // 각인: 냉각(탄이 느리게) · 긴(지속 배율) · 연쇄(반경 배율, 스태미나 절반은 cast 가)
+  overclock(a, rank, rune) {
     const p = this.ctx.player;
-    const near = this.ctx.structures.filter((t) => t.kind === 'turret' && t.alive && t.position.distanceTo(p.position) <= a.radius);
+    const radius = a.radius * (rune?.radius ?? 1);
+    const near = this.ctx.structures.filter((t) => t.kind === 'turret' && t.alive && t.position.distanceTo(p.position) <= radius);
     if (!near.length) {
-      this.ctx.bus.emit('notify', { text: `주변 ${a.radius}m 안에 포탑이 없어요`, kind: 'warn' });
+      this.ctx.bus.emit('notify', { text: `주변 ${radius}m 안에 포탑이 없어요`, kind: 'warn' });
       return false;
     }
-    const duration = a.duration + a.durationPerRank * (rank - 1);
-    this.ctx.bus.emit('turret:overclock', { turrets: near, mult: a.fireRate, duration });
+    const duration = Math.round((a.duration + a.durationPerRank * (rank - 1)) * (rune?.id === 'rune_long' ? rune.duration : 1));
+    const chill = rune?.id === 'rune_frost' ? { slow: rune.slow, duration: rune.duration } : null;
+    this.ctx.bus.emit('turret:overclock', { turrets: near, mult: a.fireRate, duration, chill });
     this.ctx.overclockUntil = this.ctx.time.elapsed + duration;
     this.ctx.bus.emit('notify', { text: `포탑 ${near.length}개 과부하! (${duration}초)`, kind: 'item' });
     return true;
@@ -131,5 +170,7 @@ export class ActiveSkillSystem {
       this.ctx.bus.emit('player:heal', { amount: h.perTick });
     }
     this.heals = this.heals.filter((h) => h.left > 0);
+    for (const l of this.later) if ((l.t -= dt) <= 0) l.fn();
+    this.later = this.later.filter((l) => l.t > 0);
   }
 }

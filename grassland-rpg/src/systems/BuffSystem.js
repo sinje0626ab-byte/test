@@ -12,6 +12,11 @@ export class BuffSystem {
       e.used = true;
       this.changed();
     });
+    // 스킬·궁극기 버프 { id, name, color, duration, effects }
+    ctx.bus.on('buff:add', (b) => {
+      this.buffs.set(b.id, { id: b.id, name: b.name, color: b.color ?? '#ffd166', time: b.duration, duration: b.duration, effects: b.effects });
+      this.changed();
+    });
     ctx.bus.on('player:died', () => { this.buffs.clear(); this.changed(); });
   }
 
