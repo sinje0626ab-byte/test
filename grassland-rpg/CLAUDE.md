@@ -653,6 +653,7 @@ src/
   - 각인의 `cooldown`·`stamina` 는 배율 (ActiveSkillSystem.cast). 실제 쿨다운은 `activeSkills.cdMax` (쿨다운 원)
 - **궁극기**(`ultimates`, `ultimate`): 하나 골라 게이지(`max` 100)가 차면 **F**(휴대폰 보라 단추). 게이지 = 처치 4 · 정예 12 · 보스 30 · 플레이어 타격 0.6(초당 최대 3) · 맞은 HP 1% 당 0.8. 다 차면 알림 + 단추 반짝
   - 별똥별 낙하(레벨 5): 9m 안 적 최대 6마리 위로 차례로 떨어지는 별(반경 2.2m, 공격력 260%) / 숲의 결계(고목 수호자 처치): 6초 받는 피해 -60% · 매초 최대 HP 6% · 둘레 6m 감속 / 포탑 총공격(선인장왕 처치): 25m 포탑 10초 연사 ×2.5 + 포탑 피해 +50% 버프 / 눈보라(얼음 거인 처치): 10m 공격력 180% + 3초 빙결(보스는 감속)
+- 그림(ChatGPT 4차 묶음 11~13, 원본 `docs/art/incoming/ui2_batch_11~13.webp`): 핵심 별 배지 `key_vampire/windwalker/commander`(별자리 큰 별·설명 판) · 궁극기 배지 `ult_<id>`(F 단추·궁극기 쪽·알림, `ultArt`) · 각인 보석 `rune_<id>`(각인 칸·얻을 때 알림) · 채팅 `btn_chat`·보내기 `ic_send` · 치우기 `ic_clear` · 돌리기 `ic_rotate`. 없으면 코드 그림
 - 공용 이벤트: `player:area { position, radius, attack, critChance, critMultiplier, knockback, effect }`(둘레 모든 적 playerHits) · `buff:add { id, name, color, duration, effects }`(BuffSystem, HUD 버프 줄에 색 점)
 
 ### 4-4-1. 장비

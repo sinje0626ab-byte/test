@@ -117,7 +117,7 @@ export class SkillPlusSystem {
     const skill = this.data.skills[r.skill];
     // 그 스킬에 끼운 각인이 없으면 바로 끼운다
     if (!this.equipped[r.skill]) this.equipped[r.skill] = id;
-    bus.emit('notify', { text: `새 각인 「${r.name}」 (${skill.name}) — ${source}에서 얻었어요! 스킬 창(K)`, kind: 'item', color: r.color });
+    bus.emit('notify', { text: `새 각인 「${r.name}」 (${skill.name}) — ${source}에서 얻었어요! 스킬 창(K)`, kind: 'item', color: r.color, icon: id });
     bus.emit('rune:gained', { id });
     this.changed();
   }
@@ -142,7 +142,7 @@ export class SkillPlusSystem {
     if (this.ult.owned.has(id)) return;
     this.ult.owned.add(id);
     if (!this.ult.equipped) this.ult.equipped = id;
-    if (notify && this.ctx.state === 'play') this.ctx.bus.emit('notify', { text: `궁극기 「${this.data.ultimates[id].name}」 해금! 게이지가 차면 F`, kind: 'item', color: this.data.ultimates[id].color });
+    if (notify && this.ctx.state === 'play') this.ctx.bus.emit('notify', { text: `궁극기 「${this.data.ultimates[id].name}」 해금! 게이지가 차면 F`, kind: 'item', color: this.data.ultimates[id].color, icon: `ult_${id}` });
     this.changed();
   }
 
@@ -152,7 +152,7 @@ export class SkillPlusSystem {
     this.ult.gauge = Math.min(this.cfg.max, before + n);
     this.ctx.ultimate.gauge = this.ult.gauge;
     if (before < this.cfg.max && this.ult.gauge >= this.cfg.max) {
-      this.ctx.bus.emit('notify', { text: `궁극기 「${this.data.ultimates[this.ult.equipped].name}」 준비! (${this.cfg.label})`, kind: 'item', color: '#b48cf0' });
+      this.ctx.bus.emit('notify', { text: `궁극기 「${this.data.ultimates[this.ult.equipped].name}」 준비! (${this.cfg.label})`, kind: 'item', color: '#b48cf0', icon: `ult_${this.ult.equipped}` });
       this.ctx.bus.emit('ult:ready', {});
     }
   }
