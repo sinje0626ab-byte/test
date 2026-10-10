@@ -79,10 +79,10 @@ export class MissionWindow {
     const all = state[kind].length && state[kind].every((m) => m.claimed);
     const got = state[`${kind}Bonus`];
     return `<section class="m-sec">
-      <h3>${title} <small>${resetText}</small></h3>
+      <h3><span class="sec-tag">${uiImg(kind === 'daily' ? 'ic_daily' : 'ic_calendar')}${title}</span> <small>${resetText}</small></h3>
       ${rows}
       <div class="m-row bonus ${got ? 'claimed' : all ? 'done' : ''}">
-        <div class="m-main"><span class="m-text">${uiImg('ic_bonus', '✨')} 모두 완료 보너스</span></div>
+        <div class="m-main"><span class="m-text">${uiImg('ic_gift', uiImg('ic_bonus', '✨'))} 모두 완료 보너스</span></div>
         <div class="m-rew">${this.rewardHtml({ ...bonus, count: 1 })}</div>
         <button type="button" class="m-btn primary" data-m="bonus:${kind}" ${all && !got ? '' : 'disabled'}>${got ? `${uiImg('ic_claimed')}받음` : '받기'}</button>
       </div></section>`;
@@ -111,12 +111,12 @@ export class MissionWindow {
     this.body.innerHTML = `
       <div class="missions">
         <section class="m-sec">
-          <h3>출석 도장 <small>${state.att.count}일째 함께했어요</small></h3>
+          <h3><span class="sec-tag">${uiImg('ic_attend')}출석 도장</span> <small>${state.att.count}일째 함께했어요</small></h3>
           <div class="m-stamps">${stamps}</div>
           <button type="button" class="m-attend primary" data-m="attend" ${canAttend ? '' : 'disabled'}>${canAttend ? '오늘 도장 찍기!' : '오늘 도장 완료 — 내일 또 만나요'}</button>
         </section>
         ${this.list('daily', '매일 임무', `${uiImg('ic_hourglass')}${hh}시간 ${mm}분 뒤 새 임무`)}
-        ${this.list('weekly', '주간 임무', `${uiImg('ic_calendar')}${wd}일 뒤 월요일에 새 임무`)}
+        ${this.list('weekly', '주간 임무', `${uiImg('ic_hourglass')}${wd}일 뒤 월요일에 새 임무`)}
       </div>`;
   }
 }

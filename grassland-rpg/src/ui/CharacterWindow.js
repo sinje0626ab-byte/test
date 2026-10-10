@@ -1,4 +1,7 @@
 import { itemIcon, slotHint } from './icons.js';
+import { uiImg } from './painted.js';
+
+const STAT_ICON = { maxHp: 'stat_hp', maxStamina: 'stat_stamina', attack: 'stat_attack', defense: 'stat_defense', moveSpeed: 'stat_speed', critChance: 'stat_crit', hpRegen: 'stat_regen' };
 import { itemTooltip, formatStat } from './itemText.js';
 
 const SHOWN = ['maxHp', 'maxStamina', 'attack', 'defense', 'moveSpeed', 'critChance', 'hpRegen'];
@@ -74,7 +77,7 @@ export class CharacterWindow {
       // 세트 진행도 (하나라도 낀 세트만)
       const items = ctx.data.items;
       this.setsEl.innerHTML = (sets ?? []).filter((st) => st.have > 0).map((st) => `
-        <div class="set${st.have === st.total ? ' done' : ''}"><b>${st.name} ${st.have}/${st.total}</b>
+        <div class="set${st.have === st.total ? ' done' : ''}"><b>${uiImg('set_crest', '', 'set-ic')}${st.name} ${st.have}/${st.total}</b>
         <small>${Object.entries(st.bonus).map(([k, v]) => `${items.statLabels[k]} ${formatStat(items, k, v)}`).join(', ')}</small></div>`).join('');
     });
     ctx.bus.on('stats:changed', (info) => { this.info = info; this.renderStats(); });
@@ -89,7 +92,7 @@ export class CharacterWindow {
       el.classList.toggle('filled', !!def);
       el.style.setProperty('--grade', def ? items.grades[def.grade]?.color : 'transparent');
       const plus = this.plus?.[slot];
-      el.querySelector('.eicon').innerHTML = def ? itemIcon(def) + (plus ? `<b class="plus-badge">+${plus}</b>` : '') : slotHint(slot);
+      el.querySelector('.eicon').innerHTML = def ? itemIcon(def) + (plus ? `<b class="plus-badge">+${plus}</b>` : '') : uiImg(`slot_${slot.startsWith('accessory') ? 'accessory' : slot}`, slotHint(slot), 'slot-sil');
     }
     this.tooltip.hide();
   }
@@ -102,6 +105,6 @@ export class CharacterWindow {
     const max = Number.isFinite(xpToNext);
     this.el.xp.style.width = max ? `${(xp / xpToNext) * 100}%` : '100%';
     this.el.xpText.textContent = max ? `경험치 ${xp} / ${xpToNext}` : '최고 레벨';
-    this.el.list.innerHTML = SHOWN.map((k) => `<dt>${items.statLabels[k]}</dt><dd>${formatStat(items, k, stats[k], false)}</dd>`).join('');
+    this.el.list.innerHTML = SHOWN.map((k) => `<dt>${uiImg(STAT_ICON[k], '', 'stat-ic')}${items.statLabels[k]}</dt><dd>${formatStat(items, k, stats[k], false)}</dd>`).join('');
   }
 }
