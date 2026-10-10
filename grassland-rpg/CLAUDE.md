@@ -137,7 +137,8 @@ src/
     EquipmentSystem.js
     StatsSystem.js     # 레벨, 경험치, 능력치
     SkillSystem.js
-    ActiveSkillSystem.js # 액티브 스킬 Q·R 슬롯·쿨다운·발동
+    ActiveSkillSystem.js # 액티브 스킬 Q·R 슬롯·쿨다운·발동 (끼운 각인 효과)
+    SkillPlusSystem.js # 각인 얻기·끼우기, 궁극기 게이지·해금·발동, 핵심 별 「바람 개척자」
     BuildSystem.js     # 건설 모드, 배치 검증
     BaseSystem.js      # 기지 목록, 기지 레벨, 빠른 이동
     TurretSystem.js    # 타겟팅, 발사, 업그레이드·수리·철거
@@ -166,14 +167,14 @@ src/
   ui/
     UIManager.js       # 창 열기/닫기, 단축키
     TouchControls.js   # 모바일 터치 조작 (조이스틱·버튼)
-    SkillBar.js        # 액티브 스킬 슬롯 Q·R (PC 퀵슬롯 옆 / 모바일 공격 버튼 위, 쿨다운 원)
+    SkillBar.js        # 액티브 스킬 슬롯 Q·R + 궁극기 F 단추(보라 게이지 고리) (PC 퀵슬롯 옆 / 모바일 공격 버튼 위)
     TitleScreen.js     # 타이틀·새 게임/이어하기·조작 방법·새 게임 안내
     PauseMenu.js       # 게임 중 메뉴 (☰ / ESC)
     SettingsPanel.js   # 설정 창 (게임 메뉴·타이틀에서)
     HUD.js
     InventoryWindow.js
     CharacterWindow.js
-    SkillWindow.js
+    SkillWindow.js     # 별자리 스킬 창 (갈래마다 밤하늘 판 + 설명 판, 궁극기 쪽)
     BuildMenu.js
     TurretWindow.js    # 포탑 관리 (E)
     ShopWindow.js
@@ -566,6 +567,7 @@ src/
 - v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
 - v7 → v8: `gather` 추가 (빈 값 = 모든 노드 살아 있음)
 - v8 → v9: `skills.slots` 추가 (액티브 스킬 Q·R, 빈 슬롯)
+- v13 → v14: 스킬 개편 — 찍어 둔 스킬 랭크를 모두 포인트로 돌려받고(`skills.ranks` 비움, Q·R 비움, 불러오면 알림), `skills.runes { owned, equipped }`·`skills.ult { owned, equipped, gauge }` (없으면 빈 값, 이미 잡은 보스·레벨로 궁극기 해금)
 - v12 → v13: `chests`·`missions`(없으면 그날 새로), 장비 칸 `opts`(없으면 불러올 때 [])
 - v11 → v12: `weather`(없으면 그날 새로), `tomb`(없음), `inventory.seen`(없으면 지금 가방 아이템)
 - v10 → v11: `player.appearance`(없으면 기본값), `npcs`·`quests`·`bestiary`·`bounties`·`nightLord` 추가 (빈 값 = 처음부터, 퀘스트는 이룬 것 건너뛰기)
@@ -635,6 +637,21 @@ src/
   - 약초꾼(생존, 최대 3, 선행 알뜰 채집 1): 소모품 회복량 +15%
   - 석공(건축, 최대 3, 선행 절약 1): 기지·부속 건물 체력 +20%, 기지 업그레이드·부속 건물 재료 -10% (개수 반올림, 최소 1)
   - 명사수 포탑(건축, 최대 3, 선행 진지 확장 1): 포탑 치명타 확률 +10% (치명타 배율은 플레이어와 같다)
+
+### 4-4-3-1. 스킬 개편: 별자리 · 각인 · 궁극기 (`skills.json`)
+- **별자리 창**(`ui/SkillWindow.js`): 갈래(전투·생존·채집·건축)마다 밤하늘 판 한 장 + 궁극기 쪽. 스킬은 `pos [x, y]`(0~100) 자리의 별, 선행(`requires`)은 선(둘 다 배우면 금빛), 배울 수 있는 별은 반짝, 액티브는 주황 점. 별을 누르면 아래 설명 판: 효과(랭크당·지금)·선행·「배우기/올리기(포인트 1)」·액티브는 Q·R 칸 등록과 각인 끼우기. 휴대폰은 옆으로 밀어 쪽 넘기기
+- **핵심 별**(keystone, 별자리 맨 아래 큰 별, `maxRank 1`): 셋 중 **하나만**, 그 갈래에 포인트 `requiresSpent`(8) 이상. `SkillSystem.blockReason`
+  - 흡혈 검사(전투): 처치할 때 최대 HP 3% 회복(`killHealPct`, CombatSystem.killed), 치명 피해 +30%
+  - 바람 개척자(생존): 구르기 스태미나 -30%, 구른 뒤 2초 「바람 타기」 버프(이동 +30%·공격 +20%, `rollRush` → SkillPlusSystem 이 `buff:add`)
+  - 포탑 지휘관(건축): 포탑 피해 +20%, 플레이어가 때린 적(`m.markedUntil` 4초)을 사거리 안 포탑이 먼저 노린다(`focusFire`, TurretSystem.pickTarget)
+- **각인**(`runes`, 액티브 스킬마다 3개 중 하나 끼움, `ctx.skillRunes[스킬]`): 얻기 `runeDrops` — 보스 처치 확정 · 황금 상자 30% · 은 상자 8% · 정예 2% (아직 없는 것 중에서, 다 모으면 골드 250). 처음 얻으면 빈 스킬에 바로 끼운다
+  - 돌진 베기: 맹독 베기(베인 적 독 4초, 초당 공격력 35%, `hit.venom`) · 메아리 돌진(0.35초 뒤 한 번 더, 피해 70%) · 충격 마무리(끝자리 반경 3m 공격력 120% 충격파, `hit.quake` → `player:area`)
+  - 응급 처치: 단단한 붕대(5초 받는 피해 -35% 버프) · 급속 처치(절반 바로, 쿨 ×0.7) · 나눔 처치(12m 포탑·건물 최대 체력 25% 회복)
+  - 포탑 과부하: 냉각 과부하(과부하 포탑 탄이 35% 감속 2초, `turret:overclock.chill`) · 긴 과부하(지속 ×1.6) · 연쇄 과부하(반경 ×2, 스태미나 ×0.5)
+  - 각인의 `cooldown`·`stamina` 는 배율 (ActiveSkillSystem.cast). 실제 쿨다운은 `activeSkills.cdMax` (쿨다운 원)
+- **궁극기**(`ultimates`, `ultimate`): 하나 골라 게이지(`max` 100)가 차면 **F**(휴대폰 보라 단추). 게이지 = 처치 4 · 정예 12 · 보스 30 · 플레이어 타격 0.6(초당 최대 3) · 맞은 HP 1% 당 0.8. 다 차면 알림 + 단추 반짝
+  - 별똥별 낙하(레벨 5): 9m 안 적 최대 6마리 위로 차례로 떨어지는 별(반경 2.2m, 공격력 260%) / 숲의 결계(고목 수호자 처치): 6초 받는 피해 -60% · 매초 최대 HP 6% · 둘레 6m 감속 / 포탑 총공격(선인장왕 처치): 25m 포탑 10초 연사 ×2.5 + 포탑 피해 +50% 버프 / 눈보라(얼음 거인 처치): 10m 공격력 180% + 3초 빙결(보스는 감속)
+- 공용 이벤트: `player:area { position, radius, attack, critChance, critMultiplier, knockback, effect }`(둘레 모든 적 playerHits) · `buff:add { id, name, color, duration, effects }`(BuffSystem, HUD 버프 줄에 색 점)
 
 ### 4-4-1. 장비
 - 슬롯: 무기, 머리, 몸, 신발, 장신구 2

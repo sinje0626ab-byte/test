@@ -25,6 +25,7 @@ export class CombatSystem {
     ctx.bus.on('monster:blast', (a) => this.onBlast(a));
     ctx.bus.on('boss:line', (a) => this.onLine(a));
     ctx.bus.on('player:sweep', (a) => this.onSweep(a));
+    ctx.bus.on('player:area', (a) => this.onArea(a));
     // 돌진 적중: 크게 밀려난다 (반격 타이밍이면 charger 가 먼저 막아 이 이벤트가 오지 않는다)
     ctx.bus.on('monster:charge-hit', ({ monster, dir: d }) => {
       if (monster.alive) this.hitPlayer(monster.stats.attack, d, monster.def.hitEffect, this.cfg.chargeKnockback);
@@ -50,7 +51,9 @@ export class CombatSystem {
   killed(m, byPlayer = false, noLoot = false) {
     const { bus } = this.ctx;
     // 처치 시 HP 회복 (왕젤리 대검 등)
-    const heal = this.ctx.player.stats.onKillHeal;
+    // 흡혈 검사(핵심 별): 최대 HP 의 killHealPct 더
+    const ps = this.ctx.player.stats;
+    const heal = (ps.onKillHeal ?? 0) + (ps.killHealPct ?? 0) * ps.maxHp;
     if (byPlayer && heal) bus.emit('player:heal', { amount: heal });
     bus.emit('monster:killed', {
       type: m.type, position: m.position.clone(), color: m.def.color, radius: m.radius, boss: !!m.boss, elite: !!m.elite, noLoot, reward: m.reward ?? 1, raid: !!m.raid, night: !!m.night,
@@ -102,6 +105,7 @@ export class CombatSystem {
     const { amount, crit } = this.calcDamage(atk, m.stats.defense, counter ? 1 : a.critChance, a.critMultiplier, pierce);
     const killed = m.takeDamage(amount, d.multiplyScalar(a.knockback));
     if (counter) m.behavior.countered(m);
+    if (s.focusFire) m.markedUntil = this.ctx.time.elapsed + 4; // 포탑 지휘관: 포탑이 이 적을 먼저
     this.ctx.bus.emit('combat:hit', { position: m.position.clone(), amount, crit, target: 'monster', source: 'player', color: m.def.color, type: m.type });
     if (killed) {
       this.killed(m, true);
@@ -167,12 +171,33 @@ export class CombatSystem {
   }
 
   // 돌진 베기: 지나간 길 위의 적 모두
+  // 각인: venom(베인 적 맹독) · quake(끝자리 충격파)
   onSweep(a) {
     const length = Math.hypot(a.to.x - a.from.x, a.to.z - a.from.z);
     for (const m of this.ctx.monsters) {
       if (!m.alive || m.untargetable) continue;
       if (sideDistance(m.position, a.from, a.dir, length) > a.width / 2 + m.radius) continue;
       this.playerHits(m, a, a.dir.clone());
+      if (a.venom && m.alive) this.ctx.bus.emit('status:apply', { target: m, type: 'poison', duration: a.venom.duration, amount: a.venom.amount });
+    }
+    if (a.quake) {
+      this.ctx.bus.emit('player:area', { ...a, position: a.to, radius: a.quake.radius, attack: a.quake.attack, knockback: a.quake.knockback });
+      this.ctx.bus.emit('fx:ring', { position: a.to.clone(), color: '#e9a35b' });
+      this.ctx.bus.emit('player:shock', { position: a.to.clone(), radius: a.quake.radius });
+    }
+  }
+
+  // 둘레 범위 공격 (각인 충격파·궁극기): 반경 안 적 모두 playerHits, effect 가 있으면 상태 이상도
+  onArea(a) {
+    for (const m of this.ctx.monsters) {
+      if (!m.alive || m.untargetable) continue;
+      const dx = m.position.x - a.position.x;
+      const dz = m.position.z - a.position.z;
+      const d = Math.hypot(dx, dz);
+      if (d > a.radius + m.radius) continue;
+      const dir = d > 1e-3 ? new THREE.Vector3(dx / d, 0, dz / d) : new THREE.Vector3(0, 0, 1);
+      this.playerHits(m, a, dir);
+      if (a.effect && m.alive) this.ctx.bus.emit('status:apply', { target: m, ...(m.boss && a.effect.type === 'freeze' ? { type: 'slow', duration: a.effect.duration, amount: 0.5 } : a.effect) });
     }
   }
 

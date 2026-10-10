@@ -83,8 +83,9 @@ export class TurretSystem {
       bus.emit('turret:slept', { turret: t });
       bus.emit('notify', { text: `${josa(t.def.name, '이/가')} 잠들었습니다!`, kind: 'warn' });
     });
-    bus.on('turret:overclock', ({ turrets, mult, duration }) => {
-      for (const t of turrets) t.overclock = { mult, time: duration };
+    // chill: 냉각 과부하 각인 — 그동안 쏜 탄이 적을 느리게 한다
+    bus.on('turret:overclock', ({ turrets, mult, duration, chill = null }) => {
+      for (const t of turrets) t.overclock = { mult, time: duration, chill };
     });
 
     bus.on('save:collect', (save) => {
@@ -205,6 +206,7 @@ export class TurretSystem {
     const tent = t.priority === 'first' ? this.ctx.bases.find((b) => b.id === t.baseId)?.position : null;
     let best = null;
     let bestScore = Infinity;
+    const now = this.ctx.time.elapsed;
     for (const m of this.ctx.monsters) {
       if (!m.alive || m.untargetable || m === exclude) continue;
       const d = Math.hypot(m.position.x - t.position.x, m.position.z - t.position.z);
@@ -218,6 +220,7 @@ export class TurretSystem {
         case 'spread': score = d + (t.recent?.includes(m) ? 1000 : 0); break;
         default: score = d;
       }
+      if (m.markedUntil > now) score -= 1e5; // 포탑 지휘관: 플레이어가 때린 적을 먼저
       if (this.doomed(m)) score += 1e6; // 이미 죽을 만큼 날아오고 있으면 뒤로 (그것뿐이면 그래도 쏜다)
       if (score < bestScore) { bestScore = score; best = m; }
     }
@@ -299,7 +302,8 @@ export class TurretSystem {
     }
     t.shots = (t.shots ?? 0) + 1;
     (this.tally[t.type] ??= { shots: 0, hits: 0 }).shots += 1;
-    p.onHit = info.effect;
+    const chill = t.overclock?.chill;
+    p.onHit = info.effect ?? (chill ? { type: 'slow', duration: chill.duration, amount: chill.slow } : undefined);
     p.hitSplash = def.hitSplash ?? 0;
   }
 
