@@ -72,3 +72,30 @@ body.ui-art .w-icon::before, body.ui-art .w-icon::after { content: none !importa
 body.ui-art .w-wave { background-image: var(--ui-welcome-wave) !important; }
 body.ui-art .w-tent { background-image: var(--ui-welcome-tent) !important; }
 body.ui-art .w-moon { background-image: var(--ui-welcome-moon) !important; }
+
+/* 3차 (묶음 8~10): 창 제목 리본 + 창 아이콘 + 키캡, 제목 아래 덩굴, 소제목 나무 판, 캐릭터 창 */
+body.ui-art .win-head { border-bottom: 0; background: var(--ui-divider-vine) center bottom 2px / 280px auto no-repeat; padding-bottom: 34px; }
+body.ui-art .win-head h2 {
+  background: none; box-shadow: none; border-radius: 0; display: inline-flex; align-items: center; gap: 5px;
+  border: solid transparent; border-width: 0 60px; border-image: var(--ui-title-ribbon) 0 120 fill / 0 60px / 0 stretch;
+  padding: 5px 0 13px; min-height: 42px; color: #fff; text-shadow: 0 1px 0 #3f7a2c, 0 0 3px rgba(40, 80, 30, 0.6);
+}
+body.ui-art .win-head h2 .win-ic { width: 32px; height: 32px; margin: -6px 0 -4px -22px; filter: drop-shadow(0 2px 0 rgba(60, 90, 40, 0.35)); }
+body.ui-art .win-head h2 kbd {
+  width: 22px; height: 22px; padding: 0; margin-left: 2px; display: inline-grid; place-items: center; border-radius: 0;
+  background: var(--ui-key-badge) center / contain no-repeat; color: var(--ink); font: 400 12px/1 var(--font-title); text-shadow: none;
+}
+body.touch.ui-art .win-head h2 .win-ic { width: 28px; height: 28px; }
+
+.sec-tag { display: inline-flex; align-items: center; gap: 4px; }
+body.ui-art .sec-tag {
+  color: #6b4a2a; border: solid transparent; border-width: 0 26px; border-image: var(--ui-sec-tag) 0 130 fill / 0 26px / 0 stretch;
+  padding: 4px 4px 5px 4px; margin-left: -4px; font-size: 15px;
+}
+.sec-tag .ui-ic { width: 22px; height: 22px; margin: -4px 0; }
+body.ui-art .m-sec h3 { color: #6b4a2a; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+/* 캐릭터 창 */
+.ui-ic.stat-ic { width: 18px; height: 18px; vertical-align: -4px; margin-right: 5px; }
+.ui-ic.slot-sil { width: 62%; height: 62%; opacity: 0.95; }
+.ui-ic.set-ic { width: 18px; height: 18px; vertical-align: -4px; margin-right: 4px; }

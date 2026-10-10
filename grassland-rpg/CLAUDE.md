@@ -458,6 +458,9 @@ src/
     - 지도·미니맵 표시(`ui/mapIcons.js` `marker()`, 캔버스에 그린다): 기지 `map_base` · 보스 둥지 `map_boss`(처치하면 회색) · 주민 `map_npc` · 묘비 `map_tomb` · 보물상자 `map_chest` · 플레이어 `map_player`(바라보는 쪽으로 돈다) · 퀘스트 목표 `map_quest`. 핀 모양은 아래 끝이 그 자리
     - 시계: 낮 `clock_sun` · 밤 `clock_moon` · 붉은 달 `clock_bloodmoon`(`.clock.blood`) 그림 한 장 + 날씨 작은 그림 `weather_rain/sand/snow`(`weather:changed`). 새 게임 환영 카드 `welcome_wave/tent/moon`
     - 버프 줄 옆 상태 줄(`HUD.updateFx`): 플레이어 상태 이상 `status_poison/slow/freeze`(`ctx.statusOf`) · 응급 처치 `buff_first_aid`(`ctx.firstAidUntil`) · 포탑 과부하 `buff_overclock`(`ctx.overclockUntil`) · 모닥불 온기 `buff_regen`(`player:aura`). 몬스터 머리 위 상태 아이콘도 그림이 있으면 스프라이트(`status_*`)
+    - 3차(묶음 8~10) 창 제목: 초록 리본 `title_ribbon`(`border-image`, 양 끝 120px 그대로·가운데 늘임) 위 하얀 글씨 + 왼쪽 창 아이콘 `win_<창 id>`(inventory·character·skills·build·map·missions·forge·shop·craft·storage·garden·bestiary·bounty·courier·turret·settings) + 단축키는 크림 키캡 `key_badge`, 제목 아래 덩굴 `divider_vine`(점선 대신)
+    - 소제목 나무 꼬리표 `.sec-tag`(`sec_tag` border-image, 임무 창 h3: 출석 `ic_attend` · 매일 `ic_daily` · 주간 `ic_calendar`), 모두 완료 보너스 `ic_gift`
+    - 캐릭터 창: 능력치 줄 왼쪽 `stat_hp/stamina/attack/defense/speed/crit/regen`, 빈 장비 칸 옅은 그림자 `slot_weapon/head/body/feet/accessory`(없으면 예전 글자), 세트 줄 `set_crest`
   - UI 그림 자르기: `ART_KEEP=<긴 변 px> node tools/art-import.mjs <그림> ui <id...>` — 정사각 칸에 넣지 않고 원래 비율로 (판·버튼·리본), 그다음 sharp `trim()` 으로 여백을 바짝 자른다
 - **HUD 마감**(`ui/polish.css`): 막대·HUD 패널·퀵슬롯
 - **팔·손**(`PlayerModel.js`): 오른팔은 `swordPivot` 에 달려 무기와 같이 휘두르고, 손은 무기 `userData.grip`(종류별 손잡이 위치)을 쥔다. 무기를 바꾸면 `fitArm` 이 손을 옮긴다. 활은 몸 쪽으로 당겨 든다(모양만). 왼팔은 걸을 때 흔든다

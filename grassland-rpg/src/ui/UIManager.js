@@ -25,7 +25,7 @@ export class UIManager {
     el.hidden = true;
     el.innerHTML = `
       <header class="win-head">
-        <h2>${title}${hotkeyLabel ? ` <kbd>${hotkeyLabel}</kbd>` : ''}</h2>
+        <h2>${uiImg(`win_${id}`, '', 'win-ic')}<span class="win-title">${title}</span>${hotkeyLabel ? ` <kbd>${hotkeyLabel}</kbd>` : ''}</h2>
         <button class="win-close" type="button" aria-label="닫기">${uiImg('ic_close', '✕')}</button>
       </header>
       <div class="win-body"></div>
