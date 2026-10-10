@@ -2,7 +2,12 @@
   "grassland": {
     "name": "초원",
     "difficulty": 1,
-    "statMultiplier": 1, "field": { "hp": 2.0, "attack": 1.6, "reward": 1.4 },
+    "statMultiplier": 1,
+    "field": {
+      "hp": 2.0,
+      "attack": 1.6,
+      "reward": 1.4
+    },
     "zFrom": -60,
     "zTo": 90,
     "monsters": [
@@ -27,7 +32,8 @@
       "flowers": 27,
       "tufts": 55,
       "mushrooms": 0,
-      "cacti": 0
+      "cacti": 0,
+      "pebbles": 2
     },
     "palette": {
       "pine": [
@@ -83,7 +89,12 @@
   "forest": {
     "name": "숲",
     "difficulty": 2,
-    "statMultiplier": 1.35, "field": { "hp": 3.5, "attack": 2.4, "reward": 2.0 },
+    "statMultiplier": 1.35,
+    "field": {
+      "hp": 3.5,
+      "attack": 2.4,
+      "reward": 2.0
+    },
     "zFrom": -270,
     "zTo": -60,
     "monsters": [
@@ -108,7 +119,8 @@
       "flowers": 6,
       "tufts": 40,
       "mushrooms": 7,
-      "cacti": 0
+      "cacti": 0,
+      "logs": 1.2
     },
     "palette": {
       "pine": [
@@ -161,7 +173,12 @@
   "desert": {
     "name": "사막",
     "difficulty": 3,
-    "statMultiplier": 1.8, "field": { "hp": 6.2, "attack": 4.4, "reward": 2.6 },
+    "statMultiplier": 1.8,
+    "field": {
+      "hp": 6.2,
+      "attack": 4.4,
+      "reward": 2.6
+    },
     "zFrom": 90,
     "zTo": 300,
     "monsters": [
@@ -186,7 +203,8 @@
       "flowers": 3,
       "tufts": 8,
       "mushrooms": 0,
-      "cacti": 6
+      "cacti": 6,
+      "skulls": 0.4
     },
     "palette": {
       "pine": [
@@ -235,7 +253,12 @@
   "snow": {
     "name": "설원",
     "difficulty": 4,
-    "statMultiplier": 2.4, "field": { "hp": 8.6, "attack": 6.4, "reward": 3.0 },
+    "statMultiplier": 2.4,
+    "field": {
+      "hp": 8.6,
+      "attack": 6.4,
+      "reward": 3.0
+    },
     "zFrom": -480,
     "zTo": -270,
     "monsters": [
@@ -254,13 +277,14 @@
     ],
     "decor": {
       "pines": 9,
-      "roundTrees": 0,
+      "roundTrees": 1.5,
       "rocks": 3,
       "bushes": 1.5,
       "flowers": 0,
       "tufts": 6,
       "mushrooms": 0,
-      "cacti": 0
+      "cacti": 0,
+      "drifts": 2
     },
     "palette": {
       "pine": [

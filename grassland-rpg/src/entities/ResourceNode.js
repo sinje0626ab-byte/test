@@ -1,96 +1,113 @@
 import * as THREE from 'three';
+import { PAL, baked, meshes, patch, rock } from './structureKit.js';
+import { trunk, crown, blade, bloom, pineTiers, ico } from '../world/decorProps.js';
+
 
 const GLOW = new THREE.Color(0xfff2b0);
-const flat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: 0.85, ...extra });
 
-// 채집 노드 모양. alive = 캘 수 있는 모습, stump = 캔 뒤 모습 (그루터기·부서진 바위·새싹)
-function buildModel(model, rng) {
+// 채집 노드 모양 (시안 docs/art/incoming/concept_nodes.webp). 장식보다 살짝 크고 작은 풀밭(사막 모래·설원 눈) 위.
+// alive = 캘 수 있는 모습, stump = 캔 뒤 모습. 모양은 종류마다 한 번 만들어 같이 쓴다(baked)
+const GROUND = { cactus: 'sand', sandstone: 'sand', ice: 'snowGround' };
+function base(k, model, r) {
+  const g = GROUND[model];
+  if (g) k.add(new THREE.CylinderGeometry(r, r * 1.04, 0.06, 12), g, [0, 0.02, 0]);
+  else patch(k, r, { seed: model.length * 7, flowers: 3, bushes: 0, rocks: 1 });
+}
+const ALIVE = {
+  roundTree(k) {
+    trunk(k, 1.6, 0.32, 0.22);
+    crown(k, 2.3, 1.1, 'leafDeep', 'leafMid', 'leafTop');
+    for (const [a, y] of [[0.3, 2.0], [1.9, 2.5], [3.3, 2.1], [4.6, 2.7], [5.6, 1.9]]) {
+      k.ball(0.15, 'apple', [Math.cos(a) * 1.3, y, Math.sin(a) * 1.3], 1, 1);
+      k.cyl(0.015, 0.015, 0.08, 3, 'barkDark', [Math.cos(a) * 1.3, y + 0.16, Math.sin(a) * 1.3]);
+    }
+  },
+  pine(k) {
+    pineTiers(k, false);
+    for (const [x, y, z, s] of [[0.95, 0.4, 0.4, 1.1], [0.62, 1.15, 0.55, 1], [0.4, 1.8, 0.45, 0.8], [-0.8, 0.55, 0.6, 0.9]]) k.add(new THREE.SphereGeometry(0.1 * s, 6, 4), 'resin', [x, y, z], [0, 0, 0], [1, 1.5, 1]);
+  },
+  rock(k) {
+    k.add(new THREE.DodecahedronGeometry(0.8, 0), 'stone', [0, 0.6, 0], [0.2, 0.4, 0], [1, 1.05, 0.95]);
+    k.add(new THREE.DodecahedronGeometry(0.45, 0), 'stoneDark', [0.6, 0.3, 0.35], [0.5, 1, 0]);
+    k.add(new THREE.DodecahedronGeometry(0.35, 0), 'stoneLight', [-0.55, 0.25, 0.4], [1, 0.2, 0]);
+    for (const [x, y, z, s] of [[0.2, 0.75, 0.62, 1], [-0.35, 1.0, 0.45, 0.8], [0.5, 0.45, 0.62, 0.7], [0.0, 1.2, 0.1, 0.7], [-0.6, 0.55, 0.15, 0.6]]) k.add(new THREE.OctahedronGeometry(0.15 * s, 0), 'ore', [x, y, z], [0.3, x * 4, 0.2], [1, 1.3, 1]);
+  },
+  herb(k) {
+    ico(k, 0.45, 'leafMid', [0, 0.4, 0], [1.3, 0.9, 1.2]);
+    ico(k, 0.32, 'leafDeep', [0.45, 0.28, 0.1], [1, 0.9, 1]);
+    ico(k, 0.3, 'leafTop', [-0.4, 0.3, -0.1], [1, 0.9, 1]);
+    for (let i = 0; i < 6; i++) bloom(k, Math.cos(i * 1.05) * 0.42, 0.62 + (i % 2) * 0.1, Math.sin(i * 1.05) * 0.38, 'petal', 1.7);
+  },
+  fiber(k) {
+    for (let i = 0; i < 11; i++) {
+      const a = i * 2.4;
+      blade(k, Math.cos(a) * 0.18, Math.sin(a) * 0.18, 0.9 + (i % 4) * 0.18, i % 2 ? 'leafMid' : 'leafTop', 0.3, a);
+    }
+    for (const a of [0.5, 2.8, 4.6]) {
+      k.cyl(0.012, 0.012, 1.2, 3, 'leafTop', [Math.cos(a) * 0.08, 0.6, Math.sin(a) * 0.08]);
+      k.add(new THREE.SphereGeometry(0.05, 5, 3), 'wheat', [Math.cos(a) * 0.08, 1.28, Math.sin(a) * 0.08], [0, 0, 0], [1, 3, 1]);
+    }
+  },
+  cactus(k) {
+    k.cyl(0.36, 0.4, 2.0, 10, 'cactus', [0, 1.0, 0]);
+    k.ball(0.36, 'cactus', [0, 2.0, 0], [1, 0.7, 1], 1);
+    for (const [s, y, h] of [[1, 1.2, 0.8], [-1, 0.9, 0.6]]) {
+      k.cyl(0.15, 0.15, 0.4, 7, 'cactusLight', [s * 0.48, y, 0], [0, 0, Math.PI / 2]);
+      k.cyl(0.15, 0.15, h, 7, 'cactusLight', [s * 0.62, y + h / 2, 0]);
+      k.ball(0.15, 'cactusLight', [s * 0.62, y + h, 0], [1, 0.7, 1], 1);
+      bloom(k, s * 0.62, y + h + 0.1, 0, 'petalPink', 1.6);
+    }
+    bloom(k, 0, 2.28, 0, 'petalPink', 2);
+    for (let i = 0; i < 10; i++) { const a = i * 2.2; k.cone(0.02, 0.08, 3, 'spine', [Math.cos(a) * 0.4, 0.4 + (i % 5) * 0.32, Math.sin(a) * 0.4], [0, 0, Math.PI / 2]); }
+    rock(k, 0.5, 0.45, 0.16, 'stone');
+  },
+  sandstone(k) {
+    const cols = ['sandstoneDark', 'sandstone', 'sandstoneLight', 'sandstone', 'sandstoneLight'];
+    for (let i = 0; i < 5; i++) k.box(1.4 - i * 0.18, 0.32, 1.2 - i * 0.14, cols[i], [(i % 2) * 0.06, 0.16 + i * 0.31, (i % 2) * -0.05], [0, i * 0.12, 0]);
+    for (const [x, y, z, s, r] of [[0.45, 1.5, 0.3, 1, -0.3], [0.2, 1.55, 0.45, 0.7, 0.2], [-0.5, 0.45, 0.55, 0.8, 0.3]]) k.add(new THREE.OctahedronGeometry(0.17 * s, 0), 'sunCrystal', [x, y, z], [0, 0, r], [1, 2, 1]);
+  },
+  ice(k) {
+    k.add(new THREE.CylinderGeometry(0.32, 0.45, 2.4, 6), 'ice', [0, 1.2, 0]);
+    k.add(new THREE.ConeGeometry(0.32, 0.5, 6), 'ice', [0, 2.65, 0]);
+    for (const [x, z, h, r] of [[0.5, 0.2, 1.5, -0.25], [-0.45, 0.25, 1.2, 0.3], [0.1, -0.5, 1.0, 0.2]]) {
+      k.add(new THREE.CylinderGeometry(0.16, 0.24, h, 6), 'iceLight', [x, h / 2, z], [r * Math.sign(z), 0, r]);
+    }
+    ico(k, 0.35, 'snow', [0, 2.35, 0], [1, 0.3, 1]);
+    for (let i = 0; i < 5; i++) { const a = i * 1.3; ico(k, 0.2, 'snow', [Math.cos(a) * 0.65, 0.05, Math.sin(a) * 0.65], [1.4, 0.4, 1]); }
+  },
+};
+const STUMP = {
+  roundTree(k) { stump(k, 0.36); k.cone(0.03, 0.15, 3, 'leafTop', [0.12, 0.6, 0.05]); },
+  pine(k) { stump(k, 0.32); k.add(new THREE.SphereGeometry(0.07, 6, 4), 'resin', [0.25, 0.25, 0.18], [0, 0, 0], [1, 1.5, 1]); },
+  rock(k) { for (const [x, z, s, n] of [[0, 0, 0.3, 'stone'], [0.35, 0.2, 0.22, 'stoneDark'], [-0.3, 0.25, 0.2, 'stoneLight']]) k.add(new THREE.DodecahedronGeometry(s, 0), n, [x, s * 0.6, z], [x * 3, z * 3, 0]); k.add(new THREE.OctahedronGeometry(0.1, 0), 'ore', [0.1, 0.45, 0.15]); },
+  herb(k) { for (let i = 0; i < 3; i++) { const a = i * 2.1; k.cyl(0.015, 0.015, 0.2, 3, 'leafMid', [Math.cos(a) * 0.15, 0.1, Math.sin(a) * 0.15]); ico(k, 0.07, 'leafTop', [Math.cos(a) * 0.15, 0.22, Math.sin(a) * 0.15], [1.4, 0.5, 0.8], 0); } },
+  fiber(k) { for (let i = 0; i < 7; i++) { const a = i * 0.9; k.cyl(0.03, 0.03, 0.14, 3, 'leafMid', [Math.cos(a) * 0.15, 0.07, Math.sin(a) * 0.15]); } },
+  cactus(k) { k.cyl(0.36, 0.4, 0.45, 10, 'cactus', [0, 0.22, 0]); k.cyl(0.33, 0.33, 0.02, 10, 'cactusLight', [0, 0.46, 0]); },
+  sandstone(k) { k.box(1.0, 0.3, 0.9, 'sandstoneDark', [0, 0.15, 0]); for (const [x, z] of [[0.6, 0.3], [-0.5, 0.45]]) k.box(0.3, 0.2, 0.3, 'sandstone', [x, 0.1, z], [0, x, 0]); k.add(new THREE.OctahedronGeometry(0.1, 0), 'sunCrystal', [0.2, 0.4, 0.2], [0, 0, 0], [1, 2, 1]); },
+  ice(k) { for (const [x, z, h] of [[0, 0, 0.5], [0.35, 0.2, 0.35], [-0.3, 0.2, 0.3]]) k.add(new THREE.CylinderGeometry(0.2, 0.28, h, 6), 'ice', [x, h / 2, z]); },
+};
+function stump(k, r) {
+  k.cyl(r, r * 1.15, 0.45, 9, 'bark', [0, 0.22, 0]);
+  k.cyl(r * 0.95, r * 0.95, 0.02, 9, 'logEnd', [0, 0.46, 0]);
+  k.add(new THREE.TorusGeometry(r * 0.5, 0.015, 3, 10), 'woodDark', [0, 0.47, 0], [Math.PI / 2, 0, 0]);
+}
+Object.assign(PAL, {
+  resin: { color: '#f2b234', emissive: '#7a4d08', emissiveIntensity: 0.5, roughness: 0.3 },
+  ore: { color: '#d97a3a', roughness: 0.5 },
+  wheat: { color: '#e3c770' },
+  spine: { color: '#f3e7c2' },
+  sunCrystal: { color: '#ffd23f', emissive: '#a07010', emissiveIntensity: 0.5, roughness: 0.25 },
+});
+const SIZE = { roundTree: 1.3, pine: 1.35, rock: 1.25, herb: 0.85, fiber: 0.75, cactus: 1.0, sandstone: 1.15, ice: 1.05 };
+
+function buildModel(model) {
   const alive = new THREE.Group();
-  const stump = new THREE.Group();
-  const add = (g, geo, mat, x, y, z, sx = 1, sy = 1, sz = 1) => {
-    const m = new THREE.Mesh(geo, mat);
-    m.position.set(x, y, z);
-    m.scale.set(sx, sy, sz);
-    m.castShadow = true;
-    m.receiveShadow = true;
-    g.add(m);
-    return m;
-  };
-  const trunk = flat('#9a6a45');
-  const stumpTop = flat('#e0c38a');
-
-  switch (model) {
-    case 'roundTree': {
-      add(alive, new THREE.CylinderGeometry(0.22, 0.3, 1.6, 7), trunk, 0, 0.8, 0);
-      add(alive, new THREE.IcosahedronGeometry(1.35, 0), flat('#79c96a'), 0, 2.3, 0, 1, 0.9, 1);
-      const apple = flat('#ff6b6b');
-      for (let i = 0; i < 4; i++) {
-        const a = rng() * Math.PI * 2;
-        add(alive, new THREE.SphereGeometry(0.12, 6, 4), apple, Math.cos(a) * 1.05, 2.0 + rng() * 0.6, Math.sin(a) * 1.05);
-      }
-      add(stump, new THREE.CylinderGeometry(0.28, 0.34, 0.45, 7), trunk, 0, 0.22, 0);
-      add(stump, new THREE.CylinderGeometry(0.27, 0.27, 0.02, 7), stumpTop, 0, 0.46, 0);
-      break;
-    }
-    case 'pine': {
-      add(alive, new THREE.CylinderGeometry(0.2, 0.3, 1.3, 7), trunk, 0, 0.65, 0);
-      const needle = flat('#3f8a55');
-      add(alive, new THREE.ConeGeometry(1.25, 1.9, 7), needle, 0, 1.9, 0);
-      add(alive, new THREE.ConeGeometry(0.9, 1.5, 7), needle, 0, 2.9, 0);
-      add(alive, new THREE.SphereGeometry(0.16, 6, 4), flat('#e9b44f', { emissive: '#6b4a10' }), 0.24, 1.0, 0.2); // 송진 방울
-      add(stump, new THREE.CylinderGeometry(0.26, 0.32, 0.4, 7), trunk, 0, 0.2, 0);
-      add(stump, new THREE.CylinderGeometry(0.25, 0.25, 0.02, 7), stumpTop, 0, 0.41, 0);
-      break;
-    }
-    case 'rock': {
-      add(alive, new THREE.DodecahedronGeometry(0.95, 0), flat('#a9adb6'), 0, 0.55, 0, 1.1, 0.8, 1);
-      const ore = flat('#8a7f8f', { metalness: 0.4 });
-      for (let i = 0; i < 3; i++) add(alive, new THREE.OctahedronGeometry(0.14, 0), ore, (rng() - 0.5) * 1.1, 0.5 + rng() * 0.5, 0.55 + rng() * 0.2);
-      for (let i = 0; i < 3; i++) add(stump, new THREE.DodecahedronGeometry(0.25, 0), flat('#b8bcc4'), (rng() - 0.5) * 0.9, 0.15, (rng() - 0.5) * 0.9);
-      break;
-    }
-    case 'herb': {
-      add(alive, new THREE.IcosahedronGeometry(0.55, 0), flat('#6fbf5f'), 0, 0.35, 0, 1.2, 0.7, 1.2);
-      const flower = flat('#f4f0ff', { emissive: '#443a55' });
-      for (let i = 0; i < 5; i++) add(alive, new THREE.OctahedronGeometry(0.09, 0), flower, (rng() - 0.5) * 0.9, 0.6 + rng() * 0.15, (rng() - 0.5) * 0.9);
-      add(stump, new THREE.ConeGeometry(0.1, 0.25, 4), flat('#6fbf5f'), 0, 0.12, 0);
-      break;
-    }
-    case 'fiber': {
-      const blade = flat('#9fd46a');
-      for (let i = 0; i < 9; i++) {
-        const m = add(alive, new THREE.ConeGeometry(0.07, 1.1 + rng() * 0.4, 3), blade, (rng() - 0.5) * 0.6, 0.55, (rng() - 0.5) * 0.6);
-        m.rotation.set((rng() - 0.5) * 0.5, rng() * 3, (rng() - 0.5) * 0.5);
-      }
-      add(stump, new THREE.ConeGeometry(0.08, 0.2, 3), blade, 0, 0.1, 0);
-      break;
-    }
-    case 'cactus': {
-      const green = flat('#5fa85a');
-      add(alive, new THREE.CylinderGeometry(0.36, 0.42, 2.6, 8), green, 0, 1.3, 0);
-      add(alive, new THREE.CylinderGeometry(0.2, 0.2, 0.9, 6), green, 0.55, 1.5, 0);
-      add(alive, new THREE.CylinderGeometry(0.2, 0.2, 0.7, 6), green, -0.55, 1.2, 0);
-      add(alive, new THREE.OctahedronGeometry(0.2, 0), flat('#ff8fb1'), 0, 2.7, 0);
-      add(stump, new THREE.CylinderGeometry(0.36, 0.42, 0.35, 8), green, 0, 0.17, 0);
-      break;
-    }
-    case 'sandstone': {
-      const c = ['#e0a86a', '#d99a5c', '#ebb982'];
-      for (let i = 0; i < 3; i++) add(alive, new THREE.BoxGeometry(1.5 - i * 0.3, 0.45, 1.3 - i * 0.25), flat(c[i]), (rng() - 0.5) * 0.2, 0.22 + i * 0.45, 0);
-      add(alive, new THREE.OctahedronGeometry(0.16, 0), flat('#ffd23f', { emissive: '#8a6a10' }), 0.4, 1.35, 0.2);
-      add(stump, new THREE.BoxGeometry(1.2, 0.3, 1.0), flat('#d99a5c'), 0, 0.15, 0);
-      break;
-    }
-    case 'ice': {
-      const ice = flat('#9fd8ff', { transparent: true, opacity: 0.85, roughness: 0.2, emissive: '#1b3a55' });
-      add(alive, new THREE.CylinderGeometry(0.35, 0.5, 2.4, 6), ice, 0, 1.2, 0);
-      add(alive, new THREE.CylinderGeometry(0.2, 0.3, 1.5, 6), ice, 0.5, 0.75, 0.2).rotation.z = -0.3;
-      add(alive, new THREE.OctahedronGeometry(0.18, 0), flat('#e6fbff', { emissive: '#4a7a9a' }), 0, 2.55, 0);
-      add(stump, new THREE.CylinderGeometry(0.4, 0.5, 0.35, 6), ice, 0, 0.17, 0);
-      break;
-    }
-  }
-  return { alive, stump };
+  const stumpG = new THREE.Group();
+  const ground = new THREE.Group();
+  meshes(baked(`node:${model}:ground`, (k) => base(k, model, SIZE[model] ?? 1)), ground);
+  meshes(baked(`node:${model}:alive`, (k) => ALIVE[model]?.(k)), alive);
+  meshes(baked(`node:${model}:stump`, (k) => STUMP[model]?.(k)), stumpG);
+  return { alive, stump: stumpG, ground };
 }
 
 // 캘 수 있는 나무·바위·풀 하나
@@ -107,15 +124,15 @@ export class ResourceNode {
     this.wobble = 0;
     this.sparkle = 0;
 
-    const { alive, stump } = buildModel(def.model, rng);
+    const { alive, stump, ground } = buildModel(def.model);
     this.group = new THREE.Group();
     this.group.position.copy(position);
     this.group.rotation.y = rng() * Math.PI * 2;
-    this.group.add(alive, stump);
+    this.group.add(ground, alive, stump); // 받침(풀밭)은 흔들리지 않고 캔 뒤에도 남는다
     this.aliveMesh = alive;
     this.stumpMesh = stump;
     this.mats = [];
-    alive.traverse((o) => { if (o.isMesh) this.mats.push(o.material); });
+    alive.traverse((o) => { if (o.isMesh && o.material.emissive) this.mats.push(o.material); });
     this.baseEmissive = this.mats.map((m) => m.emissive.clone());
     scene.add(this.group);
     this.applyLook();
