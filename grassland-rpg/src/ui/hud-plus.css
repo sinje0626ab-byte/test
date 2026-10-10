@@ -116,7 +116,15 @@ body:not(.touch) .win-inventory .inv-hint { order: 9; flex: 1 1 100%; text-align
 .actionbar .skillbar .ultslot { margin-left: 4px; }
 body.touch .ultslot { position: absolute; right: 98px; bottom: 214px; width: 54px; height: 54px; }
 body.touch .ultslot kbd { display: none; }
-@media (max-width: 600px) { body.touch .ultslot { bottom: 226px; } }
+/* 세로 휴대폰: 화면 맨 아래 퀵슬롯 줄 오른쪽에 작게 (가운데에 떠서 화면을 가리지 않게) */
+@media (max-width: 600px) {
+  body.touch .ultslot { right: auto; left: calc(50% + 102px); bottom: max(4px, env(safe-area-inset-bottom)); width: 36px; height: 36px; box-shadow: 0 2px 0 1px #8a63c9, 0 0 0 2px #fff; }
+  body.touch .ultslot::before { inset: 3px; }
+  body.touch .ultslot .u-icon, body.touch .ultslot:has(img.painted) .u-icon { width: 30px; height: 30px; }
+  body.touch .ultslot .u-pct { font-size: 9px; right: -3px; bottom: -3px; -webkit-text-stroke-width: 2px; }
+  body.touch .ultslot.ready { animation-name: ult-ready-sm; }
+}
+@keyframes ult-ready-sm { 50% { box-shadow: 0 2px 0 1px #8a63c9, 0 0 0 2px #fff, 0 0 12px 4px rgba(190, 150, 255, 0.85); } }
 @media (max-height: 500px) { body.touch .ultslot { right: 336px; bottom: 34px; } }
 
 /* ── 스킬 창 2: 별자리 (밤하늘 판 + 별 + 아래 설명 판) ── */
