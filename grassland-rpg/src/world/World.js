@@ -166,8 +166,14 @@ export class World {
   }
 
   // 기지 건물(중심 건물·부속 건물·포탑)을 밀어낸다 — 플레이어·주민·용병만 (벽은 예전처럼 몬스터만 막는다)
+  // 몸이 부딪히는 건물 + 꾸미기 소품 중 solid 인 것
+  *solidsAround() {
+    yield* this.ctx.structures ?? [];
+    for (const d of this.ctx.decor ?? []) if (d.solid) yield d;
+  }
+
   resolveStructures(pos, radius) {
-    for (const s of this.ctx.structures ?? []) {
+    for (const s of this.solidsAround()) {
       if (s.kind === 'wall' || !s.radius) continue;
       const dx = pos.x - s.position.x;
       const dz = pos.z - s.position.z;

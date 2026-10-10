@@ -34,6 +34,8 @@ export class TouchControls {
       <nav class="t-menu">${MENU.map(([code, label]) => `<button type="button" data-key="${code}">${label}</button>`).join('')}</nav>
       <div class="t-build" data-build hidden>
         <button type="button" class="ok" data-key="BuildConfirm">설치</button>
+        <button type="button" data-key="BuildRotate" data-rot hidden>돌리기</button>
+        <button type="button" class="danger" data-key="BuildRemove" data-rm hidden>치우기</button>
         <button type="button" data-key="BuildCancel">취소</button>
       </div>`;
     root.appendChild(el);
@@ -131,6 +133,10 @@ export class TouchControls {
     if (!this.enabled) return;
     const build = this.ctx.mode === 'build';
     this.el.build.hidden = !build;
+    const pl = this.ctx.placing;
+    this.el.build.querySelector('[data-rot]').hidden = !pl?.rotatable;
+    this.el.build.querySelector('[data-rm]').hidden = !(pl?.kind === 'decor' && pl.move);
+    this.el.build.querySelector('.ok').textContent = pl?.move ? '옮기기' : '설치';
     this.el.attack.hidden = build;
     this.el.roll.hidden = build;
     if (build) this.el.use.hidden = true;

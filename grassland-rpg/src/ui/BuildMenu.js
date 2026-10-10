@@ -3,6 +3,8 @@ import { turretCost, maxTurrets, turretDamage, turretRange, materialCost, struct
 import { itemIcon } from './icons.js';
 import { buildArt } from './uiArt.js';
 import { josa } from '../utils/josa.js';
+import { decorThumb } from './monsterPortrait.js';
+import { createDecorModel } from '../entities/decorModels.js';
 
 // 건설 창 (B): 기지 영역 안에서만 열린다. 건물/포탑 탭, 비용 표시.
 export class BuildMenu {
@@ -30,6 +32,7 @@ export class BuildMenu {
       <nav class="tabs">
         <button type="button" data-tab="building">건물</button>
         <button type="button" data-tab="turret">포탑</button>
+        <button type="button" data-tab="decor">꾸미기</button>
         <button type="button" data-tab="merc">용병</button>
       </nav>
       <div class="build-list"></div>
@@ -79,6 +82,14 @@ export class BuildMenu {
         this.render();
         return;
       }
+      const cat = e.target.closest('[data-decor-cat]');
+      if (cat) { this.decorCat = cat.dataset.decorCat; this.render(); return; }
+      const dec = e.target.closest('[data-decor]');
+      if (dec) {
+        if (dec.classList.contains('disabled')) return;
+        ctx.bus.emit('build:start', { kind: 'decor', type: dec.dataset.decor });
+        return;
+      }
       const fac = e.target.closest('[data-facility]');
       if (fac && !fac.classList.contains('disabled')) {
         ctx.bus.emit('build:start', { kind: 'facility', type: fac.dataset.facility });
@@ -97,6 +108,7 @@ export class BuildMenu {
     ctx.bus.on('walls:changed', () => { if (ui.isOpen('build') && this.tab === 'building') this.render(); });
     ctx.bus.on('mercenary:changed', () => { if (ui.isOpen('build') && this.tab === 'merc') this.render(); });
     ctx.bus.on('turret:changed', () => { if (ui.isOpen('build')) this.render(); });
+    ctx.bus.on('decor:changed', () => { if (ui.isOpen('build') && this.tab === 'decor') this.render(); });
     ctx.bus.on('interact:base', () => {
       this.tab = 'building';
       if (ui.isOpen('build')) this.render();
@@ -121,6 +133,10 @@ export class BuildMenu {
 
     if (this.tab === 'merc') {
       this.list.innerHTML = this.mercCards(base);
+      return;
+    }
+    if (this.tab === 'decor') {
+      this.list.innerHTML = this.decorCards(base);
       return;
     }
     if (this.tab === 'building') {
@@ -217,6 +233,30 @@ export class BuildMenu {
           <span class="build-cost wall-btns">${btn(1, '+1칸')}${btn(5, '+5칸')}${btn(999, '가득')}<small>${why}</small></span>
         </div>`;
     }).join('');
+  }
+
+  // 꾸미기 탭: 갈래 고르기 + 소품 카드(모델 사진·이름·설명·값). 누르면 마우스로 놓는다
+  decorCards(base) {
+    const { decor } = this.ctx.data;
+    const cats = decor.categories;
+    this.decorCat ??= 'all';
+    const used = (this.ctx.decor ?? []).filter((d) => d.baseId === base.id).length;
+    const max = decor.config.maxPerBase;
+    const chips = [['all', '전체'], ...Object.entries(cats)].map(([id, name]) => `<button type="button" class="${this.decorCat === id ? 'on' : ''}" data-decor-cat="${id}">${name}</button>`).join('');
+    const cards = Object.entries(decor.decor).filter(([, d]) => this.decorCat === 'all' || d.category === this.decorCat).map(([id, d]) => {
+      const poor = this.gold < d.cost;
+      const full = used >= max;
+      return `
+        <button type="button" class="decor-card${poor || full ? ' disabled' : ''}" data-decor="${id}" title="${d.desc}">
+          <img src="${decorThumb(id, createDecorModel)}" alt="">
+          <b>${d.name}</b>
+          <small class="dc-cost"><i class="coin"></i>${d.cost}</small>
+        </button>`;
+    }).join('');
+    return `
+      <div class="decor-head"><b>기지 꾸미기 ${used}/${max}</b><small>골라서 원하는 자리에 놓아요 · R·휠로 돌리기 · 놓은 소품 앞에서 E 로 옮기기·치우기(값 절반 돌려받기)</small></div>
+      <nav class="seg decor-cats">${chips}</nav>
+      <div class="decor-grid">${cards}</div>`;
   }
 
   // 기지 업그레이드 카드: 다음 단계 효과와 필요한 재료

@@ -24,6 +24,7 @@ import { SkillSystem } from '../systems/SkillSystem.js';
 import { ExplorationSystem } from '../systems/ExplorationSystem.js';
 import { InteractionSystem } from '../systems/InteractionSystem.js';
 import { FacilitySystem } from '../systems/FacilitySystem.js';
+import { DecorSystem } from '../systems/DecorSystem.js';
 import { CraftingSystem } from '../systems/CraftingSystem.js';
 import { StorageSystem } from '../systems/StorageSystem.js';
 import { BossSystem } from '../systems/BossSystem.js';
@@ -51,7 +52,6 @@ import { MissionWindow } from '../ui/MissionWindow.js';
 import { ChestSystem } from '../systems/ChestSystem.js';
 import { MissionSystem } from '../systems/MissionSystem.js';
 import { EndingScreen } from '../ui/EndingScreen.js';
-import { NearbyMobs } from '../ui/NearbyMobs.js';
 import { Chat } from '../ui/Chat.js';
 import { Minimap } from '../ui/Minimap.js';
 import { LootLog } from '../ui/LootLog.js';
@@ -149,6 +149,7 @@ export class Game {
       new ExplorationSystem(ctx),
       new InteractionSystem(ctx),
       new FacilitySystem(ctx),
+      new DecorSystem(ctx),
       new CraftingSystem(ctx),
       new StorageSystem(ctx),
       new BossSystem(ctx),
@@ -187,7 +188,6 @@ export class Game {
     new QuestTracker(ctx, uiRoot);
     this.minimap = new Minimap(ctx, uiRoot);
     this.lootLog = new LootLog(ctx, uiRoot);
-    this.nearby = new NearbyMobs(ctx, this.hud.root);
     this.chat = new Chat(ctx, this.hud.root);
 
     // 연출·소리·설정 (게임 로직과 따로)
@@ -321,7 +321,6 @@ export class Game {
     this.raidInd.update();
     this.minimap.update(dt);
     this.lootLog.update(realDt);
-    this.nearby.update(dt);
     this.chat.update(dt);
     ctx.input.endFrame();
   }

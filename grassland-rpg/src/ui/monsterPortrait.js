@@ -65,3 +65,25 @@ export function monsterPortrait(def, id, known = true) {
   cache.set(key, url);
   return url;
 }
+
+// 꾸미기 소품 사진 (건설 창 카드). 한 번 찍으면 기억
+const decorCache = new Map();
+export function decorThumb(type, make) {
+  if (decorCache.has(type)) return decorCache.get(type);
+  const { group } = make(type);
+  const g = new THREE.Group();
+  g.add(group);
+  g.rotation.y = -0.6;
+  const box = new THREE.Box3().setFromObject(g);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3()).length();
+  const url = snapshot(g, (camera) => {
+    camera.fov = 30;
+    camera.updateProjectionMatrix();
+    const dist = size / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 0.95;
+    camera.position.set(center.x, center.y + dist * 0.55, center.z + dist * 0.85);
+    camera.lookAt(center);
+  });
+  decorCache.set(type, url);
+  return url;
+}
