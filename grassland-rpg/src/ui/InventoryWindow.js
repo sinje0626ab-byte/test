@@ -57,7 +57,7 @@ export class InventoryWindow {
     ctx.bus.on('inventory:changed', ({ slots }) => this.render(slots));
     this.worn = {};
     this.wornPlus = {};
-    ctx.bus.on('equipment:changed', ({ slots, plus }) => { this.worn = slots; this.wornPlus = plus; });
+    ctx.bus.on('equipment:changed', ({ slots, plus, opts }) => { this.worn = slots; this.wornPlus = plus; this.wornOpts = opts ?? {}; });
     ctx.bus.on('gold:changed', ({ gold }) => { this.goldEl.textContent = gold.toLocaleString(); });
   }
 
@@ -79,7 +79,7 @@ export class InventoryWindow {
       const def = this.def(s.id);
       el.className = `slot filled${i === this.selected ? ' sel' : ''}`;
       el.style.setProperty('--grade', grades[def.grade]?.color ?? '#e8e8e8');
-      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}${s.fresh ? '<i class="new-dot"></i>' : ''}`;
+      el.innerHTML = `${itemIcon(def)}${s.count > 1 ? `<b class="count">${s.count}</b>` : ''}${s.plus ? `<b class="plus-badge">+${s.plus}</b>` : ''}${s.opts?.length ? `<i class="opt-dots">${'◆'.repeat(s.opts.length)}</i>` : ''}${s.fresh ? '<i class="new-dot"></i>' : ''}`;
     });
   }
 
@@ -93,9 +93,9 @@ export class InventoryWindow {
     if (def.category === 'equipment') {
       const slot = def.equipSlot === 'accessory' ? 'accessory1' : def.equipSlot;
       const cur = this.worn[slot];
-      compare = compareLines(this.ctx.data, def, s.plus ?? 0, cur && this.def(cur), this.wornPlus[slot] ?? 0);
+      compare = compareLines(this.ctx.data, def, s.plus ?? 0, cur && this.def(cur), this.wornPlus[slot] ?? 0, s.opts, this.wornOpts?.[slot]);
     }
-    return itemTooltip(this.ctx.data, s.id, { count: s.count, hint, plus: s.plus ?? 0, compare });
+    return itemTooltip(this.ctx.data, s.id, { count: s.count, hint, plus: s.plus ?? 0, opts: s.opts, compare });
   }
 
   slotIndexAt(x, y) {

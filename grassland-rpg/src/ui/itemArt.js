@@ -621,6 +621,22 @@ function scroll(b) {
   return s;
 }
 
+// 보물상자 (나무·은·황금): 둥근 뚜껑 + 테 두 줄 + 자물쇠 + 반짝
+function chest(body, band, shine) {
+  return (b) => {
+    let s = shadow(42, 16);
+    s += P('M8 22h32v17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2z', b.f(body));
+    s += P('M8 22c0-8 6-12 16-12s16 4 16 12z', b.f(dark(body, -0.06)));
+    for (const x of [13, 31]) s += P(`M${x} 11.5v29.5h4V10.6z`, b.f(band));
+    s += P('M8 22h32v3H8z', b.f(dark(band, 0.12)));
+    s += P('M21 23h6v8h-6z', b.f(M.gold));
+    s += circ(24, 27, 1.2, INK);
+    s += hl('M12 17c3-3 7-4 11-4', 0.6);
+    if (shine) for (const [x, y, r] of [[40, 8, 2.4], [7, 12, 1.6]]) s += P(`M${x} ${y - r * 1.8}l${r * 0.5} ${r * 1.3} ${r * 1.3} ${r * 0.5}-${r * 1.3} ${r * 0.5}-${r * 0.5} ${r * 1.3}-${r * 0.5}-${r * 1.3}-${r * 1.3}-${r * 0.5} ${r * 1.3}-${r * 0.5}z`, shine, 'stroke="none"');
+    return s;
+  };
+}
+
 function coins(b) {
   let s = shadow(42, 13);
   for (const [x, y] of [[18, 34], [30, 34], [24, 28], [24, 22]]) {
@@ -725,6 +741,9 @@ const ART = {
   fire_tonic: tonic,
   cactus_juice: juiceGlass,
   return_scroll: scroll,
+  chest_wood: chest(M.wood, M.iron),
+  chest_silver: chest(M.darkwood, M.steel, '#e8f4ff'),
+  chest_gold: chest(M.red, M.gold, '#fff2a0'),
   forget_potion: (b) => flask(b, M.violet, { swirl: true, glow: '#d8c8ff', ribbon: '#5a4a8a' }),
 };
 

@@ -157,6 +157,8 @@ src/
     NightLordSystem.js # 최종 보스 밤의 군주 등장·파도 패턴·해돋이
     WeatherSystem.js   # 하루 단위 날씨, 장식 생물
     TombstoneSystem.js # 쓰러진 자리 묘비 (잃은 골드 절반)
+    ChestSystem.js     # 들판 보물상자 (아침마다 지역별 배치·E로 열기·미믹)·상자 아이템 열기
+    MissionSystem.js   # 매일·주간 임무와 출석 도장 (실제 날짜 기준)
     StructureHpSystem.js # 건물 최대 체력 × 진행도 (체력 비율 유지)
     SaveSystem.js
   ui/
@@ -185,6 +187,7 @@ src/
     QuestTracker.js    # 현재 목표 한 줄
     BestiaryWindow.js  # 몬스터 도감
     BountyWindow.js    # 현상금 게시판
+    MissionWindow.js   # 임무·출석 창 (J) + HUD 「임무」 알약
     EndingScreen.js    # 엔딩 크레딧·카메라 비행
     Minimap.js         # 둥근 미니맵 (골드 아래)
     LootLog.js         # 획득 로그 (왼쪽 아래)
@@ -214,6 +217,7 @@ src/
     wallRing.js        # 성벽 원형 자리 (순서·입구·격자 칸)
     navigator.js       # 아군(용병·주민) 길 찾기: 직진 / 격자 A* 우회 / 막힘 감지
     enhance.js         # 장비 강화 능력치·비용
+    affix.js           # 장비 랜덤 옵션 굴리기·재련·능력치 합
   data/
     config.json        # 월드·카메라·스포너·전투 공통 수치
     player.json        # 플레이어 기본 능력치
@@ -474,6 +478,25 @@ src/
 - 한 칸에 겹칠 수 있는 최대 수량은 아이템의 `maxStack` (없으면 `inventory.defaultMaxStack`)
 - 골드는 가방 칸을 차지하지 않는다 (EconomySystem이 따로 관리)
 
+### 4-15. 다시 하고 싶게 (매일 임무·출석 · 랜덤 옵션 · 보물상자)
+- **장비 랜덤 옵션**(`utils/affix.js`, `config.affix`): 장비가 가방에 처음 들어올 때(`InventorySystem.add`, 옵션이 정해지지 않은 장비만) 한 개씩 굴린다. 칸·장착 슬롯에 `opts: [[능력치, 값, 품질 0~1], …]` (`plus` 처럼 가방·장착·창고·택배·판매 나머지로 따라다닌다, `extraOf`). 옵션 붙은 장비는 겹치지 않는다
+  - 줄 수: 등급별 `lines`(일반 0~1·고급 1·희귀 1~2·영웅 2·전설 3) + `luckyLine`(6%) 한 줄 더, 상자 장비는 `extraLines`. 최대 4줄
+  - 능력치 표 `stats`: 부위(weapon·armor·accessory)별로 고를 수 있는 것과 값 범위, 지역 단계(`tierByPool` 초원1~설원4, 풀 없는 장비는 `tierByGrade`)에 `scale` 만큼 커진다. 같은 능력치는 한 번만. 품질 `goodRoll`(0.85) 이상은 ★ (주황)
+  - 능력치 합: 기본(강화 반영) + 옵션(강화와 무관) → `EquipmentSystem.changed`. 툴팁은 기본 줄 아래 ◆ 하늘색 줄(`optLines`), 비교도 옵션 포함. 가방 칸 오른쪽 위 ◆ 개수
+  - **재련**(대장간 창 「재련」 탭, `forge:reroll`): 골드 + 철광석(지역 단계별 `reroll`), 줄 수는 그대로(없으면 1줄) 능력치·값을 다시
+  - 예전 장비(저장에 opts 없음)는 불러올 때 `[]` (옵션 없음, 재련으로 1줄 생김)
+- **보물상자**(`systems/ChestSystem.js`, `config.chests`, `ctx.chests`): 아침마다(`time:day`) 지역마다 `perRegion` 개를 기지 영역·연못·막힌 곳을 피해 서로 20m 넘게 떨어뜨려 놓는다(종류 weights 나무 75%·은 21%·황금 4%). 위에 반짝 별이 떠 있고 미니맵에 점. 가까이서 E(`InteractionSystem`) → 뚜껑이 열리고 내용물이 튀어나온다(`loot:spawn`, 고리·조각 연출, 소리 rare+coin). 연 상자는 그날 내내 열린 채
+  - 내용물(`kinds`): 골드(지역 단계 배수) + 그 지역 재료 몇 가지 + 장비(나무 40%, 은·황금 확정, 황금은 2개, 등급 확률 `gear`, 은·황금은 옵션 한 줄 더) + 소모품 + 황금은 수정
+  - **미믹**(`mimicChance` 12%): 열면 상자가 사라지고 미믹(`monsters.json` mimic: 벌린 뚜껑·이빨·혀·빛나는 눈, 돌진형, 도감 제외)이 튀어나온다. 잡으면 은 상자 몫을 토한다. 가만히 있을 때 뚜껑이 가끔 들썩인다(눈치채기)
+  - 상자 아이템 `chest_wood`·`chest_silver`·`chest_gold`(소모품 `use.chest`): 쓰면 그 자리에서 지금 지역 기준으로 열린다. 임무·출석 보상
+  - 저장 `chests: { day, list: [{ x, z, type, opened, mimic }] }` (같은 날이면 그대로, 날이 바뀌었으면 새로)
+- **매일·주간 임무와 출석**(`systems/MissionSystem.js`, `config.missions`, 창 `ui/MissionWindow.js` J): 날짜는 기기의 실제 날짜. 하루가 바뀌면 매일 임무 3개(날짜로 시드, 같은 날이면 같은 임무), 월요일마다 주간 임무 3개. 20초마다 날짜 확인(켜 둔 채 자정이 지나도 바뀜)
+  - 임무 종류: 처치 kill · 정예 elite · 보스 boss · 채집 gather(`gather:done`) · 상자 chest(`chest:opened`, 미믹 처치 포함) · 습격 막기 raid(`raid:result` cleared) · 의뢰 bounty(`bounty:claimed`) · 골드 벌기 gold(`gold:changed` 증가, 임무 보상 골드는 빼고) · 제작 craft(`craft:done`) · 대장간 forge(`forge:enhanced`, 재련 포함) · 소모품 consume(`item:used`)
+  - 보상: 매일 임무마다 골드(40 + 레벨 × 18) + 나무 상자, 셋 다 받으면 은 상자 / 주간 임무마다 골드(150 + 레벨 × 60) + 은 상자, 셋 다 받으면 황금 상자. 아이템은 가방에(자리가 없으면 발밑)
+  - 출석 도장: 하루 한 번 「오늘 도장 찍기」 → 7칸 보상(골드 100 · 나무 상자 · 큰 물약 3 · 은 상자 · 철광석 10 · 골드 500 · 황금 상자), 7일째 다음은 다시 1칸(빠진 날이 있어도 끊기지 않음). 도장은 빨간 원 ✓ 이 통 찍힌다
+  - HUD: 퀘스트 한 줄 아래 「📋 임무 n/3」 알약(받을 보상이 있으면 빨간 점·통통), 누르면 창. 터치 메뉴 「임무」, PC J. 이어하기로 들어왔을 때 오늘 도장을 안 찍었으면 창이 저절로 열린다
+  - 저장 `missions: { date, daily, dailyBonus, week, weekly, weeklyBonus, att: { count, last } }` (세이브 슬롯마다 따로)
+
 ### 4-11. 저장
 - localStorage 한 키에 JSON 하나 (`config.json`의 `save.key`)
 - 자동 저장: 일정 간격(`save.autosaveInterval`초) + 탭을 숨기거나 닫을 때
@@ -511,6 +534,7 @@ src/
 - v6 → v7: `bosses` 추가 (빈 값 = 모든 보스 살아 있음)
 - v7 → v8: `gather` 추가 (빈 값 = 모든 노드 살아 있음)
 - v8 → v9: `skills.slots` 추가 (액티브 스킬 Q·R, 빈 슬롯)
+- v12 → v13: `chests`·`missions`(없으면 그날 새로), 장비 칸 `opts`(없으면 불러올 때 [])
 - v11 → v12: `weather`(없으면 그날 새로), `tomb`(없음), `inventory.seen`(없으면 지금 가방 아이템)
 - v10 → v11: `player.appearance`(없으면 기본값), `npcs`·`quests`·`bestiary`·`bounties`·`nightLord` 추가 (빈 값 = 처음부터, 퀘스트는 이룬 것 건너뛰기)
 - v9 → v10: 장착 슬롯 id 문자열 → `{ id, plus: 0 }`, `walls` 추가 (빈 값). 부속 건물에 텃밭 작물 `crop` { seed, day } (없으면 빈 텃밭)

@@ -3,7 +3,7 @@
 import { PAINTED } from './painted.js';
 
 const MENU = [
-  ['KeyI', '가방'], ['KeyC', '캐릭터'], ['KeyK', '스킬'], ['KeyB', '건설'], ['KeyM', '지도'],
+  ['KeyI', '가방'], ['KeyC', '캐릭터'], ['KeyK', '스킬'], ['KeyB', '건설'], ['KeyM', '지도'], ['KeyJ', '임무'],
 ];
 
 export class TouchControls {

@@ -386,4 +386,33 @@ function snowman(def) {
   return k;
 }
 
-export const SHAPES = { slime, mushroom, cactus, golem, bee, rabbit, puff, wolf, stump, scorpion, mole, tumble, wisp, yeti, snowman };
+// ── 미믹: 보물상자인 척하던 몬스터 (ChestSystem). 벌린 뚜껑 + 이빨 + 혀 + 빛나는 눈 ──
+function mimic(def) {
+  const k = kit(def);
+  const { add, mat, std, basic } = k;
+  const band = std('#e0b34a', { metalness: 0.5, roughness: 0.35 });
+  const dark = std('#5a3520', { roughness: 0.9 });
+  const tooth = std('#fff6e0', { roughness: 0.5 });
+  const tongue = std('#d9506a', { roughness: 0.6 });
+  add(new THREE.BoxGeometry(k.r * 1.8, k.r * 1.0, k.r * 1.3), mat, 0, 0.55, 0);
+  add(new THREE.BoxGeometry(k.r * 1.62, k.r * 0.1, k.r * 1.12), dark, 0, 1.06, 0);
+  for (const x of [-0.6, 0.6]) add(new THREE.BoxGeometry(k.r * 0.16, k.r * 1.04, k.r * 1.34), band, x, 0.55, 0);
+  // 뚜껑: 뒤쪽 경첩에서 벌어진다
+  const lid = new THREE.Group();
+  lid.position.set(0, 1.05 * k.r, -0.65 * k.r);
+  lid.rotation.x = -0.75;
+  body_add(lid, add(new THREE.CylinderGeometry(k.r * 0.65, k.r * 0.65, k.r * 1.8, 10, 1, false, 0, Math.PI), mat, 0, 0, 0.65));
+  lid.children[0].rotation.z = Math.PI / 2;
+  for (const x of [-0.6, 0.6]) body_add(lid, add(new THREE.CylinderGeometry(k.r * 0.68, k.r * 0.68, k.r * 0.16, 10, 1, false, 0, Math.PI), band, x, 0, 0.65)).rotation.z = Math.PI / 2;
+  for (let i = 0; i < 6; i++) body_add(lid, add(cone(k, 0.08, 0.26, 4), tooth, -0.62 + i * 0.25, -0.12, 1.2)).rotation.x = Math.PI;
+  k.body.add(lid);
+  for (let i = 0; i < 6; i++) add(cone(k, 0.08, 0.26, 4), tooth, -0.62 + i * 0.25, 1.18, 0.6);
+  add(sphere(k, 0.35, 8, 5), tongue, 0, 1.1, 0.45, [1, 0.3, 1.4]);
+  const glow = basic('#ffe066');
+  for (const x of [-0.35, 0.35]) add(sphere(k, 0.1, 6, 4), glow, x, 1.35, 0.15);
+  add(new THREE.BoxGeometry(k.r * 0.22, k.r * 0.28, k.r * 0.06), band, 0, 0.75, 0.67);
+  return k;
+}
+const body_add = (parent, mesh) => { parent.add(mesh); return mesh; };
+
+export const SHAPES = { mimic, slime, mushroom, cactus, golem, bee, rabbit, puff, wolf, stump, scorpion, mole, tumble, wisp, yeti, snowman };

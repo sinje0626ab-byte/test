@@ -11,7 +11,7 @@ export class LootSystem {
     ctx.drops = this.drops; // 용병 채집가가 바닥 골드를 찾는다
     this.fullNotice = 0;
     ctx.bus.on('monster:killed', (e) => this.onKilled(e));
-    ctx.bus.on('loot:spawn', ({ item, count, position }) => this.spawn(item, count, position));
+    ctx.bus.on('loot:spawn', ({ item, count, position, extraLines }) => this.spawn(item, count, position, extraLines));
     ctx.bus.on('loot:table', ({ drops, position }) => this.roll(drops, position));
   }
 
@@ -63,13 +63,17 @@ export class LootSystem {
     }
   }
 
-  spawn(itemId, count, position) {
+  // extraLines: 장비 옵션 한 줄 더 (보물상자)
+  spawn(itemId, count, position, extraLines = 0) {
     const a = rand.range(0, Math.PI * 2);
     const s = rand.range(0.4, 1) * this.cfg.scatter;
     const vel = new THREE.Vector3(Math.cos(a) * s, rand.range(this.cfg.popMin, this.cfg.popMax), Math.sin(a) * s);
     const start = position.clone();
     start.y = 0.4;
-    this.drops.push(new Drop(this.ctx, itemId, count, start, vel));
+    const d = new Drop(this.ctx, itemId, count, start, vel);
+    d.extraLines = extraLines;
+    this.drops.push(d);
+    return d;
   }
 
   onBagFull(drop) {
@@ -92,7 +96,7 @@ export class LootSystem {
         const dist = Math.hypot(player.position.x - d.position.x, player.position.z - d.position.z);
         if (dist < p.pickupRadius) {
           // 받은 쪽이 taken에 받은 개수를 더한다. 다 못 받으면 나머지는 바닥에 남는다.
-          const e = { item: d.itemId, count: d.count, taken: 0 };
+          const e = { item: d.itemId, count: d.count, taken: 0, extraLines: d.extraLines };
           bus.emit('loot:picked', e);
           d.count -= e.taken;
           if (d.count <= 0) d.done = true;

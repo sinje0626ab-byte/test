@@ -55,18 +55,19 @@ export class CharacterWindow {
         return;
       }
       this.lastTap = { slot, time: now };
-      tooltip.pin(itemTooltip(ctx.data, id, { hint: '두 번 탭: 해제', plus: this.plus?.[slot] ?? 0 }), cell);
+      tooltip.pin(itemTooltip(ctx.data, id, { hint: '두 번 탭: 해제', plus: this.plus?.[slot] ?? 0, opts: this.opts?.[slot] }), cell);
     });
     this.grid.addEventListener('pointermove', (e) => {
       if (e.pointerType === 'touch') return;
       const slot = e.target.closest('[data-eslot]')?.dataset.eslot;
       const id = slot && this.equip[slot];
-      if (id) tooltip.show(itemTooltip(ctx.data, id, { hint: '우클릭: 해제', plus: this.plus?.[slot] ?? 0 }), e.clientX, e.clientY);
+      if (id) tooltip.show(itemTooltip(ctx.data, id, { hint: '우클릭: 해제', plus: this.plus?.[slot] ?? 0, opts: this.opts?.[slot] }), e.clientX, e.clientY);
       else tooltip.hide();
     });
     this.grid.addEventListener('pointerleave', (e) => tooltip.hover(e));
 
-    ctx.bus.on('equipment:changed', ({ slots, plus, sets }) => {
+    ctx.bus.on('equipment:changed', ({ slots, plus, opts, sets }) => {
+      this.opts = opts ?? {};
       this.equip = { ...slots };
       this.plus = { ...plus };
       this.renderEquip();

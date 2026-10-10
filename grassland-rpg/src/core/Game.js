@@ -47,6 +47,9 @@ import { BountyWindow } from '../ui/BountyWindow.js';
 import { NightLordSystem } from '../systems/NightLordSystem.js';
 import { WeatherSystem } from '../systems/WeatherSystem.js';
 import { TombstoneSystem } from '../systems/TombstoneSystem.js';
+import { MissionWindow } from '../ui/MissionWindow.js';
+import { ChestSystem } from '../systems/ChestSystem.js';
+import { MissionSystem } from '../systems/MissionSystem.js';
 import { EndingScreen } from '../ui/EndingScreen.js';
 import { Minimap } from '../ui/Minimap.js';
 import { LootLog } from '../ui/LootLog.js';
@@ -139,6 +142,8 @@ export class Game {
       new NightLordSystem(ctx),
       new WeatherSystem(ctx),
       new TombstoneSystem(ctx),
+      new ChestSystem(ctx),
+      new MissionSystem(ctx),
       new ExplorationSystem(ctx),
       new InteractionSystem(ctx),
       new FacilitySystem(ctx),
@@ -172,6 +177,7 @@ export class Game {
     new CourierWindow(ctx, this.ui);
     new BestiaryWindow(ctx, this.ui);
     new BountyWindow(ctx, this.ui);
+    new MissionWindow(ctx, this.ui);
     this.ending = new EndingScreen(ctx, this);
     this.touch = new TouchControls(ctx, uiRoot);
     this.skillBar = new SkillBar(ctx, this.hud.actionBar);

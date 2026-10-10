@@ -1,4 +1,5 @@
 import { enhancedBonus } from '../utils/enhance.js';
+import { optsBonus, goodLine } from '../utils/affix.js';
 import { pick } from '../utils/josa.js';
 
 // 능력치 이름·값 표기와 아이템 툴팁 내용
@@ -17,10 +18,22 @@ export function bonusLines(items, bonus) {
 const LOWER_BETTER = ['damageTaken', 'rollStaminaPct']; // 낮을수록 좋은 능력치
 
 // 장비 비교: 지금 낀 장비와 능력치 차이 (초록 ▲ / 빨강 ▼)
-export function compareLines(data, def, plus, cur, curPlus) {
+const sum = (...list) => {
+  const out = {};
+  for (const b of list) for (const [k, v] of Object.entries(b ?? {})) out[k] = (out[k] ?? 0) + v;
+  return out;
+};
+
+// 랜덤 옵션 줄 (하늘색, 좋은 값은 ★)
+export function optLines(data, opts) {
+  if (!opts?.length) return '';
+  return opts.map((o) => `<div class="tt-opt${goodLine(data, o) ? ' good' : ''}">◆ ${data.items.statLabels[o[0]] ?? o[0]} ${formatStat(data.items, o[0], o[1])}${goodLine(data, o) ? ' ★' : ''}</div>`).join('');
+}
+
+export function compareLines(data, def, plus, cur, curPlus, opts, curOpts) {
   const items = data.items;
-  const a = enhancedBonus(data, def.bonus, plus);
-  const b = cur ? enhancedBonus(data, cur.bonus, curPlus) : {};
+  const a = sum(enhancedBonus(data, def.bonus, plus), optsBonus(opts));
+  const b = cur ? sum(enhancedBonus(data, cur.bonus, curPlus), optsBonus(curOpts)) : {};
   const keys = [...new Set([...Object.keys(a), ...Object.keys(b)])];
   const rows = keys.map((k) => {
     const d = (a[k] ?? 0) - (b[k] ?? 0);
@@ -31,7 +44,7 @@ export function compareLines(data, def, plus, cur, curPlus) {
   return `<div class="tt-cmp-head">${cur ? `${cur.name}${curPlus ? ` +${curPlus}` : ''}${pick(curPlus ? curPlus : cur.name, '과/와')} 비교` : '지금 빈 칸'}</div>${rows || '<div class="tt-cmp">차이 없음</div>'}`;
 }
 
-export function itemTooltip(data, id, { count, hint, plus = 0, compare } = {}) {
+export function itemTooltip(data, id, { count, hint, plus = 0, opts, compare } = {}) {
   const { grades, categories } = data.items;
   const def = data.items.items[id];
   const grade = grades[def.grade];
@@ -44,6 +57,7 @@ export function itemTooltip(data, id, { count, hint, plus = 0, compare } = {}) {
     <div class="tt-name" style="color:${grade?.color ?? '#fff'}">${def.name}${plus ? ` <b class="tt-plus">+${plus}</b>` : ''}</div>
     <div class="tt-meta">${grade ? `${grade.name} · ` : ''}${categories[def.category] ?? ''}${slotName}</div>
     ${bonusLines(data.items, enhancedBonus(data, def.bonus, plus))}
+    ${optLines(data, opts)}
     ${plus ? `<div class="tt-meta">강화 +${plus} (기본 능력치 +${Math.round(plus * data.config.enhance.statPerPlus * 100)}%)</div>` : ''}
     ${set ? `<div class="tt-meta">${set.name} (3부위: ${Object.entries(set.bonus).map(([k, v]) => `${data.items.statLabels[k]} ${formatStat(data.items, k, v)}`).join(', ')})</div>` : ''}
     ${def.description ? `<p class="tt-desc">${def.description}</p>` : ''}
