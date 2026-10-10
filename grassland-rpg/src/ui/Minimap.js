@@ -1,9 +1,11 @@
+import { marker, preloadMarkers } from './mapIcons.js';
 // 미니맵: HUD 오른쪽 위(골드 아래) 둥근 지도. 지도 창과 같은 탐험 칸·지역 색을 쓰고,
 // 기지·보스 둥지·주민·퀘스트 목표를 점으로. 플레이어는 가운데 (위 = 북쪽).
 export class Minimap {
   constructor(ctx, root) {
     this.ctx = ctx;
     this.cfg = ctx.data.config.minimap;
+    preloadMarkers();
     this.explored = null;
     this.lairs = [];
     this.target = null;
@@ -89,6 +91,7 @@ export class Minimap {
       g.beginPath();
       g.arc(sx, sy, base.areaRadius * k, 0, Math.PI * 2);
       g.stroke();
+      if (marker(g, 'map_base', sx, sy, 18, { pin: true })) continue;
       g.fillStyle = '#e9835b';
       g.beginPath();
       g.moveTo(sx, sy - 5); g.lineTo(sx + 4.5, sy + 3.5); g.lineTo(sx - 4.5, sy + 3.5);
@@ -101,12 +104,20 @@ export class Minimap {
       const c = Math.floor((l.lair[0] - b.minX) / cs);
       const r = Math.floor((l.lair[1] - b.minZ) / cs);
       if (!ex || !ex.cells[r * ex.cols + c]) continue;
-      dot(l.lair[0], l.lair[1], l.defeated ? '#9a958c' : '#c9584e', 4, '#fff');
+      const [lx, ly] = at(l.lair[0], l.lair[1]);
+      if (!marker(g, 'map_boss', lx, ly, 18, { pin: true, gray: l.defeated, alpha: l.defeated ? 0.7 : 1 })) dot(l.lair[0], l.lair[1], l.defeated ? '#9a958c' : '#c9584e', 4, '#fff');
     }
-    for (const n of npcs ?? []) dot(n.position.x, n.position.z, n.def.color, 2.6, '#fff4d6');
+    for (const n of npcs ?? []) { const [nx, ny] = at(n.position.x, n.position.z); if (!marker(g, 'map_npc', nx, ny, 13, { pin: true })) dot(n.position.x, n.position.z, n.def.color, 2.6, '#fff4d6'); }
     // 보물상자 (안 연 것)
-    for (const c of this.ctx.chests ?? []) if (!c.opened) dot(c.position.x, c.position.z, c.type === 'gold' ? '#ffd166' : c.type === 'silver' ? '#dfeaf2' : '#c8955a', 2.4, '#6b4a2a');
-    if (this.ctx.tomb) dot(this.ctx.tomb.position.x, this.ctx.tomb.position.z, '#9a958c', 3.5, '#ffcf5c');
+    for (const c of this.ctx.chests ?? []) {
+      if (c.opened) continue;
+      const [qx, qy] = at(c.position.x, c.position.z);
+      if (!marker(g, 'map_chest', qx, qy, 13, { pin: true })) dot(c.position.x, c.position.z, c.type === 'gold' ? '#ffd166' : c.type === 'silver' ? '#dfeaf2' : '#c8955a', 2.4, '#6b4a2a');
+    }
+    if (this.ctx.tomb) {
+      const [tx, ty] = at(this.ctx.tomb.position.x, this.ctx.tomb.position.z);
+      if (!marker(g, 'map_tomb', tx, ty, 15, { pin: true })) dot(this.ctx.tomb.position.x, this.ctx.tomb.position.z, '#9a958c', 3.5, '#ffcf5c');
+    }
     g.restore();
     // 퀘스트 목표: 안에 있으면 별, 밖이면 가장자리 화살표
     if (this.target) {
@@ -117,7 +128,9 @@ export class Minimap {
       g.fillStyle = '#ffcf5c';
       g.strokeStyle = '#7a5412';
       g.lineWidth = 1.2;
-      if (d < cx - 6) {
+      if (d < cx - 6 && marker(g, 'map_quest', tx, ty, 18, { pin: true })) {
+        // 그림 핀
+      } else if (d < cx - 6) {
         g.beginPath();
         g.arc(tx, ty, 4, 0, Math.PI * 2);
         g.fill();
@@ -137,6 +150,7 @@ export class Minimap {
       }
     }
     // 플레이어
+    if (marker(g, 'map_player', cx, cx, 15, { rot: Math.atan2(player.facing.z, player.facing.x) + Math.PI / 2 })) return;
     g.fillStyle = '#e0645a';
     g.strokeStyle = '#fff';
     g.lineWidth = 1.5;

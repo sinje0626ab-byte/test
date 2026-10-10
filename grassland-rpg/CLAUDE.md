@@ -455,6 +455,8 @@ src/
     - 메뉴 ☰ `ic_menu` · 닫기 ✕ `ic_close` · 퀘스트 📜 `ic_quest` · 스킬 포인트 ✦ `ic_skillpoint` · 위험도 ★☆ `star_full/empty` · 알림 i/✦/! `note_info/item/warn`(골드는 `ic_coin`, `notify({ icon })` 이면 그 그림: 상자 `chest_open`·미믹 `ic_mimic`) · 대화 ▼ `ic_next` · 습격 방향 ▲ `ic_pointer` · 타이틀 메뉴 🌱 `ic_sprout` · 모든 `.coin` → `ic_coin`
     - 장비 옵션 ◆ `opt_gem` · ★ `opt_star` · 비교 ▲▼ `ic_up/down` · 대장간 탭 `ic_enhance`·`ic_reroll`
     - 임무 창: 📋 `ic_mission` · ✨ `ic_bonus` · 받음 `ic_claimed` · 출석 칸 `stamp_card(_today)` · 도장 `stamp_seal` · 남은 시간 `ic_hourglass` · 주간 `ic_calendar`. 상자 아이템 그림 `art/items/chest_*`
+    - 지도·미니맵 표시(`ui/mapIcons.js` `marker()`, 캔버스에 그린다): 기지 `map_base` · 보스 둥지 `map_boss`(처치하면 회색) · 주민 `map_npc` · 묘비 `map_tomb` · 보물상자 `map_chest` · 플레이어 `map_player`(바라보는 쪽으로 돈다) · 퀘스트 목표 `map_quest`. 핀 모양은 아래 끝이 그 자리
+    - 시계: 낮 `clock_sun` · 밤 `clock_moon` · 붉은 달 `clock_bloodmoon`(`.clock.blood`) 그림 한 장 + 날씨 작은 그림 `weather_rain/sand/snow`(`weather:changed`). 새 게임 환영 카드 `welcome_wave/tent/moon`
     - 버프 줄 옆 상태 줄(`HUD.updateFx`): 플레이어 상태 이상 `status_poison/slow/freeze`(`ctx.statusOf`) · 응급 처치 `buff_first_aid`(`ctx.firstAidUntil`) · 포탑 과부하 `buff_overclock`(`ctx.overclockUntil`) · 모닥불 온기 `buff_regen`(`player:aura`). 몬스터 머리 위 상태 아이콘도 그림이 있으면 스프라이트(`status_*`)
   - UI 그림 자르기: `ART_KEEP=<긴 변 px> node tools/art-import.mjs <그림> ui <id...>` — 정사각 칸에 넣지 않고 원래 비율로 (판·버튼·리본), 그다음 sharp `trim()` 으로 여백을 바짝 자른다
 - **HUD 마감**(`ui/polish.css`): 막대·HUD 패널·퀵슬롯

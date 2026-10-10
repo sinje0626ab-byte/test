@@ -52,3 +52,23 @@ body.ui-art .m-stamp.today { background-image: var(--ui-stamp-card-today); backg
 body.ui-art .m-stamp.done { background-image: var(--ui-stamp-card); }
 .m-seal-img { position: absolute; left: 50%; top: 52%; width: 46px; height: 46px; translate: -50% -50%; rotate: -12deg; opacity: 0.92; }
 .m-stamp.pop .m-seal-img { animation: mseal 0.5s cubic-bezier(.3, 1.6, .5, 1); }
+
+/* 지도 표시는 캔버스에 그린다 (ui/mapIcons.js) */
+
+/* 시계: 낮 해 / 밤 달 / 붉은 달 그림 한 장 + 날씨 작은 그림 */
+body.ui-art .clock .dial { background: var(--ui-clock-sun) center / cover no-repeat !important; overflow: visible; }
+body.ui-art .clock.night .dial { background: var(--ui-clock-moon) center / cover no-repeat !important; }
+body.ui-art .clock.night.blood .dial { background: var(--ui-clock-bloodmoon) center / cover no-repeat !important; }
+body.ui-art .dial-wheel, body.ui-art .dial::after { display: none; }
+.wx { display: none; }
+body.ui-art .wx:not([hidden]) { display: block; flex: none; width: 22px; height: 22px; margin-left: -12px; margin-top: 14px; background: center / contain no-repeat; position: relative; z-index: 1; }
+body.ui-art .wx[data-wx="rain"] { background-image: var(--ui-weather-rain); }
+body.ui-art .wx[data-wx="sandstorm"] { background-image: var(--ui-weather-sand); }
+body.ui-art .wx[data-wx="snow"] { background-image: var(--ui-weather-snow); }
+
+/* 새 게임 환영 카드 그림 */
+body.ui-art .w-icon { background: center / cover no-repeat !important; box-shadow: 0 3px 0 rgba(150, 110, 60, 0.25); }
+body.ui-art .w-icon::before, body.ui-art .w-icon::after { content: none !important; }
+body.ui-art .w-wave { background-image: var(--ui-welcome-wave) !important; }
+body.ui-art .w-tent { background-image: var(--ui-welcome-tent) !important; }
+body.ui-art .w-moon { background-image: var(--ui-welcome-moon) !important; }
