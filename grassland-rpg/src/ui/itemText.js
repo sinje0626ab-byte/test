@@ -1,5 +1,6 @@
 import { enhancedBonus } from '../utils/enhance.js';
 import { optsBonus, goodLine } from '../utils/affix.js';
+import { uiImg } from './painted.js';
 import { pick } from '../utils/josa.js';
 
 // 능력치 이름·값 표기와 아이템 툴팁 내용
@@ -27,7 +28,7 @@ const sum = (...list) => {
 // 랜덤 옵션 줄 (하늘색, 좋은 값은 ★)
 export function optLines(data, opts) {
   if (!opts?.length) return '';
-  return opts.map((o) => `<div class="tt-opt${goodLine(data, o) ? ' good' : ''}">◆ ${data.items.statLabels[o[0]] ?? o[0]} ${formatStat(data.items, o[0], o[1])}${goodLine(data, o) ? ' ★' : ''}</div>`).join('');
+  return opts.map((o) => `<div class="tt-opt${goodLine(data, o) ? ' good' : ''}">${uiImg('opt_gem', '◆', 'opt')} ${data.items.statLabels[o[0]] ?? o[0]} ${formatStat(data.items, o[0], o[1])}${goodLine(data, o) ? ` ${uiImg('opt_star', '★', 'opt')}` : ''}</div>`).join('');
 }
 
 export function compareLines(data, def, plus, cur, curPlus, opts, curOpts) {
@@ -39,7 +40,7 @@ export function compareLines(data, def, plus, cur, curPlus, opts, curOpts) {
     const d = (a[k] ?? 0) - (b[k] ?? 0);
     if (Math.abs(d) < 1e-6) return '';
     const up = LOWER_BETTER.includes(k) ? d < 0 : d > 0;
-    return `<div class="tt-cmp ${up ? 'up' : 'down'}">${items.statLabels[k] ?? k} ${up ? '▲' : '▼'} ${formatStat(items, k, Math.abs(d), false)}</div>`;
+    return `<div class="tt-cmp ${up ? 'up' : 'down'}">${items.statLabels[k] ?? k} ${up ? uiImg('ic_up', '▲', 'cmp') : uiImg('ic_down', '▼', 'cmp')} ${formatStat(items, k, Math.abs(d), false)}</div>`;
   }).join('');
   return `<div class="tt-cmp-head">${cur ? `${cur.name}${curPlus ? ` +${curPlus}` : ''}${pick(curPlus ? curPlus : cur.name, '과/와')} 비교` : '지금 빈 칸'}</div>${rows || '<div class="tt-cmp">차이 없음</div>'}`;
 }

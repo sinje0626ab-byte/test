@@ -1,4 +1,5 @@
 import { itemIcon } from './icons.js';
+import { uiImg } from './painted.js';
 
 // 임무 창 (J, HUD 「임무」 알약): 출석 도장 7칸 + 매일 임무 3개 + 주간 임무 3개, 받을 보상이 있으면 알약에 빨간 점.
 // 이어하기로 들어왔을 때 오늘 도장을 아직 안 찍었으면 저절로 열린다.
@@ -24,7 +25,7 @@ export class MissionWindow {
     const pill = document.createElement('button');
     pill.type = 'button';
     pill.className = 'mission-pill';
-    pill.innerHTML = '<span>📋 임무</span><b class="m-count"></b><i class="m-dot" hidden></i>';
+    pill.innerHTML = `<span>${uiImg('ic_mission', '📋')} 임무</span><b class="m-count"></b><i class="m-dot" hidden></i>`;
     pill.addEventListener('click', () => ui.toggle('missions'));
     document.querySelector('.hud')?.appendChild(pill) ?? document.body.appendChild(pill);
     this.pill = pill;
@@ -72,7 +73,7 @@ export class MissionWindow {
         <div class="m-main"><span class="m-text">${m.text}</span>
           <div class="m-bar"><i style="width:${pct}%"></i><small>${m.progress}/${m.target}</small></div></div>
         <div class="m-rew">${this.rewardHtml(rewards[kind])}</div>
-        <button type="button" class="m-btn primary" data-m="claim:${kind}:${i}" ${ok && !m.claimed ? '' : 'disabled'}>${m.claimed ? '받음' : ok ? '받기' : '진행 중'}</button>
+        <button type="button" class="m-btn primary" data-m="claim:${kind}:${i}" ${ok && !m.claimed ? '' : 'disabled'}>${m.claimed ? `${uiImg('ic_claimed')}받음` : ok ? '받기' : '진행 중'}</button>
       </div>`;
     }).join('');
     const all = state[kind].length && state[kind].every((m) => m.claimed);
@@ -81,9 +82,9 @@ export class MissionWindow {
       <h3>${title} <small>${resetText}</small></h3>
       ${rows}
       <div class="m-row bonus ${got ? 'claimed' : all ? 'done' : ''}">
-        <div class="m-main"><span class="m-text">✨ 모두 완료 보너스</span></div>
+        <div class="m-main"><span class="m-text">${uiImg('ic_bonus', '✨')} 모두 완료 보너스</span></div>
         <div class="m-rew">${this.rewardHtml({ ...bonus, count: 1 })}</div>
-        <button type="button" class="m-btn primary" data-m="bonus:${kind}" ${all && !got ? '' : 'disabled'}>${got ? '받음' : '받기'}</button>
+        <button type="button" class="m-btn primary" data-m="bonus:${kind}" ${all && !got ? '' : 'disabled'}>${got ? `${uiImg('ic_claimed')}받음` : '받기'}</button>
       </div></section>`;
   }
 
@@ -99,7 +100,7 @@ export class MissionWindow {
       const done = i < cycleDone;
       const today = canAttend && i === stampedInCycle;
       return `<div class="m-stamp ${done ? 'done' : ''} ${today ? 'today' : ''} ${this.stamped === i + 1 ? 'pop' : ''}">
-        <small>${i + 1}일</small><div class="m-srew">${this.rewardHtml(r)}</div>${done ? '<i class="m-seal">✓</i>' : ''}</div>`;
+        <small>${i + 1}일</small><div class="m-srew">${this.rewardHtml(r)}</div>${done ? uiImg('stamp_seal', '<i class="m-seal">✓</i>', 'm-seal-img') : ''}</div>`;
     }).join('');
     const now = new Date();
     const mid = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -114,8 +115,8 @@ export class MissionWindow {
           <div class="m-stamps">${stamps}</div>
           <button type="button" class="m-attend primary" data-m="attend" ${canAttend ? '' : 'disabled'}>${canAttend ? '오늘 도장 찍기!' : '오늘 도장 완료 — 내일 또 만나요'}</button>
         </section>
-        ${this.list('daily', '매일 임무', `${hh}시간 ${mm}분 뒤 새 임무`)}
-        ${this.list('weekly', '주간 임무', `${wd}일 뒤 월요일에 새 임무`)}
+        ${this.list('daily', '매일 임무', `${uiImg('ic_hourglass')}${hh}시간 ${mm}분 뒤 새 임무`)}
+        ${this.list('weekly', '주간 임무', `${uiImg('ic_calendar')}${wd}일 뒤 월요일에 새 임무`)}
       </div>`;
   }
 }

@@ -1,3 +1,4 @@
+import { uiImg } from './painted.js';
 import * as THREE from 'three';
 
 const v = new THREE.Vector3();
@@ -34,7 +35,7 @@ export class RaidIndicator {
       if (this.arrows.has(r.base.id)) continue;
       const a = document.createElement('div');
       a.className = 'raid-arrow';
-      a.innerHTML = `<i>▲</i><span>${r.base.label}</span>`;
+      a.innerHTML = `<i>${uiImg('ic_pointer', '▲')}</i><span>${r.base.label}</span>`;
       this.arrowsEl.appendChild(a);
       this.arrows.set(r.base.id, a);
     }

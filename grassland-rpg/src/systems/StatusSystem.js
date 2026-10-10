@@ -1,7 +1,20 @@
 import * as THREE from 'three';
+import { PAINTED } from '../ui/painted.js';
 
 const ICON_COLORS = { poison: 0x7cd67a, slow: 0x8fd0ff, freeze: 0xd6f4ff };
 const ICE = new THREE.IcosahedronGeometry(1, 1);
+// 머리 위 상태 아이콘: 그린 그림(art/ui/status_*)이 있으면 늘 화면을 보는 스프라이트, 없으면 색 팔면체
+const TEX = {};
+const loader = new THREE.TextureLoader();
+function iconFor(type) {
+  const url = PAINTED.ui[`status_${type}`];
+  if (!url) return new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), new THREE.MeshBasicMaterial({ color: ICON_COLORS[type] }));
+  TEX[type] ??= Object.assign(loader.load(url), { colorSpace: THREE.SRGBColorSpace });
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX[type], transparent: true, depthWrite: false }));
+  s.scale.setScalar(0.42);
+  s.userData.sprite = true;
+  return s;
+}
 
 // 상태 이상: 독(초당 피해), 감속(이동 속도 배율), 빙결(이동·공격 정지). 같은 상태는 시간만 새로.
 // 몬스터(Phase 9)와 플레이어(Phase 10). 플레이어는 독 저항·감속 면역을 따진다.
@@ -14,6 +27,7 @@ export class StatusSystem {
     this.cfg = ctx.data.config.status;
     this.list = []; // { target, type, time, amount, icon, tick }
     ctx.bus.on('status:apply', (e) => this.apply(e));
+    ctx.statusOf = (target) => this.list.filter((x) => x.target === target); // HUD 상태 줄
   }
 
   apply({ target, type, duration, amount, maxStacks, freeze }) {
@@ -35,7 +49,7 @@ export class StatusSystem {
     }
     let st = this.list.find((x) => x.target === target && x.type === type);
     if (!st) {
-      const icon = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), new THREE.MeshBasicMaterial({ color: ICON_COLORS[type] }));
+      const icon = iconFor(type);
       target.mesh.add(icon);
       st = { target, type, icon, tick: 1 };
       this.list.push(st);
@@ -67,7 +81,7 @@ export class StatusSystem {
   layout(target) {
     const mine = this.list.filter((x) => x.target === target);
     const y = target === this.ctx.player ? this.cfg.playerIconHeight : target.radius * 2 + 0.7;
-    mine.forEach((st, i) => st.icon.position.set((i - (mine.length - 1) / 2) * 0.32, y, 0));
+    mine.forEach((st, i) => st.icon.position.set((i - (mine.length - 1) / 2) * 0.42, y, 0));
   }
 
   remove(st) {
@@ -86,7 +100,7 @@ export class StatusSystem {
       const t = st.target;
       st.time -= dt;
       if (!t.alive || st.time <= 0) { this.remove(st); continue; }
-      st.icon.rotation.y += dt * 3;
+      if (!st.icon.userData.sprite) st.icon.rotation.y += dt * 3;
       if (st.type === 'slow') t.speedMult = 1 - st.amount;
       if (st.type === 'poison') {
         st.tick -= dt;

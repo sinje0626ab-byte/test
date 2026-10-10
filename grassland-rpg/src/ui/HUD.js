@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { itemIcon } from './icons.js';
+import { uiImg, PAINTED } from './painted.js';
 import { playerPortrait } from './playerPortrait.js';
 
 const v = new THREE.Vector3();
@@ -30,10 +31,11 @@ export class HUD {
           <div class="bar st"><div class="fill" data-st></div></div>
           <div class="bar xp"><div class="fill" data-xp></div></div>
           <div class="buffs" data-buffs></div>
+          <div class="buffs fx" data-fx></div>
         </div>
       </div>
       <div class="hud-tr">
-        <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">☰</button><div class="clock" data-clock><i class="dial"><i class="dial-wheel" data-dial><i class="dial-sun"></i><i class="dial-moon"></i></i></i><b data-day>1일차</b><span data-until></span></div></div>
+        <div class="tr-row"><button type="button" class="menu-btn" data-menu aria-label="메뉴">${uiImg('ic_menu', '☰')}</button><div class="clock" data-clock><i class="dial"><i class="dial-wheel" data-dial><i class="dial-sun"></i><i class="dial-moon"></i></i></i><b data-day>1일차</b><span data-until></span></div></div>
         <div class="gold"><i class="coin"></i><b data-gold>0</b></div>
         <div class="saved" data-saved>저장됨</div>
       </div>
@@ -55,7 +57,7 @@ export class HUD {
       death: $('[data-death]'), vignette: $('[data-vignette]'), saved: $('[data-saved]'),
       clock: $('[data-clock]'), dial: $('[data-dial]'), day: $('[data-day]'), until: $('[data-until]'),
       banner: $('[data-banner]'), region: $('[data-region]'), levelup: $('[data-levelup]'), interact: $('[data-interact]'), quick: $('[data-quick]'),
-      buffs: $('[data-buffs]'), portrait: $('[data-portrait]'), hpGhost: $('[data-hp-ghost]'), boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
+      buffs: $('[data-buffs]'), fx: $('[data-fx]'), portrait: $('[data-portrait]'), hpGhost: $('[data-hp-ghost]'), boss: $('[data-boss]'), bossName: $('[data-boss-name]'), bossFill: $('[data-boss-fill]'), lv: $('[data-lv]'), sp: $('[data-sp]'),
     };
 
     this.actionBar = $('[data-actionbar]');
@@ -81,6 +83,7 @@ export class HUD {
       if (delta > 0) this.pulse(this.el.gold.parentElement);
     });
     bus.on('notify', (n) => this.notify(n));
+    bus.on('player:aura', ({ hpRegen }) => { this.aura = hpRegen; });
     bus.on('buffs:changed', ({ list }) => {
       this.el.buffs.innerHTML = list.map((b) => `<span class="buff" title="${b.name}">${b.item ? itemIcon(this.ctx.data.items.items[b.item]) : `<i style="--c:${b.color}"></i>`}${Math.ceil(b.time)}</span>`).join('');
     });
@@ -225,7 +228,7 @@ export class HUD {
     const diff = this.ctx.data.regions[id]?.difficulty ?? 1;
     const max = Math.max(4, ...Object.values(this.ctx.data.regions).map((r) => r.difficulty ?? 1));
     el.className = `region-banner${first ? ' first' : ''}`;
-    el.innerHTML = `<b>${name}</b><small>위험도 <i>${'★'.repeat(diff)}</i>${'☆'.repeat(Math.max(0, max - diff))}</small>`;
+    el.innerHTML = `<b>${name}</b><small>위험도 <i>${uiImg('star_full', '★', 'star').repeat(diff)}</i>${uiImg('star_empty', '☆', 'star').repeat(Math.max(0, max - diff))}</small>`;
     el.hidden = false;
     el.style.animation = 'none';
     void el.offsetWidth;
@@ -247,10 +250,11 @@ export class HUD {
     this.levelTimer = setTimeout(() => { el.hidden = true; }, 2200);
   }
 
-  notify({ text, kind = 'info', color }) {
+  // icon: UI 그림 id (보물상자·미믹 등) — 있으면 동그라미 대신 그 그림
+  notify({ text, kind = 'info', color, icon }) {
     const n = document.createElement('div');
-    n.className = `note ${kind}`;
-    n.innerHTML = `<i class="note-ic"></i><span></span>`;
+    n.className = `note ${kind}${icon && PAINTED.ui[icon] ? ' has-art' : ''}`;
+    n.innerHTML = `<i class="note-ic">${icon ? uiImg(icon) : ''}</i><span></span>`;
     n.lastChild.textContent = text;
     if (color) n.style.setProperty('--accent', color);
     this.el.notify.append(n);
@@ -276,7 +280,24 @@ export class HUD {
     this.floats.push({ el, pos, age: 0, crit });
   }
 
+  // 버프 줄 옆: 상태 이상(독·감속·빙결)·응급 처치·포탑 과부하·모닥불 온기 (그림 있으면 그림)
+  updateFx(dt) {
+    this.fxTimer = (this.fxTimer ?? 0) - dt;
+    if (this.fxTimer > 0) return;
+    this.fxTimer = 0.25;
+    const { ctx } = this;
+    const now = ctx.time.elapsed;
+    const list = [];
+    for (const st of ctx.statusOf?.(ctx.player) ?? []) list.push([`status_${st.type}`, st.time, { poison: '#7cd67a', slow: '#8fd0ff', freeze: '#d6f4ff' }[st.type]]);
+    if ((ctx.firstAidUntil ?? 0) > now) list.push(['buff_first_aid', ctx.firstAidUntil - now, '#ff8f9f']);
+    if ((ctx.overclockUntil ?? 0) > now) list.push(['buff_overclock', ctx.overclockUntil - now, '#ffd166']);
+    if (this.aura > 0) list.push(['buff_regen', null, '#8bcf6d']);
+    const html = list.map(([id, t, c]) => `<span class="buff">${uiImg(id, `<i style="--c:${c}"></i>`, 'buff-ic')}${t != null ? Math.ceil(t) : ''}</span>`).join('');
+    if (html !== this.fxHtml) { this.fxHtml = html; this.el.fx.innerHTML = html; }
+  }
+
   update(dt) {
+    this.updateFx(dt);
     const input = this.ctx.input;
     for (let i = 0; i < this.quick.length; i++) {
       if (input.wasPressed(`Digit${i + 1}`)) this.ctx.bus.emit('quick:use', { index: i });

@@ -3,6 +3,7 @@ import { closeWhenFar } from './CraftWindow.js';
 import { enhanceCost } from '../utils/enhance.js';
 import { rerollCost } from '../utils/affix.js';
 import { optLines } from './itemText.js';
+import { uiImg } from './painted.js';
 
 // 대장간 창 (대장간 앞에서 E): 낀 장비와 가방 장비 목록 → 골라서 강화 / 재련(랜덤 옵션 다시 굴리기)
 export class ForgeWindow {
@@ -80,8 +81,8 @@ export class ForgeWindow {
     });
     this.body.innerHTML = `
       <div class="fg">
-        <div class="seg fg-mode"><button type="button" data-fmode="enhance" class="${reroll ? '' : 'on'}">강화</button><button type="button" data-fmode="reroll" class="${reroll ? 'on' : ''}">재련</button></div>
-        <p class="fg-note">${reroll ? '랜덤 옵션(◆)을 다시 굴려요. 줄 수는 그대로, 능력치와 값이 바뀌어요. ★ 은 아주 좋은 값.' : `단계마다 기본 능력치 +${Math.round(data.config.enhance.statPerPlus * 100)}%. 실패는 없어요.`}</p>
+        <div class="seg fg-mode"><button type="button" data-fmode="enhance" class="${reroll ? '' : 'on'}">${uiImg('ic_enhance')}강화</button><button type="button" data-fmode="reroll" class="${reroll ? 'on' : ''}">${uiImg('ic_reroll')}재련</button></div>
+        <p class="fg-note">${reroll ? `랜덤 옵션(${uiImg('opt_gem', '◆', 'opt')})을 다시 굴려요. 줄 수는 그대로, 능력치와 값이 바뀌어요. ${uiImg('opt_star', '★', 'opt')} 은 아주 좋은 값.` : `단계마다 기본 능력치 +${Math.round(data.config.enhance.statPerPlus * 100)}%. 실패는 없어요.`}</p>
         ${list.length ? list.join('') : '<p class="empty">장비가 없어요.</p>'}
       </div>`;
   }

@@ -109,14 +109,14 @@ export class ChestSystem {
       this.ctx.scene.remove(c.mesh);
       this.list.splice(this.list.indexOf(c), 1);
       bus.emit('monster:spawn', { type: this.cfg.mimicType, position: c.position.clone(), spread: 0 });
-      bus.emit('notify', { text: '앗, 미믹이다! 잡으면 보물을 토해 내요', kind: 'warn' });
+      bus.emit('notify', { text: '앗, 미믹이다! 잡으면 보물을 토해 내요', kind: 'warn', icon: 'ic_mimic' });
       bus.emit('chest:mimic', { position: c.position });
       return;
     }
     this.applyLook(c);
     this.burst(c.type, c.position, this.regionId(c.position));
     bus.emit('chest:opened', { type: c.type, position: c.position });
-    bus.emit('notify', { text: `${this.cfg.kinds[c.type].name}를 열었어요!`, kind: 'item' });
+    bus.emit('notify', { text: `${this.cfg.kinds[c.type].name}를 열었어요!`, kind: 'item', icon: 'chest_open' });
   }
 
   // 상자 아이템: 지금 있는 지역 것이 나온다

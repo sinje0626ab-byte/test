@@ -8,6 +8,7 @@ import './ui/mobile.css';
 import './ui/theme-cozy.css';
 import './ui/pause-art.css';
 import './ui/title-art.css';
+import './ui/ui-art.css';
 import config from './data/config.json';
 import player from './data/player.json';
 import monsters from './data/monsters.json';
@@ -30,6 +31,9 @@ import bounties from './data/bounties.json';
 import { Game } from './core/Game.js';
 import { installToonShading } from './core/toon.js';
 import { loadModels } from './core/Models.js';
+import { installUiVars } from './ui/painted.js';
+
+installUiVars(); // UI 그림을 CSS 변수로 (body.ui-art)
 
 // 툰 명암은 재질이 처음 그려지기 전에 (셰이더 조각을 고친다)
 installToonShading(config.render.toon);
