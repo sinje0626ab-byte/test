@@ -1,4 +1,5 @@
 import { skillArt } from './uiArt.js';
+import { PAINTED } from './painted.js';
 // 액티브 스킬 슬롯 Q·R. PC는 퀵슬롯 옆, 모바일은 공격 버튼 위 둥근 버튼 (쿨다운 원형 표시).
 // 누르면 skill:cast. 쿨다운은 ctx.activeSkills(ActiveSkillSystem)를 읽는다.
 // 바꾸기: PC 우클릭 / 터치 길게 누르기 → 배운 액티브 스킬 고르기 판 (스킬 창의 Q·R 버튼과 같은 skill:assign)
@@ -126,8 +127,9 @@ export class SkillBar {
   }
 }
 
-// 궁극기 그림 (48 격자, 스킬 배지와 같은 붓)
+// 궁극기 그림: 새로 그린 그림(art/ui/ult_<id>)이 있으면 그것, 없으면 코드 그림 (48 격자)
 export function ultArt(id) {
+  if (PAINTED.ui[`ult_${id}`]) return `<img class="ult-svg painted" src="${PAINTED.ui[`ult_${id}`]}" alt="" draggable="false">`;
   const G = {
     meteor: '<path d="M10 10l14 14" stroke="#fff3c4" stroke-width="5" stroke-linecap="round" opacity=".7"/><path d="M28 14l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#ffd166" stroke="#7a5412" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16" cy="34" r="2" fill="#fff3c4"/><circle cx="36" cy="38" r="1.6" fill="#fff3c4"/>',
     sanctuary: '<circle cx="24" cy="25" r="15" fill="#c9f0b8" stroke="#3f7a2c" stroke-width="1.8"/><path d="M24 34c-7-4-9-12-1-20 8 8 6 16 1 20z" fill="#7cc67a" stroke="#3f7a2c" stroke-width="1.6"/><path d="M24 33V20" stroke="#3f7a2c" stroke-width="1.4"/><path d="M17 37c2 1 12 1 14 0" stroke="#3f7a2c" stroke-width="1.4" fill="none"/>',

@@ -1,6 +1,7 @@
 import { formatStat } from './itemText.js';
 import { skillArt } from './uiArt.js';
 import { ultArt } from './SkillBar.js';
+import { PAINTED } from './painted.js';
 
 // 스킬 창 (K): 갈래마다 별자리 한 장 (전투·생존·채집·건축) + 궁극기 쪽.
 // 별(스킬)을 누르면 아래 설명 판: 효과·선행·배우기(포인트 1) · 액티브는 Q·R 등록과 각인 끼우기.
@@ -180,8 +181,8 @@ export class SkillWindow {
       extra += `<div class="sk2-runes"><b class="sk2-sub">각인 <small>하나만 끼울 수 있어요 · 보스·황금 상자·정예에서 얻어요</small></b>${mine.map(([rid, x]) => {
         const own = this.runes.owned.includes(rid);
         return own
-          ? `<button type="button" class="rune${eq === rid ? ' on' : ''}" style="--rc:${x.color}" data-act="rune" data-id="${id}" data-rune="${eq === rid ? '' : rid}"><i></i><span><b>${x.name}</b><small>${x.desc}</small></span><em>${eq === rid ? '끼움' : '끼우기'}</em></button>`
-          : `<div class="rune lockd"><i></i><span><b>??? 각인</b><small>아직 못 얻었어요</small></span></div>`;
+          ? `<button type="button" class="rune${eq === rid ? ' on' : ''}" style="--rc:${x.color}" data-act="rune" data-id="${id}" data-rune="${eq === rid ? '' : rid}">${runeArt(rid)}<span><b>${x.name}</b><small>${x.desc}</small></span><em>${eq === rid ? '끼움' : '끼우기'}</em></button>`
+          : `<div class="rune lockd">${runeArt(rid)}<span><b>??? 각인</b><small>아직 못 얻었어요</small></span></div>`;
       }).join('')}</div>`;
     }
     return `
@@ -220,12 +221,21 @@ export class SkillWindow {
   }
 }
 
-// 핵심 별 그림: 갈래 색 큰 별
+// 핵심 별 그림: 새로 그린 배지(art/ui/key_<id>)가 있으면 그것, 없으면 갈래 색 큰 별
+const KEY_ID = { combat: 'key_vampire', survival: 'key_windwalker', building: 'key_commander' };
 function keyArt(bid) {
+  const painted = PAINTED.ui[KEY_ID[bid]];
+  if (painted) return `<img class="skill-svg key-svg painted" src="${painted}" alt="" draggable="false">`;
   const C = { combat: '#ff8a7a', survival: '#7cc67a', building: '#e9a35b' }[bid] ?? '#b48cf0';
   return `<svg class="skill-svg key-svg" viewBox="0 0 48 48" aria-hidden="true">
     <circle cx="24" cy="24" r="21" fill="#3e4675"/><circle cx="24" cy="24" r="18" fill="none" stroke="${C}" stroke-width="2" stroke-dasharray="3 3"/>
     <path d="M24 7l4.6 10.6 11.4 1-8.7 7.6 2.6 11.3L24 31.6l-9.9 5.9 2.6-11.3L8 18.6l11.4-1z" fill="${C}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
     <circle cx="24" cy="23" r="3.2" fill="#fff" opacity=".85"/>
   </svg>`;
+}
+
+// 각인 보석 그림 (art/ui/rune_<id>, 없으면 색 마름모)
+function runeArt(rid) {
+  const url = PAINTED.ui[rid];
+  return url ? `<img class="rune-img" src="${url}" alt="" draggable="false">` : '<i></i>';
 }
