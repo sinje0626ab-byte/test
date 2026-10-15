@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>상담 콘솔</title>
+<script>
+/* =====================================================================
+   ▣ 요금/지원금 DATA — 매달 정책이 바뀌면 이 블록의 숫자만 고치세요.
+   ---------------------------------------------------------------------
+   - 모든 상품 3년약정 기준
+   - support(지원금): 만원 단위 현금 지원금 (15 = 15만원)
+   - feeVat: 시트 월요금(VAT 포함, 원). VAT 제외 금액은 feeVat ÷ 1.1 로 자동 계산
+     (SKB만 시트에 VAT 제외 금액이 따로 있어서 exVat / combExVat 을 직접 사용)
+   - tier: 비교표에서 통신사끼리 TV 등급 맞추는 값 (1=기본, 2=중간, 3=고급)
+   - baseMonth: 이 시트의 정책 기준월. 이번 달보다 이전이면 화면에 경고 배지가 뜸
+   - "// TODO 확인필요" = PDF에서 확정 못한 값
+   - 미확정 칸(가이드, KT 상품권/이마트, LG 5G 정책군/고객지원)은 넣지 않음
+   ===================================================================== */
+const DATA = {
+
+  /* ───────────── KT (대표번호 100) ───────────── */
+  kt: {
+    baseMonth: '2026-09', // 9월 정책 — 10월 정책으로 업데이트 필요
+    name: 'KT', short: 'KT', mobileName: 'KT', phone: '100',
+    install: { // 설치비: 평일 / 주말(평일대비 25% 할증). 익월 요금에 1회 합산 청구
+      net:   { weekday: 36000, weekend: 45000 },
+      tv:    { weekday: 56200, weekend: 71250 },
+      addTv: { weekday: 15400, weekend: 19250 },
+    },
+    products: [
+      { id: 'kt-100',     type: 'net', speed: '100M', tv: null,               tier: 0, name: '인터넷 슬림(100M) 와이파이',    support: 15, feeVat: 23100 },
+      { id: 'kt-500',     type: 'net', speed: '500M', tv: null,               tier: 0, name: '인터넷 베이직(500M) 와이파이',  support: 18, feeVat: 34100 },
+      { id: 'kt-1g',      type: 'net', speed: '1G',   tv: null,               tier: 0, name: '인터넷 에센스(1기가) 와이파이', support: 20, feeVat: 38500 },
+      { id: 'kt-100-otv', type: 'tv',  speed: '100M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 슬림와이파이 + OTV베이직(236개)',   support: 41, feeVat: 39600 },
+      { id: 'kt-100-all', type: 'tv',  speed: '100M', tv: '모든G',            tier: 3, name: '인터넷 슬림와이파이 + 모든G',             support: 52, feeVat: 47300 }, // 세부합계(44,000)와 월요금 3,300원 차이 // TODO 확인필요
+      { id: 'kt-500-otv', type: 'tv',  speed: '500M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 베이직와이파이 + OTV베이직(236개)', support: 51, feeVat: 45100 },
+      { id: 'kt-500-all', type: 'tv',  speed: '500M', tv: '모든G',            tier: 3, name: '인터넷 베이직 와이파이 + 모든G',          support: 62, feeVat: 52800 }, // 세부합계와 3,300원 차이 // TODO 확인필요
+      { id: 'kt-1g-otv',  type: 'tv',  speed: '1G',   tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 에센스 와이파이 + OTV베이직(236개)', support: 55, feeVat: 49500 },
+      { id: 'kt-1g-all',  type: 'tv',  speed: '1G',   tv: '모든G',            tier: 3, name: '인터넷 에센스 와이파이 + 모든G',          support: 66, feeVat: 57200 }, // 세부합계와 3,300원 차이 // TODO 확인필요
+    ],
+    addons: [ // support 만원 / feeVat 원(월)
+      { id: 'kt-addtv', name: '추가티비', support: 3, feeVat: 10670, install: 'addTv', optionsFrom: 'addTvOptions', tvOnly: true },
+      { id: 'kt-buddy', name: '버디패키지 WIFI 증폭기 (500M이상)', support: 1, feeVat: 1650, minSpeed: '500M' },
+    ],
+    addTvOptions: [ // 추가TV 채널별 이용료 + 셋톱별 임대료 (3년약정시)
+      { label: '베이직 + 지니A', total: 10670 },
+      { label: '에센스 + 지니A', total: 12100 },
+      { label: '베이직 + 지니3', total: 11770 },
+      { label: '에센스 + 지니3', total: 13200 },
+    ],
+    deductions: [
+      { id: 'kt-ttaro',  name: '따로살아도결합',               support: -9 },
+      { id: 'kt-settop', name: '지니3 / 사운드바 셋톱 외',     support: -3 },
+      { id: 'kt-common', name: '공통사항신청서 작성시',         support: -5 }, // TODO 확인필요 (적용 조건)
+    ],
+    // 유심 동판 (KT 유심 80k 이상 / 접수일 정책기준) — 인터넷 지원금에 "추가"되는 금액(만원)
+    usim: {
+      minPlan: 80, // 80k 이상만 시트에 금액 있음 (37K/49K/61K 추가정책 칸은 빈칸)
+      general: { 'kt-100': 31, 'kt-500': 34, 'kt-1g': 36, 'kt-100-otv': 40, 'kt-100-all': 40 /* 시트 "100+에센스" // TODO 확인필요 */, 'kt-500-otv': 43, 'kt-500-all': 48, 'kt-1g-otv': 48, 'kt-1g-all': 48 },
+      family:  { 'kt-100': 17, 'kt-500': 20, 'kt-1g': 23, 'kt-100-otv': 23, 'kt-100-all': 23, 'kt-500-otv': 28, 'kt-500-all': 28, 'kt-1g-otv': 30, 'kt-1g-all': 30 /* 시트 "에센스" 표기 // TODO 확인필요 */ },
+    },
+    // 휴대폰 결합 — 할인액은 VAT 포함
+    combine: {
+      brackets: ['22,000원 미만', '22,000원 이상', '64,900원 이상', '108,900원 이상', '141,900원 이상', '174,900원 이상'], // 휴대폰 월정액 총액
+      netDiscount:    { '100M': [1650, 3300, 5500, 5500, 5500, 5500],    '500M/1G': [2200, 5500, 5500, 5500, 5500, 5500] },
+      mobileDiscount: { '100M': [0, 0, 3300, 14300, 18700, 23100],      '500M/1G': [0, 0, 5500, 16610, 22110, 27610] },
+      flatNetDiscount: 5500, // 정액 결합할인: 인터넷 할인 5,500원 고정
+    },
+    rules: { rejoinDays: 280, usimMinPlan: 37 },
+  },
+
+  /* ───────────── LG U+ (대표번호 101) ───────────── */
+  lg: {
+    baseMonth: '2026-09', // 9월 정책 — 10월 정책으로 업데이트 필요
+    name: 'LG U+', short: 'LG', mobileName: 'LG U+', phone: '101',
+    install: {
+      net:       { weekday: 36300, weekend: 45375 },
+      tv:        { weekday: 56100, weekend: 70125 },
+      addSettop: { weekday: 22000, weekend: 27500 },
+    },
+    // support = 일반 지원금 합계 / soho = 소호(사업자·사업장 설치) 지원금
+    products: [
+      { id: 'lg-100',   type: 'net', speed: '100M', tv: null,              tier: 0, name: 'WIFI요금제광랜안심',     support: 18, soho: 28, feeVat: 22000 },
+      { id: 'lg-500',   type: 'net', speed: '500M', tv: null,              tier: 0, name: 'WIFI요금제기가슬림안심', support: 30, soho: 35, feeVat: 33000 },
+      { id: 'lg-1g',    type: 'net', speed: '1G',   tv: null,              tier: 0, name: 'WIFI요금제기가안심',     support: 34, soho: 39, feeVat: 38500 },
+      { id: 'lg-100-s', type: 'tv',  speed: '100M', tv: '실속형(219개)',   tier: 1, name: '광랜안심 + TV 실속형(219개) UHD4',   support: 43, soho: 51,   feeVat: 39600 },
+      { id: 'lg-100-b', type: 'tv',  speed: '100M', tv: '기본형(225개)',   tier: 2, name: '광랜안심 + TV 기본형(225개) UHD4',   support: 43, soho: null, feeVat: 40700 }, // 지원금 "〃" / 소호 빈칸 // TODO 확인필요
+      { id: 'lg-100-p', type: 'tv',  speed: '100M', tv: '프리미엄(252개)', tier: 3, name: '광랜안심 + TV 프리미엄(252개) UHD4', support: 46, soho: 55,   feeVat: 42900 },
+      { id: 'lg-500-s', type: 'tv',  speed: '500M', tv: '실속형(219개)',   tier: 1, name: '기가슬림안심 + TV 실속형(219개) UHD4',   support: 52, soho: 59,   feeVat: 45100 },
+      { id: 'lg-500-b', type: 'tv',  speed: '500M', tv: '기본형(225개)',   tier: 2, name: '기가슬림안심 + TV 기본형(225개) UHD4',   support: 52, soho: null, feeVat: 46200 }, // 〃 / 소호 빈칸 // TODO 확인필요
+      { id: 'lg-500-p', type: 'tv',  speed: '500M', tv: '프리미엄(252개)', tier: 3, name: '기가슬림안심 + TV 프리미엄(252개) UHD4', support: 55, soho: 62,   feeVat: 48400 },
+      { id: 'lg-1g-s',  type: 'tv',  speed: '1G',   tv: '실속형(219개)',   tier: 1, name: '1기가안심 + TV 실속형(219개) UHD4',   support: 55, soho: 67,   feeVat: 50600 },
+      { id: 'lg-1g-b',  type: 'tv',  speed: '1G',   tv: '기본형(225개)',   tier: 2, name: '1기가안심 + TV 기본형(225개) UHD4',   support: 55, soho: null, feeVat: 51700 }, // 〃 / 소호 빈칸 // TODO 확인필요
+      { id: 'lg-1g-p',  type: 'tv',  speed: '1G',   tv: '프리미엄(252개)', tier: 3, name: '1기가안심 + TV 프리미엄(252개) UHD4', support: 59, soho: 69,   feeVat: 53900 },
+      // 기본형(225개) 행은 WIFI·설치비 칸 빈칸 → 같은 설치비로 가정 // TODO 확인필요
+    ],
+    addons: [
+      { id: 'lg-addsettop', name: '추가셋톱', support: 9, feeVat: 10450, install: 'addSettop', optionsFrom: 'addTvOptions', tvOnly: true },
+      { id: 'lg-addwifi',   name: '추가 와이파이', support: 0, feeVat: 2200 },
+      { id: 'lg-easy2',     name: '우리집 지킴이 Easy2플러스 IOT', support: 8, feeVat: 14300, discontinued: true }, // 판매가이드: 판매종료
+    ],
+    addTvOptions: [
+      { label: '베이직(100메가) + 고급형',    total: 10450 },
+      { label: '베이직(500메가↑) + UHD3',     total: 9350 },
+      { label: '프리미엄(500메가↑) + UHD4',   total: 13750 },
+      { label: '베이직 + 크롬캐스트',         total: 9900 },
+    ],
+    deductions: [
+      { id: 'lg-settop', name: '메인 UHD3,4 셋톱 외', support: -1 },
+    ],
+    usim: null, // LG 시트에 유심 동판 표 없음
+    combine: {
+      // 참쉬운가족결합: 인터넷 속도별 인터넷 할인(1대당). VAT 포함 여부 미기재 // TODO 확인필요
+      netDiscount: { '100M': 5500, '500M': 9900, '1G': 13200 },
+    },
+    rules: { rejoinDays: 90, bannedBiz: ['유흥업소', '노래방', '고시텔', '숙박업소', 'PC방', '성인게임장'] },
+  },
+
+  /* ───────────── SKB / SKT (SKB 106 / SKT 1600-2000) ───────────── */
+  sk: {
+    baseMonth: '2026-09', // 9월 정책 — 10월 정책으로 업데이트 필요
+    name: 'SKB/SKT', short: 'SK', mobileName: 'SKT', phone: 'SKB 106 / SKT 1600-2000',
+    install: {
+      net:       { weekday: 36300, weekend: 45375 },
+      tv:        { weekday: 56100, weekend: 70125 },
+      addSettop: { weekday: 17600, weekend: 22000 },
+    },
+    // exVat=미결합(VAT 제외) / combExVat=결합(VAT 제외) / feeVat=우리집(VAT 포함) / combVat=요즘가족(VAT 포함)
+    products: [
+      { id: 'sk-100',     type: 'net', speed: '100M', tv: null,              tier: 0, name: '광랜100M (WiFi통합)',       support: 15, exVat: 21000, combExVat: 17000, feeVat: 23100, combVat: 18700 },
+      { id: 'sk-500',     type: 'net', speed: '500M', tv: null,              tier: 0, name: '기가라이트500M (WiFi통합)', support: 22, exVat: 31000, combExVat: 21000, feeVat: 34100, combVat: 23100 },
+      { id: 'sk-1g',      type: 'net', speed: '1G',   tv: null,              tier: 0, name: '기가1G (WiFi통합)',         support: 23, exVat: 36000, combExVat: 24000, feeVat: 39600, combVat: 26400 },
+      { id: 'sk-100-eco', type: 'tv',  speed: '100M', tv: '이코노미(178개)', tier: 1, name: '광랜100M + TV 이코노미(스마트3)',      support: 35, exVat: 33000, combExVat: 29000, feeVat: 36300, combVat: 31900 },
+      { id: 'sk-100-std', type: 'tv',  speed: '100M', tv: '스탠다드(219개)', tier: 2, name: '광랜100M + TV 스탠다드(스마트3)',      support: 46, exVat: 36000, combExVat: 32000, feeVat: 39600, combVat: 35200 },
+      { id: 'sk-100-all', type: 'tv',  speed: '100M', tv: 'ALL(251개)',      tier: 3, name: '광랜100M + TV ALL(스마트3)',           support: 50, exVat: 39000, combExVat: 35000, feeVat: 42900, combVat: 38500 },
+      { id: 'sk-500-eco', type: 'tv',  speed: '500M', tv: '이코노미(178개)', tier: 1, name: '기가라이트500M + TV 이코노미(스마트3)', support: 42, exVat: 39000, combExVat: 33000, feeVat: 42900, combVat: 36300 },
+      { id: 'sk-500-std', type: 'tv',  speed: '500M', tv: '스탠다드(219개)', tier: 2, name: '기가라이트500M + TV 스탠다드(스마트3)', support: 53, exVat: 42000, combExVat: 36000, feeVat: 46200, combVat: 39600 },
+      { id: 'sk-500-all', type: 'tv',  speed: '500M', tv: 'ALL(251개)',      tier: 3, name: '기가라이트500M + TV ALL(스마트3)',      support: 57, exVat: 45000, combExVat: 39000, feeVat: 49500, combVat: 42900 },
+      { id: 'sk-1g-eco',  type: 'tv',  speed: '1G',   tv: '이코노미(178개)', tier: 1, name: '기가1G + TV 이코노미(스마트3)',         support: 42, exVat: 44000, combExVat: 36000, feeVat: 48400, combVat: 39600 },
+      { id: 'sk-1g-std',  type: 'tv',  speed: '1G',   tv: '스탠다드(219개)', tier: 2, name: '기가1G + TV 스탠다드(스마트3)',         support: 53, exVat: 47000, combExVat: 39000, feeVat: 51700, combVat: 42900 },
+      { id: 'sk-1g-all',  type: 'tv',  speed: '1G',   tv: 'ALL(251개)',      tier: 3, name: '기가1G + TV ALL(스마트3)',              support: 57, exVat: 50000, combExVat: 42000, feeVat: 55000, combVat: 46200 },
+    ],
+    addons: [
+      { id: 'sk-settop-eco', name: '추가셋톱 이코노미', support: 2, feeVat: 8250,  install: 'addSettop', group: 'settop', tvOnly: true },
+      { id: 'sk-settop-std', name: '추가셋톱 스탠다드', support: 4, feeVat: 9900,  install: 'addSettop', group: 'settop', tvOnly: true },
+      { id: 'sk-settop-all', name: '추가셋톱 ALL',      support: 6, feeVat: 11550, install: 'addSettop', group: 'settop', tvOnly: true },
+      { id: 'sk-oss',        name: 'OSS 원스탑전환',    support: 1, feeVat: 0 },
+      { id: 'sk-wings',      name: '윙즈(와이파이증폭기)', support: 0, feeVat: 1650 },
+    ],
+    deductions: [
+      { id: 'sk-common', name: '공통사항신청서 작성시', support: -5 }, // TODO 확인필요 (적용 조건)
+    ],
+    // 유심 동판 추가지급 (인터넷 개통일 기준 +30일 안에 유심 개통). 요금제 구간: 33/43/69/89 이상
+    usim: {
+      tiers: [33, 43, 69, 89],
+      netOnly:   { 33: null, 43: null, 69: null, 89: null }, // 인터넷+유심: 시트 빈칸 // TODO 확인필요
+      tv:        { 33: 30,   43: 35,   69: 38,   89: 40 },   // (인터넷+티비)+유심 — 본인명의 인터넷 + 본인명의 유심
+      family:    { 33: 20,   43: 25,   69: 27,   89: 30 },   // 가족 추가유심 — 본인 인터넷 + 본인 유심 + 가족명의 추가유심
+    },
+    combine: {
+      // 요즘가족결합 이동전화 할인(1회선). 인터넷 할인은 요금표(combExVat/combVat)에 이미 반영
+      mobile1Line: { '100M': 3500, '500M': 3500, '1G': 3500 },
+    },
+    rules: { combineWithinDays: 30 },
+  },
+
+  /* ───────────── 스카이라이프 (1588-3002) ───────────── */
+  sky: {
+    baseMonth: '2026-09', // 9월 정책 — 10월 정책으로 업데이트 필요
+    name: '스카이라이프', short: '스카이', mobileName: '스카이 알뜰폰', phone: '1588-3002',
+    install: {
+      net:     { weekday: 36000, weekend: 45000 },
+      tv:      { weekday: 48500, weekend: 48500 }, // 시트에 평일/주말 칸 합쳐짐 // TODO 확인필요
+      skyOnly: { weekday: 27500, weekend: 27500 }, // TODO 확인필요
+      addSky:  { weekday: 10000, weekend: 10000 }, // TODO 확인필요
+    },
+    products: [
+      { id: 'sky-100',      type: 'net', speed: '100M', tv: null,          tier: 0, name: '인터넷(100M)',     support: 11, feeVat: 23100 },
+      { id: 'sky-200',      type: 'net', speed: '200M', tv: null,          tier: 0, name: '기가(200M)',       support: 13, feeVat: 25300 },
+      { id: 'sky-500',      type: 'net', speed: '500M', tv: null,          tier: 0, name: '기가콤팩트(500M)', support: 22, feeVat: 33000 },
+      { id: 'sky-1g',       type: 'net', speed: '1G',   tv: null,          tier: 0, name: '기가(1G)',         support: 24, feeVat: 38500 },
+      { id: 'sky-100-b',    type: 'tv',  speed: '100M', tv: 'IPTV 베이직', tier: 1, name: '100M + IPTV 베이직', support: 43, feeVat: 34100 },
+      { id: 'sky-200-b',    type: 'tv',  speed: '200M', tv: 'IPTV 베이직', tier: 1, name: '200M + IPTV 베이직', support: 43, feeVat: 35200 },
+      { id: 'sky-500-b',    type: 'tv',  speed: '500M', tv: 'IPTV 베이직', tier: 1, name: '500M + IPTV 베이직', support: 52, feeVat: 40700 },
+      { id: 'sky-1g-b',     type: 'tv',  speed: '1G',   tv: 'IPTV 베이직', tier: 1, name: '1G + IPTV 베이직',   support: 55, feeVat: 46200 },
+      { id: 'sky-100-p',    type: 'tv',  speed: '100M', tv: 'IPTV 플러스', tier: 3, name: '100M + IPTV 플러스', support: 43, feeVat: 35200 },
+      { id: 'sky-200-p',    type: 'tv',  speed: '200M', tv: 'IPTV 플러스', tier: 3, name: '200M + IPTV 플러스', support: 43, feeVat: 36300 },
+      { id: 'sky-500-p',    type: 'tv',  speed: '500M', tv: 'IPTV 플러스', tier: 3, name: '500M + IPTV 플러스', support: 52, feeVat: 41800 },
+      { id: 'sky-1g-p',     type: 'tv',  speed: '1G',   tv: 'IPTV 플러스', tier: 3, name: '1G + IPTV 플러스',   support: 55, feeVat: 47300 },
+      // 홈결합30%: KT 전환 차감 없음 / 기존 KT·HCN 전환 시 불가 / 가이드없음 추가 사은품으로 접수 요망
+      { id: 'sky-home-100', type: 'tv',  speed: '100M', tv: '홈결합30% SKY ALL', tier: 0, name: '홈결합30% + 100M + SKY ALL', support: 0, feeVat: 22000, home30: true },
+      { id: 'sky-home-200', type: 'tv',  speed: '200M', tv: '홈결합30% SKY ALL', tier: 0, name: '홈결합30% + 200M + SKY ALL', support: 0, feeVat: 23100, home30: true },
+    ],
+    addons: [
+      { id: 'sky-only', name: '단독 sky All (238채널)', support: 1, feeVat: 13200, install: 'skyOnly' }, // TV단독 상품은 VOD다시보기, 넷플릭스 불가
+      { id: 'sky-add',  name: '추가 sky All 안드로이드5 (할인형)', support: 1, feeVat: 6600, install: 'addSky', tvOnly: true }, // 9,900원 → 프로모션 6,600원
+      { id: 'sky-oss',  name: 'OSS (동일주소지만 가능)', support: 1, feeVat: 0 },
+    ],
+    deductions: [],
+    usim: null,    // 스카이 시트에 유심 동판 표 없음
+    combine: null, // 결합 할인표 없음 (휴대폰 결합은 스카이알뜰폰만 가능)
+    rules: { rejoinDays: 280, fromKtDeduct: 10, home30BlockedFrom: ['KT', 'HCN'] },
+  },
+};
+
+/* ▣ 반론 대응 — "반론 대응 32개" PDF가 아직 첨부되지 않아 비어 있음.
+   형식: { title: '반론 문구', keywords: ['고민', ...], answer: '대응 멘트(원문 그대로)' } */
+const OBJECTIONS = [
+  // TODO 확인필요: 반론 대응 PDF 원문으로 32개 채우기
+];
+const OBJECTION_KEYWORDS = ['고민', '알아보겠다', '이사날짜', '온가족할인', '본사'];
+
+/* ▣ 스크립트 설정
+   스크립트 원문: "최대 47만원 지원해드리는데 오늘 접수하시면 최대 52만원까지" (차이 5만원)
+   → 앞 금액 = 지원금 총액 - todayBonus 로 계산 */
+const SCRIPT_CONFIG = { todayBonus: 5 };
+</script>
+<style>
+:root {
+  --bg: #0e1116; --panel: #161a21; --panel2: #1d222b; --line: #2b323d;
+  --text: #e8ecf1; --muted: #8e98a6; --accent: #5aa9ff; --accent-weak: #1d3550;
+  --fill: #ffd479; --blank: #ff9470; --red: #ff5d5d; --red-weak: #3a1a1d;
+  --amber: #ffb547; --amber-weak: #3a2c14; --green: #43d79b; --green-weak: #143429;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+body { display: grid; grid-template-rows: auto auto 1fr auto; grid-template-columns: minmax(0, 1fr); height: 100vh; overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+/* 상단 */
+.topbar { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: #0a0d11; border-bottom: 1px solid var(--line); }
+.topbar h1 { font-size: 16px; margin: 0; font-weight: 700; letter-spacing: -0.2px; }
+.topbar .sp { flex: 1; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.badge.red { background: var(--red-weak); color: var(--red); border: 1px solid #6b2a2f; }
+.badge.amber { background: var(--amber-weak); color: var(--amber); border: 1px solid #6a5023; }
+.badge.green { background: var(--green-weak); color: var(--green); border: 1px solid #23604a; }
+.badge.gray { background: var(--panel2); color: var(--muted); border: 1px solid var(--line); }
+.btn { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 14px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: #06121f; border-color: var(--accent); font-weight: 700; }
+.btn.danger { border-color: #6b2a2f; color: var(--red); }
+kbd { font-family: ui-monospace, monospace; font-size: 11px; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; color: var(--muted); }
+
+/* 고객 정보 바 */
+.custbar { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--line); align-items: end; }
+.custbar label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); }
+.custbar input, .custbar select { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 15px; min-width: 0; }
+.custbar input:focus, .custbar select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.custbar .chk { flex-direction: row; align-items: center; gap: 6px; font-size: 14px; color: var(--text); padding-bottom: 7px; }
+.custbar .chk input { width: 18px; height: 18px; }
+
+/* 메인 */
+main { display: grid; grid-template-columns: minmax(0, 1fr) 560px; min-height: 0; }
+#scriptPane { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); }
+.steps { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 20px 0; }
+.steps button { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 13px; color: var(--muted); }
+.steps button.on { background: var(--accent-weak); color: var(--text); border-color: var(--accent); font-weight: 700; }
+.steps button.done { color: var(--text); }
+.card { flex: 1; overflow: auto; margin: 12px 20px; padding: 26px 32px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+.card .stitle { font-size: 15px; color: var(--accent); font-weight: 700; margin-bottom: 14px; }
+.card .stitle span { color: var(--muted); font-weight: 500; margin-left: 6px; }
+.card p { font-size: 27px; line-height: 1.75; margin: 0 0 18px; letter-spacing: -0.3px; word-break: keep-all; }
+.card p.note { font-size: 16px; color: var(--muted); line-height: 1.6; }
+.card ul { font-size: 23px; line-height: 1.7; margin: 0 0 18px; padding-left: 28px; }
+.fill { color: var(--fill); font-weight: 700; }
+.blank { color: var(--blank); font-weight: 700; border-bottom: 2px dashed var(--blank); }
+.nav { display: flex; align-items: center; gap: 12px; padding: 0 20px 14px; }
+.nav .btn { font-size: 18px; padding: 10px 22px; }
+.nav .pos { color: var(--muted); font-size: 14px; }
+
+/* 사이드 */
+#side { overflow: auto; padding: 12px 16px 24px; min-height: 0; }
+.sec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+.sec h2 { font-size: 14px; margin: 0 0 10px; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.row { display: grid; grid-template-columns: 92px 1fr; gap: 8px; align-items: start; margin-bottom: 8px; }
+.row > .lb { font-size: 13px; color: var(--muted); padding-top: 6px; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button { background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 10px; font-size: 14px; }
+.seg button.on { background: var(--accent); color: #06121f; border-color: var(--accent); font-weight: 700; }
+.seg button:disabled { opacity: .35; cursor: not-allowed; }
+.opt { display: flex; align-items: center; gap: 6px; font-size: 14px; margin: 3px 0; }
+.opt input { width: 16px; height: 16px; }
+.opt .mut, .mut { color: var(--muted); font-size: 12px; }
+.opt.dis { opacity: .45; }
+select.sm { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font-size: 13px; }
+.res { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.res .box { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.res .box .k { font-size: 12px; color: var(--muted); }
+.res .box .v { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; margin-top: 2px; }
+.res .box .s { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.res .box.big { grid-column: 1 / -1; border-color: #23604a; background: var(--green-weak); }
+.res .box.big .v { font-size: 30px; color: var(--green); }
+.breakdown { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+.pname { font-size: 15px; font-weight: 700; margin: 0 0 8px; }
+.warns { display: flex; flex-direction: column; gap: 6px; }
+.warn { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.45; padding: 7px 10px; border-radius: 8px; }
+.warn.red { background: var(--red-weak); border: 1px solid #6b2a2f; }
+.warn.red b { color: var(--red); }
+.warn.amber { background: var(--amber-weak); border: 1px solid #6a5023; }
+.warn.amber b { color: var(--amber); }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.cmp th, table.cmp td { padding: 6px 6px; border-bottom: 1px solid var(--line); text-align: right; vertical-align: top; }
+table.cmp th { color: var(--muted); font-weight: 600; font-size: 12px; }
+table.cmp td:first-child, table.cmp th:first-child { text-align: left; }
+table.cmp tr.sel td { background: var(--accent-weak); }
+table.cmp .sup { font-weight: 800; color: var(--green); font-size: 15px; }
+table.cmp .na { color: var(--muted); text-align: center; }
+
+/* 하단 요약 */
+footer { display: flex; gap: 10px; align-items: center; padding: 10px 16px; background: #0a0d11; border-top: 1px solid var(--line); }
+footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
+#summary { flex: 1; min-width: 0; font-size: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; white-space: nowrap; overflow-x: auto; }
+
+/* 모달 */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: flex-start; justify-content: center; padding-top: 6vh; z-index: 50; }
+.modal.open { display: flex; }
+.mbox { width: min(980px, 92vw); max-height: 86vh; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; }
+.mbox h3 { margin: 0 0 12px; font-size: 18px; display: flex; gap: 8px; align-items: center; }
+.mbox input.search { width: 100%; font-size: 20px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+.kw { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 14px; }
+.kw button { background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.kw button.on { border-color: var(--accent); background: var(--accent-weak); }
+.olist button { display: block; width: 100%; text-align: left; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; font-size: 16px; }
+.olist button:hover { border-color: var(--accent); }
+.oanswer { font-size: 30px; line-height: 1.7; word-break: keep-all; white-space: pre-wrap; }
+.empty { color: var(--muted); font-size: 15px; padding: 16px; border: 1px dashed var(--line); border-radius: 8px; line-height: 1.6; }
+.toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: var(--green); color: #04150d; font-weight: 700; padding: 8px 16px; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 60; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>로젠이사 인터넷 상담 콘솔</h1>
+  <span id="monthBadges"></span>
+  <span class="sp"></span>
+  <label class="mut">상담원 <input id="agentName" class="sm" style="width:90px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 6px" placeholder="이름"></label>
+  <button class="btn" id="btnObj">반론 대응 <kbd>/</kbd></button>
+  <button class="btn danger" id="btnReset">새 상담</button>
+</header>
+
+<!-- A. 고객 정보 (저장하지 않음: 새로고침하면 초기화) -->
+<section class="custbar" id="custbar" autocomplete="off">
+  <label>고객명 <input data-f="name" style="width:110px" placeholder="홍길동"></label>
+  <label>현재 통신사
+    <select data-f="curCarrier">
+      <option value="">선택</option><option>KT</option><option>LG U+</option><option>SKB</option><option>스카이라이프</option>
+      <option>HCN</option><option>티브로드</option><option>딜라이브</option><option>CMB</option><option>헬로비전</option><option value="신규">없음(신규)</option>
+    </select></label>
+  <label>약정 만료
+    <select data-f="contractEnd"><option value="">선택</option><option>만료</option><option>미만료</option><option>모름</option></select></label>
+  <label>이사 날짜 <input type="date" data-f="moveDate"></label>
+  <label>설치 희망일 <input type="date" data-f="installDate"></label>
+  <label>시간 <input data-f="installTime" style="width:96px" placeholder="오후 5시"></label>
+  <label>휴대폰 통신사
+    <select data-f="mobile"><option value="">선택</option><option>SKT</option><option>KT</option><option>LG U+</option><option>알뜰폰</option><option value="없음">없음</option></select></label>
+  <label class="chk"><input type="checkbox" data-f="biz"> 사업장</label>
+  <label>업종(사업장) <input data-f="bizType" style="width:110px" placeholder="예: PC방"></label>
+  <label>익일 지급액(만원) <input type="number" min="0" data-f="nextDay" style="width:80px"></label>
+</section>
+
+<main>
+  <!-- B. 스크립트 -->
+  <section id="scriptPane">
+    <div class="steps" id="steps"></div>
+    <article class="card" id="card"></article>
+    <div class="nav">
+      <button class="btn" id="prev">◀ 이전</button>
+      <button class="btn primary" id="next">다음 ▶</button>
+      <span class="pos" id="pos"></span>
+      <span class="sp" style="flex:1"></span>
+      <span class="mut"><kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>/</kbd> 반론 · <kbd>Esc</kbd> 닫기 · <kbd>Alt</kbd>+<kbd>C</kbd> 요약 복사</span>
+    </div>
+  </section>
+
+  <!-- C. 계산기 / E. 경고 -->
+  <aside id="side">
+    <div class="sec"><h2>주의사항</h2><div class="warns" id="warns"></div></div>
+    <div class="sec" id="calc"></div>
+    <div class="sec" id="result"></div>
+    <div class="sec"><h2>4사 비교 <span class="mut">같은 조건 · 지원금 높은 순 · 추가상품/차감 제외</span></h2><div id="compare"></div></div>
+  </aside>
+</main>
+
+<!-- F. 접수 요약 -->
+<footer>
+  <span class="lab">접수 요약</span>
+  <div id="summary"></div>
+  <button class="btn primary" id="btnCopy">복사</button>
+</footer>
+
+<!-- D. 반론 대응 -->
+<div class="modal" id="objModal">
+  <div class="mbox">
+    <h3>반론 대응 <span class="mut">Esc 닫기</span></h3>
+    <input class="search" id="objSearch" placeholder="반론 검색 (예: 고민, 본사)">
+    <div class="kw" id="objKw"></div>
+    <div class="olist" id="objList"></div>
+  </div>
+</div>
+<div class="modal" id="ansModal">
+  <div class="mbox">
+    <h3 id="ansTitle"></h3>
+    <div class="oanswer" id="ansBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast">복사했습니다</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ───────── 유틸 ───────── */
+const $ = (s) => document.querySelector(s);
+const won = (n) => (n == null || isNaN(n)) ? '-' : Math.round(n).toLocaleString('ko-KR');
+const exVat = (v) => Math.round(v / 1.1);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const CARRIERS = ['kt', 'lg', 'sk', 'sky'];
+const SPEED_ORDER = ['100M', '200M', '500M', '1G'];
+const SPEED_TALK = { '100M': '100메가', '200M': '200메가', '500M': '500메가', '1G': '1기가' };
+const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+const CUR_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SKB': 'sk', '스카이라이프': 'sky' };
+const MOBILE_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SKT': 'sk', '알뜰폰': 'sky' };
+
+function parseDate(s) { if (!s) return null; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function fmtDate(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월 ${d.getDate()}일(${WEEK[d.getDay()]})` : ''; }
+function fmtDateTalk(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월 ${d.getDate()}일` : ''; }
+
+/* ───────── 상태 (고객 정보는 메모리에만 — 저장 안 함) ───────── */
+const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', biz: false, bizType: '', nextDay: '' });
+const blankCalc = () => ({
+  carrier: 'sk', type: 'tv', speed: '500M', tier: 3, productId: null,
+  soho: false, combine: false, ktBracket: 'flat',
+  usim: false, usimPlan: 69, usimKind: 'general',
+  addons: {}, deds: {}, dayMode: 'auto',
+});
+let cust = blankCust();
+let calc = blankCalc();
+let step = 0;
+let combineTouched = false;
+
+/* ───────── 상품 선택 ───────── */
+function productsOf(key, type) { return DATA[key].products.filter((p) => p.type === type); }
+function speedsOf(key, type) { return SPEED_ORDER.filter((s) => productsOf(key, type).some((p) => p.speed === s)); }
+function pickProduct(key, type, speed, tier, preferId) {
+  const list = productsOf(key, type).filter((p) => p.speed === speed);
+  if (!list.length) return null;
+  if (preferId) { const f = list.find((p) => p.id === preferId); if (f) return f; }
+  if (type === 'net') return list[0];
+  const ranked = list.filter((p) => p.tier > 0).sort((a, b) => Math.abs(a.tier - tier) - Math.abs(b.tier - tier) || b.tier - a.tier);
+  return ranked[0] || list[0];
+}
+function currentProduct() {
+  const c = calc;
+  if (!speedsOf(c.carrier, c.type).includes(c.speed)) c.speed = speedsOf(c.carrier, c.type).includes('500M') ? '500M' : speedsOf(c.carrier, c.type)[0];
+  const p = pickProduct(c.carrier, c.type, c.speed, c.tier, c.productId);
+  c.productId = p ? p.id : null;
+  return p;
+}
+function installDay() {
+  if (calc.dayMode !== 'auto') return calc.dayMode;
+  const d = parseDate(cust.installDate);
+  if (!d) return 'weekday';
+  return (d.getDay() === 0 || d.getDay() === 6) ? 'weekend' : 'weekday';
+}
+
+/* ───────── 계산 ─────────
+   opt.withExtras=false → 비교표용(추가상품/차감 제외) */
+function compute(key, p, opt = {}) {
+  const C = DATA[key];
+  const withExtras = opt.withExtras !== false;
+  const day = installDay();
+  const r = { key, p, notes: [], blocked: [], items: [] };
+  if (!p) return null;
+
+  // 월요금
+  let feeVat = p.feeVat, feeEx = p.exVat != null ? p.exVat : exVat(p.feeVat);
+  let combVat = null, combEx = null, mobileDisc = null, combNote = '';
+  if (calc.combine) {
+    if (key === 'sk') {
+      combVat = p.combVat; combEx = p.combExVat; mobileDisc = C.combine.mobile1Line[p.speed];
+      combNote = '요즘가족결합 (시트 요금)';
+    } else if (key === 'kt') {
+      const sk = p.speed === '100M' ? '100M' : '500M/1G';
+      let disc;
+      if (calc.ktBracket === 'flat') { disc = C.combine.flatNetDiscount; combNote = '정액결합 인터넷할인 5,500원'; }
+      else { const i = +calc.ktBracket; disc = C.combine.netDiscount[sk][i]; mobileDisc = C.combine.mobileDiscount[sk][i] || null; combNote = `총액결합(휴대폰 ${C.combine.brackets[i]}) 인터넷할인 ${won(disc)}원`; }
+      combVat = feeVat - disc; combEx = exVat(combVat);
+    } else if (key === 'lg') {
+      const disc = C.combine.netDiscount[p.speed];
+      combVat = feeVat - disc; combEx = exVat(combVat); combNote = `참쉬운가족결합 인터넷할인 ${won(disc)}원 (추정)`;
+    } else {
+      combNote = '결합 할인표 없음 (스카이알뜰폰만 결합 가능)';
+    }
+  }
+
+  // 지원금
+  let net = p.support;
+  if (key === 'lg' && calc.soho) {
+    if (p.soho == null) { r.notes.push('이 상품은 소호 지원금이 시트에 없음 — 일반 지원금으로 표시'); }
+    else net = p.soho;
+  }
+  r.items.push([calc.soho && key === 'lg' && p.soho != null ? '소호 지원금' : '인터넷 지원금', net]);
+
+  let usim = 0;
+  if (calc.usim) {
+    if (key === 'kt') {
+      if (calc.usimPlan >= C.usim.minPlan) usim = (C.usim[calc.usimKind] || {})[p.id] || 0;
+      else r.notes.push('KT 동판은 유심 80k 이상만 금액 있음');
+    } else if (key === 'sk') {
+      const t = C.usim.tiers.filter((x) => x <= calc.usimPlan).pop();
+      if (t == null) r.notes.push('SK 동판은 유심 33 요금제 이상');
+      else {
+        const tbl = calc.usimKind === 'family' ? C.usim.family : (p.type === 'tv' ? C.usim.tv : C.usim.netOnly);
+        if (tbl[t] == null) r.notes.push('SK 인터넷 단독 + 유심 동판 금액 시트 빈칸');
+        else usim = tbl[t];
+      }
+    } else {
+      r.notes.push(`${C.short} 시트에 유심 동판 표 없음`);
+    }
+    if (usim) r.items.push(['유심 동판', usim]);
+  }
+
+  // 기존 통신사 조건
+  let carrierDeduct = 0;
+  if (key === 'sky') {
+    if (p.home30 && C.rules.home30BlockedFrom.includes(cust.curCarrier)) r.blocked.push(`기존 ${cust.curCarrier} 전환 — 30% 홈결합 불가`);
+    if (cust.curCarrier === 'KT' && !p.home30) { carrierDeduct = -C.rules.fromKtDeduct; r.items.push(['KT 전환 차감', carrierDeduct]); }
+  }
+
+  // 추가상품 / 차감
+  let addSup = 0, addFee = 0, addInstall = 0;
+  if (withExtras) {
+    for (const a of C.addons) {
+      const v = calc.addons[a.id];
+      if (!v || !addonAllowed(a, p)) continue;
+      const fee = a.optionsFrom ? C[a.optionsFrom][+v - 1].total : a.feeVat;
+      addSup += a.support; addFee += fee;
+      if (a.install) addInstall += C.install[a.install][day];
+      r.items.push([a.name + (a.optionsFrom ? ` (${C[a.optionsFrom][+v - 1].label})` : ''), a.support]);
+    }
+    for (const d of C.deductions) if (calc.deds[d.id]) { addSup += d.support; r.items.push([d.name, d.support]); }
+  }
+
+  const baseInstall = C.install[p.type === 'net' ? 'net' : 'tv'][day];
+  Object.assign(r, {
+    feeVat: feeVat + addFee, feeEx: feeEx + exVat(addFee),
+    combVat: combVat == null ? null : combVat + addFee, combEx: combEx == null ? null : combEx + exVat(addFee),
+    mobileDisc, combNote, net, usim, addSup, carrierDeduct,
+    total: net + usim + addSup + carrierDeduct,
+    install: baseInstall + addInstall, baseInstall, day,
+  });
+  return r;
+}
+function addonAllowed(a, p) {
+  if (a.discontinued) return false;
+  if (a.tvOnly && p.type !== 'tv') return false;
+  if (a.minSpeed && SPEED_ORDER.indexOf(p.speed) < SPEED_ORDER.indexOf(a.minSpeed)) return false;
+  return true;
+}
+
+/* ───────── 경고 (E) ───────── */
+function warnings(r) {
+  const w = [];
+  if (!r) return w;
+  const C = DATA[r.key], key = r.key;
+  w.push(['red', '지원금 환수', '1년 내 해지 · 요금 미납 · 미접속(가개통 직권해지) · 명의변경/일시정지 · 상품 하향 시 지원금 전액 환수']);
+  const curKey = CUR_TO_KEY[cust.curCarrier];
+  if (C.rules.rejoinDays && curKey === key) w.push(['red', '재가입 제한', `${C.name}: 본인/가족명의로 해지 후 ${C.rules.rejoinDays}일 이내 재가입 불가 (지원금 전액 환수) — 해지일 확인`]);
+  if (key === 'sky' && cust.curCarrier === 'KT') w.push(['red', 'KT 전환 차감', `KT → 스카이 전환: 지원금 ${C.rules.fromKtDeduct}만원 차감 (정책 마이너스 되지 않게 주의)`]);
+  r.blocked.forEach((b) => w.push(['red', '접수 불가', b]));
+  if (key === 'lg' && cust.biz) {
+    const hit = C.rules.bannedBiz.find((b) => cust.bizType && cust.bizType.includes(b.replace('업소', '')));
+    w.push([hit ? 'red' : 'amber', hit ? `접수 불가: ${hit}` : 'LG 사업장 확인', `LG 접수·개통 불가 업소: ${C.rules.bannedBiz.join(', ')} (개통되어도 전액 환수)`]);
+  }
+  if (calc.usim) {
+    w.push(['red', '유심 유지', '유심 개통일로부터 7개월 의무 유지 (기기변경·요금제 하향·명의변경·해지 시 전액 반환) · 선택약정 12개월/24개월 유지']);
+    if (key === 'kt' && calc.usimPlan < DATA.kt.rules.usimMinPlan) w.push(['red', 'KT 유심', 'KT 유심 37k 요금제 이상 필수']);
+    if (key === 'kt' && calc.deds['kt-ttaro']) w.push(['red', 'KT 유심', '따로 살아도 가족결합 진행불가 (유심 동판)']);
+    if (key === 'sk') w.push(['amber', 'SK 유심', '인터넷 개통일 기준 +30일 안에 유심 개통']);
+  }
+  if (key === 'sk' && calc.combine) w.push(['amber', 'SK 결합', 'SK 모든 결합은 30일 내로만 가능 · 해피콜 필수 진행']);
+  if (cust.biz && key !== 'lg') w.push(['amber', '사업장', '사업장 설치 — 통신사별 사업자 접수 조건 확인']);
+  r.notes.forEach((n) => w.push(['amber', '확인', n]));
+  return w;
+}
+
+/* ───────── 스크립트 (B) — PDF 원문 그대로, 빈칸만 자동 채움 ───────── */
+const F = (v, ph) => (v !== '' && v != null) ? `<span class="fill">${esc(v)}</span>` : `<span class="blank">${esc(ph)}</span>`;
+function tvTalk(p, mode) {
+  if (!p || !p.tv) return '';
+  const m = p.tv.match(/(\d+)개/);
+  if (mode === 'count') return m ? m[1] : p.tv;
+  return m ? `TV${m[1]}채널` : `TV ${p.tv}`;
+}
+function buildSteps(r) {
+  const C = DATA[calc.carrier], p = r && r.p;
+  const nm = F(cust.name, '○○○');
+  const total = r ? r.total : '';
+  const teaser = r ? Math.max(total - SCRIPT_CONFIG.todayBonus, 0) : '';
+  const speedTxt = p ? SPEED_TALK[p.speed] : '';
+  const prodTalk = p ? `인터넷 ${speedTxt}${p.type === 'tv' ? '+' + tvTalk(p) : ''}` : '';
+  const exFee = r ? (r.combEx != null ? r.combEx : r.feeEx) : '';
+  const steps = [];
+
+  steps.push({ t: '인사', h: `
+    <p>안녕하세요<br>로젠이사 인터넷 사업부입니다<br>안녕하세요 ${nm}님 맞으시죠?<br>인터넷 상담 희망하신다고 하셔서 연락드렸습니다</p>` });
+
+  steps.push({ t: '통신사 확인', h: `
+    <p>현재 사용하고 계신 인터넷이 어떤 통신사일까요?</p>
+    <p class="note">현재 통신사: ${F(cust.curCarrier, '미입력')} · 약정: ${F(cust.contractEnd, '미입력')}</p>` });
+
+  steps.push({ t: '지원금 제시', h: `
+    <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요</p>
+    <p>혹시 핸드폰 사용하실까요? ${F(C.mobileName, '○○')} 사용하고 계시면 ${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 제외하고 ${F(r ? won(exFee) : '', '○○,○○○')}원 나오시구요.<br>
+    ${r && r.combEx != null ? `핸드폰에서도 ${F(r.mobileDisc ? won(r.mobileDisc) : '', '○,○○○')}원 할인 되세요./<br>` : ''}
+    그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
+    ${r && r.combEx == null ? `<p class="note">휴대폰 결합 미선택 또는 결합표 없음 → 미결합 VAT 제외 요금으로 표시</p>` : ''}` });
+
+  steps.push({ t: '설치일', h: `
+    <p>그리고 이사날짜가 ${F(fmtDateTalk(cust.moveDate), '○○월 ○○일')}날 하시는거죠/ 그럼 저희가 ${F(fmtDateTalk(cust.installDate), '○○월○○일')} ${F(cust.installTime, '오후 ○시')} 설치해드려도 괜찮을까요?</p>
+    ${r ? `<p class="note">설치 요일: ${installDay() === 'weekend' ? '주말' : '평일'} → 설치비 ${won(r.install)}원</p>` : ''}` });
+
+  steps.push({ t: '명의/계좌/주민번호', h: `
+    <p>신청은 고객님 명의로 해드릴건데 고객님 성함이 ${nm}님 맞으시죠?<br>연락처도 고객님 명의 맞으시구요?</p>
+    <p>휴대폰결합은 고객센터로 해주시면 되시고, 설치받고 고객센터 전화주시거나 직영대리점 방문하시면 되구요 납부계좌 등록해드리면서 지원금 입금해드리는 계좌 입력해드릴건데요 고객님 명의 계좌 확인 부탁드립니다</p>
+    <p>설치 후에는 다른 계좌나 카드납부로 변경 가능하시니까 참고해주시면되시구요<br>통신사 등록건이라서 주민번호 입력 필요하신데 명의자님 주민번호 확인부탁드릴게요</p>
+    <p class="note">※ 계좌번호·주민번호는 이 화면에 입력하지 않습니다.</p>` });
+
+  steps.push({ t: '신청내용 복창', h: `
+    <p>신청하신 내용 다시 한번 정리해서 말씀드리면<br>
+    ${F(C.short, '○○')}통신사 인터넷속도 ${F(speedTxt, '○○메가')}, ${p && p.type === 'tv' ? `티비채널 ${F(tvTalk(p, 'count'), '○○○')}개 제공되는 상품으로` : '인터넷 단독 상품으로'}<br>
+    3년 약정으로 진행하시면서 최대지원금 ${F(total, '○○')}만원 지원해드릴거구요</p>` });
+
+  steps.push({ t: '1년 유지 고지', h: `
+    <p>가입센터 통해 지원받고 개통하시는 거기 때문에 설치하시고 1년이내에 일반해지를 하시거나 요금미납, 또는 단 한번도 접속하지 않아 가개통으로 의심되어서 직권해지될 경우, 1년이내 명의변경 또는 인터넷 상품을 낮은 요금제로 하향 시 지원금이 환수될 수 있기 때문에 1년은 정상사용 해주셔야 되시는 점 참고부탁드립니다</p>` });
+
+  if (calc.usim && calc.carrier === 'sk') steps.push({ t: '유심 안내', h: `
+    <p>첫달 요금에 신규유심비 7,700원+번이 수수료 800원이 청구됩니다</p>
+    <p>유심은 고객님께서 개통하신 날짜로부터 7개월 간은 의무적으로 유지해 주셔야 합니다. 만약 유심 개통 이후</p>
+    <ul><li>새단말기 구매로 인한 기기(핸드폰 기기변경)변경 (자급제는 상관없음)</li><li>핸드폰 월요금제 하향</li><li>명의변경 / 일반해지 및 각종해지</li><li>복지할인등록</li><li>당월 동일명의 모바일 해지 발생회선 수수료 지급 제외 입니다</li></ul>
+    <p>기존 회선 유지가 안된다면 유심 개통으로 인해 지급된 지원금은 전액 반환 해주셔야합니다</p>
+    <p>유심 개통시 신용조회가 필수적으로 이루어지니 참고부탁드립니다. 또한 선택약정 12개월 (12개월유지), 선택약정 24개월 (24개월유지) 는 꼭 지켜주셔야 위약금이 발생되지 않습니다.</p>
+    <p>인터넷+TV (인터넷이)이 개통 완료된 이후 연락주시면 유심을 고객님께 등기우편으로 발송해드리겠습니다</p>` });
+  if (calc.usim && calc.carrier === 'kt') steps.push({ t: '유심 안내', h: `
+    <p>KT 유심은 고객님께서 개통하신 날짜로부터 7개월 간은 의무적으로 유지해 주셔야 합니다.</p>
+    <p>7개월 이내에 만약</p>
+    <ul><li>새단말기 구매로 인한 기기(핸드폰 기기변경)변경</li><li>핸드폰 월요금제 하향</li><li>일반해지 및 각종해지</li></ul>
+    <p>등이 이루어져 유지가 안된다면 KT 유심개통으로 인해 지급된 지원금은 전액 반환해주셔야합니다</p>
+    <p>KT 유심은 선택약정 12개월 (12개월유지), 선택약정 24개월 (24개월유지) 는 꼭 지켜주셔야 위약금이 발생되지 않습니다.</p>
+    <p>유심 개통시 신용조회가 필수적으로 이루어지니 참고부탁드립니다<br>유심 개통시 인터넷+TV 혹은 인터넷이 개통 완료된 이후 유심이 고객님께 등기우편으로 발송이 나갑니다.</p>` });
+
+  steps.push({ t: '요금/설치비/지급일', h: `
+    <p>요금은 부가세제외 ${F(r ? won(r.feeEx) : '', '○○,○○○')}원이신데 휴대폰결합시 부가세제외 ${F(r && r.combEx != null ? won(r.combEx) : '', '○○,○○○')}원이세요<br>
+    그리고 설치비 ${F(r ? won(r.install) : '', '○○,○○○')}원은 익월 요금에 딱 한번 합산 청구 되실거구요<br>
+    지원금은 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${F(cust.nextDay, '○○')}만원, 차액은 다음주 금요일날 입금되실거예요</p>
+    ${r ? `<p class="note">VAT 포함: 월 ${won(r.feeVat)}원${r.combVat != null ? ` / 결합 ${won(r.combVat)}원` : ''} · 지원금 총 ${r.total}만원${cust.nextDay !== '' ? ` → 차액 ${r.total - Number(cust.nextDay)}만원` : ' (익일 지급액은 상단 입력칸)'}</p>` : ''}` });
+
+  steps.push({ t: '해피콜/설치팀 안내', h: `
+    <p>접수 후 센터에서해피콜팀, 설치팀에서 각각 연락가실건데</p>
+    <p>해피콜 전화가 갈 때 지원받는 현금 금액을 확인하는 경우가 있는데,<br>이때는 원래 가이드로는 더 적은 금액인데 제가 추가로 지원금을 더 넣어드린 거니까<br>그냥 네라고 말씀해주시면되세요</p>` });
+
+  steps.push({ t: '마무리', h: `
+    <p>저는 담당자 ${F(agentName(), '○○○')}이구요 통화 끝나면 문자로 명함 보내드릴테니까 저장해두셨다가 문의사항 있으시면 연락주시구요.</p>` });
+  return steps;
+}
+
+/* ───────── 렌더링 ───────── */
+function agentName() { return ($('#agentName').value || '').trim(); }
+
+function renderMonthBadges() {
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  $('#monthBadges').innerHTML = CARRIERS.map((k) => {
+    const old = DATA[k].baseMonth < ym;
+    return `<span class="badge ${old ? 'amber' : 'gray'}" title="${old ? '이번 달 정책으로 업데이트 필요' : ''}">${DATA[k].short} ${DATA[k].baseMonth.replace('-', '.')}${old ? ' ⚠' : ''}</span>`;
+  }).join(' ') + (CARRIERS.some((k) => DATA[k].baseMonth < ym) ? ` <span class="badge amber">${now.getMonth() + 1}월 정책 업데이트 필요</span>` : '');
+}
+
+function seg(name, items, val, attrs = '') {
+  return `<div class="seg">${items.map(([v, label, dis]) => `<button data-set="${name}" data-v="${esc(v)}" class="${String(v) === String(val) ? 'on' : ''}" ${dis ? 'disabled' : ''} ${attrs}>${esc(label)}</button>`).join('')}</div>`;
+}
+
+function renderCalc(p) {
+  const C = DATA[calc.carrier], key = calc.carrier;
+  const tvs = calc.type === 'tv' ? productsOf(key, 'tv').filter((x) => x.speed === calc.speed) : [];
+  let h = `<h2>요금 계산기 <span class="mut">${esc(C.name)} · 대표번호 ${esc(C.phone)}</span></h2>`;
+  h += `<div class="row"><div class="lb">통신사</div>${seg('carrier', CARRIERS.map((k) => [k, DATA[k].short]), key)}</div>`;
+  if (key === 'lg') h += `<div class="row"><div class="lb">카테고리</div>${seg('soho', [['0', '일반'], ['1', '소호(사업장)']], calc.soho ? '1' : '0')}</div>`;
+  h += `<div class="row"><div class="lb">상품 유형</div>${seg('type', [['net', '인터넷 단독'], ['tv', '인터넷+TV']], calc.type)}</div>`;
+  h += `<div class="row"><div class="lb">속도</div>${seg('speed', SPEED_ORDER.filter((s) => s !== '200M' || key === 'sky').map((s) => [s, s, !speedsOf(key, calc.type).includes(s)]), calc.speed)}</div>`;
+  if (calc.type === 'tv') h += `<div class="row"><div class="lb">TV 채널</div>${seg('productId', tvs.map((x) => [x.id, x.tv]), p && p.id)}</div>`;
+
+  // 결합
+  let comb = seg('combine', [['0', '미결합'], ['1', '휴대폰 결합']], calc.combine ? '1' : '0');
+  if (calc.combine && key === 'kt') comb += `<div style="margin-top:6px"><select class="sm" data-set="ktBracket"><option value="flat" ${calc.ktBracket === 'flat' ? 'selected' : ''}>정액결합 (인터넷 -5,500)</option>${C.combine.brackets.map((b, i) => `<option value="${i}" ${String(calc.ktBracket) === String(i) ? 'selected' : ''}>총액결합 · 휴대폰 ${b}</option>`).join('')}</select></div>`;
+  if (calc.combine && key === 'sky') comb += `<div class="mut" style="margin-top:4px">스카이 결합표 없음 (스카이알뜰폰만 가능)</div>`;
+  h += `<div class="row"><div class="lb">휴대폰 결합</div><div>${comb}</div></div>`;
+
+  // 유심 동판
+  let us = seg('usim', [['0', '없음'], ['1', '유심 동판']], calc.usim ? '1' : '0');
+  if (calc.usim) us += `<div style="margin-top:6px;display:flex;gap:6px;align-items:center"><select class="sm" data-set="usimPlan">${[33, 37, 43, 49, 61, 69, 80, 89].map((v) => `<option value="${v}" ${calc.usimPlan === v ? 'selected' : ''}>유심 ${v}k 이상</option>`).join('')}</select>${seg('usimKind', [['general', '일반(본인)'], ['family', '패밀리(가족)']], calc.usimKind)}</div>`;
+  if (calc.usim && !C.usim) us += `<div class="mut" style="margin-top:4px">${C.short} 시트에 동판 표 없음</div>`;
+  h += `<div class="row"><div class="lb">유심 동판</div><div>${us}</div></div>`;
+
+  // 추가상품
+  const groups = {};
+  let ad = '';
+  for (const a of C.addons) {
+    const ok = p && addonAllowed(a, p);
+    const why = a.discontinued ? '판매종료' : (a.tvOnly && p && p.type !== 'tv') ? 'TV 상품만' : (a.minSpeed && p && !ok) ? `${a.minSpeed} 이상` : '';
+    const sup = `<span class="mut">${a.support ? `지원 ${a.support > 0 ? '+' : ''}${a.support}` : ''}</span>`;
+    if (a.optionsFrom) {
+      ad += `<div class="opt ${ok ? '' : 'dis'}">${esc(a.name)} <select class="sm" data-addon="${a.id}" ${ok ? '' : 'disabled'}><option value="">없음</option>${C[a.optionsFrom].map((o, i) => `<option value="${i + 1}" ${String(calc.addons[a.id]) === String(i + 1) ? 'selected' : ''}>${esc(o.label)} ${won(o.total)}원</option>`).join('')}</select> ${sup} <span class="mut">${why}</span></div>`;
+    } else {
+      ad += `<label class="opt ${ok ? '' : 'dis'}"><input type="checkbox" data-addon="${a.id}" ${a.group ? `data-group="${a.group}"` : ''} ${calc.addons[a.id] && ok ? 'checked' : ''} ${ok ? '' : 'disabled'}> ${esc(a.name)} <span class="mut">${a.feeVat ? won(a.feeVat) + '원' : ''}</span> ${sup} <span class="mut">${why}</span></label>`;
+    }
+  }
+  h += `<div class="row"><div class="lb">추가 셋톱/<br>와이파이</div><div>${ad || '<span class="mut">없음</span>'}</div></div>`;
+  if (C.deductions.length) h += `<div class="row"><div class="lb">차감</div><div>${C.deductions.map((d) => `<label class="opt"><input type="checkbox" data-ded="${d.id}" ${calc.deds[d.id] ? 'checked' : ''}> ${esc(d.name)} <span class="mut">${d.support}</span></label>`).join('')}</div></div>`;
+  const autoLbl = cust.installDate ? `자동(${fmtDate(cust.installDate)})` : '자동(날짜 미입력→평일)';
+  h += `<div class="row"><div class="lb">설치 요일</div>${seg('dayMode', [['auto', autoLbl], ['weekday', '평일'], ['weekend', '주말']], calc.dayMode)}</div>`;
+  $('#calc').innerHTML = h;
+}
+
+function renderResult(r) {
+  if (!r) { $('#result').innerHTML = '<div class="mut">상품 없음</div>'; return; }
+  const items = r.items.map(([k, v]) => `${esc(k)} ${v > 0 ? '+' : ''}${v}`).join(' · ');
+  $('#result').innerHTML = `
+    <h2>계산 결과</h2>
+    <p class="pname">${esc(DATA[r.key].short)} · ${esc(r.p.name)}${r.blocked.length ? ' <span class="badge red">접수 불가</span>' : ''}</p>
+    <div class="res">
+      <div class="box big"><div class="k">지원금 합계</div><div class="v">${r.total}만원</div><div class="breakdown">${items}</div></div>
+      <div class="box"><div class="k">월요금 (VAT 제외)</div><div class="v">${won(r.feeEx)}원</div><div class="s">VAT 포함 ${won(r.feeVat)}원</div></div>
+      <div class="box"><div class="k">결합 시 월요금 (VAT 제외)</div><div class="v">${r.combEx != null ? won(r.combEx) + '원' : '-'}</div><div class="s">${r.combVat != null ? `VAT 포함 ${won(r.combVat)}원 · ` : ''}${esc(r.combNote || (calc.combine ? '' : '결합 미선택'))}</div></div>
+      <div class="box"><div class="k">설치비 (${r.day === 'weekend' ? '주말' : '평일'})</div><div class="v">${won(r.install)}원</div><div class="s">익월 요금에 1회 합산 청구${r.install !== r.baseInstall ? ` · 추가 ${won(r.install - r.baseInstall)}` : ''}</div></div>
+      <div class="box"><div class="k">휴대폰 할인</div><div class="v">${r.mobileDisc ? won(r.mobileDisc) + '원' : '-'}</div><div class="s">${r.key === 'sk' ? '요즘가족 1회선 기준' : r.key === 'kt' ? '총액결합 구간 선택 시' : '시트 기준 없음'}</div></div>
+    </div>`;
+}
+
+function renderCompare() {
+  const rows = CARRIERS.map((k) => {
+    const sp = speedsOf(k, calc.type).includes(calc.speed) ? calc.speed : null;
+    const p = sp ? pickProduct(k, calc.type, sp, calc.tier) : null;
+    return { k, r: p ? compute(k, p, { withExtras: false }) : null };
+  });
+  rows.sort((a, b) => (b.r ? b.r.total : -999) - (a.r ? a.r.total : -999));
+  $('#compare').innerHTML = `<table class="cmp"><thead><tr><th>통신사 · 상품</th><th>월(VAT별도)</th><th>결합(VAT별도)</th><th>설치비</th><th>지원금</th></tr></thead><tbody>${
+    rows.map(({ k, r }) => r ? `<tr class="${k === calc.carrier ? 'sel' : ''}" data-pick="${k}" style="cursor:pointer">
+      <td><b>${esc(DATA[k].short)}</b> ${r.blocked.length ? '<span class="badge red">불가</span>' : ''}<br><span class="mut">${esc(r.p.name)}</span></td>
+      <td>${won(r.feeEx)}<br><span class="mut">${won(r.feeVat)}</span></td>
+      <td>${r.combEx != null ? won(r.combEx) : '-'}${r.combVat != null ? `<br><span class="mut">${won(r.combVat)}</span>` : ''}</td>
+      <td>${won(r.install)}</td>
+      <td><span class="sup">${r.total}</span><br><span class="mut">${r.net}${r.usim ? ` +동판${r.usim}` : ''}${r.carrierDeduct ? ` ${r.carrierDeduct}` : ''}</span></td></tr>`
+      : `<tr><td><b>${esc(DATA[k].short)}</b></td><td colspan="4" class="na">${esc(calc.speed)} 상품 없음</td></tr>`).join('')
+  }</tbody></table><div class="mut" style="margin-top:6px">행 클릭 → 그 통신사로 계산기 전환 · 아래 줄 숫자 = VAT 포함</div>`;
+}
+
+function renderWarns(r) {
+  const w = warnings(r);
+  $('#warns').innerHTML = w.map(([lv, t, d]) => `<div class="warn ${lv}"><span class="badge ${lv}">${esc(t)}</span><span>${esc(d)}</span></div>`).join('');
+}
+
+function renderScript(r) {
+  const steps = buildSteps(r);
+  step = Math.max(0, Math.min(step, steps.length - 1));
+  $('#steps').innerHTML = steps.map((s, i) => `<button data-step="${i}" class="${i === step ? 'on' : i < step ? 'done' : ''}">${i + 1}. ${esc(s.t)}</button>`).join('');
+  $('#card').innerHTML = `<div class="stitle">${step + 1}. ${esc(steps[step].t)}<span>${step + 1} / ${steps.length}</span></div>${steps[step].h}`;
+  $('#pos').textContent = `${step + 1} / ${steps.length}`;
+  $('#prev').disabled = step === 0;
+  $('#next').disabled = step === steps.length - 1;
+  return steps.length;
+}
+
+function summaryText(r) {
+  if (!r) return '';
+  const C = DATA[r.key];
+  const parts = [];
+  parts.push(`[${C.short}${r.key === 'lg' && calc.soho ? ' 소호' : ''}] ${r.p.name}`);
+  const extras = r.items.slice(1).map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}`).join(', ');
+  parts.push(`월 ${won(r.feeEx)}원(VAT별도)/${won(r.feeVat)}원(VAT포함)` + (r.combEx != null ? ` · 결합 ${won(r.combEx)}원(VAT별도)` : ''));
+  parts.push(`지원금 총 ${r.total}만원 (인터넷 ${r.net}${extras ? ', ' + extras : ''})`);
+  parts.push(`설치 ${cust.installDate ? fmtDate(cust.installDate) : '미정'}${cust.installTime ? ' ' + cust.installTime : ''} · 설치비 ${won(r.install)}원(${r.day === 'weekend' ? '주말' : '평일'})`);
+  const c = [];
+  if (cust.name) c.push(`고객 ${cust.name}`);
+  if (cust.curCarrier) c.push(`현재 ${cust.curCarrier}${cust.contractEnd ? `(약정 ${cust.contractEnd})` : ''}`);
+  if (cust.mobile) c.push(`휴대폰 ${cust.mobile}`);
+  if (cust.moveDate) c.push(`이사 ${fmtDate(cust.moveDate)}`);
+  if (cust.biz) c.push(`사업장${cust.bizType ? '(' + cust.bizType + ')' : ''}`);
+  if (calc.usim) c.push(`유심 ${calc.usimPlan}k ${calc.usimKind === 'family' ? '패밀리' : '일반'}`);
+  if (c.length) parts.push(c.join(' · '));
+  return parts.join(' | ');
+}
+
+let lastResult = null;
+function render() {
+  const p = currentProduct();
+  if (p && p.tier) calc.tier = p.tier;
+  const r = p ? compute(calc.carrier, p) : null;
+  lastResult = r;
+  renderCalc(p);
+  renderResult(r);
+  renderCompare();
+  renderWarns(r);
+  renderScript(r);
+  $('#summary').textContent = summaryText(r);
+}
+
+/* ───────── 이벤트 ───────── */
+$('#custbar').addEventListener('input', (e) => {
+  const f = e.target.dataset.f; if (!f) return;
+  cust[f] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+  if (f === 'biz') calc.soho = cust.biz;
+  if (f === 'mobile' && !combineTouched) calc.combine = MOBILE_TO_KEY[cust.mobile] === calc.carrier;
+  render();
+});
+$('#agentName').addEventListener('input', () => { try { localStorage.setItem('consoleAgentName', agentName()); } catch (_) {} render(); });
+try { $('#agentName').value = localStorage.getItem('consoleAgentName') || ''; } catch (_) {}
+
+$('#side').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-set]');
+  if (b) {
+    const k = b.dataset.set, v = b.dataset.v;
+    if (k === 'carrier') { calc.carrier = v; calc.productId = null; calc.addons = {}; calc.deds = {}; if (!combineTouched) calc.combine = MOBILE_TO_KEY[cust.mobile] === v; }
+    else if (k === 'type') { calc.type = v; calc.productId = null; }
+    else if (k === 'speed') { calc.speed = v; calc.productId = null; }
+    else if (k === 'productId') { calc.productId = v; }
+    else if (k === 'soho' || k === 'combine' || k === 'usim') { calc[k] = v === '1'; if (k === 'combine') combineTouched = true; }
+    else calc[k] = v;
+    render(); return;
+  }
+  const tr = e.target.closest('tr[data-pick]');
+  if (tr) { calc.carrier = tr.dataset.pick; calc.productId = null; calc.addons = {}; calc.deds = {}; render(); }
+});
+$('#side').addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.dataset.set === 'ktBracket') calc.ktBracket = t.value;
+  else if (t.dataset.set === 'usimPlan') calc.usimPlan = Number(t.value);
+  else if (t.dataset.addon) {
+    if (t.type === 'checkbox') {
+      if (t.checked && t.dataset.group) DATA[calc.carrier].addons.filter((a) => a.group === t.dataset.group).forEach((a) => { calc.addons[a.id] = false; });
+      calc.addons[t.dataset.addon] = t.checked;
+    } else calc.addons[t.dataset.addon] = t.value;
+  } else if (t.dataset.ded) calc.deds[t.dataset.ded] = t.checked;
+  else return;
+  render();
+});
+
+function go(d) { step += d; render(); }
+$('#prev').onclick = () => go(-1);
+$('#next').onclick = () => go(1);
+$('#steps').addEventListener('click', (e) => { const b = e.target.closest('button[data-step]'); if (b) { step = +b.dataset.step; render(); } });
+
+function copySummary() {
+  const text = $('#summary').textContent;
+  const done = () => { const t = $('#toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1200); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  function fallback() { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (_) {} ta.remove(); }
+}
+$('#btnCopy').onclick = copySummary;
+
+$('#btnReset').onclick = () => {
+  if (!confirm('새 상담을 시작할까요? 입력한 고객 정보가 모두 지워집니다.')) return;
+  cust = blankCust(); calc = blankCalc(); step = 0; combineTouched = false;
+  document.querySelectorAll('#custbar [data-f]').forEach((el) => { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+  closeModals(); render();
+};
+
+/* 반론 대응 (D) */
+let objKw = '';
+function openObj() { $('#objModal').classList.add('open'); $('#objSearch').focus(); $('#objSearch').select(); renderObj(); }
+function closeModals() { document.querySelectorAll('.modal').forEach((m) => m.classList.remove('open')); }
+function renderObj() {
+  const q = $('#objSearch').value.trim();
+  $('#objKw').innerHTML = OBJECTION_KEYWORDS.map((k) => `<button data-kw="${esc(k)}" class="${objKw === k ? 'on' : ''}">${esc(k)}</button>`).join('');
+  const hit = OBJECTIONS.map((o, i) => ({ o, i })).filter(({ o }) => {
+    const hay = [o.title, o.answer, ...(o.keywords || [])].join(' ');
+    return (!q || hay.includes(q)) && (!objKw || hay.includes(objKw));
+  });
+  $('#objList').innerHTML = !OBJECTIONS.length
+    ? `<div class="empty">반론 대응 데이터가 아직 없습니다.<br>"반론 대응 32개" PDF가 첨부되지 않아, 파일 상단 <b>OBJECTIONS</b> 배열이 비어 있어요.</div>`
+    : hit.length ? hit.map(({ o, i }) => `<button data-obj="${i}">${esc(o.title)}</button>`).join('') : `<div class="empty">검색 결과 없음</div>`;
+}
+$('#btnObj').onclick = openObj;
+$('#objSearch').addEventListener('input', renderObj);
+$('#objKw').addEventListener('click', (e) => { const b = e.target.closest('[data-kw]'); if (b) { objKw = objKw === b.dataset.kw ? '' : b.dataset.kw; renderObj(); } });
+$('#objList').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-obj]'); if (!b) return;
+  const o = OBJECTIONS[+b.dataset.obj];
+  $('#ansTitle').textContent = o.title; $('#ansBody').textContent = o.answer;
+  $('#objModal').classList.remove('open'); $('#ansModal').classList.add('open');
+});
+document.querySelectorAll('.modal').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m) closeModals(); }));
+
+document.addEventListener('keydown', (e) => {
+  const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName);
+  const modalOpen = !!document.querySelector('.modal.open');
+  if (e.key === 'Escape') { if (modalOpen) { closeModals(); e.preventDefault(); } else if (typing) document.activeElement.blur(); return; }
+  if (e.altKey && (e.key === 'c' || e.key === 'C' || e.code === 'KeyC')) { e.preventDefault(); copySummary(); return; }
+  if (typing || modalOpen) return;
+  if (e.key === '/' || e.key === 'F2') { e.preventDefault(); openObj(); return; }
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+});
+
+renderMonthBadges();
+render();
+})();
+</script>
+</body>
+</html>
