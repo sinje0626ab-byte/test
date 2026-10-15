@@ -11,8 +11,8 @@
    ---------------------------------------------------------------------
    - 모든 상품 3년약정 기준
    - support(지원금): 만원 단위 현금 지원금 (15 = 15만원)
-   - feeVat: 시트 월요금(VAT 포함, 원). VAT 제외 금액은 feeVat ÷ 1.1 로 자동 계산
-     (SKB만 시트에 VAT 제외 금액이 따로 있어서 exVat / combExVat 을 직접 사용)
+   - feeVat: 시트 월요금(VAT 포함, 원). 화면·스크립트의 요금은 모두 VAT 포함 금액으로 표시
+     (SKB의 exVat / combExVat 은 시트 원본 보관용, 화면에는 feeVat / combVat 사용)
    - tier: 비교표에서 통신사끼리 TV 등급 맞추는 값 (1=기본, 2=중간, 3=고급)
    - baseMonth: 이 시트의 정책 기준월. 이번 달보다 이전이면 화면에 경고 배지가 뜸
    - "// TODO 확인필요" = PDF에서 확정 못한 값
@@ -717,7 +717,7 @@ function buildSteps(r) {
   const teaser = r ? Math.max(total - SCRIPT_CONFIG.todayBonus, 0) : '';
   const speedTxt = p ? SPEED_TALK[p.speed] : '';
   const prodTalk = p ? `인터넷 ${speedTxt}${p.type === 'tv' ? '+' + tvTalk(p) : ''}` : '';
-  const exFee = r ? (r.combEx != null ? r.combEx : r.feeEx) : '';
+  const vatFee = r ? (r.combVat != null ? r.combVat : r.feeVat) : '';
   const steps = [];
 
   steps.push({ t: '인사', h: `
@@ -746,9 +746,9 @@ function buildSteps(r) {
     ${Number(cust.tvCount) >= 2 ? `<p class="note">TV ${esc(cust.tvCount)}대 이용 중 → 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인 (계산기 "추가 셋톱")</p>` : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
     <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요</p>
-    <p>${F(C.mobileName, '○○')} 사용하고 계시면 ${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 제외하고 ${F(r ? won(exFee) : '', '○○,○○○')}원 나오시구요.<br>
+    <p>${F(C.mobileName, '○○')} 사용하고 계시면 ${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.<br>
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
-    ${r && r.combEx == null ? `<p class="note">휴대폰 결합 미선택 또는 결합표 없음 → 미결합 VAT 제외 요금으로 표시</p>` : ''}` });
+    ${r && r.combEx == null ? `<p class="note">휴대폰 결합 미선택 또는 결합표 없음 → 미결합 요금(부가세 포함)으로 표시</p>` : ''}` });
 
   steps.push({ t: '설치일', h: `
     <p>그리고 이사날짜가 ${IN('moveDate', '', 'date')}날 하시는거죠/ 그럼 저희가 ${IN('installDate', '', 'date')} ${IN('installTime', '오후 ○시')} 설치해드려도 괜찮을까요?</p>
@@ -784,13 +784,13 @@ function buildSteps(r) {
     <p>유심 개통시 신용조회가 필수적으로 이루어지니 참고부탁드립니다<br>유심 개통시 인터넷+TV 혹은 인터넷이 개통 완료된 이후 유심이 고객님께 등기우편으로 발송이 나갑니다.</p>` });
 
   steps.push({ t: '요금/설치비/지급일', h: `
-    <p>요금은 부가세제외 ${F(r ? won(r.feeEx) : '', '○○,○○○')}원이신데 휴대폰결합시 부가세제외 ${F(r && r.combEx != null ? won(r.combEx) : '', '○○,○○○')}원이세요<br>
+    <p>요금은 부가세포함 ${F(r ? won(r.feeVat) : '', '○○,○○○')}원이신데 휴대폰결합시 부가세포함 ${F(r && r.combVat != null ? won(r.combVat) : '', '○○,○○○')}원이세요<br>
     그리고 설치비 ${F(r ? won(r.install) : '', '○○,○○○')}원은 익월 요금에 딱 한번 합산 청구 되실거구요<br>
     ${r && r.pay && !r.pay.gift && !r.pay.rest ? `지원금은 현금으로 지급되시고, 설치 당일 지원금 ${F(r.total, '○○')}만원 전액 바로 지급되실거예요`
     : r && r.pay && !r.pay.gift ? `지원금은 현금으로 지급되시고, 설치 당일 ${F(r.pay.first, '○○')}만원이 바로 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
     : r && r.pay ? `지원금은 ${esc(C.giftName)}과 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${esc(C.giftName)} ${F(r.pay.gift, '○')}만원에 현금 ${F(r.pay.cash, '○')}만원이 먼저 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
     : `지원금은 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${IN('nextDay', '○○', 'number')}만원, 차액은 다음주 금요일날 입금되실거예요`}</p>
-    ${r ? `<p class="note">VAT 포함: 월 ${won(r.feeVat)}원${r.combVat != null ? ` / 결합 ${won(r.combVat)}원` : ''} · 지원금 총 ${r.total}만원 → <span data-show="diff">${diffText(r)}</span></p>` : ''}` });
+    ${r ? `<p class="note">지원금 총 ${r.total}만원 → <span data-show="diff">${diffText(r)}</span></p>` : ''}` });
 
   steps.push({ t: '해피콜/설치팀 안내', h: `
     <p>접수 후 센터에서해피콜팀, 설치팀에서 각각 연락가실건데</p>
@@ -885,8 +885,8 @@ function renderResult(r) {
     <p class="pname">${esc(DATA[r.key].short)} · ${esc(r.p.name)}${r.blocked.length ? ' <span class="badge red">접수 불가</span>' : ''}</p>
     <div class="res">
       <div class="box big"><div class="k">지원금 합계</div><div class="v">${r.total}만원</div><div class="breakdown">${items}</div></div>
-      <div class="box"><div class="k">월요금 (VAT 제외)</div><div class="v">${won(r.feeEx)}원</div><div class="s">VAT 포함 ${won(r.feeVat)}원</div></div>
-      <div class="box"><div class="k">결합 시 월요금 (VAT 제외)</div><div class="v">${r.combEx != null ? won(r.combEx) + '원' : '-'}</div><div class="s">${r.combVat != null ? `VAT 포함 ${won(r.combVat)}원 · ` : ''}${esc(r.combNote || (calc.combine ? '' : '결합 미선택'))}</div></div>
+      <div class="box"><div class="k">월요금 (VAT 포함)</div><div class="v">${won(r.feeVat)}원</div><div class="s">미결합</div></div>
+      <div class="box"><div class="k">결합 시 월요금 (VAT 포함)</div><div class="v">${r.combVat != null ? won(r.combVat) + '원' : '-'}</div><div class="s">${esc(r.combNote || (calc.combine ? '' : '결합 미선택'))}</div></div>
       <div class="box"><div class="k">설치비 (${r.day === 'weekend' ? '주말' : '평일'})</div><div class="v">${won(r.install)}원</div><div class="s">익월 요금에 1회 합산 청구${r.install !== r.baseInstall ? ` · 추가 ${won(r.install - r.baseInstall)}` : ''}</div></div>
       <div class="box"><div class="k">휴대폰 할인</div><div class="v">${r.mobileDisc ? won(r.mobileDisc) + '원' : '-'}</div><div class="s">${r.key === 'sk' ? '요즘가족 1회선 기준' : r.key === 'kt' ? '총액결합 구간 선택 시' : '시트 기준 없음'}</div></div>
     </div>`;
@@ -903,15 +903,15 @@ function renderCompare() {
   const rows = compareRows();
   const score = (x) => !x.r ? -999 : x.r.same ? -500 : x.r.total;
   rows.sort((a, b) => score(b) - score(a));
-  $('#compare').innerHTML = `<table class="cmp"><thead><tr><th>통신사 · 상품</th><th>월(VAT별도)</th><th>결합(VAT별도)</th><th>설치비</th><th>지원금</th></tr></thead><tbody>${
+  $('#compare').innerHTML = `<table class="cmp"><thead><tr><th>통신사 · 상품</th><th>월요금</th><th>결합 시</th><th>설치비</th><th>지원금</th></tr></thead><tbody>${
     rows.map(({ k, r }) => r ? `<tr class="${k === calc.carrier ? 'sel' : ''}" data-pick="${k}" style="cursor:pointer">
       <td><b>${esc(DATA[k].short)}</b> ${r.same ? '<span class="badge red">동일 통신사 불가</span>' : r.blocked.length ? '<span class="badge red">불가</span>' : ''}<br><span class="mut">${esc(r.p.name)}</span></td>
-      <td>${won(r.feeEx)}<br><span class="mut">${won(r.feeVat)}</span></td>
-      <td>${r.combEx != null ? won(r.combEx) : '-'}${r.combVat != null ? `<br><span class="mut">${won(r.combVat)}</span>` : ''}</td>
+      <td>${won(r.feeVat)}</td>
+      <td>${r.combVat != null ? won(r.combVat) : '-'}</td>
       <td>${won(r.install)}</td>
       <td><span class="sup">${r.total}</span><br><span class="mut">${r.net}${r.usim ? ` +동판${r.usim}` : ''}${r.carrierDeduct ? ` ${r.carrierDeduct}` : ''}</span></td></tr>`
       : `<tr><td><b>${esc(DATA[k].short)}</b></td><td colspan="4" class="na">${esc(calc.speed)} 상품 없음</td></tr>`).join('')
-  }</tbody></table><div class="mut" style="margin-top:6px">행 클릭 → 그 통신사로 계산기 전환 · 아래 줄 숫자 = VAT 포함</div>`;
+  }</tbody></table><div class="mut" style="margin-top:6px">행 클릭 → 그 통신사로 계산기 전환 · 요금은 모두 VAT 포함</div>`;
 }
 
 function renderWarns(r) {
@@ -938,7 +938,7 @@ function summaryText(r) {
   const parts = [];
   parts.push(`[${C.short}${r.key === 'lg' && calc.soho ? ' 소호' : ''}] ${r.p.name}`);
   const extras = r.items.slice(1).map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}`).join(', ');
-  parts.push(`월 ${won(r.feeEx)}원(VAT별도)/${won(r.feeVat)}원(VAT포함)` + (r.combEx != null ? ` · 결합 ${won(r.combEx)}원(VAT별도)` : ''));
+  parts.push(`월 ${won(r.feeVat)}원(VAT포함)` + (r.combVat != null ? ` · 결합 ${won(r.combVat)}원(VAT포함)` : ''));
   parts.push(`지원금 총 ${r.total}만원 (인터넷 ${r.net}${extras ? ', ' + extras : ''})` + (r.pay ? ` · ${r.pay.when} ${r.pay.gift ? `${C.giftName} ${r.pay.gift}+현금 ${r.pay.cash}` : `현금 ${r.pay.first}`}, 차액 ${r.pay.rest} 다음주 금요일` : ''));
   parts.push(`설치 ${cust.installDate ? fmtDate(cust.installDate) : '미정'}${cust.installTime ? ' ' + cust.installTime : ''} · 설치비 ${won(r.install)}원(${r.day === 'weekend' ? '주말' : '평일'})`);
   const c = [];
