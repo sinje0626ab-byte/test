@@ -290,6 +290,7 @@ kbd { font-family: ui-monospace, monospace; font-size: 11px; padding: 1px 5px; b
 .ans > button:disabled { opacity: .4; }
 .ans .sub { font-size: 12px; opacity: .8; margin-left: 4px; }
 .ans .divider { width: 100%; height: 0; }
+.how { display: inline-block; font-size: 14px; font-weight: 400; color: var(--muted); line-height: 1.5; margin: 2px 0 4px; }
 .info { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; font-size: 14px; align-items: center; }
 .info .k { color: var(--muted); font-size: 13px; }
 .info .v.none { color: var(--blank); }
@@ -575,6 +576,8 @@ function compute(key, p, opt = {}) {
   if (!p) return null;
 
   // 월요금
+  r.feeAdds = [];
+  r.feeHow = p.exVat != null ? `시트 미결합 ${won(p.exVat)}원 × 1.1(부가세) = ${won(p.feeVat)}원` : `시트 월요금(부가세 포함) ${won(p.feeVat)}원`;
   let feeVat = p.feeVat, feeEx = p.exVat != null ? p.exVat : exVat(p.feeVat);
   let combVat = null, combEx = null, mobileDisc = null, combNote = '';
   if (calc.combine && combinable(key) === false && key === calc.carrier) combNote = `휴대폰 ${cust.mobile} → ${C.short} 인터넷과 결합 불가`;
@@ -582,15 +585,18 @@ function compute(key, p, opt = {}) {
     if (key === 'sk') {
       combVat = p.combVat; combEx = p.combExVat; mobileDisc = C.combine.mobile1Line[p.speed];
       combNote = `휴대폰 결합: 시트 결합 ${won(p.combExVat)}원 + VAT`;
+      r.combHow = `시트 결합 ${won(p.combExVat)}원 × 1.1(부가세) = ${won(combVat)}원`;
     } else if (key === 'kt') {
       const sk = p.speed === '100M' ? '100M' : '500M/1G';
       let disc;
       if (calc.ktBracket === 'flat') { disc = C.combine.flatNetDiscount; combNote = '정액결합 인터넷할인 5,500원'; }
       else { const i = +calc.ktBracket; disc = C.combine.netDiscount[sk][i]; mobileDisc = C.combine.mobileDiscount[sk][i] || null; combNote = `총액결합(휴대폰 ${C.combine.brackets[i]}) 인터넷할인 ${won(disc)}원`; }
       combVat = feeVat - disc; combEx = exVat(combVat);
+      r.combHow = `월요금 ${won(feeVat)}원 − ${calc.ktBracket === 'flat' ? '정액결합' : '총액결합'} 인터넷할인 ${won(disc)}원 = ${won(combVat)}원`;
     } else if (key === 'lg') {
       const disc = C.combine.netDiscount[p.speed];
       combVat = feeVat - disc; combEx = exVat(combVat); combNote = `참쉬운가족결합 인터넷할인 ${won(disc)}원 (추정)`;
+      r.combHow = `월요금 ${won(feeVat)}원 − 참쉬운가족결합 인터넷할인 ${won(disc)}원 = ${won(combVat)}원`;
     } else {
       combNote = '결합 할인표 없음 (스카이알뜰폰만 결합 가능)';
     }
@@ -640,6 +646,7 @@ function compute(key, p, opt = {}) {
       const fee = o.total * extra, inst = C.install[C.addTv.install][day] * extra;
       addFee += fee; addInstall += inst; addSup += o.support * extra;
       r.addTv = { n: extra, o, fee, inst, unitInst: C.install[C.addTv.install][day] };
+      r.feeAdds.push([`추가 TV ${o.label} ${won(o.total)}원${extra > 1 ? ` × ${extra}대` : ''}`, fee]);
       r.items.push([`추가 TV ${extra}대 (${o.label})`, o.support * extra]);
     }
   }
@@ -649,6 +656,7 @@ function compute(key, p, opt = {}) {
       if (!v || !addonAllowed(a, p)) continue;
       const fee = a.optionsFrom ? C[a.optionsFrom][+v - 1].total : a.feeVat;
       addSup += a.support; addFee += fee;
+      if (fee) r.feeAdds.push([`${a.name} ${won(fee)}원`, fee]);
       if (a.install) addInstall += C.install[a.install][day];
       r.items.push([a.name + (a.optionsFrom ? ` (${C[a.optionsFrom][+v - 1].label})` : ''), a.support]);
     }
@@ -683,6 +691,15 @@ function compute(key, p, opt = {}) {
   });
   return r;
 }
+// 요금 계산법 (회색 작은 글씨)
+function howText(r, comb) {
+  if (!r) return '';
+  const base = comb ? r.combHow : r.feeHow;
+  if (!base) return '';
+  const adds = r.feeAdds.map(([l]) => ` + ${l}`).join('');
+  return `${comb ? '결합 요금 계산' : '요금 계산'}: ${base}${adds ? adds + ` = ${won(comb ? r.combVat : r.feeVat)}원` : ''}`;
+}
+const HOW = (r, comb) => { const t = howText(r, comb); return t ? `<br><span class="how">${esc(t)}</span>` : ''; };
 function combinable(key) { return cust.mobile ? MOBILE_TO_KEY[cust.mobile] === key : null; }
 function useCombine(key) { return key === calc.carrier ? calc.combine && combinable(key) !== false : combinable(key) === true; }
 function extraTvCount() { return cust.tvUse === '사용' ? Math.max((Number(cust.tvCount) || 1) - 1, 0) : 0; }
@@ -770,7 +787,8 @@ function buildSteps(r) {
     ${CH('curCarrier', '고객 답변 · 현재 통신사', CUR_LIST)}
     <p>휴대폰은 어느 통신사 사용하고 계실까요?</p>
     ${CH('mobile', '고객 답변 · 휴대폰 통신사', ['SKT', 'KT', 'LG U+', '스카이 알뜰폰', ['알뜰폰', '알뜰폰(그 외)']])}
-    ${CH('contractEnd', '약정 만료 여부', ['만료', '미만료', '모름'])}
+    <p>지금 사용하시는 인터넷 약정은 만료되셨을까요?</p>
+    ${CH('contractEnd', '고객 답변 · 약정 만료 여부', ['만료', '미만료', '모름'])}
     <p>TV도 같이 사용하고 계실까요?</p>
     ${CH('tvUse', '고객 답변 · TV 사용', ['사용', '미사용'])}
     ${cust.tvUse === '사용' ? `<p>TV는 몇 대 이용 중이실까요? ${IN('tvCount', '○', 'number')}대</p>` : ''}
@@ -788,7 +806,7 @@ function buildSteps(r) {
     ${r && r.addTv ? `<p class="note">TV ${esc(cust.tvCount)}대 → 추가 TV ${r.addTv.n}대 (${esc(r.addTv.o.label)}) 월 +${won(r.addTv.fee)}원 · 설치비 +${won(r.addTv.inst)}원 — 위 요금·설치비에 포함</p>` : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
     <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요</p>
-    <p>${r && r.combVat != null ? `${F(C.mobileName, '○○')} 사용하고 계시면 ` : ''}${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.<br>
+    <p>${r && r.combVat != null ? `현재 휴대폰 ${F(C.mobileName, '○○')} 사용하고 계시면 ` : ''}${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.${HOW(r, r && r.combVat != null)}<br>
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
     ${r && r.combVat == null ? `<p class="note">${combinable(calc.carrier) === false ? `휴대폰 ${esc(cust.mobile)} → ${esc(C.short)} 인터넷과 결합 불가 — 결합 요금·결합 안내 없이 진행` : '휴대폰 결합 미선택 또는 결합표 없음'} → 미결합 요금(부가세 포함)으로 표시</p>` : ''}` });
 
@@ -826,7 +844,7 @@ function buildSteps(r) {
     <p>유심 개통시 신용조회가 필수적으로 이루어지니 참고부탁드립니다<br>유심 개통시 인터넷+TV 혹은 인터넷이 개통 완료된 이후 유심이 고객님께 등기우편으로 발송이 나갑니다.</p>` });
 
   steps.push({ t: '요금/설치비/지급일', h: `
-    <p>${r && r.combVat != null ? `요금은 부가세포함 ${F(won(r.feeVat), '○○,○○○')}원이신데 휴대폰결합시 부가세포함 ${F(won(r.combVat), '○○,○○○')}원이세요` : `요금은 부가세포함 ${F(r ? won(r.feeVat) : '', '○○,○○○')}원이세요`}<br>
+    <p>${r && r.combVat != null ? `요금은 부가세포함 ${F(won(r.feeVat), '○○,○○○')}원이신데 휴대폰결합시 부가세포함 ${F(won(r.combVat), '○○,○○○')}원이세요${HOW(r, false)}${HOW(r, true)}` : `요금은 부가세포함 ${F(r ? won(r.feeVat) : '', '○○,○○○')}원이세요${HOW(r, false)}`}<br>
     그리고 설치비 ${F(r ? won(r.install) : '', '○○,○○○')}원은 익월 요금에 딱 한번 합산 청구 되실거구요<br>
     ${r && r.addTv ? `<span class="note" style="font-size:15px;color:var(--muted)">(설치비에 추가 TV ${r.addTv.n}대 설치비 ${won(r.addTv.inst)}원 포함)</span><br>` : ''}
     ${r && r.pay && !r.pay.gift && !r.pay.rest ? `지원금은 현금으로 지급되시고, 설치 당일 지원금 ${F(r.total, '○○')}만원 전액 바로 지급되실거예요`
