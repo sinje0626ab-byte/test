@@ -520,7 +520,8 @@ const SPEED_ORDER = ['100M', '200M', '500M', '1G'];
 const SPEED_TALK = { '100M': '100메가', '200M': '200메가', '500M': '500메가', '1G': '1기가' };
 const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 const CUR_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SKB': 'sk', '스카이라이프': 'sky' };
-const MOBILE_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SKT': 'sk', '알뜰폰': 'sky' };
+// 휴대폰 결합 대상: 같은 통신사끼리만. 스카이는 스카이 알뜰폰만 결합 가능, 그 외 알뜰폰은 결합 대상 없음
+const MOBILE_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SKT': 'sk', '스카이 알뜰폰': 'sky' };
 
 function parseDate(s) { if (!s) return null; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 function fmtDate(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월 ${d.getDate()}일(${WEEK[d.getDay()]})` : ''; }
@@ -768,7 +769,7 @@ function buildSteps(r) {
     <p>현재 사용하고 계신 인터넷이 어떤 통신사일까요?</p>
     ${CH('curCarrier', '고객 답변 · 현재 통신사', CUR_LIST)}
     <p>휴대폰은 어느 통신사 사용하고 계실까요?</p>
-    ${CH('mobile', '고객 답변 · 휴대폰 통신사', ['SKT', 'KT', 'LG U+', '알뜰폰'])}
+    ${CH('mobile', '고객 답변 · 휴대폰 통신사', ['SKT', 'KT', 'LG U+', '스카이 알뜰폰', ['알뜰폰', '알뜰폰(그 외)']])}
     ${CH('contractEnd', '약정 만료 여부', ['만료', '미만료', '모름'])}
     <p>TV도 같이 사용하고 계실까요?</p>
     ${CH('tvUse', '고객 답변 · TV 사용', ['사용', '미사용'])}
