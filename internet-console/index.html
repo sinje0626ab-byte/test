@@ -16,7 +16,8 @@
    - tier: 비교표에서 통신사끼리 TV 등급 맞추는 값 (1=기본, 2=중간, 3=고급)
    - baseMonth: 이 시트의 정책 기준월. 이번 달보다 이전이면 화면에 경고 배지가 뜸
    - "// TODO 확인필요" = PDF에서 확정 못한 값
-   - KT만 guide(최저가이드)/gift(이마트 금액권) 사용 — 다음날 먼저 지급되는 금액. 그 외 통신사의 가이드 칸, LG 5G 정책군/고객지원은 넣지 않음
+   - guide(최저가이드) = 먼저 지급되는 금액. KT는 다음날(이마트 금액권 gift 포함), LG·SK는 설치 당일 현금. 차액은 다음주 금요일
+   - 스카이 가이드 칸, LG 5G 정책군/고객지원은 넣지 않음
    ===================================================================== */
 const DATA = {
 
@@ -33,6 +34,7 @@ const DATA = {
     //         나머지(지원금 합계 - guide)는 다음주 금요일 입금
     // gift  = 이마트 금액권(만원). KT는 전액 현금이 아니라 이마트 금액권이 포함되어 지급됨
     giftName: '이마트 금액권',
+    payTiming: 'nextDay',
     products: [
       { id: 'kt-100',     type: 'net', speed: '100M', tv: null,               tier: 0, name: '인터넷 슬림(100M) 와이파이',    support: 15, guide: 9, gift: 4, feeVat: 23100 },
       { id: 'kt-500',     type: 'net', speed: '500M', tv: null,               tier: 0, name: '인터넷 베이직(500M) 와이파이',  support: 18, guide: 14, gift: 4, feeVat: 34100 },
@@ -85,19 +87,21 @@ const DATA = {
       addSettop: { weekday: 22000, weekend: 27500 },
     },
     // support = 일반 지원금 합계 / soho = 소호(사업자·사업장 설치) 지원금
+    // guide = 최저가이드(접수요망): 설치 당일 바로 지급되는 현금(만원). 차액은 다음주 금요일
+    payTiming: 'sameDay',
     products: [
-      { id: 'lg-100',   type: 'net', speed: '100M', tv: null,              tier: 0, name: 'WIFI요금제광랜안심',     support: 18, soho: 28, feeVat: 22000 },
-      { id: 'lg-500',   type: 'net', speed: '500M', tv: null,              tier: 0, name: 'WIFI요금제기가슬림안심', support: 30, soho: 35, feeVat: 33000 },
-      { id: 'lg-1g',    type: 'net', speed: '1G',   tv: null,              tier: 0, name: 'WIFI요금제기가안심',     support: 34, soho: 39, feeVat: 38500 },
-      { id: 'lg-100-s', type: 'tv',  speed: '100M', tv: '실속형(219개)',   tier: 1, name: '광랜안심 + TV 실속형(219개) UHD4',   support: 43, soho: 51,   feeVat: 39600 },
-      { id: 'lg-100-b', type: 'tv',  speed: '100M', tv: '기본형(225개)',   tier: 2, name: '광랜안심 + TV 기본형(225개) UHD4',   support: 43, soho: null, feeVat: 40700 }, // 지원금 "〃" / 소호 빈칸 // TODO 확인필요
-      { id: 'lg-100-p', type: 'tv',  speed: '100M', tv: '프리미엄(252개)', tier: 3, name: '광랜안심 + TV 프리미엄(252개) UHD4', support: 46, soho: 55,   feeVat: 42900 },
-      { id: 'lg-500-s', type: 'tv',  speed: '500M', tv: '실속형(219개)',   tier: 1, name: '기가슬림안심 + TV 실속형(219개) UHD4',   support: 52, soho: 59,   feeVat: 45100 },
-      { id: 'lg-500-b', type: 'tv',  speed: '500M', tv: '기본형(225개)',   tier: 2, name: '기가슬림안심 + TV 기본형(225개) UHD4',   support: 52, soho: null, feeVat: 46200 }, // 〃 / 소호 빈칸 // TODO 확인필요
-      { id: 'lg-500-p', type: 'tv',  speed: '500M', tv: '프리미엄(252개)', tier: 3, name: '기가슬림안심 + TV 프리미엄(252개) UHD4', support: 55, soho: 62,   feeVat: 48400 },
-      { id: 'lg-1g-s',  type: 'tv',  speed: '1G',   tv: '실속형(219개)',   tier: 1, name: '1기가안심 + TV 실속형(219개) UHD4',   support: 55, soho: 67,   feeVat: 50600 },
-      { id: 'lg-1g-b',  type: 'tv',  speed: '1G',   tv: '기본형(225개)',   tier: 2, name: '1기가안심 + TV 기본형(225개) UHD4',   support: 55, soho: null, feeVat: 51700 }, // 〃 / 소호 빈칸 // TODO 확인필요
-      { id: 'lg-1g-p',  type: 'tv',  speed: '1G',   tv: '프리미엄(252개)', tier: 3, name: '1기가안심 + TV 프리미엄(252개) UHD4', support: 59, soho: 69,   feeVat: 53900 },
+      { id: 'lg-100',   type: 'net', speed: '100M', tv: null,              tier: 0, name: 'WIFI요금제광랜안심',     support: 18, guide: 20, soho: 28, feeVat: 22000 },
+      { id: 'lg-500',   type: 'net', speed: '500M', tv: null,              tier: 0, name: 'WIFI요금제기가슬림안심', support: 30, guide: 23, soho: 35, feeVat: 33000 },
+      { id: 'lg-1g',    type: 'net', speed: '1G',   tv: null,              tier: 0, name: 'WIFI요금제기가안심',     support: 34, guide: 23, soho: 39, feeVat: 38500 },
+      { id: 'lg-100-s', type: 'tv',  speed: '100M', tv: '실속형(219개)',   tier: 1, name: '광랜안심 + TV 실속형(219개) UHD4',   support: 43, guide: 40, soho: 51,   feeVat: 39600 },
+      { id: 'lg-100-b', type: 'tv',  speed: '100M', tv: '기본형(225개)',   tier: 2, name: '광랜안심 + TV 기본형(225개) UHD4',   support: 43, guide: 40, soho: null, feeVat: 40700 }, // 지원금 "〃" / 소호 빈칸 // TODO 확인필요
+      { id: 'lg-100-p', type: 'tv',  speed: '100M', tv: '프리미엄(252개)', tier: 3, name: '광랜안심 + TV 프리미엄(252개) UHD4', support: 46, guide: 40, soho: 55,   feeVat: 42900 },
+      { id: 'lg-500-s', type: 'tv',  speed: '500M', tv: '실속형(219개)',   tier: 1, name: '기가슬림안심 + TV 실속형(219개) UHD4',   support: 52, guide: 47, soho: 59,   feeVat: 45100 },
+      { id: 'lg-500-b', type: 'tv',  speed: '500M', tv: '기본형(225개)',   tier: 2, name: '기가슬림안심 + TV 기본형(225개) UHD4',   support: 52, guide: 47, soho: null, feeVat: 46200 }, // 〃 / 소호 빈칸 // TODO 확인필요
+      { id: 'lg-500-p', type: 'tv',  speed: '500M', tv: '프리미엄(252개)', tier: 3, name: '기가슬림안심 + TV 프리미엄(252개) UHD4', support: 55, guide: 47, soho: 62,   feeVat: 48400 },
+      { id: 'lg-1g-s',  type: 'tv',  speed: '1G',   tv: '실속형(219개)',   tier: 1, name: '1기가안심 + TV 실속형(219개) UHD4',   support: 55, guide: 47, soho: 67,   feeVat: 50600 },
+      { id: 'lg-1g-b',  type: 'tv',  speed: '1G',   tv: '기본형(225개)',   tier: 2, name: '1기가안심 + TV 기본형(225개) UHD4',   support: 55, guide: 47, soho: null, feeVat: 51700 }, // 〃 / 소호 빈칸 // TODO 확인필요
+      { id: 'lg-1g-p',  type: 'tv',  speed: '1G',   tv: '프리미엄(252개)', tier: 3, name: '1기가안심 + TV 프리미엄(252개) UHD4', support: 59, guide: 47, soho: 69,   feeVat: 53900 },
       // 기본형(225개) 행은 WIFI·설치비 칸 빈칸 → 같은 설치비로 가정 // TODO 확인필요
     ],
     addons: [
@@ -131,20 +135,22 @@ const DATA = {
       tv:        { weekday: 56100, weekend: 70125 },
       addSettop: { weekday: 17600, weekend: 22000 },
     },
+    // guide = 가이드(SKB 접수) / guideSkt = 가이드(SKT 접수): 설치 당일 바로 지급되는 현금(만원). 차액은 다음주 금요일
+    payTiming: 'sameDay',
     // exVat=미결합(VAT 제외) / combExVat=결합(VAT 제외) / feeVat=우리집(VAT 포함) / combVat=요즘가족(VAT 포함)
     products: [
-      { id: 'sk-100',     type: 'net', speed: '100M', tv: null,              tier: 0, name: '광랜100M (WiFi통합)',       support: 15, exVat: 21000, combExVat: 17000, feeVat: 23100, combVat: 18700 },
-      { id: 'sk-500',     type: 'net', speed: '500M', tv: null,              tier: 0, name: '기가라이트500M (WiFi통합)', support: 22, exVat: 31000, combExVat: 21000, feeVat: 34100, combVat: 23100 },
-      { id: 'sk-1g',      type: 'net', speed: '1G',   tv: null,              tier: 0, name: '기가1G (WiFi통합)',         support: 23, exVat: 36000, combExVat: 24000, feeVat: 39600, combVat: 26400 },
-      { id: 'sk-100-eco', type: 'tv',  speed: '100M', tv: '이코노미(178개)', tier: 1, name: '광랜100M + TV 이코노미(스마트3)',      support: 35, exVat: 33000, combExVat: 29000, feeVat: 36300, combVat: 31900 },
-      { id: 'sk-100-std', type: 'tv',  speed: '100M', tv: '스탠다드(219개)', tier: 2, name: '광랜100M + TV 스탠다드(스마트3)',      support: 46, exVat: 36000, combExVat: 32000, feeVat: 39600, combVat: 35200 },
-      { id: 'sk-100-all', type: 'tv',  speed: '100M', tv: 'ALL(251개)',      tier: 3, name: '광랜100M + TV ALL(스마트3)',           support: 50, exVat: 39000, combExVat: 35000, feeVat: 42900, combVat: 38500 },
-      { id: 'sk-500-eco', type: 'tv',  speed: '500M', tv: '이코노미(178개)', tier: 1, name: '기가라이트500M + TV 이코노미(스마트3)', support: 42, exVat: 39000, combExVat: 33000, feeVat: 42900, combVat: 36300 },
-      { id: 'sk-500-std', type: 'tv',  speed: '500M', tv: '스탠다드(219개)', tier: 2, name: '기가라이트500M + TV 스탠다드(스마트3)', support: 53, exVat: 42000, combExVat: 36000, feeVat: 46200, combVat: 39600 },
-      { id: 'sk-500-all', type: 'tv',  speed: '500M', tv: 'ALL(251개)',      tier: 3, name: '기가라이트500M + TV ALL(스마트3)',      support: 57, exVat: 45000, combExVat: 39000, feeVat: 49500, combVat: 42900 },
-      { id: 'sk-1g-eco',  type: 'tv',  speed: '1G',   tv: '이코노미(178개)', tier: 1, name: '기가1G + TV 이코노미(스마트3)',         support: 42, exVat: 44000, combExVat: 36000, feeVat: 48400, combVat: 39600 },
-      { id: 'sk-1g-std',  type: 'tv',  speed: '1G',   tv: '스탠다드(219개)', tier: 2, name: '기가1G + TV 스탠다드(스마트3)',         support: 53, exVat: 47000, combExVat: 39000, feeVat: 51700, combVat: 42900 },
-      { id: 'sk-1g-all',  type: 'tv',  speed: '1G',   tv: 'ALL(251개)',      tier: 3, name: '기가1G + TV ALL(스마트3)',              support: 57, exVat: 50000, combExVat: 42000, feeVat: 55000, combVat: 46200 },
+      { id: 'sk-100',     type: 'net', speed: '100M', tv: null,              tier: 0, name: '광랜100M (WiFi통합)',       support: 15, guide: 9, guideSkt: 11, exVat: 21000, combExVat: 17000, feeVat: 23100, combVat: 18700 },
+      { id: 'sk-500',     type: 'net', speed: '500M', tv: null,              tier: 0, name: '기가라이트500M (WiFi통합)', support: 22, guide: 13, guideSkt: 17, exVat: 31000, combExVat: 21000, feeVat: 34100, combVat: 23100 },
+      { id: 'sk-1g',      type: 'net', speed: '1G',   tv: null,              tier: 0, name: '기가1G (WiFi통합)',         support: 23, guide: 13, guideSkt: 17, exVat: 36000, combExVat: 24000, feeVat: 39600, combVat: 26400 },
+      { id: 'sk-100-eco', type: 'tv',  speed: '100M', tv: '이코노미(178개)', tier: 1, name: '광랜100M + TV 이코노미(스마트3)',      support: 35, guide: 29, guideSkt: 40, exVat: 33000, combExVat: 29000, feeVat: 36300, combVat: 31900 },
+      { id: 'sk-100-std', type: 'tv',  speed: '100M', tv: '스탠다드(219개)', tier: 2, name: '광랜100M + TV 스탠다드(스마트3)',      support: 46, guide: 29, guideSkt: 40, exVat: 36000, combExVat: 32000, feeVat: 39600, combVat: 35200 },
+      { id: 'sk-100-all', type: 'tv',  speed: '100M', tv: 'ALL(251개)',      tier: 3, name: '광랜100M + TV ALL(스마트3)',           support: 50, guide: 29, guideSkt: 40, exVat: 39000, combExVat: 35000, feeVat: 42900, combVat: 38500 },
+      { id: 'sk-500-eco', type: 'tv',  speed: '500M', tv: '이코노미(178개)', tier: 1, name: '기가라이트500M + TV 이코노미(스마트3)', support: 42, guide: 37, guideSkt: 48, exVat: 39000, combExVat: 33000, feeVat: 42900, combVat: 36300 },
+      { id: 'sk-500-std', type: 'tv',  speed: '500M', tv: '스탠다드(219개)', tier: 2, name: '기가라이트500M + TV 스탠다드(스마트3)', support: 53, guide: 37, guideSkt: 48, exVat: 42000, combExVat: 36000, feeVat: 46200, combVat: 39600 },
+      { id: 'sk-500-all', type: 'tv',  speed: '500M', tv: 'ALL(251개)',      tier: 3, name: '기가라이트500M + TV ALL(스마트3)',      support: 57, guide: 37, guideSkt: 48, exVat: 45000, combExVat: 39000, feeVat: 49500, combVat: 42900 },
+      { id: 'sk-1g-eco',  type: 'tv',  speed: '1G',   tv: '이코노미(178개)', tier: 1, name: '기가1G + TV 이코노미(스마트3)',         support: 42, guide: 37, guideSkt: 48, exVat: 44000, combExVat: 36000, feeVat: 48400, combVat: 39600 },
+      { id: 'sk-1g-std',  type: 'tv',  speed: '1G',   tv: '스탠다드(219개)', tier: 2, name: '기가1G + TV 스탠다드(스마트3)',         support: 53, guide: 37, guideSkt: 48, exVat: 47000, combExVat: 39000, feeVat: 51700, combVat: 42900 },
+      { id: 'sk-1g-all',  type: 'tv',  speed: '1G',   tv: 'ALL(251개)',      tier: 3, name: '기가1G + TV ALL(스마트3)',              support: 57, guide: 37, guideSkt: 48, exVat: 50000, combExVat: 42000, feeVat: 55000, combVat: 46200 },
     ],
     addons: [
       { id: 'sk-settop-eco', name: '추가셋톱 이코노미', support: 2, feeVat: 8250,  install: 'addSettop', group: 'settop', tvOnly: true },
@@ -506,7 +512,7 @@ function fmtDateTalk(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1
 const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', tvUse: '', tvCount: '', biz: false, bizType: '', nextDay: '' });
 const blankCalc = () => ({
   carrier: 'sk', type: 'tv', speed: '500M', tier: 3, productId: null,
-  soho: false, combine: false, ktBracket: 'flat',
+  soho: false, combine: false, ktBracket: 'flat', skDesk: 'SKB',
   usim: false, usimPlan: 69, usimKind: 'general',
   addons: {}, deds: {}, dayMode: 'auto',
 });
@@ -630,9 +636,11 @@ function compute(key, p, opt = {}) {
   // KT: 다음날 최저가이드 금액(이마트 금액권 + 현금) 먼저, 차액은 다음주 금요일
   let pay = null;
   if (p.guide != null && !same) {
-    const first = Math.min(p.guide, totalSup);
+    if (p.guide > p.support) r.notes.push(`가이드(${p.guide})가 지원금 합계(${p.support})보다 큼 — 시트 확인 필요`); // TODO 확인필요 (LG 100M 단독 20 > 18)
+    const g = key === 'sk' && calc.skDesk === 'SKT' && p.guideSkt != null ? p.guideSkt : p.guide;
+    const first = Math.min(g, totalSup);
     const gift = Math.min(p.gift || 0, first);
-    pay = { first, gift, cash: first - gift, rest: Math.max(totalSup - first, 0) };
+    pay = { first, gift, cash: first - gift, rest: Math.max(totalSup - first, 0), when: C.payTiming === 'nextDay' ? '다음날' : '설치 당일' };
   }
   Object.assign(r, {
     same, pay,
@@ -674,6 +682,7 @@ function warnings(r) {
   if (key === 'sk' && calc.combine) w.push(['amber', 'SK 결합', 'SK 모든 결합은 30일 내로만 가능 · 해피콜 필수 진행']);
   if (cust.biz && key !== 'lg') w.push(['amber', '사업장', '사업장 설치 — 통신사별 사업자 접수 조건 확인']);
   if (Number(cust.tvCount) >= 2) w.push(['amber', 'TV 대수', `TV ${cust.tvCount}대 이용 중 — 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인`]);
+  if (r.pay && !r.pay.gift) w.push(['amber', '지급 안내', `설치 당일 현금 ${r.pay.first}만원(가이드${key === 'sk' ? ' · ' + calc.skDesk + ' 접수' : ''}), 차액 ${r.pay.rest}만원 다음주 금요일`]);
   if (key === 'kt' && r.pay) w.push(['amber', 'KT 지급', `전액 현금 아님: 다음날 ${C.giftName} ${r.pay.gift}만원 + 현금 ${r.pay.cash}만원, 차액 ${r.pay.rest}만원 다음주 금요일`]);
   r.notes.forEach((n) => w.push(['amber', '확인', n]));
   return w;
@@ -777,7 +786,9 @@ function buildSteps(r) {
   steps.push({ t: '요금/설치비/지급일', h: `
     <p>요금은 부가세제외 ${F(r ? won(r.feeEx) : '', '○○,○○○')}원이신데 휴대폰결합시 부가세제외 ${F(r && r.combEx != null ? won(r.combEx) : '', '○○,○○○')}원이세요<br>
     그리고 설치비 ${F(r ? won(r.install) : '', '○○,○○○')}원은 익월 요금에 딱 한번 합산 청구 되실거구요<br>
-    ${r && r.pay ? `지원금은 ${esc(C.giftName)}과 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${esc(C.giftName)} ${F(r.pay.gift, '○')}만원에 현금 ${F(r.pay.cash, '○')}만원이 먼저 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
+    ${r && r.pay && !r.pay.gift && !r.pay.rest ? `지원금은 현금으로 지급되시고, 설치 당일 지원금 ${F(r.total, '○○')}만원 전액 바로 지급되실거예요`
+    : r && r.pay && !r.pay.gift ? `지원금은 현금으로 지급되시고, 설치 당일 ${F(r.pay.first, '○○')}만원이 바로 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
+    : r && r.pay ? `지원금은 ${esc(C.giftName)}과 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${esc(C.giftName)} ${F(r.pay.gift, '○')}만원에 현금 ${F(r.pay.cash, '○')}만원이 먼저 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
     : `지원금은 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${IN('nextDay', '○○', 'number')}만원, 차액은 다음주 금요일날 입금되실거예요`}</p>
     ${r ? `<p class="note">VAT 포함: 월 ${won(r.feeVat)}원${r.combVat != null ? ` / 결합 ${won(r.combVat)}원` : ''} · 지원금 총 ${r.total}만원 → <span data-show="diff">${diffText(r)}</span></p>` : ''}` });
 
@@ -792,7 +803,7 @@ function buildSteps(r) {
 
 /* ───────── 렌더링 ───────── */
 function agentName() { return (agentNm || '').trim(); }
-function diffText(r) { if (r && r.pay) return `다음날 ${r.pay.first}만원(금액권 ${r.pay.gift} + 현금 ${r.pay.cash}) · 차액 ${r.pay.rest}만원`; return cust.nextDay !== '' && r ? `차액 ${r.total - Number(cust.nextDay)}만원` : '다음날 지급액 입력 시 차액 계산'; }
+function diffText(r) { if (r && r.pay) return `${r.pay.when} ${r.pay.first}만원${r.pay.gift ? `(금액권 ${r.pay.gift} + 현금 ${r.pay.cash})` : '(현금)'} · 차액 ${r.pay.rest}만원 다음주 금요일`; return cust.nextDay !== '' && r ? `차액 ${r.total - Number(cust.nextDay)}만원` : '다음날 지급액 입력 시 차액 계산'; }
 let lastSteps = [];
 function renderInfo() {
   const v = (x) => x ? `<span class="v">${esc(x)}</span>` : '<span class="v none">미입력</span>';
@@ -804,7 +815,7 @@ function renderInfo() {
     ['TV', cust.tvUse === '사용' ? `사용${cust.tvCount ? ' · ' + cust.tvCount + '대' : ''}` : cust.tvUse, '통신사 확인'],
     ['이사 날짜', fmtDate(cust.moveDate), '설치일'],
     ['설치 희망', [fmtDate(cust.installDate), cust.installTime].filter(Boolean).join(' '), '설치일'],
-    ['익일 지급', lastResult && lastResult.pay ? `${lastResult.pay.first}만원 (금액권 ${lastResult.pay.gift}+현금 ${lastResult.pay.cash}) · 자동` : (cust.nextDay !== '' ? cust.nextDay + '만원' : ''), '요금/설치비/지급일'],
+    ['먼저 지급', lastResult && lastResult.pay ? `${lastResult.pay.when} ${lastResult.pay.first}만원${lastResult.pay.gift ? ` (금액권 ${lastResult.pay.gift}+현금 ${lastResult.pay.cash})` : ''} · 자동` : (cust.nextDay !== '' ? cust.nextDay + '만원' : ''), '요금/설치비/지급일'],
     ['상담원', agentNm, '마무리'],
   ];
   $('#info').innerHTML = rows.map(([k, x, t]) => `<span class="k">${k}</span>${v(x)}<button data-jump="${esc(t)}">입력</button>`).join('');
@@ -828,6 +839,7 @@ function renderCalc(p) {
   const tvs = calc.type === 'tv' ? productsOf(key, 'tv').filter((x) => x.speed === calc.speed) : [];
   let h = `<h2>요금 계산기 <span class="mut">${esc(C.name)} · 대표번호 ${esc(C.phone)}</span></h2>`;
   h += `<div class="row"><div class="lb">통신사</div>${seg('carrier', CARRIERS.map((k) => [k, DATA[k].short]), key)}</div>`;
+  if (key === 'sk') h += `<div class="row"><div class="lb">접수처</div>${seg('skDesk', [['SKB', 'SKB (106)'], ['SKT', 'SKT (1600-2000)']], calc.skDesk)}</div>`;
   if (key === 'lg') h += `<div class="row"><div class="lb">카테고리</div>${seg('soho', [['0', '일반'], ['1', '소호(사업장)']], calc.soho ? '1' : '0')}</div>`;
   h += `<div class="row"><div class="lb">상품 유형</div>${seg('type', [['net', '인터넷 단독'], ['tv', '인터넷+TV']], calc.type)}</div>`;
   h += `<div class="row"><div class="lb">속도</div>${seg('speed', SPEED_ORDER.filter((s) => s !== '200M' || key === 'sky').map((s) => [s, s, !speedsOf(key, calc.type).includes(s)]), calc.speed)}</div>`;
@@ -927,7 +939,7 @@ function summaryText(r) {
   parts.push(`[${C.short}${r.key === 'lg' && calc.soho ? ' 소호' : ''}] ${r.p.name}`);
   const extras = r.items.slice(1).map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}`).join(', ');
   parts.push(`월 ${won(r.feeEx)}원(VAT별도)/${won(r.feeVat)}원(VAT포함)` + (r.combEx != null ? ` · 결합 ${won(r.combEx)}원(VAT별도)` : ''));
-  parts.push(`지원금 총 ${r.total}만원 (인터넷 ${r.net}${extras ? ', ' + extras : ''})` + (r.pay ? ` · 익일 ${C.giftName} ${r.pay.gift}+현금 ${r.pay.cash}, 차액 ${r.pay.rest} 다음주 금요일` : ''));
+  parts.push(`지원금 총 ${r.total}만원 (인터넷 ${r.net}${extras ? ', ' + extras : ''})` + (r.pay ? ` · ${r.pay.when} ${r.pay.gift ? `${C.giftName} ${r.pay.gift}+현금 ${r.pay.cash}` : `현금 ${r.pay.first}`}, 차액 ${r.pay.rest} 다음주 금요일` : ''));
   parts.push(`설치 ${cust.installDate ? fmtDate(cust.installDate) : '미정'}${cust.installTime ? ' ' + cust.installTime : ''} · 설치비 ${won(r.install)}원(${r.day === 'weekend' ? '주말' : '평일'})`);
   const c = [];
   if (cust.name) c.push(`고객 ${cust.name}`);
