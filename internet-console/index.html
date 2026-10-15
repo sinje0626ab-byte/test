@@ -331,15 +331,88 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
 .empty { color: var(--muted); font-size: 15px; padding: 16px; border: 1px dashed var(--line); border-radius: 8px; line-height: 1.6; }
 .toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: var(--green); color: #04150d; font-weight: 700; padding: 8px 16px; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 60; }
 .toast.show { opacity: 1; }
+
+/* 모바일 탭 (PC에서는 숨김) */
+.mtabs, #btnCust { display: none; }
+
+/* ───────── 모바일 (폭 860px 이하) ───────── */
+@media (max-width: 860px) {
+  body { display: block; height: auto; overflow: visible; padding-bottom: calc(118px + env(safe-area-inset-bottom)); }
+  .topbar { flex-wrap: wrap; gap: 6px; padding: 8px 12px; }
+  .topbar h1 { font-size: 0; white-space: nowrap; }
+  .topbar h1::after { content: '상담 콘솔'; font-size: 16px; }
+  .topbar .sp { display: none; }
+  .topbar h1 { margin-right: auto; }
+  .topbar .agent { display: none; }
+  #monthBadges { order: 10; width: 100%; display: flex; flex-wrap: wrap; gap: 4px; }
+  #monthBadges:empty { display: none; }
+  #monthBadges .badge { font-size: 11px; }
+  #monthBadges .mb { display: none; }
+  #btnCust { display: inline-block; }
+  .topbar .btn { padding: 6px 10px; font-size: 13px; }
+  .topbar kbd { display: none; }
+
+  .custbar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 12px; }
+  .custbar.collapsed { display: none; }
+  .custbar label input, .custbar label select { width: 100% !important; font-size: 16px; padding: 8px; }
+  .custbar .chk { padding: 22px 0 0; font-size: 16px; justify-content: flex-start; }
+  .custbar .chk input { width: 22px !important; height: 22px; flex: none; }
+
+  main { display: block; }
+  #scriptPane { border-right: 0; }
+  .steps { flex-wrap: nowrap; overflow-x: auto; padding: 10px 12px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .steps::-webkit-scrollbar { display: none; }
+  .steps button { flex: none; white-space: nowrap; font-size: 13px; padding: 6px 10px; }
+  .card { margin: 8px 12px; padding: 18px 16px; overflow: visible; }
+  .card p { font-size: 21px; line-height: 1.7; margin-bottom: 14px; }
+  .card ul { font-size: 18px; padding-left: 22px; }
+  .card p.note { font-size: 14px; }
+  .nav { position: sticky; bottom: calc(108px + env(safe-area-inset-bottom)); z-index: 25; background: var(--bg); padding: 8px 12px; gap: 8px; }
+  .nav .pos { display: none; }
+  .nav .btn { flex: 1; font-size: 17px; padding: 12px; }
+  .nav .hint, .nav .sp { display: none !important; }
+
+  #side { overflow: visible; padding: 10px 12px; }
+  .row { grid-template-columns: 1fr; gap: 4px; margin-bottom: 12px; }
+  .row > .lb { padding-top: 0; }
+  .seg button { padding: 8px 12px; font-size: 15px; }
+  .opt { font-size: 15px; margin: 6px 0; flex-wrap: wrap; }
+  .opt input { width: 20px; height: 20px; }
+  select.sm { font-size: 15px; padding: 6px; max-width: 100%; }
+  .res .box .v { font-size: 20px; }
+  .res .box.big .v { font-size: 28px; }
+  table.cmp { font-size: 12px; }
+  table.cmp th, table.cmp td { padding: 6px 3px; }
+
+  footer { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 30; padding: 8px 12px; gap: 8px; }
+  footer .lab { display: none; }
+  #summary { font-size: 13px; padding: 7px 8px; }
+
+  .mtabs { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; height: calc(56px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom); background: #0a0d11; border-top: 1px solid var(--line); }
+  .mtabs button { flex: 1; background: none; border: 0; color: var(--muted); font-size: 15px; font-weight: 700; position: relative; }
+  .mtabs button.on { color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+  .mtabs .cnt { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; background: var(--red); color: #fff; font-size: 11px; line-height: 18px; }
+  .mtabs .cnt:empty { display: none; }
+
+  body[data-tab="script"] #side { display: none; }
+  body[data-tab="calc"] #scriptPane, body[data-tab="calc"] #secCompare { display: none; }
+  body[data-tab="cmp"] #scriptPane, body[data-tab="cmp"] #side > .sec:not(#secCompare) { display: none; }
+
+  .mbox { width: 94vw; padding: 14px; max-height: 80vh; }
+  .modal { padding-top: 4vh; }
+  .oanswer { font-size: 22px; }
+}
 </style>
 </head>
-<body>
+<body data-tab="script">
 
 <header class="topbar">
   <h1>로젠이사 인터넷 상담 콘솔</h1>
   <span id="monthBadges"></span>
   <span class="sp"></span>
-  <label class="mut">상담원 <input id="agentName" class="sm" style="width:90px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 6px" placeholder="이름"></label>
+  <button class="btn" id="btnCust">고객정보 ▴</button>
+  <label class="mut agent">상담원 <input id="agentName" class="sm" style="width:90px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 6px" placeholder="이름"></label>
   <button class="btn" id="btnObj">반론 대응 <kbd>/</kbd></button>
   <button class="btn danger" id="btnReset">새 상담</button>
 </header>
@@ -374,7 +447,7 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
       <button class="btn primary" id="next">다음 ▶</button>
       <span class="pos" id="pos"></span>
       <span class="sp" style="flex:1"></span>
-      <span class="mut"><kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>/</kbd> 반론 · <kbd>Esc</kbd> 닫기 · <kbd>Alt</kbd>+<kbd>C</kbd> 요약 복사</span>
+      <span class="mut hint"><kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>/</kbd> 반론 · <kbd>Esc</kbd> 닫기 · <kbd>Alt</kbd>+<kbd>C</kbd> 요약 복사</span>
     </div>
   </section>
 
@@ -383,7 +456,7 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
     <div class="sec"><h2>주의사항</h2><div class="warns" id="warns"></div></div>
     <div class="sec" id="calc"></div>
     <div class="sec" id="result"></div>
-    <div class="sec"><h2>4사 비교 <span class="mut">같은 조건 · 지원금 높은 순 · 추가상품/차감 제외</span></h2><div id="compare"></div></div>
+    <div class="sec" id="secCompare"><h2>4사 비교 <span class="mut">같은 조건 · 지원금 높은 순 · 추가상품/차감 제외</span></h2><div id="compare"></div></div>
   </aside>
 </main>
 
@@ -393,6 +466,13 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
   <div id="summary"></div>
   <button class="btn primary" id="btnCopy">복사</button>
 </footer>
+
+<!-- 모바일 하단 탭 -->
+<nav class="mtabs" id="mtabs">
+  <button data-tab="script" class="on">스크립트</button>
+  <button data-tab="calc">계산기<span class="cnt" id="warnCnt"></span></button>
+  <button data-tab="cmp">4사 비교</button>
+</nav>
 
 <!-- D. 반론 대응 -->
 <div class="modal" id="objModal">
@@ -678,7 +758,7 @@ function renderMonthBadges() {
   const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   $('#monthBadges').innerHTML = CARRIERS.map((k) => {
     const old = DATA[k].baseMonth < ym;
-    return `<span class="badge ${old ? 'amber' : 'gray'}" title="${old ? '이번 달 정책으로 업데이트 필요' : ''}">${DATA[k].short} ${DATA[k].baseMonth.replace('-', '.')}${old ? ' ⚠' : ''}</span>`;
+    return `<span class="badge mb ${old ? 'amber' : 'gray'}" title="${old ? '이번 달 정책으로 업데이트 필요' : ''}">${DATA[k].short} ${DATA[k].baseMonth.replace('-', '.')}${old ? ' ⚠' : ''}</span>`;
   }).join(' ') + (CARRIERS.some((k) => DATA[k].baseMonth < ym) ? ` <span class="badge amber">${now.getMonth() + 1}월 정책 업데이트 필요</span>` : '');
 }
 
@@ -763,6 +843,7 @@ function renderCompare() {
 
 function renderWarns(r) {
   const w = warnings(r);
+  $('#warnCnt').textContent = w.filter((x) => x[0] === 'red').length || '';
   $('#warns').innerHTML = w.map(([lv, t, d]) => `<div class="warn ${lv}"><span class="badge ${lv}">${esc(t)}</span><span>${esc(d)}</span></div>`).join('');
 }
 
@@ -835,7 +916,7 @@ $('#side').addEventListener('click', (e) => {
     render(); return;
   }
   const tr = e.target.closest('tr[data-pick]');
-  if (tr) { calc.carrier = tr.dataset.pick; calc.productId = null; calc.addons = {}; calc.deds = {}; render(); }
+  if (tr) { calc.carrier = tr.dataset.pick; calc.productId = null; calc.addons = {}; calc.deds = {}; render(); if (isMobile()) setTab('calc'); }
 });
 $('#side').addEventListener('change', (e) => {
   const t = e.target;
@@ -907,6 +988,19 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(1); }
   if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
 });
+
+/* 모바일 탭 / 고객정보 접기 */
+const isMobile = () => window.matchMedia('(max-width: 860px)').matches;
+function setTab(t) {
+  document.body.dataset.tab = t;
+  document.querySelectorAll('#mtabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t));
+  window.scrollTo(0, 0);
+}
+$('#mtabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-tab]'); if (b) setTab(b.dataset.tab); });
+$('#btnCust').onclick = () => {
+  const c = $('#custbar').classList.toggle('collapsed');
+  $('#btnCust').textContent = c ? '고객정보 ▾' : '고객정보 ▴';
+};
 
 renderMonthBadges();
 render();
