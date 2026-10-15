@@ -12,7 +12,7 @@
    - 모든 상품 3년약정 기준
    - support(지원금): 만원 단위 현금 지원금 (15 = 15만원)
    - feeVat: 시트 월요금(VAT 포함, 원). 화면·스크립트의 요금은 모두 VAT 포함 금액으로 표시
-     (SKB의 exVat / combExVat 은 시트 원본 보관용, 화면에는 feeVat / combVat 사용)
+     (SK만 시트의 미결합/결합(VAT 제외) 금액 exVat / combExVat 을 입력 → × 1.1 로 VAT 포함 자동 계산)
    - tier: 비교표에서 통신사끼리 TV 등급 맞추는 값 (1=기본, 2=중간, 3=고급)
    - baseMonth: 이 시트의 정책 기준월. 이번 달보다 이전이면 화면에 경고 배지가 뜸
    - "// TODO 확인필요" = PDF에서 확정 못한 값
@@ -137,20 +137,21 @@ const DATA = {
     },
     // guide = 가이드(SKB 접수) / guideSkt = 가이드(SKT 접수): 설치 당일 바로 지급되는 현금(만원). 차액은 다음주 금요일
     payTiming: 'sameDay',
-    // exVat=미결합(VAT 제외) / combExVat=결합(VAT 제외) / feeVat=우리집(VAT 포함) / combVat=요즘가족(VAT 포함)
+    // exVat = 시트 '미결합'(VAT 제외) / combExVat = 시트 '결합'(휴대폰 결합 시, VAT 제외)
+    // 화면·스크립트 요금은 × 1.1 해서 VAT 포함으로 자동 계산 (= 시트 '우리집' / '요즘가족' 칸과 같은 값)
     products: [
-      { id: 'sk-100',     type: 'net', speed: '100M', tv: null,              tier: 0, name: '광랜100M (WiFi통합)',       support: 15, guide: 9, guideSkt: 11, exVat: 21000, combExVat: 17000, feeVat: 23100, combVat: 18700 },
-      { id: 'sk-500',     type: 'net', speed: '500M', tv: null,              tier: 0, name: '기가라이트500M (WiFi통합)', support: 22, guide: 13, guideSkt: 17, exVat: 31000, combExVat: 21000, feeVat: 34100, combVat: 23100 },
-      { id: 'sk-1g',      type: 'net', speed: '1G',   tv: null,              tier: 0, name: '기가1G (WiFi통합)',         support: 23, guide: 13, guideSkt: 17, exVat: 36000, combExVat: 24000, feeVat: 39600, combVat: 26400 },
-      { id: 'sk-100-eco', type: 'tv',  speed: '100M', tv: '이코노미(178개)', tier: 1, name: '광랜100M + TV 이코노미(스마트3)',      support: 35, guide: 29, guideSkt: 40, exVat: 33000, combExVat: 29000, feeVat: 36300, combVat: 31900 },
-      { id: 'sk-100-std', type: 'tv',  speed: '100M', tv: '스탠다드(219개)', tier: 2, name: '광랜100M + TV 스탠다드(스마트3)',      support: 46, guide: 29, guideSkt: 40, exVat: 36000, combExVat: 32000, feeVat: 39600, combVat: 35200 },
-      { id: 'sk-100-all', type: 'tv',  speed: '100M', tv: 'ALL(251개)',      tier: 3, name: '광랜100M + TV ALL(스마트3)',           support: 50, guide: 29, guideSkt: 40, exVat: 39000, combExVat: 35000, feeVat: 42900, combVat: 38500 },
-      { id: 'sk-500-eco', type: 'tv',  speed: '500M', tv: '이코노미(178개)', tier: 1, name: '기가라이트500M + TV 이코노미(스마트3)', support: 42, guide: 37, guideSkt: 48, exVat: 39000, combExVat: 33000, feeVat: 42900, combVat: 36300 },
-      { id: 'sk-500-std', type: 'tv',  speed: '500M', tv: '스탠다드(219개)', tier: 2, name: '기가라이트500M + TV 스탠다드(스마트3)', support: 53, guide: 37, guideSkt: 48, exVat: 42000, combExVat: 36000, feeVat: 46200, combVat: 39600 },
-      { id: 'sk-500-all', type: 'tv',  speed: '500M', tv: 'ALL(251개)',      tier: 3, name: '기가라이트500M + TV ALL(스마트3)',      support: 57, guide: 37, guideSkt: 48, exVat: 45000, combExVat: 39000, feeVat: 49500, combVat: 42900 },
-      { id: 'sk-1g-eco',  type: 'tv',  speed: '1G',   tv: '이코노미(178개)', tier: 1, name: '기가1G + TV 이코노미(스마트3)',         support: 42, guide: 37, guideSkt: 48, exVat: 44000, combExVat: 36000, feeVat: 48400, combVat: 39600 },
-      { id: 'sk-1g-std',  type: 'tv',  speed: '1G',   tv: '스탠다드(219개)', tier: 2, name: '기가1G + TV 스탠다드(스마트3)',         support: 53, guide: 37, guideSkt: 48, exVat: 47000, combExVat: 39000, feeVat: 51700, combVat: 42900 },
-      { id: 'sk-1g-all',  type: 'tv',  speed: '1G',   tv: 'ALL(251개)',      tier: 3, name: '기가1G + TV ALL(스마트3)',              support: 57, guide: 37, guideSkt: 48, exVat: 50000, combExVat: 42000, feeVat: 55000, combVat: 46200 },
+      { id: 'sk-100',     type: 'net', speed: '100M', tv: null,              tier: 0, name: '광랜100M (WiFi통합)',       support: 15, guide: 9, guideSkt: 11, exVat: 21000, combExVat: 17000 },
+      { id: 'sk-500',     type: 'net', speed: '500M', tv: null,              tier: 0, name: '기가라이트500M (WiFi통합)', support: 22, guide: 13, guideSkt: 17, exVat: 31000, combExVat: 21000 },
+      { id: 'sk-1g',      type: 'net', speed: '1G',   tv: null,              tier: 0, name: '기가1G (WiFi통합)',         support: 23, guide: 13, guideSkt: 17, exVat: 36000, combExVat: 24000 },
+      { id: 'sk-100-eco', type: 'tv',  speed: '100M', tv: '이코노미(178개)', tier: 1, name: '광랜100M + TV 이코노미(스마트3)',      support: 35, guide: 29, guideSkt: 40, exVat: 33000, combExVat: 29000 },
+      { id: 'sk-100-std', type: 'tv',  speed: '100M', tv: '스탠다드(219개)', tier: 2, name: '광랜100M + TV 스탠다드(스마트3)',      support: 46, guide: 29, guideSkt: 40, exVat: 36000, combExVat: 32000 },
+      { id: 'sk-100-all', type: 'tv',  speed: '100M', tv: 'ALL(251개)',      tier: 3, name: '광랜100M + TV ALL(스마트3)',           support: 50, guide: 29, guideSkt: 40, exVat: 39000, combExVat: 35000 },
+      { id: 'sk-500-eco', type: 'tv',  speed: '500M', tv: '이코노미(178개)', tier: 1, name: '기가라이트500M + TV 이코노미(스마트3)', support: 42, guide: 37, guideSkt: 48, exVat: 39000, combExVat: 33000 },
+      { id: 'sk-500-std', type: 'tv',  speed: '500M', tv: '스탠다드(219개)', tier: 2, name: '기가라이트500M + TV 스탠다드(스마트3)', support: 53, guide: 37, guideSkt: 48, exVat: 42000, combExVat: 36000 },
+      { id: 'sk-500-all', type: 'tv',  speed: '500M', tv: 'ALL(251개)',      tier: 3, name: '기가라이트500M + TV ALL(스마트3)',      support: 57, guide: 37, guideSkt: 48, exVat: 45000, combExVat: 39000 },
+      { id: 'sk-1g-eco',  type: 'tv',  speed: '1G',   tv: '이코노미(178개)', tier: 1, name: '기가1G + TV 이코노미(스마트3)',         support: 42, guide: 37, guideSkt: 48, exVat: 44000, combExVat: 36000 },
+      { id: 'sk-1g-std',  type: 'tv',  speed: '1G',   tv: '스탠다드(219개)', tier: 2, name: '기가1G + TV 스탠다드(스마트3)',         support: 53, guide: 37, guideSkt: 48, exVat: 47000, combExVat: 39000 },
+      { id: 'sk-1g-all',  type: 'tv',  speed: '1G',   tv: 'ALL(251개)',      tier: 3, name: '기가1G + TV ALL(스마트3)',              support: 57, guide: 37, guideSkt: 48, exVat: 50000, combExVat: 42000 },
     ],
     addons: [
       { id: 'sk-settop-eco', name: '추가셋톱 이코노미', support: 2, feeVat: 8250,  install: 'addSettop', group: 'settop', tvOnly: true },
@@ -217,6 +218,12 @@ const DATA = {
 
 /* ▣ 반론 대응 — "반론 대응 32개" PDF가 아직 첨부되지 않아 비어 있음.
    형식: { title: '반론 문구', keywords: ['고민', ...], answer: '대응 멘트(원문 그대로)' } */
+// SK: 미결합/결합(VAT 제외) × 1.1 → VAT 포함 요금
+for (const p of DATA.sk.products) {
+  p.feeVat = Math.round(p.exVat * 1.1);
+  p.combVat = Math.round(p.combExVat * 1.1);
+}
+
 const OBJECTIONS = [
   // TODO 확인필요: 반론 대응 PDF 원문으로 32개 채우기
 ];
@@ -561,7 +568,7 @@ function compute(key, p, opt = {}) {
   if (calc.combine) {
     if (key === 'sk') {
       combVat = p.combVat; combEx = p.combExVat; mobileDisc = C.combine.mobile1Line[p.speed];
-      combNote = '요즘가족결합 (시트 요금)';
+      combNote = `휴대폰 결합: 시트 결합 ${won(p.combExVat)}원 + VAT`;
     } else if (key === 'kt') {
       const sk = p.speed === '100M' ? '100M' : '500M/1G';
       let disc;
