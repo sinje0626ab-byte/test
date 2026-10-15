@@ -134,7 +134,7 @@ const DATA = {
   /* ───────────── SKB / SKT (SKB 106 / SKT 1600-2000) ───────────── */
   sk: {
     baseMonth: '2026-09', // 9월 정책 — 10월 정책으로 업데이트 필요
-    name: 'SKB/SKT', short: 'SK', mobileName: 'SKT', phone: 'SKB 106 / SKT 1600-2000',
+    name: 'SK', short: 'SK', mobileName: 'SKT', phone: 'SKB 106 / SKT 1600-2000',
     defaultTier: 2, // 기본 안내 TV: 스탠다드(219개)
     install: {
       net:       { weekday: 36300, weekend: 45375 },
@@ -528,7 +528,7 @@ const CARRIERS = ['kt', 'lg', 'sk', 'sky'];
 const SPEED_ORDER = ['100M', '200M', '500M', '1G'];
 const SPEED_TALK = { '100M': '100메가', '200M': '200메가', '500M': '500메가', '1G': '1기가' };
 const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
-const CUR_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SKB': 'sk', '스카이라이프': 'sky' };
+const CUR_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SK': 'sk', '스카이라이프': 'sky' };
 // 휴대폰 결합 대상: 같은 통신사끼리만. 스카이는 스카이 알뜰폰만 결합 가능, 그 외 알뜰폰은 결합 대상 없음
 const MOBILE_TO_KEY = { 'KT': 'kt', 'LG U+': 'lg', 'SKT': 'sk', '스카이 알뜰폰': 'sky' };
 
@@ -785,7 +785,7 @@ function CH(f, q, opts) {
   return `<div class="ans"><span class="q">${esc(q)}</span>${opts.map((o) => { const [v, label] = Array.isArray(o) ? o : [o, o];
     return `<button data-cf="${f}" data-v="${esc(v)}" class="${String(cust[f]) === String(v) ? 'on' : ''}">${esc(label)}</button>`; }).join('')}</div>`;
 }
-const CUR_LIST = ['KT', 'LG U+', 'SKB', '스카이라이프', 'HCN', '티브로드', '딜라이브', 'CMB', '헬로비전', ['신규', '없음(신규)']];
+const CUR_LIST = ['KT', 'LG U+', 'SK', '스카이라이프', 'HCN', '티브로드', '딜라이브', 'CMB', '헬로비전', ['신규', '없음(신규)']];
 const F = (v, ph) => (v !== '' && v != null) ? `<span class="fill">${esc(v)}</span>` : `<span class="blank">${esc(ph)}</span>`;
 function tvTalk(p, mode) {
   if (!p || !p.tv) return '';
@@ -828,7 +828,7 @@ function buildSteps(r) {
       <span class="divider"></span>${combinable(calc.carrier) === false ? `<span class="mut">휴대폰 ${esc(cust.mobile)} — ${esc(C.short)} 결합 대상 아님</span>` : seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
     ${r && r.addTv ? `<p class="note">TV ${esc(cust.tvCount)}대 → 추가 TV ${r.addTv.n}대 (${esc(r.addTv.o.label)}) 월 +${won(r.addTv.fee)}원 · 설치비 +${won(r.addTv.inst)}원 — 위 요금·설치비에 포함</p>` : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
-    <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요${SUPHOW(r)}</p>
+    <p>${cust.curCarrier === '신규' ? `${F(C.short, '○○')}로 신규 가입하시면` : `${F(cust.curCarrier, '○○')}에서 ${F(C.short, '○○')}로 변경하시면`} 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요${SUPHOW(r)}</p>
     <p>${r && r.combVat != null ? `현재 휴대폰 ${F(C.mobileName, '○○')} 사용하고 계시면 ` : ''}${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.${HOW(r, r && r.combVat != null)}<br>
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
     ${r && r.combVat == null ? `<p class="note">${combinable(calc.carrier) === false ? `휴대폰 ${esc(cust.mobile)} → ${esc(C.short)} 인터넷과 결합 불가 — 결합 요금·결합 안내 없이 진행` : '휴대폰 결합 미선택 또는 결합표 없음'} → 미결합 요금(부가세 포함)으로 표시</p>` : ''}` });
