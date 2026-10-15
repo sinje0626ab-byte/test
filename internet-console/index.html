@@ -576,7 +576,8 @@ function compute(key, p, opt = {}) {
   // 월요금
   let feeVat = p.feeVat, feeEx = p.exVat != null ? p.exVat : exVat(p.feeVat);
   let combVat = null, combEx = null, mobileDisc = null, combNote = '';
-  if (calc.combine) {
+  if (calc.combine && combinable(key) === false && key === calc.carrier) combNote = `휴대폰 ${cust.mobile} → ${C.short} 인터넷과 결합 불가`;
+  if (useCombine(key)) {
     if (key === 'sk') {
       combVat = p.combVat; combEx = p.combExVat; mobileDisc = C.combine.mobile1Line[p.speed];
       combNote = `휴대폰 결합: 시트 결합 ${won(p.combExVat)}원 + VAT`;
@@ -681,6 +682,8 @@ function compute(key, p, opt = {}) {
   });
   return r;
 }
+function combinable(key) { return cust.mobile ? MOBILE_TO_KEY[cust.mobile] === key : null; }
+function useCombine(key) { return key === calc.carrier ? calc.combine && combinable(key) !== false : combinable(key) === true; }
 function extraTvCount() { return cust.tvUse === '사용' ? Math.max((Number(cust.tvCount) || 1) - 1, 0) : 0; }
 function addTvList(C, p) { return C.addTv ? C.addTv.options.map((o, i) => ({ o, i })).filter(({ o }) => !o.speeds || o.speeds.includes(p.speed)) : []; }
 function addTvChoice(key, p) {
@@ -716,7 +719,7 @@ function warnings(r) {
     if (key === 'sk') w.push(['amber', 'SK 유심', '인터넷 개통일 기준 +30일 안에 유심 개통']);
   }
   if (r.p.notRecommended) w.push(['red', '비권장 상품', `${C.short} ${r.p.tv}는 가입 비권장 — 최소 스탠다드 이상으로 권장`]);
-  if (key === 'sk' && calc.combine) w.push(['amber', 'SK 결합', 'SK 모든 결합은 30일 내로만 가능 · 해피콜 필수 진행']);
+  if (key === 'sk' && useCombine(key)) w.push(['amber', 'SK 결합', 'SK 모든 결합은 30일 내로만 가능 · 해피콜 필수 진행']);
   if (cust.biz && key !== 'lg') w.push(['amber', '사업장', '사업장 설치 — 통신사별 사업자 접수 조건 확인']);
   if (r.addTv) w.push([r.addTv.o.notRecommended ? 'red' : 'amber', '추가 TV', `TV ${cust.tvCount}대 → 추가 ${r.addTv.n}대 (${r.addTv.o.label}${r.addTv.o.notRecommended ? ' · 비권장' : ''}): 월 +${won(r.addTv.fee)}원, 설치비 +${won(r.addTv.inst)}원 (대당 ${won(r.addTv.unitInst)}원)`]);
   else if (extraTvCount() > 0 && r.p.type !== 'tv') w.push(['red', 'TV 대수', `TV ${cust.tvCount}대 사용 중인데 인터넷 단독 선택됨 — 인터넷+TV 확인`]);
@@ -780,13 +783,13 @@ function buildSteps(r) {
       <span class="divider"></span>${seg('type', [['net', '인터넷 단독'], ['tv', '인터넷+TV']], calc.type)}
       ${seg('speed', SPEED_ORDER.filter((x) => speedsOf(calc.carrier, calc.type).includes(x)).map((x) => [x, x]), calc.speed)}
       ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv + (x.notRecommended ? ' · 비권장' : '')]), p && p.id) : ''}
-      <span class="divider"></span>${seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
+      <span class="divider"></span>${combinable(calc.carrier) === false ? `<span class="mut">휴대폰 ${esc(cust.mobile)} — ${esc(C.short)} 결합 대상 아님</span>` : seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
     ${r && r.addTv ? `<p class="note">TV ${esc(cust.tvCount)}대 → 추가 TV ${r.addTv.n}대 (${esc(r.addTv.o.label)}) 월 +${won(r.addTv.fee)}원 · 설치비 +${won(r.addTv.inst)}원 — 위 요금·설치비에 포함</p>` : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
     <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요</p>
-    <p>${F(C.mobileName, '○○')} 사용하고 계시면 ${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.<br>
+    <p>${r && r.combVat != null ? `${F(C.mobileName, '○○')} 사용하고 계시면 ` : ''}${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.<br>
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
-    ${r && r.combEx == null ? `<p class="note">휴대폰 결합 미선택 또는 결합표 없음 → 미결합 요금(부가세 포함)으로 표시</p>` : ''}` });
+    ${r && r.combVat == null ? `<p class="note">${combinable(calc.carrier) === false ? `휴대폰 ${esc(cust.mobile)} → ${esc(C.short)} 인터넷과 결합 불가 — 결합 요금·결합 안내 없이 진행` : '휴대폰 결합 미선택 또는 결합표 없음'} → 미결합 요금(부가세 포함)으로 표시</p>` : ''}` });
 
   steps.push({ t: '설치일', h: `
     <p>그리고 이사날짜가 ${IN('moveDate', '', 'date')}날 하시는거죠/ 그럼 저희가 ${IN('installDate', '', 'date')} ${IN('installTime', '오후 ○시')} 설치해드려도 괜찮을까요?</p>
@@ -794,7 +797,7 @@ function buildSteps(r) {
 
   steps.push({ t: '명의/계좌/주민번호', h: `
     <p>신청은 고객님 명의로 해드릴건데 고객님 성함이 ${IN('name', '○○○')}님 맞으시죠?<br>연락처도 고객님 명의 맞으시구요?</p>
-    <p>휴대폰결합은 고객센터로 해주시면 되시고, 설치받고 고객센터 전화주시거나 직영대리점 방문하시면 되구요 납부계좌 등록해드리면서 지원금 입금해드리는 계좌 입력해드릴건데요 고객님 명의 계좌 확인 부탁드립니다</p>
+    <p>${combinable(calc.carrier) !== false && calc.combine ? '휴대폰결합은 고객센터로 해주시면 되시고, 설치받고 고객센터 전화주시거나 직영대리점 방문하시면 되구요 ' : ''}납부계좌 등록해드리면서 지원금 입금해드리는 계좌 입력해드릴건데요 고객님 명의 계좌 확인 부탁드립니다</p>
     <p>설치 후에는 다른 계좌나 카드납부로 변경 가능하시니까 참고해주시면되시구요<br>통신사 등록건이라서 주민번호 입력 필요하신데 명의자님 주민번호 확인부탁드릴게요</p>
     <p class="note">※ 계좌번호·주민번호는 이 화면에 입력하지 않습니다.</p>` });
 
@@ -822,7 +825,7 @@ function buildSteps(r) {
     <p>유심 개통시 신용조회가 필수적으로 이루어지니 참고부탁드립니다<br>유심 개통시 인터넷+TV 혹은 인터넷이 개통 완료된 이후 유심이 고객님께 등기우편으로 발송이 나갑니다.</p>` });
 
   steps.push({ t: '요금/설치비/지급일', h: `
-    <p>요금은 부가세포함 ${F(r ? won(r.feeVat) : '', '○○,○○○')}원이신데 휴대폰결합시 부가세포함 ${F(r && r.combVat != null ? won(r.combVat) : '', '○○,○○○')}원이세요<br>
+    <p>${r && r.combVat != null ? `요금은 부가세포함 ${F(won(r.feeVat), '○○,○○○')}원이신데 휴대폰결합시 부가세포함 ${F(won(r.combVat), '○○,○○○')}원이세요` : `요금은 부가세포함 ${F(r ? won(r.feeVat) : '', '○○,○○○')}원이세요`}<br>
     그리고 설치비 ${F(r ? won(r.install) : '', '○○,○○○')}원은 익월 요금에 딱 한번 합산 청구 되실거구요<br>
     ${r && r.addTv ? `<span class="note" style="font-size:15px;color:var(--muted)">(설치비에 추가 TV ${r.addTv.n}대 설치비 ${won(r.addTv.inst)}원 포함)</span><br>` : ''}
     ${r && r.pay && !r.pay.gift && !r.pay.rest ? `지원금은 현금으로 지급되시고, 설치 당일 지원금 ${F(r.total, '○○')}만원 전액 바로 지급되실거예요`
@@ -891,9 +894,11 @@ function renderCalc(p) {
   if (calc.type === 'tv') h += `<div class="row"><div class="lb">TV 채널</div>${seg('productId', tvs.map((x) => [x.id, x.tv + (x.notRecommended ? ' · 비권장' : '')]), p && p.id)}</div>`;
 
   // 결합
-  let comb = seg('combine', [['0', '미결합'], ['1', '휴대폰 결합']], calc.combine ? '1' : '0');
-  if (calc.combine && key === 'kt') comb += `<div style="margin-top:6px"><select class="sm" data-set="ktBracket"><option value="flat" ${calc.ktBracket === 'flat' ? 'selected' : ''}>정액결합 (인터넷 -5,500)</option>${C.combine.brackets.map((b, i) => `<option value="${i}" ${String(calc.ktBracket) === String(i) ? 'selected' : ''}>총액결합 · 휴대폰 ${b}</option>`).join('')}</select></div>`;
-  if (calc.combine && key === 'sky') comb += `<div class="mut" style="margin-top:4px">스카이 결합표 없음 (스카이알뜰폰만 가능)</div>`;
+  let comb = combinable(key) === false
+    ? `<span class="mut">휴대폰 ${esc(cust.mobile)} — ${esc(C.short)} 인터넷과 결합 불가 (같은 통신사끼리만 결합)</span>`
+    : seg('combine', [['0', '미결합'], ['1', '휴대폰 결합']], calc.combine ? '1' : '0');
+  if (useCombine(key) && key === 'kt') comb += `<div style="margin-top:6px"><select class="sm" data-set="ktBracket"><option value="flat" ${calc.ktBracket === 'flat' ? 'selected' : ''}>정액결합 (인터넷 -5,500)</option>${C.combine.brackets.map((b, i) => `<option value="${i}" ${String(calc.ktBracket) === String(i) ? 'selected' : ''}>총액결합 · 휴대폰 ${b}</option>`).join('')}</select></div>`;
+  if (useCombine(key) && key === 'sky') comb += `<div class="mut" style="margin-top:4px">스카이 결합표 없음 (스카이알뜰폰만 가능)</div>`;
   h += `<div class="row"><div class="lb">휴대폰 결합</div><div>${comb}</div></div>`;
 
   // 유심 동판
