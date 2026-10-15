@@ -135,6 +135,7 @@ const DATA = {
       tv:        { weekday: 56100, weekend: 70125 },
       addSettop: { weekday: 17600, weekend: 22000 },
     },
+    // notRecommended: true = 가입 비권장 (SK TV는 이코노미 비권장, 최소 스탠다드 이상 권장)
     // guide = 가이드(SKB 접수) / guideSkt = 가이드(SKT 접수): 설치 당일 바로 지급되는 현금(만원). 차액은 다음주 금요일
     payTiming: 'sameDay',
     // exVat = 시트 '미결합'(VAT 제외) / combExVat = 시트 '결합'(휴대폰 결합 시, VAT 제외)
@@ -143,13 +144,13 @@ const DATA = {
       { id: 'sk-100',     type: 'net', speed: '100M', tv: null,              tier: 0, name: '광랜100M (WiFi통합)',       support: 15, guide: 9, guideSkt: 11, exVat: 21000, combExVat: 17000 },
       { id: 'sk-500',     type: 'net', speed: '500M', tv: null,              tier: 0, name: '기가라이트500M (WiFi통합)', support: 22, guide: 13, guideSkt: 17, exVat: 31000, combExVat: 21000 },
       { id: 'sk-1g',      type: 'net', speed: '1G',   tv: null,              tier: 0, name: '기가1G (WiFi통합)',         support: 23, guide: 13, guideSkt: 17, exVat: 36000, combExVat: 24000 },
-      { id: 'sk-100-eco', type: 'tv',  speed: '100M', tv: '이코노미(178개)', tier: 1, name: '광랜100M + TV 이코노미(스마트3)',      support: 35, guide: 29, guideSkt: 40, exVat: 33000, combExVat: 29000 },
+      { id: 'sk-100-eco', type: 'tv',  speed: '100M', tv: '이코노미(178개)', tier: 1, notRecommended: true, name: '광랜100M + TV 이코노미(스마트3)',      support: 35, guide: 29, guideSkt: 40, exVat: 33000, combExVat: 29000 },
       { id: 'sk-100-std', type: 'tv',  speed: '100M', tv: '스탠다드(219개)', tier: 2, name: '광랜100M + TV 스탠다드(스마트3)',      support: 46, guide: 29, guideSkt: 40, exVat: 36000, combExVat: 32000 },
       { id: 'sk-100-all', type: 'tv',  speed: '100M', tv: 'ALL(251개)',      tier: 3, name: '광랜100M + TV ALL(스마트3)',           support: 50, guide: 29, guideSkt: 40, exVat: 39000, combExVat: 35000 },
-      { id: 'sk-500-eco', type: 'tv',  speed: '500M', tv: '이코노미(178개)', tier: 1, name: '기가라이트500M + TV 이코노미(스마트3)', support: 42, guide: 37, guideSkt: 48, exVat: 39000, combExVat: 33000 },
+      { id: 'sk-500-eco', type: 'tv',  speed: '500M', tv: '이코노미(178개)', tier: 1, notRecommended: true, name: '기가라이트500M + TV 이코노미(스마트3)', support: 42, guide: 37, guideSkt: 48, exVat: 39000, combExVat: 33000 },
       { id: 'sk-500-std', type: 'tv',  speed: '500M', tv: '스탠다드(219개)', tier: 2, name: '기가라이트500M + TV 스탠다드(스마트3)', support: 53, guide: 37, guideSkt: 48, exVat: 42000, combExVat: 36000 },
       { id: 'sk-500-all', type: 'tv',  speed: '500M', tv: 'ALL(251개)',      tier: 3, name: '기가라이트500M + TV ALL(스마트3)',      support: 57, guide: 37, guideSkt: 48, exVat: 45000, combExVat: 39000 },
-      { id: 'sk-1g-eco',  type: 'tv',  speed: '1G',   tv: '이코노미(178개)', tier: 1, name: '기가1G + TV 이코노미(스마트3)',         support: 42, guide: 37, guideSkt: 48, exVat: 44000, combExVat: 36000 },
+      { id: 'sk-1g-eco',  type: 'tv',  speed: '1G',   tv: '이코노미(178개)', tier: 1, notRecommended: true, name: '기가1G + TV 이코노미(스마트3)',         support: 42, guide: 37, guideSkt: 48, exVat: 44000, combExVat: 36000 },
       { id: 'sk-1g-std',  type: 'tv',  speed: '1G',   tv: '스탠다드(219개)', tier: 2, name: '기가1G + TV 스탠다드(스마트3)',         support: 53, guide: 37, guideSkt: 48, exVat: 47000, combExVat: 39000 },
       { id: 'sk-1g-all',  type: 'tv',  speed: '1G',   tv: 'ALL(251개)',      tier: 3, name: '기가1G + TV ALL(스마트3)',              support: 57, guide: 37, guideSkt: 48, exVat: 50000, combExVat: 42000 },
     ],
@@ -536,7 +537,7 @@ function pickProduct(key, type, speed, tier, preferId) {
   if (!list.length) return null;
   if (preferId) { const f = list.find((p) => p.id === preferId); if (f) return f; }
   if (type === 'net') return list[0];
-  const ranked = list.filter((p) => p.tier > 0).sort((a, b) => Math.abs(a.tier - tier) - Math.abs(b.tier - tier) || b.tier - a.tier);
+  const ranked = list.filter((p) => p.tier > 0 && !p.notRecommended).sort((a, b) => Math.abs(a.tier - tier) - Math.abs(b.tier - tier) || b.tier - a.tier);
   return ranked[0] || list[0];
 }
 function currentProduct() {
@@ -686,6 +687,7 @@ function warnings(r) {
     if (key === 'kt' && calc.deds['kt-ttaro']) w.push(['red', 'KT 유심', '따로 살아도 가족결합 진행불가 (유심 동판)']);
     if (key === 'sk') w.push(['amber', 'SK 유심', '인터넷 개통일 기준 +30일 안에 유심 개통']);
   }
+  if (r.p.notRecommended) w.push(['red', '비권장 상품', `${C.short} ${r.p.tv}는 가입 비권장 — 최소 스탠다드 이상으로 권장`]);
   if (key === 'sk' && calc.combine) w.push(['amber', 'SK 결합', 'SK 모든 결합은 30일 내로만 가능 · 해피콜 필수 진행']);
   if (cust.biz && key !== 'lg') w.push(['amber', '사업장', '사업장 설치 — 통신사별 사업자 접수 조건 확인']);
   if (Number(cust.tvCount) >= 2) w.push(['amber', 'TV 대수', `TV ${cust.tvCount}대 이용 중 — 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인`]);
@@ -748,7 +750,7 @@ function buildSteps(r) {
       `<button data-set="carrier" data-v="${k}" class="${k === calc.carrier ? 'on' : ''}" ${x && !x.same ? '' : 'disabled'}>${esc(DATA[k].short)}<span class="sub">${!x ? '없음' : x.same ? '이동불가' : x.total + '만'}</span></button>`).join('')}
       <span class="divider"></span>${seg('type', [['net', '인터넷 단독'], ['tv', '인터넷+TV']], calc.type)}
       ${seg('speed', SPEED_ORDER.filter((x) => speedsOf(calc.carrier, calc.type).includes(x)).map((x) => [x, x]), calc.speed)}
-      ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv]), p && p.id) : ''}
+      ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv + (x.notRecommended ? ' · 비권장' : '')]), p && p.id) : ''}
       <span class="divider"></span>${seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
     ${Number(cust.tvCount) >= 2 ? `<p class="note">TV ${esc(cust.tvCount)}대 이용 중 → 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인 (계산기 "추가 셋톱")</p>` : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
@@ -856,7 +858,7 @@ function renderCalc(p) {
   if (key === 'lg') h += `<div class="row"><div class="lb">카테고리</div>${seg('soho', [['0', '일반'], ['1', '소호(사업장)']], calc.soho ? '1' : '0')}</div>`;
   h += `<div class="row"><div class="lb">상품 유형</div>${seg('type', [['net', '인터넷 단독'], ['tv', '인터넷+TV']], calc.type)}</div>`;
   h += `<div class="row"><div class="lb">속도</div>${seg('speed', SPEED_ORDER.filter((s) => s !== '200M' || key === 'sky').map((s) => [s, s, !speedsOf(key, calc.type).includes(s)]), calc.speed)}</div>`;
-  if (calc.type === 'tv') h += `<div class="row"><div class="lb">TV 채널</div>${seg('productId', tvs.map((x) => [x.id, x.tv]), p && p.id)}</div>`;
+  if (calc.type === 'tv') h += `<div class="row"><div class="lb">TV 채널</div>${seg('productId', tvs.map((x) => [x.id, x.tv + (x.notRecommended ? ' · 비권장' : '')]), p && p.id)}</div>`;
 
   // 결합
   let comb = seg('combine', [['0', '미결합'], ['1', '휴대폰 결합']], calc.combine ? '1' : '0');
