@@ -614,8 +614,16 @@ function compute(key, p, opt = {}) {
     for (const d of C.deductions) if (calc.deds[d.id]) { addSup += d.support; r.items.push([d.name, d.support]); }
   }
 
+  // 같은 통신사끼리는 이동 불가 → 지원금 없음
+  const same = CUR_TO_KEY[cust.curCarrier] === key;
+  if (same) {
+    r.blocked.unshift(`현재 ${cust.curCarrier} 사용 중 — 같은 통신사로는 이동 불가 (지원금 지급 없음)`);
+    net = 0; usim = 0; addSup = 0; carrierDeduct = 0;
+    r.items = [['동일 통신사 이동 불가', 0]];
+  }
   const baseInstall = C.install[p.type === 'net' ? 'net' : 'tv'][day];
   Object.assign(r, {
+    same,
     feeVat: feeVat + addFee, feeEx: feeEx + exVat(addFee),
     combVat: combVat == null ? null : combVat + addFee, combEx: combEx == null ? null : combEx + exVat(addFee),
     mobileDisc, combNote, net, usim, addSup, carrierDeduct,
@@ -638,7 +646,7 @@ function warnings(r) {
   const C = DATA[r.key], key = r.key;
   w.push(['red', '지원금 환수', '1년 내 해지 · 요금 미납 · 미접속(가개통 직권해지) · 명의변경/일시정지 · 상품 하향 시 지원금 전액 환수']);
   const curKey = CUR_TO_KEY[cust.curCarrier];
-  if (C.rules.rejoinDays && curKey === key) w.push(['red', '재가입 제한', `${C.name}: 본인/가족명의로 해지 후 ${C.rules.rejoinDays}일 이내 재가입 불가 (지원금 전액 환수) — 해지일 확인`]);
+  if (C.rules.rejoinDays && curKey !== key) w.push(['amber', '재가입 제한', `${C.name}: 본인/가족명의로 ${C.name} 해지 후 ${C.rules.rejoinDays}일 이내 재가입 불가 (지원금 전액 환수) — 최근 해지 이력 확인`]);
   if (key === 'sky' && cust.curCarrier === 'KT') w.push(['red', 'KT 전환 차감', `KT → 스카이 전환: 지원금 ${C.rules.fromKtDeduct}만원 차감 (정책 마이너스 되지 않게 주의)`]);
   r.blocked.forEach((b) => w.push(['red', '접수 불가', b]));
   if (key === 'lg' && cust.biz) {
@@ -695,6 +703,8 @@ function buildSteps(r) {
   steps.push({ t: '통신사 확인', h: `
     <p>현재 사용하고 계신 인터넷이 어떤 통신사일까요?</p>
     ${CH('curCarrier', '고객 답변 · 현재 통신사', CUR_LIST)}
+    <p>휴대폰은 어느 통신사 사용하고 계실까요?</p>
+    ${CH('mobile', '고객 답변 · 휴대폰 통신사', ['SKT', 'KT', 'LG U+', '알뜰폰'])}
     ${CH('contractEnd', '약정 만료 여부', ['만료', '미만료', '모름'])}
     ${CH('biz', '설치 장소', [['false', '가정'], ['true', '사업장']])}
     ${cust.biz ? `<p class="note">업종: ${IN('bizType', '예: PC방')} (LG는 유흥업소·노래방·고시텔·숙박업소·PC방·성인게임장 접수 불가)</p>` : ''}` });
@@ -702,14 +712,13 @@ function buildSteps(r) {
   const cmp = compareRows();
   steps.push({ t: '지원금 제시', h: `
     <div class="ans"><span class="q">제안할 통신사 · 상품 (숫자 = 지원금 총액)</span>${cmp.map(({ k, r: x }) =>
-      `<button data-set="carrier" data-v="${k}" class="${k === calc.carrier ? 'on' : ''}" ${x ? '' : 'disabled'}>${esc(DATA[k].short)}<span class="sub">${x ? x.total + '만' : '없음'}</span></button>`).join('')}
+      `<button data-set="carrier" data-v="${k}" class="${k === calc.carrier ? 'on' : ''}" ${x && !x.same ? '' : 'disabled'}>${esc(DATA[k].short)}<span class="sub">${!x ? '없음' : x.same ? '이동불가' : x.total + '만'}</span></button>`).join('')}
       <span class="divider"></span>${seg('type', [['net', '인터넷 단독'], ['tv', '인터넷+TV']], calc.type)}
       ${seg('speed', SPEED_ORDER.filter((x) => speedsOf(calc.carrier, calc.type).includes(x)).map((x) => [x, x]), calc.speed)}
-      ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv]), p && p.id) : ''}</div>
+      ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv]), p && p.id) : ''}
+      <span class="divider"></span>${seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
+    ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
     <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요</p>
-    <p>혹시 핸드폰 사용하실까요?</p>
-    <div class="ans"><span class="q">고객 답변 · 휴대폰 통신사</span>${['SKT', 'KT', 'LG U+', '알뜰폰', '없음'].map((v) => `<button data-cf="mobile" data-v="${v}" class="${cust.mobile === v ? 'on' : ''}">${v}</button>`).join('')}
-      <span class="divider"></span>${seg('combine', [['0', '미결합'], ['1', '휴대폰 결합']], calc.combine ? '1' : '0')}</div>
     <p>${F(C.mobileName, '○○')} 사용하고 계시면 ${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 제외하고 ${F(r ? won(exFee) : '', '○○,○○○')}원 나오시구요.<br>
     ${r && r.combEx != null ? `핸드폰에서도 ${F(r.mobileDisc ? won(r.mobileDisc) : '', '○,○○○')}원 할인 되세요./<br>` : ''}
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
@@ -861,10 +870,11 @@ function compareRows() {
 }
 function renderCompare() {
   const rows = compareRows();
-  rows.sort((a, b) => (b.r ? b.r.total : -999) - (a.r ? a.r.total : -999));
+  const score = (x) => !x.r ? -999 : x.r.same ? -500 : x.r.total;
+  rows.sort((a, b) => score(b) - score(a));
   $('#compare').innerHTML = `<table class="cmp"><thead><tr><th>통신사 · 상품</th><th>월(VAT별도)</th><th>결합(VAT별도)</th><th>설치비</th><th>지원금</th></tr></thead><tbody>${
     rows.map(({ k, r }) => r ? `<tr class="${k === calc.carrier ? 'sel' : ''}" data-pick="${k}" style="cursor:pointer">
-      <td><b>${esc(DATA[k].short)}</b> ${r.blocked.length ? '<span class="badge red">불가</span>' : ''}<br><span class="mut">${esc(r.p.name)}</span></td>
+      <td><b>${esc(DATA[k].short)}</b> ${r.same ? '<span class="badge red">동일 통신사 불가</span>' : r.blocked.length ? '<span class="badge red">불가</span>' : ''}<br><span class="mut">${esc(r.p.name)}</span></td>
       <td>${won(r.feeEx)}<br><span class="mut">${won(r.feeVat)}</span></td>
       <td>${r.combEx != null ? won(r.combEx) : '-'}${r.combVat != null ? `<br><span class="mut">${won(r.combVat)}</span>` : ''}</td>
       <td>${won(r.install)}</td>
@@ -942,7 +952,11 @@ function setCust(f, v) {
   if (f === 'agent') { agentNm = v; try { localStorage.setItem('consoleAgentName', v); } catch (_) {} return; }
   cust[f] = v;
   if (f === 'biz') calc.soho = cust.biz;
-  if (f === 'mobile' && !combineTouched) calc.combine = MOBILE_TO_KEY[cust.mobile] === calc.carrier;
+  if (f === 'curCarrier' && CUR_TO_KEY[v] === calc.carrier) {
+    const best = compareRows().filter((x) => x.r && !x.r.same).sort((a, b) => b.r.total - a.r.total)[0];
+    if (best) { calc.carrier = best.k; calc.productId = null; calc.addons = {}; calc.deds = {}; }
+  }
+  if ((f === 'mobile' || f === 'curCarrier') && !combineTouched) calc.combine = MOBILE_TO_KEY[cust.mobile] === calc.carrier;
 }
 // 스크립트 안 입력칸: 글자 입력은 실시간 반영(카드는 유지), 날짜는 바로 전체 반영
 $('#card').addEventListener('input', (e) => {
