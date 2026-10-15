@@ -41,11 +41,11 @@ const DATA = {
       { id: 'kt-500',     type: 'net', speed: '500M', tv: null,               tier: 0, name: '인터넷 베이직(500M) 와이파이',  support: 18, guide: 14, gift: 4, feeVat: 34100 },
       { id: 'kt-1g',      type: 'net', speed: '1G',   tv: null,               tier: 0, name: '인터넷 에센스(1기가) 와이파이', support: 20, guide: 14, gift: 5, feeVat: 38500 },
       { id: 'kt-100-otv', type: 'tv',  speed: '100M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 슬림와이파이 + OTV베이직(236개)',   support: 41, guide: 37, gift: 6, feeVat: 39600 },
-      { id: 'kt-100-all', type: 'tv',  speed: '100M', tv: '모든G',            tier: 3, name: '인터넷 슬림와이파이 + 모든G',             support: 52, guide: 37, gift: 7, feeVat: 47300 }, // 세부합계(44,000)와 월요금 3,300원 차이 // TODO 확인필요
+      { id: 'kt-100-all', type: 'tv',  speed: '100M', tv: '모든G(250개)',      tier: 3, name: '인터넷 슬림와이파이 + 모든G',             support: 52, guide: 37, gift: 7, feeVat: 47300 }, // 세부합계(44,000)와 월요금 3,300원 차이 // TODO 확인필요
       { id: 'kt-500-otv', type: 'tv',  speed: '500M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 베이직와이파이 + OTV베이직(236개)', support: 51, guide: 45, gift: 6, feeVat: 45100 },
-      { id: 'kt-500-all', type: 'tv',  speed: '500M', tv: '모든G',            tier: 3, name: '인터넷 베이직 와이파이 + 모든G',          support: 62, guide: 45, gift: 7, feeVat: 52800 }, // 세부합계와 3,300원 차이 // TODO 확인필요
+      { id: 'kt-500-all', type: 'tv',  speed: '500M', tv: '모든G(250개)',      tier: 3, name: '인터넷 베이직 와이파이 + 모든G',          support: 62, guide: 45, gift: 7, feeVat: 52800 }, // 세부합계와 3,300원 차이 // TODO 확인필요
       { id: 'kt-1g-otv',  type: 'tv',  speed: '1G',   tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 에센스 와이파이 + OTV베이직(236개)', support: 55, guide: 45, gift: 9, feeVat: 49500 },
-      { id: 'kt-1g-all',  type: 'tv',  speed: '1G',   tv: '모든G',            tier: 3, name: '인터넷 에센스 와이파이 + 모든G',          support: 66, guide: 45, gift: 10, feeVat: 57200 }, // 세부합계와 3,300원 차이 // TODO 확인필요
+      { id: 'kt-1g-all',  type: 'tv',  speed: '1G',   tv: '모든G(250개)',      tier: 3, name: '인터넷 에센스 와이파이 + 모든G',          support: 66, guide: 45, gift: 10, feeVat: 57200 }, // 세부합계와 3,300원 차이 // TODO 확인필요
     ],
     addons: [ // support 만원 / feeVat 원(월)
       { id: 'kt-buddy', name: '버디패키지 WIFI 증폭기 (500M이상)', support: 1, feeVat: 1650, minSpeed: '500M' },
@@ -791,7 +791,7 @@ function tvTalk(p, mode) {
   if (!p || !p.tv) return '';
   const m = p.tv.match(/(\d+)개/);
   if (mode === 'count') return m ? m[1] : p.tv;
-  return m ? `TV${m[1]}채널` : `TV ${p.tv}`;
+  return m ? `TV ${m[1]}채널` : `TV ${p.tv}`;
 }
 function buildSteps(r) {
   const C = DATA[calc.carrier], p = r && r.p;
