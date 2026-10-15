@@ -47,15 +47,16 @@ const DATA = {
       { id: 'kt-1g-all',  type: 'tv',  speed: '1G',   tv: '모든G',            tier: 3, name: '인터넷 에센스 와이파이 + 모든G',          support: 66, guide: 45, gift: 10, feeVat: 57200 }, // 세부합계와 3,300원 차이 // TODO 확인필요
     ],
     addons: [ // support 만원 / feeVat 원(월)
-      { id: 'kt-addtv', name: '추가티비', support: 3, feeVat: 10670, install: 'addTv', optionsFrom: 'addTvOptions', tvOnly: true },
       { id: 'kt-buddy', name: '버디패키지 WIFI 증폭기 (500M이상)', support: 1, feeVat: 1650, minSpeed: '500M' },
     ],
-    addTvOptions: [ // 추가TV 채널별 이용료 + 셋톱별 임대료 (3년약정시)
-      { label: '베이직 + 지니A', total: 10670 },
-      { label: '에센스 + 지니A', total: 12100 },
-      { label: '베이직 + 지니3', total: 11770 },
-      { label: '에센스 + 지니3', total: 13200 },
-    ],
+    // 추가 TV (TV 1대 늘 때마다 대당 적용): 채널별 이용료 + 셋톱 임대료 합계(3년약정시) / support = 대당 지원금(만원)
+    // 설치비는 install.addTv 를 대당 추가 (평일 15,400 / 주말 19,250). 베이직 권장
+    addTv: { install: 'addTv', options: [
+      { label: '베이직 + 지니A', total: 10670, support: 3, recommended: true },
+      { label: '베이직 + 지니3', total: 11770, support: 3, recommended: true },
+      { label: '에센스 + 지니A', total: 12100, support: 3 },
+      { label: '에센스 + 지니3', total: 13200, support: 3 },
+    ] },
     deductions: [
       { id: 'kt-ttaro',  name: '따로살아도결합',               support: -9 },
       { id: 'kt-settop', name: '지니3 / 사운드바 셋톱 외',     support: -3 },
@@ -105,16 +106,18 @@ const DATA = {
       // 기본형(225개) 행은 WIFI·설치비 칸 빈칸 → 같은 설치비로 가정 // TODO 확인필요
     ],
     addons: [
-      { id: 'lg-addsettop', name: '추가셋톱', support: 9, feeVat: 10450, install: 'addSettop', optionsFrom: 'addTvOptions', tvOnly: true },
       { id: 'lg-addwifi',   name: '추가 와이파이', support: 0, feeVat: 2200 },
       { id: 'lg-easy2',     name: '우리집 지킴이 Easy2플러스 IOT', support: 8, feeVat: 14300, discontinued: true }, // 판매가이드: 판매종료
     ],
-    addTvOptions: [
-      { label: '베이직(100메가) + 고급형',    total: 10450 },
-      { label: '베이직(500메가↑) + UHD3',     total: 9350 },
-      { label: '프리미엄(500메가↑) + UHD4',   total: 13750 },
-      { label: '베이직 + 크롬캐스트',         total: 9900 },
-    ],
+    // 추가 TV (대당): 시트 첫장 하단 "추가TV 채널별 이용료 + 셋톱별 임대료" 합계 / support = 대당 지원금(시트 "추가셋톱" 9)
+    // 설치비는 install.addSettop 대당 추가 (평일 22,000 / 주말 27,500). 베이직(500메가) 권장
+    // 100M 인터넷은 품질이슈로 추가셋톱 고급형만 가능 (시트 문구)
+    addTv: { install: 'addSettop', options: [
+      { label: '베이직(100메가) + 고급형',  total: 10450, support: 9, speeds: ['100M'], recommended: true },
+      { label: '베이직(500메가↑) + UHD3',   total: 9350,  support: 9, speeds: ['500M', '1G'], recommended: true },
+      { label: '프리미엄(500메가↑) + UHD4', total: 13750, support: 9, speeds: ['500M', '1G'] },
+      { label: '베이직 + 크롬캐스트',       total: 9900,  support: 9, speeds: ['500M', '1G'] },
+    ] },
     deductions: [
       { id: 'lg-settop', name: '메인 UHD3,4 셋톱 외', support: -1 },
     ],
@@ -155,12 +158,16 @@ const DATA = {
       { id: 'sk-1g-all',  type: 'tv',  speed: '1G',   tv: 'ALL(251개)',      tier: 3, name: '기가1G + TV ALL(스마트3)',              support: 57, guide: 37, guideSkt: 48, exVat: 50000, combExVat: 42000 },
     ],
     addons: [
-      { id: 'sk-settop-eco', name: '추가셋톱 이코노미', support: 2, feeVat: 8250,  install: 'addSettop', group: 'settop', tvOnly: true },
-      { id: 'sk-settop-std', name: '추가셋톱 스탠다드', support: 4, feeVat: 9900,  install: 'addSettop', group: 'settop', tvOnly: true },
-      { id: 'sk-settop-all', name: '추가셋톱 ALL',      support: 6, feeVat: 11550, install: 'addSettop', group: 'settop', tvOnly: true },
       { id: 'sk-oss',        name: 'OSS 원스탑전환',    support: 1, feeVat: 0 },
       { id: 'sk-wings',      name: '윙즈(와이파이증폭기)', support: 0, feeVat: 1650 },
     ],
+    // 추가 TV (대당): 이코노미 8,250 / 스탠다드 9,900 / ALL 11,550, support = 대당 지원금(시트 2/4/6)
+    // 설치비는 install.addSettop 대당 추가 (평일 17,600 / 주말 22,000). 이코노미 비권장
+    addTv: { install: 'addSettop', options: [
+      { label: '이코노미', total: 8250,  support: 2, notRecommended: true },
+      { label: '스탠다드', total: 9900,  support: 4, recommended: true },
+      { label: 'ALL',      total: 11550, support: 6 },
+    ] },
     deductions: [
       { id: 'sk-common', name: '공통사항신청서 작성시', support: -5 }, // TODO 확인필요 (적용 조건)
     ],
@@ -207,9 +214,12 @@ const DATA = {
     ],
     addons: [
       { id: 'sky-only', name: '단독 sky All (238채널)', support: 1, feeVat: 13200, install: 'skyOnly' }, // TV단독 상품은 VOD다시보기, 넷플릭스 불가
-      { id: 'sky-add',  name: '추가 sky All 안드로이드5 (할인형)', support: 1, feeVat: 6600, install: 'addSky', tvOnly: true }, // 9,900원 → 프로모션 6,600원
       { id: 'sky-oss',  name: 'OSS (동일주소지만 가능)', support: 1, feeVat: 0 },
     ],
+    // 추가 TV (대당): 추가 sky All 안드로이드5 (9,900원 → 프로모션 할인가 6,600원), 설치비 install.addSky 대당
+    addTv: { install: 'addSky', options: [
+      { label: '추가 sky All 안드로이드5 (할인형)', total: 6600, support: 1, recommended: true },
+    ] },
     deductions: [],
     usim: null,    // 스카이 시트에 유심 동판 표 없음
     combine: null, // 결합 할인표 없음 (휴대폰 결합은 스카이알뜰폰만 가능)
@@ -520,7 +530,7 @@ function fmtDateTalk(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1
 const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', tvUse: '', tvCount: '', biz: false, bizType: '', nextDay: '' });
 const blankCalc = () => ({
   carrier: 'sk', type: 'tv', speed: '500M', tier: 3, productId: null,
-  soho: false, combine: false, ktBracket: 'flat', skDesk: 'SKB',
+  soho: false, combine: false, ktBracket: 'flat', skDesk: 'SKB', addTvOpt: {},
   usim: false, usimPlan: 69, usimKind: 'general',
   addons: {}, deds: {}, dayMode: 'auto',
 });
@@ -620,6 +630,17 @@ function compute(key, p, opt = {}) {
 
   // 추가상품 / 차감
   let addSup = 0, addFee = 0, addInstall = 0;
+  // 추가 TV: 고객 TV 대수 - 1 만큼 대당 요금·설치비·지원금 추가 (비교표에도 반영)
+  const extra = extraTvCount();
+  if (extra > 0 && p.type === 'tv' && C.addTv) {
+    const o = addTvChoice(key, p);
+    if (o) {
+      const fee = o.total * extra, inst = C.install[C.addTv.install][day] * extra;
+      addFee += fee; addInstall += inst; addSup += o.support * extra;
+      r.addTv = { n: extra, o, fee, inst, unitInst: C.install[C.addTv.install][day] };
+      r.items.push([`추가 TV ${extra}대 (${o.label})`, o.support * extra]);
+    }
+  }
   if (withExtras) {
     for (const a of C.addons) {
       const v = calc.addons[a.id];
@@ -660,6 +681,13 @@ function compute(key, p, opt = {}) {
   });
   return r;
 }
+function extraTvCount() { return cust.tvUse === '사용' ? Math.max((Number(cust.tvCount) || 1) - 1, 0) : 0; }
+function addTvList(C, p) { return C.addTv ? C.addTv.options.map((o, i) => ({ o, i })).filter(({ o }) => !o.speeds || o.speeds.includes(p.speed)) : []; }
+function addTvChoice(key, p) {
+  const list = addTvList(DATA[key], p);
+  const sel = list.find((x) => x.i === calc.addTvOpt[key]);
+  return (sel || list.find((x) => x.o.recommended) || list[0] || {}).o || null;
+}
 function addonAllowed(a, p) {
   if (a.discontinued) return false;
   if (a.tvOnly && p.type !== 'tv') return false;
@@ -690,7 +718,8 @@ function warnings(r) {
   if (r.p.notRecommended) w.push(['red', '비권장 상품', `${C.short} ${r.p.tv}는 가입 비권장 — 최소 스탠다드 이상으로 권장`]);
   if (key === 'sk' && calc.combine) w.push(['amber', 'SK 결합', 'SK 모든 결합은 30일 내로만 가능 · 해피콜 필수 진행']);
   if (cust.biz && key !== 'lg') w.push(['amber', '사업장', '사업장 설치 — 통신사별 사업자 접수 조건 확인']);
-  if (Number(cust.tvCount) >= 2) w.push(['amber', 'TV 대수', `TV ${cust.tvCount}대 이용 중 — 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인`]);
+  if (r.addTv) w.push([r.addTv.o.notRecommended ? 'red' : 'amber', '추가 TV', `TV ${cust.tvCount}대 → 추가 ${r.addTv.n}대 (${r.addTv.o.label}${r.addTv.o.notRecommended ? ' · 비권장' : ''}): 월 +${won(r.addTv.fee)}원, 설치비 +${won(r.addTv.inst)}원 (대당 ${won(r.addTv.unitInst)}원)`]);
+  else if (extraTvCount() > 0 && r.p.type !== 'tv') w.push(['red', 'TV 대수', `TV ${cust.tvCount}대 사용 중인데 인터넷 단독 선택됨 — 인터넷+TV 확인`]);
   if (r.pay && !r.pay.gift) w.push(['amber', '지급 안내', `설치 당일 현금 ${r.pay.first}만원(가이드${key === 'sk' ? ' · ' + calc.skDesk + ' 접수' : ''}), 차액 ${r.pay.rest}만원 다음주 금요일`]);
   if (key === 'kt' && r.pay) w.push(['amber', 'KT 지급', `전액 현금 아님: 다음날 ${C.giftName} ${r.pay.gift}만원 + 현금 ${r.pay.cash}만원, 차액 ${r.pay.rest}만원 다음주 금요일`]);
   r.notes.forEach((n) => w.push(['amber', '확인', n]));
@@ -752,7 +781,7 @@ function buildSteps(r) {
       ${seg('speed', SPEED_ORDER.filter((x) => speedsOf(calc.carrier, calc.type).includes(x)).map((x) => [x, x]), calc.speed)}
       ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv + (x.notRecommended ? ' · 비권장' : '')]), p && p.id) : ''}
       <span class="divider"></span>${seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
-    ${Number(cust.tvCount) >= 2 ? `<p class="note">TV ${esc(cust.tvCount)}대 이용 중 → 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인 (계산기 "추가 셋톱")</p>` : ''}
+    ${r && r.addTv ? `<p class="note">TV ${esc(cust.tvCount)}대 → 추가 TV ${r.addTv.n}대 (${esc(r.addTv.o.label)}) 월 +${won(r.addTv.fee)}원 · 설치비 +${won(r.addTv.inst)}원 — 위 요금·설치비에 포함</p>` : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
     <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요</p>
     <p>${F(C.mobileName, '○○')} 사용하고 계시면 ${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.<br>
@@ -795,6 +824,7 @@ function buildSteps(r) {
   steps.push({ t: '요금/설치비/지급일', h: `
     <p>요금은 부가세포함 ${F(r ? won(r.feeVat) : '', '○○,○○○')}원이신데 휴대폰결합시 부가세포함 ${F(r && r.combVat != null ? won(r.combVat) : '', '○○,○○○')}원이세요<br>
     그리고 설치비 ${F(r ? won(r.install) : '', '○○,○○○')}원은 익월 요금에 딱 한번 합산 청구 되실거구요<br>
+    ${r && r.addTv ? `<span class="note" style="font-size:15px;color:var(--muted)">(설치비에 추가 TV ${r.addTv.n}대 설치비 ${won(r.addTv.inst)}원 포함)</span><br>` : ''}
     ${r && r.pay && !r.pay.gift && !r.pay.rest ? `지원금은 현금으로 지급되시고, 설치 당일 지원금 ${F(r.total, '○○')}만원 전액 바로 지급되실거예요`
     : r && r.pay && !r.pay.gift ? `지원금은 현금으로 지급되시고, 설치 당일 ${F(r.pay.first, '○○')}만원이 바로 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
     : r && r.pay ? `지원금은 ${esc(C.giftName)}과 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${esc(C.giftName)} ${F(r.pay.gift, '○')}만원에 현금 ${F(r.pay.cash, '○')}만원이 먼저 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
@@ -884,6 +914,17 @@ function renderCalc(p) {
     } else {
       ad += `<label class="opt ${ok ? '' : 'dis'}"><input type="checkbox" data-addon="${a.id}" ${a.group ? `data-group="${a.group}"` : ''} ${calc.addons[a.id] && ok ? 'checked' : ''} ${ok ? '' : 'disabled'}> ${esc(a.name)} <span class="mut">${a.feeVat ? won(a.feeVat) + '원' : ''}</span> ${sup} <span class="mut">${why}</span></label>`;
     }
+  }
+  // 추가 TV
+  if (C.addTv) {
+    const n = extraTvCount();
+    let tvh = seg('extraTv', [0, 1, 2, 3].map((x) => [x, x ? `${x}대` : '없음']), n);
+    if (p && p.type === 'tv') {
+      const cur = addTvChoice(key, p);
+      tvh += `<div style="margin-top:6px"><select class="sm" data-set="addTvOpt">${addTvList(C, p).map(({ o, i }) => `<option value="${i}" ${o === cur ? 'selected' : ''}>${esc(o.label)} ${won(o.total)}원 · 지원 +${o.support}${o.recommended ? ' · 권장' : ''}${o.notRecommended ? ' · 비권장' : ''}</option>`).join('')}</select></div>
+        <div class="mut" style="margin-top:4px">대당 월 요금 + 설치비 ${won(C.install[C.addTv.install].weekday)}원(평일) / ${won(C.install[C.addTv.install].weekend)}원(주말)${key === 'lg' && p.speed === '100M' ? ' · 100M은 고급형만 가능' : ''}</div>`;
+    } else tvh += `<div class="mut" style="margin-top:4px">인터넷+TV 상품에서 적용</div>`;
+    h += `<div class="row"><div class="lb">추가 TV<br><span class="mut">(TV 대수 - 1)</span></div><div>${tvh}</div></div>`;
   }
   h += `<div class="row"><div class="lb">추가 셋톱/<br>와이파이</div><div>${ad || '<span class="mut">없음</span>'}</div></div>`;
   if (C.deductions.length) h += `<div class="row"><div class="lb">차감</div><div>${C.deductions.map((d) => `<label class="opt"><input type="checkbox" data-ded="${d.id}" ${calc.deds[d.id] ? 'checked' : ''}> ${esc(d.name)} <span class="mut">${d.support}</span></label>`).join('')}</div></div>`;
@@ -1033,6 +1074,7 @@ function onSetClick(e) {
     else if (k === 'type') { calc.type = v; calc.productId = null; }
     else if (k === 'speed') { calc.speed = v; calc.productId = null; }
     else if (k === 'productId') { calc.productId = v; }
+    else if (k === 'extraTv') { const n = Number(v); if (n > 0) { cust.tvUse = '사용'; calc.type = 'tv'; } cust.tvCount = n > 0 ? String(n + 1) : (cust.tvUse === '사용' ? '1' : ''); }
     else if (k === 'soho' || k === 'combine' || k === 'usim') { calc[k] = v === '1'; if (k === 'combine') combineTouched = true; }
     else calc[k] = v;
     render(); return true;
@@ -1049,6 +1091,7 @@ $('#side').addEventListener('click', (e) => {
 $('#side').addEventListener('change', (e) => {
   const t = e.target;
   if (t.dataset.set === 'ktBracket') calc.ktBracket = t.value;
+  else if (t.dataset.set === 'addTvOpt') calc.addTvOpt[calc.carrier] = Number(t.value);
   else if (t.dataset.set === 'usimPlan') calc.usimPlan = Number(t.value);
   else if (t.dataset.addon) {
     if (t.type === 'checkbox') {
