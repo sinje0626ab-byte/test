@@ -16,7 +16,7 @@
    - tier: 비교표에서 통신사끼리 TV 등급 맞추는 값 (1=기본, 2=중간, 3=고급)
    - baseMonth: 이 시트의 정책 기준월. 이번 달보다 이전이면 화면에 경고 배지가 뜸
    - "// TODO 확인필요" = PDF에서 확정 못한 값
-   - 미확정 칸(가이드, KT 상품권/이마트, LG 5G 정책군/고객지원)은 넣지 않음
+   - KT만 guide(최저가이드)/gift(이마트 금액권) 사용 — 다음날 먼저 지급되는 금액. 그 외 통신사의 가이드 칸, LG 5G 정책군/고객지원은 넣지 않음
    ===================================================================== */
 const DATA = {
 
@@ -29,16 +29,20 @@ const DATA = {
       tv:    { weekday: 56200, weekend: 71250 },
       addTv: { weekday: 15400, weekend: 19250 },
     },
+    // guide = 최저가이드(접수요망): 설치 다음날 먼저 지급되는 금액(만원) — 이마트금액권(gift) + 현금(guide-gift)
+    //         나머지(지원금 합계 - guide)는 다음주 금요일 입금
+    // gift  = 이마트 금액권(만원). KT는 전액 현금이 아니라 이마트 금액권이 포함되어 지급됨
+    giftName: '이마트 금액권',
     products: [
-      { id: 'kt-100',     type: 'net', speed: '100M', tv: null,               tier: 0, name: '인터넷 슬림(100M) 와이파이',    support: 15, feeVat: 23100 },
-      { id: 'kt-500',     type: 'net', speed: '500M', tv: null,               tier: 0, name: '인터넷 베이직(500M) 와이파이',  support: 18, feeVat: 34100 },
-      { id: 'kt-1g',      type: 'net', speed: '1G',   tv: null,               tier: 0, name: '인터넷 에센스(1기가) 와이파이', support: 20, feeVat: 38500 },
-      { id: 'kt-100-otv', type: 'tv',  speed: '100M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 슬림와이파이 + OTV베이직(236개)',   support: 41, feeVat: 39600 },
-      { id: 'kt-100-all', type: 'tv',  speed: '100M', tv: '모든G',            tier: 3, name: '인터넷 슬림와이파이 + 모든G',             support: 52, feeVat: 47300 }, // 세부합계(44,000)와 월요금 3,300원 차이 // TODO 확인필요
-      { id: 'kt-500-otv', type: 'tv',  speed: '500M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 베이직와이파이 + OTV베이직(236개)', support: 51, feeVat: 45100 },
-      { id: 'kt-500-all', type: 'tv',  speed: '500M', tv: '모든G',            tier: 3, name: '인터넷 베이직 와이파이 + 모든G',          support: 62, feeVat: 52800 }, // 세부합계와 3,300원 차이 // TODO 확인필요
-      { id: 'kt-1g-otv',  type: 'tv',  speed: '1G',   tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 에센스 와이파이 + OTV베이직(236개)', support: 55, feeVat: 49500 },
-      { id: 'kt-1g-all',  type: 'tv',  speed: '1G',   tv: '모든G',            tier: 3, name: '인터넷 에센스 와이파이 + 모든G',          support: 66, feeVat: 57200 }, // 세부합계와 3,300원 차이 // TODO 확인필요
+      { id: 'kt-100',     type: 'net', speed: '100M', tv: null,               tier: 0, name: '인터넷 슬림(100M) 와이파이',    support: 15, guide: 9, gift: 4, feeVat: 23100 },
+      { id: 'kt-500',     type: 'net', speed: '500M', tv: null,               tier: 0, name: '인터넷 베이직(500M) 와이파이',  support: 18, guide: 14, gift: 4, feeVat: 34100 },
+      { id: 'kt-1g',      type: 'net', speed: '1G',   tv: null,               tier: 0, name: '인터넷 에센스(1기가) 와이파이', support: 20, guide: 14, gift: 5, feeVat: 38500 },
+      { id: 'kt-100-otv', type: 'tv',  speed: '100M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 슬림와이파이 + OTV베이직(236개)',   support: 41, guide: 37, gift: 6, feeVat: 39600 },
+      { id: 'kt-100-all', type: 'tv',  speed: '100M', tv: '모든G',            tier: 3, name: '인터넷 슬림와이파이 + 모든G',             support: 52, guide: 37, gift: 7, feeVat: 47300 }, // 세부합계(44,000)와 월요금 3,300원 차이 // TODO 확인필요
+      { id: 'kt-500-otv', type: 'tv',  speed: '500M', tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 베이직와이파이 + OTV베이직(236개)', support: 51, guide: 45, gift: 6, feeVat: 45100 },
+      { id: 'kt-500-all', type: 'tv',  speed: '500M', tv: '모든G',            tier: 3, name: '인터넷 베이직 와이파이 + 모든G',          support: 62, guide: 45, gift: 7, feeVat: 52800 }, // 세부합계와 3,300원 차이 // TODO 확인필요
+      { id: 'kt-1g-otv',  type: 'tv',  speed: '1G',   tv: 'OTV베이직(236개)', tier: 1, name: '인터넷 에센스 와이파이 + OTV베이직(236개)', support: 55, guide: 45, gift: 9, feeVat: 49500 },
+      { id: 'kt-1g-all',  type: 'tv',  speed: '1G',   tv: '모든G',            tier: 3, name: '인터넷 에센스 와이파이 + 모든G',          support: 66, guide: 45, gift: 10, feeVat: 57200 }, // 세부합계와 3,300원 차이 // TODO 확인필요
     ],
     addons: [ // support 만원 / feeVat 원(월)
       { id: 'kt-addtv', name: '추가티비', support: 3, feeVat: 10670, install: 'addTv', optionsFrom: 'addTvOptions', tvOnly: true },
@@ -499,7 +503,7 @@ function fmtDate(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월
 function fmtDateTalk(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월 ${d.getDate()}일` : ''; }
 
 /* ───────── 상태 (고객 정보는 메모리에만 — 저장 안 함) ───────── */
-const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', biz: false, bizType: '', nextDay: '' });
+const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', tvUse: '', tvCount: '', biz: false, bizType: '', nextDay: '' });
 const blankCalc = () => ({
   carrier: 'sk', type: 'tv', speed: '500M', tier: 3, productId: null,
   soho: false, combine: false, ktBracket: 'flat',
@@ -622,8 +626,16 @@ function compute(key, p, opt = {}) {
     r.items = [['동일 통신사 이동 불가', 0]];
   }
   const baseInstall = C.install[p.type === 'net' ? 'net' : 'tv'][day];
+  const totalSup = net + usim + addSup + carrierDeduct;
+  // KT: 다음날 최저가이드 금액(이마트 금액권 + 현금) 먼저, 차액은 다음주 금요일
+  let pay = null;
+  if (p.guide != null && !same) {
+    const first = Math.min(p.guide, totalSup);
+    const gift = Math.min(p.gift || 0, first);
+    pay = { first, gift, cash: first - gift, rest: Math.max(totalSup - first, 0) };
+  }
   Object.assign(r, {
-    same,
+    same, pay,
     feeVat: feeVat + addFee, feeEx: feeEx + exVat(addFee),
     combVat: combVat == null ? null : combVat + addFee, combEx: combEx == null ? null : combEx + exVat(addFee),
     mobileDisc, combNote, net, usim, addSup, carrierDeduct,
@@ -661,6 +673,8 @@ function warnings(r) {
   }
   if (key === 'sk' && calc.combine) w.push(['amber', 'SK 결합', 'SK 모든 결합은 30일 내로만 가능 · 해피콜 필수 진행']);
   if (cust.biz && key !== 'lg') w.push(['amber', '사업장', '사업장 설치 — 통신사별 사업자 접수 조건 확인']);
+  if (Number(cust.tvCount) >= 2) w.push(['amber', 'TV 대수', `TV ${cust.tvCount}대 이용 중 — 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인`]);
+  if (key === 'kt' && r.pay) w.push(['amber', 'KT 지급', `전액 현금 아님: 다음날 ${C.giftName} ${r.pay.gift}만원 + 현금 ${r.pay.cash}만원, 차액 ${r.pay.rest}만원 다음주 금요일`]);
   r.notes.forEach((n) => w.push(['amber', '확인', n]));
   return w;
 }
@@ -706,6 +720,9 @@ function buildSteps(r) {
     <p>휴대폰은 어느 통신사 사용하고 계실까요?</p>
     ${CH('mobile', '고객 답변 · 휴대폰 통신사', ['SKT', 'KT', 'LG U+', '알뜰폰'])}
     ${CH('contractEnd', '약정 만료 여부', ['만료', '미만료', '모름'])}
+    <p>TV도 같이 사용하고 계실까요?</p>
+    ${CH('tvUse', '고객 답변 · TV 사용', ['사용', '미사용'])}
+    ${cust.tvUse === '사용' ? `<p>TV는 몇 대 이용 중이실까요? ${IN('tvCount', '○', 'number')}대</p>` : ''}
     ${CH('biz', '설치 장소', [['false', '가정'], ['true', '사업장']])}
     ${cust.biz ? `<p class="note">업종: ${IN('bizType', '예: PC방')} (LG는 유흥업소·노래방·고시텔·숙박업소·PC방·성인게임장 접수 불가)</p>` : ''}` });
 
@@ -717,10 +734,10 @@ function buildSteps(r) {
       ${seg('speed', SPEED_ORDER.filter((x) => speedsOf(calc.carrier, calc.type).includes(x)).map((x) => [x, x]), calc.speed)}
       ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv]), p && p.id) : ''}
       <span class="divider"></span>${seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
+    ${Number(cust.tvCount) >= 2 ? `<p class="note">TV ${esc(cust.tvCount)}대 이용 중 → 추가 셋톱 ${Number(cust.tvCount) - 1}대 확인 (계산기 "추가 셋톱")</p>` : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
     <p>${F(cust.curCarrier, '○○')}이시면 ${F(C.short, '○○')}로 변경하시면 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요</p>
     <p>${F(C.mobileName, '○○')} 사용하고 계시면 ${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 제외하고 ${F(r ? won(exFee) : '', '○○,○○○')}원 나오시구요.<br>
-    ${r && r.combEx != null ? `핸드폰에서도 ${F(r.mobileDisc ? won(r.mobileDisc) : '', '○,○○○')}원 할인 되세요./<br>` : ''}
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
     ${r && r.combEx == null ? `<p class="note">휴대폰 결합 미선택 또는 결합표 없음 → 미결합 VAT 제외 요금으로 표시</p>` : ''}` });
 
@@ -760,7 +777,8 @@ function buildSteps(r) {
   steps.push({ t: '요금/설치비/지급일', h: `
     <p>요금은 부가세제외 ${F(r ? won(r.feeEx) : '', '○○,○○○')}원이신데 휴대폰결합시 부가세제외 ${F(r && r.combEx != null ? won(r.combEx) : '', '○○,○○○')}원이세요<br>
     그리고 설치비 ${F(r ? won(r.install) : '', '○○,○○○')}원은 익월 요금에 딱 한번 합산 청구 되실거구요<br>
-    지원금은 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${IN('nextDay', '○○', 'number')}만원, 차액은 다음주 금요일날 입금되실거예요</p>
+    ${r && r.pay ? `지원금은 ${esc(C.giftName)}과 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${esc(C.giftName)} ${F(r.pay.gift, '○')}만원에 현금 ${F(r.pay.cash, '○')}만원이 먼저 지급되고, 지원금 합계 ${F(r.total, '○○')}만원 중 남은 차액 ${F(r.pay.rest, '○')}만원은 다음주 금요일날 입금되실거예요`
+    : `지원금은 현금으로 지급되시고, 설치완료 후 평일기준으로 다음날 ${IN('nextDay', '○○', 'number')}만원, 차액은 다음주 금요일날 입금되실거예요`}</p>
     ${r ? `<p class="note">VAT 포함: 월 ${won(r.feeVat)}원${r.combVat != null ? ` / 결합 ${won(r.combVat)}원` : ''} · 지원금 총 ${r.total}만원 → <span data-show="diff">${diffText(r)}</span></p>` : ''}` });
 
   steps.push({ t: '해피콜/설치팀 안내', h: `
@@ -774,7 +792,7 @@ function buildSteps(r) {
 
 /* ───────── 렌더링 ───────── */
 function agentName() { return (agentNm || '').trim(); }
-function diffText(r) { return cust.nextDay !== '' && r ? `차액 ${r.total - Number(cust.nextDay)}만원` : '다음날 지급액 입력 시 차액 계산'; }
+function diffText(r) { if (r && r.pay) return `다음날 ${r.pay.first}만원(금액권 ${r.pay.gift} + 현금 ${r.pay.cash}) · 차액 ${r.pay.rest}만원`; return cust.nextDay !== '' && r ? `차액 ${r.total - Number(cust.nextDay)}만원` : '다음날 지급액 입력 시 차액 계산'; }
 let lastSteps = [];
 function renderInfo() {
   const v = (x) => x ? `<span class="v">${esc(x)}</span>` : '<span class="v none">미입력</span>';
@@ -782,10 +800,11 @@ function renderInfo() {
     ['고객명', cust.name, '인사'],
     ['현재 통신사', [cust.curCarrier, cust.contractEnd && `약정 ${cust.contractEnd}`].filter(Boolean).join(' · '), '통신사 확인'],
     ['설치 장소', cust.biz ? `사업장${cust.bizType ? ' (' + cust.bizType + ')' : ''}` : (cust.curCarrier ? '가정' : ''), '통신사 확인'],
-    ['휴대폰', cust.mobile, '지원금 제시'],
+    ['휴대폰', cust.mobile, '통신사 확인'],
+    ['TV', cust.tvUse === '사용' ? `사용${cust.tvCount ? ' · ' + cust.tvCount + '대' : ''}` : cust.tvUse, '통신사 확인'],
     ['이사 날짜', fmtDate(cust.moveDate), '설치일'],
     ['설치 희망', [fmtDate(cust.installDate), cust.installTime].filter(Boolean).join(' '), '설치일'],
-    ['익일 지급', cust.nextDay !== '' ? cust.nextDay + '만원' : '', '요금/설치비/지급일'],
+    ['익일 지급', lastResult && lastResult.pay ? `${lastResult.pay.first}만원 (금액권 ${lastResult.pay.gift}+현금 ${lastResult.pay.cash}) · 자동` : (cust.nextDay !== '' ? cust.nextDay + '만원' : ''), '요금/설치비/지급일'],
     ['상담원', agentNm, '마무리'],
   ];
   $('#info').innerHTML = rows.map(([k, x, t]) => `<span class="k">${k}</span>${v(x)}<button data-jump="${esc(t)}">입력</button>`).join('');
@@ -908,12 +927,13 @@ function summaryText(r) {
   parts.push(`[${C.short}${r.key === 'lg' && calc.soho ? ' 소호' : ''}] ${r.p.name}`);
   const extras = r.items.slice(1).map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}`).join(', ');
   parts.push(`월 ${won(r.feeEx)}원(VAT별도)/${won(r.feeVat)}원(VAT포함)` + (r.combEx != null ? ` · 결합 ${won(r.combEx)}원(VAT별도)` : ''));
-  parts.push(`지원금 총 ${r.total}만원 (인터넷 ${r.net}${extras ? ', ' + extras : ''})`);
+  parts.push(`지원금 총 ${r.total}만원 (인터넷 ${r.net}${extras ? ', ' + extras : ''})` + (r.pay ? ` · 익일 ${C.giftName} ${r.pay.gift}+현금 ${r.pay.cash}, 차액 ${r.pay.rest} 다음주 금요일` : ''));
   parts.push(`설치 ${cust.installDate ? fmtDate(cust.installDate) : '미정'}${cust.installTime ? ' ' + cust.installTime : ''} · 설치비 ${won(r.install)}원(${r.day === 'weekend' ? '주말' : '평일'})`);
   const c = [];
   if (cust.name) c.push(`고객 ${cust.name}`);
   if (cust.curCarrier) c.push(`현재 ${cust.curCarrier}${cust.contractEnd ? `(약정 ${cust.contractEnd})` : ''}`);
   if (cust.mobile) c.push(`휴대폰 ${cust.mobile}`);
+  if (cust.tvUse) c.push(`TV ${cust.tvUse}${cust.tvCount ? ' ' + cust.tvCount + '대' : ''}`);
   if (cust.moveDate) c.push(`이사 ${fmtDate(cust.moveDate)}`);
   if (cust.biz) c.push(`사업장${cust.bizType ? '(' + cust.bizType + ')' : ''}`);
   if (calc.usim) c.push(`유심 ${calc.usimPlan}k ${calc.usimKind === 'family' ? '패밀리' : '일반'}`);
@@ -952,6 +972,7 @@ function setCust(f, v) {
   if (f === 'agent') { agentNm = v; try { localStorage.setItem('consoleAgentName', v); } catch (_) {} return; }
   cust[f] = v;
   if (f === 'biz') calc.soho = cust.biz;
+  if (f === 'tvUse' && v) { calc.type = v === '사용' ? 'tv' : 'net'; calc.productId = null; if (v !== '사용') cust.tvCount = ''; }
   if (f === 'curCarrier' && CUR_TO_KEY[v] === calc.carrier) {
     const best = compareRows().filter((x) => x.r && !x.r.same).sort((a, b) => b.r.total - a.r.total)[0];
     if (best) { calc.carrier = best.k; calc.productId = null; calc.addons = {}; calc.deds = {}; }
