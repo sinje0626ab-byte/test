@@ -723,6 +723,15 @@ function supText(r) {
 }
 const SUPHOW = (r) => { const t = supText(r); return t ? `<br><span class="how">${esc(t)}</span>` : ''; };
 const HOW = (r, comb) => { const t = howText(r, comb); return t ? `<br><span class="how">${esc(t)}</span>` : ''; };
+// 약정 만료 '모름'일 때 참고사항 (현재 인터넷 통신사별)
+function contractUnknownNote() {
+  const k = CUR_TO_KEY[cust.curCarrier];
+  const sk = `<p class="note">(SK일 경우) 약정조회 가능 — 고객님 <b>성함 · 생년월일 · 휴대폰번호 · 현재 설치 주소</b> 확인해서 조회</p>`;
+  const ktlg = `<p>설치하신 지 3년 지나셨을까요?</p><p class="note">(KT, LG일 경우) 설치 후 3년 지났는지로 약정 만료 확인</p>`;
+  if (k === 'sk') return sk;
+  if (k === 'kt' || k === 'lg') return ktlg;
+  return sk + ktlg;
+}
 function combinable(key) { return cust.mobile ? MOBILE_TO_KEY[cust.mobile] === key : null; }
 function useCombine(key) { return key === calc.carrier ? calc.combine && combinable(key) !== false : combinable(key) === true; }
 function extraTvCount() { return cust.tvUse === '사용' ? Math.max((Number(cust.tvCount) || 1) - 1, 0) : 0; }
@@ -812,6 +821,7 @@ function buildSteps(r) {
     ${CH('mobile', '고객 답변 · 휴대폰 통신사', ['SKT', 'KT', 'LG U+', '스카이 알뜰폰', ['알뜰폰', '알뜰폰(그 외)']])}
     <p>지금 사용하시는 인터넷 약정은 만료되셨을까요?</p>
     ${CH('contractEnd', '고객 답변 · 약정 만료 여부', ['만료', '미만료', '모름'])}
+    ${cust.contractEnd === '모름' ? contractUnknownNote() : ''}
     <p>TV도 같이 사용하고 계실까요?</p>
     ${CH('tvUse', '고객 답변 · TV 사용', ['사용', '미사용'])}
     ${cust.tvUse === '사용' ? `<p>TV는 몇 대 이용 중이실까요? ${IN('tvCount', '○', 'number')}대</p>` : ''}
