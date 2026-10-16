@@ -185,7 +185,7 @@ const DATA = {
       // 요즘가족결합 이동전화 할인(1회선). 인터넷 할인은 요금표(combExVat/combVat)에 이미 반영
       mobile1Line: { '100M': 3500, '500M': 3500, '1G': 3500 },
     },
-    rules: { combineWithinDays: 30 },
+    rules: { combineWithinDays: 30, otherNameRejoin: true }, // otherNameRejoin: 현재 SK 고객도 타인 명의로 개통 시 재가입 가능
   },
 
   /* ───────────── 스카이라이프 (1588-3002) ───────────── */
@@ -636,7 +636,7 @@ function fmtDate(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월
 function fmtDateTalk(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월 ${d.getDate()}일` : ''; }
 
 /* ───────── 상태 (고객 정보는 메모리에만 — 저장 안 함) ───────── */
-const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', tvUse: '', tvCount: '', biz: false, bizType: '', nextDay: '' });
+const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', tvUse: '', tvCount: '', biz: false, bizType: '', nextDay: '', skOtherName: false });
 const blankCalc = () => ({
   carrier: 'sk', type: 'tv', speed: '500M', tier: 3, productId: null,
   soho: false, combine: false, ktBracket: 'flat', skDesk: 'SKB', addTvOpt: {},
@@ -779,7 +779,10 @@ function compute(key, p, opt = {}) {
   }
 
   // 같은 통신사끼리는 이동 불가 → 지원금 없음
-  const same = CUR_TO_KEY[cust.curCarrier] === key;
+  const sameCarrier = CUR_TO_KEY[cust.curCarrier] === key;
+  const otherName = sameCarrier && C.rules.otherNameRejoin && cust.skOtherName; // SK: 타인 명의 개통 시 재가입 가능
+  const same = sameCarrier && !otherName;
+  r.otherName = otherName;
   if (same) {
     r.blocked.unshift(`현재 ${cust.curCarrier} 사용 중 — 같은 통신사로는 이동 불가 (지원금 지급 없음)`);
     net = 0; usim = 0; addSup = 0; carrierDeduct = 0;
@@ -857,6 +860,7 @@ function warnings(r) {
   if (C.rules.rejoinDays && curKey !== key) w.push(['amber', '재가입 제한', `${C.name}: 본인/가족명의로 ${C.name} 해지 후 ${C.rules.rejoinDays}일 이내 재가입 불가 (지원금 전액 환수) — 최근 해지 이력 확인`]);
   if (key === 'sky' && cust.curCarrier === 'KT') w.push(['red', 'KT 전환 차감', `KT → 스카이 전환: 지원금 ${C.rules.fromKtDeduct}만원 차감 (정책 마이너스 되지 않게 주의)`]);
   r.blocked.forEach((b) => w.push(['red', '접수 불가', b]));
+  if (r.otherName) w.push(['amber', 'SK 타인명의', `현재 SK 고객 — 타인 명의로 개통해서 재가입 (신청 명의·연락처·계좌·주민번호 모두 명의자 기준)`]);
   if (key === 'lg' && cust.biz) {
     const hit = C.rules.bannedBiz.find((b) => cust.bizType && cust.bizType.includes(b.replace('업소', '')));
     w.push([hit ? 'red' : 'amber', hit ? `접수 불가: ${hit}` : 'LG 사업장 확인', `LG 접수·개통 불가 업소: ${C.rules.bannedBiz.join(', ')} (개통되어도 전액 환수)`]);
@@ -930,14 +934,15 @@ function buildSteps(r) {
   const cmp = compareRows();
   steps.push({ t: '지원금 제시', h: `
     <div class="ans"><span class="q">제안할 통신사 · 상품 (숫자 = 지원금 총액)</span>${cmp.map(({ k, r: x }) =>
-      `<button data-set="carrier" data-v="${k}" class="${k === calc.carrier ? 'on' : ''}" ${x && !x.same ? '' : 'disabled'}>${esc(DATA[k].short)}<span class="sub">${!x ? '없음' : x.same ? '이동불가' : x.total + '만'}</span></button>`).join('')}
+      `<button data-set="carrier" data-v="${k}" class="${k === calc.carrier ? 'on' : ''}" ${x && (!x.same || DATA[k].rules.otherNameRejoin) ? '' : 'disabled'}>${esc(DATA[k].short)}<span class="sub">${!x ? '없음' : x.same ? (DATA[k].rules.otherNameRejoin ? '타인명의시 가능' : '이동불가') : x.total + '만'}</span></button>`).join('')}
       <span class="divider"></span>${seg('type', [['net', '인터넷 단독'], ['tv', '인터넷+TV']], calc.type)}
       ${seg('speed', SPEED_ORDER.filter((x) => speedsOf(calc.carrier, calc.type).includes(x)).map((x) => [x, x]), calc.speed)}
       ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv + (x.notRecommended ? ' · 비권장' : '') + (x.tier && x.tier === DATA[calc.carrier].defaultTier ? ' · 기본안내' : '')]), p && p.id) : ''}
       <span class="divider"></span>${combinable(calc.carrier) === false ? `<span class="mut">휴대폰 ${esc(cust.mobile)} — ${esc(C.short)} 결합 대상 아님</span>` : seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
     ${r && r.addTv ? `<p class="note">TV ${esc(cust.tvCount)}대 → 추가 TV ${r.addTv.n}대 (${esc(r.addTv.o.label)}) 월 +${won(r.addTv.fee)}원 · 설치비 +${won(r.addTv.inst)}원 — 위 요금·설치비에 포함</p>` : ''}
-    ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가, 다른 통신사를 선택하세요</p>` : ''}
-    <p>${cust.curCarrier === '신규' ? `${F(C.short, '○○')}로 신규 가입하시면` : `${F(cust.curCarrier, '○○')}에서 ${F(C.short, '○○')}로 변경하시면`} 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요${SUPHOW(r)}</p>
+    ${CUR_TO_KEY[cust.curCarrier] === calc.carrier && C.rules.otherNameRejoin ? CH('skOtherName', `현재 ${cust.curCarrier} 사용 중 — ${C.short}는 타인 명의로 개통 시 재가입 가능`, [['false', '본인 명의 (불가)'], ['true', '타인 명의로 개통']]) : ''}
+    ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가${C.rules.otherNameRejoin ? ' (타인 명의로 개통하면 가능)' : ''}, 다른 통신사를 선택하세요</p>` : ''}
+    <p>${cust.curCarrier === '신규' ? `${F(C.short, '○○')}로 신규 가입하시면` : r && r.otherName ? `${F(C.short, '○○')} 다른 분 명의로 새로 가입하시면` : `${F(cust.curCarrier, '○○')}에서 ${F(C.short, '○○')}로 변경하시면`} 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요${SUPHOW(r)}</p>
     <p>${r && r.combVat != null ? `현재 휴대폰 ${F(C.mobileName, '○○')} 사용하고 계시면 ` : ''}${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.${HOW(r, r && r.combVat != null)}<br>
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
     ${r && r.combVat == null ? `<p class="note">${combinable(calc.carrier) === false ? `휴대폰 ${esc(cust.mobile)} → ${esc(C.short)} 인터넷과 결합 불가 — 결합 요금·결합 안내 없이 진행` : '휴대폰 결합 미선택 또는 결합표 없음'} → 미결합 요금(부가세 포함)으로 표시</p>` : ''}` });
@@ -947,6 +952,7 @@ function buildSteps(r) {
     <p class="note">이사 ${F(fmtDate(cust.moveDate), '미입력')} · 설치 ${F(fmtDate(cust.installDate), '미입력')}${r ? ` → ${installDay() === 'weekend' ? '주말' : '평일'} 설치비 ${won(r.install)}원` : ''}</p>` });
 
   steps.push({ t: '명의/계좌/주민번호', h: `
+    ${r && r.otherName ? `<p class="note">(SK 타인명의 개통일 경우) 아래 성함·연락처·계좌·주민번호는 모두 개통하실 명의자 기준으로 확인</p>` : ''}
     <p>신청은 고객님 명의로 해드릴건데 고객님 성함이 ${IN('name', '○○○')}님 맞으시죠?<br>연락처도 고객님 명의 맞으시구요?</p>
     <p>${combinable(calc.carrier) !== false && calc.combine ? '휴대폰결합은 고객센터로 해주시면 되시고, 설치받고 고객센터 전화주시거나 직영대리점 방문하시면 되구요 ' : ''}납부계좌 등록해드리면서 지원금 입금해드리는 계좌 입력해드릴건데요 고객님 명의 계좌 확인 부탁드립니다</p>
     <p>설치 후에는 다른 계좌나 카드납부로 변경 가능하시니까 참고해주시면되시구요<br>통신사 등록건이라서 주민번호 입력 필요하신데 명의자님 주민번호 확인부탁드릴게요</p>
@@ -1118,7 +1124,7 @@ function renderCompare() {
   rows.sort((a, b) => score(b) - score(a));
   $('#compare').innerHTML = `<table class="cmp"><thead><tr><th>통신사 · 상품</th><th>월요금</th><th>결합 시</th><th>설치비</th><th>지원금</th></tr></thead><tbody>${
     rows.map(({ k, r }) => r ? `<tr class="${k === calc.carrier ? 'sel' : ''}" data-pick="${k}" style="cursor:pointer">
-      <td><b>${esc(DATA[k].short)}</b> ${r.same ? '<span class="badge red">동일 통신사 불가</span>' : r.blocked.length ? '<span class="badge red">불가</span>' : ''}<br><span class="mut">${esc(r.p.name)}</span></td>
+      <td><b>${esc(DATA[k].short)}</b> ${r.same ? `<span class="badge red">${DATA[k].rules.otherNameRejoin ? '본인명의 불가 · 타인명의 가능' : '동일 통신사 불가'}</span>` : r.blocked.length ? '<span class="badge red">불가</span>' : ''}<br><span class="mut">${esc(r.p.name)}</span></td>
       <td>${won(r.feeVat)}</td>
       <td>${r.combVat != null ? won(r.combVat) : '-'}</td>
       <td>${won(r.install)}</td>
@@ -1217,8 +1223,8 @@ $('#card').addEventListener('click', (e) => {
   const c = e.target.closest('button[data-cf]');
   if (c) {
     const f = c.dataset.cf; let v = c.dataset.v;
-    if (f === 'biz') v = v === 'true';
-    setCust(f, String(cust[f]) === String(v) && f !== 'biz' ? '' : v);
+    if (f === 'biz' || f === 'skOtherName') v = v === 'true';
+    setCust(f, String(cust[f]) === String(v) && f !== 'biz' && f !== 'skOtherName' ? '' : v);
     render(); return;
   }
   onSetClick(e);
