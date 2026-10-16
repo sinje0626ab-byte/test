@@ -636,7 +636,7 @@ function fmtDate(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월
 function fmtDateTalk(s) { const d = parseDate(s); return d ? `${d.getMonth() + 1}월 ${d.getDate()}일` : ''; }
 
 /* ───────── 상태 (고객 정보는 메모리에만 — 저장 안 함) ───────── */
-const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', tvUse: '', tvCount: '', biz: false, bizType: '', nextDay: '', skOtherName: false });
+const blankCust = () => ({ name: '', curCarrier: '', contractEnd: '', moveDate: '', installDate: '', installTime: '', mobile: '', tvUse: '', tvCount: '', biz: false, bizType: '', nextDay: '', skOtherName: true }); // skOtherName: 현재 SK 고객의 SK 재가입은 타인 명의 개통이 기본
 const blankCalc = () => ({
   carrier: 'sk', type: 'tv', speed: '500M', tier: 3, productId: null,
   soho: false, combine: false, ktBracket: 'flat', skDesk: 'SKB', addTvOpt: {},
@@ -940,9 +940,9 @@ function buildSteps(r) {
       ${calc.type === 'tv' ? seg('productId', productsOf(calc.carrier, 'tv').filter((x) => x.speed === calc.speed).map((x) => [x.id, x.tv + (x.notRecommended ? ' · 비권장' : '') + (x.tier && x.tier === DATA[calc.carrier].defaultTier ? ' · 기본안내' : '')]), p && p.id) : ''}
       <span class="divider"></span>${combinable(calc.carrier) === false ? `<span class="mut">휴대폰 ${esc(cust.mobile)} — ${esc(C.short)} 결합 대상 아님</span>` : seg('combine', [['0', '미결합'], ['1', `휴대폰 결합${cust.mobile ? ' (' + cust.mobile + ')' : ''}`]], calc.combine ? '1' : '0')}</div>
     ${r && r.addTv ? `<p class="note">TV ${esc(cust.tvCount)}대 → 추가 TV ${r.addTv.n}대 (${esc(r.addTv.o.label)}) 월 +${won(r.addTv.fee)}원 · 설치비 +${won(r.addTv.inst)}원 — 위 요금·설치비에 포함</p>` : ''}
-    ${CUR_TO_KEY[cust.curCarrier] === calc.carrier && C.rules.otherNameRejoin ? CH('skOtherName', `현재 ${cust.curCarrier} 사용 중 — ${C.short}는 타인 명의로 개통 시 재가입 가능`, [['false', '본인 명의 (불가)'], ['true', '타인 명의로 개통']]) : ''}
+    ${CUR_TO_KEY[cust.curCarrier] === calc.carrier && C.rules.otherNameRejoin ? CH('skOtherName', `현재 ${cust.curCarrier} 사용 중 — ${C.short}는 타인 명의로 개통 시 재가입 가능`, [['true', '타인 명의로 개통 (가능)'], ['false', '본인 명의 (불가)']]) : ''}
     ${r && r.same ? `<p class="note" style="color:var(--red)">⚠ 고객이 현재 ${esc(cust.curCarrier)} 사용 중 — 같은 통신사로는 이동 불가${C.rules.otherNameRejoin ? ' (타인 명의로 개통하면 가능)' : ''}, 다른 통신사를 선택하세요</p>` : ''}
-    <p>${cust.curCarrier === '신규' ? `${F(C.short, '○○')}로 신규 가입하시면` : r && r.otherName ? `${F(C.short, '○○')} 다른 분 명의로 새로 가입하시면` : `${F(cust.curCarrier, '○○')}에서 ${F(C.short, '○○')}로 변경하시면`} 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요${SUPHOW(r)}</p>
+    <p>${cust.curCarrier === '신규' ? `${F(C.short, '○○')}로 신규 가입하시면` : r && r.otherName ? `${F(C.short, '○○')} 그대로 재가입하시면` : `${F(cust.curCarrier, '○○')}에서 ${F(C.short, '○○')}로 변경하시면`} 저희가 최대 ${F(teaser, '○○')}만원 지원해드리는데 오늘 접수하시면 최대 ${F(total, '○○')}만원까지 지원해드리고 있어요${SUPHOW(r)}</p>
     <p>${r && r.combVat != null ? `현재 휴대폰 ${F(C.mobileName, '○○')} 사용하고 계시면 ` : ''}${F(prodTalk, '인터넷 ○○메가+TV○○○채널')} 하시면 부가세 포함 ${F(r ? won(vatFee) : '', '○○,○○○')}원 나오시구요.${HOW(r, r && r.combVat != null)}<br>
     그리고 저희가 최대 지원금 ${F(total, '○○')}만원까지 해드리고 있어요.</p>
     ${r && r.combVat == null ? `<p class="note">${combinable(calc.carrier) === false ? `휴대폰 ${esc(cust.mobile)} → ${esc(C.short)} 인터넷과 결합 불가 — 결합 요금·결합 안내 없이 진행` : '휴대폰 결합 미선택 또는 결합표 없음'} → 미결합 요금(부가세 포함)으로 표시</p>` : ''}` });
