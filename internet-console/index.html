@@ -883,8 +883,8 @@ function warnings(r) {
 }
 
 /* ───────── 스크립트 (B) — PDF 원문 그대로, 빈칸만 자동 채움 ───────── */
-let agentNm = '';
-try { agentNm = localStorage.getItem('consoleAgentName') || ''; } catch (_) {}
+let agentNm = '김용준'; // 기본 상담원 이름 (입력하면 그 이름으로 바뀜)
+try { agentNm = localStorage.getItem('consoleAgentName') || agentNm; } catch (_) {}
 const curVal = (f) => f === 'agent' ? agentNm : cust[f];
 // 문장 속 입력칸
 function IN(f, ph, type = 'text') {
