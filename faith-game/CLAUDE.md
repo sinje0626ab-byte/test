@@ -33,7 +33,7 @@ src/
   data/            countries.json(나라 175곳) · religions.json · adjacency.json(생성물) · loader.js · ids.js
   map/             worldMap.js(그리기 전용) · colorModes.js(색칠 모드) · unitLayer.js(유닛 핀)
   game/            state.js · turn.js(턴 단계 배열) · stages.js · save.js · events.js
-  religion/        deities.js · tenets.js · modifiers.js(수정자 합산) · spread.js(전파 공식) · founding.js
+  religion/        deities.js · tenets.js · emblems.js(문양 42종) · modifiers.js(수정자 합산) · spread.js(전파 공식) · founding.js
   units/           unitTypes.js · units.js(생산·이동·행동) · abilities.js(능력 표)
   ui/              styles.css(디자인 토큰) · titleScreen · foundingScreen · gameScreen(컨트롤러) · hud · countryPanel · dock · production · toast(배너·모달)
 tools/             build-adjacency.mjs · simulate.mjs
@@ -65,3 +65,5 @@ tools/             build-adjacency.mjs · simulate.mjs
 - 라이트/다크는 시스템 설정을 따른다. 색은 `styles.css`의 토큰만 쓴다.
 - PC: 상단 바 / 왼쪽 지도 도구 / 오른쪽 나라 패널 / 하단 독. 모바일(≤760px): 패널은 독 위 시트, 독 높이는 `--dock-h`로 전달.
 - 모든 UI 문구는 한국어.
+- 문양(`emblems.js`): 24×24 선 아이콘, 채움은 일부만. 자연·천체·기하 모티프만 쓰고 기존 종교의 상징(십자가·초승달·육각별·법륜·옴 등)은 넣지 않는다. 종교 색 바탕 + 흰 문양으로 HUD·패널·알림·파비콘에 쓰인다.
+- 저장 v2에서 `religion.emblem`이 생겼다 (v1 저장은 '태양'으로 이어진다).

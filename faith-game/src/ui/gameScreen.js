@@ -19,6 +19,7 @@ import { toast, modal, confirmModal } from './toast.js';
 import { setAccent, mapTheme, onSchemeChange } from './theme.js';
 import { esc, people, pct, josa } from './format.js';
 import { icon, rawIcon } from './icons.js';
+import { emblemSvg } from '../religion/emblems.js';
 
 // 게임 화면. 상태를 들고 있고, 입력을 받아 게임 로직을 부른 뒤 다시 그린다.
 export function startGameScreen(map, state, { onNewGame }) {
@@ -202,7 +203,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     const unlocked = s.unlock.map((t) => `<span class="pill">${UNIT_TYPES[t].name}</span>`).join('');
     modal({
       dismissable: false,
-      content: `<div class="center" style="padding-top:12px"><div class="big-mark">${icon('rise')}</div>
+      content: `<div class="center" style="padding-top:12px"><div class="big-mark">${emblemSvg(state.religion.emblem)}</div>
         <div class="step-label">새로운 단계</div><h2 style="margin:4px 0 0;font-size:28px;letter-spacing:-.03em">${s.name}</h2>
         <p class="modal-text">${esc(state.religion.name)}의 이름이 더 넓은 세상에 알려지고 있습니다.<br>자연 증가 ×${s.growth} · 신앙력 ×${s.faith}</p>
         ${unlocked ? `<div class="unlock-list" style="justify-content:center">새 유닛 ${unlocked}</div>` : ''}</div>
@@ -239,7 +240,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     const win = result === 'victory';
     modal({
       dismissable: false,
-      content: `<div class="center" style="padding-top:12px"><div class="big-mark" ${win ? '' : 'style="background:var(--fill-2);color:var(--label-2)"'}>${icon(win ? 'globe' : 'alert')}</div>
+      content: `<div class="center" style="padding-top:12px"><div class="big-mark" ${win ? '' : 'style="background:var(--fill-2);color:var(--label-2)"'}>${emblemSvg(state.religion.emblem)}</div>
         <div class="step-label">${dateLabel(state.turn)} · ${state.turn}개월</div>
         <h2 style="margin:4px 0 0;font-size:28px;letter-spacing:-.03em">${win ? '세계가 귀 기울였습니다' : '마지막 신도가 떠났습니다'}</h2>
         <p class="modal-text">${win

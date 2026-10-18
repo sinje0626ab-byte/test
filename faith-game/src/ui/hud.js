@@ -5,6 +5,7 @@ import { faithIncome } from '../game/turn.js';
 import { VICTORY_SHARE } from '../config.js';
 import { people, pct, int } from './format.js';
 import { icon } from './icons.js';
+import { emblemSvg } from '../religion/emblems.js';
 
 // 상단 바: 날짜 · 신도 · 신앙력 · 성장 단계
 export function renderHud(el, state) {
@@ -16,7 +17,7 @@ export function renderHud(el, state) {
     : `승리까지 세계 인구의 ${Math.round(VICTORY_SHARE * 100)}%`;
   const change = state.lastReport?.change ?? 0;
   el.innerHTML = `
-    <div class="hud-card glass hud-date"><strong class="num">${dateLabel(state.turn)}</strong><span>${state.turn + 1}번째 달</span></div>
+    <div class="hud-card glass hud-date"><span class="emblem-badge">${emblemSvg(state.religion.emblem)}</span><div><strong class="num">${dateLabel(state.turn)}</strong><span>${state.turn + 1}번째 달</span></div></div>
     <div class="hud-card glass hud-stats">
       <div class="stat"><span class="stat-label">신도</span><span class="stat-value">${people(total)}${change ? `<small class="${change > 0 ? 'up' : ''}">${change > 0 ? '+' : '−'}${people(Math.abs(change))}</small>` : ''}</span></div>
       <div class="stat"><span class="stat-label">세계 인구 대비</span><span class="stat-value">${pct(total / world.totalPop)}</span></div>

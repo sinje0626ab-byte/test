@@ -5,6 +5,8 @@ import { GAME } from '../config.js';
 import { esc, people } from './format.js';
 import { icon, MARK } from './icons.js';
 import { setAccent } from './theme.js';
+import { emblemSvg } from '../religion/emblems.js';
+import { onColor } from './format.js';
 
 // 시작 화면: 이어하기 / 새로 창시
 export function showTitle({ saved, onContinue, onNew }) {
@@ -18,7 +20,7 @@ export function showTitle({ saved, onContinue, onNew }) {
       <p class="lead">새로운 종교를 세우고, 한 달씩 세상에 전하세요.</p>
       <div class="title-actions">
         ${saved ? `<button class="continue-card glass" data-continue>
-          <span class="dot" style="background:${esc(saved.religion.color)}"></span>
+          <span class="emblem-badge" style="background:${esc(saved.religion.color)};color:${onColor(saved.religion.color)}">${emblemSvg(saved.religion.emblem)}</span>
           <span><b>${esc(saved.religion.name)}</b><span>${esc(world.countries[saved.religion.home]?.name ?? '')}에서 시작 · ${dateLabel(saved.turn)} · ${stageOf(saved.stage).name} · 신도 ${people(totalFollowers(saved))}명</span></span>
           ${icon('chevron')}</button>` : ''}
         <button class="btn ${saved ? 'btn-secondary' : 'btn-primary'} btn-lg btn-block" data-new>새 종교 창시</button>

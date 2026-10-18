@@ -6,7 +6,7 @@
 export const GAME = {
   title: '',                 // 게임 이름(미정). 정해지면 여기만 채운다.
   saveKey: 'faith-game-save',
-  saveVersion: 1,
+  saveVersion: 2,
   startYear: 2026,
   startMonth: 1,
   startFollowers: 300,       // 창시 직후 시작 국가의 신도 (교주와 첫 제자들)

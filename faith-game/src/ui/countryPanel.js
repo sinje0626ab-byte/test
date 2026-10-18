@@ -4,6 +4,7 @@ import { UNIT_TYPES } from '../units/unitTypes.js';
 import { SPAWN_MIN_FOLLOWERS } from '../config.js';
 import { esc, people, pct, signed } from './format.js';
 import { icon, rawIcon } from './icons.js';
+import { emblemSvg } from '../religion/emblems.js';
 
 // 나라 정보 패널
 export function renderCountryPanel(el, state, id) {
@@ -27,7 +28,7 @@ export function renderCountryPanel(el, state, id) {
       </div>
 
       <div class="hero">
-        <div class="hero-label">${esc(state.religion.name)} 신도</div>
+        <div class="hero-label">${emblemSvg(state.religion.emblem, 'hero-emblem')}${esc(state.religion.name)} 신도</div>
         <div class="hero-value">${people(cs.followers)}<small>${pct(ours)}</small></div>
         <div class="hero-delta">${cs.followers > 0 || delta ? `지난달 <span class="${delta > 0 ? 'up' : delta < 0 ? 'down' : ''}">${signed(delta)}명</span>` : '아직 신도가 없습니다'}</div>
       </div>

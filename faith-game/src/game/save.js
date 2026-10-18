@@ -1,9 +1,10 @@
 import { GAME } from '../config.js';
+import { DEFAULT_EMBLEM } from '../religion/emblems.js';
 
 // localStorage 저장. 실패해도(사생활 보호 모드 등) 게임은 계속된다.
 // 저장 형식이 바뀌면 saveVersion을 올리고 MIGRATIONS에 변환 함수를 추가한다.
 const MIGRATIONS = {
-  // 1: (s) => ({ ...s, version: 2, 새필드: 기본값 }),
+  1: (s) => ({ ...s, version: 2, religion: { ...s.religion, emblem: DEFAULT_EMBLEM } }), // 문양 추가
 };
 
 export function saveGame(state) {
