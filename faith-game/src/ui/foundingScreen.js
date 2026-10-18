@@ -3,6 +3,7 @@ import { world } from '../data/loader.js';
 import { DEITIES, DEITY_ORDER } from '../religion/deities.js';
 import { TENETS, TENET_ORDER } from '../religion/tenets.js';
 import { COLOR_PRESETS, validateFounding } from '../religion/founding.js';
+import { EMBLEMS, DEFAULT_EMBLEM, emblemSvg, emblemOf } from '../religion/emblems.js';
 import { difficulty, baseResistance } from '../religion/spread.js';
 import { esc, people, pct } from './format.js';
 import { icon } from './icons.js';
@@ -10,6 +11,7 @@ import { setAccent } from './theme.js';
 
 const STEPS = [
   { key: 'identity', label: '이름', title: '새로운 종교', subtitle: '세상에 알릴 이름과 상징 색을 정하세요.' },
+  { key: 'emblem', label: '문양', title: '상징 문양', subtitle: `${EMBLEMS.length}가지 문양 중 하나를 고르세요. 지도와 알림 곳곳에 쓰입니다.` },
   { key: 'deity', label: '신앙 대상', title: '무엇을 믿나요', subtitle: '신앙 대상은 하나만 고를 수 있습니다.' },
   { key: 'tenets', label: '교리', title: '교리', subtitle: '' },
   { key: 'home', label: '시작 국가', title: '어디서 시작할까요', subtitle: '종교 자유도가 높고 저항이 약한 나라일수록 쉽습니다.' },
@@ -20,7 +22,7 @@ const SORTS = { ease: '쉬운 순', name: '이름순', pop: '인구순' };
 
 // 종교 창시 화면. 완료되면 onDone(입력값)을 부른다.
 export function openFounding({ onDone, onCancel }) {
-  const f = { name: '', founder: '', color: COLOR_PRESETS[0], deity: null, tenets: [], home: null };
+  const f = { name: '', founder: '', color: COLOR_PRESETS[0], emblem: DEFAULT_EMBLEM, deity: null, tenets: [], home: null };
   let step = 0;
   let query = '';
   let sort = 'ease';
@@ -44,6 +46,7 @@ export function openFounding({ onDone, onCancel }) {
   function canNext() {
     switch (STEPS[step].key) {
       case 'identity': return f.name.trim() && f.founder.trim();
+      case 'emblem': return Boolean(f.emblem);
       case 'deity': return Boolean(f.deity);
       case 'tenets': return f.tenets.length === GAME.tenetSlots;
       case 'home': return Boolean(f.home);
@@ -86,6 +89,11 @@ export function openFounding({ onDone, onCancel }) {
         </div></div>
       ${previewChip()}`,
 
+    emblem: () => `${previewChip()}
+      <div class="emblem-grid" role="radiogroup" aria-label="문양">${EMBLEMS.map((e) => `
+        <button class="emblem-tile" data-emblem="${e.id}" role="radio" aria-checked="${f.emblem === e.id}" aria-label="${e.name}" title="${e.name}">${emblemSvg(e.id)}</button>`).join('')}
+      </div>`,
+
     deity: () => `<div class="options">${DEITY_ORDER.map((id) => {
       const d = DEITIES[id];
       return `<button class="option" data-deity="${id}" aria-pressed="${f.deity === id}">${check}<b>${esc(d.name)}</b><p>${esc(d.desc)}</p>${effects(d)}</button>`;
@@ -111,6 +119,8 @@ export function openFounding({ onDone, onCancel }) {
       return `${previewChip()}
         <div class="summary-grid">
           <div><small>신앙 대상</small><b>${esc(DEITIES[f.deity].name)}</b></div>
+          <div><small>문양</small><b>${emblemOf(f.emblem).name}</b></div>
+          <div><small>상징 색</small><b><span class="dot" style="display:inline-block;background:${f.color};margin-right:6px"></span>${f.color.toUpperCase()}</b></div>
           <div><small>시작 국가</small><b>${esc(c.name)}</b> <span class="pill tone-${d.tone}">${d.label}</span></div>
           <div class="wide"><small>교리</small><b>${f.tenets.map((t) => esc(TENETS[t].name)).join(' · ')}</b></div>
           <div><small>종교 자유도</small><b class="num">${c.freedom}</b></div>
@@ -121,9 +131,9 @@ export function openFounding({ onDone, onCancel }) {
   };
 
   function previewChip() {
-    const initial = (f.name.trim() || '?').slice(0, 1);
-    return `<div class="preview-chip"><div class="emblem">${esc(initial)}</div><div>
-      <b data-preview-name>${esc(f.name.trim() || '종교 이름')}</b><span data-preview-founder>${f.founder.trim() ? `교주 ${esc(f.founder.trim())}` : '교주 이름'}</span></div></div>`;
+    return `<div class="preview-chip"><div class="emblem">${emblemSvg(f.emblem)}</div><div>
+      <b data-preview-name>${esc(f.name.trim() || '종교 이름')}</b><span data-preview-founder>${f.founder.trim() ? `교주 ${esc(f.founder.trim())}` : '교주 이름'}</span>
+      <span data-preview-emblem class="preview-emblem-name">문양 · ${emblemOf(f.emblem).name}</span></div></div>`;
   }
 
   function countryRows() {
@@ -155,7 +165,6 @@ export function openFounding({ onDone, onCancel }) {
       if (name) {
         name.textContent = f.name.trim() || '종교 이름';
         body.querySelector('[data-preview-founder]').textContent = f.founder.trim() ? `교주 ${f.founder.trim()}` : '교주 이름';
-        body.querySelector('.emblem').textContent = (f.name.trim() || '?').slice(0, 1);
       }
       updateFoot();
     }
@@ -188,6 +197,13 @@ export function openFounding({ onDone, onCancel }) {
       setAccent(f.color);
       body.querySelectorAll('.swatch').forEach((b) => b.setAttribute('aria-pressed', String(b === t)));
       return;
+    }
+    if (t.dataset.emblem) {
+      f.emblem = t.dataset.emblem;
+      body.querySelectorAll('[data-emblem]').forEach((b) => b.setAttribute('aria-checked', String(b === t)));
+      body.querySelector('.preview-chip .emblem').innerHTML = emblemSvg(f.emblem);
+      body.querySelector('[data-preview-emblem]').textContent = `문양 · ${emblemOf(f.emblem).name}`;
+      return updateFoot();
     }
     if (t.dataset.deity) {
       f.deity = t.dataset.deity;

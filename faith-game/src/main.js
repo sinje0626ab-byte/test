@@ -12,6 +12,16 @@ import { openFounding } from './ui/foundingScreen.js';
 import { showTitle } from './ui/titleScreen.js';
 import { startGameScreen } from './ui/gameScreen.js';
 import { mapTheme } from './ui/theme.js';
+import { emblemFavicon } from './religion/emblems.js';
+import { onColor } from './ui/format.js';
+
+// 브라우저 탭 아이콘을 플레이 중인 종교의 문양으로 바꾼다
+const favicon = document.querySelector('link[rel="icon"]');
+const defaultFavicon = favicon?.href;
+function setFavicon(religion) {
+  if (!favicon) return;
+  favicon.href = religion ? emblemFavicon(religion.emblem, religion.color, onColor(religion.color)) : defaultFavicon;
+}
 
 initWorld(countriesJson, adjacencyJson, religionsJson);
 const map = createWorldMap(document.getElementById('map'), topology);
@@ -26,6 +36,7 @@ function title() {
   screen?.destroy();
   screen = null;
   idleMap();
+  setFavicon(null);
   const saved = loadGame();
   showTitle({
     saved,
@@ -48,6 +59,7 @@ function found() {
 
 function play(state) {
   screen?.destroy();
+  setFavicon(state.religion);
   screen = startGameScreen(map, state, {
     onNewGame: () => { clearSave(); screen?.destroy(); screen = null; idleMap(); found(); },
   });
