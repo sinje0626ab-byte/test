@@ -1,0 +1,14 @@
+{
+  "_note": "기존 종교(배경 세력). 모든 종교는 같은 규칙으로 저항력에 반영된다. 색은 같은 채도·명도 대역에서 골랐다.",
+  "order": ["christianity", "islam", "hinduism", "buddhism", "judaism", "folk", "other", "none"],
+  "list": {
+    "christianity": { "name": "기독교", "color": "#7f9cc0" },
+    "islam":        { "name": "이슬람교", "color": "#7fb39a" },
+    "hinduism":     { "name": "힌두교", "color": "#d1a374" },
+    "buddhism":     { "name": "불교", "color": "#d4bc72" },
+    "judaism":      { "name": "유대교", "color": "#9a92c4" },
+    "folk":         { "name": "민간·전통 신앙", "color": "#b98f86" },
+    "other":        { "name": "기타 종교", "color": "#a3aab3" },
+    "none":         { "name": "무종교", "color": "#c9ccd1" }
+  }
+}
