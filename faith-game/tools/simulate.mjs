@@ -12,6 +12,7 @@ import { spreadAmount } from '../src/religion/spread.js';
 import { performMiracle, miracleBlocker, buildHolySite, holySiteBlocker } from '../src/game/actions.js';
 import { dueRevelation, resolveRevelation, dueIncident, resolveIncident, choiceAvailable } from '../src/story/storyEngine.js';
 import { stageOf } from '../src/game/stages.js';
+import { bestApproach, setApproach, approachBlocker } from '../src/religion/culture.js';
 
 const json = (p) => JSON.parse(readFileSync(new URL(`../src/data/${p}`, import.meta.url)));
 initWorld(json('countries.json'), json('adjacency.json'), json('religions.json'));
@@ -74,7 +75,7 @@ function potentials(state) {
 
 const topCountries = (state) => world.ids.filter((id) => state.countries[id].followers > 0).sort((a, b) => state.countries[b].followers - state.countries[a].followers);
 
-function play(state) {
+function play(state, opt) {
   const top = topCountries(state);
   const base = top[0];
   if (!base) return;
@@ -116,6 +117,14 @@ function play(state) {
     const t = top.filter((id) => !miracleBlocker(state, id)).sort((a, b) => P[b] - P[a])[0];
     if (t) performMiracle(state, t);
   }
+  // 전도 방식: 큰 나라부터 기질에 가장 맞는 방식
+  if (!opt.noApproach) {
+    for (const id of top.slice(0, 20)) {
+      if (state.countries[id].approach || state.faith < reserve) continue;
+      const key = bestApproach(id);
+      if (!approachBlocker(state, id, key)) setApproach(state, id, key);
+    }
+  }
   // 성지
   for (const id of top.slice(0, 14)) if (!holySiteBlocker(state, id) && state.faith > reserve * 2) buildHolySite(state, id);
 }
@@ -139,7 +148,7 @@ export function runGame(opt) {
   };
   handleStory(null);
   for (let t = 0; t < opt.turns && !state.result; t++) {
-    if (opt.policy !== 'idle') play(state);
+    if (opt.policy !== 'idle') play(state, opt);
     const report = endTurn(state);
     for (const e of report.events) out.events[e.type] = (out.events[e.type] ?? 0) + 1;
     const total = totalFollowers(state);

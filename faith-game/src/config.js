@@ -142,6 +142,37 @@ export const UNITS = {
   witness:    { cost: 120, power: 6 },
 };
 
+// ── 나라 기질 (culture.js) ── 나라 데이터(도시화·소득·자유도·종교 구성·지형)에서 판정한다
+export const CULTURE = {
+  metroUrban: 0.78, metroGdp: 3,  // 대도시 사회
+  ruralUrban: 0.5,                // 농촌 사회 (도시화율 미만)
+  secularNone: 0.25,              // 무종교 비율 이상
+  devoutShare: 0.85,              // 한 종교가 이 비율 이상
+  folkShare: 0.08,                // 민간·전통 신앙 비율 이상
+  pluralTop: 0.55,                // 가장 큰 종교가 이 비율 미만
+  restrictedFreedom: 40,          // 종교 자유도 미만
+  openFreedom: 80,                // 종교 자유도 이상
+  unitStep: 0.12,                 // 유닛 궁합 점수 1점당 효과
+  unitMin: 0.7, unitMax: 1.4,
+};
+
+// ── 현지 전도 방식 (나라마다 하나) ──
+// fit: 그 나라 기질과의 궁합 점수 → 장점 배율. 잘 맞음 1 · 맞음 0.6 · 보통 0.3 · 안 맞음 -0.4
+// 바꾸면 처음엔 adaptStart 만큼만 효과가 나고 adaptTurns 에 걸쳐 자리를 잡는다
+export const APPROACH = {
+  cost: 15,                       // × 단계 비용 배율
+  adaptStart: 0.25, adaptTurns: 4,
+  fitFactor: [[2, 1], [1, 0.6], [0, 0.3]], fitBad: -0.4,
+  street:   { unitPower: 0.35, growth: 0.1, alertGain: 0.004 },
+  house:    { growth: 0.2, unitPower: 0.1, alertMul: 0.7 },
+  online:   { unitPower: 0.3, growth: 0.25, aversionGain: 0.003 },
+  seminar:  { growth: 0.3, upkeep: 1 },             // 매달 신앙력 유지비 × √단계 비용 배율
+  charity:  { growth: 0.25, unitPower: 0.15, aversionGain: -0.004, upkeep: 2 },
+  customs:  { resistance: 0.15, growth: 0.1, attrition: 1.12 },
+  festival: { growth: 0.3, alertGain: 0.006 },
+  commune:  { attrition: 0.3, growth: 0.1, unitPower: 0.85 },
+};
+
 // ── 기적 (한 나라에 1회 대형 전파) ──
 export const MIRACLE = {
   cost: 50,                  // × 단계 비용 배율

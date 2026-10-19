@@ -9,6 +9,9 @@ import { esc, people, pct, signed } from './format.js';
 import { icon, rawIcon } from './icons.js';
 import { emblemSvg } from '../religion/emblems.js';
 import { flagImg } from './flags.js';
+import { APPROACHES, TRAITS, traitsOf, fitOf, adaptOf, unitAffinity, approachCost, prosText } from '../religion/culture.js';
+import { UNIT_ORDER } from '../units/unitTypes.js';
+import { traitChips } from './approachSheet.js';
 
 // 나라 정보 패널
 // expanded: 모바일에서 시트를 끝까지 펼쳤는지 (PC 에서는 항상 전체를 보여 준다)
@@ -34,6 +37,12 @@ export function renderCountryPanel(el, state, id, { expanded = false } = {}) {
     : cs.alert >= raidAt ? '압수수색 직전'
       : cs.alert >= ALERT.warn ? `경고 단계 — ${Math.round(raidAt * 100)}%에서 압수수색`
         : `${Math.round(ALERT.warn * 100)}% 경고 · ${Math.round(raidAt * 100)}% 압수수색 · 100% 활동 금지`;
+  const ap = cs.approach;
+  const apFit = ap ? fitOf(id, ap.id) : null;
+  const adapt = ap ? adaptOf(state, id) : 0;
+  const approachNote = ap
+    ? (adapt < 1 ? `자리 잡는 중 ${Math.round(adapt * 100)}% · ${prosText(id, ap.id)}` : prosText(id, ap.id))
+    : cs.followers > 0 ? '이 나라 기질에 맞는 방식을 고르면 더 잘 퍼집니다' : '신도가 생기면 정할 수 있습니다';
   const mBlock = miracleBlocker(state, id);
   const hBlock = holySiteBlocker(state, id);
 
@@ -94,6 +103,20 @@ export function renderCountryPanel(el, state, id, { expanded = false } = {}) {
         <div class="alert-text"><span class="num">${Math.round(cs.alert * 100)}%</span><span>${alertNote}</span></div>
       </div>
       <p class="panel-note">전파 효율 ${pct((1 - R) * freedomMod(id))} · 육로 이웃 ${c.land.length}곳 · 해로 ${c.sea.length}곳</p>
+
+      <div class="section-title">기질과 전도 방식</div>
+      ${traitChips(id)}
+      <p class="panel-note trait-note">${traitsOf(id).slice(0, 2).map((t) => esc(TRAITS[t].desc)).join(' ')}</p>
+      <div class="list action-list" style="margin-top:10px">
+        <button class="row action-row" data-panel="approach" ${cs.followers > 0 ? '' : 'disabled'}>
+          <span class="row-label">${icon('rise')}<span><b>${ap ? APPROACHES[ap.id].name : '전도 방식 정하기'}</b><small>${approachNote}</small></span></span>
+          <span class="row-value">${ap ? `<span class="badge fit ${apFit.tone}">${apFit.label}</span>` : `<span class="num"><i class="faith-mark"></i>${approachCost(state)}</span>`}${icon('chevron')}</span></button>
+      </div>
+      <div class="unit-fit">${UNIT_ORDER.map((t) => {
+        const f = unitAffinity(id, t);
+        const tone = f > 1.05 ? 'good' : f < 0.95 ? 'bad' : '';
+        return `<span class="unit-fit-chip ${tone}" title="이 나라에서 ${UNIT_TYPES[t].name} 효과 ×${f.toFixed(2)}">${UNIT_TYPES[t].name}<b class="num">${tone === 'good' ? '▲' : tone === 'bad' ? '▼' : '–'}</b></span>`;
+      }).join('')}</div>
 
       <div class="section-title">이곳의 유닛 ${units.length ? `· ${units.length}` : ''}</div>
       ${units.length ? `<div class="list">${units.map((u) => `
