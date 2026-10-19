@@ -70,23 +70,37 @@ export function createWorldMap(container, topology) {
   const requestDraw = () => { if (!frame) frame = requestAnimationFrame(draw); };
 
   // ── 입력: d3-zoom 의 이동량을 회전으로, 배율을 확대로 쓴다 ──
+  // 한 손가락·마우스 끌기 = 회전, 휠·두 손가락 = 그 지점을 중심으로 확대.
+  // d3-zoom 의 이동량은 확대 중심 보정까지 섞여 있으므로, 회전은 직접 잰 포인터 이동으로만 한다.
   let last = null;
   let samples = [];
+  let pan = { x: 0, y: 0 };          // 지금까지 끈 거리 (관성 계산용)
+  let lastFocus = null;              // 두 손가락 중심 (이전 프레임)
   const zoomer = zoom()
     .scaleExtent([K_MIN, K_MAX])
     .on('start', (event) => {
       stopMotion();
       last = event.transform;
       samples = [];
+      lastFocus = null;
     })
     .on('zoom', (event) => {
       const t = event.transform;
       const src = event.sourceEvent;
-      view.k = t.k;
-      if (last && src && src.type !== 'wheel') {
-        rotateBy(t.x - last.x, t.y - last.y);
-        samples.push({ x: t.x, y: t.y, time: performance.now() });
-        if (samples.length > 6) samples.shift();
+      const touches = src?.touches;
+      if (!src) {
+        view.k = t.k;                                   // 코드에서 맞춘 배율 (syncZoom 등)
+      } else if (src.type === 'wheel') {
+        zoomAround(localPoint(src), t.k);
+      } else if (touches && touches.length >= 2) {
+        const f = touchCenter(touches);
+        if (lastFocus) panBy(f[0] - lastFocus[0], f[1] - lastFocus[1]);
+        lastFocus = f;
+        zoomAround(f, t.k);
+      } else {
+        lastFocus = null;
+        if (last) panBy(t.x - last.x, t.y - last.y);
+        view.k = t.k;
       }
       last = t;
       requestDraw();
@@ -101,8 +115,45 @@ export function createWorldMap(container, topology) {
         startInertia(((b.x - a.x) / dt) * 16, ((b.y - a.y) / dt) * 16);
       }
       samples = [];
+      lastFocus = null;
     });
   svg.call(zoomer).on('dblclick.zoom', null);
+
+  function panBy(dx, dy) {
+    rotateBy(dx, dy);
+    pan = { x: pan.x + dx, y: pan.y + dy };
+    samples.push({ ...pan, time: performance.now() });
+    if (samples.length > 6) samples.shift();
+  }
+
+  const localPoint = (e) => {
+    const r = svg.node().getBoundingClientRect();
+    return [e.clientX - r.left, e.clientY - r.top];
+  };
+  function touchCenter(touches) {
+    const r = svg.node().getBoundingClientRect();
+    let x = 0, y = 0;
+    for (const t of touches) { x += t.clientX; y += t.clientY; }
+    return [x / touches.length - r.left, y / touches.length - r.top];
+  }
+
+  // 화면의 점 p 아래에 있던 땅이 확대 뒤에도 p 에 남도록 배율을 바꾼다
+  function zoomAround(p, k) {
+    k = Math.max(K_MIN, Math.min(K_MAX, k));
+    projection.rotate(view.rotate).scale(radius * view.k).translate([width / 2, height / 2]);
+    const geo = projection.invert(p);
+    const visible = geo && geoDistance(geo, [-view.rotate[0], -view.rotate[1]]) < Math.PI / 2;
+    view.k = k;
+    if (!visible) return;                    // 지구 밖을 가리키면 가운데 기준
+    for (let i = 0; i < 3; i++) {
+      projection.rotate(view.rotate).scale(radius * view.k);
+      const q = projection(geo);
+      if (!q) break;
+      const dx = p[0] - q[0], dy = p[1] - q[1];
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) break;
+      rotateBy(dx, dy);
+    }
+  }
 
   function rotateBy(dx, dy) {
     const r = radius * view.k;
