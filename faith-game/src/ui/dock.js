@@ -5,29 +5,58 @@ import { dateLabel } from '../game/state.js';
 import { esc } from './format.js';
 import { icon, rawIcon } from './icons.js';
 import { unitStatus } from './countryPanel.js';
+import { flagImg } from './flags.js';
 
 const isReady = (u) => !u.auto && (!u.moved || canAct(u));
 
 // 하단 독: 선택한 유닛 정보 + 유닛 목록 + 생산 + 다음 달
-export function renderDock(el, state, selectedUnitId) {
+// 유닛 목록은 나라별로만 보여 준다.
+//   나라를 고르지 않았으면: 유닛이 있는 나라 목록 (국기 · 이름 · 유닛 수)
+//   나라를 골랐으면: 그 나라에 있는 유닛만 + '전체' 로 돌아가기
+export function renderDock(el, state, selectedUnitId, countryId = null) {
   const unit = state.units.find((u) => u.id === selectedUnitId);
   const next = dateLabel(state.turn + 1);
   el.innerHTML = `
     ${unit ? inspector(state, unit) : ''}
     <div class="dock-main">
-      <div class="dock-units" role="list" aria-label="유닛">
-        ${state.units.length ? state.units.map((u) => `
-          <button class="unit-chip ${u.id === selectedUnitId ? 'is-selected' : ''} ${isReady(u) ? '' : 'is-spent'}" data-unit="${u.id}" role="listitem">
-            <span class="unit-glyph">${rawIcon(UNIT_TYPES[u.type].icon)}</span>
-            <span><b>${UNIT_TYPES[u.type].name}</b><small>${u.auto ? '자동 · ' : ''}${esc(world.countries[u.at].name)}</small></span>
-            ${isReady(u) ? '<i class="ready-dot" aria-label="행동 가능"></i>' : ''}
-          </button>`).join('') : '<span class="dock-empty">유닛이 없습니다. 신앙력으로 생산하세요.</span>'}
-      </div>
+      <div class="dock-units" role="list" aria-label="유닛">${countryId ? countryUnits(state, countryId, selectedUnitId) : countryList(state)}</div>
       <div class="dock-buttons">
         <button class="btn btn-secondary btn-produce" data-dock="produce" aria-label="유닛 생산">${icon('plus')}<span>생산 <small class="num">${state.units.length}/${unitCap(state)}</small></span></button>
         <button class="btn btn-primary btn-turn" data-dock="end-turn" ${state.result ? 'disabled' : ''}>다음 달<small class="num">${next}</small></button>
       </div>
     </div>`;
+}
+
+function countryList(state) {
+  const groups = new Map();
+  for (const u of state.units) {
+    if (!groups.has(u.at)) groups.set(u.at, []);
+    groups.get(u.at).push(u);
+  }
+  if (!groups.size) return '<span class="dock-empty">유닛이 없습니다. 신앙력으로 생산하세요.</span>';
+  // 행동할 유닛이 남은 나라 먼저, 그다음 유닛이 많은 나라
+  const list = [...groups].sort((a, b) => b[1].some(isReady) - a[1].some(isReady) || b[1].length - a[1].length);
+  return list.map(([id, units]) => {
+    const c = world.countries[id];
+    const ready = units.filter(isReady).length;
+    return `<button class="unit-chip country-chip" data-dock-country="${id}" role="listitem">
+      ${flagImg(c, 'flag flag-md')}
+      <span><b>${esc(c.name)}</b><small>유닛 ${units.length}${ready ? ` · 대기 ${ready}` : ''}</small></span>
+      ${ready ? '<i class="ready-dot" aria-label="행동 가능"></i>' : ''}
+    </button>`;
+  }).join('');
+}
+
+function countryUnits(state, countryId, selectedUnitId) {
+  const units = state.units.filter((u) => u.at === countryId);
+  const back = `<button class="unit-chip back-chip" data-dock="all" role="listitem" aria-label="모든 나라 보기">${icon('chevron')}<span><b>전체</b><small>${new Set(state.units.map((u) => u.at)).size}개국</small></span></button>`;
+  if (!units.length) return `${state.units.length ? back : ''}<span class="dock-empty">이 나라엔 유닛 없음</span>`;
+  return back + units.map((u) => `
+    <button class="unit-chip ${u.id === selectedUnitId ? 'is-selected' : ''} ${isReady(u) ? '' : 'is-spent'}" data-unit="${u.id}" role="listitem">
+      <span class="unit-glyph">${rawIcon(UNIT_TYPES[u.type].icon)}</span>
+      <span><b>${UNIT_TYPES[u.type].name}</b><small>${u.auto ? '자동 임무' : unitStatus(u)}</small></span>
+      ${isReady(u) ? '<i class="ready-dot" aria-label="행동 가능"></i>' : ''}
+    </button>`).join('');
 }
 
 function inspector(state, u) {
