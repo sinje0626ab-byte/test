@@ -20,6 +20,8 @@ import { renderCountryPanel, tooltipHtml } from './countryPanel.js';
 import { renderDock } from './dock.js';
 import { flagImg } from './flags.js';
 import { openProduction } from './production.js';
+import { openApproach } from './approachSheet.js';
+import { setApproach } from '../religion/culture.js';
 import { showIncident } from './incidentCard.js';
 import { showChronicle } from './chronicle.js';
 import { toast, modal } from './toast.js';
@@ -185,6 +187,15 @@ export function startGameScreen(map, state, { onNewGame }) {
     toast({ title: '기적', body: `${world.countries[id].name}에서 ${people(r.converted)}명이 무릎을 꿇었습니다. 당국도 그 장면을 보았습니다.`, iconName: 'rise' });
     map.pulse(id, 'burst');
     commit();
+  }
+
+  function chooseApproach(id, key) {
+    const r = setApproach(state, id, key);
+    if (!r.ok) { toast({ title: r.message, tone: 'bad', iconName: 'alert' }); return r; }
+    const tail = r.fit.tone === 'bad' ? ' 이 땅과는 잘 맞지 않는 것 같습니다.' : r.fit.tone === 'good' ? ' 이 땅에 잘 맞는 방식입니다.' : '';
+    toast({ title: '전도 방식', body: `${world.countries[id].name}에서 '${r.name}'${josa(r.name, '을/를').slice(r.name.length)} 시작합니다. 몇 달에 걸쳐 자리를 잡습니다.${tail}`, iconName: 'rise' });
+    commit();
+    return r;
   }
 
   function holySite(id) {
@@ -433,6 +444,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     if (t.dataset.panel === 'produce') { production = openProduction(state, ui.country, spawnFromSheet); return; }
     if (t.dataset.panel === 'miracle') return miracle(ui.country);
     if (t.dataset.panel === 'holy') return holySite(ui.country);
+    if (t.dataset.panel === 'approach') { openApproach(state, ui.country, chooseApproach); return; }
     if (t.dataset.unit) { selectUnit(t.dataset.unit); return; }
     if (t.dataset.dockCountry) { selectCountry(t.dataset.dockCountry); return; }
     if (t.dataset.dock === 'all') { ui.country = null; ui.unit = null; render(); return; }

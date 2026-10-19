@@ -829,7 +829,7 @@ body.is-revelation .game-ui, body.is-revelation .toasts { visibility: hidden; }
 
 /* ── 나라 패널 추가 ── */
 .badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 7px; background: var(--fill); color: var(--label-2); }
+.badge { white-space: nowrap; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 7px; background: var(--fill); color: var(--label-2); }
 .badge.holy { background: color-mix(in srgb, #ffcc4d 26%, transparent); color: #9a6a00; }
 .badge.bad { background: color-mix(in srgb, #ff3b30 16%, transparent); color: var(--bad); }
 .badge.warn { background: color-mix(in srgb, #ff9f0a 18%, transparent); color: var(--warn); }
@@ -944,3 +944,27 @@ body.is-revelation .game-ui, body.is-revelation .toasts { visibility: hidden; }
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: border-color 0.2s, background 0.2s;
 }
 .rv-back:hover { border-color: rgba(243, 223, 176, 0.6); background: rgba(40, 32, 20, 0.92); }
+
+/* 나라 기질 · 전도 방식 */
+.trait-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.trait-chip { font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 9px; background: var(--accent-soft); color: var(--label); }
+.trait-note { margin-top: 8px; line-height: 1.45; }
+.badge.fit.good { background: color-mix(in srgb, #34c759 18%, transparent); color: var(--good); }
+.badge.fit.bad { background: color-mix(in srgb, #ff3b30 14%, transparent); color: var(--bad); }
+.badge.rec { background: var(--accent); color: var(--on-accent); }
+.prod-text .badge.fit { margin-left: 6px; vertical-align: 1px; white-space: nowrap; }
+.unit-fit { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.unit-fit-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 3px 8px; border-radius: 8px; background: var(--fill); color: var(--label-2); }
+.unit-fit-chip b { font-size: 10px; font-weight: 600; }
+.unit-fit-chip.good { color: var(--good); }
+.unit-fit-chip.bad { color: var(--bad); }
+.approach-list { margin-top: 14px; }
+.approach-item { display: flex; gap: 12px; align-items: center; padding: 12px 14px; }
+.approach-item + .approach-item { box-shadow: inset 0 0.5px 0 var(--hairline); }
+.approach-item.is-current { background: var(--accent-soft); }
+.approach-name { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.approach-fx { font-size: 12px !important; }
+.approach-fx .up { color: var(--good); }
+.approach-fx .down { color: var(--bad); }
+.approach-using { flex: none; min-width: 84px; text-align: center; font-size: 13px; font-weight: 600; color: var(--accent); display: flex; flex-direction: column; }
+.approach-using small { font-size: 11px; font-weight: 500; color: var(--label-2); }

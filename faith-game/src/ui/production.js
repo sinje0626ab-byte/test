@@ -5,6 +5,7 @@ import { unitCost, spawnBlocker, unitCap } from '../units/units.js';
 import { esc, int, people } from './format.js';
 import { rawIcon } from './icons.js';
 import { modal } from './toast.js';
+import { unitAffinity } from '../religion/culture.js';
 
 // 생산 시트. 생산할 때마다 onSpawn(type, at) → 결과 { ok, message }
 export function openProduction(state, preferredAt, onSpawn) {
@@ -26,9 +27,11 @@ export function openProduction(state, preferredAt, onSpawn) {
         const t = UNIT_TYPES[type];
         const blocker = spawnBlocker(state, type, at);
         const locked = blocker && blocker.includes('해금');
+        const f = at ? unitAffinity(at, type) : 1;
+        const fit = f > 1.05 ? `<span class="badge fit good" title="이 나라에서 효과 ×${f.toFixed(2)}">잘 맞음 ▲</span>` : f < 0.95 ? `<span class="badge fit bad" title="이 나라에서 효과 ×${f.toFixed(2)}">안 맞음 ▼</span>` : '';
         return `<div class="prod-item ${locked ? 'is-locked' : ''}">
           <span class="unit-glyph">${rawIcon(t.icon)}</span>
-          <div class="prod-text"><b>${t.name}</b><p>${esc(t.desc)}</p>${blocker && blocker !== '신앙력 부족' ? `<div class="lock">${esc(blocker)}</div>` : ''}</div>
+          <div class="prod-text"><b>${t.name}</b>${fit}<p>${esc(t.desc)}</p>${blocker && blocker !== '신앙력 부족' ? `<div class="lock">${esc(blocker)}</div>` : ''}</div>
           <button class="btn ${blocker ? 'btn-secondary' : 'btn-primary'} btn-sm prod-buy" data-buy="${type}" ${blocker ? 'disabled' : ''}><span class="faith-mark"></span><span class="num">${int(unitCost(state, type, at))}</span></button>
         </div>`;
       }).join('')}</div>

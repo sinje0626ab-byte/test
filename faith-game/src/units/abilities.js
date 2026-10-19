@@ -2,16 +2,18 @@ import { UNITS, AVERSION, ALERT } from '../config.js';
 import { world } from '../data/loader.js';
 import { spreadAmount, addFollowers, share } from '../religion/spread.js';
 import { bumpAlert } from '../game/watch.js';
+import { unitAffinity } from '../religion/culture.js';
 
 // 유닛 능력 표.
 //   act(state, unit)    — 플레이어가 누르는 행동. { ok, converted, consumed } 를 돌려준다.
 //   onTurn(state, unit) — 매 턴 자동으로 일어나는 효과. 바뀐 신도 수를 돌려준다.
 //   attritionShield(state, unit) — 머무는 나라 이탈 감소율 (0~1)
 // 활동은 그 나라 정부 경계를 바꾼다 (ALERT.unitAction).
+// 효과는 그 나라 기질과의 궁합(unitAffinity)만큼 커지거나 줄어든다.
 export const ABILITIES = {
   missionary: {
     act(state, unit) {
-      const converted = addFollowers(state, unit.at, spreadAmount(state, unit.at, UNITS.missionary.power));
+      const converted = addFollowers(state, unit.at, spreadAmount(state, unit.at, UNITS.missionary.power * unitAffinity(unit.at, 'missionary')));
       bumpAlert(state, unit.at, ALERT.unitAction.missionary);
       unit.usesLeft -= 1;
       return { ok: true, converted, consumed: unit.usesLeft <= 0 };
@@ -22,16 +24,17 @@ export const ABILITIES = {
     act(state, unit) {
       const cs = state.countries[unit.at];
       const before = cs.aversion;
-      cs.aversion = Math.max(0, cs.aversion - UNITS.relief.aversionCut);
+      const fit = unitAffinity(unit.at, 'relief');
+      cs.aversion = Math.max(0, cs.aversion - UNITS.relief.aversionCut * fit);
       bumpAlert(state, unit.at, ALERT.unitAction.relief);
-      const converted = addFollowers(state, unit.at, spreadAmount(state, unit.at, UNITS.relief.power));
+      const converted = addFollowers(state, unit.at, spreadAmount(state, unit.at, UNITS.relief.power * fit));
       return { ok: true, converted, aversionCut: before - cs.aversion, consumed: false };
     },
   },
 
   witness: {
     act(state, unit) {
-      const converted = addFollowers(state, unit.at, spreadAmount(state, unit.at, UNITS.witness.power));
+      const converted = addFollowers(state, unit.at, spreadAmount(state, unit.at, UNITS.witness.power * unitAffinity(unit.at, 'witness')));
       const cs = state.countries[unit.at];
       cs.aversion = Math.min(AVERSION.max, cs.aversion + AVERSION.witnessGain);
       bumpAlert(state, unit.at, ALERT.unitAction.witness);
@@ -44,11 +47,12 @@ export const ABILITIES = {
     onTurn(state, unit) {
       const cfg = UNITS.theologian;
       const c = world.countries[unit.at];
-      let total = addFollowers(state, unit.at, spreadAmount(state, unit.at, cfg.hostPressure));
+      const fit = unitAffinity(unit.at, 'theologian');
+      let total = addFollowers(state, unit.at, spreadAmount(state, unit.at, cfg.hostPressure * fit));
       const [list, factor] = c.land.length ? [c.land, 1] : [c.sea, cfg.seaFactor];
       for (const n of list) {
         if (state.countries[n].banned) continue;
-        total += addFollowers(state, n, spreadAmount(state, n, cfg.neighborPressure * factor));
+        total += addFollowers(state, n, spreadAmount(state, n, cfg.neighborPressure * factor * fit));
       }
       return total;
     },
@@ -57,7 +61,8 @@ export const ABILITIES = {
   guardian: {
     attritionShield(state, unit) {
       const cfg = UNITS.guardian;
-      return share(state, unit.at) >= cfg.minShare ? cfg.attritionCut : cfg.weakAttritionCut;
+      const cut = share(state, unit.at) >= cfg.minShare ? cfg.attritionCut : cfg.weakAttritionCut;
+      return Math.min(0.85, cut * unitAffinity(unit.at, 'guardian'));
     },
   },
 };

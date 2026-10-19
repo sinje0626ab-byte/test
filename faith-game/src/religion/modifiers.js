@@ -2,8 +2,9 @@ import { DEITIES } from './deities.js';
 import { TENETS } from './tenets.js';
 import { STAGES } from '../config.js';
 import { EFFECTS, holySiteSource } from '../story/effects.js';
+import { approachSource } from './culture.js';
 
-// 수정자 출처: 절대 원칙(신앙 대상) · 울타리(교리) · 성장 단계 · 계시/사건이 남긴 효과(state.extraModifiers)
+// 수정자 출처: 절대 원칙(신앙 대상) · 울타리(교리) · 성장 단계 · 나라별 현지 전도 방식 · 계시/사건이 남긴 효과(state.extraModifiers)
 // extraModifiers 항목은 저장 가능한 데이터다: { ref: 'sanctuary:mountain', until?: 턴, params? }
 // ref 는 story/effects.js 의 EFFECTS 표에서 { mods, add } 정의로 바뀐다.
 // 같은 턴에 수천 번 불리므로, 출처 목록을 상태가 바뀔 때만 다시 만든다
@@ -25,6 +26,7 @@ function buildSources(state) {
   for (const t of state.religion.tenets) list.push(TENETS[t]);
   const stage = STAGES.find((s) => s.id === state.stage);
   if (stage) list.push({ mods: { growth: stage.growth, faith: stage.faith, unitPower: stage.unitPower, resistance: stage.resistance } });
+  list.push(approachSource);
   const holy = holySiteSource(state);
   if (holy) list.push(holy);
   for (const m of state.extraModifiers ?? []) {
