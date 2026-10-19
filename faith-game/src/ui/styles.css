@@ -303,6 +303,8 @@ button:disabled { cursor: default; }
   .has-panel .dock { right: 384px; }
 }
 
+.panel-grip, .peek { display: none; }
+
 /* ── 하단 독 ── */
 .dock {
   position: fixed; z-index: 12; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom));
@@ -523,39 +525,88 @@ button:disabled { cursor: default; }
 /* ── 모바일 ── */
 @media (max-width: 760px) {
   body { font-size: 14px; }
-  .hud { gap: 8px; left: 8px; right: 8px; flex-wrap: wrap; }
-  .hud-card { min-height: 48px; border-radius: 16px; }
-  .hud-date { padding: 6px 12px; }
-  .hud-date strong { font-size: 15px; }
-  .hud-stats { order: 3; width: 100%; justify-content: space-between; padding: 4px; }
-  .stat { padding: 3px 10px; flex: 1; }
-  .stat-value { font-size: 15px; }
+  .hud { gap: 6px; left: 6px; right: 6px; top: max(6px, env(safe-area-inset-top)); flex-wrap: wrap; }
+  .hud-card { min-height: 42px; border-radius: 14px; }
+  .hud-date { padding: 4px 10px 4px 6px; gap: 8px; }
+  .hud-date strong { font-size: 14px; }
+  .hud-date span { font-size: 11px; }
+  .hud-stats { order: 3; width: 100%; justify-content: space-between; padding: 2px; min-height: 38px; }
+  .stat { padding: 2px 10px; flex: 1; }
+  .stat-label { font-size: 10px; }
+  .stat-value { font-size: 14px; }
+  .stat-value small { font-size: 11px; }
   .hud-spacer { display: none; }
-  .hud-stage { flex: 1; padding: 6px 10px; min-width: 0; }
+  .hud-stage { flex: 1; padding: 4px 10px; min-width: 0; }
+  .hud-stage .stage-name { font-size: 13px; }
+  .hud-stage .meter { margin-top: 3px; height: 4px; }
+  .hud-stage .stage-next { font-size: 10px; margin-top: 2px; }
   .hud-stage .meter { width: 100%; }
   .hud-stage > div { flex: 1; min-width: 0; }
   .hud-stage .stage-next { overflow: hidden; text-overflow: ellipsis; }
-  .hud-menu { width: 48px; }
-  .map-tools { top: calc(max(8px, env(safe-area-inset-top)) + 138px); left: 8px; flex-direction: row; }
+  .hud-menu { width: 42px; }
+  .map-tools { top: calc(max(6px, env(safe-area-inset-top)) + 96px); left: 6px; right: 6px; flex-direction: row; gap: 6px; }
+  .tool-card { padding: 4px; border-radius: 12px; }
+  .segmented button { height: 26px; padding: 0 10px; font-size: 12px; }
+  .search { flex: 1; min-width: 0; }
+  .search input { width: 100%; height: 26px; font-size: 13px; }
+  .search .icon { top: 9px; }
   .legend, .zoom-card { display: none; }
-  .search input { width: 150px; }
+  /* 나라 패널 = 아래에서 올라오는 시트. 기본은 요약만, 끌어 올리거나 '자세히'로 펼친다 */
   .panel {
-    left: 8px; right: 8px; width: auto; top: auto; bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--dock-h, 72px) + 8px);
-    max-height: min(42dvh, calc(100dvh - var(--dock-h, 72px) - 170px)); border-radius: 22px; animation-name: sheet-up;
+    left: 6px; right: 6px; width: auto; top: auto; bottom: calc(max(6px, env(safe-area-inset-bottom)) + var(--dock-h, 64px) + 6px);
+    max-height: calc(100dvh - var(--dock-h, 64px) - 130px); border-radius: 20px; animation-name: sheet-up;
   }
+  .panel.is-expanded { max-height: min(62dvh, calc(100dvh - var(--dock-h, 64px) - 130px)); }
+  /* 유닛을 고르면 이동할 나라가 보이도록 나라 시트는 잠시 숨긴다 (유닛 정보는 독에) */
+  .has-unit .panel { display: none; }
   @keyframes sheet-up { from { opacity: 0; transform: translateY(20px); } }
-  .panel-scroll { padding: 16px; }
-  .panel-head h2 { font-size: 21px; }
-  .dock { left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); padding: 8px; border-radius: 20px; }
-  .dock-main { min-height: 48px; gap: 8px; }
-  .dock-buttons .btn { height: 48px; padding: 0 12px; }
-  .btn-turn { min-width: 96px; }
+  .panel-grip { display: block; width: 100%; height: 16px; flex: none; position: relative; touch-action: none; }
+  .panel-grip i { position: absolute; left: 50%; top: 6px; width: 36px; height: 5px; border-radius: 3px; background: var(--fill-2); transform: translateX(-50%); }
+  .panel-scroll { padding: 0 14px 12px; }
+  .panel:not(.is-expanded) .panel-scroll { overflow: hidden; }
+  .panel:not(.is-expanded) .panel-detail { display: none; }
+  .panel-head { touch-action: none; }
+  .panel-head h2 { font-size: 18px; }
+  .panel-head p { font-size: 12px; }
+  .panel-title { gap: 10px; }
+  .panel-title .flag-lg { width: 34px; height: 25px; border-radius: 4px; }
+  .badges { margin-top: 3px; }
+  .panel-close { width: 28px; height: 28px; margin: 0; }
+  .peek { display: block; margin-top: 10px; }
+  .peek-stats { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 6px; }
+  .peek-stats div { padding: 7px 10px; border-radius: 12px; background: var(--fill); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .peek-stats small { display: block; font-size: 10.5px; color: var(--label-2); }
+  .peek-stats b { font-size: 15px; font-weight: 650; }
+  .peek-stats b.up { color: var(--good); } .peek-stats b.down { color: var(--bad); }
+  .peek-stats em { font-style: normal; font-size: 11px; color: var(--label-2); margin-left: 4px; }
+  .peek-stats .warn b { color: var(--warn); } .peek-stats .bad b { color: var(--bad); }
+  .peek-actions { display: flex; gap: 6px; margin-top: 8px; }
+  .peek-actions .btn { flex: 1; padding: 0 8px; gap: 4px; height: 34px; }
+  .peek-actions .btn .icon { width: 15px; height: 15px; }
+  .peek-actions .peek-more { flex: none; }
+  .panel.is-expanded .hero { display: none; }
+  .panel-detail .section-title:first-child { margin-top: 14px; }
+  .dock { left: 6px; right: 6px; bottom: max(6px, env(safe-area-inset-bottom)); padding: 6px; border-radius: 18px; gap: 6px; }
+  .dock-main { min-height: 42px; gap: 6px; }
+  .dock-buttons .btn { height: 42px; padding: 0 10px; border-radius: 13px; }
+  .btn-turn { min-width: 86px; font-size: 14px; }
+  .unit-chip { padding: 4px 10px 4px 4px; gap: 7px; border-radius: 12px; }
+  .unit-chip .unit-glyph { width: 26px; height: 26px; border-radius: 8px; }
+  .unit-chip b { font-size: 12px; }
+  .inspector { padding: 6px; gap: 8px; border-radius: 13px; }
+  .inspector .unit-glyph { width: 32px; height: 32px; border-radius: 10px; }
+  .inspector-text b { font-size: 14px; }
+  .inspector-text p { font-size: 11px; }
+  .inspector-actions .btn-sm { height: 30px; font-size: 12px; padding: 0 8px; }
   .btn-produce span { display: none; }
   .unit-chip small { display: none; }
   .inspector { flex-wrap: wrap; }
   .inspector-actions { width: 100%; }
   .inspector-actions .btn { flex: 1; }
-  .toasts { top: calc(max(8px, env(safe-area-inset-top)) + 138px); }
+  .toasts { top: calc(max(6px, env(safe-area-inset-top)) + 132px); width: calc(100% - 12px); }
+  .toast { padding: 9px 12px; border-radius: 14px; }
+  .toast-mark { width: 26px; height: 26px; }
+  .toast b { font-size: 13px; } .toast span { font-size: 12px; }
   .overlay { padding: 0; align-items: end; }
   .sheet, .founding .sheet { width: 100%; max-height: 94dvh; border-radius: 26px 26px 0 0; padding-bottom: env(safe-area-inset-bottom); }
   .founding .sheet { height: 94dvh; }

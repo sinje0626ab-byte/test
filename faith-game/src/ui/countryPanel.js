@@ -11,7 +11,8 @@ import { emblemSvg } from '../religion/emblems.js';
 import { flagImg } from './flags.js';
 
 // 나라 정보 패널
-export function renderCountryPanel(el, state, id) {
+// expanded: 모바일에서 시트를 끝까지 펼쳤는지 (PC 에서는 항상 전체를 보여 준다)
+export function renderCountryPanel(el, state, id, { expanded = false } = {}) {
   const c = world.countries[id];
   const cs = state.countries[id];
   const { ours, existing } = composition(state, id);
@@ -39,13 +40,30 @@ export function renderCountryPanel(el, state, id) {
   const meterRow = (label, v, warn = false, text = pct(v)) =>
     `<div class="row"><span class="row-label">${label}</span><span class="row-value"><span class="meter row-meter ${warn ? 'warn' : ''}"><i style="width:${(Math.min(1, v) * 100).toFixed(1)}%"></i></span><span class="num" style="min-width:44px">${text}</span></span></div>`;
 
+  el.classList.toggle('is-expanded', expanded);
   el.innerHTML = `
+    <button class="panel-grip" data-panel="expand" aria-label="${expanded ? '접기' : '자세히 보기'}"><i></i></button>
     <div class="panel-scroll">
       <div class="panel-head">
         <div class="panel-title">${flagImg(c, 'flag flag-lg')}<div><h2>${esc(c.name)}</h2><p>${esc(c.region)} · 인구 ${people(c.pop)}명</p>${badges ? `<div class="badges">${badges}</div>` : ''}</div></div>
         <button class="icon-btn panel-close" data-panel="close" aria-label="닫기">${icon('close')}</button>
       </div>
 
+      <div class="peek">
+        <div class="peek-stats">
+          <div><small>신도</small><b class="num">${people(cs.followers)}</b><em class="num">${pct(ours)}</em></div>
+          <div><small>지난달</small><b class="num ${delta > 0 ? 'up' : delta < 0 ? 'down' : ''}">${signed(delta)}</b></div>
+          <div class="${cs.banned ? 'bad' : cs.alert >= ALERT.warn ? 'warn' : ''}"><small>정부 경계</small><b class="num">${cs.banned ? '금지' : `${Math.round(cs.alert * 100)}%`}</b></div>
+        </div>
+        <div class="peek-actions">
+          <button class="btn btn-secondary btn-sm" data-panel="produce" ${canSpawn ? '' : 'disabled'}>${icon('plus')}생산</button>
+          <button class="btn btn-secondary btn-sm" data-panel="miracle" ${mBlock ? 'disabled' : ''}>${icon('rise')}기적</button>
+          ${state.flags.holySites ? `<button class="btn btn-secondary btn-sm" data-panel="holy" ${hBlock ? 'disabled' : ''}>${icon('flag')}성지</button>` : ''}
+          <button class="btn btn-plain btn-sm peek-more" data-panel="expand">${expanded ? '접기' : '자세히'}</button>
+        </div>
+      </div>
+
+      <div class="panel-detail">
       <div class="hero">
         <div class="hero-label">${emblemSvg(state.religion.emblem, 'hero-emblem')}${esc(state.religion.name)} 신도</div>
         <div class="hero-value">${people(cs.followers)}<small>${pct(ours)}</small></div>
@@ -92,6 +110,7 @@ export function renderCountryPanel(el, state, id) {
           <span class="row-label">${icon('rise')}<span><b>기적</b><small>${mBlock ?? '한 번에 크게 퍼뜨립니다 · 정부 경계↑'}</small></span></span><span class="row-value num"><i class="faith-mark"></i>${miracleCost(state)}</span></button>
         <button class="row action-row" data-panel="holy" ${hBlock ? 'disabled' : ''}>
           <span class="row-label">${icon('flag')}<span><b>성지 건설</b><small>${hBlock ?? '이 나라 성장↑ 이탈↓ 매달 신앙력, 영구'}</small></span></span><span class="row-value num">${state.holySites[id] ? '완공' : `<i class="faith-mark"></i>${holySiteCost(state)}`}</span></button>
+      </div>
       </div>
     </div>`;
 }

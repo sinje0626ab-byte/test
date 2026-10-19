@@ -30,7 +30,7 @@ import { emblemSvg } from '../religion/emblems.js';
 
 // 게임 화면. 상태를 들고 있고, 입력을 받아 게임 로직을 부른 뒤 다시 그린다.
 export function startGameScreen(map, state, { onNewGame }) {
-  const ui = { country: null, unit: null, mode: 'ours', skipIdleConfirm: false };
+  const ui = { country: null, unit: null, mode: 'ours', skipIdleConfirm: false, panelExpanded: false };
   let production = null;
   setAccent(state.religion.color);
 
@@ -70,12 +70,13 @@ export function startGameScreen(map, state, { onNewGame }) {
     if (ui.country) {
       const keep = panelEl.querySelector('.panel-scroll')?.scrollTop ?? 0;
       panelEl.hidden = false;
-      renderCountryPanel(panelEl, state, ui.country);
+      renderCountryPanel(panelEl, state, ui.country, { expanded: ui.panelExpanded });
       panelEl.querySelector('.panel-scroll').scrollTop = keep;
     } else {
       panelEl.hidden = true;
     }
     root.classList.toggle('has-panel', Boolean(ui.country));
+    root.classList.toggle('has-unit', Boolean(ui.unit));
     renderMap();
   }
 
@@ -103,8 +104,8 @@ export function startGameScreen(map, state, { onNewGame }) {
     const top = hudEl.getBoundingClientRect().bottom + 8;
     const dockTop = dockEl.getBoundingClientRect().top;
     let left = 0, right = w, bottom = dockTop;
-    if (!panelEl.hidden) {
-      const r = panelEl.getBoundingClientRect();
+    const r = panelEl.getBoundingClientRect();
+    if (!panelEl.hidden && r.height > 0) {   // CSS 로 숨겨진 시트(모바일 유닛 선택 중)는 무시
       if (w > 760) right = r.left;
       else bottom = Math.min(bottom, r.top);
     }
@@ -129,6 +130,7 @@ export function startGameScreen(map, state, { onNewGame }) {
       }
     }
     if (unit && id !== unit.at) ui.unit = null;
+    if (ui.country !== id) ui.panelExpanded = false;   // 다른 나라를 고르면 모바일 시트는 다시 작게
     ui.country = id;
     render();
     flyToCountry(id);
@@ -427,6 +429,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     if (t.dataset.hud === 'stage') return showStageInfo();
     if (t.dataset.hud === 'menu') return showMenu();
     if (t.dataset.panel === 'close') { ui.country = null; ui.unit = null; render(); return; }
+    if (t.dataset.panel === 'expand') { if (swallowClick) { swallowClick = false; return; } setExpanded(!ui.panelExpanded); return; }
     if (t.dataset.panel === 'produce') { production = openProduction(state, ui.country, spawnFromSheet); return; }
     if (t.dataset.panel === 'miracle') return miracle(ui.country);
     if (t.dataset.panel === 'holy') return holySite(ui.country);
@@ -454,6 +457,31 @@ export function startGameScreen(map, state, { onNewGame }) {
     const r = spawn(type, at);
     if (r.ok) { production?.close(); production = null; }
   }
+
+  // 모바일 시트: 손잡이를 위로 밀면 펼치고, 아래로 밀면 접거나 닫는다
+  function setExpanded(v) {
+    ui.panelExpanded = v;
+    render();
+    if (ui.country) flyToCountry(ui.country);
+  }
+  let dragY = null;
+  let swallowClick = false;   // 끌기로 처리했으면 이어지는 클릭은 무시
+  panelEl.addEventListener('pointerdown', (e) => { if (e.target.closest('.panel-grip, .panel-head')) dragY = e.clientY; });
+  const onPointerUp = (e) => {
+    if (dragY == null) return;
+    const dy = e.clientY - dragY;
+    dragY = null;
+    if (Math.abs(dy) > 36) {
+      swallowClick = true;
+      setTimeout(() => { swallowClick = false; }, 400);
+    }
+    if (dy < -36 && !ui.panelExpanded) setExpanded(true);
+    else if (dy > 36) {
+      if (ui.panelExpanded) setExpanded(false);
+      else { ui.country = null; ui.unit = null; render(); }
+    }
+  };
+  addEventListener('pointerup', onPointerUp);
 
   // 나라 찾기
   const searchInput = $('[data-search]');
@@ -505,6 +533,7 @@ export function startGameScreen(map, state, { onNewGame }) {
   return {
     destroy() {
       document.removeEventListener('keydown', onKey);
+      removeEventListener('pointerup', onPointerUp);
       dockObserver.disconnect();
       map.bind({});
       map.setReach(null);
