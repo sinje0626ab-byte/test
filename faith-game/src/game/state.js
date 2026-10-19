@@ -1,32 +1,47 @@
-import { GAME } from '../config.js';
+import { GAME, UNITY } from '../config.js';
 import { world } from '../data/loader.js';
-import { createUnit } from '../units/units.js';
+import { seedState } from './rng.js';
 
-export function createState(religion) {
+// 새 게임 상태. 창시 화면에서는 교주 정보만 정하고,
+// 절대 원칙·이름(계시 I)·본거지(계시 II)·울타리(계시 IV)는 계시에서 채운다.
+export function createState({ founder, age, color, emblem, seed }) {
   const countries = {};
   for (const id of world.ids) countries[id] = { followers: 0, aversion: 0, alert: 0, reachedTurn: null, lastDelta: 0 };
-  const state = {
+  return {
     version: GAME.saveVersion,
     turn: 0,
-    religion,
+    religion: { name: '', founder, color, emblem, deity: null, tenets: [], home: null, sanctuary: null, method: null },
+    leader: { name: founder, age, ageMonths: 0, generation: 1, heir: null, rite: null, immortal: false, jailedUntil: null },
     faith: GAME.startFaith,
     countries,
     units: [],
     nextUnitId: 1,
     stage: 'cult',
+    unity: UNITY.start,
+    riskPoints: 0,
+    holySites: {},
+    miracleReadyTurn: 0,
     peakFollowers: 0,
-    history: [],        // 턴별 전 세계 신도 (그래프용)
-    flags: {},          // 2단계 기능 해금 표시
-    extraModifiers: [], // 2단계: 성지·사원·이벤트가 넣는 수정자
+    history: [],
+    flags: {},          // 계시·사건이 남기는 표시 (lockdownUntil, rebrand …)
+    extraModifiers: [], // 계시·사건이 남기는 지속 효과 (story/effects.js 의 ref)
+    story: { done: {}, log: [] },
+    incidents: { next: null, seen: {}, log: [] },
+    rng: seedState(seed),
     result: null,       // 'victory' | 'defeat'
+    defeatReason: null, // 'followers' | 'arrest' | 'death' | 'schism' | 'collapse'
     lastReport: null,
   };
-  countries[religion.home].followers = GAME.startFollowers;
-  countries[religion.home].reachedTurn = 0;
-  for (const type of GAME.startUnits) state.units.push(createUnit(state, type, religion.home));
-  state.peakFollowers = GAME.startFollowers;
-  state.history.push(GAME.startFollowers);
-  return state;
+}
+
+// 계시 II 에서 본거지가 정해지면 첫 신도 3명이 생긴다
+export function settleHome(state, id) {
+  state.religion.home = id;
+  const cs = state.countries[id];
+  cs.followers = GAME.startFollowers;
+  cs.reachedTurn = state.turn;
+  state.peakFollowers = Math.max(state.peakFollowers, GAME.startFollowers);
+  if (!state.history.length) state.history.push(GAME.startFollowers);
 }
 
 export function totalFollowers(state) {

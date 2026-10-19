@@ -34,8 +34,12 @@ export function checkStage(state) {
 }
 
 export function checkResult(state) {
+  if (!state.religion.home) return null;
   const total = totalFollowers(state);
   if (total >= world.totalPop * VICTORY_SHARE) return 'victory';
-  if (total < DEFEAT_FOLLOWERS) return 'defeat';
+  if (total < DEFEAT_FOLLOWERS) {
+    state.defeatReason = 'followers';
+    return 'defeat';
+  }
   return null;
 }

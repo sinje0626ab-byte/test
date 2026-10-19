@@ -13,7 +13,10 @@ export function people(n) {
   return n.toLocaleString('ko-KR');
 }
 
-export const signed = (n) => (n > 0 ? '+' : n < 0 ? '−' : '±') + people(Math.abs(n));
+export const signed = (n) => {
+  n = Math.round(n);
+  return (n > 0 ? '+' : n < 0 ? '−' : '±') + people(Math.abs(n));
+};
 
 // 비율: 작은 값도 의미 있게 보이도록 자릿수를 바꾼다
 export function pct(x) {

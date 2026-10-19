@@ -1,0 +1,30 @@
+import { dateLabel } from '../game/state.js';
+import { esc } from './format.js';
+import { modal } from './toast.js';
+
+// 교단 연대기: 지금까지의 계시와 사건 선택을 다시 본다
+export function showChronicle(state) {
+  const log = state.story.log;
+  const darkTotal = state.riskPoints;
+  modal({
+    title: '교단 연대기',
+    subtitle: `${esc(state.religion.name || '이름 없는 믿음')} · ${esc(state.leader.name)}`,
+    wide: true,
+    content: `
+      <div class="chronicle-summary">
+        <div><small>계시</small><b>${Object.keys(state.story.done).length} / 9</b></div>
+        <div><small>사건</small><b>${state.incidents.log.length}</b></div>
+        <div><small>그림자 장부</small><b class="${darkTotal >= 8 ? 'bad' : ''}">${darkTotal}점</b></div>
+      </div>
+      <ol class="chronicle">${log.slice().reverse().map((e) => `
+        <li class="chronicle-item is-${e.kind}">
+          <span class="chronicle-mark">${e.kind === 'revelation' ? esc(e.numeral) : '·'}</span>
+          <div>
+            <small>${dateLabel(e.turn)} · ${e.kind === 'revelation' ? '계시' : esc(e.kicker ?? '사건')}${e.dark ? ` · <span class="shadow">그림자 ${e.dark}</span>` : ''}</small>
+            <b>${esc(e.title)}</b>
+            ${e.lines.map((l) => `<p>${esc(l)}</p>`).join('')}
+            ${e.outcome ? `<p class="chronicle-outcome">${esc(e.outcome)}</p>` : ''}
+          </div>
+        </li>`).join('') || '<li class="muted">아직 기록이 없습니다.</li>'}</ol>`,
+  });
+}
