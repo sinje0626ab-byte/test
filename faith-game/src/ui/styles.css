@@ -925,3 +925,13 @@ body.is-revelation .game-ui, body.is-revelation .toasts { visibility: hidden; }
   .chronicle-summary { grid-template-columns: repeat(3, 1fr); }
   .incident-head { padding: 22px 18px 6px; }
 }
+
+/* ── 독: 나라별 유닛 ── */
+.country-chip { padding-left: 10px; }
+.country-chip .flag { width: 26px; height: 19px; }
+.back-chip { padding: 6px 12px 6px 8px; }
+.back-chip .icon { width: 16px; height: 16px; transform: rotate(180deg); color: var(--label-2); }
+@media (max-width: 760px) {
+  .country-chip .flag { width: 22px; height: 16px; }
+  .unit-chip small { display: block; font-size: 10px; }
+}

@@ -66,7 +66,7 @@ export function startGameScreen(map, state, { onNewGame }) {
   // ── 그리기 ──
   function render() {
     renderHud(hudEl, state);
-    renderDock(dockEl, state, ui.unit);
+    renderDock(dockEl, state, ui.unit, ui.country);
     if (ui.country) {
       const keep = panelEl.querySelector('.panel-scroll')?.scrollTop ?? 0;
       panelEl.hidden = false;
@@ -434,6 +434,8 @@ export function startGameScreen(map, state, { onNewGame }) {
     if (t.dataset.panel === 'miracle') return miracle(ui.country);
     if (t.dataset.panel === 'holy') return holySite(ui.country);
     if (t.dataset.unit) { selectUnit(t.dataset.unit); return; }
+    if (t.dataset.dockCountry) { selectCountry(t.dataset.dockCountry); return; }
+    if (t.dataset.dock === 'all') { ui.country = null; ui.unit = null; render(); return; }
     if (t.dataset.dock === 'produce') { production = openProduction(state, ui.country, spawnFromSheet); return; }
     if (t.dataset.dock === 'end-turn') return requestNextTurn();
     if (t.dataset.dock === 'act') return act();
