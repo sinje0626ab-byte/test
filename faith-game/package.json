@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "adjacency": "node tools/build-adjacency.mjs",
-    "flags": "node tools/build-flags.mjs"
+    "flags": "node tools/build-flags.mjs",
+    "sim": "node tools/simulate.mjs --table"
   },
   "dependencies": {
     "d3-ease": "^3.0.1",

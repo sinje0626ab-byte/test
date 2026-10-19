@@ -7,7 +7,10 @@ import { initWorld } from './data/loader.js';
 import { createWorldMap } from './map/worldMap.js';
 import { createState } from './game/state.js';
 import { loadGame, saveGame, clearSave } from './game/save.js';
-import { makeReligion } from './religion/founding.js';
+import { makeFounder } from './religion/founding.js';
+import { dueRevelation } from './story/storyEngine.js';
+import { showRevelation } from './story/revelationScreen.js';
+import { setAccent } from './ui/theme.js';
 import { openFounding } from './ui/foundingScreen.js';
 import { showTitle } from './ui/titleScreen.js';
 import { startGameScreen } from './ui/gameScreen.js';
@@ -41,27 +44,37 @@ function title() {
   const saved = loadGame();
   showTitle({
     saved,
-    onContinue: () => play(saved),
+    onContinue: () => begin(saved),
     onNew: found,
   });
 }
 
 function found() {
   openFounding({
-    onDone: (f) => {
-      const state = createState(makeReligion(f));
-      saveGame(state);
-      play(state);
-    },
+    onDone: (f) => begin(createState(makeFounder(f))),
     onCancel: title,
   });
+}
+
+// 계시 I·II (원칙·이름·본거지) 는 지도를 열기 전에 받는다. 중간에 나갔다 와도 이어진다.
+function begin(state) {
+  saveGame(state);
+  setAccent(state.religion.color);
+  if (!state.story.done.II) {
+    const ch = dueRevelation(state);
+    if (ch) {
+      showRevelation(state, ch, { onDone: () => begin(state) });
+      return;
+    }
+  }
+  play(state);
 }
 
 function play(state) {
   screen?.destroy();
   setFavicon(state.religion);
   screen = startGameScreen(map, state, {
-    onNewGame: () => { clearSave(); screen?.destroy(); screen = null; idleMap(); found(); },
+    onNewGame: () => { clearSave(); screen?.destroy(); screen = null; idleMap(); setFavicon(null); found(); },
   });
   map.spin(false);
   screen.focusCountry(state.religion.home, 2.4); // 시작할 때는 주변 지역까지 보이게

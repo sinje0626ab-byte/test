@@ -9,6 +9,6 @@
     "judaism":      { "name": "유대교", "color": "#9a92c4" },
     "folk":         { "name": "민간·전통 신앙", "color": "#b98f86" },
     "other":        { "name": "기타 종교", "color": "#a3aab3" },
-    "none":         { "name": "무종교", "color": "#c9ccd1" }
+    "none":         { "name": "무종교", "color": "#86c2cf" }
   }
 }

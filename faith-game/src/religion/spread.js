@@ -34,7 +34,7 @@ export function resistance(state, id) {
   const { existing } = composition(state, id);
   let r = 0;
   for (const [key, v] of Object.entries(existing)) r += v * cohesion(key);
-  r *= 1 + state.countries[id].aversion;
+  r *= 1 + state.countries[id].aversion * RESISTANCE.aversionWeight;
   r *= mul(state, 'resistance', c);
   return Math.min(RESISTANCE.max, Math.max(0, r));
 }
@@ -50,13 +50,26 @@ export function pool(state, id) {
   return Math.max(0, c.pop * SPREAD.maxShare - state.countries[id].followers);
 }
 
+// 전 세계 신도 (state.js 와 순환 참조를 피하려고 여기서 직접 센다)
+function worldFollowers(state) {
+  let t = 0;
+  for (const k in state.countries) t += state.countries[k].followers;
+  return t;
+}
+
+// 도달력: 조직이 클수록 멀리 닿지만, 그 나라 인구보다 크게는 못 간다
+export function reach(state, id) {
+  const org = SPREAD.reachK * (worldFollowers(state) + SPREAD.reachSeed) ** SPREAD.reachExponent;
+  return Math.min(pool(state, id) ** SPREAD.popExponent, org);
+}
+
 // ── 전파 공식 ──
-// 전파량 = 유닛 기본값 × 교리 보정 × (1 - 저항력) × 자유도 보정 × (개종 가능 인구)^popExponent
+// 전파량 = 유닛 기본값 × 교리·단계 보정 × (1 - 저항력) × 자유도 보정 × 도달력
 export function spreadAmount(state, id, base) {
   const c = world.countries[id];
   const p = pool(state, id);
   if (p <= 0) return 0;
-  const amount = base * mul(state, 'unitPower', c, share(state, id)) * (1 - resistance(state, id)) * freedomMod(id) * p ** SPREAD.popExponent;
+  const amount = base * mul(state, 'unitPower', c, share(state, id)) * (1 - resistance(state, id)) * freedomMod(id) * reach(state, id);
   return Math.min(p, amount);
 }
 

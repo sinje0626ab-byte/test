@@ -29,6 +29,8 @@ export function createWorldMap(container, topology) {
   const graticule = svg.append('path').attr('class', 'map-graticule').datum(geoGraticule10());
   const countryLayer = svg.append('g').attr('class', 'map-countries');
   const shadeLayer = svg.append('path').attr('class', 'map-shade').attr('fill', 'url(#globe-shade)');
+  const markLayer = svg.append('g').attr('class', 'map-marks');
+  const fxLayer = svg.append('g').attr('class', 'map-fx');
   const unitLayer = svg.append('g').attr('class', 'map-units');
 
   const projection = geoOrthographic().precision(0.6).clipAngle(90);
@@ -62,6 +64,8 @@ export function createWorldMap(container, topology) {
     graticule.attr('d', path);
     paths.attr('d', path);
     placeUnits();
+    placeMarks();
+    placeFx();
   }
   const requestDraw = () => { if (!frame) frame = requestAnimationFrame(draw); };
 
@@ -252,6 +256,82 @@ export function createWorldMap(container, topology) {
     });
   }
 
+  // ── 표시: 성지(빛나는 점)와 활동 금지(붉은 테두리) ──
+  let holyIds = [];
+  function setMarks(holy = [], banned = []) {
+    holyIds = holy;
+    const bannedSet = new Set(banned);
+    paths.classed('is-banned', (d) => bannedSet.has(d.id));
+    const sel = markLayer.selectAll('g.holy-mark').data(holyIds, (d) => d);
+    sel.exit().remove();
+    const g = sel.enter().append('g').attr('class', 'holy-mark');
+    g.append('circle').attr('class', 'holy-glow').attr('r', 9);
+    g.append('path').attr('class', 'holy-star').attr('d', 'M0-6 1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6Z');
+    placeMarks();
+  }
+  function placeMarks() {
+    const center = [-view.rotate[0], -view.rotate[1]];
+    markLayer.selectAll('g.holy-mark').each(function (id) {
+      const g = anchorGeo.get(id);
+      const el = select(this);
+      if (!g || geoDistance(g, center) > Math.PI / 2 - 0.05) { el.attr('display', 'none'); return; }
+      const [x, y] = projection(g);
+      el.attr('display', null).attr('transform', `translate(${x},${y - 16})`);
+    });
+  }
+
+  // ── 연출: 전파 파동 · 새 나라 진입 · 압수수색 · 성지 ──
+  // 지구가 돌아도 그 나라에 붙어 있도록 매 프레임 위치를 다시 잡는다
+  const fx = [];
+  let fxFrame = 0;
+  const FX = {
+    spread: { rings: 2, dur: 1300, r: 34, cls: 'fx-spread' },
+    burst: { rings: 3, dur: 1700, r: 70, cls: 'fx-burst' },
+    new: { rings: 2, dur: 2200, r: 46, cls: 'fx-new', label: true },
+    raid: { rings: 2, dur: 1600, r: 40, cls: 'fx-raid' },
+    holy: { rings: 3, dur: 2000, r: 56, cls: 'fx-holy' },
+  };
+  function pulse(id, kind = 'spread', text = '') {
+    const k = FX[kind] ?? FX.spread;
+    if (!anchorGeo.has(id) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const g = fxLayer.append('g').attr('class', `fx ${k.cls}`);
+    const rings = Array.from({ length: k.rings }, () => g.append('circle'));
+    const label = k.label && text ? g.append('text').attr('class', 'fx-label').text(text) : null;
+    fx.push({ id, k, g, rings, label, t0: performance.now() });
+    if (!fxFrame) fxFrame = requestAnimationFrame(tickFx);
+  }
+  function tickFx(now) {
+    fxFrame = 0;
+    placeFx(now);
+    if (fx.length) fxFrame = requestAnimationFrame(tickFx);
+  }
+  function placeFx(now = performance.now()) {
+    const center = [-view.rotate[0], -view.rotate[1]];
+    for (let i = fx.length - 1; i >= 0; i--) {
+      const f = fx[i];
+      const t = (now - f.t0) / f.k.dur;
+      if (t >= 1) { f.g.remove(); fx.splice(i, 1); continue; }
+      const geo = anchorGeo.get(f.id);
+      if (geoDistance(geo, center) > Math.PI / 2 - 0.05) { f.g.attr('display', 'none'); continue; }
+      const [x, y] = projection(geo);
+      f.g.attr('display', null).attr('transform', `translate(${x},${y})`);
+      f.rings.forEach((c, j) => {
+        const tt = Math.max(0, Math.min(1, t * 1.25 - j * 0.22));
+        const e = 1 - (1 - tt) ** 3;
+        c.attr('r', 4 + e * f.k.r).attr('opacity', tt <= 0 ? 0 : (1 - tt) * 0.9);
+      });
+      if (f.label) f.label.attr('opacity', t < 0.15 ? t / 0.15 : t > 0.7 ? (1 - t) / 0.3 : 1).attr('y', -20 - t * 10);
+    }
+  }
+
+  // 단계 상승: 지구 테두리가 한 번 빛난다
+  function flash() {
+    svg.classed('is-flash', false);
+    void svg.node().getBoundingClientRect();
+    svg.classed('is-flash', true);
+    setTimeout(() => svg.classed('is-flash', false), 2400);
+  }
+
   // 프랑스처럼 해외 영토가 있는 나라는 가장 큰 땅덩이 중심에 표시한다
   function anchorOf(f) {
     const g = f.geometry;
@@ -283,5 +363,5 @@ export function createWorldMap(container, topology) {
   resize();
   syncZoom();
 
-  return { bind, setFill, setSelected, setReach, setUnits, focus, zoomBy, resetView, spin, resize, ids: () => features.map((f) => f.id) };
+  return { bind, setFill, setSelected, setReach, setUnits, setMarks, pulse, flash, focus, zoomBy, resetView, spin, resize, ids: () => features.map((f) => f.id) };
 }
