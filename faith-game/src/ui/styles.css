@@ -935,3 +935,12 @@ body.is-revelation .game-ui, body.is-revelation .toasts { visibility: hidden; }
   .country-chip .flag { width: 22px; height: 16px; }
   .unit-chip small { display: block; font-size: 10px; }
 }
+
+/* 계시: 이전 버튼 */
+.rv-back {
+  position: fixed; z-index: 2; left: max(14px, env(safe-area-inset-left)); top: max(14px, env(safe-area-inset-top));
+  height: 36px; padding: 0 14px; border-radius: 18px; font-family: var(--serif); font-size: 15px; letter-spacing: 0.04em;
+  color: var(--rv-ink); background: rgba(14, 12, 9, 0.88); border: 1px solid rgba(243, 223, 176, 0.25);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: border-color 0.2s, background 0.2s;
+}
+.rv-back:hover { border-color: rgba(243, 223, 176, 0.6); background: rgba(40, 32, 20, 0.92); }
