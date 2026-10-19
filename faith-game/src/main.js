@@ -30,6 +30,7 @@ let screen = null;
 function idleMap() {
   const { land } = mapTheme();
   map.setFill(() => land);
+  map.spin(true);
 }
 
 function title() {
@@ -51,7 +52,6 @@ function found() {
       const state = createState(makeReligion(f));
       saveGame(state);
       play(state);
-      map.focus(f.home, 2.5);
     },
     onCancel: title,
   });
@@ -63,6 +63,8 @@ function play(state) {
   screen = startGameScreen(map, state, {
     onNewGame: () => { clearSave(); screen?.destroy(); screen = null; idleMap(); found(); },
   });
+  map.spin(false);
+  screen.focusCountry(state.religion.home, 2.4); // 시작할 때는 주변 지역까지 보이게
   if (import.meta.env.DEV) window.__game = screen;
 }
 

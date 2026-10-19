@@ -8,7 +8,10 @@
   --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
 
   --bg: #eef0f3;
-  --ocean: #e4e8ee;
+  --ocean: #dfe5ec;
+  --graticule: rgba(60, 60, 67, 0.07);
+  --shade-hi: 0.22;
+  --shade-lo: 0.1;
   --land: #cfd4db;
   --border-line: rgba(255, 255, 255, 0.9);
   --surface: rgba(255, 255, 255, 0.78);
@@ -42,7 +45,10 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000000;
-    --ocean: #0e1013;
+    --ocean: #14181e;
+    --graticule: rgba(255, 255, 255, 0.05);
+    --shade-hi: 0.07;
+    --shade-lo: 0.35;
     --land: #30343b;
     --border-line: rgba(0, 0, 0, 0.6);
     --surface: rgba(30, 30, 32, 0.74);
@@ -85,10 +91,16 @@ button:disabled { cursor: default; }
 .muted { color: var(--label-2); }
 [hidden] { display: none !important; }
 
-/* ── 지도 ── */
+/* ── 지도 (지구본) ── */
 #map { position: fixed; inset: 0; }
-.world-map { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
-.map-sphere { fill: var(--ocean); }
+.world-map { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
+.world-map:active { cursor: grabbing; }
+.map-sphere { fill: var(--ocean); filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.14)); }
+.map-graticule { fill: none; stroke: var(--graticule); stroke-width: 0.6px; pointer-events: none; }
+.map-shade { pointer-events: none; }
+.shade-hi { stop-color: #fff; stop-opacity: var(--shade-hi); }
+.shade-mid { stop-color: #fff; stop-opacity: 0; }
+.shade-lo { stop-color: #000; stop-opacity: var(--shade-lo); }
 .country {
   fill: var(--land);
   stroke: var(--border-line);
@@ -412,8 +424,7 @@ button:disabled { cursor: default; }
 /* ── 시작 화면 ── */
 .title-screen {
   position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 24px;
-  background: color-mix(in srgb, var(--bg) 55%, transparent);
-  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--bg) 78%, transparent), color-mix(in srgb, var(--bg) 20%, transparent));
   animation: fade 0.6s var(--ease);
 }
 .title-card { width: min(420px, 100%); text-align: center; }
@@ -593,3 +604,13 @@ button:disabled { cursor: default; }
   .hud-date .emblem-badge { width: 30px; height: 30px; border-radius: 9px; }
   .hud-date .emblem-badge .icon { width: 18px; height: 18px; }
 }
+
+/* ── 국기 ── */
+.flag { display: inline-block; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18); flex: none; vertical-align: middle; background: var(--fill); }
+.flag-none { background: var(--fill-2); }
+.flag-sm { width: 20px; height: 15px; border-radius: 2.5px; margin-right: 7px; }
+.flag-md { width: 28px; height: 21px; }
+.flag-lg { width: 44px; height: 33px; border-radius: 5px; box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.12); }
+.panel-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.flag-line { display: inline-flex; align-items: center; }
+.map-tooltip .flag-sm { margin-top: -2px; }

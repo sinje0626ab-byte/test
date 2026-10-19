@@ -14,6 +14,7 @@ import { unitPins } from '../map/unitLayer.js';
 import { renderHud } from './hud.js';
 import { renderCountryPanel, tooltipHtml } from './countryPanel.js';
 import { renderDock } from './dock.js';
+import { flagImg } from './flags.js';
 import { openProduction } from './production.js';
 import { toast, modal, confirmModal } from './toast.js';
 import { setAccent, mapTheme, onSchemeChange } from './theme.js';
@@ -89,6 +90,25 @@ export function startGameScreen(map, state, { onNewGame }) {
 
   const commit = () => { saveGame(state); render(); };
 
+  // 패널·독·상단 바를 피한 '보이는 지도 영역'의 중심
+  function visibleCenter() {
+    const w = innerWidth, h = innerHeight;
+    const top = hudEl.getBoundingClientRect().bottom + 8;
+    const dockTop = dockEl.getBoundingClientRect().top;
+    let left = 0, right = w, bottom = dockTop;
+    if (!panelEl.hidden) {
+      const r = panelEl.getBoundingClientRect();
+      if (w > 760) right = r.left;
+      else bottom = Math.min(bottom, r.top);
+    }
+    return [(left + right) / 2, (top + bottom) / 2];
+  }
+
+  // 나라를 보이는 영역 가운데로 살며시 옮긴다
+  function flyToCountry(id, scale = null) {
+    requestAnimationFrame(() => map.focus(id, { center: visibleCenter(), scale }));
+  }
+
   // ── 선택 ──
   function selectCountry(id) {
     const unit = state.units.find((u) => u.id === ui.unit);
@@ -97,12 +117,14 @@ export function startGameScreen(map, state, { onNewGame }) {
       if (r.ok) {
         ui.country = id;
         commit();
+        flyToCountry(id);
         return;
       }
     }
     if (unit && id !== unit.at) ui.unit = null;
     ui.country = id;
     render();
+    flyToCountry(id);
   }
 
   function selectUnit(id) {
@@ -110,6 +132,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     const unit = state.units.find((u) => u.id === ui.unit);
     if (unit) ui.country = unit.at;
     render();
+    if (unit) flyToCountry(unit.at);
   }
 
   // ── 행동 ──
@@ -305,15 +328,15 @@ export function startGameScreen(map, state, { onNewGame }) {
     if (t.dataset.dock === 'deselect') { ui.unit = null; render(); return; }
     if (t.dataset.dock === 'focus-unit') {
       const u = state.units.find((x) => x.id === ui.unit);
-      if (u) map.focus(u.at);
+      if (u) flyToCountry(u.at);
       return;
     }
     if (t.dataset.go) {
       ui.country = t.dataset.go;
-      map.focus(t.dataset.go);
       $('[data-search]').value = '';
       $('.search-results').hidden = true;
       render();
+      flyToCountry(t.dataset.go);
     }
   });
 
@@ -331,7 +354,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     const hits = world.ids.filter((id) => world.countries[id].name.includes(q)).slice(0, 8);
     results.hidden = false;
     results.innerHTML = hits.length
-      ? hits.map((id, i) => `<button data-go="${id}" class="${i === 0 ? 'is-active' : ''}">${esc(world.countries[id].name)}<small>${people(state.countries[id].followers)}명</small></button>`).join('')
+      ? hits.map((id, i) => `<button data-go="${id}" class="${i === 0 ? 'is-active' : ''}"><span class="flag-line">${flagImg(world.countries[id], 'flag flag-sm')}${esc(world.countries[id].name)}</span><small>${people(state.countries[id].followers)}명</small></button>`).join('')
       : '<div class="row muted" style="font-size:14px">결과 없음</div>';
   });
   searchInput.addEventListener('keydown', (e) => {
@@ -378,6 +401,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     },
     state,
     // 개발 확인용
+    focusCountry: flyToCountry,
     debug: { nextTurn, spawn, selectCountry, selectUnit, act, ui, unitCost: (t) => unitCost(state, t) },
   };
 }
