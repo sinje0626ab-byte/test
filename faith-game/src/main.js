@@ -49,21 +49,35 @@ function title() {
   });
 }
 
-function found() {
+function found(initial = null) {
   openFounding({
+    initial,
     onDone: (f) => begin(createState(makeFounder(f))),
     onCancel: title,
   });
 }
 
 // 계시 I·II (원칙·이름·본거지) 는 지도를 열기 전에 받는다. 중간에 나갔다 와도 이어진다.
-function begin(state) {
+// history: 앞 계시들의 { before: 받기 전 상태(JSON), picks: 고른 답 }. '이전'을 누르면 직전 계시 전으로 되돌리고 답을 채워 다시 연다.
+// 계시 I 에서 '이전'이면 교주 정보 화면으로 (입력했던 값 그대로).
+function begin(state, history = [], { quick = false, picks = null } = {}) {
   saveGame(state);
   setAccent(state.religion.color);
   if (!state.story.done.II) {
     const ch = dueRevelation(state);
     if (ch) {
-      showRevelation(state, ch, { onDone: () => begin(state) });
+      const before = JSON.stringify(state);
+      const canBack = history.length > 0 || ch.id === 'I';
+      showRevelation(state, ch, {
+        quick,
+        picks,
+        onDone: (_, chosen) => begin(state, [...history, { before, picks: chosen }]),
+        onBack: canBack ? () => {
+          const prev = history.at(-1);
+          if (prev) begin(JSON.parse(prev.before), history.slice(0, -1), { quick: true, picks: prev.picks });
+          else found({ founder: state.leader.name, age: state.leader.age, color: state.religion.color, emblem: state.religion.emblem });
+        } : undefined,
+      });
       return;
     }
   }

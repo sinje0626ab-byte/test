@@ -12,9 +12,9 @@ const STEPS = [
   { key: 'symbol', label: '상징', title: '상징', subtitle: '언젠가 전 세계가 알아볼 색과 문양입니다.' },
 ];
 
-export function openFounding({ onDone, onCancel }) {
+export function openFounding({ onDone, onCancel, initial = null }) {
   const { min, max } = GAME.leaderAge;
-  const f = { founder: '', age: GAME.leaderAge.default, color: COLOR_PRESETS[0], emblem: DEFAULT_EMBLEM };
+  const f = { founder: '', age: GAME.leaderAge.default, color: COLOR_PRESETS[0], emblem: DEFAULT_EMBLEM, ...(initial ?? {}) };
   let step = 0;
   setAccent(f.color);
 
