@@ -23,6 +23,7 @@ export function initWorld(countriesJson, adjacencyJson, religionsJson) {
     const c = {
       id,
       name: raw.name,
+      iso2: raw.iso2 ?? null,
       region: raw.region,
       pop: raw.pop,
       urban: raw.urban ?? def.urban,

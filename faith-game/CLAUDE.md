@@ -12,7 +12,8 @@
 - 승리: 세계 인구의 30% / 패배: 신도 0명
 
 ## 2. 기술·배포
-- Vite + 바닐라 JS (ES 모듈), 지도는 d3-geo/d3-zoom + world-atlas `countries-110m`
+- Vite + 바닐라 JS (ES 모듈), 지도는 d3-geo(정사영 지구본)/d3-zoom + world-atlas `countries-110m`
+- 국기: flag-icons(MIT) SVG를 `npm run flags`로 `public/flags/{iso2}.svg`에 복사해 함께 배포한다 (북키프로스·소말릴란드는 국기 없음)
 - 저장: localStorage `faith-game-save` (매 행동·매 턴 자동 저장, `saveVersion` + 마이그레이션 표)
 - 레포 루트가 GitHub Pages로 서비스된다. 소스는 `faith-game/`, 빌드 결과는 **레포 루트 `faith/`** (`base: './'`). 배포물은 손으로 고치지 않고 `npm run build`로 다시 만든다.
 
@@ -22,6 +23,7 @@ npm install
 npm run dev        # 개발 서버
 npm run build      # ../faith/ 로 빌드
 npm run adjacency  # 국가 연결(육로·해로) 다시 계산
+npm run flags      # countries.json에 iso2를 채우고 국기 SVG 복사
 node tools/simulate.mjs 410 cosmos healing,open,communal 400   # 밸런스 확인 (자동 플레이)
 ```
 
@@ -31,7 +33,7 @@ src/
   config.js        ★ 모든 밸런스 수치 (전파·성장·이탈·유닛·단계·신앙 대상·교리)
   main.js          부트: 데이터 로드 → 지도 → 시작 화면
   data/            countries.json(나라 175곳) · religions.json · adjacency.json(생성물) · loader.js · ids.js
-  map/             worldMap.js(그리기 전용) · colorModes.js(색칠 모드) · unitLayer.js(유닛 핀)
+  map/             worldMap.js(지구본: 끌어 돌리기·관성·휠/핀치 확대·나라로 날아가기) · colorModes.js(색칠 모드) · unitLayer.js(유닛 핀)
   game/            state.js · turn.js(턴 단계 배열) · stages.js · save.js · events.js
   religion/        deities.js · tenets.js · emblems.js(문양 42종) · modifiers.js(수정자 합산) · spread.js(전파 공식) · founding.js
   units/           unitTypes.js · units.js(생산·이동·행동) · abilities.js(능력 표)
@@ -65,5 +67,6 @@ tools/             build-adjacency.mjs · simulate.mjs
 - 라이트/다크는 시스템 설정을 따른다. 색은 `styles.css`의 토큰만 쓴다.
 - PC: 상단 바 / 왼쪽 지도 도구 / 오른쪽 나라 패널 / 하단 독. 모바일(≤760px): 패널은 독 위 시트, 독 높이는 `--dock-h`로 전달.
 - 모든 UI 문구는 한국어.
+- 지도는 3D 지구본. 나라를 고르면 대권을 따라 돌면서 '패널·독을 피한 보이는 영역'의 가운데로 날아간다(먼 거리는 살짝 멀어졌다 다가옴). 시작 화면에서는 천천히 돈다.
 - 문양(`emblems.js`): 24×24 선 아이콘, 채움은 일부만. 자연·천체·기하 모티프만 쓰고 기존 종교의 상징(십자가·초승달·육각별·법륜·옴 등)은 넣지 않는다. 종교 색 바탕 + 흰 문양으로 HUD·패널·알림·파비콘에 쓰인다.
 - 저장 v2에서 `religion.emblem`이 생겼다 (v1 저장은 '태양'으로 이어진다).

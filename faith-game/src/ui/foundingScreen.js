@@ -8,6 +8,7 @@ import { difficulty, baseResistance } from '../religion/spread.js';
 import { esc, people, pct } from './format.js';
 import { icon } from './icons.js';
 import { setAccent } from './theme.js';
+import { flagImg } from './flags.js';
 
 const STEPS = [
   { key: 'identity', label: '이름', title: '새로운 종교', subtitle: '세상에 알릴 이름과 상징 색을 정하세요.' },
@@ -121,7 +122,7 @@ export function openFounding({ onDone, onCancel }) {
           <div><small>신앙 대상</small><b>${esc(DEITIES[f.deity].name)}</b></div>
           <div><small>문양</small><b>${emblemOf(f.emblem).name}</b></div>
           <div><small>상징 색</small><b><span class="dot" style="display:inline-block;background:${f.color};margin-right:6px"></span>${f.color.toUpperCase()}</b></div>
-          <div><small>시작 국가</small><b>${esc(c.name)}</b> <span class="pill tone-${d.tone}">${d.label}</span></div>
+          <div><small>시작 국가</small><b class="flag-line">${flagImg(c, 'flag flag-sm')}${esc(c.name)}</b> <span class="pill tone-${d.tone}">${d.label}</span></div>
           <div class="wide"><small>교리</small><b>${f.tenets.map((t) => esc(TENETS[t].name)).join(' · ')}</b></div>
           <div><small>종교 자유도</small><b class="num">${c.freedom}</b></div>
           <div><small>기존 종교 저항력</small><b class="num">${pct(baseResistance(f.home))}</b></div>
@@ -152,6 +153,7 @@ export function openFounding({ onDone, onCancel }) {
       const d = score.get(id);
       return `<button class="country-row" data-home="${id}" aria-pressed="${f.home === id}">
         <span class="radio">${icon('check')}</span>
+        ${flagImg(c, 'flag flag-md')}
         <span class="grow"><b>${esc(c.name)}</b><small>${esc(c.region)} · 인구 ${people(c.pop)} · 자유도 ${c.freedom}</small></span>
         <span class="pill tone-${d.tone}">${d.label}</span></button>`;
     }).join('');

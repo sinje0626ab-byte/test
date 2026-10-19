@@ -5,6 +5,7 @@ import { SPAWN_MIN_FOLLOWERS } from '../config.js';
 import { esc, people, pct, signed } from './format.js';
 import { icon, rawIcon } from './icons.js';
 import { emblemSvg } from '../religion/emblems.js';
+import { flagImg } from './flags.js';
 
 // 나라 정보 패널
 export function renderCountryPanel(el, state, id) {
@@ -23,7 +24,7 @@ export function renderCountryPanel(el, state, id) {
   el.innerHTML = `
     <div class="panel-scroll">
       <div class="panel-head">
-        <div><h2>${esc(c.name)}</h2><p>${esc(c.region)} · 인구 ${people(c.pop)}명</p></div>
+        <div class="panel-title">${flagImg(c, 'flag flag-lg')}<div><h2>${esc(c.name)}</h2><p>${esc(c.region)} · 인구 ${people(c.pop)}명</p></div></div>
         <button class="icon-btn panel-close" data-panel="close" aria-label="닫기">${icon('close')}</button>
       </div>
 
@@ -81,5 +82,5 @@ export function unitStatus(u) {
 export function tooltipHtml(state, id) {
   const c = world.countries[id];
   const s = share(state, id);
-  return `<b>${esc(c.name)}</b> <span class="muted">${s > 0 ? `${people(state.countries[id].followers)}명 · ${pct(s)}` : '신도 없음'}</span>`;
+  return `${flagImg(c, 'flag flag-sm')}<b>${esc(c.name)}</b> <span class="muted">${s > 0 ? `${people(state.countries[id].followers)}명 · ${pct(s)}` : '신도 없음'}</span>`;
 }
