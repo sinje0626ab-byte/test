@@ -1,15 +1,20 @@
 import { icon } from './icons.js';
 import { esc } from './format.js';
+import { stamp } from './portrait.js';
+import { CAST } from '../story/cast.js';
 
-// 위에서 내려오는 알림 배너
+// 위에서 내려오는 알림 쪽지
+// who 가 있으면 그 사람 도장과 대사(say)로 말한다: toast({ who: 'taesik', say: '금고에 그 돈 없어요.' })
 let host;
-// key가 같은 배너가 떠 있으면 그것을 바꿔 끼운다
-export function toast({ title, body = '', tone = 'info', iconName = 'rise', duration = 3600, key = null }) {
+// key가 같은 쪽지가 떠 있으면 그것을 바꿔 끼운다
+export function toast({ title = '', body = '', tone = 'info', iconName = 'rise', duration = 3600, key = null, who = null, say = '', state = null }) {
   host ??= Object.assign(document.body.appendChild(document.createElement('div')), { className: 'toasts' });
   const el = document.createElement('div');
-  el.className = `toast glass tone-${tone}`;
+  el.className = `toast tone-${tone} ${who ? 'is-say' : ''}`;
   el.setAttribute('role', 'status');
-  el.innerHTML = `<div class="toast-mark">${icon(iconName)}</div><div><b>${esc(title)}</b>${body ? `<span>${esc(body)}</span>` : ''}</div>`;
+  el.innerHTML = who
+    ? `<div class="toast-mark">${stamp(who, { state, size: 34 })}</div><div><b>${esc(title || CAST[who]?.short || '')}</b><span class="toast-say">"${esc(say)}"</span>${body ? `<span>${esc(body)}</span>` : ''}</div>`
+    : `<div class="toast-mark">${icon(iconName)}</div><div><b>${esc(title)}</b>${body ? `<span>${esc(body)}</span>` : ''}</div>`;
   const prev = key && host.querySelector(`[data-key="${key}"]`);
   if (key) el.dataset.key = key;
   if (prev) { prev.replaceWith(el); el.style.animationName = 'none'; }
@@ -61,6 +66,6 @@ export function confirmModal({ title, text, confirmLabel = '확인', onConfirm, 
   return modal({
     title,
     content: `<p class="modal-text" style="margin-top:0">${esc(text)}</p>`,
-    actions: [{ label: '취소' }, { label: confirmLabel, kind: danger ? 'primary danger' : 'primary', onClick: onConfirm }],
+    actions: [{ label: '관둔다' }, { label: confirmLabel, kind: danger ? 'primary danger' : 'primary', onClick: onConfirm }],
   });
 }

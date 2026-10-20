@@ -1,11 +1,11 @@
 import { world } from '../data/loader.js';
 import { VICTORY_SHARE, PRESENCE_MIN } from '../config.js';
-import { totalFollowers, presenceCount, dateLabel } from '../game/state.js';
+import { totalFollowers, presenceCount, dateLabel, checkAbroad } from '../game/state.js';
 import { endTurn } from '../game/turn.js';
 import { stageOf, stageProgress } from '../game/stages.js';
 import { saveGame } from '../game/save.js';
 import { emit } from '../game/events.js';
-import { DEFEAT_TEXT, isJailed } from '../game/leader.js';
+import { DEFEAT_TEXT, VICTORY_TEXT, isJailed } from '../game/leader.js';
 import { performMiracle, buildHolySite } from '../game/actions.js';
 import { spawnUnit, moveUnit, actUnit, reachable, unitCost, idleUnits } from '../units/units.js';
 import { UNIT_TYPES } from '../units/unitTypes.js';
@@ -29,6 +29,11 @@ import { setAccent, mapTheme, onSchemeChange } from './theme.js';
 import { esc, people, pct, josa } from './format.js';
 import { icon } from './icons.js';
 import { emblemSvg } from '../religion/emblems.js';
+import { CAST, isIn, castOf } from '../story/cast.js';
+import { mood, shadowWord } from '../story/words.js';
+import { showLedger } from './ledger.js';
+import { stamp } from './portrait.js';
+import { blocked, idleLine, stageLine, JOIN_LINES } from './voice.js';
 
 // 게임 화면. 상태를 들고 있고, 입력을 받아 게임 로직을 부른 뒤 다시 그린다.
 export function startGameScreen(map, state, { onNewGame }) {
@@ -44,7 +49,7 @@ export function startGameScreen(map, state, { onNewGame }) {
       <div class="tool-card glass">
         <div class="segmented" role="group" aria-label="지도 색칠">${Object.entries(COLOR_MODES).map(([k, m]) => `<button data-mode="${k}">${m.label}</button>`).join('')}</div>
       </div>
-      <div class="tool-card glass search">${icon('search')}<input type="search" placeholder="나라 찾기" data-search autocomplete="off" aria-label="나라 찾기"><div class="search-results" hidden></div></div>
+      <div class="tool-card glass search">${icon('search')}<input type="search" placeholder="나라 이름" data-search autocomplete="off" aria-label="나라 찾기"><div class="search-results" hidden></div></div>
       <div class="tool-card glass zoom-card">
         <button class="icon-btn" data-zoom="in" aria-label="확대">${icon('plus')}</button>
         <button class="icon-btn" data-zoom="out" aria-label="축소">${icon('minus')}</button>
@@ -62,8 +67,13 @@ export function startGameScreen(map, state, { onNewGame }) {
   const dockEl = $('[data-dock-root]');
   const tooltip = $('.map-tooltip');
   // 독 높이가 바뀌면(유닛 선택 등) 모바일 시트가 그 위에 놓이도록 알려 준다
-  const dockObserver = new ResizeObserver(() => root.style.setProperty('--dock-h', `${dockEl.offsetHeight}px`));
+  // 주보 머리 높이도 같은 식으로 (지도 도구·패널·알림이 그 아래에 놓인다)
+  const dockObserver = new ResizeObserver(() => {
+    root.style.setProperty('--dock-h', `${dockEl.offsetHeight}px`);
+    document.documentElement.style.setProperty('--hud-h', `${hudEl.offsetHeight}px`);
+  });
   dockObserver.observe(dockEl);
+  dockObserver.observe(hudEl);
 
   // ── 그리기 ──
   function render() {
@@ -95,7 +105,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     const lg = mode.legend(state, theme);
     $('[data-legend]').innerHTML = lg.type === 'gradient'
       ? `<div class="legend-title">${esc(state.religion.name)} 신도 비율</div><div class="legend-bar" style="background:linear-gradient(90deg, ${lg.from}, ${lg.to})"></div><div class="legend-ticks">${lg.labels.map((l) => `<span>${l}</span>`).join('')}</div>`
-      : `<div class="legend-title">가장 큰 종교</div><div class="legend-swatches">${lg.items.map((i) => `<span><i style="background:${i.color}"></i>${esc(i.label)}</span>`).join('')}</div>`;
+      : `<div class="legend-title">나라마다 제일 많이 믿는 것</div><div class="legend-swatches">${lg.items.map((i) => `<span><i style="background:${i.color}"></i>${esc(i.label)}</span>`).join('')}</div>`;
   }
 
   const commit = () => { saveGame(state); render(); };
@@ -153,11 +163,11 @@ export function startGameScreen(map, state, { onNewGame }) {
     const name = UNIT_TYPES[unit.type].name;
     const at = unit.at;
     const r = actUnit(state, unit.id);
-    if (!r.ok) { toast({ title: r.message, tone: 'bad', iconName: 'alert' }); return; }
-    const parts = [`${world.countries[at].name}에서 ${people(r.converted)}명이 새로 믿게 되었습니다.`];
-    if (r.aversionCut) parts.push(`거부감 −${Math.round(r.aversionCut * 100)}`);
-    if (r.consumed) parts.push(`${josa(name, '은/는')} 임무를 마쳤습니다.`);
-    toast({ title: `${name} 활동`, body: parts.join(' '), iconName: 'people' });
+    if (!r.ok) { toast(blocked(state, r.message)); return; }
+    const parts = [`${world.countries[at].name}에서 ${people(r.converted)}명이 새로 왔다.`];
+    if (r.aversionCut) parts.push('동네 인심이 조금 풀렸다.');
+    if (r.consumed) parts.push(unit.type === 'witness' ? `${josa(name, '은/는')} 목이 쉬어서 끝났다.` : `${josa(name, '은/는')} 지쳐서 돌아왔다.`);
+    toast({ title: `${name} 다녀옴`, body: parts.join(' '), iconName: 'people' });
     map.pulse(at, unit.type === 'witness' ? 'burst' : 'spread');
     if (r.consumed) ui.unit = null;
     commit();
@@ -167,14 +177,14 @@ export function startGameScreen(map, state, { onNewGame }) {
     const unit = state.units.find((u) => u.id === ui.unit);
     if (!unit) return;
     unit.auto = !unit.auto;
-    toast({ title: unit.auto ? '자동 임무 켜짐' : '자동 임무 꺼짐', body: unit.auto ? '턴을 넘길 때 제자리에서 알아서 활동합니다.' : '직접 지시할 때만 움직입니다.', iconName: 'check', duration: 1800, key: 'auto' });
+    toast({ title: unit.auto ? '알아서 하기 켬' : '알아서 하기 끔', body: unit.auto ? '한 달이 지날 때마다 그 자리에서 알아서 활동한다.' : '시킬 때만 움직인다.', iconName: 'check', duration: 1800, key: 'auto' });
     commit();
   }
 
   function spawn(type, at) {
     const r = spawnUnit(state, type, at);
-    if (!r.ok) { toast({ title: r.message, tone: 'bad', iconName: 'alert' }); return r; }
-    toast({ title: `${UNIT_TYPES[type].name} 합류`, body: `${world.countries[at].name}에서 활동을 시작합니다.`, iconName: 'plus', duration: 2400 });
+    if (!r.ok) { toast(blocked(state, r.message)); return r; }
+    toast({ title: `${UNIT_TYPES[type].name} 합류`, body: `${world.countries[at].name}에서 시작한다.`, iconName: 'plus', duration: 2400 });
     ui.unit = r.unit.id;
     ui.country = at;
     commit();
@@ -183,25 +193,25 @@ export function startGameScreen(map, state, { onNewGame }) {
 
   function miracle(id) {
     const r = performMiracle(state, id);
-    if (!r.ok) { toast({ title: r.message, tone: 'bad', iconName: 'alert' }); return; }
-    toast({ title: '기적', body: `${world.countries[id].name}에서 ${people(r.converted)}명이 무릎을 꿇었습니다. 당국도 그 장면을 보았습니다.`, iconName: 'rise' });
+    if (!r.ok) { toast(blocked(state, r.message)); return; }
+    toast({ title: '기적', body: `${world.countries[id].name}에서 ${people(r.converted)}명이 무릎을 꿇었다. 그 장면을 휴대폰으로 찍은 사람이 백 명쯤 됐다. 경찰도 한 명 있었다.`, iconName: 'rise' });
     map.pulse(id, 'burst');
     commit();
   }
 
   function chooseApproach(id, key) {
     const r = setApproach(state, id, key);
-    if (!r.ok) { toast({ title: r.message, tone: 'bad', iconName: 'alert' }); return r; }
-    const tail = r.fit.tone === 'bad' ? ' 이 땅과는 잘 맞지 않는 것 같습니다.' : r.fit.tone === 'good' ? ' 이 땅에 잘 맞는 방식입니다.' : '';
-    toast({ title: '전도 방식', body: `${world.countries[id].name}에서 '${r.name}'${josa(r.name, '을/를').slice(r.name.length)} 시작합니다. 몇 달에 걸쳐 자리를 잡습니다.${tail}`, iconName: 'rise' });
+    if (!r.ok) { toast(blocked(state, r.message)); return r; }
+    const tail = r.fit.tone === 'bad' ? ' 동네 반응이 영 시원찮다.' : r.fit.tone === 'good' ? ' 동네 사람들이 고개를 끄덕인다.' : '';
+    toast({ title: '전도 방식', body: `${world.countries[id].name}에서 '${r.name}'${josa(r.name, '을/를').slice(r.name.length)} 시작했다. 자리 잡는 데 몇 달 걸린다.${tail}`, iconName: 'rise' });
     commit();
     return r;
   }
 
   function holySite(id) {
     const r = buildHolySite(state, id);
-    if (!r.ok) { toast({ title: r.message, tone: 'bad', iconName: 'alert' }); return; }
-    toast({ title: '성지 건설', body: `${r.name}에 성지가 세워졌습니다. 이 나라의 성장이 영구히 빨라집니다.`, iconName: 'flag' });
+    if (!r.ok) { toast(blocked(state, r.message)); return; }
+    toast({ title: '성지', body: `${r.name}에 성지를 세웠다. 테이프 커팅은 가위가 안 들어서 세 번 만에 잘렸다.`, iconName: 'flag' });
     map.pulse(id, 'holy');
     commit();
   }
@@ -211,13 +221,14 @@ export function startGameScreen(map, state, { onNewGame }) {
     if (state.result || showing) return;
     const idle = idleUnits(state);
     if (idle.length && !ui.skipIdleConfirm) {
+      const v = idleLine(state, idle);
       const m = modal({
-        title: '아직 움직이지 않은 유닛이 있습니다',
-        content: `<p class="modal-text" style="margin-top:0">${idle.length}명이 이번 달에 아무것도 하지 않았습니다. 그래도 다음 달로 넘길까요?</p>
-          <label class="check-line"><input type="checkbox" data-skip> 이번 판에서는 다시 묻지 않기</label>`,
+        className: 'say-sheet',
+        content: `<div class="say-big">${stamp(v.who, { state, size: 52 })}<div><b>${esc(CAST[v.who].short)}</b><p>"${esc(v.say)}"</p></div></div>
+          <label class="check-line"><input type="checkbox" data-skip> 이번 판에서는 다시 안 물어봐도 된다</label>`,
         actions: [
-          { label: '돌아가기', onClick: () => { const u = idle[0]; selectUnit(u.id); } },
-          { label: '다음 달로', kind: 'primary', onClick: () => { ui.skipIdleConfirm = m.body.querySelector('[data-skip]').checked; nextTurn(); } },
+          { label: '가서 시킨다', onClick: () => { const u = idle[0]; selectUnit(u.id); } },
+          { label: '그냥 한 달 보낸다', kind: 'primary', onClick: () => { ui.skipIdleConfirm = m.body.querySelector('[data-skip]').checked; nextTurn(); } },
         ],
       });
       return;
@@ -236,7 +247,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     const newOnes = report.newCountries.map((id) => world.countries[id].name);
     toast({
       title: `${dateLabel(state.turn)} · 신도 ${report.change >= 0 ? '+' : '−'}${people(Math.abs(report.change))}명`,
-      body: `이번 달 신앙력 수입 ${report.faith >= 0 ? '+' : ''}${report.faith}${newOnes.length ? ` · 새로 전파: ${newOnes.slice(0, 3).join(', ')}${newOnes.length > 3 ? ` 외 ${newOnes.length - 3}곳` : ''}` : ''}`,
+      body: `이번 달 헌금 ${report.faith >= 0 ? '+' : ''}${report.faith}${newOnes.length ? ` · 처음 소문난 곳: ${newOnes.slice(0, 3).join(', ')}${newOnes.length > 3 ? ` 외 ${newOnes.length - 3}곳` : ''}` : ''}`,
       iconName: report.change >= 0 ? 'rise' : 'alert',
       tone: report.change >= 0 ? 'info' : 'bad',
       duration: 2600,
@@ -253,18 +264,20 @@ export function startGameScreen(map, state, { onNewGame }) {
     for (const e of report.events) {
       const name = e.id ? world.countries[e.id].name : '';
       if (e.type === 'raid') {
-        toast({ title: `${name} 압수수색`, body: `신도 ${people(e.lost)}명이 떠났고, 유닛 ${e.unitsLost}명이 붙잡혔습니다.`, tone: 'bad', iconName: 'alert', duration: 4200 });
+        toast({ title: `${name} 압수수색`, body: `신도 ${people(e.lost)}명이 떠났다.${e.unitsLost ? ` 거기 있던 ${e.unitsLost}명은 연행됐다.` : ''}`, tone: 'bad', iconName: 'alert', duration: 4200 });
         map.pulse(e.id, 'raid');
       }
-      if (e.type === 'ban') toast({ title: `${name} 활동 금지`, body: '정부 경계가 한계에 달했습니다. 경계가 60% 아래로 내려갈 때까지 생산·활동이 막힙니다.', tone: 'bad', iconName: 'alert', duration: 4800 });
-      if (e.type === 'unban') toast({ title: `${name} 활동 재개`, body: '금지가 풀렸습니다.', iconName: 'check' });
-      if (e.type === 'succession') toast({ title: '새 교주', body: `${josa(state.leader.name, '이/가')} 연단에 섰습니다. 결속 ${e.unityDelta >= 0 ? '+' : ''}${e.unityDelta}`, iconName: 'people', duration: 5000 });
+      if (e.type === 'ban') toast({ title: `${name} 활동 금지`, body: '간판도 못 걸고 사람도 못 모은다. 당국이 좀 잠잠해질 때까지 기다려야 한다.', tone: 'bad', iconName: 'alert', duration: 4800 });
+      if (e.type === 'unban') toast({ title: `${name} 금지 풀림`, body: '다시 간판을 걸 수 있다.', iconName: 'check' });
+      if (e.type === 'succession') toast({ title: '새 교주', body: `${josa(state.leader.name, '이/가')} 연단에 섰다. 마이크 높이부터 맞췄다. 간부들 분위기: ${mood(state.unity).text}.`, iconName: 'people', duration: 5600 });
+      if (e.type === 'join' && JOIN_LINES[e.who]) toast({ who: e.who, title: `${CAST[e.who].name} 합류`, say: JOIN_LINES[e.who], body: CAST[e.who].trait, state, duration: 6000 });
     }
   }
 
   // 턴이 끝난 뒤 차례로: 계시 → 사건 카드 → 단계 상승 → 결과
   function afterTurn(report) {
     if (state.result) return enqueue((done) => showResult(state.result, done));
+    maybeAbroad();
     const ch = dueRevelation(state);
     if (ch) enqueue((done) => openRevelation(ch, done));
     else {
@@ -287,6 +300,38 @@ export function startGameScreen(map, state, { onNewGame }) {
 
   function checkEnd() {
     if (state.result) enqueue((done) => showResult(state.result, done));
+    else maybeAbroad();
+  }
+
+  // 처음으로 바다 건너에 신도가 생기면: 지구 전체가 보이도록 천천히 멀어진다 (중반 전환점)
+  function maybeAbroad() {
+    const first = checkAbroad(state);
+    if (!first) return;
+    saveGame(state);
+    enqueue((done) => showAbroad(first, done));
+  }
+
+  function showAbroad(id, done) {
+    ui.country = null;
+    ui.unit = null;
+    render();
+    map.reveal(state.religion.home, id);
+    map.pulse(id, 'new', world.countries[id].name);
+    const v = isIn(state, 'minho') ? ['minho', `근데요, ${world.countries[id].name}에서 전화 왔어요. 국제전화요. 요금은 누가 내요?`]
+      : ['jeongsuk', `어머, 교주님~ ${world.countries[id].name}에서도 우리 얘기를 한대요!`];
+    const el = document.createElement('div');
+    el.className = 'abroad-card';
+    el.innerHTML = `<div class="abroad-paper"><small>${esc(state.religion.name)} 주보 · 호외</small>
+      <h2>바다를 건넜다</h2>
+      <p>${esc(world.countries[id].name)}에 첫 신도가 생겼다. 성소 지도에 압정이 하나 더 꽂혔다.</p>
+      <div class="say-big">${stamp(v[0], { state, size: 44 })}<div><b>${esc(CAST[v[0]].short)}</b><p>"${esc(v[1])}"</p></div></div>
+      <button class="btn btn-primary" data-abroad>지도를 펼친다</button></div>`;
+    document.body.appendChild(el);   // 지도가 멀어지는 동안 입력을 막고, 쪽지는 CSS 로 늦게 떠오른다
+    el.addEventListener('click', (e) => {
+      if (!e.target.closest('[data-abroad]')) return;
+      el.classList.add('is-leaving');
+      setTimeout(() => { el.remove(); done(); }, 300);
+    });
   }
 
   // 큰 알림(계시·사건·단계 상승·결과)은 하나씩 차례로 띄운다
@@ -306,17 +351,17 @@ export function startGameScreen(map, state, { onNewGame }) {
   function goalBlock() {
     const p = stageProgress(state);
     if (!p.next) {
-      return `<div class="next-goal"><h3>승리 조건</h3>
-        <div class="goal-row"><span>세계 인구의 ${Math.round(VICTORY_SHARE * 100)}%</span><span>${people(p.followers)} / ${people(p.goal)}명</span></div>
+      return `<div class="next-goal"><h3>끝까지 가면</h3>
+        <div class="goal-row"><span>지구 인구의 ${Math.round(VICTORY_SHARE * 100)}%</span><span>${people(p.followers)} / ${people(p.goal)}명</span></div>
         <div class="meter"><i style="width:${(p.ratio * 100).toFixed(1)}%"></i></div></div>`;
     }
-    const unlocks = p.next.unlock.map((t) => `<span class="pill">${UNIT_TYPES[t].name} 해금</span>`).join('');
-    return `<div class="next-goal"><h3>다음 단계 · ${p.next.name}</h3>
-      <div class="goal-row"><span>전 세계 신도</span><span>${people(p.followers)} / ${people(p.next.followers)}명</span></div>
+    const unlocks = p.next.unlock.map((t) => `<span class="pill">${UNIT_TYPES[t].name} 모집 가능</span>`).join('');
+    return `<div class="next-goal"><h3>다음 단계: ${p.next.name}</h3>
+      <div class="goal-row"><span>전체 신도</span><span>${people(p.followers)} / ${people(p.next.followers)}명</span></div>
       <div class="meter"><i style="width:${(p.followerRatio * 100).toFixed(1)}%"></i></div>
-      ${p.next.countries ? `<div class="goal-row"><span>진출 국가 (신도 ${people(PRESENCE_MIN)}명 이상)</span><span>${p.countries} / ${p.next.countries}곳</span></div>
+      ${p.next.countries ? `<div class="goal-row"><span>신도 ${people(PRESENCE_MIN)}명 넘는 나라</span><span>${p.countries} / ${p.next.countries}곳</span></div>
       <div class="meter"><i style="width:${(p.countryRatio * 100).toFixed(1)}%"></i></div>` : ''}
-      <div class="unlock-list"><span class="pill">유닛 상한 ${p.next.unitCap}</span>${unlocks}</div></div>`;
+      <div class="unlock-list"><span class="pill">정원 ${p.next.unitCap}명</span>${unlocks}</div></div>`;
   }
 
   function sparkline() {
@@ -331,15 +376,17 @@ export function startGameScreen(map, state, { onNewGame }) {
   function showStageUp(stageId, onClose) {
     const s = stageOf(stageId);
     const unlocked = s.unlock.map((t) => `<span class="pill">${UNIT_TYPES[t].name}</span>`).join('');
+    const v = stageLine(state, stageId);
     modal({
       dismissable: false,
       className: 'stage-up',
       content: `<div class="center" style="padding-top:12px"><div class="big-mark">${emblemSvg(state.religion.emblem)}</div>
-        <div class="step-label">새로운 단계</div><h2 style="margin:4px 0 0;font-size:28px;letter-spacing:-.03em">${s.name}</h2>
-        <p class="modal-text">${esc(state.religion.name)}의 이름이 더 넓은 세상에 알려지고 있습니다.<br>유닛 전파 ×${s.unitPower} · 신앙력 ×${s.faith} · 유닛 상한 ${s.unitCap}</p>
-        ${unlocked ? `<div class="unlock-list" style="justify-content:center">새 유닛 ${unlocked}</div>` : ''}</div>
+        <div class="step-label">간판을 새로 단다</div><h2 class="stage-title">${s.name}</h2>
+        ${v ? `<div class="say-big">${stamp(v.who, { state, size: 44 })}<div><b>${esc(CAST[v.who].short)}</b><p>"${esc(v.say)}"</p></div></div>` : ''}
+        <p class="modal-text">정원 ${s.unitCap}명까지 늘었다.${unlocked ? ' 이제 이런 사람도 모을 수 있다.' : ''}</p>
+        ${unlocked ? `<div class="unlock-list" style="justify-content:center">${unlocked}</div>` : ''}</div>
         ${goalBlock()}`,
-      actions: [{ label: '계속', kind: 'primary' }],
+      actions: [{ label: '현수막 건다', kind: 'primary' }],
       onClose,
     });
   }
@@ -352,18 +399,18 @@ export function startGameScreen(map, state, { onNewGame }) {
       subtitle: `${esc(state.religion.name)} · ${esc(state.leader.name)} ${state.leader.age}세`,
       content: `
         <div class="summary-grid" style="margin-top:4px">
-          <div><small>전 세계 신도</small><b class="num">${people(total)}명</b></div>
-          <div><small>세계 인구 대비</small><b class="num">${pct(total / world.totalPop)}</b></div>
-          <div><small>진출 국가</small><b class="num">${presenceCount(state, PRESENCE_MIN)}곳</b></div>
-          <div><small>교단 결속</small><b class="num">${Math.round(state.unity)} / 100</b></div>
-          <div class="wide"><small>신도 추이</small>${sparkline() || '<b>다음 달부터 기록됩니다</b>'}</div>
+          <div><small>전체 신도</small><b class="num">${people(total)}명</b></div>
+          <div><small>지구 인구 대비</small><b class="num">${pct(total / world.totalPop)}</b></div>
+          <div><small>신도 천 명 넘는 나라</small><b class="num">${presenceCount(state, PRESENCE_MIN)}곳</b></div>
+          <div><small>간부들 분위기</small><b>${esc(mood(state.unity).text)}</b></div>
+          <div class="wide"><small>신도 추이</small>${sparkline() || '<b>다음 달부터 그린다</b>'}</div>
         </div>
         ${goalBlock()}
         <div class="summary-grid">
-          <div><small>절대 원칙</small><b>${state.religion.deity ? DEITIES[state.religion.deity].name : '—'}</b></div>
-          <div><small>울타리</small><b>${state.religion.tenets.map((t) => TENETS[t].name).join(' · ') || '계시 IV 에서'}</b></div>
-          <div><small>후계자</small><b>${state.leader.immortal ? '없음 (불사 선언)' : state.leader.heir ? '지명됨' : '없음'}</b></div>
-          <div><small>성지</small><b>${Object.keys(state.holySites).length}곳</b></div>
+          <div><small>화이트보드 첫 줄</small><b>${state.religion.deity ? `"${DEITIES[state.religion.deity].creed}"` : '아직'}</b></div>
+          <div><small>규칙 세 줄</small><b>${state.religion.tenets.map((t) => TENETS[t].name).join(', ') || '신도 100명 되면'}</b></div>
+          <div><small>후계자</small><b>${state.leader.immortal ? '없음 (안 죽기로 함)' : state.leader.heirCast ? CAST[state.leader.heirCast].short : '아직'}</b></div>
+          <div><small>장부 서랍</small><b>${shadowWord(state.riskPoints)}</b></div>
         </div>`,
     });
   }
@@ -371,34 +418,37 @@ export function startGameScreen(map, state, { onNewGame }) {
   function showResult(result, onClose) {
     const total = totalFollowers(state);
     const win = result === 'victory';
-    const d = DEFEAT_TEXT[state.defeatReason] ?? DEFEAT_TEXT.followers;
+    const d = win ? VICTORY_TEXT : DEFEAT_TEXT[state.defeatReason] ?? DEFEAT_TEXT.followers;
+    const speakerId = d.who.find((id) => isIn(state, id) || castOf(state, id).status === 'leader') ?? d.who.find((id) => castOf(state, id).status !== 'dead') ?? d.who[0];
     modal({
       dismissable: false,
-      content: `<div class="center" style="padding-top:12px"><div class="big-mark" ${win ? '' : 'style="background:var(--fill-2);color:var(--label-2)"'}>${emblemSvg(state.religion.emblem)}</div>
-        <div class="step-label">${dateLabel(state.turn)} · ${state.turn}개월</div>
-        <h2 style="margin:4px 0 0;font-size:28px;letter-spacing:-.03em">${win ? '세계가 무릎을 꿇었습니다' : esc(d.title)}</h2>
-        <p class="modal-text">${win
-          ? `${esc(josa(state.religion.name, '이/가'))} 세계 인구의 ${pct(total / world.totalPop)}를 손에 넣었습니다. 역사는 이것을 무엇이라 부를까요.`
-          : `${esc(d.body)} 최고 기록은 ${people(state.peakFollowers)}명이었습니다.`}</p></div>
-        <div class="summary-grid"><div><small>최종 신도</small><b class="num">${people(total)}명</b></div><div><small>그림자 장부</small><b class="num">${state.riskPoints}점</b></div></div>`,
-      actions: [{ label: '연대기', onClick: () => setTimeout(() => showChronicle(state), 300) }, { label: '새 게임', kind: 'primary', onClick: () => onNewGame() }],
+      className: `result-sheet ${win ? 'is-win' : 'is-lose'}`,
+      content: `<div class="center" style="padding-top:12px"><div class="big-mark">${emblemSvg(state.religion.emblem)}</div>
+        <div class="step-label">${dateLabel(state.turn)} · 창시 ${state.turn}개월째</div>
+        <h2 class="stage-title">${esc(d.title)}</h2>
+        <p class="modal-text">${esc(win ? d.body(state.religion.name) : d.body)}${win ? '' : ` 가장 많았을 때는 ${people(state.peakFollowers)}명이었다.`}</p>
+        <div class="say-big">${stamp(speakerId, { state, size: 44 })}<div><b>${esc(CAST[speakerId].short)}</b><p>"${esc(d.line[speakerId])}"</p></div></div></div>
+        <div class="summary-grid"><div><small>남은 신도</small><b class="num">${people(total)}명</b></div><div><small>장부 서랍</small><b>${shadowWord(state.riskPoints)}</b></div></div>`,
+      actions: [{ label: '지나온 일 보기', onClick: () => setTimeout(() => showChronicle(state), 300) }, { label: '처음부터 다시', kind: 'primary', onClick: () => onNewGame() }],
       onClose,
     });
   }
 
   function showHelp() {
     modal({
-      title: '진행 방법',
+      title: '처음 온 사람 안내문',
       wide: true,
       content: `<div class="list">
         ${[
-          ['한 턴은 한 달', '‘다음 달’을 누르면 자연 증가·이탈, 이웃 나라로의 전파, 신앙력 수입, 정부 경계가 계산됩니다. 조건을 채운 달이 끝나면 계시나 사건이 찾아옵니다.'],
-          ['성장은 당신이 이끈다', '가만히 있으면 교단은 시든다. 선교사·기적·성지로 직접 사람을 모으세요. 조직이 커질수록 유닛도 세집니다.'],
-          ['정부 경계', '신도가 눈에 띌수록 쌓입니다. 50%면 경고장, 70%면 압수수색, 100%면 그 나라 활동 금지. 그 나라의 주류가 되면 오히려 누그러집니다.'],
-          ['거부감과 결속', '거부감은 그 나라의 저항력을 키웁니다(구호 활동가로 낮추세요). 결속이 낮으면 신도가 빠지고, 0이 되면 교단이 갈라집니다.'],
-          ['그림자 장부', '어두운 선택은 당장 달콤합니다. 대신 장부에 남아 폭로·내부 고발·분열을 부르고, 압수수색에서 당신을 지키기 어렵게 만듭니다.'],
-          ['교주', '12개월마다 한 살씩 먹고, 70세부터는 언제든 쓰러질 수 있습니다. 후계자가 없으면 체포나 죽음이 곧 끝입니다.'],
-          ['승리와 패배', `세계 인구의 ${Math.round(VICTORY_SHARE * 100)}%가 믿으면 승리. 신도 0 · 교주 체포 · 교주 사망 · 교단 분열이면 패배. 진행은 자동 저장됩니다.`],
+          ['한 번 누르면 한 달', '"한 달 보내기"를 누르면 신도가 늘거나 줄고, 헌금이 들어오고, 소문이 이웃 나라로 번진다. 때가 되면 계시나 사건이 찾아온다.'],
+          ['가만히 있으면 시든다', '사람은 직접 모아야 한다. 선교사, 기적, 성지. 교단이 커질수록 한 사람이 데려오는 수도 커진다.'],
+          ['한국에서 시작한다', '국경 붙은 나라는 북한뿐이다. 바닷길로 일본, 중국, 러시아에 닿고, 교민이 많은 나라는 처음 들어갈 때 잘 먹힌다. 신도가 천 명쯤 되면 바다 건너에서 연락이 온다.'],
+          ['당국과 동네 인심', '눈에 띌수록 당국이 본다. 경고장, 압수수색, 활동 금지 순서로 온다. 동네 인심이 나빠지면 사람이 잘 안 모인다. 봉사자를 보내면 조금 풀린다.'],
+          ['간부들 분위기', '분위기가 가라앉으면 사람이 빠지고, 끝까지 가라앉으면 교단이 쪼개진다.'],
+          ['장부 서랍', '나쁜 선택은 당장은 달다. 서랍에 쌓인 영수증은 나중에 폭로, 내부 고발, 분열로 돌아온다. 떠난 사람은 증인으로도 돌아온다.'],
+          ['교주도 늙는다', '1년에 한 살. 일흔이 넘으면 언제든 쓰러질 수 있다. 후계자가 없으면 그걸로 끝이다.'],
+          ['정확한 숫자', '메뉴의 교단 장부에 다 적혀 있다.'],
+          ['끝', `지구 인구의 ${Math.round(VICTORY_SHARE * 100)}%가 믿으면 끝까지 간 것이다. 신도가 다 떠나거나 교주가 잡히거나 죽거나 교단이 쪼개지면 거기서 끝. 자동 저장된다.`],
         ].map(([t, dsc]) => `<div class="row" style="flex-direction:column;align-items:flex-start;gap:2px"><b style="font-weight:600">${t}</b><span class="muted" style="font-size:14px">${dsc}</span></div>`).join('')}
       </div>`,
     });
@@ -406,26 +456,29 @@ export function startGameScreen(map, state, { onNewGame }) {
 
   function showMenu() {
     const m = modal({
-      title: '메뉴',
+      title: '서랍',
       content: `<div class="list">
-        <button class="row" style="width:100%" data-m="chronicle"><span class="row-label">${icon('flag')}교단 연대기</span>${icon('chevron')}</button>
-        <button class="row" style="width:100%" data-m="stage"><span class="row-label">${icon('rise')}성장 단계와 기록</span>${icon('chevron')}</button>
-        <button class="row" style="width:100%" data-m="help"><span class="row-label">${icon('help')}진행 방법</span>${icon('chevron')}</button>
-        <button class="row" style="width:100%" data-m="new"><span class="row-label" style="color:var(--bad)">${icon('reset')}새 게임</span></button>
-      </div><p class="panel-note">진행 상황은 이 브라우저에 자동 저장됩니다.</p>`,
+        <button class="row" style="width:100%" data-m="ledger"><span class="row-label">${icon('people')}교단 장부 (정확한 숫자)</span>${icon('chevron')}</button>
+        <button class="row" style="width:100%" data-m="chronicle"><span class="row-label">${icon('flag')}지나온 일</span>${icon('chevron')}</button>
+        <button class="row" style="width:100%" data-m="stage"><span class="row-label">${icon('rise')}교단 단계</span>${icon('chevron')}</button>
+        <button class="row" style="width:100%" data-m="help"><span class="row-label">${icon('help')}처음 온 사람 안내문</span>${icon('chevron')}</button>
+        <button class="row" style="width:100%" data-m="new"><span class="row-label" style="color:var(--bad)">${icon('reset')}간판 내리고 처음부터</span></button>
+      </div><p class="panel-note">이 브라우저에 알아서 저장된다.</p>`,
     });
     m.body.addEventListener('click', (e) => {
       const b = e.target.closest('[data-m]');
       if (!b) return;
       m.close();
+      if (b.dataset.m === 'ledger') showLedger(state);
       if (b.dataset.m === 'chronicle') showChronicle(state);
       if (b.dataset.m === 'stage') showStageInfo();
       if (b.dataset.m === 'help') showHelp();
       if (b.dataset.m === 'new') {
+        const who = isIn(state, 'mom') ? ['mom', '그래, 그만하고 밥이나 먹자.'] : ['minho', '근데요, 진짜요? 의자 다 접어요?'];
         modal({
-          title: '새 게임을 시작할까요?',
-          content: '<p class="modal-text" style="margin-top:0">지금의 교단은 사라집니다.</p>',
-          actions: [{ label: '취소' }, { label: '새 게임', kind: 'primary danger', onClick: () => onNewGame() }],
+          className: 'say-sheet',
+          content: `<div class="say-big">${stamp(who[0], { state, size: 52 })}<div><b>${esc(CAST[who[0]].short)}</b><p>"${esc(who[1])}"</p></div></div><p class="modal-text">지금 교단은 없어진다.</p>`,
+          actions: [{ label: '아니, 계속한다' }, { label: '간판 내린다', kind: 'primary danger', onClick: () => onNewGame() }],
         });
       }
     });
@@ -507,7 +560,7 @@ export function startGameScreen(map, state, { onNewGame }) {
     results.hidden = false;
     results.innerHTML = hits.length
       ? hits.map((id, i) => `<button data-go="${id}" class="${i === 0 ? 'is-active' : ''}"><span class="flag-line">${flagImg(world.countries[id], 'flag flag-sm')}${esc(world.countries[id].name)}</span><small>${people(state.countries[id].followers)}명</small></button>`).join('')
-      : '<div class="row muted" style="font-size:14px">결과 없음</div>';
+      : '<div class="row muted" style="font-size:14px">그런 나라는 없다</div>';
   });
   searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') results.querySelector('[data-go]')?.click();
@@ -558,6 +611,8 @@ export function startGameScreen(map, state, { onNewGame }) {
     },
     state,
     focusCountry: flyToCountry,
+    // 처음 열 때: 아직 바다를 안 건넜으면 한국에 바짝 붙어서 시작
+    openView() { flyToCountry(state.religion.home, state.flags.abroad ? 2.4 : 6); },
     // 개발 확인용
     debug: { nextTurn, spawn, selectCountry, selectUnit, act, miracle, holySite, ui, unitCost: (t) => unitCost(state, t), jailed: () => isJailed(state) },
   };

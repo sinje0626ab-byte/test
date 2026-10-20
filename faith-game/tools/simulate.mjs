@@ -1,8 +1,8 @@
 // 밸런스 확인용 헤드리스 시뮬레이터.
 // 계시·사건 선택지를 성향(policy)에 따라 자동으로 고르고, 유닛·기적·성지를 굴려 끝까지 돌린다.
 //   node tools/simulate.mjs --table                     여러 조합 결과 표
-//   node tools/simulate.mjs --policy good --home 410 --deity founder --tenets communal,healing,ascetic --seed 3 --log
-// policy: idle(턴만 넘김) · good(괜찮은 플레이) · dark(어두운 선택만)
+//   node tools/simulate.mjs --policy good --deity founder --site downtown --tenets communal,healing,ascetic --seed 3 --log
+// policy: idle(턴만 넘김) · good(괜찮은 플레이) · dark(어두운 선택만). 본거지는 늘 대한민국.
 import { readFileSync } from 'node:fs';
 import { initWorld, world } from '../src/data/loader.js';
 import { createState, totalFollowers, presenceCount } from '../src/game/state.js';
@@ -11,6 +11,7 @@ import { spawnUnit, spawnBlocker, actUnit, moveUnit, reachable, canAct, unlocked
 import { spreadAmount } from '../src/religion/spread.js';
 import { performMiracle, miracleBlocker, buildHolySite, holySiteBlocker } from '../src/game/actions.js';
 import { dueRevelation, resolveRevelation, dueIncident, resolveIncident, choiceAvailable } from '../src/story/storyEngine.js';
+import { visibleChoices } from '../src/story/incidents.js';
 import { stageOf } from '../src/game/stages.js';
 import { bestApproach, setApproach, approachBlocker } from '../src/religion/culture.js';
 
@@ -37,7 +38,6 @@ function answerRevelation(state, ch, opt) {
   const pref = PREFS[opt.policy] ?? {};
   return ch.parts.map((part, i) => {
     if (part.kind === 'text') return '시험 교단';
-    if (part.kind === 'country') return opt.home;
     if (ch.id === 'I') return [opt.deity];
     if (ch.id === 'II') return [opt.site ?? pref.II ?? part.choices[0].id];
     if (ch.id === 'III') return [opt.method ?? pref.III ?? part.choices[0].id];
@@ -50,8 +50,8 @@ function answerRevelation(state, ch, opt) {
   });
 }
 
-function answerIncident(state, card, opt) {
-  const ok = card.choices.filter((c) => choiceAvailable(state, c) === true);
+function answerIncident(state, card, ctx, opt) {
+  const ok = visibleChoices(state, card, ctx).filter((c) => choiceAvailable(state, c) === true);
   if (opt.policy === 'dark') return (ok.find((c) => c.dark) ?? ok[0]).id;
   if (opt.policy === 'good') {
     const clean = ok.filter((c) => !c.dark);
@@ -141,7 +141,7 @@ export function runGame(opt) {
     }
     const inc = dueIncident(state, report);
     if (inc) {
-      const id = answerIncident(state, inc.card, opt);
+      const id = answerIncident(state, inc.card, inc.ctx, opt);
       const r = resolveIncident(state, inc.card, inc.ctx, id);
       if (opt.log) console.log(`  [사건] ${inc.card.title} → ${id}: ${r.outcome}`);
     }
@@ -177,7 +177,7 @@ if (has('table')) {
   table(runGame, Number(flag('seeds', 4)));
 } else if (process.argv[1].endsWith('simulate.mjs')) {
   const opt = {
-    policy: flag('policy', 'good'), home: flag('home', '410'), deity: flag('deity', 'founder'),
+    policy: flag('policy', 'good'), deity: flag('deity', 'founder'),
     tenets: flag('tenets') ? flag('tenets').split(',') : null, site: flag('site'), method: flag('method'),
     seed: Number(flag('seed', 1)), turns: Number(flag('turns', 420)), log: has('log'),
   };

@@ -9,17 +9,17 @@ const ORGANIZED = ['christianity', 'islam', 'hinduism', 'buddhism', 'judaism'];
 
 // ── 기질 ──
 export const TRAITS = {
-  metro:      { name: '대도시', desc: '바쁘고 익명적이다. 길에서 말을 걸면 피하지만, 화면 속 이야기는 끝까지 본다.' },
-  rural:      { name: '농촌', desc: '서로 얼굴을 안다. 아는 사람의 말이 통하고, 소문은 빠르다.' },
-  secular:    { name: '무종교 많음', desc: '신은 믿지 않아도 의미는 찾는다. 교리보다 삶의 이야기에 귀를 연다.' },
-  devout:     { name: '신앙 깊음', desc: '이미 믿는 것이 있다. 정면으로 부딪히면 단단히 막힌다.' },
-  folk:       { name: '민간 신앙', desc: '풍습과 의례가 일상에 녹아 있다. 보이지 않는 것을 낯설어하지 않는다.' },
-  plural:     { name: '다종교', desc: '여러 믿음이 섞여 산다. 새 목소리 하나쯤은 그리 이상하지 않다.' },
-  restricted: { name: '통제 사회', desc: '눈에 띄는 순간 끝이다. 조용히, 작게 움직여야 한다.' },
-  open:       { name: '자유 사회', desc: '무엇이든 말할 수 있다. 그만큼 귀를 끌려는 목소리도 많다.' },
-  island:     { name: '섬나라', desc: '바깥 소식은 늦게 닿고, 안쪽의 결속은 단단하다.' },
-  poor:       { name: '저소득', desc: '당장의 끼니와 병원비가 교리보다 먼저다.' },
-  rich:       { name: '고소득', desc: '부족한 것은 돈이 아니라 시간과, 말할 사람이다.' },
+  metro: { name: '대도시', desc: '출근길 지하철은 꽉 차 있고 다들 이어폰을 꽂고 있다. 길에서 말 걸면 더 깊이 꽂는다. 밤 열한 시에 휴대폰으로 보는 영상은 끝까지 본다.' },
+  rural: { name: '농촌', desc: '장날이면 모든 소식이 한 바퀴 돈다. 마을 어른이 끄덕이면 마을이 끄덕인다.' },
+  secular: { name: '무종교 많음', desc: '일요일엔 늦잠. 신 얘기엔 시큰둥해도 "요즘 왜 이렇게 허무하지" 얘기엔 오래 앉아 있는다.' },
+  devout: { name: '신앙 깊음', desc: '다들 다니는 데가 이미 있다. 정면으로 들이밀면 문이 닫히고, 반찬부터 건네면 그나마 열린다.' },
+  folk: { name: '민간 신앙', desc: '이사 날짜는 손 없는 날로, 개업식엔 고사떡. 보이지 않는 걸 딱히 이상하게 안 본다.' },
+  plural: { name: '여러 종교', desc: '한 골목에 예배당, 절, 사원이 같이 있다. 간판 하나 더 붙는다고 아무도 놀라지 않는다.' },
+  restricted: { name: '통제 사회', desc: '모임 신고서는 세 장, 단톡방은 누가 보고 있다. 눈에 띄면 끝이다.' },
+  open: { name: '자유 사회', desc: '전단지 돌리는 건 자유다. 옆에서 다른 전단지 돌리는 것도 자유다.' },
+  island: { name: '섬나라', desc: '배나 비행기를 타야 온다. 한번 들어온 소문은 잘 안 나간다.' },
+  poor: { name: '저소득', desc: '월말이면 쌀통부터 본다. 교리보다 백반이 먼저 통한다.' },
+  rich: { name: '고소득', desc: '돈은 있다. 저녁에 같이 밥 먹을 사람이 없다.' },
 };
 export const TRAIT_ORDER = Object.keys(TRAITS);
 
@@ -73,52 +73,52 @@ export function unitAffinity(id, type) {
 const A = APPROACH;
 export const APPROACHES = {
   street: {
-    name: '거리 전도', desc: '광장과 시장에서 전단을 나누고 말을 건다. 가장 오래된 방식.',
+    name: '거리 전도', desc: '광장, 시장 입구, 지하철역 출구. 전단지와 생수, 그리고 웃는 얼굴.',
     affinity: { open: 1, plural: 1, rural: 1, metro: -1, restricted: -2 },
     lean: (c) => c.freedom / 100,
-    pros: ['unitPower', 'growth'], cons: '정부 경계 조금씩↑',
+    pros: ['unitPower', 'growth'], cons: '정부 경계가 조금씩 쌓임',
   },
   house: {
-    name: '가정 소모임', desc: '거실에 몇 명씩 모여 조용히 이야기를 나눈다. 밖에서는 잘 보이지 않는다.',
+    name: '가정 소모임', desc: '거실에 여섯 명. 과일 깎아 놓고 조용조용 이야기한다. 밖에서는 집들이처럼 보인다.',
     affinity: { restricted: 2, devout: 1, island: 1, open: -1 },
     lean: (c) => (100 - c.freedom) / 100,
-    pros: ['growth', 'unitPower'], cons: `눈에 띄지 않는다 — 정부 경계 쌓임 −${Math.round((1 - A.house.alertMul) * 100)}%`,
+    pros: ['growth', 'unitPower'], cons: '눈에 잘 안 띔 · 정부 경계 쌓임 −30%',
   },
   online: {
-    name: '온라인 방송', desc: '짧은 영상과 밤늦은 생방송. 화면 너머의 외로운 사람들에게 닿는다.',
+    name: '온라인 방송', desc: '밤 열한 시 라이브. 링라이트 하나, 채팅창에는 "잠이 안 와요"가 제일 많다.',
     affinity: { metro: 2, rich: 1, secular: 1, poor: -2, rural: -1, restricted: -1 },
     lean: (c) => c.urban * c.gdpTier / 4,
-    pros: ['unitPower', 'growth'], cons: '댓글이 쌓이며 거부감 조금씩↑',
+    pros: ['unitPower', 'growth'], cons: '댓글이 쌓이며 거부감도 조금씩 쌓임',
   },
   seminar: {
-    name: '명상·인생 강좌', desc: '종교라는 말은 빼고, 마음 다스리는 법을 가르친다는 간판을 건다.',
+    name: '명상·마음공부 강좌', desc: '간판에 종교라는 말은 없다. "번아웃 회복 8주 과정", 수강료는 첫 주 무료.',
     affinity: { secular: 2, rich: 1, metro: 1, devout: -2, poor: -1, restricted: -1 },
     lean: (c) => (c.religions.none ?? 0) * 2,
-    pros: ['growth'], cons: '강의실 임대료 — 매달 신앙력 조금',
+    pros: ['growth'], cons: '강의실 임대료로 매달 신앙력이 조금 듦',
   },
   charity: {
-    name: '무료 급식·봉사', desc: '먼저 밥을 나누고, 이야기는 그다음이다.',
+    name: '무료 급식과 봉사', desc: '먼저 밥. 이야기는 설거지 끝나고.',
     affinity: { poor: 2, rural: 1, rich: -2 },
     lean: (c) => (4 - c.gdpTier) / 3,
-    pros: ['growth', 'unitPower'], cons: '매달 신앙력이 든다 · 대신 거부감 조금씩↓',
+    pros: ['growth', 'unitPower'], cons: '매달 신앙력이 듦 · 대신 거부감이 조금씩 줄어듦',
   },
   customs: {
-    name: '풍습 끌어안기', desc: '그 땅의 명절과 의례에 맞춰 교단의 행사를 꾸린다. 낯설지 않아 보이지만, 믿음은 얕아진다.',
+    name: '풍습에 맞추기', desc: '그 동네 명절, 그 동네 잔치 날짜에 행사를 연다. 낯설어 보이진 않는데, 믿음은 얕게 붙는다.',
     affinity: { folk: 2, devout: 1, rural: 1, secular: -1 },
     lean: (c) => (c.religions.folk ?? 0) * 3 + (1 - c.urban) * 0.5,
-    pros: ['resistance', 'growth'], cons: `이탈 +${Math.round((A.customs.attrition - 1) * 100)}%`,
+    pros: ['resistance', 'growth'], cons: '이탈 +12%',
   },
   festival: {
-    name: '축제와 음악', desc: '노래와 춤이 있는 큰 모임. 처음 온 사람도 쉽게 섞인다.',
+    name: '축제와 노래', desc: '앰프, 천막, 떡볶이. 처음 온 사람도 손뼉은 친다.',
     affinity: { plural: 2, open: 1, island: 1, devout: -1, restricted: -2 },
     lean: (c) => 1 - Math.max(...Object.values(c.religions)),
-    pros: ['growth'], cons: '시끄럽다 — 정부 경계↑',
+    pros: ['growth'], cons: '시끄럽다 · 정부 경계가 쌓임',
   },
   commune: {
-    name: '공동체 마을', desc: '함께 일하고 함께 먹는 마을을 세운다. 들어온 사람은 잘 떠나지 않는다.',
+    name: '공동체 마을', desc: '같이 농사짓고 같이 먹는 마을을 하나 세운다. 들어온 사람은 잘 안 나간다.',
     affinity: { rural: 2, island: 1, poor: 1, metro: -2 },
     lean: (c) => 1 - c.urban,
-    pros: ['attrition', 'growth'], cons: `바깥과 멀어져 유닛 전파 −${Math.round((1 - A.commune.unitPower) * 100)}%`,
+    pros: ['attrition', 'growth'], cons: '바깥과 멀어져 유닛 전파 −15%',
   },
 };
 export const APPROACH_ORDER = Object.keys(APPROACHES);
@@ -157,11 +157,11 @@ export const approachCost = (state) => Math.round(A.cost * stageCost(state));
 
 export function approachBlocker(state, id, key) {
   const cs = state.countries[id];
-  if (!state.religion.home) return '아직 본거지가 없습니다';
-  if (cs.banned) return '활동 금지된 나라';
-  if (cs.followers < SPAWN_MIN_FOLLOWERS) return `신도 ${SPAWN_MIN_FOLLOWERS}명 이상인 나라에서만`;
+  if (!state.religion.home) return '아직 성소가 없다';
+  if (cs.banned) return '활동 금지라 안 된다';
+  if (cs.followers < SPAWN_MIN_FOLLOWERS) return `신도 ${SPAWN_MIN_FOLLOWERS}명 이상인 나라에서만 된다`;
   if (cs.approach?.id === key) return '지금 쓰는 방식';
-  if (state.faith < approachCost(state)) return '신앙력 부족';
+  if (state.faith < approachCost(state)) return '신앙력이 모자란다';
   return null;
 }
 

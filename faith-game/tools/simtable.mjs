@@ -21,21 +21,20 @@ export function table(runGame, seeds) {
     });
   };
 
-  // 1) 방치 플레이
-  for (const deity of ['founder', 'monotheism', 'cosmos', 'ancestors', 'science']) run(`방치 · ${deity} · 대한민국`, { policy: 'idle', home: '410', deity });
-  run('방치 · founder · 미국', { policy: 'idle', home: '840', deity: 'founder' });
-  run('방치 · founder · 체코', { policy: 'idle', home: '203', deity: 'founder' });
-  // 2) 괜찮은 플레이 — 원칙별
-  for (const deity of ['founder', 'monotheism', 'cosmos', 'ancestors', 'science']) run(`좋음 · ${deity} · 대한민국`, { policy: 'good', home: '410', deity });
-  // 3) 괜찮은 플레이 — 울타리 조합별
+  // 1) 방치 플레이 (본거지는 늘 대한민국)
+  for (const deity of ['founder', 'monotheism', 'cosmos', 'ancestors', 'science']) run(`방치 · ${deity}`, { policy: 'idle', deity });
+  run('방치 · founder · 외딴 섬', { policy: 'idle', deity: 'founder', site: 'island' });
+  // 2) 괜찮은 플레이: 원칙별
+  for (const deity of ['founder', 'monotheism', 'cosmos', 'ancestors', 'science']) run(`좋음 · ${deity}`, { policy: 'good', deity });
+  // 3) 괜찮은 플레이: 규칙 조합별
   for (const t of [['communal', 'ascetic', 'open'], ['tithe', 'healing', 'secretive'], ['healing', 'open', 'ascetic'], ['tithe', 'communal', 'open'], ['secretive', 'ascetic', 'communal']]) {
-    run(`좋음 · ${t.join('+')}`, { policy: 'good', home: '410', deity: 'cosmos', tenets: t });
+    run(`좋음 · ${t.join('+')}`, { policy: 'good', deity: 'cosmos', tenets: t });
   }
-  // 4) 시작 국가
-  for (const [home, name] of [['840', '미국'], ['076', '브라질'], ['566', '나이지리아'], ['356', '인도'], ['203', '체코']]) run(`좋음 · founder · ${name}`, { policy: 'good', home, deity: 'founder' });
+  // 4) 성소 장소
+  for (const [site, name] of [['mountain', '산골 폐교'], ['campus', '스터디 카페'], ['island', '외딴 섬']]) run(`좋음 · founder · ${name}`, { policy: 'good', deity: 'founder', site });
   // 5) 어두운 선택만
-  for (const deity of ['founder', 'cosmos', 'monotheism']) run(`어둠 · ${deity} · 대한민국`, { policy: 'dark', home: '410', deity });
-  run('어둠 · founder · 미국', { policy: 'dark', home: '840', deity: 'founder' });
+  for (const deity of ['founder', 'cosmos', 'monotheism']) run(`어둠 · ${deity}`, { policy: 'dark', deity });
+  run('어둠 · founder · 외딴 섬', { policy: 'dark', deity: 'founder', site: 'island' });
 
   console.log(`시드 ${seeds}개씩 (중앙값). 턴 = 개월\n`);
   console.log('조합'.padEnd(36) + ' 100명  1천  1만  승리   승리턴  패배(사유)          패배턴  VIII  장부');
