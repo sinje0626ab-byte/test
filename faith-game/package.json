@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "adjacency": "node tools/build-adjacency.mjs",
     "flags": "node tools/build-flags.mjs",
-    "sim": "node tools/simulate.mjs --table"
+    "sim": "node tools/simulate.mjs --table",
+    "lint:words": "node tools/check-words.mjs"
   },
   "dependencies": {
     "d3-ease": "^3.0.1",

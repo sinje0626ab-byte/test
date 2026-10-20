@@ -7,6 +7,7 @@ import { totalFollowers } from './state.js';
 import { checkStage, checkResult } from './stages.js';
 import { pressureTurn, alertTurn, unityTurn, unityAttrition } from './watch.js';
 import { leaderTurn } from './leader.js';
+import { castTurn } from '../story/cast.js';
 
 // ── 턴 단계 ──
 // 턴 종료 시 아래 순서대로 실행된다. 각 단계는 (state, report) → void.
@@ -115,6 +116,11 @@ function leader(state, report) {
   leaderTurn(state, report);
 }
 
+// 조건이 된 등장인물이 합류한다
+function cast(state, report) {
+  castTurn(state, report);
+}
+
 function progress(state, report) {
   const total = totalFollowers(state);
   state.peakFollowers = Math.max(state.peakFollowers, total);
@@ -125,7 +131,7 @@ function progress(state, report) {
   report.result = state.result;
 }
 
-export const TURN_PHASES = [autoMissions, income, unitEffects, growth, attrition, diffusion, pressure, watch, cohesion, leader, progress];
+export const TURN_PHASES = [autoMissions, income, unitEffects, growth, attrition, diffusion, pressure, watch, cohesion, leader, cast, progress];
 
 export function endTurn(state) {
   const before = totalFollowers(state);

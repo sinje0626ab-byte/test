@@ -57,7 +57,7 @@ function found(initial = null) {
   });
 }
 
-// 계시 I·II (원칙·이름·본거지) 는 지도를 열기 전에 받는다. 중간에 나갔다 와도 이어진다.
+// 계시 I·II (첫 줄·이름·성소) 는 지도를 열기 전에 받는다. 중간에 나갔다 와도 이어진다.
 // history: 앞 계시들의 { before: 받기 전 상태(JSON), picks: 고른 답 }. '이전'을 누르면 직전 계시 전으로 되돌리고 답을 채워 다시 연다.
 // 계시 I 에서 '이전'이면 교주 정보 화면으로 (입력했던 값 그대로).
 function begin(state, history = [], { quick = false, picks = null } = {}) {
@@ -91,7 +91,7 @@ function play(state) {
     onNewGame: () => { clearSave(); screen?.destroy(); screen = null; idleMap(); setFavicon(null); found(); },
   });
   map.spin(false);
-  screen.focusCountry(state.religion.home, 2.4); // 시작할 때는 주변 지역까지 보이게
+  screen.openView(); // 바다를 건너기 전엔 한국에 바짝 붙어서
   if (import.meta.env.DEV) window.__game = screen;
 }
 

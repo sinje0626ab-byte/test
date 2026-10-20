@@ -1,14 +1,12 @@
 import { LEADER, STORY, UNITY } from '../config.js';
 import { chance } from './rng.js';
 import { addEffect } from '../religion/modifiers.js';
+import { CAST, castAge, setCast } from '../story/cast.js';
 
 // 교주: 나이·사망·체포·수감·후계
 
-export const HEIRS = {
-  blood: '교주의 핏줄',
-  loyal: '충성스러운 간부',
-  dream: '꿈의 계시를 받은 신도',
-};
+// 후계자는 계시 VII 에서 등장인물 중에 고른다 (leader.heirCast)
+export const HEIRS = { blood: '조카', loyal: '2인자', dream: '꿈에 나온 사람' };
 
 export function isJailed(state) {
   return state.leader.jailedUntil != null && state.turn < state.leader.jailedUntil;
@@ -46,10 +44,13 @@ function succeed(state, report) {
   state.unity = Math.max(0, Math.min(UNITY.max, state.unity + delta));
   if (heir === 'loyal') addEffect(state, 'heir:loyal');
   L.generation += 1;
-  L.name = `${HEIRS[heir]} (${L.generation}대 교주)`;
-  L.age = LEADER.heirAge;
+  const who = L.heirCast;
+  L.name = who ? CAST[who].name : `${HEIRS[heir]}`;
+  L.age = who ? castAge(state, who) : LEADER.heirAge;
   L.ageMonths = 0;
+  if (who) setCast(state, who, 'leader');
   L.heir = null;
+  L.heirCast = null;
   L.rite = null;
   L.jailedUntil = null;
   report?.events.push({ type: 'succession', heir, unityDelta: delta });
@@ -62,10 +63,19 @@ export function defeat(state, reason) {
   state.defeatReason = reason;
 }
 
+// 패배 화면. who 는 마지막 대사를 하는 사람 (그 사람이 없으면 다음 사람)
 export const DEFEAT_TEXT = {
-  followers: { title: '마지막 신도가 떠났습니다', body: '텅 빈 성소에 당신 혼자 남았습니다.' },
-  arrest: { title: '교주가 체포되었습니다', body: '수갑이 채워지는 순간, 교단도 함께 멈췄습니다. 뒤를 이을 사람이 없었습니다.' },
-  death: { title: '교주가 세상을 떠났습니다', body: '후계자는 없었습니다. 간부들은 장례식장에서부터 서로를 노려보았습니다.' },
-  collapse: { title: '불사의 교주가 죽었습니다', body: '"나는 죽지 않는다"던 사람이 죽었습니다. 신도들은 그 말을 가장 먼저 의심했습니다.' },
-  schism: { title: '교단이 갈라졌습니다', body: '파벌마다 자기가 정통이라 외쳤고, 남은 것은 서로를 고소하는 소장뿐이었습니다.' },
+  followers: { title: '접이식 의자 서른 개, 빈자리 서른 개', body: '마지막 신도가 단톡방을 나갔다. 성소 불을 끄고 나오는데 1층 치킨집 사장님이 "요즘 조용하네요" 했다.', who: ['mom', 'minho'], line: { mom: '밥은 먹고 다녀라. 반찬 갖다 놓을게.', minho: '근데요, 저 다음 주에도 와도 돼요? 화장실 쓰러.' } },
+  arrest: { title: '교주 구속', body: '호송차 문이 닫혔다. 뒤를 이을 사람을 정해 두지 않았다. 다음 날 성소 문에는 자물쇠 두 개가 걸렸다. 하나는 경찰, 하나는 건물주.', who: ['mom', 'taesik'], line: { mom: '면회 가면 뭐 해 가니. 김치는 되나?', taesik: '야, 아니 교주님. 300만 원은 꼭 갚을게.' } },
+  death: { title: '교주 별세', body: '후계자는 없었다. 간부들은 장례식장 육개장을 앞에 두고 서로를 쳐다봤다. 아무도 숟가락을 먼저 들지 않았다.', who: ['dongcheol', 'jeongsuk', 'minho'], line: { dongcheol: '절차대로 하겠습니다. 다만 절차를 누가 정하느냐가 문제입니다.', jeongsuk: '어머... 조의금 장부는 제가 쓸게요.', minho: '근데요, 이제 우리 어떡해요?' } },
+  collapse: { title: '안 죽는다던 교주가 죽었다', body: '"나는 안 죽는다"던 사람이 죽었다. 신도들은 그 말부터 의심했다. 건강검진 안내 문자는 그 뒤로도 두 번 더 왔다.', who: ['mom', 'subin'], line: { mom: '그러게 내가 밥 제때 먹으라고 했잖아.', subin: '이거 논문 결론으로 써도 될까요.' } },
+  schism: { title: '갈라졌다', body: '파벌마다 자기가 진짜라고 했다. 길 하나를 사이에 두고 간판이 세 개 걸렸다. 글씨체는 셋 다 같았다.', who: ['dongcheol', 'subin', 'jeongsuk'], line: { dongcheol: '저희 쪽이 정통입니다. 다만 교주님 사진은 계속 걸어 두겠습니다.', subin: '이제 비교 연구가 되겠네요.', jeongsuk: '어머, 저는 세 군데 다 다닐게요.' } },
+};
+
+// 승리 화면 대사
+export const VICTORY_TEXT = {
+  title: '지구 인구 열 명 중 세 명',
+  body: (name) => `${name} 신도가 지구 인구의 30%를 넘었다. 성소 1층 치킨집은 이제 전 세계에 지점이 412개다.`,
+  who: ['mom', 'taesik', 'minho', 'jeongsuk'],
+  line: { mom: '그래서 밥은 먹었니?', taesik: '야, 아니 교주님. 이제 300만 원 안 갚아도 되지?', minho: '근데요, 다음엔 뭐 해요?', jeongsuk: '어머, 교주님~ 이건 진짜 계약 대박이에요.' },
 };

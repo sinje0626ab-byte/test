@@ -28,12 +28,12 @@ export function unlockStage(type) {
 
 // 생산할 수 없으면 이유(문자열), 가능하면 null
 export function spawnBlocker(state, type, at) {
-  if (!unlockedTypes(state).has(type)) return `${unlockStage(type)?.name} 단계에서 해금`;
-  if (isJailed(state)) return '교주 수감 중 — 생산 불가';
-  if (state.units.length >= unitCap(state)) return `유닛 보유 상한 ${unitCap(state)}명 (${stage(state).name})`;
-  if (!at || state.countries[at].followers < SPAWN_MIN_FOLLOWERS) return `신도 ${SPAWN_MIN_FOLLOWERS}명 이상인 나라에서만 생산`;
-  if (state.countries[at].banned) return '활동 금지된 나라';
-  if (state.faith < unitCost(state, type, at)) return '신앙력 부족';
+  if (!unlockedTypes(state).has(type)) return `${unlockStage(type)?.name} 단계부터 해금`;
+  if (isJailed(state)) return '교주가 수감 중이라 못 모은다';
+  if (state.units.length >= unitCap(state)) return `정원 ${unitCap(state)}명이 찼다 (${stage(state).name})`;
+  if (!at || state.countries[at].followers < SPAWN_MIN_FOLLOWERS) return `신도 ${SPAWN_MIN_FOLLOWERS}명 이상인 나라에서만 모은다`;
+  if (state.countries[at].banned) return '활동 금지라 안 된다';
+  if (state.faith < unitCost(state, type, at)) return '신앙력이 모자란다';
   return null;
 }
 
@@ -84,9 +84,9 @@ export function reachable(fromId) {
 
 export function moveUnit(state, unitId, to) {
   const unit = state.units.find((u) => u.id === unitId);
-  if (!unit) return { ok: false, message: '유닛이 없습니다.' };
-  if (unit.moved) return { ok: false, message: '이번 달에는 이미 이동했습니다.' };
-  if (!reachable(unit.at).has(to)) return { ok: false, message: '그곳까지는 갈 수 없습니다.' };
+  if (!unit) return { ok: false, message: '그런 사람 없다' };
+  if (unit.moved) return { ok: false, message: '이번 달엔 이미 이동했다' };
+  if (!reachable(unit.at).has(to)) return { ok: false, message: '거기까지는 갈 수 없다' };
   unit.at = to;
   unit.moved = true;
   return { ok: true, unit };
@@ -100,11 +100,11 @@ export function canAct(unit, state = null) {
 
 export function actUnit(state, unitId) {
   const unit = state.units.find((u) => u.id === unitId);
-  if (!unit) return { ok: false, message: '유닛이 없습니다.' };
+  if (!unit) return { ok: false, message: '그런 사람 없다' };
   const ability = ABILITIES[unit.type];
-  if (!ability?.act) return { ok: false, message: `${UNIT_TYPES[unit.type].name}은(는) 자동으로 활동합니다.` };
-  if (unit.acted) return { ok: false, message: '이번 달에는 이미 활동했습니다.' };
-  if (state.countries[unit.at].banned) return { ok: false, message: '활동 금지된 나라에서는 활동할 수 없습니다.' };
+  if (!ability?.act) return { ok: false, message: '이 사람은 알아서 움직인다' };
+  if (unit.acted) return { ok: false, message: '이번 달엔 이미 활동했다' };
+  if (state.countries[unit.at].banned) return { ok: false, message: '활동 금지라 안 된다' };
   const result = ability.act(state, unit);
   unit.acted = true;
   if (result.consumed) state.units = state.units.filter((u) => u !== unit);

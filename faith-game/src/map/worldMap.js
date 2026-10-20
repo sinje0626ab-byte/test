@@ -238,6 +238,13 @@ export function createWorldMap(container, topology) {
     flyTo([-view.rotate[0], -view.rotate[1]], k, { duration: 320 });
   }
 
+  // 처음 바다를 건널 때: 두 나라 사이를 중심으로 천천히 멀어지며 지구 전체를 보여 준다
+  function reveal(fromId, toId) {
+    const a = anchorGeo.get(fromId), b = anchorGeo.get(toId);
+    if (!a || !b) return resetView();
+    flyTo(geoInterpolate(a, b)(0.5), 1, { duration: 2600 });
+  }
+
   function resetView() {
     flyTo([-view.rotate[0], 15], 1, { duration: 700 });
   }
@@ -414,5 +421,5 @@ export function createWorldMap(container, topology) {
   resize();
   syncZoom();
 
-  return { bind, setFill, setSelected, setReach, setUnits, setMarks, pulse, flash, focus, zoomBy, resetView, spin, resize, ids: () => features.map((f) => f.id) };
+  return { bind, setFill, setSelected, setReach, setUnits, setMarks, pulse, flash, focus, zoomBy, resetView, reveal, spin, resize, ids: () => features.map((f) => f.id) };
 }

@@ -1,10 +1,10 @@
-import { world } from '../data/loader.js';
-import { difficulty } from '../religion/spread.js';
 import { choiceAvailable, textOf, resolveRevelation } from './storyEngine.js';
-import { esc, people } from '../ui/format.js';
-import { flagImg } from '../ui/flags.js';
+import { odds } from './words.js';
+import { esc } from '../ui/format.js';
+import { sayLine } from '../ui/portrait.js';
 
-// 계시 연출: 암전 → 위에서 빛줄기 → 먼지 입자 → 번호·제목 → 내레이션 한 줄씩 → 질문과 선택지
+// 계시 연출: 암전 → 위에서 빛줄기 → 먼지 입자 → 번호·제목 → 내레이션 한 줄씩 → 질문과 선택지(촛불에 비친 종이 쪽지)
+// 선택지에는 등장인물 한마디가 붙고, 정확한 효과는 (i)를 누르거나 길게 눌러야 보인다.
 // 선택을 마치면 storyEngine.resolveRevelation 으로 적용하고, 결과 문장을 보여 준 뒤 닫는다.
 // onDone(result, picks) 는 화면이 완전히 사라진 뒤 불린다.
 // '이전': 같은 계시 안에서는 앞 질문으로 돌아가고(고른 답은 남아 있다),
@@ -30,11 +30,11 @@ export function showRevelation(state, chapter, { onDone, onBack, quick = false, 
     <canvas class="rv-dust" aria-hidden="true"></canvas>
     <div class="rv-scroll">
       <div class="rv-content">
-        <div class="rv-numeral">계시 ${esc(chapter.numeral)}</div>
+        <div class="rv-numeral"><span class="rv-kicker">계시</span><span class="rv-num">${esc(chapter.numeral)}</span></div>
         <h1 class="rv-title">${esc(chapter.title)}</h1>
-        <div class="rv-narration">${chapter.narration.map((l) => `<p>${esc(l)}</p>`).join('')}</div>
+        <div class="rv-narration">${textOf(state, chapter.narration).map((l) => `<p>${esc(l)}</p>`).join('')}</div>
         <div class="rv-stage"></div>
-        <button class="rv-skip" type="button">눌러서 넘기기</button>
+        <button class="rv-skip" type="button">한 번에 다 보기</button>
       </div>
     </div>
     <button class="rv-back" type="button" hidden aria-label="이전으로">‹ 이전</button>`;
@@ -126,7 +126,6 @@ function askPart(state, part, stage, prev, ctl) {
     requestAnimationFrame(() => stage.querySelector('.rv-question').classList.add('is-in'));
     if (part.kind === 'choice') return askChoice(state, part, answer, resolve, prev);
     if (part.kind === 'text') return askText(part, answer, resolve, prev);
-    if (part.kind === 'country') return askCountry(answer, resolve, prev);
     resolve(null);
   });
 }
@@ -134,19 +133,42 @@ function askPart(state, part, stage, prev, ctl) {
 function choiceCard(state, c) {
   const ok = choiceAvailable(state, c);
   const cost = c.cost ? c.cost(state) : 0;
-  const shadow = c.dark ? `<span class="rv-shadow" title="그림자 장부에 남는다">${'●'.repeat(Math.min(4, c.dark))} 그림자</span>` : '';
+  const shadow = c.dark ? `<span class="rv-shadow" title="그림자 장부에 남는다">그림자 ${'●'.repeat(Math.min(4, c.dark))}</span>` : '';
+  const chance = c.odds ? odds(c.odds(state)) : null;
   return `<button class="rv-card" data-choice="${c.id}" ${ok === true ? '' : 'disabled'}>
-    <b>${esc(c.label)}</b>
-    <span class="rv-flavor">${esc(c.flavor ?? '')}</span>
+    <span class="rv-info" data-info role="button" tabindex="0" aria-label="정확한 효과 보기">i</span>
+    <b>${esc(textOf(state, c.label))}</b>
+    <span class="rv-flavor">${esc(textOf(state, c.flavor) ?? '')}</span>
+    ${sayLine(textOf(state, c.say), state)}
     <span class="rv-effect">${esc(textOf(state, c.effectText))}</span>
-    <span class="rv-meta">${cost ? `<span class="rv-cost">신앙력 ${cost}</span>` : ''}${shadow}${ok === true ? '' : `<span class="rv-lock">${esc(ok)}</span>`}</span>
+    <span class="rv-meta">${chance ? `<span class="rv-odds tone-${chance.tone}">${chance.label}</span>` : ''}${cost ? `<span class="rv-cost">신앙력 ${cost}</span>` : ''}${shadow}${ok === true ? '' : `<span class="rv-lock">${esc(ok)}</span>`}</span>
   </button>`;
+}
+
+// (i)를 누르거나 카드를 길게 누르면 정확한 효과를 펼친다. 펼치는 동작은 선택으로 치지 않는다.
+function bindInfo(root) {
+  let timer = null, held = false;
+  root.addEventListener('pointerdown', (e) => {
+    const card = e.target.closest('.rv-card');
+    if (!card || e.target.closest('[data-info]')) return;
+    held = false;
+    timer = setTimeout(() => { held = true; card.classList.toggle('show-fx'); }, 480);
+  });
+  const cancel = () => clearTimeout(timer);
+  root.addEventListener('pointerup', cancel);
+  root.addEventListener('pointerleave', cancel);
+  root.addEventListener('click', (e) => {
+    const info = e.target.closest('[data-info]');
+    if (info) { e.stopPropagation(); info.closest('.rv-card').classList.toggle('show-fx'); return; }
+    if (held) { e.stopPropagation(); held = false; }
+  }, true);
 }
 
 function askChoice(state, part, answer, resolve, prev) {
   const multi = part.pickCount > 1;
   answer.innerHTML = `<div class="rv-cards ${part.choices.length > 4 ? 'is-many' : ''}">${part.choices.map((c) => choiceCard(state, c)).join('')}</div>
-    ${multi ? `<div class="rv-confirm"><span class="rv-count">0 / ${part.pickCount}</span><button class="rv-btn" data-confirm disabled>울타리를 세운다</button></div>` : ''}`;
+    ${multi ? `<div class="rv-confirm"><span class="rv-count">0 / ${part.pickCount}</span><button class="rv-btn" data-confirm disabled>${esc(part.confirmLabel ?? '이걸로 한다')}</button></div>` : ''}`;
+  bindInfo(answer);
   const cards = [...answer.querySelectorAll('.rv-card')];
   cards.forEach((el, i) => setTimeout(() => el.classList.add('is-in'), reduced() ? 0 : 120 * i));
   const chosen = new Set(multi && Array.isArray(prev) ? prev : []);
@@ -183,7 +205,7 @@ function askChoice(state, part, answer, resolve, prev) {
 }
 
 function askText(part, answer, resolve, prev) {
-  answer.innerHTML = `<form class="rv-form"><input class="rv-input" maxlength="${part.maxLength ?? 20}" placeholder="${esc(part.placeholder ?? '')}" value="${esc(prev ?? '')}" autocomplete="off" aria-label="${esc(part.question)}"><button class="rv-btn" ${prev ? '' : 'disabled'}>새긴다</button></form>`;
+  answer.innerHTML = `<form class="rv-form"><input class="rv-input" maxlength="${part.maxLength ?? 20}" placeholder="${esc(part.placeholder ?? '')}" value="${esc(prev ?? '')}" autocomplete="off" aria-label="${esc(part.question)}"><button class="rv-btn" ${prev ? '' : 'disabled'}>간판에 넣는다</button></form>`;
   const form = answer.querySelector('form');
   const input = form.querySelector('input');
   const btn = form.querySelector('button');
@@ -201,53 +223,6 @@ function askText(part, answer, resolve, prev) {
   });
 }
 
-function askCountry(answer, resolve, prev) {
-  let q = '';
-  let chosen = world.countries[prev] ? prev : null;
-  answer.innerHTML = `<div class="rv-countries">
-      <input class="rv-input rv-search" type="search" placeholder="나라 또는 지역 검색" autocomplete="off" aria-label="나라 검색">
-      <div class="rv-list" role="listbox" aria-label="나라"></div>
-    </div>
-    <div class="rv-confirm"><span class="rv-count">나라를 고르라</span><button class="rv-btn" data-confirm disabled>이 땅으로</button></div>`;
-  const list = answer.querySelector('.rv-list');
-  const render = () => {
-    const ids = world.ids
-      .filter((id) => !q || world.countries[id].name.includes(q) || world.countries[id].region.includes(q))
-      .map((id) => ({ id, d: difficulty(id) }))
-      .sort((a, b) => b.d.score - a.d.score);
-    list.innerHTML = ids.map(({ id, d }) => {
-      const c = world.countries[id];
-      return `<button class="rv-country ${chosen === id ? 'is-picked' : ''}" data-id="${id}" role="option" aria-selected="${chosen === id}">
-        ${flagImg(c, 'flag flag-md')}<span><b>${esc(c.name)}</b><small>${esc(c.region)} · 인구 ${people(c.pop)} · 종교 자유도 ${c.freedom}</small></span>
-        <em class="rv-diff tone-${d.tone}">${d.label}</em></button>`;
-    }).join('') || '<p class="rv-empty">그런 땅은 없다.</p>';
-  };
-  render();
-  if (chosen) {
-    answer.querySelector('.rv-count').textContent = world.countries[chosen].name;
-    answer.querySelector('[data-confirm]').disabled = false;
-    requestAnimationFrame(() => list.querySelector('.is-picked')?.scrollIntoView({ block: 'center' }));
-  }
-  requestAnimationFrame(() => answer.querySelector('.rv-countries').classList.add('is-in'));
-  answer.querySelector('.rv-search').addEventListener('input', (e) => { q = e.target.value.trim(); render(); });
-  answer.addEventListener('click', async (e) => {
-    const row = e.target.closest('.rv-country');
-    if (row) {
-      chosen = row.dataset.id;
-      list.querySelectorAll('.rv-country').forEach((el) => el.classList.toggle('is-picked', el === row));
-      answer.querySelector('.rv-count').textContent = world.countries[chosen].name;
-      answer.querySelector('[data-confirm]').disabled = false;
-      return;
-    }
-    if (e.target.closest('[data-confirm]') && chosen) {
-      answer.closest('.revelation').querySelector('.rv-back').hidden = true;
-      answer.classList.add('is-decided');
-      await wait(700);
-      resolve(chosen);
-    }
-  });
-}
-
 // ── 결과·후기 ──
 function showOutcome(stage, chapter, result) {
   const after = chapter.afterword;
@@ -258,7 +233,7 @@ function showOutcome(stage, chapter, result) {
       ? `<div class="rv-memo"><h3>${esc(after.title)}</h3>${after.lines.map((l) => `<p>${esc(l)}</p>`).join('')}</div>`
       : after ? `<p class="rv-after">${esc(after)}</p>` : '';
     stage.innerHTML = `${result.outcome ? `<p class="rv-outcome tone-${result.tone ?? 'plain'}">${esc(result.outcome)}</p>` : ''}${memo}
-      <button class="rv-btn rv-continue">계속</button>`;
+      <button class="rv-btn rv-continue">고개를 끄덕인다</button>`;
     stage.querySelectorAll('.rv-outcome, .rv-after, .rv-memo, .rv-continue').forEach((el, i) => setTimeout(() => el.classList.add('is-in'), reduced() ? 0 : 200 + 700 * i));
     stage.querySelector('.rv-continue').addEventListener('click', () => resolve(), { once: true });
   });

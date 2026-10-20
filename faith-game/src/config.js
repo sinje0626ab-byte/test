@@ -6,10 +6,11 @@
 export const GAME = {
   title: '',                 // 게임 이름(미정). 정해지면 여기만 채운다.
   saveKey: 'faith-game-save',
-  saveVersion: 3,
+  saveVersion: 4,
+  home: '410',               // 본거지는 늘 대한민국
   startYear: 2026,
   startMonth: 1,
-  startFollowers: 3,         // 늙은 어머니, 오랜 친구, 길 잃은 낯선 사람
+  startFollowers: 3,         // 엄마, 태식, 민호
   startFaith: 12,
   leaderAge: { min: 30, max: 55, default: 41 },
 };
@@ -197,7 +198,7 @@ export const HOLY_SITE = {
 // unitPower: 유닛·기적 전파 배율 · cost: 기적·성지·선택지 비용 배율 · unitCap: 유닛 보유 상한
 // resistance: 기존 종교 저항력 배율 (세계적인 교단이 되면 더 이상 낯설지 않다)
 export const STAGES = [
-  { id: 'cult',          name: '컬트',     followers: 0,           countries: 0,  growth: 1.0,  faith: 1.0, unitPower: 1.0, resistance: 1,    cost: 1,   unitCap: 3,  unlock: ['missionary', 'relief', 'guardian'] },
+  { id: 'cult',          name: '동네 모임',     followers: 0,           countries: 0,  growth: 1.0,  faith: 1.0, unitPower: 1.0, resistance: 1,    cost: 1,   unitCap: 3,  unlock: ['missionary', 'relief', 'guardian'] },
   { id: 'new',           name: '신흥 종교', followers: 10_000,      countries: 1,  growth: 1.05, faith: 1.2, unitPower: 1.5, resistance: 1,    cost: 2.5, unitCap: 6,  unlock: ['theologian', 'witness'] },
   { id: 'international', name: '국제 교단', followers: 1_000_000,   countries: 8,  growth: 1.1,  faith: 1.4, unitPower: 2.0, resistance: 0.95, cost: 6,   unitCap: 14, unlock: [] },
   { id: 'world',         name: '세계 종교', followers: 100_000_000, countries: 30, growth: 1.15, faith: 1.6, unitPower: 2.8, resistance: 0.87, cost: 12,  unitCap: 30, unlock: [] },
@@ -289,6 +290,14 @@ export const STORY = {
 };
 
 // ── 무작위 사건 카드 ──
+// ── 바다 건너 ── 해외 한인 사회가 큰 나라 (0~1). 전 세계 신도 1,000명부터, 그 나라 신도 비율이 cap 아래면 전파·증가 × (1 + w × bonus)
+export const DIASPORA = {
+  weights: { '840': 1, '156': 1, '392': 0.9, '124': 0.6, '036': 0.5, '704': 0.6, '860': 0.5, '398': 0.4, '643': 0.4, '554': 0.4, '608': 0.4, '276': 0.25, '076': 0.2, '032': 0.2, '826': 0.2, '458': 0.2, '360': 0.2 },
+  bonus: 0.5,
+  cap: 0.0005,
+  invite: { min: 1000, seed: 25 },   // 초대장: 신도 1,000명부터 반드시 한 번. 지부를 열면 그 나라에 첫 신도 seed명
+};
+
 export const INCIDENTS = {
   firstTurn: 5,              // 이 턴부터
   minGap: 3,
@@ -307,6 +316,13 @@ export const INCIDENT_VALUES = {
   tax:         { openLoss: 0.15, openAlert: -0.1, tidyChance: 0.6, tidyAlert: -0.05, tidyFailAlert: 0.2, tidyFailUnity: -5, donateCost: 50, donateAlert: -0.05 },
   documentary: { chance: 0.55, winFollowers: 0.1, winAversion: -0.05, loseAversion: 0.15, refuseAversion: 0.03, safeCost: 35, safeFollowers: 0.05 },
   invite:      { declineUnity: 2 },
+  momSick:     { hospitalCost: 30, prayDeath: 0.5, prayUnity: 6, prayAversion: 0.12, homeUnity: -3 },
+  ticket:      { payCost: 6, payUnity: 2, ignoreAversion: 0.03, stickerAlert: 0.04, stickerTurns: 4 },
+  viral:       { turns: 6, stopUnity: -3, aversion: 0.03 },
+  quota:       { turns: 6, aversion: 0.006, calendarCost: 20, calendarAversion: 0.06, calendarUnity: 1 },
+  embezzleSilly: { alert: 0.05, unity: -3 },
+  dongcheolSulk: { unity: -3 },
+  witness:     0.05,           // 등 돌린 사람 한 명당 압수수색 대응 성공률 감소
   warning:     { auditCost: 20, auditAlert: -0.15, ignoreAlert: 0.03, signAversion: -0.05, signAlert: -0.05 },
   exodus:      { retreatCost: 20, turns: 6, letGoLoss: 0.06 },
   debate:      { chance: 0.5, winFollowers: 0.08, winAversion: -0.05, loseAversion: 0.12 },

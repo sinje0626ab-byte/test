@@ -12,11 +12,11 @@ export const miracleCost = (state) => Math.round(MIRACLE.cost * stageCostMul(sta
 
 export function miracleBlocker(state, id) {
   const cs = state.countries[id];
-  if (!state.religion.home) return '아직 본거지가 없습니다';
-  if (cs.banned) return '활동 금지된 나라';
-  if (cs.followers <= 0) return '신도가 있는 나라에서만';
-  if (state.turn < state.miracleReadyTurn) return `${state.miracleReadyTurn - state.turn}턴 뒤 가능`;
-  if (state.faith < miracleCost(state)) return '신앙력 부족';
+  if (!state.religion.home) return '아직 성소가 없다';
+  if (cs.banned) return '활동 금지라 안 된다';
+  if (cs.followers <= 0) return '신도가 있는 나라에서만 된다';
+  if (state.turn < state.miracleReadyTurn) return `${state.miracleReadyTurn - state.turn}달 뒤에 다시`;
+  if (state.faith < miracleCost(state)) return '신앙력이 모자란다';
   return null;
 }
 
@@ -36,13 +36,13 @@ export const holySiteCount = (state) => Object.keys(state.holySites ?? {}).lengt
 export const holySiteCost = (state) => Math.round(HOLY_SITE.cost * (1 + HOLY_SITE.perSite * holySiteCount(state)) * stageCostMul(state));
 
 export function holySiteBlocker(state, id) {
-  if (!state.flags.holySites) return '계시 VI 이후 해금';
-  if (state.holySites[id]) return '이미 성지가 있습니다';
+  if (!state.flags.holySites) return '금고 문제를 정한 뒤에 (계시 VI)';
+  if (state.holySites[id]) return '이미 성지가 있다';
   const cs = state.countries[id];
-  if (cs.banned) return '활동 금지된 나라';
-  if (cs.followers < HOLY_SITE.minFollowers) return `신도 ${HOLY_SITE.minFollowers.toLocaleString('ko-KR')}명 이상 필요`;
-  if (isJailed(state)) return '교주 수감 중';
-  if (state.faith < holySiteCost(state)) return '신앙력 부족';
+  if (cs.banned) return '활동 금지라 안 된다';
+  if (cs.followers < HOLY_SITE.minFollowers) return `신도 ${HOLY_SITE.minFollowers.toLocaleString('ko-KR')}명은 있어야 한다`;
+  if (isJailed(state)) return '교주가 수감 중이다';
+  if (state.faith < holySiteCost(state)) return '신앙력이 모자란다';
   return null;
 }
 

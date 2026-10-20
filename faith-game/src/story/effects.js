@@ -1,4 +1,4 @@
-import { STORY, HOLY_SITE, STAGES } from '../config.js';
+import { STORY, HOLY_SITE, STAGES, DIASPORA } from '../config.js';
 
 // 계시·사건이 남기는 지속 효과 정의. state.extraModifiers 에는 ref 문자열만 저장되고
 // 실제 수정자({ mods, add })는 이 표에서 만든다 (함수는 저장할 수 없으므로).
@@ -86,7 +86,18 @@ export const EFFECTS = {
   'incident:rumor': { mods: { growth: 1.15 } },
   'incident:scandal': { mods: { growth: 0.8 } },
   'incident:feud': { mods: { attrition: 1.25 } },
+  'incident:viral': { mods: { growth: onlyHome(1.2) } },
+  'incident:quota': { mods: { growth: 1.2 }, add: { aversionGain: 0.006 } },
+  'incident:sticker': { mods: { unitPower: onlyHome(1.1) } },
 };
+
+// 해외 한인 사회: 교단이 초대장을 받을 만큼 커진 뒤(신도 1,000명), 그 나라 우리 비율이 작을 때만
+// 전파·증가 보너스 (첫 진출을 돕는다. 처음부터 주면 이웃 나라로 너무 일찍 번진다)
+const diasporaBoost = (c, s, share) => {
+  const w = c ? DIASPORA.weights[c.id] : 0;
+  return w && share < DIASPORA.cap && total(s) >= DIASPORA.invite.min ? 1 + w * DIASPORA.bonus : 1;
+};
+export const diasporaSource = { mods: { unitPower: diasporaBoost, growth: diasporaBoost } };
 
 // 성지: state.holySites 에 있는 나라마다 영구 보너스
 export function holySiteSource(state) {

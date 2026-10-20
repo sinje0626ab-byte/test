@@ -2,6 +2,7 @@ import { GAME, UNITY, LEADER } from '../config.js';
 import { DEFAULT_EMBLEM } from '../religion/emblems.js';
 import { seedState } from './rng.js';
 import { world } from '../data/loader.js';
+import { createCast, CAST_ORDER, CAST } from '../story/cast.js';
 
 // localStorage 저장. 실패해도(사생활 보호 모드 등) 게임은 계속된다.
 // 저장 형식이 바뀌면 saveVersion을 올리고 MIGRATIONS에 변환 함수를 추가한다.
@@ -27,6 +28,20 @@ const MIGRATIONS = {
       rng: seedState(),
       defeatReason: s.result === 'defeat' ? 'followers' : null,
     };
+  },
+  // 한국 고정 + 등장인물. 본거지가 아직 없으면 계시 II 에서 대한민국으로 정해진다.
+  // 이미 다른 나라에서 하던 판은 그대로 둔다. 합류 조건을 이미 채운 사람은 합류한 것으로 본다.
+  3: (s) => {
+    const cast = createCast(s.leader?.age ?? GAME.leaderAge.default);
+    if (s.religion.home) {
+      for (const id of CAST_ORDER) if (CAST[id].joins(s)) cast[id] = { ...cast[id], status: 'active', since: s.turn };
+    }
+    const flags = { ...(s.flags ?? {}) };
+    if (s.religion.home) {
+      const abroad = Object.keys(s.countries).find((id) => id !== s.religion.home && s.countries[id].followers >= 1);
+      if (abroad) flags.abroad = abroad;
+    }
+    return { ...s, version: 4, cast, flags };
   },
 };
 
