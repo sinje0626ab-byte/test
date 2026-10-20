@@ -1,0 +1,132 @@
+// 성소: 자리·분위기·소품·예배·헌금·월세·신도 돌보기
+import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR } from '../config.js';
+import { rand } from './rng.js';
+import { clamp, addMoney, shiftBelief } from './leader.js';
+import { setStage, activeCast } from './faith.js';
+import { isWorshipDay } from './clock.js';
+
+export const seats = (s) => SANCTUARY.baseSeats + Object.entries(s.sanctuary.props).reduce((n, [k, c]) => n + SHOP[k].seats * c, 0);
+export const mood = (s) => Object.entries(s.sanctuary.props).reduce((n, [k, c]) => n + SHOP[k].mood * c, 0);
+
+export function canBuy(s, item) {
+  const have = s.sanctuary.props[item] ?? 0;
+  if (have >= SHOP[item].max) return { ok: false, reason: 'max' };
+  if (s.leader.money < SHOP[item].price) return { ok: false, reason: 'money' };
+  return { ok: true };
+}
+
+export function buy(s, item) {
+  const c = canBuy(s, item);
+  if (!c.ok) return c;
+  addMoney(s, -SHOP[item].price);
+  s.sanctuary.props[item] = (s.sanctuary.props[item] ?? 0) + 1;
+  return { ok: true };
+}
+
+// 아침에 정한다: 오늘 저녁 성소에 올 사람 (예배 날만)
+export function decideAttendance(s) {
+  s.attend = [];
+  if (!isWorshipDay(s.day)) return;
+  for (const [id, st] of Object.entries(s.res)) {
+    if (st.sus >= RUMOR.refuseSus) continue;
+    if (st.stage === 'visitor' && st.attendDay <= s.day) s.attend.push(id);
+    else if ((st.stage === 'newcomer' || st.stage === 'member') && rand(s) < 0.9) s.attend.push(id);
+  }
+}
+
+export const canWorship = (s) => isWorshipDay(s.day) && s.sanctuary.worshipDay !== s.day;
+
+// 예배. opts.fast (금식 권하기) · opts.doubleBasket (헌금 바구니 한 바퀴 더)
+export function holdWorship(s, opts = {}) {
+  const fx = SECT_FX[s.leader.sect];
+  const named = s.attend.filter((id) => ['visitor', 'newcomer', 'member'].includes(s.res[id].stage));
+  const heads = named.length + activeCast(s).length + s.followers;
+  const seatN = seats(s);
+  const standing = Math.max(0, heads - seatN);
+  const m = mood(s);
+  const crowd = standing > 0 ? 0.85 : 1;
+  const promoted = [];
+  const needLike = STAGES.memberLike - (fx.convert - 1) * 40;
+  for (const id of named) {
+    const st = s.res[id];
+    st.like = clamp(st.like + SANCTUARY.worship.faithGain * fx.worship * (1 + m / 40) * crowd * (opts.fast ? 1.3 : 1));
+    st.worships++;
+    if (st.stage === 'visitor') { setStage(s, id, 'newcomer'); promoted.push([id, 'newcomer']); }
+    else if (st.stage === 'newcomer' && st.worships >= STAGES.memberWorships && st.like >= needLike) { setStage(s, id, 'member'); promoted.push([id, 'member']); }
+    st.attendDay = -1;
+  }
+  let offering = heads * SANCTUARY.worship.offeringPerHead * fx.offering * (1 + m * SANCTUARY.worship.moodOffering);
+  if (opts.doubleBasket) {
+    offering *= 1.4;
+    shiftBelief(s, -8);
+    s.shadow.push({ kind: 'doubleBasket', due: s.day + 3, ids: named });
+    for (const c of activeCast(s)) s.cast[c].sus = clamp(s.cast[c].sus + 8);
+  }
+  if (opts.fast) {
+    shiftBelief(s, 8);
+    s.shadow.push({ kind: 'fast', due: s.day + 2, ids: named });
+  }
+  offering = Math.round(offering / 1000) * 1000;
+  addMoney(s, offering);
+  s.week.offering += offering;
+  s.week.worships.push({ day: s.day, heads, named: named.length, standing });
+  s.sanctuary.worshipDay = s.day;
+  s.sanctuary.lastAttend = named;
+  s.leader.nightFatigue = (s.leader.nightFatigue ?? 0) + 10;
+  return { heads, named, standing, seats: seatN, offering, promoted };
+}
+
+// 밤에 신도 한 명 돌보기
+export function care(s, id) {
+  const st = s.res[id];
+  st.like = clamp(st.like + SANCTUARY.care.like);
+  st.sus = clamp(st.sus - 4);
+  st.cared = s.day;
+  s.leader.nightFatigue = (s.leader.nightFatigue ?? 0) + SANCTUARY.care.fatigue;
+}
+
+export function vigil(s) {
+  shiftBelief(s, 10);
+  s.leader.nightFatigue = (s.leader.nightFatigue ?? 0) + 40;
+  for (const [id, st] of Object.entries(s.res)) if (st.stage === 'member') s.res[id].like = clamp(st.like + 3);
+}
+
+// 월세 (월말 밤). choice: 'promise' | 'borrow' (돈이 모자랄 때만)
+export function payRent(s, choice = 'promise') {
+  const rent = SANCTUARY.rent;
+  let borrowed = null;
+  if (s.leader.money < rent && choice === 'borrow') {
+    const pool = Object.keys(s.res).filter((id) => s.res[id].stage === 'member').sort((a, b) => s.res[b].like - s.res[a].like);
+    const lender = pool[0] ?? null;
+    if (lender) {
+      const amt = rent - s.leader.money;
+      addMoney(s, amt);
+      borrowed = { id: lender, amount: amt };
+      shiftBelief(s, -6);
+      s.shadow.push({ kind: 'borrow', due: s.day + 5, id: lender });
+      for (const c of activeCast(s)) s.cast[c].sus = clamp(s.cast[c].sus + 6);
+    }
+  }
+  if (s.leader.money >= rent) {
+    addMoney(s, -rent);
+    s.sanctuary.arrears = 0;
+    s.sanctuary.rentStreak++;
+    s.week.rent = { paid: true, amount: rent, borrowed };
+  } else {
+    s.sanctuary.arrears++;
+    s.sanctuary.rentStreak = 0;
+    s.week.rent = { paid: false, amount: rent, arrears: s.sanctuary.arrears };
+  }
+  return s.week.rent;
+}
+
+// 장부: 주보에 신도 수를 부풀려 적는다 (지금 평판 +, 나흘 뒤 대가)
+export function inflate(s) {
+  if (s.flags.inflatedWeek === s.bulletinNo) return { ok: false };
+  s.flags.inflatedWeek = s.bulletinNo;
+  s.rep = clamp(s.rep + 6);
+  shiftBelief(s, -6);
+  s.shadow.push({ kind: 'inflate', due: s.day + 4 });
+  for (const c of activeCast(s)) s.cast[c].sus = clamp(s.cast[c].sus + 4);
+  return { ok: true };
+}
