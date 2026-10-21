@@ -1,15 +1,16 @@
 // 3단계 '바깥의 위협': 노출 · 기자 · 신도 가족 시위 · 탈퇴자 · 기성 종교 공개 대응 · 행정.
 // 위협은 동네 맵의 사람(x:reporter, 시위하는 가족, 탈퇴자)과 물건(현수막·안내문)으로 보인다. 화면과 노드 봇이 같은 함수를 쓴다.
 // 위치는 일과(targetKey)로 본다 → 화면에서 실제로 걷는 자리와 같다.
-import { EXPOSURE, REPORTER, PROTEST, DEFECTOR, NOTICE, ADMIN, PHASE3 } from '../config.js';
-import { RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
-import { CLERGY } from '../data/clergy.js';
+import { EXPOSURE, REPORTER, PROTEST, DEFECTOR, NOTICE, ADMIN, PHASE3, PHASE4 } from '../config.js';
+import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
+import { CLERGY, CLERGY_B } from '../data/clergy.js';
+import { districtOfPlace } from '../data/places.js';
 import { REPORTER_INFO, INTERVIEW, REPORT, PROTEST_TEXT, DEFECTOR_TEXT, NOTICE_TEXT, ADMIN_TEXT } from '../data/threats.js';
 import { rand, pick } from './rng.js';
 import { clamp, addMoney, addFatigue, shiftBelief, josaFix } from './leader.js';
 import { relationsOf, setStage, namedMembers, memberCount } from './faith.js';
-import { targetKey } from './residents.js';
-import { resolveKey } from './grid.js';
+import { targetKey, gridFor } from './residents.js';
+import { resolveKey, gridOf } from './grid.js';
 import { roomPower } from './space.js';
 import { activeOfficers, officerById } from './officers.js';
 import { isWeekend } from './clock.js';
@@ -23,9 +24,9 @@ const outside = (g, key) => !resolveKey(g, key).inside;
 // 그 시각 바깥에 있는 주민들의 자리
 function outdoorAt(s, g, minute) {
   const out = [];
-  for (const r of RESIDENTS) {
+  for (const r of s.phase >= 4 ? ALL_RESIDENTS : RESIDENTS) {
     const key = targetKey(s, g, r.id, minute);
-    if (outside(g, key)) out.push({ id: r.id, key });
+    if (outside(gridFor(r.id, g), key)) out.push({ id: r.id, key });
   }
   return out;
 }
@@ -35,7 +36,7 @@ export function dailyExposure(s) {
   if (s.phase < 3) return;
   const sore = soreDefectors(s).length;
   const recentDark = s.darkLog.filter((d) => s.day - d < EXPOSURE.darkDays).length;
-  let target = EXPOSURE.base + Math.max(0, 60 - s.rep) * EXPOSURE.repWeight + memberCount(s) * EXPOSURE.perMember
+  let target = EXPOSURE.base + Math.max(0, 60 - s.rep) * EXPOSURE.repWeight + Math.min(memberCount(s), s.phase >= 4 ? 150 : Infinity) * EXPOSURE.perMember
     + roomPower(s, 'dorm') * EXPOSURE.dorm + roomPower(s, 'broadcast') * EXPOSURE.broadcast
     + sore * EXPOSURE.defector + recentDark * EXPOSURE.dark
     + (s.meeting?.big && s.day - s.meeting.day < 3 ? EXPOSURE.meeting : 0)
@@ -147,7 +148,7 @@ function reporterDaily(s, events) {
 
 function publishReport(s, heatIn) {
   const C = REPORTER.report;
-  let heat = heatIn * (PHASE3.sectFx[s.leader.sect]?.heat ?? 1);
+  let heat = heatIn * ((s.phase >= 4 ? PHASE4.sectFx : PHASE3.sectFx)[s.leader.sect]?.heat ?? 1);   // 유형별 보정은 단계마다 따로
   if (s.revelations.camera?.includes('open')) heat *= 0.8;
   if (s.revelations.camera?.includes('spin')) heat *= 0.6;
   const level = heat >= C.high ? 'high' : heat >= C.low ? 'mid' : 'low';
@@ -155,7 +156,7 @@ function publishReport(s, heatIn) {
   s.rep = clamp(s.rep - (heat / C.rep + C.repBase));
   for (const id of namedMembers(s)) s.res[id].sus = clamp(s.res[id].sus + heat / C.sus);
   for (const rr of RESIDENTS) if (s.res[rr.id].stage === 'none') s.res[rr.id].sus = clamp(s.res[rr.id].sus + heat / (C.sus * 2));
-  const lost = Math.round(s.followers * (heat / C.followers) / 100);
+  const lost = Math.round(s.followers * (heat / C.followers) / 100 * (s.phase >= 4 ? 0.5 : 1));   // 4단계는 기사가 두 동네로 나뉘어 덜 퍼진다
   s.followers = Math.max(0, s.followers - lost);
   s.reporter.reports++;
   s.flags.reportCalmUntil = s.day + 4;
@@ -172,13 +173,15 @@ function protestDaily(s, g, events) {
   const P = s.protest;
   if (P && !P.done && P.day === s.day) {
     if (!P.resolved) {
-      s.rep = clamp(s.rep + PROTEST.rep);
+      const bong = RESIDENT_BY_ID[P.id].district === 'bongcheon';      // 봉천동 가족은 지부 앞에서
+      if (bong) s.repB = clamp(s.repB + PROTEST.rep); else s.rep = clamp(s.rep + PROTEST.rep);
       s.landlordAnger += PROTEST.anger;
       s.admin.complaints += 5;
-      const door = resolveKey(g, 'sanctuary:door').tile;
-      for (const r of RESIDENTS) {
+      const pg = gridFor(P.id, g);
+      const door = resolveKey(pg, bong ? 'b_branch:door' : 'sanctuary:door').tile;
+      for (const r of bong ? RESIDENTS_B : RESIDENTS) {
         if (r.id === P.id || s.res[r.id].stage === 'member') continue;
-        const seen = [10, 13, 16].some((h) => { const t = resolveKey(g, targetKey(s, g, r.id, h * 60)).tile; return Math.abs(t[0] - door[0]) + Math.abs(t[1] - door[1]) <= 8; });
+        const seen = [10, 13, 16].some((h) => { const t = resolveKey(pg, targetKey(s, g, r.id, h * 60)).tile; return Math.abs(t[0] - door[0]) + Math.abs(t[1] - door[1]) <= 8; });
         if (seen) s.res[r.id].sus = clamp(s.res[r.id].sus + PROTEST.passSus);
       }
       s.flags.protestIgnored = (s.flags.protestIgnored ?? 0) + 1;
@@ -321,13 +324,15 @@ export function answerDefector(s, id, choice) {
 }
 
 // ── 기성 종교의 공개 대응 (세 계열 같은 규칙) ──
+// 동네마다 그 동네 성직자가 그 동네 신도 수를 보고 붙인다 (세 계열 같은 규칙)
 function noticeDaily(s, events) {
-  for (const c of CLERGY) {
+  const sets = [[CLERGY, RESIDENTS, 'sillim'], ...(s.phase >= 4 ? [[CLERGY_B, RESIDENTS_B, 'bongcheon']] : [])];
+  for (const [clergy, residents, district] of sets) for (const c of clergy) {
     if (s.notices[c.id] != null) continue;
-    const n = namedMembers(s).filter((id) => c.religions.includes(RESIDENT_BY_ID[id].religion)).length;
+    const n = namedMembers(s).filter((id) => RESIDENT_BY_ID[id].district === district && c.religions.includes(RESIDENT_BY_ID[id].religion)).length;
     if (n < NOTICE.members) continue;
     s.notices[c.id] = s.day;
-    for (const r of RESIDENTS) if (c.religions.includes(r.religion) && s.res[r.id].stage !== 'member') s.res[r.id].sus = clamp(s.res[r.id].sus + NOTICE.sus);
+    for (const r of residents) if (c.religions.includes(r.religion) && s.res[r.id].stage !== 'member') s.res[r.id].sus = clamp(s.res[r.id].sus + NOTICE.sus);
     events.push({ type: 'notice', id: c.id, text: `${NOTICE_TEXT[c.id].morning} "${NOTICE_TEXT[c.id].text}"` });
     s.week.clergy.push({ id: c.id, line: `${NOTICE_TEXT[c.id].where}: "${NOTICE_TEXT[c.id].text}"` });
   }
@@ -337,11 +342,14 @@ let townGrid = null;
 export const setThreatGrid = (g) => { townGrid = g; };
 export function noticeMul(s, key) {
   if (!townGrid || !key || s.phase < 3) return 1;
+  const bong = districtOfPlace(key.split(':')[0]) === 'bongcheon';
+  const grid = bong ? gridOf('bongcheon') : townGrid;
+  if (!grid) return 1;
   let t;
-  try { t = resolveKey(townGrid, key).tile; } catch { return 1; }
-  for (const c of CLERGY) {
+  try { t = resolveKey(grid, key).tile; } catch { return 1; }
+  for (const c of bong ? CLERGY_B : CLERGY) {
     if (s.notices[c.id] == null) continue;
-    const d = townGrid.places[c.place].door;
+    const d = grid.places[c.place].door;
     if (Math.abs(d[0] - t[0]) + Math.abs(d[1] - t[1]) <= NOTICE.nearTiles) return NOTICE.nearMul;
   }
   return 1;

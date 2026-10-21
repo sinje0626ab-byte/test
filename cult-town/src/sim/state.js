@@ -1,8 +1,8 @@
 // 새 게임 상태. 상태는 JSON 으로 저장되는 평범한 객체 하나다 (Phaser·DOM 모름).
 import { GAME, CLOCK, RUMOR } from '../config.js';
-import { RESIDENTS } from '../data/residents.js';
+import { ALL_RESIDENTS } from '../data/residents.js';
 import { CAST } from '../data/cast.js';
-import { CLERGY } from '../data/clergy.js';
+import { CLERGY, CLERGY_B } from '../data/clergy.js';
 
 export function newWeek() {
   return { talks: 0, newcomers: [], members: [], worships: [], offering: 0, rent: null, clergy: [], shadow: [], left: [], repStart: null, followers: 0 };
@@ -45,6 +45,26 @@ export function v3Fields() {
   };
 }
 
+// 저장 v4 에서 생긴 칸 (4단계 봉천동 지부)
+export function v4Fields() {
+  return {
+    phase4Day: null,
+    district: 'sillim',
+    repB: RUMOR.start,
+    repLogB: [],
+    branch: { open: false, head: null, followers: 0, since: -1, worshipDay: -1, heads: 0, autonomy: 0, split: null, offering: 0 },
+  };
+}
+
+export function newResident(r) {
+  return {
+    like: 0, sus: r.leader ? 8 : 4, stage: 'none', worships: 0,
+    talked: -1, met: false, known: false, hint: null,
+    needs: { ...r.needs }, attendDay: -1, missed: 0,
+    story: { done: 0, favor: null }, lastTopic: null, rlike: 0, rival: 'none',
+  };
+}
+
 export function newGame({ leaderName, age, family, sect, cultName, seed = Date.now() % 1e9 }) {
   const s = {
     v: GAME.saveVersion,
@@ -68,17 +88,11 @@ export function newGame({ leaderName, age, family, sect, cultName, seed = Date.n
     over: null,
     ...v2Fields(),
     ...v3Fields(),
+    ...v4Fields(),
   };
-  for (const r of RESIDENTS) {
-    s.res[r.id] = {
-      like: 0, sus: r.leader ? 8 : 4, stage: 'none', worships: 0,
-      talked: -1, met: false, known: false, hint: null,
-      needs: { ...r.needs }, attendDay: -1, missed: 0,
-      story: { done: 0, favor: null }, lastTopic: null, rlike: 0, rival: 'none',
-    };
-  }
+  for (const r of ALL_RESIDENTS) s.res[r.id] = newResident(r);
   for (const c of CAST) s.cast[c.id] = { sus: 0, talkIdx: 0, active: true };
-  for (const c of CLERGY) s.clergy[c.id] = { last: -99, greetIdx: 0 };
+  for (const c of [...CLERGY, ...CLERGY_B]) s.clergy[c.id] = { last: -99, greetIdx: 0 };
   s.week.repStart = s.rep;
   return s;
 }

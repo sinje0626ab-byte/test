@@ -1,6 +1,7 @@
 // 성소: 자리·분위기·소품·예배·헌금·월세·신도 돌보기
 import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR } from '../config.js';
 import { rand } from './rng.js';
+import { districtOf } from '../data/residents.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
 import { setStage, activeCast } from './faith.js';
 import { isWorshipDay } from './clock.js';
@@ -41,7 +42,7 @@ export const canWorship = (s) => isWorshipDay(s.day) && s.sanctuary.worshipDay !
 // 예배. opts.fast (금식 권하기) · opts.doubleBasket (헌금 바구니 한 바퀴 더)
 export function holdWorship(s, opts = {}) {
   const fx = SECT_FX[s.leader.sect];
-  const named = s.attend.filter((id) => ['visitor', 'newcomer', 'member'].includes(s.res[id].stage));
+  const named = s.attend.filter((id) => ['visitor', 'newcomer', 'member'].includes(s.res[id].stage) && districtOf(id) === 'sillim');   // 봉천동 사람은 지부 예배로
   const heads = named.length + activeCast(s).length + s.followers;
   const seatN = seats(s);
   const standing = Math.max(0, heads - seatN);

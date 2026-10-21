@@ -1,12 +1,12 @@
 // 포교 대화 판정. 선택지 → 호감·의심·피로 변화와 반응 대사 키.
 // 원칙: 교주의 실제 설득 문장은 만들지 않는다. 결과는 숫자와 주민 반응으로만 보인다.
 import { TALK, RUMOR, SECT_FX, GIFT, REPEAT, CONTEXT, WEATHER } from '../config.js';
-import { RESIDENT_BY_ID } from '../data/residents.js';
+import { RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { FAMILIES, SECTS } from '../data/sects.js';
 import { LINES } from '../data/lines.js';
 import { HINTS, NEED_NAMES } from '../data/topics.js';
 import { SPECIAL_TEXT } from '../data/bulletin.js';
-import { CLERGY } from '../data/clergy.js';
+import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { rand, pick, shuffle } from './rng.js';
 import { clamp, addFatigue, exhausted, shiftBelief, addMoney } from './leader.js';
 import { checkCurious, setStage, relationsOf } from './faith.js';
@@ -22,6 +22,9 @@ import { canAskRival, askRival, ourTalkCools } from './rival.js';
 const LIKE_TRAITS = ['kind', 'simple', 'curious', 'lonely', 'cheerful', 'easygoing', 'gentle'];
 const SUS_TRAITS = ['sharp', 'careful', 'strict', 'blunt', 'stubborn', 'shrewd', 'oversee'];
 const RELIGIOUS_SPECIAL = ['doomsday', 'messiah', 'fortune', 'shaman'];   // 종교색이 드러나는 특기
+
+// 그 동네 평판 (신림동 s.rep · 봉천동 s.repB)
+export const repOf = (s, district) => (district === 'bongcheon' ? s.repB : s.rep);
 
 export function sameFamily(s, id) {
   const r = RESIDENT_BY_ID[id];
@@ -43,7 +46,7 @@ function mods(s, id) {
 // 말 걸 수 있나
 export function canTalk(s, id) {
   const st = s.res[id];
-  if (s.rep <= RUMOR.silentAt) return { ok: false, reason: 'silent' };
+  if (repOf(s, districtOf(id)) <= RUMOR.silentAt) return { ok: false, reason: 'silent' };
   if (exhausted(s)) return { ok: false, reason: 'tired' };
   if (st.sus >= RUMOR.refuseSus) return { ok: false, reason: 'refuse' };
   if (st.talked === s.day) return quickOptions(s, id).length ? { ok: true, limited: true } : { ok: false, reason: 'already' };
@@ -72,12 +75,12 @@ export function quickOptions(s, id) {
 function contextOptions(s, id, ctx) {
   const st = s.res[id];
   const key = ctx.key ?? '';
-  const place = key.split(':')[0];
+  const place = key.split(':')[0].replace(/^b_/, '');     // 봉천동 장소도 같은 종류로 본다
   const top = topNeeds(st)[0];
   const out = [];
   if (storyReady(s, id) >= 0) out.push({ id: 'story', score: 10 });
   if (ITEM_KEYS(s).length) out.push({ id: 'gift', score: 6 });
-  if (s.minute >= 11 * 60 && s.minute < 14 * 60 && ['restaurant', 'cvs'].includes(place) && s.leader.money >= -CONTEXT.lunch.money) out.push({ id: 'lunch', score: top === 'lonely' ? 8 : 5 });
+  if (s.minute >= 11 * 60 && s.minute < 14 * 60 && ['restaurant', 'cvs', 'eatery', 'food'].includes(place) && s.leader.money >= -CONTEXT.lunch.money) out.push({ id: 'lunch', score: top === 'lonely' ? 8 : 5 });
   if (s.weather?.rain && (s.inventory.umbrella ?? 0) > 0) out.push({ id: 'umbrella', score: top === 'lonely' ? 9 : 7 });
   if (s.weather?.market && place === 'market') out.push({ id: 'market', score: top === 'money' ? 9 : 6 });
   if (place === 'park' || place === 'stream') out.push({ id: 'walk', score: top === 'health' ? 9 : 5 });
@@ -92,7 +95,8 @@ export function optionsFor(s, id, ctx = {}) {
   if (st.talked === s.day) return quick;
   const sect = SECTS[s.leader.sect];
   const opts = [{ id: 'smalltalk' }, { id: 'listen' }];
-  const invitable = st.stage === 'curious' && st.like >= TALK.invite.likeGate;
+  // 봉천동 주민은 지부가 생겨야 초대할 수 있다 (모일 곳이 없다)
+  const invitable = st.stage === 'curious' && st.like >= TALK.invite.likeGate && (districtOf(id) !== 'bongcheon' || s.branch?.open);
   if (invitable) opts.push({ id: 'invite' });
   else if (st.stage === 'none' || st.stage === 'curious') opts.push({ id: 'preach' });
   opts.push({ id: 'special', special: sect.terms.special });

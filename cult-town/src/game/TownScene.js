@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import { CLOCK, MOOD } from '../config.js';
 const LOOK_MIN = 4;   // 도착하고 두리번거리는 시간 (게임분)
 import { RESIDENT_BY_ID } from '../data/residents.js';
-import { CLERGY } from '../data/clergy.js';
+import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { CAST } from '../data/cast.js';
 import { peopleOf, speedOf } from '../sim/residents.js';
 import { activityOf, emotionOf, gossipLine, JOB_ICON } from '../sim/mood.js';
@@ -46,7 +46,10 @@ export class TownScene extends Phaser.Scene {
 
   create() {
     const s = app.s;
-    const map = this.make.tilemap({ key: 'town' });
+    this.district = app.district();
+    const bong = this.district === 'bongcheon';
+    const here = app.here();
+    const map = this.make.tilemap({ key: bong ? 'bongcheon' : 'town' });
     const ts = map.addTilesetImage('urban', 'urban');
     ['ground', 'detail', 'buildings', 'deco'].forEach((n, i) => map.createLayer(n, ts, 0, 0).setDepth(i));
     map.createLayer('above', ts, 0, 0).setDepth(5000);
@@ -68,7 +71,7 @@ export class TownScene extends Phaser.Scene {
     drawWires(this, poles);
     for (const l of prop('labels')) drawGroundLabel(this, l.text, l.x * T, l.y * T, { color: l.text === '도림천' ? '#ffffff' : '#e8e4f0' });
     // 장날: 시장 위쪽에 좌판이 더 나온다
-    if (s.weather?.market) {
+    if (s.weather?.market && !bong) {
       for (const x of [18, 21, 24, 27, 30]) this.add.image(x * T, 24 * T, 'urbanSheet', 277).setOrigin(0).setDepth(3);
       drawGroundLabel(this, '오늘 장날', 24 * T, 30.5 * T, { color: '#7a3a1a', alpha: 0.85 });
     }
@@ -77,11 +80,12 @@ export class TownScene extends Phaser.Scene {
     this.sprites = {};
     this.tags = {};
     this.emos = {};
-    for (const p of peopleOf(s)) this.addPerson(p.id);
+    for (const p of this.people()) this.addPerson(p.id);
     registerPerson(this, 'p:leader', LEADER_LOOK);
-    const start = this.entry === 'sanctuary' || this.entry === 'start' ? app.g.places.sanctuary.door : this.entry;
+    const start = this.entry === 'station' ? here.places[bong ? 'b_station' : 'station'].door
+      : this.entry === 'sanctuary' || this.entry === 'start' ? (bong ? here.places.b_station.door : here.places.sanctuary.door) : this.entry;
     this.player = this.add.sprite(start[0] * T, start[1] * T - 4, 'p:leader', 0).setOrigin(0, 0);
-    this.walker = new Walker(this, this.player, app.g, 'p:leader', () => app.dpad);
+    this.walker = new Walker(this, this.player, here, 'p:leader', () => app.dpad);
     this.fx = this.add.graphics().setDepth(5050);
     this.tintRect = this.add.rectangle(0, 0, this.mapW, this.mapH, 0x000000, 0).setOrigin(0).setDepth(9000);
 
@@ -110,6 +114,9 @@ export class TownScene extends Phaser.Scene {
     app.setWeatherFx(s.weather);
   }
 
+  // 이 지도(동네)에 사는 사람만
+  people() { return peopleOf(app.s).filter((p) => (p.district ?? 'sillim') === this.district); }
+
   addPerson(id) {
     if (this.sprites[id]) return;
     const key = id.startsWith('o:') ? `p:cast:${id.slice(2)}` : `p:${id}`;
@@ -128,7 +135,7 @@ export class TownScene extends Phaser.Scene {
   // 마주치면 옆으로 비켜 지나가고, 도착하면 잠깐 두리번거린 뒤 그 자리 행동을 한다.
   placePeople(time, dt = 0) {
     const s = app.s;
-    const ids = peopleOf(s).map((p) => p.id);
+    const ids = this.people().map((p) => p.id);
     for (const id of ids) this.addPerson(id);
     for (const id of Object.keys(this.sprites)) if (!ids.includes(id)) { this.sprites[id].setVisible(false); continue; }
     const standing = new Map();
@@ -260,23 +267,28 @@ export class TownScene extends Phaser.Scene {
     const pid = P?.id;
     if (this.picketC && this.picketC.pid !== pid) { this.picketC.destroy(); this.picketC = null; }
     if (pid && !this.picketC) { this.picketC = picket(this, PROTEST_TEXT.signs[P.sign ?? 0]); this.picketC.pid = pid; }
-    const key = JSON.stringify([s.notices, s.rival?.status]);
+    const key = JSON.stringify([s.notices, s.rival?.status, s.branch?.open]);
     if (key !== this.noticeKey) {
       this.noticeKey = key;
       this.notices.removeAll(true);
       this.noticeAreas = [];
       for (const c of CLERGY) {
-        if (s.notices[c.id] == null) continue;
-        const d = app.g.places[c.place].door;
+        if (s.notices[c.id] == null || !app.here().places[c.place]) continue;
+        const d = app.here().places[c.place].door;
         const n = NOTICE_TEXT[c.id];
         this.notices.add(wallNotice(this, d[0] * T + 8, (d[1] - 1) * T - 2, `${n.kind}\n${n.short}`, { w: 70 }));
         this.noticeAreas.push({ x: d[0], y: d[1] - 1, text: `${n.where}: "${n.text}"` });
       }
       const R = rivalInfo(s);
-      if (R && ['active', 'enemy', 'truce'].includes(s.rival.status)) {
+      if (R && ['active', 'enemy', 'truce'].includes(s.rival.status) && this.district === 'sillim') {
         const d = app.g.places.office.door;
         this.notices.add(wallNotice(this, d[0] * T + 8, (d[1] - 2) * T, `4층 ${R.name}`, { bg: 0x7a3a8a, color: '#ffffff', w: 60 }));
         this.noticeAreas.push({ x: d[0], y: d[1] - 2, text: `관악로지스 빌딩 4층 "${R.name}". ${R.pitch}` });
+      }
+      // 봉천 지부 간판
+      if (s.branch?.open && this.district === 'bongcheon') {
+        const d = app.gB.places.b_branch.door;
+        this.notices.add(wallNotice(this, d[0] * T + 8, (d[1] - 3) * T, `2층 ${s.leader.cultName} 봉천`, { bg: 0xe9e2c8, color: '#3a2a1a', w: 60 }));
       }
     }
     // 말풍선: 교주 근처(12칸)에서만 들린다
@@ -301,6 +313,7 @@ export class TownScene extends Phaser.Scene {
     if (this.picketC) {
       const sp = this.sprites[this.picketC.pid];
       if (sp) this.picketC.setPosition(sp.x + 8, sp.y - 2).setDepth(5075).setVisible(sp.visible);
+      else this.picketC.setVisible(false);
     }
   }
 
@@ -402,8 +415,8 @@ export class TownScene extends Phaser.Scene {
     for (const b of this.buildings) {
       if (Math.abs(b.door - tx) <= 1 && b.y + b.h === ty) return b.place ? { kind: 'door', place: b.place } : b.shop ? { kind: 'shop', b } : null;
     }
-    for (const place of ['market', 'park', 'station', 'stream']) {
-      const d = app.g.places[place]?.door;
+    for (const place of ['market', 'park', 'station', 'stream', 'b_station', 'b_food', 'b_park']) {
+      const d = app.here().places[place]?.door;
       if (d && Math.abs(d[0] - tx) + Math.abs(d[1] - ty) <= 1) return { kind: 'door', place };
     }
     return null;

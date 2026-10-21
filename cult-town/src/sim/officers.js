@@ -6,7 +6,7 @@ import { CAST } from '../data/cast.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { CAST_OFFICERS, TRAIT_MAP, TRAITS, AGENDAS, DISCONTENT_TEXT } from '../data/officers.js';
 import { rand, pick } from './rng.js';
-import { clamp, addMoney, shiftBelief } from './leader.js';
+import { clamp, addMoney, shiftBelief, josaFix } from './leader.js';
 import { setStage } from './faith.js';
 
 const h32 = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619); return (h >>> 0) / 4294967296; };
@@ -61,6 +61,7 @@ export function promote(s, id) {
 export function assign(s, oid, where) {
   const o = officerById(s, oid);
   if (!o || o.left) return;
+  if (s.branch?.head === o.id && where !== 'branch') return;     // 지부장은 '봉천 지부' 메뉴에서만 바꾼다
   // 방 하나에 간부 한 명
   if (where?.startsWith('room:')) for (const x of activeOfficers(s)) if (x.assign === where) x.assign = null;
   o.assign = where;
@@ -72,6 +73,7 @@ export function streetTick(s) {
   for (const o of activeOfficers(s)) {
     if (o.assign !== 'street') continue;
     const pool = Object.keys(s.res).filter((id) => {
+      if (id.startsWith('b_')) return false;          // 낮 포교 간부는 신림동을 돈다
       const st = s.res[id];
       return st.stage !== 'member' && st.sus < RUMOR.refuseSus && (!s.pos[id] || !s.pos[id].inside);
     });
@@ -116,16 +118,16 @@ export function dailyOfficers(s, darkToday = 0) {
       if (o.kind === 'cast') s.cast[o.id].active = false;
       else setStage(s, o.id, 'curious');
       s.shadow.push({ kind: 'expose', due: s.day + OFFICERS.exposeDays, oid: o.id, name: o.name });
-      out.push({ type: 'officerLeft', oid: o.id, text: DISCONTENT_TEXT.leave.replaceAll('{이름}', o.name) });
+      out.push({ type: 'officerLeft', oid: o.id, text: josaFix(DISCONTENT_TEXT.leave.replaceAll('{이름}', o.name)) });
     } else if (o.discontent >= OFFICERS.factionAt && !o.faction) {
       o.faction = true;
       for (const [, st] of Object.entries(s.res)) if (st.stage === 'member' && rand(s) < 0.35) st.sus = clamp(st.sus + OFFICERS.factionSus);
-      out.push({ type: 'faction', oid: o.id, text: DISCONTENT_TEXT.faction.replaceAll('{이름}', o.name) });
+      out.push({ type: 'faction', oid: o.id, text: josaFix(DISCONTENT_TEXT.faction.replaceAll('{이름}', o.name)) });
     } else if (o.discontent >= OFFICERS.embezzleAt && rand(s) < 0.3) {
       const amt = Math.round(Math.max(0, s.leader.money) * OFFICERS.embezzleShare / 1000) * 1000;
       if (amt > 0) {
         addMoney(s, -amt);
-        out.push({ type: 'embezzle', oid: o.id, text: DISCONTENT_TEXT.embezzle.replaceAll('{이름}', o.name).replace('{돈}', `${amt.toLocaleString('ko-KR')}원`) });
+        out.push({ type: 'embezzle', oid: o.id, text: josaFix(DISCONTENT_TEXT.embezzle.replaceAll('{이름}', o.name)).replace('{돈}', `${amt.toLocaleString('ko-KR')}원`) });
       }
     }
     if (o.discontent < OFFICERS.factionAt - 15) o.faction = false;

@@ -1,6 +1,6 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
-import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, OFFICERS, REPORTER } from '../config.js';
-import { RESIDENT_BY_ID } from '../data/residents.js';
+import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, PHASE4, OFFICERS, REPORTER } from '../config.js';
+import { RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { CLERGY } from '../data/clergy.js';
 import { SECTS } from '../data/sects.js';
 import { BULLETIN, SHADOW } from '../data/bulletin.js';
@@ -19,6 +19,8 @@ import { newWeek } from './state.js';
 import { dailyThreats, morningThreats, addDefectors, inspect } from './threats.js';
 import { rivalDaily, rivalWeekly, rivalMajority, rivalResolved } from './rival.js';
 import { DEFECTOR_TEXT } from '../data/threats.js';
+import { dailyBranch } from './branch.js';
+import { branchCount } from './faith.js';
 
 export function startDay(s, g) {
   s.minute = CLOCK.dayStart;
@@ -74,6 +76,7 @@ function applyLateShadow(s, sh) {
     case 'adminLater': sh.text = inspect(s, true); break;
     case 'hush': s.rep = clamp(s.rep - 8); s.exposure = clamp(s.exposure + 10); if (s.defectors[sh.id]) s.defectors[sh.id].hushed = false; if (s.reporter.active) s.reporter.heat += 6; break;
     case 'spin': s.rep = clamp(s.rep - 8); s.exposure = clamp(s.exposure + 8); break;
+    case 'branch_visit': s.repB = clamp(s.repB - 8); break;
     case 'rumor': s.rep = clamp(s.rep - 6); if (s.rival && s.rival.status === 'active') s.rival.status = 'enemy'; break;
     default: break;
   }
@@ -95,11 +98,12 @@ function weeklyFollowers(s) {
   let gained = 0;
   for (const id of namedMembers(s)) {
     const have = s.followerOf[id] ?? 0;
-    const F = s.phase >= 3 ? PHASE3.followers : STAGES.phase2Followers;
+    const F = s.phase >= 4 ? PHASE4.followers : s.phase >= 3 ? PHASE3.followers : STAGES.phase2Followers;
     const cap = s.phase >= 2 ? F.cap : STAGES.followerCapPerMember;
     const chance = (s.phase >= 2 ? F.chance * (s.phase >= 3 ? PHASE3.sectFx[s.leader.sect]?.followers ?? 1 : 1) : STAGES.followersPerMemberWeek) + followerBonus(s);
     if (have < cap && rand(s) < chance) {
-      s.followerOf[id] = have + 1; s.followers++; gained++;
+      s.followerOf[id] = have + 1; gained++;
+      if (districtOf(id) === 'bongcheon') s.branch.followers++; else s.followers++;
     }
   }
   if (s.rep < 30 && s.followers > 0) s.followers = Math.max(0, s.followers - Math.ceil(s.followers * 0.1));
@@ -133,6 +137,12 @@ export function endDay(s, g, opts = {}) {
     events.push(...dailyThreats(s, g));
     events.push(...rivalDaily(s));
   }
+  if (s.phase >= 4) {
+    const b = dailyBranch(s);
+    events.push(...b.events);
+    if (b.split) s.flags.branchSplit = true;
+    s.repLogB = [...s.repLogB, Math.round(s.repB)].slice(-7);
+  }
   s.flags.darkToday = 0;
   if (s.flags.quietSign) for (const st of Object.values(s.res)) st.sus = clamp(st.sus - 1);
 
@@ -154,6 +164,7 @@ export function endDay(s, g, opts = {}) {
   let phaseUp = false;
   if (s.over === 'phase1') { s.over = null; s.phase = 2; initOfficers(s); phaseUp = 2; }
   if (s.over === 'phase2') { s.over = null; s.phase = 3; s.phase3Day = s.day; phaseUp = 3; }
+  if (s.over === 'phase3') { s.over = null; s.phase = 4; s.phase4Day = s.day; s.repB = RUMOR.start; s.reporter.reports = 0; phaseUp = 4; }   // 보도 누적은 4단계에서 새로 센다
   const revelation = s.over ? null : dueRevelation(s);
   let event = null;
   if (!s.over) {
@@ -181,9 +192,16 @@ export function checkOver(s) {
     return null;
   }
   if (rivalMajority(s, PHASE3.rivalMajority)) return 'rival';
-  if (s.rep <= REPORTER.pressFail.rep && s.reporter.reports >= REPORTER.pressFail.reports) return 'press';
-  const floor7 = s.repLog.length >= 7 ? Math.min(...s.repLog) : 0;
-  if (memberCount(s) >= PHASE3.members && s.rep >= PHASE3.rep && floor7 >= PHASE3.repFloor7 && rivalResolved(s)) return 'win';
+  if (s.rep <= REPORTER.pressFail.rep && s.reporter.reports >= REPORTER.pressFail.reports + (s.phase >= 4 ? 1 : 0)) return 'press';   // 4단계는 보도 세 번부터
+  if (s.phase === 3) {
+    const floor7 = s.repLog.length >= 7 ? Math.min(...s.repLog) : 0;
+    if (memberCount(s) >= PHASE3.members && s.rep >= PHASE3.rep && floor7 >= PHASE3.repFloor7 && rivalResolved(s)) return 'phase3';
+    return null;
+  }
+  // 4단계
+  if (s.flags.branchSplit) return 'split';
+  if (s.repB <= RUMOR.silentAt) return 'silentB';
+  if (memberCount(s) >= PHASE4.members && branchCount(s) >= PHASE4.branch && s.rep >= PHASE4.rep && s.repB >= PHASE4.rep) return 'win';
   return null;
 }
 

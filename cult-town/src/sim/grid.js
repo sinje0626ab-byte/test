@@ -84,5 +84,10 @@ export function resolveKey(g, key) {
     if (!t) throw new Error(`모르는 자리: ${key}`);
     return { tile: t, inside: false };
   }
-  return { tile: p.door, inside: !['station', 'stream', 'park', 'market'].includes(place) };
+  return { tile: p.door, inside: !['station', 'stream', 'park', 'market', 'b_park', 'b_food'].includes(place) };
 }
+
+// 동네마다 격자 (4단계 봉천동). 앱과 시뮬레이터가 시작할 때 등록한다
+const GRIDS = {};
+export const registerGrid = (district, g) => { GRIDS[district] = g; };
+export const gridOf = (district) => GRIDS[district] ?? null;

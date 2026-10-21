@@ -7,6 +7,8 @@
 //   look: base(RPG Urban 몸 틀 0~5) · hair(모양) · hairColor · skin · top · bottom (game/people.js 가 합성)
 //   greet: 처음 말 걸 때 그 사람만의 한마디 (2개 중 하나)
 
+import { RESIDENTS_B, RELATIONS_B } from './residents-bongcheon.js';
+
 export const RESIDENTS = [
   {
     id: 'tong', name: '정순자', age: 68, gender: 'f', job: '통장', leader: true,
@@ -313,6 +315,7 @@ export const RESIDENTS = [
 // 관계: [가, 나, 종류] (양쪽 모두에게 적용)
 //   family: 가족 (한쪽이 신도가 되면 다른 쪽 의심이 오른다) · friend: 친구 · coworker: 동료
 export const RELATIONS = [
+  ...RELATIONS_B,
   ['tong', 'seokgu', 'family'],
   ['pharmacist', 'haeun', 'family'],
   ['mikyung', 'taeyang', 'family'],
@@ -340,4 +343,10 @@ export const RELATIONS = [
   ['eunbi', 'pharmacist', 'coworker'],
 ];
 
-export const RESIDENT_BY_ID = Object.fromEntries(RESIDENTS.map((r) => [r.id, r]));
+// 4단계 봉천동 주민까지 (RESIDENTS 는 신림동만. 1~3단계 규칙은 RESIDENTS 로 돈다)
+for (const r of RESIDENTS) r.district = 'sillim';
+for (const r of RESIDENTS_B) r.district = 'bongcheon';
+export { RESIDENTS_B };
+export const ALL_RESIDENTS = [...RESIDENTS, ...RESIDENTS_B];
+export const RESIDENT_BY_ID = Object.fromEntries(ALL_RESIDENTS.map((r) => [r.id, r]));
+export const districtOf = (id) => RESIDENT_BY_ID[id]?.district ?? (id.startsWith('c:b_') ? 'bongcheon' : 'sillim');

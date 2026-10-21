@@ -3,10 +3,12 @@
 // Tiled gid = 번호 + 1. 길찾기 비용은 map.properties 'cost' (행마다 숫자, 0 = 못 감).
 // 골목 소품(전봇대·주차 차량·분리수거함·화분·자전거)은 시드 고정 난수로 골목마다 흩뿌린다.
 import { writeFileSync } from 'node:fs';
-import {
-  W, H, GROUND, CROSSWALKS, BUILDINGS, PROPS, SPOTS, STATION_EXITS, LABELS, DEAD_ENDS, ROWS, ROW_H, ROAD_V, WALK_V, SANCTUARY,
-} from '../src/map/layout.js';
 import { SPACE_MAPS } from '../src/map/interiors.js';
+
+// 어느 동네를 뽑나: 인자 없으면 신림동(layout.js) + 성소 실내, 'bongcheon' 이면 layout-bongcheon.js
+const which = process.argv[2] ?? 'town';
+const L = await import(which === 'town' ? '../src/map/layout.js' : `../src/map/layout-${which}.js`);
+const { W, H, GROUND, CROSSWALKS, BUILDINGS, PROPS, SPOTS, STATION_EXITS, LABELS, DEAD_ENDS, ROWS, ROW_H, WALK_V, EXTRA_PLACES, START, MAP_ID, MAP_CREDIT } = L;
 
 const out = (name) => new URL(`../src/map/${name}`, import.meta.url);
 
@@ -79,7 +81,8 @@ BUILDINGS.forEach((b, i) => {
   const roofH = Math.max(1, b.h - floors);
   const facade = b.h - roofH;
   const R = ROOF[hash(i) % 2];
-  const wallName = b.wall ?? (b.place === 'church' ? 'red' : b.place === 'temple' ? 'orange' : WALLS[hash(i + 7) % WALLS.length]);
+  const base = b.place?.replace(/^b_/, '');   // 봉천동 장소는 b_ 를 떼고 같은 모양
+  const wallName = b.wall ?? (base === 'church' ? 'red' : base === 'temple' ? 'orange' : WALLS[hash(i + 7) % WALLS.length]);
   const Wl = WALL[wallName];
   const doorX = b.door ?? b.x + Math.floor(b.w / 2);
   const col = (x, arr) => (x === b.x ? arr[0] : x === b.x + b.w - 1 ? arr[2] : arr[1]);
@@ -101,21 +104,17 @@ BUILDINGS.forEach((b, i) => {
     }
   }
   const doorY = b.y + b.h - 1;
-  deco[doorY][doorX] = isShop && b.kind !== 'mall' ? DOOR.shop : DOOR[b.place] ?? DOOR[b.kind] ?? DOOR.villa;
+  deco[doorY][doorX] = isShop && b.kind !== 'mall' ? DOOR.shop : DOOR[base] ?? DOOR[b.kind] ?? DOOR.villa;
   const entrance = [doorX, doorY + 1];
   reserved[entrance[1]][entrance[0]] = true;
   if (b.place) {
     places[b.place] = { door: entrance };
     objects.push({ id: oid++, name: b.place, type: 'door', x: entrance[0] * 16, y: entrance[1] * 16, width: 16, height: 16,
-      properties: [{ name: 'enter', type: 'string', value: b.place === 'sanctuary' ? 'sanctuary' : '' }] });
+      properties: [{ name: 'enter', type: 'string', value: b.place === 'sanctuary' || b.place === 'b_branch' ? b.place : '' }] });
   }
   buildingsOut.push({ i, x: b.x, y: b.y, w: b.w, h: b.h, roofH, floors: facade, kind: b.kind, place: b.place ?? null, shop: b.shop ?? null, signs: b.signs ?? null, door: doorX, isShop: !!isShop });
 });
-places.market_house = { door: [16, 27] };
-places.market = { door: [16, 27] };
-places.station = { door: [25, 9] };
-places.stream = { door: [24, 2] };
-places.park = { door: [7, 49] };
+for (const [k, door] of Object.entries(EXTRA_PLACES)) places[k] = { door };
 
 // 막다른 골목의 담
 for (const d of DEAD_ENDS) for (let x = d.x; x < d.x + d.w; x++) { deco[d.y][x] = PROP.fence.base; blocked[d.y][x] = true; }
@@ -187,7 +186,7 @@ for (const yb of alleyRows) {
       if (!walkable(x, yb - 1) || !walkable(x - 1, yb - 1) || !walkable(x + 1, yb - 1)) continue;
       if (x - last < 2) continue;
       // 전봇대: 골목 뒷줄 너머 건물 칸(원래 못 걷는 칸)에 세운다. 위 두 칸은 사람 위에 그려진다
-      if (x - lastPole >= 8 && yb !== 9 && blocked[yb + 1]?.[x]) { placeProp('pole', x, yb + 1, true); lastPole = x; continue; }
+      if (x - lastPole >= 8 && yb !== ROWS[0] - 1 && blocked[yb + 1]?.[x]) { placeProp('pole', x, yb + 1, true); lastPole = x; continue; }
       // 나머지 소품: 뒷줄에만, 아래로 빠지는 샛길 입구 양옆에도 안 놓는다
       if (walkable(x - 1, yb + 1) || walkable(x + 1, yb + 1)) continue;
       // 옆 한 칸만 남기고 그 너머가 막혀 있으면 주머니(막다른 칸)가 생긴다
@@ -206,7 +205,7 @@ for (const b of buildingsOut) {
 // ── 연결 검사: 걸을 수 있는 칸이 모두 한 덩어리인가 ──
 {
   const seen = grid(W, H, false);
-  const start = places.sanctuary.door;
+  const start = places[START].door;
   const q = [start]; seen[start[1]][start[0]] = true; let n = 0;
   while (q.length) {
     const [x, y] = q.pop(); n++;
@@ -265,13 +264,13 @@ const town = tiledMap(W, H, [
   { name: 'buildings', type: 'string', value: JSON.stringify(buildingsOut) },
   { name: 'labels', type: 'string', value: JSON.stringify(LABELS) },
   { name: 'cross', type: 'string', value: JSON.stringify(CROSSWALKS.flatMap((c) => { const out = []; for (let y = c.y; y < c.y + c.h; y++) for (let x = c.x; x < c.x + c.w; x++) out.push(y * W + x); return out; })) },
-  { name: 'credit', type: 'string', value: 'Tiles: Kenney RPG Urban Pack (CC0). 신림동 구조를 손으로 단순화한 배치.' },
+  { name: 'credit', type: 'string', value: MAP_CREDIT },
 ]);
-writeFileSync(out('town.json'), JSON.stringify(town));
+writeFileSync(out(`${MAP_ID}.json`), JSON.stringify(town));
 
-// ── 성소 실내 (공간 단계마다) ──
+// ── 성소 실내 (공간 단계마다, 신림동을 뽑을 때만) ──
 const I = { floor: 105, wall: 294, wallTop: 293, rug: 132, stairs: 237 };
-for (const m of SPACE_MAPS) {
+for (const m of which === 'town' ? SPACE_MAPS : []) {
   const sg = grid(m.w, m.h, I.floor);
   const sw = grid(m.w, m.h, -1);
   const sb = grid(m.w, m.h, false);
@@ -295,6 +294,5 @@ for (const m of SPACE_MAPS) {
 }
 
 const walkN = cost.split('').filter((c) => c !== '0' && c !== '\n').length;
-console.log(`town.json ${W}x${H} · 건물 ${BUILDINGS.length} · 걸을 수 있는 칸 ${walkN} · 막다른 칸 ${deadEnds} · 전봇대 ${poles.length} · 도형 소품 ${shapeProps.length}`);
-console.log(`실내 ${SPACE_MAPS.map((m) => `${m.id}(${m.w}x${m.h})`).join(' ')}`);
-void SANCTUARY; void ROAD_V;
+console.log(`${MAP_ID}.json ${W}x${H} · 건물 ${BUILDINGS.length} · 걸을 수 있는 칸 ${walkN} · 막다른 칸 ${deadEnds} · 전봇대 ${poles.length} · 도형 소품 ${shapeProps.length}`);
+if (which === 'town') console.log(`실내 ${SPACE_MAPS.map((m) => `${m.id}(${m.w}x${m.h})`).join(' ')}`);

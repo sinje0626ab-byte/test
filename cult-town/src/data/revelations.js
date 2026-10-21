@@ -1,6 +1,9 @@
 // 성장 계시: 신도 50명 "간판" · 100명 "울타리". faith-game 의 계시 연출을 이 게임 규칙으로 다시 썼다.
 //   choices: dark(그림자 장부 무게) · fx(효과, sim/revelation.js) · say: [말하는 사람 cast id, 대사]
+import { BRANCH_REVELATION } from './branch.js';
+
 export const REVELATION_TEXT = {
+  branch: BRANCH_REVELATION,
   sign: {
     numeral: 'I', title: '간판',
     narration: [

@@ -2,6 +2,7 @@
 // 순수 함수: 같은 상태·시각이면 같은 답 (저장할 필요 없음).
 import { RESIDENT_BY_ID, RELATIONS } from '../data/residents.js';
 import { GOSSIP } from '../data/gossip.js';
+import { JOB_ICON_B } from '../data/residents-bongcheon.js';
 import { MOOD } from '../config.js';
 import { topNeeds } from './residents.js';
 
@@ -75,6 +76,7 @@ export function gossipLine(s, a, b, rand = Math.random) {
 
 // 직업 아이콘 (처음 보는 사람 머리 위)
 export const JOB_ICON = {
+  ...JOB_ICON_B,
   tong: 'cane', banchan: 'apron', pharmacist: 'pill', jihun: 'book', yerin: 'book', dohyun: 'tie', sua: 'tie', minjae: 'book',
   haeun: 'book', seokgu: 'cane', mikyung: 'apron', taeyang: 'apron', minsu: 'box', jiwon: 'pen', kyungho: 'apron',
   youngsuk: 'apron', namgung: 'apron', narae: 'book', dongwook: 'tie', seongja: 'cane', jaeseok: 'wheel', eunbi: 'pill',

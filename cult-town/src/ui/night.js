@@ -21,6 +21,10 @@ import { play } from './sound.js';
 import { rivalNight } from './threats.js';
 import { exposureWord } from '../sim/threats.js';
 import { rivalInfo } from '../sim/rival.js';
+import { PHASE4 } from '../config.js';
+import { BRANCH_TEXT } from '../data/branch.js';
+import { canOpenBranch, openBranch, branchHead, branchOptions, branchAct } from '../sim/branch.js';
+import { branchCount } from '../sim/faith.js';
 
 export function openNight(app) {
   const s = app.s;
@@ -48,6 +52,7 @@ export function openNight(app) {
         btn('officers', '간부', `${activeOfficers(s).length}명 · 배치·승진`),
         btn('meeting', '간부 회의', s.flags.meetingDay === s.day ? '오늘은 이미 했다' : '안건 하나', { disabled: s.flags.meetingDay === s.day || activeOfficers(s).length < 2 }),
       ] : []),
+      ...(s.phase >= 4 ? [btn('branch', BRANCH_TEXT.menu, s.branch.open ? `지부장 ${branchHead(s)?.name ?? '없음'} · ${branchCount(s)}명${s.branch.split ? ' · 독립 예고!' : ''}` : '봉천프라자 2층 임대')] : []),
       ...(s.phase >= 3 && s.rival ? [btn('rival', `라이벌 · ${rivalInfo(s).name}`, s.flags.rivalNight === s.day ? '오늘은 이미 정했다' : '경쟁 · 폭로 · 합병 · 휴전')] : []),
       btn('sleep', NIGHT.menu.sleep, isMonthEnd(s.day) ? '월세가 나가는 날이다' : '다음 날 아침 7시', { wide: true, run: () => { unmount('night'); app.setBack('night', null); app.sleep(); } }),
     );
@@ -71,7 +76,32 @@ export function openNight(app) {
     render();
   };
 
+  // 봉천 지부: 열기(지부장 고르기) · 지부장 문제 대응
+  function branchSub() {
+    const B = s.branch;
+    const done = (r) => { note = [r.text ?? r]; play(r.tone === 'bad' ? 'error' : 'confirm'); sub = null; app.refresh(); render(); };
+    const officerBtns = (fn, exclude) => activeOfficers(s).filter((o) => o.id !== exclude).map((o) => h('button', { class: 'btn', onclick: () => fn(o.id) },
+      `${o.name} · ${o.role}`, h('small', {}, `관리 ${o.manage} · 충성 ${o.loyal} · 불만 ${o.discontent >= 60 ? '높음' : o.discontent >= 30 ? '조금' : '낮음'}`)));
+    if (!B.open) {
+      const why = s.leader.money < PHASE4.deposit ? `보증금 ${won(PHASE4.deposit)}이 모자란다.` : activeOfficers(s).length < 2 ? '지부를 맡길 간부가 두 명은 있어야 한다.' : null;
+      return h('div', { class: 'stack' },
+        h('p', { class: 'muted' }, `${BRANCH_TEXT.door} ${BRANCH_TEXT.closedHint}`),
+        why ? h('p', { class: 'muted' }, why) : h('p', {}, '누구에게 지부를 맡길까. 관리 능력이 지부 예배를 좌우한다.'),
+        ...(canOpenBranch(s) ? officerBtns((id) => { const tx = openBranch(s, id); if (tx) done(tx); }) : []));
+    }
+    const o = branchHead(s);
+    const mood = !o ? '지부장이 없다.' : o.discontent >= PHASE4.splitAt ? '지부를 들고 나가려 한다.' : o.discontent >= 45 ? '요즘 302호 얘기를 잘 안 한다.' : '지부 일에 신이 나 있다.';
+    const opts = branchOptions(s);
+    return h('div', { class: 'stack' },
+      h('p', { class: 'muted' }, `봉천 지부 ${branchCount(s)}명 (목표 ${PHASE4.branch}) · 지부장 ${o?.name ?? '없음'}: ${mood}${B.split ? ` 독립 예고 (${Math.max(0, B.split.due - s.day)}일 남음).` : ''} 헌금 중 본부 몫 ${Math.round((B.share ?? 1) * 100)}%.`),
+      ...opts.filter((x) => x !== 'replace').map((x) => h('button', { class: 'btn', disabled: x === 'meet' && s.flags.branchMeet === s.day, onclick: () => done(branchAct(s, x)) },
+        BRANCH_TEXT.options[x][0], h('small', {}, BRANCH_TEXT.options[x][1]))),
+      opts.includes('replace') ? h('div', { class: 'muted', style: 'margin-top:6px' }, `${BRANCH_TEXT.options.replace[0]}: ${BRANCH_TEXT.options.replace[1]}`) : null,
+      ...(opts.includes('replace') ? officerBtns((id) => done(branchAct(s, 'replace', id)), o?.id) : []));
+  }
+
   function renderSub(key) {
+    if (key === 'branch') return branchSub();
     if (key === 'rival') {
       return rivalNight(s, (r) => { note = [r.text]; play(r.tone === 'bad' ? 'error' : 'confirm'); sub = null; app.refresh(); render(); });
     }
@@ -189,7 +219,7 @@ export function openNight(app) {
     const act = activeOfficers(s);
     const places = [['', '쉬는 중'], ['street', '낮 포교'], ...Object.keys(s.rooms).map((slot) => [`room:${slot}`, `${slot}호 ${ROOM_NAMES[s.rooms[slot].type]}`])];
     const rows = act.map((o) => {
-      const sel = h('select', { onchange: (e) => { assign(s, o.id, e.target.value || null); play('click'); render(); } },
+      const sel = o.assign === 'branch' ? h('small', {}, '봉천 지부장') : h('select', { onchange: (e) => { assign(s, o.id, e.target.value || null); play('click'); render(); } },
         places.map(([v, label]) => h('option', { value: v, selected: (o.assign ?? '') === v }, label)));
       const rels = act.filter((x) => x !== o).map((x) => [x, relOf(s, o.id, x.id)]).filter(([, r]) => r).map(([x, r]) => `${x.name.slice(1)} ${r === 'rival' ? '앙숙' : '친함'}`);
       return h('div', { class: 'officer-row' },

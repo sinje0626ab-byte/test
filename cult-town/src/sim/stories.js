@@ -10,7 +10,7 @@ export const storyOf = (s, id) => s.res[id].story ?? (s.res[id].story = { done: 
 // 지금 들을 수 있는 사연 단계 (없으면 -1)
 export function storyReady(s, id) {
   const st = storyOf(s, id);
-  if (st.favor || st.done >= 3) return -1;
+  if (st.favor || st.done >= (STORIES[id]?.length ?? 0)) return -1;
   return s.res[id].like >= STORY.unlockLike[st.done] ? st.done : -1;
 }
 
