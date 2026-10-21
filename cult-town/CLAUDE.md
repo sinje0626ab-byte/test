@@ -33,8 +33,8 @@ cd cult-town
 npm install
 npm run dev         # 개발 서버
 npm run build       # ../cult/ 로 빌드
-npm run map         # layout.js → src/map/town.json, sanctuary.json
-npm run sim         # 주민 일과 겹침·막힘 검사 + 1단계 목표 도달 시간 시뮬레이션
+npm run map         # layout.js·interiors.js → src/map/town.json, sanctuary-{3a,3b,3c,2,4}.json
+npm run sim         # 주민 일과 검사 + 1단계 성공률 · 2단계 도달 시간 (--games N, --verbose, --no-balance)
 npm run lint:words  # 문장 금지 패턴 개수
 ```
 
@@ -55,7 +55,8 @@ cult-town/
       lines.js           말투별 반응 대사
       places.js          장소 (집·직장·가게·교회·절·점집·성소) 이름과 입구 좌표
       shop.js            성소 소품
-      bulletin.js        주보 문장
+      bulletin.js        주보·그림자 장부·엔딩 문장
+      stories.js · prefs.js · items.js · shops.js · gossip.js · events.js · rooms.js · officers.js · revelations.js  (1단계 보강·2단계)
     sim/                 게임 로직 (노드에서 돈다)
       rng.js · clock.js · state.js · save.js
       grid.js            걷기 가능 격자 + A* 길찾기 (맵 JSON 의 collision 레이어)
@@ -66,9 +67,15 @@ cult-town/
       sanctuary.js       예배·헌금·소품·월세·건물주
       leader.js          교주 피로·돈·믿음 축(광신↔사기)
       week.js            주보 결산 · 목표·실패 판정
+      mood.js            주민 행동·감정 말풍선·수다 (화면용 순수 함수)
+      stories.js         사연 3단계·부탁·가게 물건
+      events.js          돌발 사건
+      space.js           2단계 공간 확장·방·방 효과
+      officers.js        2단계 간부·낮 포교·불만·간부 회의
+      revelation.js      성장 계시 (50·100명)
     map/                 layout.js(사람이 쓰는 배치) · town.json · sanctuary.json(생성물)
-    game/                Phaser: BootScene · TownScene · SanctuaryScene · people.js(주민 스프라이트 합성) · tint.js(시간대 색조)
-    ui/                  DOM: styles.css · fonts/ · dom · text · hud · dialog · profile · night · screens(주보·엔딩·크레딧·메뉴) · creation(제목·창시) · toast · sound
+    game/                Phaser: BootScene · TitleScene(밤 장면) · TownScene · SanctuaryScene · people.js(주민 스프라이트 합성) · overlays.js(말풍선·아이콘) · signs.js(간판·지붕·소품 도형) · walker.js · tint.js
+    ui/                  DOM: styles.css · fonts/ · dom · text · hud · dialog · profile · night · screens(주보·엔딩·크레딧·메뉴) · creation(제목·창시) · shop(가게·부탁 수첩) · event · revelation · dpad · toast · sound
   tools/                 build-map.mjs · simulate.mjs · check-words.mjs
 ```
 
@@ -172,8 +179,10 @@ cult-town/
 - v1: 처음. v2: 20장.
 
 ## 17. 검증 기준 (지금 값)
-- `npm run sim`: 일과 문제 0 · 유형 6개 모두 봇 승률 60% 이상 · 목표까지 55~125분 · 교단 얘기만 하는 봇은 진다.
-  - 마지막 측정: 유형마다 10판 모두 승, 21~35일 (중앙 24~28일, 약 100~120분).
+- `npm run sim`: 일과 문제 0 · 유형 6개 모두 1단계 성공률 60~80% (성공 = 28일 ≈ 2시간 안에 1단계 목표) · 2단계 목표까지 중앙 120~180분 · 교단 얘기만 하는 봇은 1단계를 못 넘긴다.
+  - 정석 봇: 단서로 고민 카드 고르기, 사연 부탁 들어주기, 좋아하는 선물, 어두운 선택 안 함, 2단계에선 확장·방·간부 배치·회의.
+  - 마지막 측정 (유형마다 20판): 1단계 성공 60~80% (전체 72%), 2단계 중앙 38~42일 (약 162~179분).
+  - 주의: 1단계 '실패'의 대부분은 쫓겨남·평판 바닥이 아니라 28일 안에 목표를 못 채운 경우다 (돌발 사건·체납으로 월세 연속이 끊김).
 - `npm run lint:words`: 0개.
 - 앱 구조: `src/app.js`(씬 전환·시간·UI 연결) · `src/main.js`(부트). 검증 스크립트용으로 `window.__app` 을 연다.
 

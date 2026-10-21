@@ -12,7 +12,7 @@ export function showTitle({ hasSave, onNew, onContinue, onCredits }) {
     h('button', { class: 'btn', onclick: () => { play('click'); onCredits(); } }, '만든 사람들 · 에셋'),
     h('p', { class: 'muted', style: 'font-size:12px;margin:6px 0 0' }, '이 게임의 교단·인물·가게 이름은 전부 지어낸 것이다. 실존 단체와 관계없다.'),
   );
-  mount('title', h('div', { class: 'screen title' },
+  mount('title', h('div', { class: 'screen title title-screen' },
     h('div', {},
       h('div', { class: 'logo' }, GAME.title || '신림동 교주'),
       h('div', { class: 'sub' }, '신림역 3번 출구, 상가 302호에서 시작하는 블랙코미디'),

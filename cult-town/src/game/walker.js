@@ -5,8 +5,9 @@ import { findPath, walkable } from '../sim/grid.js';
 const T = MOVE.tile;
 
 export class Walker {
-  constructor(scene, sprite, grid, textureKey) {
+  constructor(scene, sprite, grid, textureKey, getVirtual = null) {
     this.scene = scene; this.sprite = sprite; this.g = grid; this.key = textureKey;
+    this.getVirtual = getVirtual;   // 모바일 방향키 패드 { up, down, left, right }
     this.dir = 'down'; this.path = null; this.onArrive = null; this.follow = null;
     this.moved = 0;
     const kb = scene.input.keyboard;
@@ -33,10 +34,11 @@ export class Walker {
     const k = this.keys;
     let vx = 0; let vy = 0;
     if (allowed) {
-      if (k.LEFT.isDown || k.A.isDown) vx = -1;
-      else if (k.RIGHT.isDown || k.D.isDown) vx = 1;
-      if (k.UP.isDown || k.W.isDown) vy = -1;
-      else if (k.DOWN.isDown || k.S.isDown) vy = 1;
+      const v = this.getVirtual?.() ?? {};
+      if (k.LEFT.isDown || k.A.isDown || v.left) vx = -1;
+      else if (k.RIGHT.isDown || k.D.isDown || v.right) vx = 1;
+      if (k.UP.isDown || k.W.isDown || v.up) vy = -1;
+      else if (k.DOWN.isDown || k.S.isDown || v.down) vy = 1;
     }
     if (vx || vy) { this.stop(); }
     else if (allowed && this.follow) {

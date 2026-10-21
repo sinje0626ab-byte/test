@@ -6,6 +6,7 @@ import { SHOPS } from '../data/shops.js';
 
 const T = 16;
 const FONT = { fontFamily: 'Galmuri11', fontSize: '12px', color: '#ffffff' };
+const SIGN_FONT = { fontFamily: 'Galmuri7', fontSize: '8px', color: '#ffffff' };
 const PLACE_COLORS = {
   shop: 0x2f5d8a, work: 0x555a66, religion: 0x7a2e2a, ours: 0x5b3a7a, home: 0x6a5a3a, leisure: 0x3e7a4e, transit: 0x3cb44a,
 };
@@ -14,9 +15,9 @@ const hash = (n) => { let h = Math.imul(n + 1, 2654435761) >>> 0; h = (h ^ (h >>
 
 // 간판 판 하나 (가운데 x, 위 y)
 export function board(scene, cx, top, text, color, { depth = 60, fg = 0xffffff, small = false } = {}) {
-  const t = scene.add.text(0, 0, text, { ...FONT, color: hex(fg) }).setOrigin(0.5, 0);
-  const w = Math.ceil(t.width) + 6; const hgt = small ? 12 : 13;
-  t.setY(small ? -1 : 0);
+  const t = scene.add.text(0, 0, text, { ...SIGN_FONT, color: hex(fg) }).setOrigin(0.5, 0);
+  const w = Math.ceil(t.width) + 4; const hgt = small ? 9 : 10;
+  t.setY(small ? 0 : 1);
   const g = scene.add.graphics();
   g.fillStyle(0x1d1b26, 1).fillRect(-w / 2 - 1, -1, w + 2, hgt + 2);
   g.fillStyle(color, 1).fillRect(-w / 2, 0, w, hgt);
@@ -148,8 +149,8 @@ export function drawStationExit(scene, key, x, y, label) {
   g.fillStyle(0x3cb44a, 1).fillRect(0, 0, 16, 16);
   g.fillStyle(0x2a2a33, 1).fillRect(3, 8, 10, 8);
   for (let i = 0; i < 4; i++) g.fillStyle(0x888899, 1).fillRect(3, 9 + i * 2, 10, 1);
-  const num = scene.add.text(8, 4, label.replace('신림역 ', ''), FONT).setOrigin(0.5);
-  const tag = scene.add.text(8, -8, '신림역', { ...FONT, color: '#1d1b26', backgroundColor: '#ffffff' }).setOrigin(0.5).setPadding(2, 0, 2, 0);
+  const num = scene.add.text(8, 4, label.replace('신림역 ', ''), SIGN_FONT).setOrigin(0.5);
+  const tag = scene.add.text(8, -5, '신림역', { ...SIGN_FONT, color: '#1d1b26', backgroundColor: '#ffffff' }).setOrigin(0.5).setPadding(1, 0, 1, 0);
   return scene.add.container(x, y, [g, num, tag]).setDepth(50);
 }
 

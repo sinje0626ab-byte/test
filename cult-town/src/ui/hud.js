@@ -1,5 +1,5 @@
 // 화면 위: 날짜·시각·속도 / 돈·신도·평판·피로·믿음 축. 화면 아래: 상황에 맞는 큰 버튼 (말 걸기·들어가기·밤으로).
-import { GOAL, TALK, LEADER } from '../config.js';
+import { GOAL, TALK, LEADER, PHASE2 } from '../config.js';
 import { fmtDate, fmtTime, phaseOf } from '../sim/clock.js';
 import { memberCount } from '../sim/faith.js';
 import { h, mount, won } from './dom.js';
@@ -16,6 +16,9 @@ export function createHud(app) {
   ];
   const sound = h('button', { class: 'btn', title: '소리', onclick: () => { sound.textContent = toggleMute() ? '🔇' : '🔊'; } }, isMuted() ? '🔇' : '🔊');
   const menu = h('button', { class: 'btn', title: '메뉴 (Esc)', onclick: () => { play('click'); app.openMenu(); } }, '☰');
+  const book = h('button', { class: 'btn', title: '부탁 수첩 (N)', onclick: () => { play('click'); app.openNotebook(); } }, '수첩');
+  const membersLabel = h('span', {}, `신도 /${GOAL.members}`);
+  const rentLabel = h('span', {}, '월세 연속');
   const money = h('b', { class: 'num' });
   const members = h('b', { class: 'num' });
   const repBar = h('i');
@@ -24,11 +27,11 @@ export function createHud(app) {
   const rent = h('span', { class: 'num' });
 
   const el = h('div', { class: 'hud' },
-    h('div', { class: 'clock' }, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, menu)),
+    h('div', { class: 'clock' }, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, book, menu)),
     h('div', { class: 'stats' },
       h('div', { class: 'line' }, h('span', {}, '돈'), money),
-      h('div', { class: 'line' }, h('span', {}, `신도 /${GOAL.members}`), members),
-      h('div', { class: 'line' }, h('span', {}, '월세 연속'), rent),
+      h('div', { class: 'line' }, membersLabel, members),
+      h('div', { class: 'line' }, rentLabel, rent),
       h('div', { class: 'line' }, h('span', {}, '동네 평판'), h('div', { class: 'bar' }, repBar)),
       h('div', { class: 'line' }, h('span', {}, '피로'), h('div', { class: 'bar fat' }, fatBar)),
       h('div', { class: 'line', title: '왼쪽 사기 · 오른쪽 광신' }, h('span', {}, '사기↔광신'), h('div', { class: 'axis' }, axis)),
@@ -53,7 +56,15 @@ export function createHud(app) {
       speedBtns.forEach((b, i) => b.classList.toggle('on', app.speed === i));
       money.textContent = won(s.leader.money);
       members.textContent = memberCount(s);
-      rent.textContent = `${s.sanctuary.rentStreak}/${GOAL.rentStreak}${s.sanctuary.arrears ? ` (체납 ${s.sanctuary.arrears})` : ''}`;
+      if (s.phase >= 2) {
+        membersLabel.textContent = `신도 /${PHASE2.members}`;
+        rentLabel.textContent = '건물주 불만';
+        rent.textContent = `${Math.round(s.landlordAnger)}/100${s.sanctuary.arrears ? ` 체납${s.sanctuary.arrears}` : ''}`;
+      } else {
+        membersLabel.textContent = `신도 /${GOAL.members}`;
+        rentLabel.textContent = '월세 연속';
+        rent.textContent = `${s.sanctuary.rentStreak}/${GOAL.rentStreak}${s.sanctuary.arrears ? ` (체납 ${s.sanctuary.arrears})` : ''}`;
+      }
       repBar.style.width = `${s.rep}%`;
       repBar.style.background = s.rep < 30 ? 'var(--bad)' : s.rep < 50 ? 'var(--warn)' : 'var(--good)';
       fatBar.style.width = `${(s.leader.fatigue / TALK.dailyFatigueLimit) * 100}%`;

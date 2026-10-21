@@ -3,11 +3,12 @@ import Phaser from 'phaser';
 import { BootScene } from './game/BootScene.js';
 import { TownScene } from './game/TownScene.js';
 import { SanctuaryScene } from './game/SanctuaryScene.js';
+import { TitleScene } from './game/TitleScene.js';
 import { app } from './app.js';
 
 async function boot() {
   try {
-    await Promise.all(['11px Galmuri11', '14px Galmuri14', '11px GalmuriMono11'].map((f) => document.fonts.load(f, '가나다')));
+    await Promise.all(['11px Galmuri11', '14px Galmuri14', '11px GalmuriMono11', '8px Galmuri7'].map((f) => document.fonts.load(f, '가나다')));
   } catch { /* 글꼴이 늦어도 게임은 뜬다 */ }
   app.game = new Phaser.Game({
     type: Phaser.AUTO,
@@ -17,7 +18,7 @@ async function boot() {
     roundPixels: true,
     scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
     input: { activePointers: 2 },
-    scene: [BootScene, TownScene, SanctuaryScene],
+    scene: [BootScene, TitleScene, TownScene, SanctuaryScene],
   });
   window.__app = app;   // 검증 스크립트용
 }
