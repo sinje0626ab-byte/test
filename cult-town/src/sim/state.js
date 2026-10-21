@@ -1,4 +1,5 @@
 // 새 게임 상태. 상태는 JSON 으로 저장되는 평범한 객체 하나다 (Phaser·DOM 모름).
+import { v5QuestFields } from './quests.js';
 import { GAME, CLOCK, RUMOR } from '../config.js';
 import { ALL_RESIDENTS } from '../data/residents.js';
 import { CAST } from '../data/cast.js';
@@ -58,7 +59,7 @@ export function v4Fields() {
 
 // 저장 v5 에서 생긴 칸 (실제 달력·간판·퀘스트·열혈 신자·교주 성장). 이 판에서 칸이 늘면 여기에 더한다
 export function v5Fields() {
-  return {};
+  return { ...v5QuestFields() };
 }
 
 export function newResident(r) {
@@ -75,7 +76,7 @@ export function newGame({ leaderName, age, family, sect, cultName, seed = Date.n
     v: GAME.saveVersion,
     seed, rng: seed | 0,
     day: 0, minute: CLOCK.dayStart, mode: 'day',
-    leader: { name: leaderName, age, family, sect, cultName, fatigue: 0, money: GAME.startMoney, belief: 0, tiredStart: 0 },
+    leader: { name: leaderName, age, family, sect, cultName, fatigue: 0, money: GAME.startMoney, belief: 0, tiredStart: 0, xp: 0, stats: { talk: 1, stamina: 1, charisma: 1, sense: 1, disguise: 1 } },
     rep: RUMOR.start,
     res: {},
     pos: {},

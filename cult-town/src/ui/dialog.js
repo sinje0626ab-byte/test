@@ -4,8 +4,11 @@ import { RESIDENT_BY_ID } from '../data/residents.js';
 import { ITEMS } from '../data/items.js';
 import { PLACES } from '../data/places.js';
 import { OPTIONS, CARDS, STAGE_NAMES } from '../data/topics.js';
-import { LINES } from '../data/lines.js';
+import { lineFor } from '../sim/voice.js';
 import { canTalk, startTalk, act, talkClergy } from '../sim/talk.js';
+import { forkOptions } from '../sim/quests.js';
+import { dramaLabel } from '../sim/drama.js';
+import { BRANCH } from '../data/quests.js';
 import { fmtDate } from '../sim/clock.js';
 import { ALL_CLERGY } from '../data/clergy.js';
 import { h, mount, unmount, won } from './dom.js';
@@ -39,7 +42,7 @@ export function openTalk(app, id) {
 
   const can = canTalk(s, id);
   if (!can.ok) {
-    const line = can.reason === 'refuse' ? LINES[r.voice].refuse : null;
+    const line = can.reason === 'refuse' ? lineFor(s, id, 'refuse') : null;
     mount('dialog', shell(app, face, r.name, sub,
       line ? h('div', { class: 'say' }, speak(s, line)) : null,
       h('div', { class: 'narr' }, can.reason === 'refuse' ? `${josa(r.name, '이/가')} 걸음을 빨리해 지나간다.` : REASON[can.reason]),
@@ -53,15 +56,16 @@ export function openTalk(app, id) {
   const t = startTalk(s, id, ctx);
   let showFx = false;
   try { showFx = localStorage.getItem('cult-town:fx') === '1'; } catch { /* 없으면 꺼 둔다 */ }
-  const CONTEXT_IDS = ['story', 'favorDone', 'relay', 'gift', 'lunch', 'umbrella', 'market', 'walk', 'coffee'];
+  const CONTEXT_IDS = ['heard', 'comfort', 'exploit', 'fork', 'story', 'favorDone', 'relay', 'gift', 'lunch', 'umbrella', 'market', 'walk', 'coffee'];
   const optionBtn = (o) => {
     const meta = OPTIONS[o.id];
     let label = o.id === 'special' ? o.special : meta.label;
     if (o.id === 'relay') label = label.replace('{이름}', RESIDENT_BY_ID[o.from].name);
     if (o.id === 'askRival') label = label.replace('{라이벌}', textVars(s).라이벌);
     if (o.id === 'invite' && id.startsWith('b_')) label = '봉천 지부에 초대하기';
+    if (o.id === 'comfort' || o.id === 'exploit') label = dramaLabel(s, id, o.id);
     // 짧은 행동 설명만 보이고, 정확한 효과는 ⓘ를 켜거나 길게 누르면 보인다
-    const b = h('button', { class: `btn ${CONTEXT_IDS.includes(o.id) ? 'ctx' : ''}`, onclick: () => { if (b.dataset.held) { delete b.dataset.held; return; } choose(o); } },
+    const b = h('button', { class: `btn ${CONTEXT_IDS.includes(o.id) ? 'ctx' : ''} ${o.id === 'exploit' ? 'darkopt' : ''}`, onclick: () => { if (b.dataset.held) { delete b.dataset.held; return; } choose(o); } },
       label, h('small', {}, meta.hint), h('small', { class: 'fx' }, meta.fx));
     let timer = null;
     b.addEventListener('pointerdown', () => { timer = setTimeout(() => { b.dataset.held = '1'; b.classList.toggle('showfx'); }, 450); });
@@ -80,6 +84,7 @@ export function openTalk(app, id) {
     play('select');
     if (o.id === 'listen') return showCards();
     if (o.id === 'gift') return showGifts();
+    if (o.id === 'fork') return showFork();
     finish(act(s, id, o.id, o.from, ctx));
   };
   // 하위 화면의 '뒤로': 아무것도 고르지 않았으니 횟수·피로·호감이 그대로다
@@ -91,6 +96,16 @@ export function openTalk(app, id) {
       h('div', { class: 'narr' }, '무엇을 줄까. 사람마다 좋아하는 게 다르다.'),
       h('div', { class: 'cards' }, have.map((k) => h('button', { class: 'card', onclick: () => { play('select'); finish(act(s, id, 'gift', k, ctx)); } },
         h('b', {}, ITEMS[k].name), h('small', {}, `${s.inventory[k]}개`)))),
+      backBtn(),
+    ));
+  };
+  // 사연 갈림길: 세 갈래 (진짜 도움 선택지는 그 사람 고민에 따라 이름이 바뀐다)
+  const showFork = () => {
+    app.setBack('dialog', showMain);
+    mount('dialog', shell(app, face, r.name, sub,
+      h('div', { class: 'narr' }, BRANCH.intro.replace('{이름}이(가)', josa(r.name, '이/가'))),
+      h('div', { class: 'opts' }, forkOptions(s, id).map((o) => h('button', { class: 'btn ctx', onclick: () => { play('select'); finish(act(s, id, 'fork', o.id, ctx)); } },
+        o.label, h('small', {}, o.hint), h('small', { class: 'fx' }, o.fx)))),
       backBtn(),
     ));
   };
@@ -112,7 +127,8 @@ export function openTalk(app, id) {
     if (res.money) pills.push(h('span', { class: 'pill up' }, `상담비 ${won(res.money)}`));
     if (res.repeat) pills.push(h('span', { class: 'pill down' }, '같은 얘기'));
     let stageNote = null;
-    if (res.story) stageNote = `부탁을 받았다: ${favorText(res.story.favor)} (부탁 수첩 N)`;
+    if (res.story) stageNote = `부탁을 받았다: ${favorText(res.story.favor)} (수첩 N)`;
+    if (s.res[id].fork === 'pending') stageNote = `${josa(r.name, '과/와')}의 사연이 끝났다. 다시 말을 걸면 앞으로 어떻게 지낼지 고른다.`;
     if (res.stageTo !== res.stageFrom) {
       pills.push(h('span', { class: 'pill stage' }, STAGE_NAMES[res.stageTo]));
       if (res.stageTo === 'curious') stageNote = `${josa(r.name, '이/가')} 302호에 관심이 생겼다. 더 친해지면 초대할 수 있다.`;

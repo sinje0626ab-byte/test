@@ -1,9 +1,11 @@
 // 포교 대화 판정. 선택지 → 호감·의심·피로 변화와 반응 대사 키.
 // 원칙: 교주의 실제 설득 문장은 만들지 않는다. 결과는 숫자와 주민 반응으로만 보인다.
-import { TALK, RUMOR, SECT_FX, GIFT, REPEAT, CONTEXT, WEATHER } from '../config.js';
+import { dramaOpen, dramaAct } from './drama.js';
+import { hintAccuracy, talkMul } from './growth.js';
+import { TIP, GROWTH, TALK, RUMOR, SECT_FX, GIFT, REPEAT, CONTEXT, WEATHER } from '../config.js';
 import { RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { FAMILIES, SECTS } from '../data/sects.js';
-import { LINES } from '../data/lines.js';
+import { lineFor } from './voice.js';
 import { HINTS, NEED_NAMES } from '../data/topics.js';
 import { SPECIAL_TEXT } from '../data/bulletin.js';
 import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
@@ -18,6 +20,7 @@ import { inviteBonus } from './space.js';
 import { storyReady, hearStory, favorReady, completeFavor, relaysFor, doRelay } from './stories.js';
 import { noticeMul } from './threats.js';
 import { canAskRival, askRival, ourTalkCools } from './rival.js';
+import { addXp, noteToday, checkQuests, currentStep, markFork, forkReady, chooseFork } from './quests.js';
 
 const LIKE_TRAITS = ['kind', 'simple', 'curious', 'lonely', 'cheerful', 'easygoing', 'gentle'];
 const SUS_TRAITS = ['sharp', 'careful', 'strict', 'blunt', 'stubborn', 'shrewd', 'oversee'];
@@ -40,6 +43,7 @@ function mods(s, id) {
   if (r.age >= fx.ages[0] && r.age <= fx.ages[1]) like *= 1.2;
   if (r.traits.some((t) => LIKE_TRAITS.includes(t))) like *= 1.1;
   if (r.traits.some((t) => SUS_TRAITS.includes(t))) { like *= 0.9; sus *= 1.3; }
+  like *= talkMul(s);                         // 교주 말솜씨
   return { like, sus, fx, r };
 }
 
@@ -58,14 +62,16 @@ export function startTalk(s, id, ctx = {}) {
   const st = s.res[id];
   const r = RESIDENT_BY_ID[id];
   const top = topNeeds(st);
-  if (!st.hint) st.hint = rand(s) < 0.7 ? top[0] : top[1];        // 단서가 늘 정확하진 않다
-  const greet = st.met ? pick(s, [r.greet[1], LINES[r.voice].smalltalk]) : r.greet[0];
+  if (!st.hint) st.hint = rand(s) < hintAccuracy(s) ? top[0] : top[1];        // 단서가 늘 정확하진 않다
+  rand(s);                                                         // 예전 인사 고르기 난수 자리 (시뮬레이션 순서 유지)
+  const greet = st.met ? lineFor(s, id, 'greet') : lineFor(s, id, 'first') || r.greet[0];
   return { greet, hint: pick(s, HINTS[st.hint]), options: optionsFor(s, id, ctx), cards: cardsFor(s, id) };
 }
 
 // 부탁 끝내기 · 말 전하기: 오늘 이미 얘기했어도 할 수 있다
 export function quickOptions(s, id) {
   const out = [];
+  if (forkReady(s, id)) out.push({ id: 'fork' });
   if (favorReady(s, id)) out.push({ id: 'favorDone' });
   for (const from of relaysFor(s, id)) out.push({ id: 'relay', from });
   return out;
@@ -85,7 +91,10 @@ function contextOptions(s, id, ctx) {
   if (s.weather?.market && place === 'market') out.push({ id: 'market', score: top === 'money' ? 9 : 6 });
   if (place === 'park' || place === 'stream') out.push({ id: 'walk', score: top === 'health' ? 9 : 5 });
   if (s.minute < 11 * 60 && (s.inventory.coffee ?? 0) > 0) out.push({ id: 'coffee', score: 5 });
-  return out.sort((a, b) => b.score - a.score).slice(0, 2).map(({ id: o }) => ({ id: o }));
+  const tip = s.res[id].tip;
+  if (tip && !s.res[id].known && s.day - tip.day <= TIP.days) out.push({ id: 'heard', score: 10 });
+  if (dramaOpen(s, id)) { out.push({ id: 'comfort', score: 11 }); out.push({ id: 'exploit', score: 10.5 }); }
+  return out.sort((a, b) => b.score - a.score).slice(0, dramaOpen(s, id) ? 3 : 2).map(({ id: o }) => ({ id: o }));
 }
 const ITEM_KEYS = (s) => Object.keys(s.inventory).filter((k) => s.inventory[k] > 0);
 
@@ -125,8 +134,9 @@ export function act(s, id, opt, card, ctx = {}) {
   const topic = opt === 'listen' ? `listen:${card}` : opt;
   const repeat = ['smalltalk', 'listen', 'preach', 'special', 'lunch', 'walk', 'market'].includes(opt) && st.lastTopic === topic;
   if (repeat) mL *= REPEAT.factor;
-  const quick = opt === 'favorDone' || opt === 'relay';
-  const voice = LINES[r.voice];
+  const quick = opt === 'favorDone' || opt === 'relay' || opt === 'fork';
+  const notes = [];                           // 오늘의 할 일에 셀 것
+  const voice = new Proxy({}, { get: (_, k) => lineFor(s, id, k) });   // voice.hit 처럼 쓰면 그 자리에서 고른다
   const same = sameFamily(s, id);
   const secular = r.religion === 'none';
   const before = { like: st.like, sus: st.sus, stage: st.stage };
@@ -134,12 +144,18 @@ export function act(s, id, opt, card, ctx = {}) {
 
   if (!st.met) {
     st.met = true;
+    notes.push(['newFace']);
     if (relationsOf(id).some((x) => s.res[x.id].stage === 'member')) dl += TALK.friendBonus;
   }
 
   let story = null;
-  if (opt === 'favorDone') {
+  if (opt === 'fork') {
+    line = chooseFork(s, id, card);
+    narr = '';
+  } else if (opt === 'favorDone') {
     const beat = completeFavor(s, id);
+    markFork(s, id);
+    notes.push(['favor']);
     line = beat.favor.done;
     narr = `"${beat.title}" 부탁을 끝냈다.`;
   } else if (opt === 'relay') {
@@ -151,6 +167,7 @@ export function act(s, id, opt, card, ctx = {}) {
     line = beat.favor.ask;
     narr = beat.text.join(' ');
   } else if (opt === 'gift') {
+    notes.push(['gift']);
     const pref = PREFS[id];
     s.inventory[card]--;
     if (pref.likes.includes(card)) { dl += GIFT.loved * mL; narr = `${ITEMS[card].name}을(를) 건넸다. 표정이 확 밝아졌다.`; line = voice.hit; }
@@ -167,8 +184,17 @@ export function act(s, id, opt, card, ctx = {}) {
     dl += CONTEXT.market.like * mL;
     narr = '장바구니를 들어 주며 시장을 한 바퀴 돌았다.'; line = voice.smalltalk;
   } else if (opt === 'walk') {
+    notes.push(['walk']);
     dl += CONTEXT.walk.like * mL; st.needs.health = Math.max(0, st.needs.health + CONTEXT.walk.health);
     narr = '산책로를 같이 한 바퀴 걸었다.'; line = voice.smalltalk;
+  } else if (opt === 'heard') {                 // 엿들은 고민으로 말 걸기
+    const t = st.tip; st.tip = null;
+    if (t.need === topNeeds(st)[0]) { dl += TALK.listen.match * TIP.matchLike * mL; st.known = true; line = voice.hit; notes.push(['hit']); }
+    else { dl += TIP.missLike; line = voice.partial; }
+    narr = `${RESIDENT_BY_ID[t.from]?.name ?? '누군가'}에게 들은 얘기를 슬쩍 꺼냈다.`;
+  } else if (opt === 'comfort' || opt === 'exploit') {   // 동네 드라마
+    narr = dramaAct(s, id, opt);
+    line = opt === 'comfort' ? voice.hit : voice.smalltalk;
   } else if (opt === 'coffee') {
     dl += CONTEXT.coffee.like * mL; s.inventory.coffee--;
     narr = '캔커피를 건넸다.'; line = voice.smalltalk;
@@ -186,6 +212,7 @@ export function act(s, id, opt, card, ctx = {}) {
       st.needs[card] = Math.max(0, st.needs[card] - 10);
       st.known = true;
       line = voice.hit;
+      notes.push(['hit']);
     } else if (card === order[1]) {
       dl += TALK.listen.partial * topic * mL;
       line = voice.partial;
@@ -211,6 +238,7 @@ export function act(s, id, opt, card, ctx = {}) {
       st.attendDay = nextWorshipDay(s.day, s.minute);
       if (st.attendDay === s.day && !s.attend.includes(id)) s.attend.push(id);   // 오늘 저녁 예배면 바로 온다
       line = voice.inviteYes;
+      notes.push(['invite']);
     } else {
       ds += TALK.invite.refuseSus * mS;
       line = voice.inviteNo;
@@ -234,7 +262,7 @@ export function act(s, id, opt, card, ctx = {}) {
     narr = SPECIAL_TEXT[s.leader.sect][good ? 'good' : 'bad'].replaceAll('{이름}', r.name);
   }
 
-  if (repeat) { line = PREFS[id].again; narr = (narr ? narr + ' ' : '') + '(바로 전과 같은 얘기를 또 꺼냈다)'; }
+  if (repeat) { line = lineFor(s, id, 'again'); narr = (narr ? narr + ' ' : '') + '(바로 전과 같은 얘기를 또 꺼냈다)'; }
   st.like = clamp(st.like + dl);
   st.sus = clamp(st.sus + ds);
   if (!quick) {
@@ -245,8 +273,12 @@ export function act(s, id, opt, card, ctx = {}) {
     addFatigue(s, TALK.fatiguePerTalk);
   } else addFatigue(s, 3);
   checkCurious(s, id);
+  if (!quick) { notes.push(['talk']); addXp(s, GROWTH.talkXp); }
+  if (id === 'tong' && currentStep(s)?.id === 'tong') s.quest.tong = true;
+  const todayDone = notes.flatMap(([k, a]) => noteToday(s, k, a));
+  const quests = checkQuests(s);
   return {
-    line, narr, money, story, repeat, nearNotice: near < 1,
+    line, narr, money, story, repeat, nearNotice: near < 1, todayDone, quests,
     dLike: Math.round(st.like - before.like), dSus: Math.round(st.sus - before.sus),
     stageFrom: before.stage, stageTo: st.stage,
   };

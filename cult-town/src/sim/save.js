@@ -25,6 +25,9 @@ const MIGRATIONS = {
   4: (s) => {
     Object.assign(s, { ...v5Fields(), ...s });
     s.sanctuary.sign ??= 0;
+    s.leader.xp ??= 0;
+    s.leader.stats ??= { talk: 1, stamina: 1, charisma: 1, sense: 1, disguise: 1 };
+    s.quest.phase = s.phase;
     return s;
   },
 };

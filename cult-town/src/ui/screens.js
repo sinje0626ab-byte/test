@@ -1,4 +1,5 @@
 // 주보 · 밤사이 소식 · 엔딩 · 크레딧 · 게임 메뉴
+import { sanctuaryName } from '../sim/voice.js';
 import { GOAL, PHASE2, PHASE3, PHASE4 } from '../config.js';
 import { PHASE4_INTRO } from '../data/branch.js';
 import { PHASE3_INTRO } from '../data/threats.js';
@@ -15,7 +16,10 @@ import { play } from './sound.js';
 // 잠든 사이 일어난 일 (성직자 경고, 그림자 장부, 이탈, 월세)
 export function eventLines(s, events) {
   const out = [];
+  const spread = events.filter((e) => e.type === 'zealotSpread');
+  if (spread.length) out.push(`열혈 신자 ${spread.length}명이 오늘 ${spread.reduce((n, e) => n + e.targets.length, 0)}명에게 {성소} 얘기를 했다.`.replace('{성소}', sanctuaryName(s)));
   for (const e of events) {
+    if (e.type === 'zealotSpread') continue;
     if (e.type === 'clergy') {
       const c = ALL_CLERGY.find((x) => x.id === e.id);
       out.push(fill(CLERGY_EVENT, s, { 직함: c.title, 이름: c.name }) + ' ' + e.line);

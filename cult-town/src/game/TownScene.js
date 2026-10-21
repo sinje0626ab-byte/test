@@ -1,4 +1,6 @@
 // 낮: 동네 RPG. 맵·건물 간판·지붕·골목 소품·주민(행동·감정·수다)·교주·시간대 색조. 게임 시간은 여기서 흐른다.
+import { isZealot, zealotsOf } from '../sim/zealots.js';
+import { ZEALOT_TEXT } from '../data/zealots.js';
 import Phaser from 'phaser';
 import { CLOCK, MOOD } from '../config.js';
 const LOOK_MIN = 4;   // 도착하고 두리번거리는 시간 (게임분)
@@ -6,10 +8,10 @@ import { RESIDENT_BY_ID } from '../data/residents.js';
 import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { CAST } from '../data/cast.js';
 import { peopleOf, speedOf } from '../sim/residents.js';
-import { activityOf, emotionOf, gossipLine, JOB_ICON } from '../sim/mood.js';
+import { activityOf, emotionOf, gossipLine, lastGossip, JOB_ICON } from '../sim/mood.js';
 import { registerPerson, LEADER_LOOK } from './people.js';
 import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel, drawSanctuarySign, drawFloorDirectory } from './signs.js';
-import { makeIconTextures, emotionBubble, speechBubble, nameTag, picket, wallNotice } from './overlays.js';
+import { makeIconTextures, emotionBubble, speechBubble, nameTag, picket, wallNotice, questMark } from './overlays.js';
 import { REPORTER } from '../config.js';
 import { REPORTER_INFO, NOTICE_TEXT, PROTEST_TEXT } from '../data/threats.js';
 import { RIVAL_LOOKS } from '../data/rival.js';
@@ -21,6 +23,8 @@ import { tintAt } from './tint.js';
 import { Walker } from './walker.js';
 import { app } from '../app.js';
 import { speak } from '../ui/text.js';
+import { sightCut } from '../sim/growth.js';
+import { questMarkers, hear } from '../sim/quests.js';
 
 const T = 16;
 const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
@@ -35,7 +39,7 @@ export function inSight(pos, tx, ty) {
   const [fx, fy] = FWD[pos.dir ?? 'down'];
   const dx = tx - pos.x; const dy = ty - pos.y;
   const fwd = dx * fx + dy * fy; const lat = Math.abs(dx * fy - dy * fx);
-  return fwd >= 1 && fwd <= REPORTER.sight.tiles && lat <= (REPORTER.sight.width - 1) / 2;
+  return fwd >= 1 && fwd <= REPORTER.sight.tiles - sightCut(app.s) && lat <= (REPORTER.sight.width - 1) / 2;
 }
 const DIR_FRAME = { down: 0, left: 3, right: 6, up: 9 };
 const text2 = (t) => (t.length > 26 ? t.slice(0, 25) + '…' : t);
@@ -231,6 +235,8 @@ export class TownScene extends Phaser.Scene {
       if (tag) tag.setPosition(px + 8, py - 1).setVisible(sp.visible).setDepth(5060);
       const emo = this.emos[id];
       if (emo) emo.c.setPosition(px + 14, py - 6).setVisible(sp.visible).setDepth(5070);
+      const qm = this.qmarks?.[id];
+      if (qm) qm.setPosition(px + 8, py - 11).setVisible(sp.visible).setDepth(5065);
     }
     if (this.gossip) {
       const sp = this.sprites[this.gossip.id];
@@ -242,6 +248,7 @@ export class TownScene extends Phaser.Scene {
   // 이름표 (만난 사람은 이름, 처음 보는 사람은 직업 아이콘) · 감정 말풍선
   refreshOverlays() {
     const s = app.s;
+    this.refreshQuestMarks();
     for (const id of Object.keys(this.sprites)) {
       const known = id.includes(':') || s.res[id]?.met;
       const want = known ? `n:${id.includes(':') ? nameOf(id) : RESIDENT_BY_ID[id].name}` : `i:${JOB_ICON[id] ?? 'star'}`;
@@ -254,7 +261,8 @@ export class TownScene extends Phaser.Scene {
       }
       let kind = null;
       if (!id.includes(':')) {
-        if (isDefector(s, id)) kind = 'defector';
+        if (isZealot(s, id)) kind = 'zealot';
+        else if (isDefector(s, id)) kind = 'defector';
         else if (s.reporter?.active && reporterTarget(s) === id) kind = 'press';
         else if (s.rival && s.res[id].rival && s.res[id].rival !== 'none' && s.res[id].met) kind = 'rival';
         else kind = emotionOf(s, id);
@@ -264,6 +272,34 @@ export class TownScene extends Phaser.Scene {
         e?.c.destroy();
         if (kind) this.emos[id] = { kind, c: emotionBubble(this, kind) };
         else delete this.emos[id];
+      }
+    }
+  }
+
+  // 열혈 신자가 지나가는 사람에게 말 거는 모습 (몇 초에 한 번, 화면용)
+  zealotTalk(time) {
+    if (time < (this.zealotAt ?? 0)) return;
+    this.zealotAt = time + 6000 + Math.random() * 6000;
+    const ids = zealotsOf(app.s).map((z) => z.id).filter((id) => this.sprites[id]?.visible && app.s.mode === 'day');
+    if (!ids.length) return;
+    const id = ids[Math.floor(Math.random() * ids.length)];
+    this.say(id, ZEALOT_TEXT.bubbles[Math.floor(Math.random() * ZEALOT_TEXT.bubbles.length)], time);
+  }
+
+  // 퀘스트 표시: 사람 머리 위 · 장소 입구 위
+  refreshQuestMarks() {
+    const marks = questMarkers(app.s);
+    const key = JSON.stringify(marks);
+    if (key === this.qkey) return;
+    this.qkey = key;
+    for (const c of Object.values(this.qmarks ?? {})) c.destroy();
+    this.qmarks = {};
+    for (const m of marks) {
+      if (m.kind === 'res' && this.sprites[m.id] && !this.qmarks[m.id]) this.qmarks[m.id] = questMark(this, m.why);
+      if (m.kind === 'place') {
+        const d = app.here().places[m.place]?.door;
+        if (!d || this.qmarks[`p:${m.place}`]) continue;
+        this.qmarks[`p:${m.place}`] = questMark(this, m.why).setPosition(d[0] * T + 8, d[1] * T - 2).setDepth(5065);
       }
     }
   }
@@ -338,7 +374,7 @@ export class TownScene extends Phaser.Scene {
     const [fx, fy] = FWD[pos.dir ?? 'down'];
     if (!R.interviewed) {
       this.fx.fillStyle(R.chase ? 0xffa040 : 0xfff0a0, R.chase ? 0.16 : 0.12);
-      for (let f = 1; f <= REPORTER.sight.tiles; f++) for (let l = -1; l <= 1; l++) this.fx.fillRect((pos.x + fx * f + fy * l) * T, (pos.y + fy * f + fx * l) * T, T, T);
+      for (let f = 1; f <= REPORTER.sight.tiles - sightCut(s); f++) for (let l = -1; l <= 1; l++) this.fx.fillRect((pos.x + fx * f + fy * l) * T, (pos.y + fy * f + fx * l) * T, T, T);
     }
     if (!R.chase) {
       if (!R.interviewed && s.minute - R.evadedAt > 40 && inSight(pos, px, py)) {
@@ -366,8 +402,9 @@ export class TownScene extends Phaser.Scene {
     });
     if (!cands.length) return;
     const id = cands[Math.floor(Math.random() * cands.length)];
-    const line = gossipLine(s, id, this.sprites[id].neighbor);
-    this.gossip = { id, c: speechBubble(this, speak(s, line)), until: this.time.now + MOOD.bubbleSeconds * 1000 };
+    const line = speak(s, gossipLine(s, id, this.sprites[id].neighbor));
+    hear(s, id, line, lastGossip);                        // 수첩 '엿들은 소문' · 엿들은 고민은 대화 선택지로
+    this.gossip = { id, c: speechBubble(this, line), until: this.time.now + MOOD.bubbleSeconds * 1000 };
   }
 
   personAt(wx, wy) {
@@ -451,7 +488,7 @@ export class TownScene extends Phaser.Scene {
     if (key !== this.nearKey) { this.nearKey = key; this.near = near; app.setNearAction(near); }
 
     this.moodTimer += delta;
-    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); }
+    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); this.zealotTalk(time); }
     this.gossipTimer += delta;
     if (this.gossip && time > this.gossip.until) { this.gossip.c.destroy(); this.gossip = null; }
     if (this.gossipTimer > MOOD.gossipEverySeconds * 1000 && free) { this.gossipTimer = 0; this.tryGossip(); }

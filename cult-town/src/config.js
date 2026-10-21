@@ -337,3 +337,56 @@ export const PHASE4 = {
   splitAt: 70, splitDays: 3,                        // 불만 70 → 독립 예고, 3일 안에 못 풀면 분열 (실패)
   meet: { disc: -22, fatigue: 30 }, power: { disc: -30, share: 0.7 }, replace: { oldDisc: 25 },
 };
+
+// 퀘스트 (24장 C): 오늘의 할 일 · 사연 갈림길 · 엿들은 소문
+export const QUEST = {
+  tongSus: 6, tongLike: 6,                         // 통장님께 인사하면
+  dailyCount: 3, dailyXp: 8, dailyMoney: 10_000,  // 셋 다 하면 1만 원
+  dailyMissAt: 3, dailyMissSus: 1,                // 하나도 안 하면 첫 신도 의심 조금
+  heardMax: 30,
+  fork: {
+    stay: { like: 8, days: 3, later: { like: 4, rep: 1 } },
+    use: { like: 14, sus: 0, belief: 4, days: 5, later: { familySus: 12, dark: true } },
+    refer: { like: 3, sus: -15, days: 4, later: { rep: 3, sus: -10 } },
+  },
+};
+
+// ── 24장 D ──
+// 교주 성장: 경험치 → 레벨 (레벨마다 능력 1점). 능력 5개는 1에서 시작, 최대 6
+export const GROWTH = {
+  xpBase: 50, xpStep: 40,                  // 다음 레벨까지 = 50 + 40 × (레벨 - 1)
+  maxStat: 6,
+  talkXp: 1, memberXp: 5, worshipXp: 3,
+  talk: 0.04,                              // 말솜씨 1점당 호감 +4%
+  stamina: 8,                              // 체력 1점당 하루 피로 한도 +8
+  charisma: 0.04,                          // 카리스마 1점당 예배 효과 +4%
+  sense: 0.06,                             // 눈치 1점당 단서 정확도 +6% (기본 70%). 2점부터 프로필에 의심이 대충 보인다
+  disguise: 1.5,                           // 위장 1점당 노출 목표치 -1.5. 3점부터 기자 시야 -1칸
+  streetSermon: { charisma: 3, tiles: 6, like: 4, sameFamily: 1.5, secularSus: 4, fatigue: 25 },
+  unlockLevel: 3, unlockBelief: 20,        // 레벨 3부터 믿음 축 쪽에 따라 밤 행동 하나
+  flyerReviews: { money: 20_000, rep: 3 }, // 사기 쪽: 후기 전단 (어두운 선택)
+  dawnVisit: { like: 4, familySus: 2, fatigue: 40 }, // 광신 쪽: 새벽 심방
+};
+
+// 열혈 신자: 믿음 높은 신도. 낮에 알아서 포교, 성격대로 사고
+export const ZEALOT = {
+  minLike: 85, max: 6,
+  autoLike: 96, autoChance: 0.05,          // 신도가 스스로 열혈이 되기도 한다 (하루 확률)
+  targets: 2, like: 5, sus: 3, relationBonus: 1.5,
+  accident: 0.08,                          // 열혈 한 명당 하루 사고 확률 (진정시키면 며칠 0)
+  calmDays: 4, calmLike: -4, calmBelief: -2,
+  pushy: { sus: 15, rep: -1 }, family: { sus: 20, rep: -2 }, offering: { money: 30_000, laterRep: -4, days: 4 }, rival: { exposure: 5, rep: -1 },
+};
+
+// 동네 드라마 (주민끼리만): 하루 확률 · 지속 · 교주 대응
+export const DRAMA = {
+  daily: 0.14, activeDays: 4,
+  comfort: { like: 7 },
+  exploit: { like: 12, belief: -3, laterSus: 15, days: 4 },
+};
+
+// 예배 미니게임: 설교 카드 점수(0~1) → 효과 배율. 0.5 면 예전과 같다
+export const SERMON = { cards: 3, hand: 4, needWeight: 40, flow: 12, mulMin: 0.8, mulMax: 1.15, bigHit: 0.8 };
+
+// 엿듣기: 들은 고민으로 말 걸기
+export const TIP = { days: 5, matchLike: 0.8, missLike: 2 };

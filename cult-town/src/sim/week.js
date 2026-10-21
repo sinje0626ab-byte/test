@@ -1,4 +1,7 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
+import { dueLater, endToday, checkQuests, newToday } from './quests.js';
+import { dailyZealots } from './zealots.js';
+import { dailyDrama } from './drama.js';
 import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, PHASE4, OFFICERS, REPORTER, CALENDAR, SECT_FX } from '../config.js';
 import { RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { CLERGY } from '../data/clergy.js';
@@ -28,6 +31,7 @@ export function startDay(s, g) {
   s.leader.fatigue = Math.round((s.leader.nightFatigue ?? 0) * 0.5);
   s.leader.nightFatigue = 0;
   morningNeeds(s);
+  newToday(s);
   // 날씨: 달마다 비 확률·기온 (장마철엔 자주 온다). 영하 근처면 눈
   const mi = month(s.day) - 1;
   const rain = rand(s) < CALENDAR.rain[mi];
@@ -130,6 +134,10 @@ export function endDay(s, g, opts = {}) {
     for (const id of s.attend) s.res[id].like = clamp(s.res[id].like - 4);
   }
   events.push(...dueShadows(s));
+  events.push(...dueLater(s));
+  events.push(...dailyZealots(s));
+  events.push(...dailyDrama(s));
+  endToday(s);
   events.push(...dailyRumor(s));
   for (const st of Object.values(s.res)) {
     st.sus = clamp(st.sus - TALK.suspicionDecay);
@@ -178,6 +186,7 @@ export function endDay(s, g, opts = {}) {
     s.week = newWeek();
     s.week.repStart = s.rep;
   }
+  checkQuests(s);                       // 끝낸 퀘스트는 s.quest.news 로 (화면이 아침에 꺼내 보여 준다)
   s.over = checkOver(s);
   let phaseUp = false;
   if (s.over === 'phase1') { s.over = null; s.phase = 2; initOfficers(s); phaseUp = 2; }
@@ -232,6 +241,8 @@ function makeBulletin(s) {
   for (const c of w.clergy) town.push(c.line);
   for (const sh of w.shadow) if (sh.text) town.push(sh.text);
   for (const r of w.reports ?? []) town.push(`이번 주 ${r}`);
+  for (const d of (s.drama?.log ?? []).filter((x) => s.day - x.day < 7).slice(0, 2)) town.push(`동네 소식: ${d.text}`);   // 주민끼리의 일 (24장 D-4)
+  if (w.bigSermon) town.push('이번 주 설교 때 앞줄에서 손수건이 나왔다. 1면감.');
   if (w.shadow.some((x) => x.kind === 'doomsday')) town.push('doomsday');
   // 기성 종교의 생활 소식 한 줄 (돌아가며)
   const c = CLERGY[(s.bulletinNo - 1) % CLERGY.length];

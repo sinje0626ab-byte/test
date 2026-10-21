@@ -10,18 +10,25 @@ import { CAST } from '../data/cast.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { STAGE_NAMES } from '../data/topics.js';
 import { LEADER_TONE } from '../data/lines.js';
+import { openSermon } from './worship.js';
+import { zealotsOf, zealotCandidates, makeZealot, calmZealot, releaseZealot } from '../sim/zealots.js';
+import { ZEALOT_TEXT } from '../data/zealots.js';
+import { STAT_IDS, stat, levelOf, freePoints, raiseStat, axisUnlock, axisAction } from '../sim/growth.js';
+import { GROWTH_TEXT } from '../data/growth.js';
+import { cutin } from './cutin.js';
+import { lineFor } from '../sim/voice.js';
 import { canWorship, holdWorship, seats, mood, canBuy, buy, care, vigil, inflate, signTier, nextSignCost, upgradeSign } from '../sim/sanctuary.js';
 import { activeCast, memberCount } from '../sim/faith.js';
 import { isRentDay as isMonthEnd } from '../sim/clock.js';
 import { tone } from '../sim/leader.js';
 import { pick } from '../sim/rng.js';
 import { h, mount, unmount, won } from './dom.js';
-import { fill, josa } from './text.js';
+import { fill, josa, speak } from './text.js';
 import { play } from './sound.js';
 import { rivalNight } from './threats.js';
 import { exposureWord } from '../sim/threats.js';
 import { rivalInfo } from '../sim/rival.js';
-import { PHASE4, SIGN } from '../config.js';
+import { PHASE4, SIGN, SERMON, ZEALOT, GROWTH } from '../config.js';
 import { BRANCH_TEXT } from '../data/branch.js';
 import { canOpenBranch, openBranch, branchHead, branchOptions, branchAct } from '../sim/branch.js';
 import { branchCount } from '../sim/faith.js';
@@ -49,6 +56,8 @@ export function openNight(app) {
       btn('sign', '간판', `지금: ${SIGN.names[signTier(s)]}${nextSignCost(s) != null ? ` · 다음 ${won(nextSignCost(s))}` : ' · 더 바꿀 게 없다'}`),
       btn('care', NIGHT.menu.care, '전화로 30분. 호감이 오르고 의심이 내린다.'),
       btn('cast', NIGHT.menu.cast, '엄마, 오랜 친구, 우연히 온 사람'),
+      btn('growth', '교주', `레벨 ${levelOf(s).level}${freePoints(s) > 0 ? ` · 점수 ${freePoints(s)} 남음` : ''}`),
+      ...(zealotsOf(s).length || zealotCandidates(s).length ? [btn('zealots', ZEALOT_TEXT.menu, `${zealotsOf(s).length}명${zealotCandidates(s).length ? ` · 세울 수 있는 사람 ${zealotCandidates(s).length}` : ''}`)] : []),
       btn('vigil', NIGHT.menu.vigil, s.flags.vigilDay === s.day ? '오늘은 이미 했다' : '광신 쪽으로. 내일 많이 피곤하다.', { disabled: s.flags.vigilDay === s.day, run: doVigil }),
       btn('ledger', NIGHT.menu.ledger, isMonthEnd(s.day) ? `오늘 월세 ${won(rentNow(s))}` : '이번 주 돈 흐름'),
       ...(s.phase >= 2 ? [
@@ -115,17 +124,49 @@ export function openNight(app) {
           h('button', { class: 'btn', disabled: s.leader.money < c, onclick: () => {
             upgradeSign(s); play('coins');
             note = [SIGN_TEXT[signTier(s)].replaceAll('{교단}', s.leader.cultName)];
+            cutin(app, { kicker: '간판을 바꿨다', title: SIGN.names[signTier(s)], line: note[0] });
             sub = null; app.refresh(); render();
           } }, `${SIGN.names[tier + 1]}로 바꾸기`, h('small', {}, `${won(c)} · ${SIGN_HINT[tier + 1]}`)));
+    }
+    if (key === 'zealots') {
+      const cands = zealotCandidates(s);
+      const zs = zealotsOf(s);
+      return h('div', { class: 'stack' },
+        h('p', { class: 'muted' }, ZEALOT_TEXT.hint),
+        zs.length ? zs.map((z) => h('div', { class: 'row', style: 'gap:6px;align-items:center;flex-wrap:wrap' },
+          h('b', { style: 'flex:1' }, `${RESIDENT_BY_ID[z.id].name}${z.calmUntil >= s.day ? ' (쉬는 중)' : ''}`),
+          h('button', { class: 'btn small', disabled: z.calmUntil >= s.day, onclick: () => { note = [calmZealot(s, z.id)]; play('click'); render(); } }, ZEALOT_TEXT.calmBtn, h('small', {}, ZEALOT_TEXT.calmHint)),
+          h('button', { class: 'btn small', onclick: () => { note = [releaseZealot(s, z.id)]; play('click'); render(); } }, ZEALOT_TEXT.releaseBtn))) : null,
+        h('b', {}, ZEALOT_TEXT.pickTitle),
+        cands.length && zs.length < ZEALOT.max ? cands.map((id) => h('button', { class: 'btn small', onclick: () => {
+          const first = !(s.flags.zealotsEver > 0);
+          note = [makeZealot(s, id)]; play('confirm');
+          if (first) cutin(app, { kicker: '첫 열혈 신자', title: RESIDENT_BY_ID[id].name, line: note[0], face: app.portrait(id) });
+          render();
+        } }, `${RESIDENT_BY_ID[id].name} (${RESIDENT_BY_ID[id].job})`)) : h('p', { class: 'muted' }, ZEALOT_TEXT.none));
+    }
+    if (key === 'growth') {
+      const lv = levelOf(s);
+      const free = freePoints(s);
+      const unlock = axisUnlock(s);
+      return h('div', { class: 'stack' },
+        h('p', {}, `레벨 ${lv.level} · 다음 레벨까지 ${lv.need - lv.into} · 남은 점수 ${free}`),
+        STAT_IDS.map((k) => h('div', { class: 'row', style: 'gap:6px;align-items:center' },
+          h('span', { style: 'flex:1' }, h('b', {}, GROWTH_TEXT[k].name), ` ${stat(s, k)}`, h('small', { style: 'display:block' }, GROWTH_TEXT[k].desc)),
+          h('button', { class: 'btn small', disabled: free <= 0 || stat(s, k) >= GROWTH.maxStat, onclick: () => { raiseStat(s, k); play('confirm'); note = [`${GROWTH_TEXT[k].name} ${stat(s, k)}.${k === 'charisma' && stat(s, k) === GROWTH.streetSermon.charisma ? ' 낮에 길거리 즉석 설교를 할 수 있다.' : ''}`]; render(); } }, '+1'))),
+        unlock ? h('div', { class: 'stack dark' }, h('button', { class: 'btn', disabled: s.flags.axisDay === s.day, onclick: () => { axisAction(s, unlock); play('page'); note = [GROWTH_TEXT[unlock].done]; app.refresh(); render(); } },
+          GROWTH_TEXT[unlock].label, h('small', {}, GROWTH_TEXT[unlock].hint))) : h('p', { class: 'muted small' }, GROWTH_TEXT.lockedHint));
     }
     if (key === 'rival') {
       return rivalNight(s, (r) => { note = [r.text]; play(r.tone === 'bad' ? 'error' : 'confirm'); sub = null; app.refresh(); render(); });
     }
     if (key === 'worship') {
-      const run = (opts) => {
-        const r = holdWorship(s, opts);
+      const run = (opts) => openSermon(app, (score, verdict) => {
+        const r = holdWorship(s, { ...opts, sermon: score });
         play('coins');
-        note = [fill(NIGHT.worshipDone, s, { n: r.heads, 돈: r.offering })];
+        note = [verdict, fill(NIGHT.worshipDone, s, { n: r.heads, 돈: r.offering })];
+        if (score >= SERMON.bigHit) s.week.bigSermon = true;
+        for (const [id, st] of r.promoted) if (st === 'member') cutin(app, { kicker: fill('{신도}가 되었다', s), title: RESIDENT_BY_ID[id].name, line: speak(s, lineFor(s, id, 'member')), face: app.portrait(id) });
         if (r.standing) note.push(fill(NIGHT.seatsFull, s, { n: r.standing }));
         for (const [id, st] of r.promoted) note.push(`${josa(RESIDENT_BY_ID[id].name, '이/가')} ${josa(STAGE_NAMES[st], '이/가')} 되었다.`);
         if (opts.doubleBasket) note.push(SHADOW.doubleBasket.now);
@@ -134,7 +175,7 @@ export function openNight(app) {
         app.refresh();
         app.scene()?.refreshFurniture?.(true);
         render();
-      };
+      });
       return h('div', { class: 'stack' },
         h('p', { class: 'muted' }, `오늘 올 사람: 이름 아는 사람 ${s.attend.length}명 · 첫 신도 ${activeCast(s).length}명 · 따라온 사람 ${s.followers}명. 자리 ${seats(s)}.`),
         h('button', { class: 'btn primary', onclick: () => run({}) }, fill('{예배}를 연다', s)),
@@ -246,7 +287,7 @@ export function openNight(app) {
     const cands = Object.keys(s.res).filter((id) => canPromote(s, id));
     return h('div', { class: 'stack' }, rows,
       h('p', { class: 'muted' }, '방 담당: 관리가 높을수록 그 방 효과↑. 낮 포교: 말솜씨가 높을수록 잘 통하고 실수가 적다. 앙숙끼리 같은 일을 맡기면 불만이 쌓인다.'),
-      cands.length ? h('div', { class: 'stack' }, h('b', {}, '간부로 세울 수 있는 신도'), cands.map((id) => h('button', { class: 'btn small', onclick: () => { promote(s, id); play('confirm'); note = [`${RESIDENT_BY_ID[id].name}을(를) 간부로 세웠다.`]; render(); } }, `${RESIDENT_BY_ID[id].name} (${RESIDENT_BY_ID[id].job})`)))
+      cands.length ? h('div', { class: 'stack' }, h('b', {}, '간부로 세울 수 있는 신도'), cands.map((id) => h('button', { class: 'btn small', onclick: () => { promote(s, id); play('confirm'); note = [`${RESIDENT_BY_ID[id].name}을(를) 간부로 세웠다.`]; cutin(app, { kicker: '간부 승진', title: RESIDENT_BY_ID[id].name, line: speak(s, lineFor(s, id, 'member')), face: app.portrait(id) }); render(); } }, `${RESIDENT_BY_ID[id].name} (${RESIDENT_BY_ID[id].job})`)))
         : h('p', { class: 'muted' }, act.length >= 6 ? '간부는 여섯 명까지.' : '호감 75 이상인 신도가 생기면 간부로 세울 수 있다.'));
   }
 

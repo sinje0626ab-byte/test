@@ -261,3 +261,39 @@ kbd { font-family: var(--font); font-size: 11px; border: 1.5px solid currentColo
 .keys { border-collapse: collapse; font-size: 13px; }
 .keys td { padding: 3px 8px 3px 0; }
 @media (max-width: 560px) { .hud .ctrl .btn kbd { display: none; } }
+
+/* 수첩 탭 · 퀘스트 장면 (24장 C) */
+.notebook .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 8px; }
+.notebook .tabs .btn.on { background: var(--ink); color: var(--paper); }
+.notebook h3 { font-size: 15px; margin: 8px 0 4px; }
+.notebook .tabbody { max-height: 56vh; overflow-y: auto; }
+.quests li.done { opacity: .6; }
+.quests li.later { opacity: .45; }
+.quests.heard li div { margin-top: 2px; }
+.muted.small, p.small { font-size: 12px; }
+.cutin .quest-scene { max-width: 420px; text-align: left; animation: cutin .35s ease-out; }
+.quest-scene .kicker { font-size: 12px; color: var(--accent); letter-spacing: 1px; }
+.quest-scene h2 { margin: 2px 0 8px; }
+.quest-scene p.say { font-weight: bold; }
+@keyframes cutin { from { transform: translateX(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.btn.darkopt { border-color: #5a2a2a; background: #f3e4e0; }
+
+/* 예배 미니게임 · 컷인 (24장 D) */
+.sermon .gauge { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.sermon .gauge .bar { flex: 1; height: 12px; border: 2px solid var(--ink); background: var(--paper-2); border-radius: 3px; overflow: hidden; }
+.sermon .gauge .bar i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
+.sermon .faces { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; max-height: 34vh; overflow-y: auto; }
+.sermon .face { position: relative; width: 56px; text-align: center; border: 2px solid var(--paper-3); border-radius: 6px; padding: 2px; background: #fffaf0; }
+.sermon .face img { width: 36px; height: 36px; image-rendering: pixelated; display: block; margin: 0 auto; }
+.sermon .face b { position: absolute; top: 0; right: 2px; font-size: 11px; }
+.sermon .face small { display: block; font-size: 10px; }
+.sermon .face.moved { border-color: var(--good); background: #e8f4e8; }
+.sermon .face.doubt { border-color: var(--bad); }
+.sermon .face.phone, .sermon .face.sleepy { opacity: .75; }
+.sermon .face .react { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); white-space: nowrap; font-size: 10px; background: #fff; border: 1px solid var(--ink); border-radius: 4px; padding: 0 3px; z-index: 2; }
+.sermon .played { font-size: 13px; color: var(--ink-soft); }
+.cutinbar { position: fixed; left: 12px; top: 30%; z-index: 60; display: flex; gap: 10px; align-items: center; max-width: min(420px, calc(100vw - 32px)); background: var(--paper); border: var(--line); border-left: 8px solid var(--accent); border-radius: 6px; padding: 10px 12px; box-shadow: var(--shadow); animation: cutin .35s ease-out; cursor: pointer; }
+.cutinbar img { width: 48px; height: 48px; image-rendering: pixelated; background: var(--paper-2); border: 2px solid var(--ink); border-radius: 4px; }
+.cutinbar .kicker { font-size: 11px; color: var(--accent); }
+.cutinbar b { font-size: 17px; display: block; }
+.cutinbar .say { font-size: 13px; margin-top: 2px; }

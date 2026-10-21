@@ -1,5 +1,7 @@
 // 성소: 자리·분위기·소품·예배·헌금·월세·신도 돌보기
-import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR, SIGN } from '../config.js';
+import { worshipMul } from './growth.js';
+import { noteWorship, addXp } from './quests.js';
+import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR, SIGN, GROWTH, SERMON } from '../config.js';
 import { rand } from './rng.js';
 import { districtOf } from '../data/residents.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
@@ -49,18 +51,19 @@ export function holdWorship(s, opts = {}) {
   const m = mood(s);
   const crowd = standing > 0 ? 0.85 : 1;
   const promoted = [];
+  const sermonMul = opts.sermon == null ? 1 : SERMON.mulMin + (SERMON.mulMax - SERMON.mulMin) * opts.sermon;   // 예배 미니게임 점수
   const needLike = STAGES.memberLike - (fx.convert - 1) * 40 - memberLikeCut(s);
   const kitchen = worshipLikeBonus(s) + (s.flags.snackDay === s.day ? 3 : 0);
   for (const id of named) {
     const st = s.res[id];
-    st.like = clamp(st.like + SANCTUARY.worship.faithGain * fx.worship * (1 + m / 40) * crowd * (opts.fast ? 1.3 : 1) + kitchen);
+    st.like = clamp(st.like + SANCTUARY.worship.faithGain * fx.worship * (1 + m / 40) * crowd * (opts.fast ? 1.3 : 1) * worshipMul(s) * sermonMul + kitchen);
     st.worships++;
     if (st.stage === 'visitor') { setStage(s, id, 'newcomer'); promoted.push([id, 'newcomer']); }
-    else if (st.stage === 'newcomer' && st.worships >= STAGES.memberWorships && st.like >= needLike) { setStage(s, id, 'member'); promoted.push([id, 'member']); }
+    else if (st.stage === 'newcomer' && st.worships >= STAGES.memberWorships && st.like >= needLike) { setStage(s, id, 'member'); promoted.push([id, 'member']); addXp(s, GROWTH.memberXp); }
     st.attendDay = -1;
   }
   let offering = heads * SANCTUARY.worship.offeringPerHead * fx.offering * (1 + m * SANCTUARY.worship.moodOffering);
-  offering *= offeringMul(s) * ruleOffering(s);
+  offering *= offeringMul(s) * ruleOffering(s) * sermonMul;
   if (s.flags.offeringBoost?.until >= s.day) offering *= s.flags.offeringBoost.mul;
   if (s.flags.shortWorship === s.day) offering *= 0.8;
   if (opts.doubleBasket) {
@@ -81,8 +84,10 @@ export function holdWorship(s, opts = {}) {
   s.week.worships.push({ day: s.day, heads, named: named.length, standing });
   s.sanctuary.worshipDay = s.day;
   s.sanctuary.lastAttend = named;
+  noteWorship(s, heads);
+  addXp(s, GROWTH.worshipXp);
   s.leader.nightFatigue = (s.leader.nightFatigue ?? 0) + 10;
-  return { heads, named, standing, seats: seatN, offering, promoted };
+  return { heads, named, standing, seats: seatN, offering, promoted, sermon: opts.sermon ?? null };
 }
 
 // 밤에 신도 한 명 돌보기

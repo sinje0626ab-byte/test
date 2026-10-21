@@ -1,6 +1,9 @@
 // 문장 틀 채우기: {교단} {교주} {예배} {신도} {장소} {이름} {n} {돈} 등
 import { SECTS } from '../data/sects.js';
 import { won } from './dom.js';
+import { sanctuaryName } from '../sim/voice.js';
+
+export { sanctuaryName };
 
 export function fill(str, s, extra = {}) {
   const sect = s ? SECTS[s.leader.sect] : null;
@@ -24,13 +27,11 @@ export function josa(word, pair) {
   return word + (has ? a : b);
 }
 
-// 동네 사람들이 성소를 부르는 이름. 간판이 아크릴(2단계) 이상이면 교단 이름으로 부른다
-export function sanctuaryName(s) {
-  return (s?.sanctuary?.sign ?? 0) >= 2 ? s.leader.cultName : '302호';
-}
 // 주민 대사의 '302호'를 간판 단계에 맞게 바꾼다 (조사도 맞춘다)
 export function speak(s, str) {
-  if (!str || sanctuaryName(s) === '302호') return str;
+  if (!str) return str;
+  str = str.replaceAll('{성소}', sanctuaryName(s));
+  if (sanctuaryName(s) === '302호') return str;
   const name = s.leader.cultName;
   return str.replace(/302호(가|는|를|와|로|)/g, (m, j) => {
     if (!j) return name;

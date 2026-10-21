@@ -53,7 +53,10 @@ export function relationBetween(a, b) {
 }
 
 // 수다 한 줄. rand: 0~1 난수 함수 (화면 쪽 Math.random 이면 된다)
+// 마지막 수다가 누구의 어떤 고민 얘기였나 (엿듣기: 수첩에 적고 대화 선택지를 연다)
+export let lastGossip = null;
 export function gossipLine(s, a, b, rand = Math.random) {
+  lastGossip = null;
   const sa = s.res[a]; const sb = s.res[b];
   const pick = (arr) => arr[Math.floor(rand() * arr.length)];
   const roll = rand();
@@ -67,6 +70,7 @@ export function gossipLine(s, a, b, rand = Math.random) {
     const x = others.length ? pick(others) : null;
     if (x) {
       const need = topNeeds(s.res[x])[0];
+      lastGossip = { x, need };
       return pick(GOSSIP.about[need]).replace('{x}', RESIDENT_BY_ID[x].name.slice(1));
     }
   }
