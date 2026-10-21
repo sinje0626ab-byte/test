@@ -18,6 +18,10 @@ import { saveGame, loadGame, clearSave } from './sim/save.js';
 import { rentNow } from './sim/space.js';
 import { visitPlace } from './sim/stories.js';
 import { streetTick } from './sim/officers.js';
+import { threatHour, setThreatGrid, isProtester, isDefector } from './sim/threats.js';
+import { REPORTER_INFO } from './data/threats.js';
+import { RIVAL_LOOKS } from './data/rival.js';
+import { openInterview, openProtest, openDefector, rivalHello, nameForNpc } from './ui/threats.js';
 import { mapsForStep } from './map/interiors.js';
 import { portrait as makePortrait, LEADER_LOOK } from './game/people.js';
 import { createHud } from './ui/hud.js';
@@ -55,6 +59,7 @@ export const app = {
   running: false,
 
   gridFor(id) { return interiorGrids[id]; },
+  init() { setThreatGrid(this.g); },
 
   // ── 뒤로 (Esc · 오른쪽 클릭): 화면마다 지금의 '한 단계 뒤로' 함수를 등록한다. 마지막에 등록된 것부터 ──
   backs: new Map(),
@@ -72,6 +77,7 @@ export const app = {
 
   onBoot(game) {
     this.game = game;
+    this.init();
     window.addEventListener('keydown', (e) => this.onKey(e));
     window.addEventListener('keyup', (e) => { if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.running = false; });
     window.addEventListener('contextmenu', (e) => { if (!this.s) return; e.preventDefault(); this.back(); });
@@ -160,6 +166,7 @@ export const app = {
       if (s.phase >= 2 && Math.floor(before / 60) !== hour && hour >= OFFICERS.street.startHour && hour < OFFICERS.street.endHour) {
         for (const e of streetTick(s)) if (e.type === 'slip' && Math.random() < 0.5) toast(e.text, 'warn');
       }
+      if (s.phase >= 3 && Math.floor(before / 60) !== hour) threatHour(s, this.g, hour);
       if (before < CLOCK.dayEnd && s.minute >= CLOCK.dayEnd) { toast('21시. 동네가 문을 닫는다. 302호로 돌아가자.', 'warn'); play('error'); }
       if (s.minute >= CLOCK.forceHome) { this.forceNight(); return; }
       left -= step;
@@ -218,7 +225,7 @@ export const app = {
         this.maybeEvent();
       };
       const reveal = () => (r.revelation ? showRevelation(s, r.revelation, () => { saveGame(s); morning(); }) : morning());
-      const phase = () => (r.phaseUp ? showPhaseUp(s, () => { saveGame(s); reveal(); }) : reveal());
+      const phase = () => (r.phaseUp ? showPhaseUp(s, r.phaseUp, () => { saveGame(s); reveal(); }) : reveal());
       showMorning(s, lines, () => (r.bulletin ? showBulletin(s, r.bulletin, phase) : phase()));
     };
     if (isMonthEnd(s.day) && s.leader.money < rentNow(s)) openLandlord(this, finish);
@@ -243,8 +250,10 @@ export const app = {
     if (!near) return this.hud.setAction(null);
     if (near.kind === 'person') {
       const id = near.id;
-      const name = id.startsWith('c:') ? `${CLERGY_BY_ID[id.slice(2)].name} ${CLERGY_BY_ID[id.slice(2)].title}` : id.startsWith('o:') ? CAST_BY[id.slice(2)].name : RESIDENT_BY_ID[id].name;
-      this.hud.setAction(`${id.startsWith('o:') ? '인사' : '말 걸기'} · ${name}`, () => this.talkTo(id));
+      const npc = id.startsWith('x:') || id.startsWith('v:');
+      const name = id.startsWith('c:') ? `${CLERGY_BY_ID[id.slice(2)].name} ${CLERGY_BY_ID[id.slice(2)].title}` : id.startsWith('o:') ? CAST_BY[id.slice(2)].name : npc ? nameForNpc(this.s, id) : RESIDENT_BY_ID[id].name;
+      const verb = id === 'x:reporter' ? '인터뷰 받기' : id.startsWith('o:') || id.startsWith('v:') ? '인사' : isProtester(this.s, id) ? '피켓 앞으로' : isDefector(this.s, id) ? '다가가기' : '말 걸기';
+      this.hud.setAction(`${verb} · ${name}`, () => this.talkTo(id));
     } else if (near.kind === 'door') {
       const p = PLACES[near.place];
       const label = near.place === 'sanctuary' ? '302호로 올라가기' : SHOP_PLACES.includes(near.place) ? `들어가기 · ${p.short}` : `살펴보기 · ${p.short}`;
@@ -276,7 +285,11 @@ export const app = {
       toast(`${c.name}: "${['오늘 벌써 세 명한테 말 걸었어.', '다리 아프다. 그래도 한 바퀴 더 돌게.', '시장 사람들이 나를 알아보기 시작했어.'][this.s.day % 3]}"`);
       return;
     }
+    if (id === 'x:reporter') { this.s.reporter.chase = false; openInterview(this); return; }
+    if (id.startsWith('v:')) { rivalHello(this, id); return; }
     if (id.startsWith('c:')) openClergyTalk(this, id.slice(2));
+    else if (isProtester(this.s, id)) openProtest(this, id);
+    else if (isDefector(this.s, id)) openDefector(this, id);
     else openTalk(this, id);
   },
   showProfile(id, onTalk) { openProfile(this, id, { onTalk }); },
@@ -348,6 +361,8 @@ export const app = {
     if (id === 'leader') look = LEADER_LOOK;
     else if (id.startsWith('c:')) look = CLERGY_BY_ID[id.slice(2)].look;
     else if (id.startsWith('cast:') || id.startsWith('o:')) look = CAST_BY[id.split(':')[1]].look;
+    else if (id === 'x:reporter') look = REPORTER_INFO.look;
+    else if (id.startsWith('v:')) look = RIVAL_LOOKS[id.slice(2)];
     else look = RESIDENT_BY_ID[id].look;
     return makePortrait(img, id, look);
   },

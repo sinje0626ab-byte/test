@@ -1,5 +1,5 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
-import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, OFFICERS } from '../config.js';
+import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, OFFICERS, REPORTER } from '../config.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { CLERGY } from '../data/clergy.js';
 import { SECTS } from '../data/sects.js';
@@ -16,6 +16,9 @@ import { dailyRooms, weeklyRooms, followerBonus } from './space.js';
 import { dailyOfficers, initOfficers, activeOfficers } from './officers.js';
 import { dueRevelation, weeklyRules } from './revelation.js';
 import { newWeek } from './state.js';
+import { dailyThreats, morningThreats, addDefectors, inspect } from './threats.js';
+import { rivalDaily, rivalWeekly, rivalMajority, rivalResolved } from './rival.js';
+import { DEFECTOR_TEXT } from '../data/threats.js';
 
 export function startDay(s, g) {
   s.minute = CLOCK.dayStart;
@@ -26,6 +29,7 @@ export function startDay(s, g) {
   s.weather = { rain: rand(s) < WEATHER.rainChance, market: (s.day % 7) === WEATHER.marketWeekday };
   if (s.weather.rain) for (const r of Object.values(s.res)) r.needs.lonely = Math.min(100, r.needs.lonely + WEATHER.rainLonely);
   decideAttendance(s);
+  morningThreats(s);
   if (g) placeAllAtHome(s, g);
 }
 
@@ -44,7 +48,7 @@ function dueShadows(s) {
     }
     applyLateShadow(s, sh);
     const name = sh.name ?? (sh.id ? RESIDENT_BY_ID[sh.id]?.name : '');
-    const text = (SHADOW[sh.kind]?.later ?? '').replaceAll('{이름}', name ?? '').replaceAll('{가족}', sh.relative ? RESIDENT_BY_ID[sh.relative].name : '가족');
+    const text = (sh.text ?? SHADOW[sh.kind]?.later ?? '').replaceAll('{이름}', name ?? '').replaceAll('{가족}', sh.relative ? RESIDENT_BY_ID[sh.relative].name : '가족');
     s.week.shadow.push({ kind: sh.kind, text });
     out.push({ type: 'shadow', kind: sh.kind, text });
   }
@@ -67,6 +71,10 @@ function applyLateShadow(s, sh) {
     case 'agenda_visit': s.rep = clamp(s.rep - 6); s.landlordAnger += 10; break;
     case 'sign_volunteer': s.rep = clamp(s.rep - 6); break;
     case 'rule_communal': case 'rule_pledge': case 'rule_interview': s.rep = clamp(s.rep - 5); for (const r of members) r.sus = clamp(r.sus + 4); break;
+    case 'adminLater': sh.text = inspect(s, true); break;
+    case 'hush': s.rep = clamp(s.rep - 8); s.exposure = clamp(s.exposure + 10); if (s.defectors[sh.id]) s.defectors[sh.id].hushed = false; if (s.reporter.active) s.reporter.heat += 6; break;
+    case 'spin': s.rep = clamp(s.rep - 8); s.exposure = clamp(s.exposure + 8); break;
+    case 'rumor': s.rep = clamp(s.rep - 6); if (s.rival && s.rival.status === 'active') s.rival.status = 'enemy'; break;
     default: break;
   }
 }
@@ -87,8 +95,9 @@ function weeklyFollowers(s) {
   let gained = 0;
   for (const id of namedMembers(s)) {
     const have = s.followerOf[id] ?? 0;
-    const cap = s.phase >= 2 ? STAGES.phase2Followers.cap : STAGES.followerCapPerMember;
-    const chance = (s.phase >= 2 ? STAGES.phase2Followers.chance : STAGES.followersPerMemberWeek) + followerBonus(s);
+    const F = s.phase >= 3 ? PHASE3.followers : STAGES.phase2Followers;
+    const cap = s.phase >= 2 ? F.cap : STAGES.followerCapPerMember;
+    const chance = (s.phase >= 2 ? F.chance : STAGES.followersPerMemberWeek) + followerBonus(s);
     if (have < cap && rand(s) < chance) {
       s.followerOf[id] = have + 1; s.followers++; gained++;
     }
@@ -110,11 +119,19 @@ export function endDay(s, g, opts = {}) {
     st.sus = clamp(st.sus - TALK.suspicionDecay);
     if (st.talked !== s.day && (st.stage === 'none' || st.stage === 'curious')) st.like = clamp(st.like - TALK.likeDecay);
   }
-  for (const id of checkLeave(s)) events.push({ type: 'left', id });
+  const leftIds = checkLeave(s);
+  for (const id of leftIds) events.push({ type: 'left', id });
   events.push(...castDrift(s));
   if (s.phase >= 2) {
     events.push(...dailyRooms(s));
-    events.push(...dailyOfficers(s, s.flags.darkToday ?? 0));
+    const off = dailyOfficers(s, s.flags.darkToday ?? 0);
+    events.push(...off);
+    leftIds.push(...off.filter((e) => e.type === 'officerLeft').map((e) => e.oid));
+  }
+  if (s.phase >= 3) {
+    events.push(...addDefectors(s, leftIds));
+    events.push(...dailyThreats(s, g));
+    events.push(...rivalDaily(s));
   }
   s.flags.darkToday = 0;
   if (s.flags.quietSign) for (const st of Object.values(s.res)) st.sus = clamp(st.sus - 1);
@@ -126,6 +143,7 @@ export function endDay(s, g, opts = {}) {
   }
   if (isSunday(s.day)) {
     weeklyFollowers(s);
+    if (s.phase >= 3) events.push(...rivalWeekly(s));
     weeklyRooms(s, relationsOf);
     weeklyRules(s, relationsOf);
     bulletin = makeBulletin(s);
@@ -134,7 +152,8 @@ export function endDay(s, g, opts = {}) {
   }
   s.over = checkOver(s);
   let phaseUp = false;
-  if (s.over === 'phase1') { s.over = null; s.phase = 2; initOfficers(s); phaseUp = true; }
+  if (s.over === 'phase1') { s.over = null; s.phase = 2; initOfficers(s); phaseUp = 2; }
+  if (s.over === 'phase2') { s.over = null; s.phase = 3; s.phase3Day = s.day; phaseUp = 3; }
   const revelation = s.over ? null : dueRevelation(s);
   let event = null;
   if (!s.over) {
@@ -157,7 +176,14 @@ export function checkOver(s) {
   }
   if (s.landlordAnger >= PHASE2.landlordAngerMax) return 'notice';
   if (s.officersAppointed >= 3 && s.officersLeft * 2 > s.officersAppointed) return 'officers';
-  if (memberCount(s) >= PHASE2.members && s.space.step >= PHASE2.minSpaceStep && activeOfficers(s).length >= PHASE2.minOfficers) return 'win';
+  if (s.phase === 2) {
+    if (memberCount(s) >= PHASE2.members && s.space.step >= PHASE2.minSpaceStep && activeOfficers(s).length >= PHASE2.minOfficers) return 'phase2';
+    return null;
+  }
+  if (rivalMajority(s, PHASE3.rivalMajority)) return 'rival';
+  if (s.rep <= REPORTER.pressFail.rep && s.reporter.reports >= REPORTER.pressFail.reports) return 'press';
+  const floor7 = s.repLog.length >= 7 ? Math.min(...s.repLog) : 0;
+  if (memberCount(s) >= PHASE3.members && s.rep >= PHASE3.rep && floor7 >= PHASE3.repFloor7 && rivalResolved(s)) return 'win';
   return null;
 }
 
@@ -169,6 +195,7 @@ function makeBulletin(s) {
   const town = [];
   for (const c of w.clergy) town.push(c.line);
   for (const sh of w.shadow) if (sh.text) town.push(sh.text);
+  for (const r of w.reports ?? []) town.push(`이번 주 ${r}`);
   if (w.shadow.some((x) => x.kind === 'doomsday')) town.push('doomsday');
   // 기성 종교의 생활 소식 한 줄 (돌아가며)
   const c = CLERGY[(s.bulletinNo - 1) % CLERGY.length];

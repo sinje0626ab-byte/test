@@ -3,7 +3,7 @@
 export const GAME = {
   title: '',                     // 게임 이름(미정). 정해지면 여기만.
   saveKey: 'cult-town-save',
-  saveVersion: 2,
+  saveVersion: 3,
   startMoney: 400_000,           // 교주 지갑 = 교단 돈 (원)
   startAge: { min: 25, max: 60, default: 38 },
 };
@@ -230,13 +230,13 @@ export const REVELATIONS = [{ id: 'sign', at: 50 }, { id: 'fence', at: 100 }];
 // ════════ 3단계: 바깥의 위협 (22장) ════════
 export const PHASE3 = {
   members: 200, rep: 40, repFloor7: 30,          // 목표: 신도 200 + 평판 40 이상 (최근 7일 최저 30 이상) + 라이벌 정리
-  followers: { chance: 1.3, cap: 7 },            // 3단계: 신도 한 명이 데려오는 사람 한도가 늘어난다
+  followers: { chance: 0.25, cap: 6 }, outsiders: 0.3,   // 방송실 손님도 3단계엔 반쯤 (기사 보고 경계한다)            // 3단계: 신도 한 명이 데려오는 사람 한도가 조금 늘어난다
   rivalMajority: 0.5,                            // 우리 신도의 이 비율 넘게 라이벌로 가면 실패
 };
 
 // 노출 (0~100): 매일 목표치 쪽으로 30%씩. 목표치 = (60 - 평판) × repWeight + 방·탈퇴자·어두운 선택
 export const EXPOSURE = {
-  follow: 0.3, repWeight: 0.6, base: 10,
+  follow: 0.3, repWeight: 0.6, base: 18, perMember: 0.12,   // 커질수록 바깥에서 잘 보인다
   dorm: 8, broadcast: 7,                          // 방 레벨 1당
   defector: 5, meeting: 10, dark: 4, darkDays: 5, // 어두운 선택은 며칠 동안 남는다
   rivalExpose: 15, rivalExposeDays: 6,
@@ -245,16 +245,17 @@ export const EXPOSURE = {
 
 // 기자 (x:reporter)
 export const REPORTER = {
-  appearAt: 40, cooldown: 6, stayDays: 3, reportAfter: 3,
+  appearAt: 40, cooldown: 5, stayDays: 3, reportAfter: 3,
   interviewsPerHour: 1, startHour: 10, endHour: 18,
-  heat: { resident: 2, sus: 0.06, member: 8, defector: 12, meetingLink: 8, calmed: 0 },
+  heat: { resident: 3, sus: 0.1, member: 8, defector: 12, meetingLink: 8, calmed: 1 },
   sight: { tiles: 4, width: 3, loseSeconds: 6 },
   face: { win: -14, lose: 10, winBase: 0.35, repDiv: 180, fatigue: 12 },
   noComment: 4,
   officer: { perTalk: -4, base: 6, disc: 5 },
   evadeDay: 3,                                    // 피하기만 하면 기자가 동네를 더 돈다 (하루 열기 +)
   // 보도: 평판 −(열기/rep + base) · 노출 report · 신도 의심 +열기/sus · 따라온 사람 −열기/followers %
-  report: { rep: 3, repBase: 4, sus: 10, followers: 2, low: 15, high: 35 },
+  report: { rep: 2.2, repBase: 5, sus: 8, followers: 2, low: 15, high: 35 },
+  pressFail: { rep: 32, reports: 2 },             // 보도 두 번 이상 + 평판 이 아래면 실패
 };
 
 // 신도 가족 시위
@@ -269,18 +270,19 @@ export const NOTICE = { members: 3, sus: 8, nearTiles: 6, nearMul: 0.7 };
 // 라이벌 교단
 export const RIVAL = {
   startDelay: 3,
+  talkAfter: 9,                                   // 라이벌이 생기고 이만큼 지나야 합병·휴전 얘기를 받아 준다
   talksPerPreacher: 3,                            // 하루에 전도자마다 말 거는 주민 수 (교주 포함 3명)
-  like: { base: 7, topic: 6, sus: 0.08 },
+  like: { base: 10, topic: 8, sus: 0.08, decay: 0.5 },
   leanAt: 35, memberAt: 65,                       // 라이벌 호감이 이만큼이면 기울기 · 라이벌 신도
   stealGap: 12,                                   // 우리 신도인데 라이벌 호감이 우리 호감보다 이만큼 높으면 넘어간다
-  followers: { perMember: 0.7, base: 2 },         // 주마다 라이벌 따라온 사람
-  startFollowers: 12,
-  takeFollowers: 0.05,                            // 라이벌이 우리보다 크면 주마다 우리 따라온 사람 중 이 비율을 가져간다
-  compete: { days: 3, mul: 0.55, fatigue: 25 },
-  expose: { dirt: 3, cut: 0.45 },
-  merge: { base: 0.9, repDiv: 400, enemyCut: 0.3, absorb: 0.7 },
-  truce: { base: 0.35, repDiv: 200, sizeMin: 0.8 },
-  collapseAt: 3,
+  followers: { perMember: 1.2, base: 8, daily: 1 }, // 주마다 라이벌 따라온 사람 (+ 매일 조금)
+  startFollowers: 30,
+  takeFollowers: 0.12,                            // 주마다 우리 따라온 사람 중 (이 비율 × 저쪽/우리 크기)를 가져간다 (휴전 중엔 없음)
+  compete: { days: 3, mul: 0.55, fatigue: 25, poach: 2 },   // 경쟁하는 동안 하루에 저쪽 따라온 사람 poach 명이 우리 쪽으로
+  expose: { dirt: 3, cut: 0.5, slowDays: 10 },     // 폭로 뒤 한동안 저쪽이 잘 안 큰다
+  merge: { base: 0.8, repDiv: 400, cut: 0.25, enemyCut: 0.3, absorb: 0.7 },
+  truce: { base: 0.1, repDiv: 400, sizeMin: 1.3, ratio: 0.05 },
+  collapseAt: 10,
   enemyMul: 1.5, enemyRep: -5,
 };
 

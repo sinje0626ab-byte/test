@@ -8,6 +8,10 @@ const EMO = {
   question: { text: '?', color: '#2a6a3a' },
   angry: { text: '흥', color: '#c82a1a' },
   sleepy: { text: 'zz', color: '#6a5aa8' },
+  // 3단계 표시: 탈퇴자 · 기자가 다음에 묻는 사람 · 라이벌 쪽에 기운 사람 · 피켓
+  defector: { text: '떠남', color: '#5a5a6a', bg: 0xe0dcd0 },
+  press: { text: '취재', color: '#b8601a', bg: 0xfff0d8 },
+  rival: { text: '●', color: '#7a3a8a' },
 };
 
 // 직업 아이콘 텍스처를 한 번 만든다 (9×9 픽셀)
@@ -42,8 +46,8 @@ export function emotionBubble(scene, kind) {
   const w = Math.max(10, Math.ceil(t.width) + 4); const h = 10;
   const g = scene.add.graphics();
   g.fillStyle(0x1d1b26, 1).fillRoundedRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2, 3);
-  g.fillStyle(0xffffff, 1).fillRoundedRect(-w / 2, -h / 2, w, h, 3);
-  g.fillStyle(0xffffff, 1).fillTriangle(-3, h / 2 - 1, 1, h / 2 - 1, -3, h / 2 + 3);
+  g.fillStyle(e.bg ?? 0xffffff, 1).fillRoundedRect(-w / 2, -h / 2, w, h, 3);
+  g.fillStyle(e.bg ?? 0xffffff, 1).fillTriangle(-3, h / 2 - 1, 1, h / 2 - 1, -3, h / 2 + 3);
   return scene.add.container(0, 0, [g, t]);
 }
 
@@ -61,4 +65,26 @@ export function speechBubble(scene, text) {
 
 export function nameTag(scene, text) {
   return scene.add.text(0, 0, text, { ...NAME, backgroundColor: 'rgba(29,27,38,0.72)' }).setPadding(2, 1, 2, 0).setOrigin(0.5, 1);
+}
+
+// 피켓 (시위하는 가족이 머리 위로 든다)
+export function picket(scene, text) {
+  const t = scene.add.text(0, 0, text, { ...SMALL, color: '#1d1b26' }).setOrigin(0.5, 1);
+  const w = Math.ceil(t.width) + 6; const h = Math.ceil(t.height) + 3;
+  t.setY(-6);
+  const g = scene.add.graphics();
+  g.fillStyle(0x8a6a4a, 1).fillRect(-1, -6, 2, 8);
+  g.fillStyle(0x1d1b26, 1).fillRect(-w / 2 - 1, -h - 7, w + 2, h + 2);
+  g.fillStyle(0xfff6c8, 1).fillRect(-w / 2, -h - 6, w, h);
+  return scene.add.container(0, 0, [g, t]);
+}
+
+// 벽에 붙은 안내문·현수막 (기성 종교 공개 대응, 라이벌 간판)
+export function wallNotice(scene, x, y, text, { bg = 0xf6f2e6, color = '#1d1b26', w = 64 } = {}) {
+  const t = scene.add.text(0, 0, text, { ...SMALL, color, align: 'center', wordWrap: { width: w - 4, useAdvancedWrap: true } }).setOrigin(0.5, 0.5);
+  const bw = Math.max(w, Math.ceil(t.width) + 6); const bh = Math.ceil(t.height) + 4;
+  const g = scene.add.graphics();
+  g.fillStyle(0x1d1b26, 1).fillRect(-bw / 2 - 1, -bh / 2 - 1, bw + 2, bh + 2);
+  g.fillStyle(bg, 1).fillRect(-bw / 2, -bh / 2, bw, bh);
+  return scene.add.container(x, y, [g, t]);
 }

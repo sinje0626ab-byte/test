@@ -1,6 +1,6 @@
 // 노드 시뮬레이터
 //  1) 주민 일과 검사: 모든 일과 장소에 길이 있는가, 다음 일과 전에 도착하는가, 같은 칸에 너무 몰리지 않는가
-//  2) 균형 검사: '정석' 봇이 여섯 유형으로 여러 판 해 보고, 1단계 목표(성공률 60~80%)와 2단계 목표(2~3시간)까지 잰다
+//  2) 균형 검사: '정석' 봇이 여섯 유형으로 여러 판 해 보고, 1단계 목표(성공률 60~80%) · 2단계 목표 · 3단계 목표(성공률 60~80%, 2~3시간)까지 잰다. 라이벌이 혼자 크는지도 본다
 // 사용: node tools/simulate.mjs [--games 20] [--verbose] [--no-balance]
 import { readFileSync } from 'node:fs';
 import { CLOCK, MOVE, SHOP, SANCTUARY, TALK, SPACE_STEPS, OFFICERS } from '../src/config.js';
@@ -21,11 +21,15 @@ import { rentNow, nextStep, expand, haggleChance, openSlots, buildRoom, upgradeR
 import { activeOfficers, canPromote, promote, assign, streetTick, pickAgenda, decideAgenda } from '../src/sim/officers.js';
 import { applyRevelation } from '../src/sim/revelation.js';
 import { AGENDAS } from '../src/data/officers.js';
+import { threatHour, setThreatGrid, protestToday, answerProtest, soreDefectors, answerDefector, reporterHere, interview } from '../src/sim/threats.js';
+import { rivalOn, rivalAct, mergeChance, truceChance, rivalSize, rivalOptions } from '../src/sim/rival.js';
+import { RIVAL } from '../src/config.js';
 
 const args = process.argv.slice(2);
 const GAMES = args.includes('--games') ? Number(args[args.indexOf('--games') + 1]) : 20;
 const VERBOSE = args.includes('--verbose');
 const g = gridFromMap(JSON.parse(readFileSync(new URL('../src/map/town.json', import.meta.url))));
+setThreatGrid(g);
 
 let problems = 0;
 const fail = (msg) => { problems++; console.log('  ✗ ' + msg); };
@@ -101,7 +105,7 @@ const SPECIAL_FIT = {
   fortune: ['money', 'lonely'], shaman: ['future', 'money'], qigong: ['health'],
 };
 const TALK_TILES = 25;
-const EVENT_PREF = ['tea', 'mat', 'apologize', 'explain', 'short', 'buy', 'pickup', 'order', 'sorry', 'let', 'none', 'later', 'refuse', 'ignore'];
+const EVENT_PREF = ['cooperate', 'tea', 'mat', 'apologize', 'explain', 'short', 'buy', 'pickup', 'order', 'sorry', 'let', 'none', 'later', 'refuse', 'ignore'];
 const ROOM_ORDER = ['broadcast', 'counsel', 'kitchen', 'office', 'study', 'worship', 'worship', 'study'];
 
 function seenToday(s) {
@@ -127,6 +131,7 @@ function botTalk(s, id, key, policy) {
   let opt; let card;
   if (ids.includes('favorDone')) opt = 'favorDone';
   else if (ids.includes('relay')) { opt = 'relay'; card = t.options.find((o) => o.id === 'relay').from; }
+  else if (policy !== 'ignoreRival' && ids.includes('askRival') && s.rival.dirt < RIVAL.expose.dirt) opt = 'askRival';
   else if (policy === 'reckless') opt = ids.includes('invite') ? 'invite' : ids.includes('preach') ? 'preach' : 'special';
   else if (ids.includes('invite')) opt = 'invite';
   else if (ids.includes('story')) opt = 'story';
@@ -164,8 +169,21 @@ function playDay(s, policy) {
     };
     return score(b) - score(a);
   });
-  for (let hour = 9; hour < 19; hour++) streetTick(s);
+  if (s.phase >= 3) {
+    // 시위: 관리 좋은 간부가 있으면 내려보내고, 아니면 가족 면담
+    if (protestToday(s)) answerProtest(s, activeOfficers(s).some((o) => o.manage >= 4) ? 'officer' : 'meet');
+    // 오늘 밖에서 보이는 탈퇴자와 화해 (하루 두 명)
+    for (const id of soreDefectors(s).filter((x) => seen.has(x)).slice(0, 2)) answerDefector(s, id, 'reconcile');
+    // 기자가 있으면 신도부터 만나 둔다 (오늘 얘기한 사람은 기자에게 조심해서 말한다)
+    if (reporterHere(s)) order.sort((a, b) => (['member', 'newcomer'].includes(s.res[b].stage) ? 1 : 0) - (['member', 'newcomer'].includes(s.res[a].stage) ? 1 : 0));
+  }
   for (const id of order) botTalk(s, id, seen.get(id), policy);
+  for (let hour = 9; hour < 19; hour++) { streetTick(s); threatHour(s, g, hour); }
+  // 기자 인터뷰: 말 잘하는 간부 · 평판 높으면 정면 · 아니면 노코멘트
+  if (s.phase >= 3 && reporterHere(s) && !s.reporter.interviewed) {
+    const best = activeOfficers(s).sort((a, b) => b.talk - a.talk)[0];
+    interview(s, best && best.talk >= 4 ? 'officer' : s.rep >= 65 ? 'face' : 'nocomment', best?.id);
+  }
   s.minute = CLOCK.dayEnd;
 }
 
@@ -203,6 +221,14 @@ function phase2Night(s) {
     const free = roomSlots.find((x) => !activeOfficers(s).some((y) => y.assign === `room:${x}`));
     if (!o.assign) assign(s, o.id, free ? `room:${free}` : 'street');
   }
+  if (s.phase >= 3 && rivalOn(s) && s.botPolicy !== 'ignoreRival' && rivalOptions(s).length) {
+    // 합병이 잘 될 것 같으면 합병, 휴전은 거절당해도 손해가 없으니 해 볼 만하면 시도, 아니면 폭로·경쟁으로 저쪽을 줄인다
+    const opts = rivalOptions(s);
+    if (opts.includes('merge') && mergeChance(s) >= 0.55) rivalAct(s, 'merge');
+    else if (opts.includes('truce') && truceChance(s) >= 0.35) rivalAct(s, 'truce');
+    else if (s.rival.dirt >= RIVAL.expose.dirt) rivalAct(s, 'expose');
+    else if (opts.includes('compete')) rivalAct(s, 'compete');
+  }
   const ag = pickAgenda(s);
   if (ag) {
     const a = AGENDAS.find((x) => x.id === ag.id);
@@ -212,27 +238,33 @@ function phase2Night(s) {
   }
 }
 
-function playGame(sect, seed, policy = 'normal', maxDays = 60) {
+const REV_PICKS = { sign: ['banner'], fence: ['meal', 'open'], camera: ['open'], neighbor: ['respect'] };
+function playGame(sect, seed, policy = 'normal', maxDays = 130) {
   const family = SECTS[sect].family[0];
   const s = newGame({ leaderName: '봇', age: 40, family, sect, cultName: '봇', seed });
+  s.botPolicy = policy;
   startDay(s, g);
   const timeline = [];
-  let phase1Day = null;
+  let phase1Day = null; let phase2Day = null; let rivalLog = [];
   for (let d = 0; d < maxDays; d++) {
     playDay(s, policy);
     playNight(s);
     const r = endDay(s, g, { rentChoice: 'promise' });
-    if (r.phaseUp) phase1Day = s.day;
-    if (r.revelation) applyRevelation(s, r.revelation, r.revelation === 'sign' ? ['banner'] : ['meal', 'open']);
+    if (r.phaseUp === 2) phase1Day = s.day;
+    if (r.phaseUp === 3) phase2Day = s.day;
+    if (r.revelation) applyRevelation(s, r.revelation, REV_PICKS[r.revelation]);
+    if (s.rival) rivalLog.push(rivalSize(s));
+    if (process.env.P3DBG && seed === Number(process.env.P3DBG) && s.phase >= 3 && s.day % 3 === 0) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} rep${Math.round(s.rep)} exp${Math.round(s.exposure)} rep:${s.reporter.active ? 'on' : '-'}${s.reporter.due ? 'due' : ''} heat${Math.round(s.reporter.heat)} reports${s.reporter.reports} rival:${s.rival ? s.rival.status + rivalSize(s) + ' dirt' + s.rival.dirt + ' taken' + s.rival.taken : '-'} def${soreDefectors(s).length} prot${s.protest && !s.protest.done ? 'y' : '-'} notices${Object.keys(s.notices).length}`);
     timeline.push(memberCount(s));
     if (process.env.RDBG && seed === 1000 && s.phase === 1) console.log(`      d${s.day} m${memberCount(s)} streak${s.sanctuary.rentStreak} arr${s.sanctuary.arrears} money${s.leader.money}`);
     if (process.env.P2DBG && seed === 1000 && s.phase >= 2) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} step${s.space.step} off${activeOfficers(s).length} money${s.leader.money} rooms ${JSON.stringify(Object.fromEntries(Object.entries(s.rooms).map(([k, v]) => [k, v.type + v.level])))}`);
     if (VERBOSE && seed === 1000 && d % 7 === 6) {
       console.log(`    ${sect} ${d + 1}일 신도 ${memberCount(s)} 따라온 ${s.followers} 평판 ${Math.round(s.rep)} 돈 ${s.leader.money} 공간 ${s.space.step} 방 ${Object.values(s.rooms).map((x) => x.type[0] + x.level).join('')} 간부 ${activeOfficers(s).map((o) => `${o.name.slice(1)}${Math.round(o.discontent)}`).join(',')} 건물주 ${Math.round(s.landlordAnger)} 사연 ${Object.values(s.res).reduce((n, x) => n + (x.story?.done ?? 0), 0)}`);
     }
-    if (r.over) return { over: r.over, days: s.day + 1, phase1Day, timeline, s };
+    if (r.over) return { over: r.over, days: s.day + 1, phase1Day, phase2Day, timeline, rivalLog, s };
+    if (policy === 'ignoreRival' && rivalLog.length >= 15) return { over: 'probe', days: s.day + 1, phase1Day, phase2Day, timeline, rivalLog, s };
   }
-  return { over: 'timeout', days: maxDays, phase1Day, timeline, s };
+  return { over: 'timeout', days: maxDays, phase1Day, phase2Day, timeline, rivalLog, s };
 }
 
 if (!args.includes('--no-balance')) {
@@ -241,25 +273,36 @@ if (!args.includes('--no-balance')) {
   console.log(`\n■ 균형 검사 (유형마다 ${GAMES}판, 하루 ≈ ${Math.round(DAY_SECONDS)}초, 1단계 성공 = ${P1_LIMIT}일 안에 목표)`);
   const median = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
   const min = (d) => Math.round((d * DAY_SECONDS) / 60);
-  let p1Total = 0; let n = 0;
+  let p1Total = 0; let n = 0; let p3Total = 0; let p3N = 0;
   for (const sect of (process.env.SECT ? [process.env.SECT] : SECT_ORDER)) {
     const res = [];
     for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
     const p1 = res.filter((r) => r.phase1Day && r.phase1Day <= P1_LIMIT);
+    const p2 = res.filter((r) => r.phase2Day);
     const wins = res.filter((r) => r.over === 'win');
     const reasons = {};
-    for (const r of res) reasons[r.over] = (reasons[r.over] ?? 0) + 1;
-    p1Total += p1.length; n += res.length;
-    const p1d = p1.map((r) => r.phase1Day); const wd = wins.map((r) => r.days);
-    console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${p1.length}/${GAMES} (중앙 ${p1d.length ? median(p1d) : '-'}일 ≈ ${p1d.length ? min(median(p1d)) : '-'}분) · 2단계 ${wins.length}/${GAMES} (중앙 ${wd.length ? median(wd) : '-'}일 ≈ ${wd.length ? min(median(wd)) : '-'}분) · ${Object.entries(reasons).map(([k, v]) => `${k}:${v}`).join(' ')}`);
+    for (const r of res) if (r.phase2Day) reasons[r.over] = (reasons[r.over] ?? 0) + 1;
+    const fails2 = res.filter((r) => !r.phase2Day).map((r) => r.over);
+    p1Total += p1.length; n += res.length; p3Total += wins.length; p3N += p2.length;
+    const p1d = p1.map((r) => r.phase1Day); const p2d = p2.map((r) => r.phase2Day); const p3d = wins.map((r) => r.days - r.phase2Day);
+    console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${p1.length}/${GAMES} (중앙 ${p1d.length ? median(p1d) : '-'}일 ≈ ${p1d.length ? min(median(p1d)) : '-'}분) · 2단계 ${p2.length}/${GAMES} (중앙 ${p2d.length ? median(p2d) : '-'}일 ≈ ${p2d.length ? min(median(p2d)) : '-'}분)${fails2.length ? ` [2단계 전 끝: ${fails2.join(',')}]` : ''}`);
+    console.log(`  ${''.padEnd(10)} 3단계 ${wins.length}/${p2.length} (시작부터 중앙 ${p3d.length ? median(p3d) : '-'}일 ≈ ${p3d.length ? min(median(p3d)) : '-'}분) · ${Object.entries(reasons).map(([k, v]) => `${k}:${v}`).join(' ')}`);
     if (VERBOSE) console.log("    ", res[0].timeline.join(" "));
-    if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "));
+    if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "), "|", res.map((r, i) => `${1000 + i * 17}:${r.over}`).join(" "));
     const rate = p1.length / GAMES;
     if (rate < 0.6 || rate > 0.8) fail(`${SECTS[sect].name}: 1단계 성공률 ${Math.round(rate * 100)}% (목표 60~80%)`);
-    if (wd.length) { const m = min(median(wd)); if (m < 120 || m > 195) fail(`${SECTS[sect].name}: 2단계 목표까지 ${m}분 (목표 2시간~3시간 15분)`); }
+    if (p2d.length) { const m = min(median(p2d)); if (m < 120 || m > 195) fail(`${SECTS[sect].name}: 2단계 목표까지 ${m}분 (목표 2시간~3시간 15분)`); }
     else fail(`${SECTS[sect].name}: 2단계 목표에 닿은 판이 없다`);
+    const rate3 = p2.length ? wins.length / p2.length : 0;
+    if (rate3 < 0.6 || rate3 > 0.8) fail(`${SECTS[sect].name}: 3단계 성공률 ${Math.round(rate3 * 100)}% (목표 60~80%)`);
+    if (p3d.length) { const m = min(median(p3d)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: 3단계 시작부터 목표까지 ${m}분 (목표 2~3시간)`); }
   }
-  console.log(`  전체 1단계 성공률 ${Math.round((p1Total / n) * 100)}%`);
+  console.log(`  전체 1단계 성공률 ${Math.round((p1Total / n) * 100)}% · 3단계 성공률 ${p3N ? Math.round((p3Total / p3N) * 100) : 0}%`);
+  // 라이벌 혼자 크는가: 플레이어가 라이벌에 아무 대응도 안 하는 봇
+  const alone = ['doomsday', 'meditation', 'shaman'].map((sect) => playGame(sect, 777, 'ignoreRival'));
+  console.log(`\n■ 라이벌에 대응 안 하는 봇 (라이벌 규모, 등장부터 하루마다): `);
+  for (const r of alone) console.log(`    ${r.s.rival ? r.s.rival.sect : '-'}: ${r.rivalLog.join(' ')}`);
+  for (const r of alone) if (!r.rivalLog.length || r.rivalLog.at(-1) < r.rivalLog[0] * 1.5) fail(`라이벌이 혼자서는 신도를 못 모은다 (${r.rivalLog[0]} → ${r.rivalLog.at(-1)})`);
   const reckless = SECT_ORDER.map((sect) => playGame(sect, 4242, 'reckless', 45));
   console.log(`\n■ 교단 얘기만 하는 봇: ${reckless.map((r) => `${r.over}@${r.days}일`).join(' · ')}`);
   if (reckless.filter((r) => r.phase1Day).length > 1) fail('교단 얘기만 해도 1단계를 넘긴다 (의심 장치가 약하다)');

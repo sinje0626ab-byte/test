@@ -6,6 +6,7 @@ import { saveGame } from '../sim/save.js';
 import { h, mount, unmount } from './dom.js';
 import { fill } from './text.js';
 import { play } from './sound.js';
+import { toast } from './toast.js';
 
 export function showEvent(app) {
   const s = app.s;
@@ -26,7 +27,8 @@ export function showEvent(app) {
       const [label, hint] = t.options[o];
       const dark = DARK_EVENT_OPTIONS.includes(o);
       return h('div', { class: dark ? 'dark' : '' }, h('button', { class: 'btn', style: 'width:100%', onclick: () => {
-        resolveEvent(s, o); play('click'); saveGame(s); unmount('event'); app.modalClosed(); app.refresh();
+        const res = resolveEvent(s, o); play('click'); saveGame(s); unmount('event'); app.modalClosed(); app.refresh();
+        if (res) toast(res, '', 6000);
       } }, fill(label, s, extra), h('small', {}, fill(hint, s, extra))));
     })))));
 }

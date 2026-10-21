@@ -12,6 +12,9 @@ import { h, mount, unmount, won } from './dom.js';
 import { fill, josa } from './text.js';
 import { play } from './sound.js';
 import { toast } from './toast.js';
+import { textVars } from '../sim/rival.js';
+import { NOTICE_TEXT } from '../data/threats.js';
+import { CLERGY as CLERGY_LIST } from '../data/clergy.js';
 
 const REASON = {
   tired: '다리가 후들거린다. 오늘은 더 말 걸 힘이 없다. 성소로 돌아가 쉬자.',
@@ -53,6 +56,7 @@ export function openTalk(app, id) {
     const meta = OPTIONS[o.id];
     let label = o.id === 'special' ? o.special : meta.label;
     if (o.id === 'relay') label = label.replace('{이름}', RESIDENT_BY_ID[o.from].name);
+    if (o.id === 'askRival') label = label.replace('{라이벌}', textVars(s).라이벌);
     const hint = o.id === 'special' ? '교단 유형의 특기. 지금 고민과 맞으면 잘 통한다.' : meta.hint;
     return h('button', { class: `btn ${CONTEXT_IDS.includes(o.id) ? 'ctx' : ''}`, onclick: () => choose(o) }, label, h('small', {}, hint));
   };
@@ -104,6 +108,7 @@ export function openTalk(app, id) {
       res.line ? h('div', { class: 'say' }, res.line) : null,
       h('div', { class: 'delta' }, pills),
       stageNote ? h('div', { class: 'narr' }, stageNote) : null,
+      res.nearNotice ? h('div', { class: 'narr muted' }, NOTICE_TEXT.nearTalk.replace('{장소}', nearPlace(app, ctx.key))) : null,
       h('div', { class: 'row end', style: 'margin-top:8px' }, h('button', { class: 'btn primary', onclick: close }, '다음에 또 봐요'))));
     app.afterTalk(id, res);
   };
@@ -117,6 +122,19 @@ export function openTalk(app, id) {
         h('button', { class: 'btn wide', onclick: close }, OPTIONS.leave.label))));
   }
   showMain();
+}
+
+// 안내문이 붙은 가장 가까운 종교 장소 이름
+function nearPlace(app, key) {
+  const g = app.g; const s = app.s;
+  let t; try { t = g.places[key.split(':')[0]].spots?.[key.split(':')[1]] ?? g.places[key.split(':')[0]].door; } catch { return '안내문'; }
+  let best = '안내문'; let bd = 99;
+  for (const c of CLERGY_LIST) {
+    if (s.notices?.[c.id] == null) continue;
+    const d = g.places[c.place].door; const dist = Math.abs(d[0] - t[0]) + Math.abs(d[1] - t[1]);
+    if (dist < bd) { bd = dist; best = NOTICE_TEXT[c.id].where; }
+  }
+  return best;
 }
 
 function favorText(f) {

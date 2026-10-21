@@ -7,6 +7,11 @@ import { topNeeds } from '../sim/residents.js';
 import { CLERGY } from '../data/clergy.js';
 import { h, mount, unmount } from './dom.js';
 import { play } from './sound.js';
+import { leanOf, rivalInfo } from '../sim/rival.js';
+import { isDefector, isProtester } from '../sim/threats.js';
+import { REPORTER_INFO } from '../data/threats.js';
+import { nameForNpc } from './threats.js';
+import { CAST } from '../data/cast.js';
 
 export function impressionOf(st) {
   for (const row of IMPRESSION) {
@@ -29,8 +34,21 @@ export function openProfile(app, id, { onTalk } = {}) {
       h('div', { class: 'row end' }, onTalk ? h('button', { class: 'btn primary', onclick: () => { close(); onTalk(); } }, '인사하러 가기') : null, h('button', { class: 'btn', onclick: close }, '닫기'))));
     return;
   }
+  // 기자·라이벌·간부(첫 신도)는 짧은 카드
+  if (id.startsWith('x:') || id.startsWith('v:') || id.startsWith('o:')) {
+    const c = id.startsWith('o:') ? CAST.find((x) => x.id === id.slice(2)) : null;
+    const name = c ? `${c.name} (간부)` : nameForNpc(app.s, id);
+    const R = rivalInfo(app.s);
+    const bio = id === 'x:reporter' ? REPORTER_INFO.bio : c ? c.bio : R ? `${R.name}. ${R.pitch} 보라색 조끼를 입고 다닌다.` : ''; 
+    mount('profile', h('div', { class: 'profile box' },
+      h('div', { class: 'row' }, h('img', { class: 'face', src: app.portrait(id), alt: '' }), h('div', {}, h('h3', {}, name))),
+      h('p', {}, bio),
+      h('div', { class: 'row end' }, onTalk ? h('button', { class: 'btn primary', onclick: () => { close(); onTalk(); } }, id === 'x:reporter' ? '다가가기' : '인사하러 가기') : null, h('button', { class: 'btn', onclick: close }, '닫기'))));
+    return;
+  }
   const r = RESIDENT_BY_ID[id];
   const st = app.s.res[id];
+  const lean = leanOf(app.s, id);
   const top = topNeeds(st)[0];
   const rel = relationsOf(id).map((x) => h('li', {}, `${RESIDENT_BY_ID[x.id].name} (${RELATION_NAMES[x.kind]}) · ${STAGE_NAMES[app.s.res[x.id].stage]}`));
   mount('profile', h('div', { class: 'profile box' },
@@ -42,7 +60,10 @@ export function openProfile(app, id, { onTalk } = {}) {
       h('dt', {}, '지금 고민'), h('dd', {}, st.known ? NEED_NAMES[top] : st.met ? '아직 잘 모른다 (말할 때 모습을 보자)' : '처음 보는 사람'),
       h('dt', {}, '종교'), h('dd', {}, RELIGION_NAMES[r.religion]),
       h('dt', {}, '집'), h('dd', {}, PLACES[r.home].name),
+      lean ? h('dt', {}, '어느 쪽') : null, lean ? h('dd', {}, lean) : null,
     ),
+    isDefector(app.s, id) ? h('p', { class: 'quote' }, '302호를 떠난 사람이다. 동네 사람들에게 우리 얘기를 한다.') : null,
+    isProtester(app.s, id) ? h('p', { class: 'quote' }, '오늘 상가 입구 앞에서 피켓을 들고 있다.') : null,
     h('div', { class: 'muted' }, '우리에 대한 인상'),
     h('p', { class: 'quote' }, impressionOf(st)),
     rel.length ? h('div', {}, h('div', { class: 'muted' }, '아는 사람'), h('ul', {}, rel)) : null,

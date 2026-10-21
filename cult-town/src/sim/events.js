@@ -7,6 +7,7 @@ import { rand, pick } from './rng.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
 import { isWorshipDay } from './clock.js';
 import { relationsOf } from './faith.js';
+import { inspect } from './threats.js';
 
 const members = (s) => Object.keys(s.res).filter((id) => s.res[id].stage === 'member' || s.res[id].stage === 'newcomer');
 
@@ -39,6 +40,7 @@ export function eventOptions(s, ev) {
     case 'fire': return s.leader.money >= 45_000 ? ['buy', 'later'] : ['later'];
     case 'rain': return ['pickup', 'let'];
     case 'kimbap': return s.leader.money >= 90_000 ? ['order', 'sorry'] : ['sorry'];
+    case 'district': case 'firecheck': return ['cooperate', 'delay'];
     default: return [];
   }
 }
@@ -51,7 +53,10 @@ export function resolveEvent(s, choice) {
   const ev = s.events.pending;
   if (!ev) return;
   const R = s.res;
+  let result = null;
   switch (choice) {
+    case 'cooperate': result = inspect(s); break;
+    case 'delay': s.shadow.push({ kind: 'adminLater', due: s.day + 4 }); s.landlordAnger += 5; break;
     case 'tea': s.landlordAnger = Math.max(0, s.landlordAnger - 10); s.leader.fatigue = clamp(s.leader.fatigue + 10); break;
     case 'refuse': s.landlordAnger += 15; break;
     case 'envelope': s.landlordAnger = Math.max(0, s.landlordAnger - 25); addMoney(s, -100_000); shiftBelief(s, -5); break;
@@ -80,6 +85,7 @@ export function resolveEvent(s, choice) {
   s.events.seen[ev.kind] = (s.events.seen[ev.kind] ?? 0) + 1;
   s.events.pending = null;
   s.week.events = (s.week.events ?? 0) + 1;
+  return result;
 }
 
 // 월세 체납도 건물주 불만으로 쌓인다

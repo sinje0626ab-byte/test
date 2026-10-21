@@ -1,5 +1,6 @@
 // 주보 · 밤사이 소식 · 엔딩 · 크레딧 · 게임 메뉴
-import { GOAL, PHASE2 } from '../config.js';
+import { GOAL, PHASE2, PHASE3 } from '../config.js';
+import { PHASE3_INTRO } from '../data/threats.js';
 import { rentNow } from '../sim/space.js';
 import { BULLETIN, ENDINGS, DOOMSDAY_PASSED, SHADOW, LANDLORD, CLERGY_EVENT } from '../data/bulletin.js';
 import { CLERGY } from '../data/clergy.js';
@@ -73,9 +74,19 @@ export function showBulletin(s, b, onClose) {
 }
 
 // 1단계 끝 → 2단계 시작 장면
-export function showPhaseUp(s, onClose) {
-  const e = ENDINGS.phase1;
+export function showPhaseUp(s, phase, onClose) {
   play('jingle_good', 0.5);
+  if (phase === 3) {
+    const e = PHASE3_INTRO;
+    mount('phaseup', h('div', { class: 'screen ending' }, h('div', { class: 'panel box' },
+      h('h2', {}, e.title),
+      ...e.text.map((t) => h('p', {}, fill(t, s))),
+      h('p', {}, e.next),
+      h('p', { class: 'muted' }, `목표: 신도 ${PHASE3.members}명 + 동네 평판 유지 (최근 7일 내내 무너지지 않게) + 라이벌 교단 정리 (흡수·몰락·휴전). 밤 메뉴에 '라이벌'이 생긴다.`),
+      h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '3단계 시작')))));
+    return;
+  }
+  const e = ENDINGS.phase1;
   mount('phaseup', h('div', { class: 'screen ending' }, h('div', { class: 'panel box' },
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
@@ -91,7 +102,7 @@ export function showEnding(s, kind, { onTitle }) {
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
     h('p', { class: 'muted' }, `${fmtDate(s.day)} · 교주 ${s.leader.name} · ${s.leader.cultName}`),
-    kind === 'win' ? h('p', { class: 'muted' }, '3단계(기자·가족 시위·라이벌 교주)는 아직 만들지 않았다.') : null,
+    kind === 'win' ? h('p', { class: 'muted' }, '4단계(해외 진출)·5단계는 아직 만들지 않았다.') : null,
     h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('ending'); onTitle(); } }, '처음 화면으로')))));
 }
 

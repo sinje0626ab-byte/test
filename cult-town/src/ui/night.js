@@ -18,6 +18,9 @@ import { pick } from '../sim/rng.js';
 import { h, mount, unmount, won } from './dom.js';
 import { fill, josa } from './text.js';
 import { play } from './sound.js';
+import { rivalNight } from './threats.js';
+import { exposureWord } from '../sim/threats.js';
+import { rivalInfo } from '../sim/rival.js';
 
 export function openNight(app) {
   const s = app.s;
@@ -45,6 +48,7 @@ export function openNight(app) {
         btn('officers', '간부', `${activeOfficers(s).length}명 · 배치·승진`),
         btn('meeting', '간부 회의', s.flags.meetingDay === s.day ? '오늘은 이미 했다' : '안건 하나', { disabled: s.flags.meetingDay === s.day || activeOfficers(s).length < 2 }),
       ] : []),
+      ...(s.phase >= 3 && s.rival ? [btn('rival', `라이벌 · ${rivalInfo(s).name}`, s.flags.rivalNight === s.day ? '오늘은 이미 정했다' : '경쟁 · 폭로 · 합병 · 휴전')] : []),
       btn('sleep', NIGHT.menu.sleep, isMonthEnd(s.day) ? '월세가 나가는 날이다' : '다음 날 아침 7시', { wide: true, run: () => { unmount('night'); app.setBack('night', null); app.sleep(); } }),
     );
 
@@ -53,6 +57,7 @@ export function openNight(app) {
     mount('night', h('div', { class: 'screen night' }, h('div', { class: 'panel box' },
       h('h2', {}, fill(NIGHT.title, s)),
       h('p', { class: 'muted' }, NIGHT.arrive, ' ', h('span', {}, mutter)),
+      s.phase >= 3 ? h('p', { class: 'muted' }, `바깥 눈길: ${exposureWord(s)}.${s.reporter.active ? ' 관악생활신문 기자가 동네를 돈다.' : ''}${s.reporter.due ? ' 기사가 곧 나온다.' : ''}`) : null,
       note.length ? h('div', { class: 'stack' }, note.map((n) => h('div', { class: 'narr', style: 'border-left:3px solid var(--accent);padding-left:8px' }, n))) : null,
       menu, subEl,
     )));
@@ -67,6 +72,9 @@ export function openNight(app) {
   };
 
   function renderSub(key) {
+    if (key === 'rival') {
+      return rivalNight(s, (r) => { note = [r.text]; play(r.tone === 'bad' ? 'error' : 'confirm'); sub = null; app.refresh(); render(); });
+    }
     if (key === 'worship') {
       const run = (opts) => {
         const r = holdWorship(s, opts);
