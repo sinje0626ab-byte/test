@@ -88,6 +88,23 @@ export const SHADOW = {
   },
 };
 
+// 사건·2단계에서 생기는 대가 (later 만 쓴다)
+Object.assign(SHADOW, {
+  distance: { later: '{이름}의 가족이 통장님을 찾아가 302호 얘기를 한참 했다. 동네 평판이 떨어졌다.' },
+  fine: { later: '구청에서 소방 과태료 고지서가 날아왔다. 10만 원.' },
+  expose: { later: '{이름}이(가) 동네 단체 대화방에 302호 장부 사진을 올렸다. 평판이 크게 떨어졌다.' },
+  room_counsel: { later: '상담실 노트에 적어 둔 남의 집안 사정이 단체 대화방에 돌았다. 신도들 의심이 올랐다.' },
+  room_dorm: { later: '숙소 신도의 가족들이 건물 1층에 몰려와 건물주를 찾았다.' },
+  room_broadcast: { later: '방송실 후기 영상의 "처음 왔어요" 출연자가 매주 같은 사람이라는 댓글이 달렸다.' },
+  room_office: { later: '이중 장부를 간부들이 봤다. 간부들 불만이 올랐다.' },
+  agenda_envelope: { later: '헌금 봉투 이름 칸을 보고 신도 몇 명이 "누가 얼마 냈는지 다 보이네" 했다.' },
+  agenda_visit: { later: '면회 규칙 얘기가 통장님 귀에 들어갔다. 건물주에게도 전화가 갔다.' },
+  sign_volunteer: { later: '"골목 이웃 봉사 모임"이 302호라는 걸 반찬가게 사장님이 알아챘다.' },
+  rule_communal: { later: '공동 생활 규칙이 적힌 종이가 시장에 돌았다.' },
+  rule_pledge: { later: '헌신 서약서 사진이 동네 단체 대화방에 올라왔다.' },
+  rule_interview: { later: '"302호는 나가려면 면담을 세 번 해야 한대" 소문이 돌았다.' },
+});
+
 // 건물주 (월세를 못 냈을 때)
 export const LANDLORD = {
   name: '구만석',

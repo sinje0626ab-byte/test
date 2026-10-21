@@ -4,8 +4,10 @@ import { rand } from './rng.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
 import { setStage, activeCast } from './faith.js';
 import { isWorshipDay } from './clock.js';
+import { extraSeats, offeringMul, memberLikeCut, worshipLikeBonus, rentNow } from './space.js';
+import { ruleOffering } from './revelation.js';
 
-export const seats = (s) => SANCTUARY.baseSeats + Object.entries(s.sanctuary.props).reduce((n, [k, c]) => n + SHOP[k].seats * c, 0);
+export const seats = (s) => SANCTUARY.baseSeats + extraSeats(s) + Object.entries(s.sanctuary.props).reduce((n, [k, c]) => n + SHOP[k].seats * c, 0);
 export const mood = (s) => Object.entries(s.sanctuary.props).reduce((n, [k, c]) => n + SHOP[k].mood * c, 0);
 
 export function canBuy(s, item) {
@@ -46,23 +48,29 @@ export function holdWorship(s, opts = {}) {
   const m = mood(s);
   const crowd = standing > 0 ? 0.85 : 1;
   const promoted = [];
-  const needLike = STAGES.memberLike - (fx.convert - 1) * 40;
+  const needLike = STAGES.memberLike - (fx.convert - 1) * 40 - memberLikeCut(s);
+  const kitchen = worshipLikeBonus(s) + (s.flags.snackDay === s.day ? 3 : 0);
   for (const id of named) {
     const st = s.res[id];
-    st.like = clamp(st.like + SANCTUARY.worship.faithGain * fx.worship * (1 + m / 40) * crowd * (opts.fast ? 1.3 : 1));
+    st.like = clamp(st.like + SANCTUARY.worship.faithGain * fx.worship * (1 + m / 40) * crowd * (opts.fast ? 1.3 : 1) + kitchen);
     st.worships++;
     if (st.stage === 'visitor') { setStage(s, id, 'newcomer'); promoted.push([id, 'newcomer']); }
     else if (st.stage === 'newcomer' && st.worships >= STAGES.memberWorships && st.like >= needLike) { setStage(s, id, 'member'); promoted.push([id, 'member']); }
     st.attendDay = -1;
   }
   let offering = heads * SANCTUARY.worship.offeringPerHead * fx.offering * (1 + m * SANCTUARY.worship.moodOffering);
+  offering *= offeringMul(s) * ruleOffering(s);
+  if (s.flags.offeringBoost?.until >= s.day) offering *= s.flags.offeringBoost.mul;
+  if (s.flags.shortWorship === s.day) offering *= 0.8;
   if (opts.doubleBasket) {
+    s.flags.darkToday = (s.flags.darkToday ?? 0) + 1;
     offering *= 1.4;
     shiftBelief(s, -8);
     s.shadow.push({ kind: 'doubleBasket', due: s.day + 3, ids: named });
     for (const c of activeCast(s)) s.cast[c].sus = clamp(s.cast[c].sus + 8);
   }
   if (opts.fast) {
+    s.flags.darkToday = (s.flags.darkToday ?? 0) + 1;
     shiftBelief(s, 8);
     s.shadow.push({ kind: 'fast', due: s.day + 2, ids: named });
   }
@@ -93,7 +101,7 @@ export function vigil(s) {
 
 // 월세 (월말 밤). choice: 'promise' | 'borrow' (돈이 모자랄 때만)
 export function payRent(s, choice = 'promise') {
-  const rent = SANCTUARY.rent;
+  const rent = rentNow(s);
   let borrowed = null;
   if (s.leader.money < rent && choice === 'borrow') {
     const pool = Object.keys(s.res).filter((id) => s.res[id].stage === 'member').sort((a, b) => s.res[b].like - s.res[a].like);
@@ -103,6 +111,7 @@ export function payRent(s, choice = 'promise') {
       addMoney(s, amt);
       borrowed = { id: lender, amount: amt };
       shiftBelief(s, -6);
+      s.flags.darkToday = (s.flags.darkToday ?? 0) + 1;
       s.shadow.push({ kind: 'borrow', due: s.day + 5, id: lender });
       for (const c of activeCast(s)) s.cast[c].sus = clamp(s.cast[c].sus + 6);
     }
@@ -116,6 +125,7 @@ export function payRent(s, choice = 'promise') {
     s.sanctuary.arrears++;
     s.sanctuary.rentStreak = 0;
     s.week.rent = { paid: false, amount: rent, arrears: s.sanctuary.arrears };
+    s.landlordAnger += 15;
   }
   return s.week.rent;
 }
@@ -126,6 +136,7 @@ export function inflate(s) {
   s.flags.inflatedWeek = s.bulletinNo;
   s.rep = clamp(s.rep + 6);
   shiftBelief(s, -6);
+  s.flags.darkToday = (s.flags.darkToday ?? 0) + 1;
   s.shadow.push({ kind: 'inflate', due: s.day + 4 });
   for (const c of activeCast(s)) s.cast[c].sus = clamp(s.cast[c].sus + 4);
   return { ok: true };

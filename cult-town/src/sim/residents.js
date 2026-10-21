@@ -1,6 +1,6 @@
 // 주민 일과 → 목표 칸 → 격자 이동. 화면(TownScene)과 노드 시뮬레이터가 같은 함수를 쓴다.
 // 위치는 state.pos[id] = { x, y, path, prog, key, inside }. path[0] 이 다음 칸, prog(0~1)가 그 칸까지 간 정도.
-import { CLOCK, MOVE, NEEDS } from '../config.js';
+import { CLOCK, MOVE, NEEDS, WEATHER } from '../config.js';
 import { RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
 import { CLERGY } from '../data/clergy.js';
 import { isWeekend, parseTime } from './clock.js';
@@ -30,12 +30,29 @@ export function scheduleOf(s, id) {
   if (p.kind === 'clergy') return parseList(CLERGY_SCHEDULE(CLERGY_BY_ID[p.clergy]));
   const r = RESIDENT_BY_ID[id];
   let list = parseList(isWeekend(s.day) ? r.weekend : r.weekday);
+  if (s.weather?.rain) list = weatherList(list, 'rain', r.home);
+  else if (s.weather?.market) list = weatherList(list, 'market', r.home);
   if (s.attend.includes(id)) {
     const offset = (id.charCodeAt(0) + id.length * 7) % 25;
     const arrive = WORSHIP_ARRIVE - 25 + offset;
     list = [...list.filter((e) => e.min < arrive - 30), { min: arrive, key: 'sanctuary' }];
   }
   return list;
+}
+
+// 비: 공원·산책로 일과는 집에서 보낸다 / 장날: 공원 대신 시장 구경
+const weatherCache = new Map();
+function weatherList(list, kind, home) {
+  const k = kind + JSON.stringify(list);
+  if (!weatherCache.has(k)) {
+    weatherCache.set(k, list.map((e) => {
+      const place = e.key.split(':')[0];
+      if (kind === 'rain' && WEATHER.rainSkip.includes(place)) return { min: e.min, key: home };
+      if (kind === 'market' && place === 'park') return { min: e.min, key: 'market:walk' };
+      return e;
+    }));
+  }
+  return weatherCache.get(k);
 }
 
 // 출발 시각표: 도착 시각에 맞춰 걸리는 시간만큼 먼저 나선다 (길 길이 / 걷는 속도 + 3분)

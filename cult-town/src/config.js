@@ -3,7 +3,7 @@
 export const GAME = {
   title: '',                     // 게임 이름(미정). 정해지면 여기만.
   saveKey: 'cult-town-save',
-  saveVersion: 1,
+  saveVersion: 2,
   startMoney: 400_000,           // 교주 지갑 = 교단 돈 (원)
   startAge: { min: 25, max: 60, default: 38 },
 };
@@ -68,6 +68,7 @@ export const STAGES = {
   leaveSuspicion: 80,            // 의심이 이 이상이면 단계가 하나 내려간다 (신도 이탈)
   followersPerMemberWeek: 0.35,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
   followerCapPerMember: 2,
+  phase2Followers: { chance: 0.9, cap: 4 },   // 2단계: 신도가 지인을 더 잘 데려온다
 };
 
 // ── 평판·소문·기성 종교 ──
@@ -121,10 +122,10 @@ export const GOAL = {
 export const SECT_FX = {
   doomsday: { topic: { future: 1.6 }, preachSus: 1.15, invite: 1.1, worship: 1.15, offering: 1.0, convert: 1.15, secularSus: 1.1, ages: [17, 32], date: { day: 18, sus: 25 } },
   messiah: { topic: { lonely: 1.4 }, preachSus: 1.35, invite: 1.0, worship: 1.4, offering: 1.1, convert: 1.2, secularSus: 1.2, ages: [40, 65] },
-  meditation: { topic: { meaning: 1.4, health: 1.2 }, preachSus: 0.75, invite: 1.15, worship: 0.9, offering: 0.9, convert: 0.8, secularSus: 0.6, ages: [24, 45] },
-  fortune: { topic: { money: 1.5, lonely: 1.1 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.35, convert: 1.0, secularSus: 1.1, ages: [45, 75] },
-  shaman: { topic: { future: 1.4, money: 1.2 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, ages: [30, 70], listenBonus: 1.3 },
-  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.05, worship: 1.05, offering: 1.05, convert: 1.0, secularSus: 0.9, ages: [55, 85], pharmacistSus: 1.8 },
+  meditation: { topic: { meaning: 1.6, health: 1.35, lonely: 1.15 }, preachSus: 0.75, invite: 1.2, worship: 1.05, offering: 1.0, convert: 1.0, secularSus: 0.6, ages: [24, 45] },
+  fortune: { topic: { money: 1.3, lonely: 1.05 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.25, convert: 1.0, secularSus: 1.1, ages: [45, 75] },
+  shaman: { topic: { future: 1.28, money: 1.12 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, ages: [30, 70], listenBonus: 1.0 },
+  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.05, worship: 1.05, offering: 1.05, convert: 1.0, secularSus: 0.9, ages: [55, 85], pharmacistSus: 1.2 },
 };
 
 // ── 성소 소품 ── (data/shop.js 의 id 와 같은 키) seats: 자리 + / mood: 분위기 +
@@ -172,7 +173,7 @@ export const CONTEXT = {
 };
 
 // 돌발 사건 (data/events.js): 하루 끝마다 이 확률로 하나. 주 1~2회
-export const EVENTS = { dailyChance: 0.22, minGapDays: 2 };
+export const EVENTS = { dailyChance: 0.28, minGapDays: 2 };
 
 // ════════ 2단계 (B) ════════
 export const PHASE2 = { members: 100, minSpaceStep: 2, minOfficers: 3, landlordAngerMax: 100 };
@@ -180,8 +181,8 @@ export const PHASE2 = { members: 100, minSpaceStep: 2, minOfficers: 3, landlordA
 // 공간 단계: 보증금(한 번) · 월세 추가(주마다) · 새로 생기는 방 자리
 export const SPACE_STEPS = [
   { id: 0, name: '302호', deposit: 0, rent: 0, slots: ['302'] },
-  { id: 1, name: '303호 벽 트기', deposit: 700_000, rent: 120_000, slots: ['303'] },
-  { id: 2, name: '3층 전체 (301·304호)', deposit: 1_400_000, rent: 220_000, slots: ['301', '304'] },
+  { id: 1, name: '303호 벽 트기', deposit: 500_000, rent: 120_000, slots: ['303'] },
+  { id: 2, name: '3층 전체 (301·304호)', deposit: 800_000, rent: 220_000, slots: ['301', '304'] },
   { id: 3, name: '2층 임대', deposit: 1_800_000, rent: 260_000, slots: ['201', '202'] },
   { id: 4, name: '4층 임대', deposit: 1_800_000, rent: 260_000, slots: ['401', '402'] },
 ];
@@ -193,9 +194,9 @@ export const ROOMS = {
   worship: { build: 200_000, up: [300_000, 450_000], seats: 10 },
   counsel: { build: 250_000, up: [350_000, 500_000], invite: 0.08, needLike: 5, visitorExtra: 0.12 },
   study: { build: 250_000, up: [350_000, 500_000], memberLike: 2, leave: 5 },
-  kitchen: { build: 300_000, up: [400_000, 550_000], worshipLike: 3, followers: 0.08 },
+  kitchen: { build: 300_000, up: [400_000, 550_000], worshipLike: 3, followers: 0.15 },
   dorm: { build: 400_000, up: [500_000, 650_000], leave: 15, familySus: 2, anger: 3, rep: 0.4 },
-  broadcast: { build: 450_000, up: [550_000, 700_000], outsiders: 0.55, rep: 0.35, clergySus: 1 },
+  broadcast: { build: 450_000, up: [550_000, 700_000], outsiders: 3.6, rep: 0.35, clergySus: 1 },
   office: { build: 200_000, up: [300_000, 450_000], offering: 0.1 },
 };
 // 어두운 업그레이드 (레벨 3 대신): 효율 배율 · 그림자 장부 무게

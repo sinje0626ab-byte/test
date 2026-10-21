@@ -1,5 +1,5 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
-import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR } from '../config.js';
+import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, OFFICERS } from '../config.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { CLERGY } from '../data/clergy.js';
 import { SECTS } from '../data/sects.js';
@@ -10,7 +10,11 @@ import { isSunday, isMonthEnd, isWorshipDay, fmtDate } from './clock.js';
 import { morningNeeds, placeAllAtHome } from './residents.js';
 import { decideAttendance, payRent } from './sanctuary.js';
 import { dailyRumor } from './rumor.js';
-import { checkLeave, memberCount, namedMembers, activeCast } from './faith.js';
+import { checkLeave, memberCount, namedMembers, activeCast, relationsOf } from './faith.js';
+import { rollEvent } from './events.js';
+import { dailyRooms, weeklyRooms, followerBonus } from './space.js';
+import { dailyOfficers, initOfficers, activeOfficers } from './officers.js';
+import { dueRevelation, weeklyRules } from './revelation.js';
 import { newWeek } from './state.js';
 
 export function startDay(s, g) {
@@ -19,6 +23,8 @@ export function startDay(s, g) {
   s.leader.fatigue = Math.round((s.leader.nightFatigue ?? 0) * 0.5);
   s.leader.nightFatigue = 0;
   morningNeeds(s);
+  s.weather = { rain: rand(s) < WEATHER.rainChance, market: (s.day % 7) === WEATHER.marketWeekday };
+  if (s.weather.rain) for (const r of Object.values(s.res)) r.needs.lonely = Math.min(100, r.needs.lonely + WEATHER.rainLonely);
   decideAttendance(s);
   if (g) placeAllAtHome(s, g);
 }
@@ -36,8 +42,9 @@ function dueShadows(s) {
       for (const id of sh.ids) s.res[id].needs.health = clamp(s.res[id].needs.health + 15);
       s.res.pharmacist.sus = clamp(s.res.pharmacist.sus + 10);
     }
-    const name = sh.id ? RESIDENT_BY_ID[sh.id]?.name : '';
-    const text = SHADOW[sh.kind].later.replaceAll('{이름}', name ?? '');
+    applyLateShadow(s, sh);
+    const name = sh.name ?? (sh.id ? RESIDENT_BY_ID[sh.id]?.name : '');
+    const text = (SHADOW[sh.kind]?.later ?? '').replaceAll('{이름}', name ?? '').replaceAll('{가족}', sh.relative ? RESIDENT_BY_ID[sh.relative].name : '가족');
     s.week.shadow.push({ kind: sh.kind, text });
     out.push({ type: 'shadow', kind: sh.kind, text });
   }
@@ -45,12 +52,31 @@ function dueShadows(s) {
   return out;
 }
 
+// 2단계·사건에서 생긴 대가
+function applyLateShadow(s, sh) {
+  const members = Object.values(s.res).filter((r) => r.stage === 'member');
+  switch (sh.kind) {
+    case 'distance': s.rep = clamp(s.rep - 6); s.res.tong.sus = clamp(s.res.tong.sus + 8); break;
+    case 'fine': s.leader.money -= 100_000; break;
+    case 'expose': s.rep = clamp(s.rep + OFFICERS.exposeRep); for (const r of members) r.sus = clamp(r.sus + OFFICERS.exposeSus); break;
+    case 'room_counsel': s.rep = clamp(s.rep - 4); for (const r of members) r.sus = clamp(r.sus + 8); break;
+    case 'room_dorm': s.rep = clamp(s.rep - 8); s.landlordAnger += 15; break;
+    case 'room_broadcast': s.rep = clamp(s.rep - 10); break;
+    case 'room_office': for (const o of s.officers) if (!o.left) o.discontent = clamp(o.discontent + 15); break;
+    case 'agenda_envelope': for (const r of members) r.sus = clamp(r.sus + 6); break;
+    case 'agenda_visit': s.rep = clamp(s.rep - 6); s.landlordAnger += 10; break;
+    case 'sign_volunteer': s.rep = clamp(s.rep - 6); break;
+    case 'rule_communal': case 'rule_pledge': case 'rule_interview': s.rep = clamp(s.rep - 5); for (const r of members) r.sus = clamp(r.sus + 4); break;
+    default: break;
+  }
+}
+
 function castDrift(s) {
   const out = [];
   const b = s.leader.belief;
   const d = b <= -60 ? 3 : b >= 60 ? 2 : -1;
   for (const [id, c] of Object.entries(s.cast)) {
-    if (!c.active) continue;
+    if (!c.active || s.phase >= 2) continue;
     c.sus = clamp(c.sus + d);
     if (c.sus >= STAGES.leaveSuspicion) { c.active = false; out.push({ type: 'castLeft', id }); s.week.left.push(`cast:${id}`); }
   }
@@ -61,7 +87,9 @@ function weeklyFollowers(s) {
   let gained = 0;
   for (const id of namedMembers(s)) {
     const have = s.followerOf[id] ?? 0;
-    if (have < STAGES.followerCapPerMember && rand(s) < STAGES.followersPerMemberWeek) {
+    const cap = s.phase >= 2 ? STAGES.phase2Followers.cap : STAGES.followerCapPerMember;
+    const chance = (s.phase >= 2 ? STAGES.phase2Followers.chance : STAGES.followersPerMemberWeek) + followerBonus(s);
+    if (have < cap && rand(s) < chance) {
       s.followerOf[id] = have + 1; s.followers++; gained++;
     }
   }
@@ -84,6 +112,12 @@ export function endDay(s, g, opts = {}) {
   }
   for (const id of checkLeave(s)) events.push({ type: 'left', id });
   events.push(...castDrift(s));
+  if (s.phase >= 2) {
+    events.push(...dailyRooms(s));
+    events.push(...dailyOfficers(s, s.flags.darkToday ?? 0));
+  }
+  s.flags.darkToday = 0;
+  if (s.flags.quietSign) for (const st of Object.values(s.res)) st.sus = clamp(st.sus - 1);
 
   let bulletin = null;
   if (isMonthEnd(s.day)) {
@@ -92,25 +126,38 @@ export function endDay(s, g, opts = {}) {
   }
   if (isSunday(s.day)) {
     weeklyFollowers(s);
+    weeklyRooms(s, relationsOf);
+    weeklyRules(s, relationsOf);
     bulletin = makeBulletin(s);
     s.week = newWeek();
     s.week.repStart = s.rep;
   }
   s.over = checkOver(s);
+  let phaseUp = false;
+  if (s.over === 'phase1') { s.over = null; s.phase = 2; initOfficers(s); phaseUp = true; }
+  const revelation = s.over ? null : dueRevelation(s);
+  let event = null;
   if (!s.over) {
     s.day++;
     startDay(s, g);
+    event = rollEvent(s);
   } else {
     s.mode = 'over';
   }
-  return { events, bulletin, over: s.over };
+  return { events, bulletin, over: s.over, phaseUp, revelation, event };
 }
 
 export function checkOver(s) {
   if (s.sanctuary.arrears >= SANCTUARY.maxArrears) return 'evicted';
   if (s.rep <= RUMOR.silentAt) return 'silent';
   if (memberCount(s) === 0) return 'empty';
-  if (memberCount(s) >= GOAL.members && s.sanctuary.rentStreak >= GOAL.rentStreak) return 'win';
+  if (s.phase === 1) {
+    if (memberCount(s) >= GOAL.members && s.sanctuary.rentStreak >= GOAL.rentStreak) return 'phase1';
+    return null;
+  }
+  if (s.landlordAnger >= PHASE2.landlordAngerMax) return 'notice';
+  if (s.officersAppointed >= 3 && s.officersLeft * 2 > s.officersAppointed) return 'officers';
+  if (memberCount(s) >= PHASE2.members && s.space.step >= PHASE2.minSpaceStep && activeOfficers(s).length >= PHASE2.minOfficers) return 'win';
   return null;
 }
 
