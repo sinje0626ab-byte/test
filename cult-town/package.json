@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "map": "node tools/build-map.mjs",
+    "map": "node tools/build-map.mjs && node tools/build-map.mjs bongcheon",
     "sim": "node tools/simulate.mjs",
     "lint:words": "node tools/check-words.mjs"
   },

@@ -149,8 +149,9 @@ export function drawStationExit(scene, key, x, y, label) {
   g.fillStyle(0x3cb44a, 1).fillRect(0, 0, 16, 16);
   g.fillStyle(0x2a2a33, 1).fillRect(3, 8, 10, 8);
   for (let i = 0; i < 4; i++) g.fillStyle(0x888899, 1).fillRect(3, 9 + i * 2, 10, 1);
-  const num = scene.add.text(8, 4, label.replace('신림역 ', ''), SIGN_FONT).setOrigin(0.5);
-  const tag = scene.add.text(8, -5, '신림역', { ...SIGN_FONT, color: '#1d1b26', backgroundColor: '#ffffff' }).setOrigin(0.5).setPadding(1, 0, 1, 0);
+  const parts = label.split(' ');      // '신림역 3' · '서울대입구역 4' → 역 이름 + 출구 번호
+  const num = scene.add.text(8, 4, parts.at(-1), SIGN_FONT).setOrigin(0.5);
+  const tag = scene.add.text(8, -5, parts.slice(0, -1).join(' '), { ...SIGN_FONT, color: '#1d1b26', backgroundColor: '#ffffff' }).setOrigin(0.5).setPadding(1, 0, 1, 0);
   return scene.add.container(x, y, [g, num, tag]).setDepth(50);
 }
 

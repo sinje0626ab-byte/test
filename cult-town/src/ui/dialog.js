@@ -7,14 +7,14 @@ import { OPTIONS, CARDS, STAGE_NAMES } from '../data/topics.js';
 import { LINES } from '../data/lines.js';
 import { canTalk, startTalk, act, talkClergy } from '../sim/talk.js';
 import { fmtDate } from '../sim/clock.js';
-import { CLERGY } from '../data/clergy.js';
+import { ALL_CLERGY } from '../data/clergy.js';
 import { h, mount, unmount, won } from './dom.js';
 import { fill, josa } from './text.js';
 import { play } from './sound.js';
 import { toast } from './toast.js';
 import { textVars } from '../sim/rival.js';
 import { NOTICE_TEXT } from '../data/threats.js';
-import { CLERGY as CLERGY_LIST } from '../data/clergy.js';
+import { ALL_CLERGY as CLERGY_LIST } from '../data/clergy.js';
 
 const REASON = {
   tired: '다리가 후들거린다. 오늘은 더 말 걸 힘이 없다. 성소로 돌아가 쉬자.',
@@ -57,6 +57,7 @@ export function openTalk(app, id) {
     let label = o.id === 'special' ? o.special : meta.label;
     if (o.id === 'relay') label = label.replace('{이름}', RESIDENT_BY_ID[o.from].name);
     if (o.id === 'askRival') label = label.replace('{라이벌}', textVars(s).라이벌);
+    if (o.id === 'invite' && id.startsWith('b_')) label = '봉천 지부에 초대하기';
     const hint = o.id === 'special' ? '교단 유형의 특기. 지금 고민과 맞으면 잘 통한다.' : meta.hint;
     return h('button', { class: `btn ${CONTEXT_IDS.includes(o.id) ? 'ctx' : ''}`, onclick: () => choose(o) }, label, h('small', {}, hint));
   };
@@ -144,7 +145,7 @@ function favorText(f) {
 }
 
 export function openClergyTalk(app, clergyId) {
-  const c = CLERGY.find((x) => x.id === clergyId);
+  const c = ALL_CLERGY.find((x) => x.id === clergyId);
   const { name, line } = talkClergy(app.s, clergyId);
   app.modalOpened();
   play('talk');

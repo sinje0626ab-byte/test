@@ -1,6 +1,6 @@
 // 상태 단계: 무관심 → 관심 → 방문 약속 → 새신자 → 신도 (그리고 이탈)
 import { STAGES, TALK } from '../config.js';
-import { RELATIONS, RESIDENT_BY_ID } from '../data/residents.js';
+import { RELATIONS, RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { clamp } from './leader.js';
 import { leaveBonus } from './space.js';
 import { ruleLeave } from './revelation.js';
@@ -54,8 +54,9 @@ export function checkLeave(s) {
   }
   for (const id of left) {
     s.week.left.push(id);
-    const lost = s.followerOf[id] ?? 0;          // 데려온 사람도 같이 나간다
-    s.followers = Math.max(0, s.followers - lost);
+    const lost = s.followerOf[id] ?? 0;          // 데려온 사람도 같이 나간다 (봉천동 사람은 지부 쪽에서)
+    if (districtOf(id) === 'bongcheon' && s.branch) s.branch.followers = Math.max(0, s.branch.followers - lost);
+    else s.followers = Math.max(0, s.followers - lost);
     s.followerOf[id] = 0;
   }
   return left;
@@ -63,7 +64,9 @@ export function checkLeave(s) {
 
 export const namedMembers = (s) => Object.keys(s.res).filter((id) => s.res[id].stage === 'member');
 export const activeCast = (s) => Object.keys(s.cast).filter((id) => s.cast[id].active);
-export const memberCount = (s) => namedMembers(s).length + activeCast(s).length + s.followers;
+export const memberCount = (s) => namedMembers(s).length + activeCast(s).length + s.followers + (s.branch?.followers ?? 0);
+// 봉천 지부 규모 (봉천동 이름 있는 신도 + 지부 따라온 사람)
+export const branchCount = (s) => namedMembers(s).filter((id) => districtOf(id) === 'bongcheon').length + (s.branch?.followers ?? 0);
 
 export function residentName(id) {
   return RESIDENT_BY_ID[id]?.name ?? id;

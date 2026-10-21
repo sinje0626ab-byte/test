@@ -3,6 +3,7 @@ import { REVELATIONS, REVELATIONS3 } from '../config.js';
 import { REVELATION_TEXT, RULE_FX } from '../data/revelations.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
 import { memberCount } from './faith.js';
+import { RELATIONS } from '../data/residents.js';
 
 // 지금 열릴 계시 (없으면 null)
 export function dueRevelation(s) {
@@ -13,6 +14,7 @@ export function dueRevelation(s) {
     if (!s.revelations.camera && (n >= REVELATIONS3[0].at || s.reporter.reports > 0)) return 'camera';
     if (!s.revelations.neighbor && s.rival && s.day >= s.rival.since) return 'neighbor';
   }
+  if (s.phase >= 4 && s.branch?.open && !s.revelations.branch) return 'branch';
   return null;
 }
 
@@ -35,6 +37,12 @@ export function applyRevelation(s, id, picks) {
     } else if (id === 'camera') {
       if (p === 'open') s.rep = clamp(s.rep + 4);
       if (p === 'spin') { addMoney(s, -300_000); s.shadow.push({ kind: 'spin', due: s.day + 10 }); }
+    } else if (id === 'branch') {
+      if (p === 'visit') {
+        for (const [rid, st] of Object.entries(s.res)) if (rid.startsWith('b_') && st.stage === 'member') st.like = clamp(st.like + 8);
+        for (const [a, b, kind] of RELATIONS) if (kind === 'family' && a.startsWith('b_')) for (const x of [a, b]) if (s.res[x].stage !== 'member') s.res[x].sus = clamp(s.res[x].sus + 12);
+        s.shadow.push({ kind: 'branch_visit', due: s.day + 7 });
+      }
     } else if (id === 'neighbor') {
       if (p === 'respect') s.rep = clamp(s.rep + 3);
       if (p === 'rumor' && s.rival) {

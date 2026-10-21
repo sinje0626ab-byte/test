@@ -1,10 +1,10 @@
 // 주민 일과 → 목표 칸 → 격자 이동. 화면(TownScene)과 노드 시뮬레이터가 같은 함수를 쓴다.
 // 위치는 state.pos[id] = { x, y, path, prog, key, inside }. path[0] 이 다음 칸, prog(0~1)가 그 칸까지 간 정도.
 import { CLOCK, MOVE, NEEDS, WEATHER } from '../config.js';
-import { RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
-import { CLERGY } from '../data/clergy.js';
+import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, RESIDENT_BY_ID, districtOf } from '../data/residents.js';
+import { CLERGY, CLERGY_B } from '../data/clergy.js';
 import { isWeekend, parseTime } from './clock.js';
-import { findPath, resolveKey, walkable } from './grid.js';
+import { findPath, resolveKey, walkable, gridOf } from './grid.js';
 import { rand } from './rng.js';
 
 const WORSHIP_ARRIVE = 19 * 60 + 20;
@@ -15,7 +15,15 @@ export const PEOPLE = [
   ...RESIDENTS.map((r) => ({ id: r.id, home: r.home, kind: 'resident' })),
   ...CLERGY.map((c) => ({ id: `c:${c.id}`, home: c.place, kind: 'clergy', clergy: c.id })),
 ];
-const PERSON = Object.fromEntries(PEOPLE.map((p) => [p.id, p]));
+// 4단계: 봉천동 주민·성직자 (자기 동네 격자에서 걷는다)
+export const PEOPLE_B = [
+  ...RESIDENTS_B.map((r) => ({ id: r.id, home: r.home, kind: 'resident', district: 'bongcheon' })),
+  ...CLERGY_B.map((c) => ({ id: `c:${c.id}`, home: c.place, kind: 'clergy', clergy: c.id, district: 'bongcheon' })),
+];
+const PERSON = Object.fromEntries([...PEOPLE, ...PEOPLE_B].map((p) => [p.id, p]));
+// 그 사람이 걷는 동네의 격자
+export const gridFor = (id, g) => (districtOf(id) === 'bongcheon' ? gridOf('bongcheon') ?? g : g);
+export const sanctuaryKey = (id) => (districtOf(id) === 'bongcheon' ? 'b_branch' : 'sanctuary');
 
 // 낮 포교 중인 간부도 동네를 걷는다 ('o:<간부 id>'). 9시부터 90분마다 다른 바깥 자리로
 const STREET_SPOTS = ['station:plaza', 'market:entrance', 'cvs:front', 'park:plaza', 'stream:path', 'restaurant:front', 'station:exit4', 'market:walk', 'gosiwon:front', 'park:walk'];
@@ -28,6 +36,7 @@ export function peopleOf(s) {
   for (const o of s.officers ?? []) if (!o.left && o.assign === 'street' && o.kind === 'cast') out.push({ id: `o:${o.id}`, home: 'sanctuary', kind: 'officer', oid: o.id });
   if (reporterOut(s)) out.push({ id: 'x:reporter', home: 'station', kind: 'reporter' });
   if (rivalOut(s)) for (const w of ['leader', 'p1', 'p2']) out.push({ id: `v:${w}`, home: 'office', kind: 'rival' });
+  if (s.phase >= 4) out.push(...PEOPLE_B);
   return out;
 }
 const onStreet = (s, id) => id.startsWith('o:') || (s.officers ?? []).some((o) => o.id === id && !o.left && o.assign === 'street');
@@ -68,7 +77,7 @@ function npcSchedule(s, id) {
   return npcCache.get(k);
 }
 const personAny = (id) => PERSON[id] ?? (id.startsWith('x:') ? { id, home: 'station', kind: 'reporter' } : id.startsWith('v:') ? { id, home: 'office', kind: 'rival' } : { id, home: 'sanctuary', kind: 'officer' });
-const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
+const CLERGY_BY_ID = Object.fromEntries([...CLERGY, ...CLERGY_B].map((c) => [c.id, c]));
 
 const parsed = new Map();
 function parseList(list) {
@@ -85,18 +94,19 @@ export function scheduleOf(s, id) {
   const r = RESIDENT_BY_ID[id];
   // 신도 가족 시위: 그날은 아침부터 상가 입구 앞에 선다 (대응하면 원래 일과로)
   const pr = s.protest;
-  if (pr && !pr.done && pr.day === s.day && !pr.resolved && pr.id === id) return [{ min: 9 * 60 + 30, key: 'sanctuary:door' }, { min: 19 * 60, key: r.home }];
+  const bong = r.district === 'bongcheon';
+  if (pr && !pr.done && pr.day === s.day && !pr.resolved && pr.id === id) return [{ min: 9 * 60 + 30, key: bong ? 'b_branch:door' : 'sanctuary:door' }, { min: 19 * 60, key: r.home }];
   let list = parseList(isWeekend(s.day) ? r.weekend : r.weekday);
   // 탈퇴자 모임: 토요일 오후 솔밭 쉼터
   if (s.meeting?.day === s.day && s.meeting.ids.includes(id) && !s.defectors?.[id]?.done && !s.defectors?.[id]?.hushed) {
-    list = [...list.filter((e) => e.min < 12 * 60 + 30), { min: 14 * 60, key: 'park:bench1' }, ...list.filter((e) => e.min >= 16 * 60 + 30)];
+    list = [...list.filter((e) => e.min < 12 * 60 + 30), { min: 14 * 60, key: bong ? 'b_park:bench' : 'park:bench1' }, ...list.filter((e) => e.min >= 16 * 60 + 30)];
   }
   if (s.weather?.rain) list = weatherList(list, 'rain', r.home);
   else if (s.weather?.market) list = weatherList(list, 'market', r.home);
   if (s.attend.includes(id)) {
     const offset = (id.charCodeAt(0) + id.length * 7) % 25;
     const arrive = WORSHIP_ARRIVE - 25 + offset;
-    list = [...list.filter((e) => e.min < arrive - 90), { min: arrive, key: 'sanctuary' }];
+    list = [...list.filter((e) => e.min < arrive - 90), { min: arrive, key: sanctuaryKey(id) }];
   }
   return list;
 }
@@ -153,7 +163,7 @@ function legInfo(g, fromKey, toKey) {
   return legCache.get(k);
 }
 export function travelMinutes(s, g, id, fromKey, toKey, minute = s.minute) {
-  const { tiles, crossings } = legInfo(g, fromKey, toKey);
+  const { tiles, crossings } = legInfo(gridFor(id, g), fromKey, toKey);
   if (!tiles) return 0;
   const pauses = tiles * MOVE.pauseChance + crossings * MOVE.signalChance;
   return (tiles + 2) / speedOf(s, id, minute) + pauses * PAUSE_MIN * 1.6 + 6;   // 멈춤이 몰리는 날도 있어 넉넉히
@@ -166,7 +176,7 @@ export function departures(s, g, id) {
     out.push({ dep: e.min - travelMinutes(s, g, id, prev, e.key, e.min), arrive: e.min, key: e.key });
     prev = e.key;
   }
-  out.push({ dep: CLOCK.dayEnd - travelMinutes(s, g, id, prev, p.home, CLOCK.dayEnd), arrive: CLOCK.dayEnd, key: s.attend.includes(id) ? 'sanctuary' : p.home });
+  out.push({ dep: CLOCK.dayEnd - travelMinutes(s, g, id, prev, p.home, CLOCK.dayEnd), arrive: CLOCK.dayEnd, key: s.attend.includes(id) ? sanctuaryKey(id) : p.home });
   return out;
 }
 
@@ -179,7 +189,8 @@ export function targetKey(s, g, id, minute = s.minute) {
 // 바깥 자리는 사람마다 조금씩 비켜 선다 (한 칸에 몰리지 않게)
 const NUDGE = [[0, 0], [1, 0], [-1, 0], [0, 1], [1, 1], [-1, 1], [0, -1], [2, 0]];
 function hashId(id) { let h = 0; for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) | 0; return Math.abs(h); }
-export function spotFor(g, key, id) {
+export function spotFor(g0, key, id) {
+  const g = gridFor(id, g0);
   const r = resolveKey(g, key);
   if (r.inside || !key.includes(':')) return r;
   const start = hashId(id) % NUDGE.length;
@@ -195,7 +206,7 @@ export function spotFor(g, key, id) {
 export function placeAllAtHome(s, g) {
   for (const id of Object.keys(s.pos)) if (id.startsWith('o:')) delete s.pos[id];
   for (const p of peopleOf(s)) {
-    const { tile } = resolveKey(g, p.home);
+    const { tile } = resolveKey(gridFor(p.id, g), p.home);
     s.pos[p.id] = { x: tile[0], y: tile[1], path: [], prog: 0, key: p.home, inside: true };
   }
 }
@@ -215,8 +226,10 @@ export function tickPeople(s, g, dtMin) {
   const people = peopleOf(s);
   // 지금 걷는 사람들의 칸 → 다음 칸 (마주침 판정)
   const heading = new Map();
-  for (const p of people) { const q = s.pos[p.id]; if (q?.path?.length) heading.set(`${q.x},${q.y}`, { id: p.id, next: q.path[0] }); }
+  for (const p of people) { const q = s.pos[p.id]; if (q?.path?.length) heading.set(`${p.district ?? ''}${q.x},${q.y}`, { id: p.id, next: q.path[0] }); }
+  const g0 = g;
   for (const p of people) {
+    g = gridFor(p.id, g0);
     if (!s.pos[p.id]) { const { tile } = resolveKey(g, p.home); s.pos[p.id] = { x: tile[0], y: tile[1], path: [], prog: 0, key: p.home, inside: true }; }
     const pos = s.pos[p.id];
     // 기자가 교주를 따라온다: 교주 칸 옆까지 길을 다시 잡는다
@@ -243,7 +256,7 @@ export function tickPeople(s, g, dtMin) {
       // 좁은 길(옆으로 비킬 칸이 없음)에서 마주 오는 사람이 있으면 한쪽(이름 순서 뒤)이 잠깐 기다린다
       if (dt > 0 && pos.prog < 0.05) {
         const [nx, ny] = pos.path[0];
-        const other = heading.get(`${nx},${ny}`);
+        const other = heading.get(`${p.district ?? ''}${nx},${ny}`);
         if (other && other.id !== p.id && other.next[0] === pos.x && other.next[1] === pos.y && other.id < p.id && narrow(g, nx, ny)) {
           pos.wait = MOVE.yieldSeconds * CLOCK.minutesPerSecond; pos.pause = 'yield'; dt = 0;
         }
@@ -283,7 +296,8 @@ export const personOf = (id) => personAny(id);
 
 // 하루 시작: 지금 고민 정하기, 욕구 흔들기
 export function morningNeeds(s) {
-  for (const r of RESIDENTS) {
+  for (const r of ALL_RESIDENTS) {
+    if (!s.res[r.id] || (r.district === 'bongcheon' && s.phase < 4)) continue;   // 봉천동은 4단계부터 (1~3단계 난수 순서를 그대로 둔다)
     const st = s.res[r.id];
     for (const k of NEEDS.keys) {
       const drift = (rand(s) * 2 - 1) * NEEDS.dailyDrift;

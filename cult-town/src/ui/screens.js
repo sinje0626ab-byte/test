@@ -1,9 +1,10 @@
 // 주보 · 밤사이 소식 · 엔딩 · 크레딧 · 게임 메뉴
-import { GOAL, PHASE2, PHASE3 } from '../config.js';
+import { GOAL, PHASE2, PHASE3, PHASE4 } from '../config.js';
+import { PHASE4_INTRO } from '../data/branch.js';
 import { PHASE3_INTRO } from '../data/threats.js';
 import { rentNow } from '../sim/space.js';
 import { BULLETIN, ENDINGS, DOOMSDAY_PASSED, SHADOW, LANDLORD, CLERGY_EVENT } from '../data/bulletin.js';
-import { CLERGY } from '../data/clergy.js';
+import { CLERGY, ALL_CLERGY } from '../data/clergy.js';
 import { CAST_BY_ID } from '../data/cast.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { fmtDate } from '../sim/clock.js';
@@ -16,7 +17,7 @@ export function eventLines(s, events) {
   const out = [];
   for (const e of events) {
     if (e.type === 'clergy') {
-      const c = CLERGY.find((x) => x.id === e.id);
+      const c = ALL_CLERGY.find((x) => x.id === e.id);
       out.push(fill(CLERGY_EVENT, s, { 직함: c.title, 이름: c.name }) + ' ' + e.line);
     } else if (e.type === 'shadow') out.push(e.text);
     else if (e.type === 'doomsday') out.push(DOOMSDAY_PASSED);
@@ -76,6 +77,16 @@ export function showBulletin(s, b, onClose) {
 // 1단계 끝 → 2단계 시작 장면
 export function showPhaseUp(s, phase, onClose) {
   play('jingle_good', 0.5);
+  if (phase === 4) {
+    const e = PHASE4_INTRO;
+    mount('phaseup', h('div', { class: 'screen ending' }, h('div', { class: 'panel box' },
+      h('h2', {}, e.title),
+      ...e.text.map((t) => h('p', {}, fill(t, s))),
+      h('p', {}, e.next),
+      h('p', { class: 'muted' }, `목표: 신도 ${PHASE4.members}명 + 봉천 지부 ${PHASE4.branch}명 + 신림동·봉천동 평판 모두 ${PHASE4.rep} 이상. 신림역 입구에서 '2호선 타기'. 밤 메뉴에 '봉천 지부'가 생긴다.`),
+      h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '4단계 시작')))));
+    return;
+  }
   if (phase === 3) {
     const e = PHASE3_INTRO;
     mount('phaseup', h('div', { class: 'screen ending' }, h('div', { class: 'panel box' },
@@ -102,7 +113,7 @@ export function showEnding(s, kind, { onTitle }) {
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
     h('p', { class: 'muted' }, `${fmtDate(s.day)} · 교주 ${s.leader.name} · ${s.leader.cultName}`),
-    kind === 'win' ? h('p', { class: 'muted' }, '4단계(해외 진출)·5단계는 아직 만들지 않았다.') : null,
+    kind === 'win' ? h('p', { class: 'muted' }, '5단계(서울·전국)는 아직 만들지 않았다.') : null,
     h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('ending'); onTitle(); } }, '처음 화면으로')))));
 }
 

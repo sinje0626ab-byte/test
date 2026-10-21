@@ -190,6 +190,12 @@ export const SPOTS = {
   sanctuary: { door: { from: 'sanctuary', dx: 2, dy: 1 } },
 };
 
+// 건물 문이 아닌 장소의 입구 (바닥 장소) · 연결 검사 시작 장소 · 지도 이름
+export const EXTRA_PLACES = { market_house: [16, 27], market: [16, 27], station: [25, 9], stream: [24, 2], park: [7, 49] };
+export const START = 'sanctuary';
+export const MAP_ID = 'town';
+export const MAP_CREDIT = 'Tiles: Kenney RPG Urban Pack (CC0). 신림동 구조를 손으로 단순화한 배치.';
+
 // 신림역 출구 (도형 스프라이트)
 export const STATION_EXITS = [
   { label: '신림역 3', x: 30, y: 8, sprite: 'station.exit' },

@@ -2,7 +2,10 @@
 //   text: 지문 1줄 + 그 사람 말투 대사 1~2줄 (큰따옴표)
 //   favor.type: 'item' (item: items.js id 를 갖다준다) · 'deliver' (to: 다른 주민 id 에게 말을 전한다. relay: 받은 사람의 반응 대사) · 'place' (place: places.js id 에 다녀온다. note: 다녀와서 본 것 지문)
 //   ask: 부탁하는 대사 · done: 들어줬을 때 대사
+import { STORIES_B } from './residents-bongcheon.js';
+
 export const STORIES = {
+  ...STORIES_B,
   tong: [
     {
       title: '가로등 민원',

@@ -54,4 +54,57 @@ export const CLERGY = [
   },
 ];
 
+// 봉천동 성직자 3명 (4단계). 신림동 세 사람과 같은 규칙·같은 대사량.
+export const CLERGY_B = [
+  {
+    id: 'b_pastor', family: 'christian', religions: ['protestant', 'catholic'],
+    name: '하정민', title: '목사', place: 'b_church', day: 'b_church:yard',
+    bio: '봉우리교회 목사. 고시촌 청년부를 혼자 맡는다. 주일 오후엔 교회 식당을 수험생 공부방으로 연다.',
+    look: { base: 4, hair: 'short', hairColor: '#4a4a4a', skin: 1, top: '#3a3a4a', bottom: '#2a2a3a' },
+    greet: [
+      '"신림동 302호 분이시죠. 이쪽까지 오셨네요. 청년들 사정은 제가 좀 압니다. 앉으세요."',
+      '"시험 떨어진 친구들한테 필요한 건 확신이 아니라 밥이랑 잠이에요. 그걸 먼저 챙겨 주세요."',
+      '"우리 교회 식당은 주일 오후에 비어 있습니다. 공부할 자리가 필요한 사람은 누구든 오면 돼요."',
+    ],
+    warn: [
+      '하정민 목사가 청년부 단톡방에 "처음 만난 모임이 시험 합격을 약속하면 교회에 먼저 얘기해 달라"고 올렸다.',
+      '봉우리교회 주보에 "모르는 모임에 시간과 돈을 맡기기 전에 한 번 더 상의하자"는 안내가 실렸다.',
+    ],
+    bulletin: '봉우리교회가 주일 오후 식당을 수험생 공부방으로 연다. 보리차와 컵라면이 있다.',
+  },
+  {
+    id: 'b_monk', family: 'buddhist', religions: ['buddhist'],
+    name: '도안', title: '스님', place: 'b_temple', day: 'b_temple:yard',
+    bio: '구름다리선원 스님. 고시텔 어르신들 병원 동행을 다닌다. 공양간 빵 나눔을 맡는다.',
+    look: { base: 2, hair: 'bald', hairColor: '#c8a890', skin: 1, top: '#9a8a70', bottom: '#9a8a70' },
+    greet: [
+      '"신림동에서 오셨군요. 언덕 올라오느라 숨차시죠. 물 한 잔 드리겠습니다."',
+      '"마음이 급한 사람에게 답을 파는 일은 쉽습니다. 그래서 더 조심해야 합니다."',
+      '"절 마당은 누구에게나 열려 있습니다. 그쪽 사람이 와도 차는 똑같이 드립니다."',
+    ],
+    warn: [
+      '도안 스님이 법회 끝에 "기도비를 정해서 받는 곳은 한 번 더 생각해 보시라"고 당부했다.',
+      '구름다리선원 게시판에 "모르는 모임이 공양 비용을 말하면 절에 먼저 물어 달라"는 쪽지가 붙었다.',
+    ],
+    bulletin: '구름다리선원 공양간이 이번 주 빵 나눔을 하루 더 늘렸다. 동네 빵집에서 보낸 것이다.',
+  },
+  {
+    id: 'b_mansin', family: 'folk', religions: ['folk'],
+    name: '봉순덕', title: '만신', place: 'b_fortune', day: 'b_fortune:front',
+    bio: '달무리 철학관 만신. 평상에 앉아 아침 커피를 마신다. 상담비는 한 번만 받는다.',
+    look: { base: 1, hair: 'perm', hairColor: '#4a4a4a', skin: 2, top: '#d8c8e0', bottom: '#4a4a6a' },
+    greet: [
+      '"신림동 양반이구나. 평상에 앉아. 커피는 믹스밖에 없어."',
+      '"불안한 사람한테 날짜를 팔면 안 돼. 그 사람은 그 날짜만 보고 살아."',
+      '"그쪽 사람 중에 잠 못 자는 사람 있으면 나한테 보내. 차나 한 잔 하게."',
+    ],
+    warn: [
+      '봉순덕 만신이 단골들에게 "부적값을 몇 배로 부르는 데는 가지 마라"고 전화를 돌렸다.',
+      '달무리 철학관 대문에 "다른 데서 굿 하라고 하면 나한테 먼저 물어봐" 하고 손글씨가 붙었다.',
+    ],
+    bulletin: '달무리 철학관이 이번 주 어르신 무료 상담 날을 하루 더 늘렸다.',
+  },
+];
+
 export const CLERGY_BY_FAMILY = Object.fromEntries(CLERGY.map((c) => [c.family, c]));
+export const ALL_CLERGY = [...CLERGY, ...CLERGY_B];

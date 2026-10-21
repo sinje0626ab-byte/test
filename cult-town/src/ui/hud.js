@@ -1,7 +1,7 @@
 // 화면 위: 날짜·시각·속도 / 돈·신도·평판·피로·믿음 축. 화면 아래: 상황에 맞는 큰 버튼 (말 걸기·들어가기·밤으로).
-import { GOAL, TALK, LEADER, PHASE2, PHASE3 } from '../config.js';
+import { GOAL, TALK, LEADER, PHASE2, PHASE3, PHASE4 } from '../config.js';
 import { fmtDate, fmtTime, phaseOf } from '../sim/clock.js';
-import { memberCount } from '../sim/faith.js';
+import { branchCount, memberCount } from '../sim/faith.js';
 import { h, mount, won } from './dom.js';
 import { play, toggleMute, isMuted } from './sound.js';
 
@@ -52,11 +52,15 @@ export function createHud(app) {
       if (!s) return;
       date.textContent = fmtDate(s.day);
       time.textContent = s.mode === 'night' ? '밤' : fmtTime(s.minute);
-      phase.textContent = s.mode === 'night' ? '성소 운영' : phaseOf(s.minute).name;
+      phase.textContent = s.mode === 'night' ? '성소 운영' : `${phaseOf(s.minute).name}${s.phase >= 4 ? ` · ${s.district === 'bongcheon' ? '봉천동' : '신림동'}` : ''}`;
       speedBtns.forEach((b, i) => b.classList.toggle('on', app.speed === i));
       money.textContent = won(s.leader.money);
       members.textContent = memberCount(s);
-      if (s.phase >= 2) {
+      if (s.phase >= 4) {
+        membersLabel.textContent = `신도 /${PHASE4.members}`;
+        rentLabel.textContent = '봉천 지부';
+        rent.textContent = s.branch.open ? `${branchCount(s)}/${PHASE4.branch}` : '없음';
+      } else if (s.phase >= 2) {
         membersLabel.textContent = `신도 /${s.phase >= 3 ? PHASE3.members : PHASE2.members}`;
         rentLabel.textContent = '건물주 불만';
         rent.textContent = `${Math.round(s.landlordAnger)}/100${s.sanctuary.arrears ? ` 체납${s.sanctuary.arrears}` : ''}`;

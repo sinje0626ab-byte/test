@@ -6,12 +6,12 @@ import { readFileSync } from 'node:fs';
 import { CLOCK, MOVE, SHOP, SANCTUARY, TALK, SPACE_STEPS, OFFICERS } from '../src/config.js';
 import { ITEMS } from '../src/data/items.js';
 import { PREFS } from '../src/data/prefs.js';
-import { RESIDENTS } from '../src/data/residents.js';
+import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS } from '../src/data/residents.js';
 import { SECTS, SECT_ORDER } from '../src/data/sects.js';
-import { gridFromMap, findPath, resolveKey } from '../src/sim/grid.js';
+import { gridFromMap, findPath, resolveKey, registerGrid } from '../src/sim/grid.js';
 import { newGame } from '../src/sim/state.js';
 import { startDay, endDay } from '../src/sim/week.js';
-import { tickPeople, departures, targetKey, PEOPLE } from '../src/sim/residents.js';
+import { tickPeople, departures, targetKey, peopleOf, gridFor, sanctuaryKey } from '../src/sim/residents.js';
 import { canTalk, startTalk, act } from '../src/sim/talk.js';
 import { holdWorship, canWorship, buy, canBuy, seats, care } from '../src/sim/sanctuary.js';
 import { memberCount } from '../src/sim/faith.js';
@@ -23,12 +23,16 @@ import { applyRevelation } from '../src/sim/revelation.js';
 import { AGENDAS } from '../src/data/officers.js';
 import { threatHour, setThreatGrid, protestToday, answerProtest, soreDefectors, answerDefector, reporterHere, interview } from '../src/sim/threats.js';
 import { rivalOn, rivalAct, mergeChance, truceChance, rivalSize, rivalOptions } from '../src/sim/rival.js';
-import { RIVAL } from '../src/config.js';
+import { RIVAL, PHASE4 } from '../src/config.js';
+import { canOpenBranch, openBranch, branchHead, branchAct } from '../src/sim/branch.js';
+import { branchCount } from '../src/sim/faith.js';
 
 const args = process.argv.slice(2);
 const GAMES = args.includes('--games') ? Number(args[args.indexOf('--games') + 1]) : 20;
 const VERBOSE = args.includes('--verbose');
 const g = gridFromMap(JSON.parse(readFileSync(new URL('../src/map/town.json', import.meta.url))));
+const gB = gridFromMap(JSON.parse(readFileSync(new URL('../src/map/bongcheon.json', import.meta.url))));
+registerGrid('sillim', g); registerGrid('bongcheon', gB);
 setThreatGrid(g);
 
 let problems = 0;
@@ -39,21 +43,22 @@ console.log('■ 주민 일과 검사');
 // 시각은 도착 시각. 걸리는 만큼 먼저 출발하므로, 앞 장소에서 머무는 시간이 10분 이상이어야 한다.
 let legs = 0;
 let tightest = { stay: Infinity };
-for (const r of RESIDENTS) {
+for (const r of ALL_RESIDENTS) {
+  const rg = gridFor(r.id, g);
   for (const kind of ['weekday', 'weekend']) {
     const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 1 });
     s.day = kind === 'weekday' ? 0 : 5;
     s.attend = [];
     const deps = departures(s, g, r.id);
     deps.forEach((e, i) => {
-      if (!findPath(g, resolveKey(g, i ? deps[i - 1].key : r.home).tile, resolveKey(g, e.key).tile)) fail(`${r.name} ${kind} ${e.key}: 길이 없다`);
+      if (!findPath(rg, resolveKey(rg, i ? deps[i - 1].key : r.home).tile, resolveKey(rg, e.key).tile)) fail(`${r.name} ${kind} ${e.key}: 길이 없다`);
       const stay = e.dep - (i ? deps[i - 1].arrive : CLOCK.dayStart);
       if (stay < 10) fail(`${r.name} ${kind} ${e.key}: 앞 장소에 ${Math.round(stay)}분밖에 못 있는다`);
       if (stay < tightest.stay) tightest = { stay, who: `${r.name} ${kind} → ${e.key}` };
       legs++;
     });
     if (deps[0].dep < CLOCK.dayStart) fail(`${r.name} ${kind}: 첫 출발이 07시보다 이르다`);
-    if (!findPath(g, resolveKey(g, deps.at(-2)?.key ?? r.home).tile, resolveKey(g, 'sanctuary').tile)) fail(`${r.name}: 성소로 가는 길이 없다`);
+    if (!findPath(rg, resolveKey(rg, deps.at(-2)?.key ?? r.home).tile, resolveKey(rg, sanctuaryKey(r.id)).tile)) fail(`${r.name}: 성소로 가는 길이 없다`);
   }
 }
 console.log(`  이동 ${legs}구간 검사, 가장 빠듯한 곳: ${tightest.who} (머무는 시간 ${Math.round(tightest.stay)}분)`);
@@ -62,9 +67,11 @@ console.log(`  이동 ${legs}구간 검사, 가장 빠듯한 곳: ${tightest.who
 for (const day of [0, 2, 5, 6]) {
   const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 7 });
   s.day = day;
+  s.phase = 4;      // 봉천동 주민까지 같이 걷게
   startDay(s, g);
-  // 예배 날 성소 가는 길도 보려고 다섯 명을 참석자로 둔다
-  s.attend = day === 2 || day === 6 ? ['jihun', 'yerin', 'tong', 'seongja', 'osik'] : [];
+  const PEOPLE = peopleOf(s);
+  // 예배 날 성소(봉천동은 지부) 가는 길도 보려고 일곱 명을 참석자로 둔다
+  s.attend = day === 2 || day === 6 ? ['jihun', 'yerin', 'tong', 'seongja', 'osik', 'b_gongsi', 'b_mom'] : [];
   let maxCrowd = 0; let crowdAt = '';
   let notArrived = 0; const lateLog = [];
   for (let m = CLOCK.dayStart; m < CLOCK.dayEnd + 60; m++) {
@@ -81,14 +88,14 @@ for (const day of [0, 2, 5, 6]) {
       for (const p of PEOPLE) {
         const pos = s.pos[p.id];
         if (pos.inside || pos.path.length) continue;
-        const k = `${pos.x},${pos.y}`;
+        const k = `${p.district ?? ''}${pos.x},${pos.y}`;
         count[k] = (count[k] ?? 0) + 1;
         if (count[k] > maxCrowd) { maxCrowd = count[k]; crowdAt = `${pos.key} ${Math.floor(m / 60)}시`; }
       }
     }
   }
   const home = PEOPLE.filter((p) => !s.attend.includes(p.id)).every((p) => s.pos[p.id].inside && s.pos[p.id].key === p.home);
-  const atSanct = s.attend.every((id) => s.pos[id].key === 'sanctuary' && s.pos[id].inside);
+  const atSanct = s.attend.every((id) => s.pos[id].key === sanctuaryKey(id) && s.pos[id].inside);
   console.log(`  ${CLOCK.weekdays[day % 7]}요일: 도착 전 다음 일과로 넘어간 경우 ${notArrived} · 한 칸 최대 ${maxCrowd}명 (${crowdAt}) · 밤에 모두 귀가 ${home ? '예' : '아니오'}${s.attend.length ? ` · 예배 참석자 성소 도착 ${atSanct ? '예' : '아니오'}` : ''}`);
   if (lateLog.length) console.log('    ' + lateLog.join('\n    '));
   if (notArrived > 0) fail(`${CLOCK.weekdays[day % 7]}요일: 도착 전에 일과가 바뀐 경우 ${notArrived}`);
@@ -114,7 +121,7 @@ function seenToday(s) {
   for (let m = CLOCK.dayStart; m < CLOCK.dayEnd; m += 5) {
     s2.minute = m;
     tickPeople(s2, g, 5);
-    if (m % 30 === 0) for (const r of RESIDENTS) if (!s2.pos[r.id].inside && !seen.has(r.id)) seen.set(r.id, s2.pos[r.id].key);
+    if (m % 30 === 0) for (const r of s.district === 'bongcheon' ? RESIDENTS_B : RESIDENTS) if (!s2.pos[r.id].inside && !seen.has(r.id)) seen.set(r.id, s2.pos[r.id].key);
   }
   return seen;
 }
@@ -147,6 +154,12 @@ function botTalk(s, id, key, policy) {
 }
 
 function playDay(s, policy) {
+  // 4단계: 어느 동네에서 하루를 보낼까 (지부 전엔 이틀에 하루, 지부 뒤엔 지부가 목표에 못 미치면 사흘에 이틀)
+  s.district = 'sillim';
+  if (s.phase >= 4) {
+    const goB = !s.branch.open ? s.day % 2 === 0 : branchCount(s) < PHASE4.branch ? s.day % 3 !== 0 : s.day % 3 === 0;
+    if (goB) { s.district = 'bongcheon'; s.leader.money -= PHASE4.subway.fare * 2; s.leader.fatigue += 12; }
+  }
   if (s.events.pending) {
     const opts = eventOptions(s, s.events.pending).filter((o) => policy === 'reckless' || !DARK_EVENT_OPTIONS.includes(o));
     resolveEvent(s, EVENT_PREF.find((o) => opts.includes(o)) ?? opts[0]);
@@ -199,6 +212,21 @@ function playNight(s) {
   const newcomers = Object.keys(s.res).filter((id) => s.res[id].stage === 'newcomer').sort((a, b) => s.res[a].like - s.res[b].like);
   for (const id of newcomers.slice(0, 2)) care(s, id);
   if (s.phase >= 2) phase2Night(s);
+  if (s.phase >= 4) phase4Night(s);
+  s.district = 'sillim';
+}
+
+// 4단계: 지부 열기 (보증금 + 월세 여유), 지부장 불만이 크면 면담, 독립 예고면 면담 → 그래도 높으면 권한
+function phase4Night(s) {
+  if (canOpenBranch(s) && s.leader.money > PHASE4.deposit + rentNow(s) * 1.5) {
+    const head = activeOfficers(s).sort((a, b) => b.manage - a.manage || b.loyal - a.loyal)[0];
+    openBranch(s, head.id);
+  }
+  if (!s.branch.open) return;
+  const o = branchHead(s);
+  if (!o) { branchAct(s, 'replace'); return; }
+  if (s.branch.split && o.discontent >= PHASE4.splitAt - 5 && s.flags.branchMeet === s.day) branchAct(s, 'power');
+  else if (o.discontent >= 55 && s.flags.branchMeet !== s.day) branchAct(s, 'meet');
 }
 
 function phase2Night(s) {
@@ -238,33 +266,34 @@ function phase2Night(s) {
   }
 }
 
-const REV_PICKS = { sign: ['banner'], fence: ['meal', 'open'], camera: ['open'], neighbor: ['respect'] };
-function playGame(sect, seed, policy = 'normal', maxDays = 130) {
+const REV_PICKS = { sign: ['banner'], fence: ['meal', 'open'], camera: ['open'], neighbor: ['respect'], branch: ['trust'] };
+function playGame(sect, seed, policy = 'normal', maxDays = 190) {
   const family = SECTS[sect].family[0];
   const s = newGame({ leaderName: '봇', age: 40, family, sect, cultName: '봇', seed });
   s.botPolicy = policy;
   startDay(s, g);
   const timeline = [];
-  let phase1Day = null; let phase2Day = null; let rivalLog = [];
+  let phase1Day = null; let phase2Day = null; let phase3Day = null; let rivalLog = [];
   for (let d = 0; d < maxDays; d++) {
     playDay(s, policy);
     playNight(s);
     const r = endDay(s, g, { rentChoice: 'promise' });
     if (r.phaseUp === 2) phase1Day = s.day;
     if (r.phaseUp === 3) phase2Day = s.day;
+    if (r.phaseUp === 4) phase3Day = s.day;
     if (r.revelation) applyRevelation(s, r.revelation, REV_PICKS[r.revelation]);
     if (s.rival) rivalLog.push(rivalSize(s));
-    if (process.env.P3DBG && seed === Number(process.env.P3DBG) && s.phase >= 3 && s.day % 3 === 0) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} rep${Math.round(s.rep)} exp${Math.round(s.exposure)} rep:${s.reporter.active ? 'on' : '-'}${s.reporter.due ? 'due' : ''} heat${Math.round(s.reporter.heat)} reports${s.reporter.reports} rival:${s.rival ? s.rival.status + rivalSize(s) + ' dirt' + s.rival.dirt + ' taken' + s.rival.taken : '-'} def${soreDefectors(s).length} prot${s.protest && !s.protest.done ? 'y' : '-'} notices${Object.keys(s.notices).length}`);
+    if (process.env.P3DBG && seed === Number(process.env.P3DBG) && s.phase >= 3 && s.day % 3 === 0) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} rep${Math.round(s.rep)} exp${Math.round(s.exposure)} rep:${s.reporter.active ? 'on' : '-'}${s.reporter.due ? 'due' : ''} heat${Math.round(s.reporter.heat)} reports${s.reporter.reports} rival:${s.rival ? s.rival.status + rivalSize(s) + ' dirt' + s.rival.dirt + ' taken' + s.rival.taken : '-'} def${soreDefectors(s).length} prot${s.protest && !s.protest.done ? 'y' : '-'} notices${Object.keys(s.notices).length}${s.phase >= 4 ? ` | P4 repB${Math.round(s.repB)} br${s.branch.open ? branchCount(s) : '-'} bf${s.branch.followers} head${branchHead(s) ? Math.round(branchHead(s).discontent) : '-'}${s.branch.split ? 'SPLIT' : ''}` : ''}`);
     timeline.push(memberCount(s));
     if (process.env.RDBG && seed === 1000 && s.phase === 1) console.log(`      d${s.day} m${memberCount(s)} streak${s.sanctuary.rentStreak} arr${s.sanctuary.arrears} money${s.leader.money}`);
     if (process.env.P2DBG && seed === 1000 && s.phase >= 2) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} step${s.space.step} off${activeOfficers(s).length} money${s.leader.money} rooms ${JSON.stringify(Object.fromEntries(Object.entries(s.rooms).map(([k, v]) => [k, v.type + v.level])))}`);
     if (VERBOSE && seed === 1000 && d % 7 === 6) {
       console.log(`    ${sect} ${d + 1}일 신도 ${memberCount(s)} 따라온 ${s.followers} 평판 ${Math.round(s.rep)} 돈 ${s.leader.money} 공간 ${s.space.step} 방 ${Object.values(s.rooms).map((x) => x.type[0] + x.level).join('')} 간부 ${activeOfficers(s).map((o) => `${o.name.slice(1)}${Math.round(o.discontent)}`).join(',')} 건물주 ${Math.round(s.landlordAnger)} 사연 ${Object.values(s.res).reduce((n, x) => n + (x.story?.done ?? 0), 0)}`);
     }
-    if (r.over) return { over: r.over, days: s.day + 1, phase1Day, phase2Day, timeline, rivalLog, s };
-    if (policy === 'ignoreRival' && rivalLog.length >= 15) return { over: 'probe', days: s.day + 1, phase1Day, phase2Day, timeline, rivalLog, s };
+    if (r.over) return { over: r.over, days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
+    if (policy === 'ignoreRival' && rivalLog.length >= 15) return { over: 'probe', days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
   }
-  return { over: 'timeout', days: maxDays, phase1Day, phase2Day, timeline, rivalLog, s };
+  return { over: 'timeout', days: maxDays, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
 }
 
 if (!args.includes('--no-balance')) {
@@ -273,31 +302,37 @@ if (!args.includes('--no-balance')) {
   console.log(`\n■ 균형 검사 (유형마다 ${GAMES}판, 하루 ≈ ${Math.round(DAY_SECONDS)}초, 1단계 성공 = ${P1_LIMIT}일 안에 목표)`);
   const median = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
   const min = (d) => Math.round((d * DAY_SECONDS) / 60);
-  let p1Total = 0; let n = 0; let p3Total = 0; let p3N = 0;
+  let p1Total = 0; let n = 0; let p3Total = 0; let p3N = 0; let p4Total = 0; let p4N = 0;
   for (const sect of (process.env.SECT ? [process.env.SECT] : SECT_ORDER)) {
     const res = [];
     for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
     const p1 = res.filter((r) => r.phase1Day && r.phase1Day <= P1_LIMIT);
     const p2 = res.filter((r) => r.phase2Day);
-    const wins = res.filter((r) => r.over === 'win');
-    const reasons = {};
-    for (const r of res) if (r.phase2Day) reasons[r.over] = (reasons[r.over] ?? 0) + 1;
+    const p3 = res.filter((r) => r.phase3Day);                 // 3단계 목표를 채워 4단계로 넘어간 판
+    const wins = res.filter((r) => r.over === 'win');          // 4단계 목표
+    const reasons3 = {}; const reasons4 = {};
+    for (const r of res) if (r.phase2Day && !r.phase3Day) reasons3[r.over] = (reasons3[r.over] ?? 0) + 1;
+    for (const r of p3) reasons4[r.over] = (reasons4[r.over] ?? 0) + 1;
     const fails2 = res.filter((r) => !r.phase2Day).map((r) => r.over);
-    p1Total += p1.length; n += res.length; p3Total += wins.length; p3N += p2.length;
-    const p1d = p1.map((r) => r.phase1Day); const p2d = p2.map((r) => r.phase2Day); const p3d = wins.map((r) => r.days - r.phase2Day);
-    console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${p1.length}/${GAMES} (중앙 ${p1d.length ? median(p1d) : '-'}일 ≈ ${p1d.length ? min(median(p1d)) : '-'}분) · 2단계 ${p2.length}/${GAMES} (중앙 ${p2d.length ? median(p2d) : '-'}일 ≈ ${p2d.length ? min(median(p2d)) : '-'}분)${fails2.length ? ` [2단계 전 끝: ${fails2.join(',')}]` : ''}`);
-    console.log(`  ${''.padEnd(10)} 3단계 ${wins.length}/${p2.length} (시작부터 중앙 ${p3d.length ? median(p3d) : '-'}일 ≈ ${p3d.length ? min(median(p3d)) : '-'}분) · ${Object.entries(reasons).map(([k, v]) => `${k}:${v}`).join(' ')}`);
+    p1Total += p1.length; n += res.length; p3Total += p3.length; p3N += p2.length; p4Total += wins.length; p4N += p3.length;
+    const p1d = p1.map((r) => r.phase1Day); const p2d = p2.map((r) => r.phase2Day); const p3d = p3.map((r) => r.phase3Day - r.phase2Day); const p4d = wins.map((r) => r.days - r.phase3Day);
+    const md = (a) => (a.length ? `${median(a)}일 ≈ ${min(median(a))}분` : '-');
+    console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${p1.length}/${GAMES} (중앙 ${md(p1d)}) · 2단계 ${p2.length}/${GAMES} (중앙 ${md(p2d)})${fails2.length ? ` [2단계 전 끝: ${fails2.join(',')}]` : ''}`);
+    console.log(`  ${''.padEnd(10)} 3단계 ${p3.length}/${p2.length} (시작부터 중앙 ${md(p3d)}) ${Object.entries(reasons3).map(([k, v]) => `${k}:${v}`).join(' ')} · 4단계 ${wins.length}/${p3.length} (시작부터 중앙 ${md(p4d)}) ${Object.entries(reasons4).map(([k, v]) => `${k}:${v}`).join(' ')}`);
     if (VERBOSE) console.log("    ", res[0].timeline.join(" "));
     if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "), "|", res.map((r, i) => `${1000 + i * 17}:${r.over}`).join(" "));
     const rate = p1.length / GAMES;
     if (rate < 0.6 || rate > 0.8) fail(`${SECTS[sect].name}: 1단계 성공률 ${Math.round(rate * 100)}% (목표 60~80%)`);
     if (p2d.length) { const m = min(median(p2d)); if (m < 120 || m > 195) fail(`${SECTS[sect].name}: 2단계 목표까지 ${m}분 (목표 2시간~3시간 15분)`); }
     else fail(`${SECTS[sect].name}: 2단계 목표에 닿은 판이 없다`);
-    const rate3 = p2.length ? wins.length / p2.length : 0;
+    const rate3 = p2.length ? p3.length / p2.length : 0;
     if (rate3 < 0.6 || rate3 > 0.8) fail(`${SECTS[sect].name}: 3단계 성공률 ${Math.round(rate3 * 100)}% (목표 60~80%)`);
     if (p3d.length) { const m = min(median(p3d)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: 3단계 시작부터 목표까지 ${m}분 (목표 2~3시간)`); }
+    const rate4 = p3.length ? wins.length / p3.length : 0;
+    if (rate4 < 0.6 || rate4 > 0.8) fail(`${SECTS[sect].name}: 4단계 성공률 ${Math.round(rate4 * 100)}% (목표 60~80%)`);
+    if (p4d.length) { const m = min(median(p4d)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: 4단계 시작부터 목표까지 ${m}분 (목표 2~3시간)`); }
   }
-  console.log(`  전체 1단계 성공률 ${Math.round((p1Total / n) * 100)}% · 3단계 성공률 ${p3N ? Math.round((p3Total / p3N) * 100) : 0}%`);
+  console.log(`  전체 1단계 성공률 ${Math.round((p1Total / n) * 100)}% · 3단계 성공률 ${p3N ? Math.round((p3Total / p3N) * 100) : 0}% · 4단계 성공률 ${p4N ? Math.round((p4Total / p4N) * 100) : 0}%`);
   // 라이벌 혼자 크는가: 플레이어가 라이벌에 아무 대응도 안 하는 봇
   const alone = ['doomsday', 'meditation', 'shaman'].map((sect) => playGame(sect, 777, 'ignoreRival'));
   console.log(`\n■ 라이벌에 대응 안 하는 봇 (라이벌 규모, 등장부터 하루마다): `);

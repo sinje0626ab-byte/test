@@ -4,7 +4,7 @@ import { PLACES } from '../data/places.js';
 import { NEED_NAMES, IMPRESSION, STAGE_NAMES, RELIGION_NAMES, RELATION_NAMES } from '../data/topics.js';
 import { relationsOf } from '../sim/faith.js';
 import { topNeeds } from '../sim/residents.js';
-import { CLERGY } from '../data/clergy.js';
+import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { h, mount, unmount } from './dom.js';
 import { play } from './sound.js';
 import { leanOf, rivalInfo } from '../sim/rival.js';

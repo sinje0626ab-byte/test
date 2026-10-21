@@ -1,13 +1,15 @@
 // 앱 제어: 상태(app.s) · 씬 전환 · 시간 흐름 · DOM UI 연결. 게임 규칙은 전부 sim/ 에 있다.
 import townMap from './map/town.json';
-import { CLOCK, OFFICERS } from './config.js';
+import bongcheonMap from './map/bongcheon.json';
+import { CLOCK, OFFICERS, PHASE4 } from './config.js';
+import { BRANCH_TEXT } from './data/branch.js';
 import { PLACES } from './data/places.js';
 import { SHOPS } from './data/shops.js';
 import { RESIDENT_BY_ID } from './data/residents.js';
-import { CLERGY } from './data/clergy.js';
+import { ALL_CLERGY } from './data/clergy.js';
 import { CAST } from './data/cast.js';
 import { LEADER_TONE } from './data/lines.js';
-import { gridFromMap } from './sim/grid.js';
+import { gridFromMap, registerGrid } from './sim/grid.js';
 import { newGame } from './sim/state.js';
 import { startDay, endDay } from './sim/week.js';
 import { tickPeople, snapAll } from './sim/residents.js';
@@ -37,17 +39,22 @@ import { createDpad } from './ui/dpad.js';
 import { toast } from './ui/toast.js';
 import { play } from './ui/sound.js';
 import { $ui, unmount, h } from './ui/dom.js';
+import { fill } from './ui/text.js';
 
-const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
+const CLERGY_BY_ID = Object.fromEntries(ALL_CLERGY.map((c) => [c.id, c]));
 const CAST_BY = Object.fromEntries(CAST.map((c) => [c.id, c]));
 const interiors = import.meta.glob('./map/sanctuary-*.json', { eager: true, import: 'default' });
 const interiorGrids = {};
 for (const [path, json] of Object.entries(interiors)) interiorGrids[path.match(/sanctuary-(\w+)\.json/)[1]] = gridFromMap(json);
-const SHOP_PLACES = ['cvs', 'market', 'pharmacy'];
+const SHOP_PLACES = ['cvs', 'market', 'pharmacy', 'b_cvs'];
+const STATIONS = ['station', 'b_station'];
 
 export const app = {
   s: null,
-  g: gridFromMap(townMap),
+  g: gridFromMap(townMap),                 // 신림동 (시뮬레이션 기준 격자)
+  gB: gridFromMap(bongcheonMap),           // 4단계 봉천동
+  district() { return this.s?.district ?? 'sillim'; },
+  here() { return this.district() === 'bongcheon' ? this.gB : this.g; },
   game: null,
   hud: null,
   speed: 1,
@@ -59,7 +66,7 @@ export const app = {
   running: false,
 
   gridFor(id) { return interiorGrids[id]; },
-  init() { setThreatGrid(this.g); },
+  init() { setThreatGrid(this.g); registerGrid('sillim', this.g); registerGrid('bongcheon', this.gB); },
 
   // ── 뒤로 (Esc · 오른쪽 클릭): 화면마다 지금의 '한 단계 뒤로' 함수를 등록한다. 마지막에 등록된 것부터 ──
   backs: new Map(),
@@ -167,7 +174,7 @@ export const app = {
         for (const e of streetTick(s)) if (e.type === 'slip' && Math.random() < 0.5) toast(e.text, 'warn');
       }
       if (s.phase >= 3 && Math.floor(before / 60) !== hour) threatHour(s, this.g, hour);
-      if (before < CLOCK.dayEnd && s.minute >= CLOCK.dayEnd) { toast('21시. 동네가 문을 닫는다. 302호로 돌아가자.', 'warn'); play('error'); }
+      if (before < CLOCK.dayEnd && s.minute >= CLOCK.dayEnd) { toast(s.district === 'bongcheon' ? BRANCH_TEXT.nightB : '21시. 동네가 문을 닫는다. 302호로 돌아가자.', 'warn'); play('error'); }
       if (s.minute >= CLOCK.forceHome) { this.forceNight(); return; }
       left -= step;
     }
@@ -178,6 +185,7 @@ export const app = {
 
   forceNight() {
     const s = this.s;
+    s.district = 'sillim';
     s.leader.nightFatigue = (s.leader.nightFatigue ?? 0) + 30;
     toast('22시. 다리를 끌고 302호로 돌아왔다. 내일 많이 피곤하겠다.', 'bad', 5000);
     this.floor = 3;
@@ -185,6 +193,7 @@ export const app = {
   },
   goNight() {
     const s = this.s;
+    s.district = 'sillim';
     for (const id of ['dialog', 'profile']) unmount(id);
     this.modal = 0;
     s.minute = Math.max(s.minute, CLOCK.dayEnd);
@@ -217,6 +226,7 @@ export const app = {
       const morning = () => {
         this.modal = 0;
         this.floor = 3;
+        s.district = 'sillim';
         this.goTown('sanctuary');
         play('door');
         toast(`${s.leader.name}: ${pick(s, LEADER_TONE[tone(s)].morning)}`);
@@ -256,7 +266,8 @@ export const app = {
       this.hud.setAction(`${verb} · ${name}`, () => this.talkTo(id));
     } else if (near.kind === 'door') {
       const p = PLACES[near.place];
-      const label = near.place === 'sanctuary' ? '302호로 올라가기' : SHOP_PLACES.includes(near.place) ? `들어가기 · ${p.short}` : `살펴보기 · ${p.short}`;
+      const label = near.place === 'sanctuary' ? '302호로 올라가기' : STATIONS.includes(near.place) && this.s.phase >= 4 ? `2호선 타기 · ${near.place === 'station' ? '서울대입구역으로' : '신림역으로'}`
+        : near.place === 'b_branch' ? `${this.s.branch.open ? '들어가기' : '살펴보기'} · 봉천프라자 2층` : SHOP_PLACES.includes(near.place) ? `들어가기 · ${p.short}` : `살펴보기 · ${p.short}`;
       this.hud.setAction(label, () => this.useDoor(near.place));
     } else if (near.kind === 'shop') {
       this.hud.setAction(`살펴보기 · ${SHOPS[near.b.shop].name}`, () => this.lookShop(near.b));
@@ -304,8 +315,24 @@ export const app = {
       return;
     }
     if (SHOP_PLACES.includes(place)) { openShop(this, place); return; }
+    if (STATIONS.includes(place) && this.s.phase >= 4) { this.subway(); return; }
+    if (place === 'b_branch') { toast(this.s.branch.open ? fill(BRANCH_TEXT.doorOpen, this.s) : `${BRANCH_TEXT.door} (${BRANCH_TEXT.closedHint})`, '', 6000); return; }
     const p = PLACES[place];
     toast(`${p.name}. ${p.desc}`);
+  },
+  // 2호선: 신림역 ↔ 서울대입구역 (게임 20분, 1,400원). 그동안 동네 시간은 흐른다
+  subway() {
+    const s = this.s;
+    if (s.mode !== 'day') return;
+    if (s.minute >= CLOCK.dayEnd) { this.goNight(); return; }
+    play('door');
+    this.advance(PHASE4.subway.minutes);
+    if (s.mode !== 'day') return;
+    s.leader.money -= PHASE4.subway.fare;
+    s.district = s.district === 'bongcheon' ? 'sillim' : 'bongcheon';
+    saveGame(s);
+    this.goTown('station');
+    toast(s.district === 'bongcheon' ? BRANCH_TEXT.arriveB : BRANCH_TEXT.arriveS, '', 5000);
   },
   lookShop(b) {
     const sh = SHOPS[b.shop];
@@ -323,7 +350,7 @@ export const app = {
     for (const st of Object.values(s.res)) {
       const f = st.story?.favor;
       if (!f || f.type !== 'place' || f.visited) continue;
-      const d = this.g.places[f.place]?.door;
+      const d = this.here().places[f.place]?.door;
       if (d && Math.abs(d[0] - tx) + Math.abs(d[1] - ty) <= 1) this.visitAt(f.place);
     }
   },

@@ -1,9 +1,9 @@
 // 2단계: 공간 확장 · 방 · 방 효과. 상태: s.space.step · s.rooms[slot] = { type, level, dark }
-import { SPACE_STEPS, ROOMS, DARK_ROOM, NEGOTIATE, SANCTUARY, OFFICERS, PHASE3 } from '../config.js';
+import { SPACE_STEPS, ROOMS, DARK_ROOM, NEGOTIATE, SANCTUARY, OFFICERS, PHASE3, PHASE4 } from '../config.js';
 import { rand } from './rng.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
 
-export const rentNow = (s) => SANCTUARY.rent + SPACE_STEPS.slice(1, s.space.step + 1).reduce((n, st) => n + st.rent, 0);
+export const rentNow = (s) => SANCTUARY.rent + SPACE_STEPS.slice(1, s.space.step + 1).reduce((n, st) => n + st.rent, 0) + (s.branch?.open ? PHASE4.rent : 0);
 export const nextStep = (s) => SPACE_STEPS[s.space.step + 1] ?? null;
 export const openSlots = (s) => SPACE_STEPS.slice(0, s.space.step + 1).flatMap((st) => st.slots);
 
@@ -90,7 +90,7 @@ export function dailyRooms(s) {
   for (const [id, st] of Object.entries(s.res)) {
     if (st.stage === 'member' && study) st.like = clamp(st.like + ROOMS.study.memberLike * study);
     // 상담실: 관심 있는 사람이 스스로 찾아온다
-    if (counsel && st.stage === 'curious' && st.like >= 45 && rand(s) < ROOMS.counsel.visitorExtra * counsel) {
+    if (counsel && st.stage === 'curious' && st.like >= 45 && !id.startsWith('b_') && rand(s) < ROOMS.counsel.visitorExtra * counsel) {   // 302호 상담실은 신림동 사람만
       st.stage = 'visitor'; st.attendDay = s.day + 1; s.log.push({ day: s.day, type: 'stage', id, from: 'curious', to: 'visitor' });
     }
   }

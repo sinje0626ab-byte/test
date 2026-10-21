@@ -28,7 +28,32 @@ export const PLACES = {
   villa_tong: { name: '도림빌라', short: '빌라', type: 'home', desc: '통장님이 사는 빌라. 현관에 분리수거 안내문이 세 장.' },
   villa_b: { name: '미소빌라', short: '빌라', type: 'home', desc: '가족들이 많이 사는 빌라.' },
   market_house: { name: '시장 2층 살림집', short: '시장 살림집', type: 'home', door: 'market', desc: '가게 위층에 산다.' },
+
+  // ── 봉천동 (4단계) ──
+  b_cvs: { name: '모두편의점 서울대입구점', short: '편의점', type: 'shop', district: 'bongcheon', desc: '삼각김밥 코너가 두 줄이다. 계산대 옆에 컵라면 물 붓는 곳.' },
+  b_branch: { name: '봉천프라자 2층', short: '봉천 지부', type: 'ours', district: 'bongcheon', desc: '2층 계단 끝 빈 사무실. 전에 세무사 사무실이 있었다.' },
+  b_studycafe: { name: '온새미 스터디카페', short: '스터디카페', type: 'work', district: 'bongcheon', desc: '정기권 4주 13만 원. 입구에 "통화 금지" 종이가 세 장.' },
+  b_eatery: { name: '판석이네 닭한마리', short: '닭한마리집', type: 'shop', district: 'bongcheon', desc: '닭한마리 2만 2천 원. 칼국수 사리는 셀프.' },
+  b_church: { name: '봉우리교회', short: '교회', type: 'religion', district: 'bongcheon', desc: '언덕 중턱 작은 교회. 주일 오후엔 식당이 공부방이 된다.' },
+  b_temple: { name: '구름다리선원', short: '절', type: 'religion', district: 'bongcheon', desc: '골목 끝 작은 절. 공양간 선반에 빵 봉지가 있다.' },
+  b_fortune: { name: '달무리 철학관', short: '점집', type: 'religion', district: 'bongcheon', desc: '"사주·상담" 간판. 대문 앞에 평상이 있다.' },
+  b_academy: { name: '합격나무 고시학원', short: '고시학원', type: 'work', district: 'bongcheon', desc: '"9급 단기 합격반" 현수막. 엘리베이터가 늘 꽉 찬다.' },
+  b_office: { name: '봉천타워', short: '사무실 빌딩', type: 'work', district: 'bongcheon', desc: '1층 의원, 2층 헬스장, 위층은 사무실.' },
+  b_gosiwon: { name: '새벽별 고시텔', short: '고시텔', type: 'home', district: 'bongcheon', desc: '방 스물두 개. 공용 주방 밥솥은 늘 차 있다.' },
+  b_food: { name: '언덕길 먹자골목', short: '먹자골목', type: 'shop', district: 'bongcheon', desc: '닭갈비·곱창·포장마차가 한 줄. 저녁 여섯 시부터 연기가 난다.' },
+  b_park: { name: '느티나무 쉼터', short: '쉼터', type: 'leisure', district: 'bongcheon', desc: '느티나무 두 그루와 벤치 두 개. 장기판이 늘 있다.' },
+  b_station: { name: '서울대입구역', short: '서울대입구역', type: 'transit', district: 'bongcheon', desc: '2호선. 아침엔 학생과 출근하는 사람이 반반.' },
+  b_villa_a: { name: '봉천하이빌', short: '원룸', type: 'home', district: 'bongcheon', desc: '보증금 1,000에 월세 55.' },
+  b_villa_b: { name: '언덕빌라', short: '빌라', type: 'home', district: 'bongcheon', desc: '계단이 가파르다. 우편함에 독촉장이 꽂혀 있다.' },
+  b_villa_c: { name: '해오름원룸', short: '원룸', type: 'home', district: 'bongcheon', desc: '옥상에 빨래가 널려 있다.' },
+  b_villa_d: { name: '느티빌라', short: '빌라', type: 'home', district: 'bongcheon', desc: '1층에 오래된 화분이 줄지어 있다.' },
+  b_villa_e: { name: '스카이원룸', short: '원룸', type: 'home', district: 'bongcheon', desc: '이름과 달리 3층짜리.' },
+  b_villa_f: { name: '청춘하우스', short: '원룸', type: 'home', district: 'bongcheon', desc: '현관에 택배 상자가 탑처럼 쌓여 있다.' },
+  b_villa_g: { name: '봉천그린빌', short: '빌라', type: 'home', district: 'bongcheon', desc: '가족들이 많이 사는 빌라.' },
+  b_villa_h: { name: '새봄원룸', short: '원룸', type: 'home', district: 'bongcheon', desc: '1층에 오토바이 세 대.' },
 };
 
 // 일과에서 쓰는 위치 키 → 장소 (spot 이 없으면 건물 안)
 export const placeOf = (key) => key.split(':')[0];
+// 어느 동네 장소인가
+export const districtOfPlace = (place) => PLACES[place]?.district ?? 'sillim';

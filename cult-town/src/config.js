@@ -3,7 +3,7 @@
 export const GAME = {
   title: '',                     // 게임 이름(미정). 정해지면 여기만.
   saveKey: 'cult-town-save',
-  saveVersion: 3,
+  saveVersion: 4,
   startMoney: 400_000,           // 교주 지갑 = 교단 돈 (원)
   startAge: { min: 25, max: 60, default: 38 },
 };
@@ -231,6 +231,8 @@ export const REVELATIONS = [{ id: 'sign', at: 50 }, { id: 'fence', at: 100 }];
 export const PHASE3 = {
   members: 200, rep: 40, repFloor7: 30,          // 목표: 신도 200 + 평판 40 이상 (최근 7일 최저 30 이상) + 라이벌 정리
   followers: { chance: 0.25, cap: 6 }, outsiders: 0.3,   // 방송실 손님도 3단계엔 반쯤 (기사 보고 경계한다)            // 3단계: 신도 한 명이 데려오는 사람 한도가 조금 늘어난다
+  // 유형별 3단계 보정: 재림 교주형은 기삿거리가 커서 보도가 세고, 신내림 점집 확장형은 상담 손님이 오래 안 남는다
+  sectFx: { messiah: { heat: 1.12 }, shaman: { followers: 0.7 } },
   rivalMajority: 0.5,                            // 우리 신도의 이 비율 넘게 라이벌로 가면 실패
 };
 
@@ -291,3 +293,16 @@ export const ADMIN = { complaintsAt: 30, chance: 0.5, cooldown: 7, fine: 150_000
 
 // 3단계 계시
 export const REVELATIONS3 = [{ id: 'camera', at: 150 }, { id: 'neighbor' }];
+
+// ════════ 4단계: 봉천동 지부 (23장) ════════
+export const PHASE4 = {
+  members: 350, branch: 100, rep: 40,              // 목표: 신도 350 + 봉천 지부 100 + 두 동네 평판 40 이상
+  followers: { chance: 0.6, cap: 7 },              // 4단계: 두 동네 소문이 이어져 지인을 더 잘 데려온다
+  sectFx: { meditation: { heat: 1.14 }, fortune: { heat: 1.07 } },   // 유형별 4단계 보정: 명상·기복형은 지부가 늘며 기사거리가 커진다
+  subway: { minutes: 20, fare: 1_400 },            // 신림역 ↔ 서울대입구역 2호선
+  deposit: 1_200_000, rent: 150_000,               // 지부 보증금 · 월세 (본부 월세에 더해 말일에)
+  worship: { faithGain: 10, manageMul: 0.1, offeringPerHead: 7_000, walkIn: 2.2 },   // 지부 예배: 지부장 관리 1점당 효과 +10%, 관리×0.6 명이 새로 따라온다
+  head: { base: 1.2, sizeDiv: 45, trust: -0.8, report: 0.6, power: -1.2 },          // 지부장 불만 하루 증가 (규모가 클수록 독립하고 싶어 한다)
+  splitAt: 70, splitDays: 3,                        // 불만 70 → 독립 예고, 3일 안에 못 풀면 분열 (실패)
+  meet: { disc: -22, fatigue: 30 }, power: { disc: -30, share: 0.7 }, replace: { oldDisc: 25 },
+};

@@ -17,7 +17,7 @@ export function openShop(app, place) {
       h('h2', {}, PLACES[place].name),
       h('p', { class: 'muted' }, `${PLACES[place].desc} 지갑 ${won(s.leader.money)}`),
       note ? h('div', { class: 'narr' }, note) : null,
-      h('div', { class: 'shop' }, itemsAt(place).map((id) => {
+      h('div', { class: 'shop' }, itemsAt(place.replace(/^b_/, '')).map((id) => {
         const it = ITEMS[id];
         return h('button', { class: 'btn', disabled: s.leader.money < it.price, onclick: () => { if (buyItem(s, id)) { play('coins'); render(`${it.name}을(를) 샀다. (가진 것 ${s.inventory[id]}개)`); } } },
           h('span', {}, it.name, needed.has(id) ? ' ★' : '', h('small', {}, `${it.desc}${s.inventory[id] ? ` · 가진 것 ${s.inventory[id]}` : ''}${needed.has(id) ? ' · 부탁받은 물건' : ''}`)),
