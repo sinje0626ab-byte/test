@@ -97,7 +97,7 @@ function weeklyFollowers(s) {
     const have = s.followerOf[id] ?? 0;
     const F = s.phase >= 3 ? PHASE3.followers : STAGES.phase2Followers;
     const cap = s.phase >= 2 ? F.cap : STAGES.followerCapPerMember;
-    const chance = (s.phase >= 2 ? F.chance : STAGES.followersPerMemberWeek) + followerBonus(s);
+    const chance = (s.phase >= 2 ? F.chance * (s.phase >= 3 ? PHASE3.sectFx[s.leader.sect]?.followers ?? 1 : 1) : STAGES.followersPerMemberWeek) + followerBonus(s);
     if (have < cap && rand(s) < chance) {
       s.followerOf[id] = have + 1; s.followers++; gained++;
     }

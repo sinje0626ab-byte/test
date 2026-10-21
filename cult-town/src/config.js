@@ -231,6 +231,8 @@ export const REVELATIONS = [{ id: 'sign', at: 50 }, { id: 'fence', at: 100 }];
 export const PHASE3 = {
   members: 200, rep: 40, repFloor7: 30,          // 목표: 신도 200 + 평판 40 이상 (최근 7일 최저 30 이상) + 라이벌 정리
   followers: { chance: 0.25, cap: 6 }, outsiders: 0.3,   // 방송실 손님도 3단계엔 반쯤 (기사 보고 경계한다)            // 3단계: 신도 한 명이 데려오는 사람 한도가 조금 늘어난다
+  // 유형별 3단계 보정: 재림 교주형은 기삿거리가 커서 보도가 세고, 신내림 점집 확장형은 상담 손님이 오래 안 남는다
+  sectFx: { messiah: { heat: 1.12 }, shaman: { followers: 0.7 } },
   rivalMajority: 0.5,                            // 우리 신도의 이 비율 넘게 라이벌로 가면 실패
 };
 
