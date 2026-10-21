@@ -10,9 +10,9 @@ import { CAST } from '../data/cast.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { STAGE_NAMES } from '../data/topics.js';
 import { LEADER_TONE } from '../data/lines.js';
-import { canWorship, holdWorship, seats, mood, canBuy, buy, care, vigil, inflate } from '../sim/sanctuary.js';
+import { canWorship, holdWorship, seats, mood, canBuy, buy, care, vigil, inflate, signTier, nextSignCost, upgradeSign } from '../sim/sanctuary.js';
 import { activeCast, memberCount } from '../sim/faith.js';
-import { isMonthEnd } from '../sim/clock.js';
+import { isRentDay as isMonthEnd } from '../sim/clock.js';
 import { tone } from '../sim/leader.js';
 import { pick } from '../sim/rng.js';
 import { h, mount, unmount, won } from './dom.js';
@@ -21,10 +21,13 @@ import { play } from './sound.js';
 import { rivalNight } from './threats.js';
 import { exposureWord } from '../sim/threats.js';
 import { rivalInfo } from '../sim/rival.js';
-import { PHASE4 } from '../config.js';
+import { PHASE4, SIGN } from '../config.js';
 import { BRANCH_TEXT } from '../data/branch.js';
 import { canOpenBranch, openBranch, branchHead, branchOptions, branchAct } from '../sim/branch.js';
 import { branchCount } from '../sim/faith.js';
+
+const SIGN_HINT = ['', '창문에 흰 글씨로 교단 이름. 3층을 올려다보면 보인다.', '아크릴 판. 상가 앞을 지나는 사람이 다 본다.', '외벽 대형 간판, 저녁엔 불이 들어온다. 역 앞에서도 보인다.'];
+const SIGN_TEXT = ['', '시트지 업자가 창문에 "{교단}" 글씨를 붙이고 갔다. 거꾸로 붙은 글자는 없다.', '아크릴 간판을 달았다. 1층 김밥집 사장님이 올려다보고 "어, 이름이 그거였어요?" 했다.', '외벽에 큰 간판이 올라갔다. 저녁 여섯 시에 조명이 켜지자 역 3번 출구 쪽에서 사람들이 고개를 들었다.'];
 
 export function openNight(app) {
   const s = app.s;
@@ -43,6 +46,7 @@ export function openNight(app) {
     const menu = h('div', { class: 'menu' },
       btn('worship', fill(NIGHT.menu.worship, s), canWorship(s) ? `올 사람 약 ${expected}명 · 자리 ${seats(s)}` : fill(NIGHT.worshipNone, s), { disabled: !canWorship(s), primary: canWorship(s) }),
       btn('shop', NIGHT.menu.shop, `자리 ${seats(s)} · 분위기 ${mood(s)}`),
+      btn('sign', '간판', `지금: ${SIGN.names[signTier(s)]}${nextSignCost(s) != null ? ` · 다음 ${won(nextSignCost(s))}` : ' · 더 바꿀 게 없다'}`),
       btn('care', NIGHT.menu.care, '전화로 30분. 호감이 오르고 의심이 내린다.'),
       btn('cast', NIGHT.menu.cast, '엄마, 오랜 친구, 우연히 온 사람'),
       btn('vigil', NIGHT.menu.vigil, s.flags.vigilDay === s.day ? '오늘은 이미 했다' : '광신 쪽으로. 내일 많이 피곤하다.', { disabled: s.flags.vigilDay === s.day, run: doVigil }),
@@ -102,6 +106,18 @@ export function openNight(app) {
 
   function renderSub(key) {
     if (key === 'branch') return branchSub();
+    if (key === 'sign') {
+      const c = nextSignCost(s);
+      const tier = signTier(s);
+      return h('div', { class: 'stack' },
+        h('p', { class: 'muted' }, `지금 간판: ${SIGN.names[tier]}. 간판이 크면 지나가는 사람이 알아보고(평판·초대 조금↑), 바깥 눈길도 같이 는다.`),
+        c == null ? h('p', {}, '외벽 간판에 조명까지 달았다. 더 바꿀 게 없다.') :
+          h('button', { class: 'btn', disabled: s.leader.money < c, onclick: () => {
+            upgradeSign(s); play('coins');
+            note = [SIGN_TEXT[signTier(s)].replaceAll('{교단}', s.leader.cultName)];
+            sub = null; app.refresh(); render();
+          } }, `${SIGN.names[tier + 1]}로 바꾸기`, h('small', {}, `${won(c)} · ${SIGN_HINT[tier + 1]}`)));
+    }
     if (key === 'rival') {
       return rivalNight(s, (r) => { note = [r.text]; play(r.tone === 'bad' ? 'error' : 'confirm'); sub = null; app.refresh(); render(); });
     }
@@ -165,7 +181,7 @@ export function openNight(app) {
       const w = s.week;
       const inflated = s.flags.inflatedWeek === s.bulletinNo;
       return h('div', { class: 'stack' },
-        h('p', {}, `이번 주 헌금 ${won(w.offering)} · 지갑 ${won(s.leader.money)} · 월세 ${won(rentNow(s))} (말일 밤)`),
+        h('p', {}, `이번 주 헌금 ${won(w.offering)} · 지갑 ${won(s.leader.money)} · 월세 ${won(rentNow(s))} (25일) · 지난 주 지출 ${won(s.week.costs ?? 0)}`),
         h('p', { class: 'muted' }, `월세 연속 납부 ${s.sanctuary.rentStreak}달 · 체납 ${s.sanctuary.arrears}번 · 지금 신도 ${memberCount(s)}명`),
         h('div', { class: 'stack dark' }, h('button', { class: 'btn', disabled: inflated, onclick: () => {
           inflate(s); play('page'); note = [SHADOW.inflate.now]; app.refresh(); render();
@@ -249,7 +265,7 @@ export function openNight(app) {
   render();
 }
 
-// 월말에 돈이 모자랄 때 건물주
+// 월세날(25일) 돈이 모자랄 때 건물주
 export function openLandlord(app, onChoice) {
   const s = app.s;
   const hasMember = Object.values(s.res).some((r) => r.stage === 'member');
@@ -260,6 +276,6 @@ export function openLandlord(app, onChoice) {
     h('p', {}, line),
     h('p', { class: 'muted' }, `월세 ${won(rentNow(s))} · 지갑 ${won(s.leader.money)}`),
     h('div', { class: 'stack' },
-      h('button', { class: 'btn', onclick: () => { unmount('landlord'); onChoice('promise'); } }, LANDLORD.options.promise, h('small', {}, `체납 ${s.sanctuary.arrears + 1}번째가 된다. 세 번이면 쫓겨난다.`)),
+      h('button', { class: 'btn', onclick: () => { unmount('landlord'); onChoice('promise'); } }, LANDLORD.options.promise, h('small', {}, `체납 ${s.sanctuary.arrears + 1}번째가 된다. 두 달 밀리면 쫓겨난다.`)),
       hasMember ? h('div', { class: 'stack dark' }, h('button', { class: 'btn', onclick: () => { unmount('landlord'); onChoice('borrow'); } }, LANDLORD.options.borrow, h('small', {}, '지금은 낼 수 있다. 사기 쪽으로.'))) : null))));
 }

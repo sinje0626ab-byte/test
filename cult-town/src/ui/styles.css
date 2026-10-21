@@ -98,6 +98,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* 대화창 */
 .dialog { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 12px); width: min(680px, calc(100% - 2 * var(--gutter))); max-height: calc(100% - 120px); overflow-y: auto; z-index: 20; }
 .dialog .who { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+.dialog .who .info { margin-left: auto; min-width: 36px; padding: 4px 8px; font-size: 16px; }
+.dialog .who .info.on { background: var(--ink); color: var(--paper); }
+.opts small.fx { display: none; color: var(--accent, #a33); }
+.dialog.showfx .opts small.fx, .opts .btn.showfx small.fx { display: block; }
+.opts .btn { -webkit-touch-callout: none; user-select: none; }
 .dialog .who img, .profile img.face { width: 56px; height: 56px; image-rendering: pixelated; background: var(--paper-2); border: 2px solid var(--ink); border-radius: 4px; }
 .dialog .name { font-family: var(--font-title); font-size: 17px; }
 .dialog .job { font-size: 12px; color: var(--ink-soft); }

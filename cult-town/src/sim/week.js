@@ -1,12 +1,12 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
-import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, PHASE4, OFFICERS, REPORTER } from '../config.js';
+import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, PHASE4, OFFICERS, REPORTER, CALENDAR, SECT_FX } from '../config.js';
 import { RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { CLERGY } from '../data/clergy.js';
 import { SECTS } from '../data/sects.js';
 import { BULLETIN, SHADOW } from '../data/bulletin.js';
 import { rand, pick } from './rng.js';
 import { clamp, tone } from './leader.js';
-import { isSunday, isMonthEnd, isWorshipDay, fmtDate } from './clock.js';
+import { isSunday, isRentDay, isWorshipDay, fmtDate, month, season, holidayOf } from './clock.js';
 import { morningNeeds, placeAllAtHome } from './residents.js';
 import { decideAttendance, payRent } from './sanctuary.js';
 import { dailyRumor } from './rumor.js';
@@ -28,8 +28,20 @@ export function startDay(s, g) {
   s.leader.fatigue = Math.round((s.leader.nightFatigue ?? 0) * 0.5);
   s.leader.nightFatigue = 0;
   morningNeeds(s);
-  s.weather = { rain: rand(s) < WEATHER.rainChance, market: (s.day % 7) === WEATHER.marketWeekday };
+  // 날씨: 달마다 비 확률·기온 (장마철엔 자주 온다). 영하 근처면 눈
+  const mi = month(s.day) - 1;
+  const rain = rand(s) < CALENDAR.rain[mi];
+  const tempDelta = Math.round((rand(s) * 2 - 1) * 3);
+  s.weather = { rain, snow: rain && CALENDAR.temp[mi] + tempDelta <= 1, cloudy: !rain && rand(s) < CALENDAR.cloudy, tempDelta, market: (s.day % 7) === WEATHER.marketWeekday };
   if (s.weather.rain) for (const r of Object.values(s.res)) r.needs.lonely = Math.min(100, r.needs.lonely + WEATHER.rainLonely);
+  // 계절·행사가 고민을 조금씩 움직인다 (신림동은 늘, 봉천동은 4단계부터)
+  const push = { ...(CALENDAR.seasonNeeds[season(s.day)] ?? {}) };
+  const hol = holidayOf(s.day);
+  for (const [k, v] of Object.entries(hol?.needs ?? {})) push[k] = (push[k] ?? 0) + v;
+  for (const [id, r] of Object.entries(s.res)) {
+    if (id.startsWith('b_') && s.phase < 4) continue;
+    for (const [k, v] of Object.entries(push)) r.needs[k] = Math.min(100, r.needs[k] + v);
+  }
   decideAttendance(s);
   morningThreats(s);
   if (g) placeAllAtHome(s, g);
@@ -100,7 +112,7 @@ function weeklyFollowers(s) {
     const have = s.followerOf[id] ?? 0;
     const F = s.phase >= 4 ? PHASE4.followers : s.phase >= 3 ? PHASE3.followers : STAGES.phase2Followers;
     const cap = s.phase >= 2 ? F.cap : STAGES.followerCapPerMember;
-    const chance = (s.phase >= 2 ? F.chance * (s.phase >= 3 ? PHASE3.sectFx[s.leader.sect]?.followers ?? 1 : 1) : STAGES.followersPerMemberWeek) + followerBonus(s);
+    const chance = (s.phase >= 2 ? F.chance * (s.phase >= 3 ? PHASE3.sectFx[s.leader.sect]?.followers ?? 1 : 1) : STAGES.followersPerMemberWeek * (SECT_FX[s.leader.sect].p1Followers ?? 1)) + followerBonus(s);
     if (have < cap && rand(s) < chance) {
       s.followerOf[id] = have + 1; gained++;
       if (districtOf(id) === 'bongcheon') s.branch.followers++; else s.followers++;
@@ -147,11 +159,17 @@ export function endDay(s, g, opts = {}) {
   if (s.flags.quietSign) for (const st of Object.values(s.res)) st.sus = clamp(st.sus - 1);
 
   let bulletin = null;
-  if (isMonthEnd(s.day)) {
+  if (isRentDay(s.day)) {
     const r = payRent(s, opts.rentChoice);
     events.push({ type: 'rent', ...r });
   }
   if (isSunday(s.day)) {
+    // 주간 지출: 전단 인쇄 · 보리차 · 전기료 (공간이 넓을수록 더)
+    const W = SANCTUARY.weekly;
+    const cost = W.flyers + W.tea + W.utilities + W.perStep * s.space.step + (s.branch?.open ? W.perStep : 0);
+    s.leader.money -= cost;
+    s.week.costs = cost;
+    events.push({ type: 'weekly', text: `이번 주 지출: 전단 인쇄 · 보리차 · 전기료 ${cost.toLocaleString('ko-KR')}원.` });
     weeklyFollowers(s);
     if (s.phase >= 3) events.push(...rivalWeekly(s));
     weeklyRooms(s, relationsOf);
@@ -188,20 +206,20 @@ export function checkOver(s) {
   if (s.landlordAnger >= PHASE2.landlordAngerMax) return 'notice';
   if (s.officersAppointed >= 3 && s.officersLeft * 2 > s.officersAppointed) return 'officers';
   if (s.phase === 2) {
-    if (memberCount(s) >= PHASE2.members && s.space.step >= PHASE2.minSpaceStep && activeOfficers(s).length >= PHASE2.minOfficers) return 'phase2';
+    if (memberCount(s) >= PHASE2.members && s.space.step >= PHASE2.minSpaceStep && activeOfficers(s).length >= PHASE2.minOfficers && s.sanctuary.rentStreak >= PHASE2.rentStreak) return 'phase2';
     return null;
   }
   if (rivalMajority(s, PHASE3.rivalMajority)) return 'rival';
   if (s.rep <= REPORTER.pressFail.rep && s.reporter.reports >= REPORTER.pressFail.reports + (s.phase >= 4 ? 1 : 0)) return 'press';   // 4단계는 보도 세 번부터
   if (s.phase === 3) {
     const floor7 = s.repLog.length >= 7 ? Math.min(...s.repLog) : 0;
-    if (memberCount(s) >= PHASE3.members && s.rep >= PHASE3.rep && floor7 >= PHASE3.repFloor7 && rivalResolved(s)) return 'phase3';
+    if (memberCount(s) >= PHASE3.members && s.rep >= PHASE3.rep && floor7 >= PHASE3.repFloor7 && rivalResolved(s) && s.sanctuary.rentStreak >= PHASE3.rentStreak) return 'phase3';
     return null;
   }
   // 4단계
   if (s.flags.branchSplit) return 'split';
   if (s.repB <= RUMOR.silentAt) return 'silentB';
-  if (memberCount(s) >= PHASE4.members && branchCount(s) >= PHASE4.branch && s.rep >= PHASE4.rep && s.repB >= PHASE4.rep) return 'win';
+  if (memberCount(s) >= PHASE4.members && branchCount(s) >= PHASE4.branch && s.rep >= PHASE4.rep && s.repB >= PHASE4.rep && s.sanctuary.rentStreak >= PHASE4.rentStreak) return 'win';
   return null;
 }
 

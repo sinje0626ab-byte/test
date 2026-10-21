@@ -134,7 +134,7 @@ export const PROPS = [
 
 export const SPOTS = {
   b_cvs: { front: { from: 'b_cvs', dx: 1, dy: 0 }, table: { from: 'b_cvs', dx: -2, dy: 0 } },
-  b_station: { plaza: [20, 7], exit4: [25, 7], exit5: [34, 7] },
+  b_station: { plaza: [19, 7], exit4: [23, 7], exit5: [36, 7] },
   b_studycafe: { front: { from: 'b_studycafe', dx: 2, dy: 0 } },
   b_eatery: { front: { from: 'b_eatery', dx: 1, dy: 0 } },
   b_church: { yard: { from: 'b_church', dx: 2, dy: 1 } },

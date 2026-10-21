@@ -13,7 +13,7 @@ import { gridFromMap, registerGrid } from './sim/grid.js';
 import { newGame } from './sim/state.js';
 import { startDay, endDay } from './sim/week.js';
 import { tickPeople, snapAll } from './sim/residents.js';
-import { isMonthEnd, fmtTime } from './sim/clock.js';
+import { isRentDay as isMonthEnd, fmtTime, season, holidayOf, dayOfMonth, fmtDate, tempAt, skyName } from './sim/clock.js';
 import { tone } from './sim/leader.js';
 import { pick } from './sim/rng.js';
 import { saveGame, loadGame, clearSave } from './sim/save.js';
@@ -25,7 +25,7 @@ import { REPORTER_INFO } from './data/threats.js';
 import { RIVAL_LOOKS } from './data/rival.js';
 import { openInterview, openProtest, openDefector, rivalHello, nameForNpc } from './ui/threats.js';
 import { mapsForStep } from './map/interiors.js';
-import { portrait as makePortrait, LEADER_LOOK } from './game/people.js';
+import { portrait as makePortrait, LEADER_LOOK, setSeason } from './game/people.js';
 import { createHud } from './ui/hud.js';
 import { showTitle, hideTitle, showCreation } from './ui/creation.js';
 import { openTalk, openClergyTalk } from './ui/dialog.js';
@@ -135,6 +135,7 @@ export const app = {
     return this.game.scene.getScenes(true).find((sc) => !['boot', 'title'].includes(sc.scene.key)) ?? null;
   },
   goTown(entry) {
+    setSeason(season(this.s.day));
     this.game.scene.stop('title');
     this.game.scene.stop('sanctuary');
     this.game.scene.start('town', { entry });
@@ -143,6 +144,7 @@ export const app = {
     this.dpadShow(true);
   },
   goSanctuary(entry = 'door') {
+    setSeason(season(this.s.day));
     this.game.scene.stop('title');
     this.game.scene.stop('town');
     this.game.scene.stop('sanctuary');
@@ -230,7 +232,9 @@ export const app = {
         this.goTown('sanctuary');
         play('door');
         toast(`${s.leader.name}: ${pick(s, LEADER_TONE[tone(s)].morning)}`);
-        if (s.weather.rain) toast('비가 온다. 공원·산책로에 사람이 없다. 우산을 씌워 주면 좋아한다.');
+        const hol = holidayOf(s.day);
+        if (hol && dayOfMonth(s.day) === hol.from) toast(hol.text, '', 6000);
+        if (s.weather.rain) toast(s.weather.snow ? `${fmtDate(s.day)}. 눈이 온다. 골목이 미끄럽다.` : `${fmtDate(s.day)}. 비가 온다 (${tempAt(s)}°). 공원·산책로에 사람이 없다. 우산을 씌워 주면 좋아한다.`);
         if (s.weather.market) toast('오늘은 토요일 장날. 시장에 사람이 많다.');
         this.maybeEvent();
       };
@@ -266,7 +270,7 @@ export const app = {
       this.hud.setAction(`${verb} · ${name}`, () => this.talkTo(id));
     } else if (near.kind === 'door') {
       const p = PLACES[near.place];
-      const label = near.place === 'sanctuary' ? '302호로 올라가기' : STATIONS.includes(near.place) && this.s.phase >= 4 ? `2호선 타기 · ${near.place === 'station' ? '서울대입구역으로' : '신림역으로'}`
+      const label = near.place === 'sanctuary' ? `${this.s.leader.cultName}(3층)으로 올라가기` : STATIONS.includes(near.place) && this.s.phase >= 4 ? `2호선 타기 · ${near.place === 'station' ? '서울대입구역으로' : '신림역으로'}`
         : near.place === 'b_branch' ? `${this.s.branch.open ? '들어가기' : '살펴보기'} · 봉천프라자 2층` : SHOP_PLACES.includes(near.place) ? `들어가기 · ${p.short}` : `살펴보기 · ${p.short}`;
       this.hud.setAction(label, () => this.useDoor(near.place));
     } else if (near.kind === 'shop') {

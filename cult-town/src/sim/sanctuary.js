@@ -1,5 +1,5 @@
 // 성소: 자리·분위기·소품·예배·헌금·월세·신도 돌보기
-import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR } from '../config.js';
+import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR, SIGN } from '../config.js';
 import { rand } from './rng.js';
 import { districtOf } from '../data/residents.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
@@ -141,4 +141,16 @@ export function inflate(s) {
   s.shadow.push({ kind: 'inflate', due: s.day + 4 });
   for (const c of activeCast(s)) s.cast[c].sus = clamp(s.cast[c].sus + 4);
   return { ok: true };
+}
+
+// 간판 바꾸기 (밤 메뉴): 다음 단계 값을 내고 한 단계 올린다
+export const signTier = (s) => s.sanctuary.sign ?? 0;
+export const nextSignCost = (s) => SIGN.cost[signTier(s) + 1] ?? null;
+export function upgradeSign(s) {
+  const c = nextSignCost(s);
+  if (c == null || s.leader.money < c) return false;
+  addMoney(s, -c);
+  s.sanctuary.sign = signTier(s) + 1;
+  s.rep = clamp(s.rep + SIGN.rep);
+  return true;
 }

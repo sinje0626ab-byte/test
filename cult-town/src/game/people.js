@@ -97,11 +97,29 @@ export function composePerson(urbanImage, look) {
 
 export const frameIndex = (dir, f) => DIRS.indexOf(dir) * 3 + f;
 
-// Phaser 텍스처와 걷기 애니메이션 등록
+// 계절 옷차림: 3월·겨울은 두꺼운 겉옷(어둡게), 봄은 그대로, 장마는 칙칙하게, 여름은 밝게, 가을은 조금 어둡게
+let SEASON = 'early';
+export const setSeason = (s) => { SEASON = s; };
+const SEASON_TONE = { winter: -0.32, early: -0.22, spring: 0, rainy: -0.1, summer: 0.25, autumn: -0.12 };
+const tone = (hexStr, k) => {
+  const [r, g, b] = hex(hexStr);
+  return k >= 0 ? toHex(r + (255 - r) * k, g + (255 - g) * k, b + (255 - b) * k) : toHex(r * (1 + k), g * (1 + k), b * (1 + k));
+};
+export function seasonalLook(look, season = SEASON) {
+  const k = SEASON_TONE[season] ?? 0;
+  return k ? { ...look, top: tone(look.top, k), bottom: tone(look.bottom, k * 0.5) } : look;
+}
+
+// Phaser 텍스처와 걷기 애니메이션 등록 (계절이 바뀌면 다시 만든다)
 export function registerPerson(scene, key, look) {
-  if (scene.textures.exists(key)) return;
-  const canvas = composePerson(scene.textures.get('urban').getSourceImage(), look);
+  if (scene.textures.exists(key)) {
+    if (scene.textures.get(key).customData?.season === SEASON) return;
+    for (const dir of DIRS) scene.anims.remove(`${key}-walk-${dir}`);
+    scene.textures.remove(key);
+  }
+  const canvas = composePerson(scene.textures.get('urban').getSourceImage(), seasonalLook(look));
   scene.textures.addSpriteSheet(key, canvas, { frameWidth: 16, frameHeight: 16 });
+  scene.textures.get(key).customData = { season: SEASON };
   for (const dir of DIRS) {
     scene.anims.create({
       key: `${key}-walk-${dir}`,

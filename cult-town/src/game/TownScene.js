@@ -8,7 +8,7 @@ import { CAST } from '../data/cast.js';
 import { peopleOf, speedOf } from '../sim/residents.js';
 import { activityOf, emotionOf, gossipLine, JOB_ICON } from '../sim/mood.js';
 import { registerPerson, LEADER_LOOK } from './people.js';
-import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel } from './signs.js';
+import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel, drawSanctuarySign, drawFloorDirectory } from './signs.js';
 import { makeIconTextures, emotionBubble, speechBubble, nameTag, picket, wallNotice } from './overlays.js';
 import { REPORTER } from '../config.js';
 import { REPORTER_INFO, NOTICE_TEXT, PROTEST_TEXT } from '../data/threats.js';
@@ -20,6 +20,7 @@ import { toast } from '../ui/toast.js';
 import { tintAt } from './tint.js';
 import { Walker } from './walker.js';
 import { app } from '../app.js';
+import { speak } from '../ui/text.js';
 
 const T = 16;
 const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
@@ -60,6 +61,14 @@ export class TownScene extends Phaser.Scene {
     // 건물: 지붕 위 물건과 간판
     this.buildings = prop('buildings');
     for (const b of this.buildings) { drawRoof(this, b); drawBuildingSigns(this, b); }
+    // 동림상가: 교단 간판(단계별) · 입구 층별 안내판
+    this.noticeAreas = [];
+    const mall = !bong && this.buildings.find((b) => b.place === 'sanctuary');
+    if (mall) {
+      drawSanctuarySign(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0, s.minute >= 18 * 60);
+      const dir = drawFloorDirectory(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0);
+      this.directory = { x: dir.area.x, y: dir.area.y, text: `동림상가 층별 안내: ${dir.lines.join(' · ')}` };
+    }
     // 골목 소품·전봇대·역 출구
     const poles = [];
     for (const o of map.getObjectLayer('places').objects) {
@@ -306,7 +315,7 @@ export class TownScene extends Phaser.Scene {
   updateBubbles(time) {
     for (const b of this.bubbles) {
       const sp = this.sprites[b.id];
-      if (!b.c && time >= b.at) { b.c = speechBubble(this, text2(b.text)); b.until = time + MOOD.bubbleSeconds * 1000 + 600; }
+      if (!b.c && time >= b.at) { b.c = speechBubble(this, text2(speak(app.s, b.text))); b.until = time + MOOD.bubbleSeconds * 1000 + 600; }
       if (b.c && sp) b.c.setPosition(sp.x + 8, sp.y - 10).setDepth(5085).setVisible(sp.visible);
     }
     this.bubbles = this.bubbles.filter((b) => { if (b.c && time > b.until) { b.c.destroy(); return false; } return true; });
@@ -358,7 +367,7 @@ export class TownScene extends Phaser.Scene {
     if (!cands.length) return;
     const id = cands[Math.floor(Math.random() * cands.length)];
     const line = gossipLine(s, id, this.sprites[id].neighbor);
-    this.gossip = { id, c: speechBubble(this, line), until: this.time.now + MOOD.bubbleSeconds * 1000 };
+    this.gossip = { id, c: speechBubble(this, speak(s, line)), until: this.time.now + MOOD.bubbleSeconds * 1000 };
   }
 
   personAt(wx, wy) {
@@ -383,6 +392,7 @@ export class TownScene extends Phaser.Scene {
     const tx = Math.floor(wx / T); const ty = Math.floor(wy / T);
     const who = this.personAt(wx, wy);
     if (who) { app.showProfile(who, () => this.walker.chase(() => this.tileOf(who), () => app.talkTo(who))); return; }
+    if (this.directory && Math.abs(this.directory.x - tx) <= 0 && Math.abs(this.directory.y - ty) <= 0) { toast(this.directory.text, '', 6000); return; }
     const n = this.noticeAreas?.find((a) => Math.abs(a.x - tx) <= 2 && Math.abs(a.y - ty) <= 1);
     if (n) { toast(n.text, '', 6000); return; }
     const b = this.buildingAt(tx, ty);

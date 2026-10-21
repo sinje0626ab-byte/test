@@ -184,3 +184,47 @@ export function drawShape(scene, key, x, y, extra = {}) {
   }
   return g;
 }
+
+// ── 성소 간판 (24장 A-2) ── 단계 0 A4 종이 테이프 · 1 창문 시트지 글씨 · 2 아크릴 간판 · 3 외벽 대형 간판 + 저녁 조명
+// b: 동림상가 건물 · name: 교단 이름 · tier: 간판 단계 · evening: 저녁이면 조명
+export function drawSanctuarySign(scene, b, name, tier, evening = false) {
+  const key = `sign.sanctuary.${tier}`;
+  const facadeTop = b.y + b.roofH;
+  const x3 = (b.x + b.w - 3) * T;          // 3층 창문 줄 오른쪽
+  const y3 = (facadeTop + 1) * T;
+  if (scene.textures.exists(key)) return scene.add.image(x3, y3, key).setOrigin(0.5, 0).setDepth(62);
+  const g = scene.add.graphics().setDepth(61);
+  const parts = [g];
+  if (tier === 0) {
+    // 창문에 붙인 A4 종이 + 테이프 두 줄
+    g.fillStyle(0xf8f6ee, 1).fillRect(x3 - 7, y3 + 3, 14, 10);
+    g.fillStyle(0xd8c890, 0.9).fillRect(x3 - 7, y3 + 2, 4, 2).fillRect(x3 + 3, y3 + 2, 4, 2);
+    parts.push(scene.add.text(x3, y3 + 4, '302', { ...SIGN_FONT, color: '#1d1b26' }).setOrigin(0.5, 0).setDepth(62));
+  } else if (tier === 1) {
+    // 창문 시트지 글씨 (흰 글씨, 바탕 없음)
+    parts.push(scene.add.text(x3 - 4, y3 + 3, `302 ${name}`, { ...SIGN_FONT, color: '#ffffff', stroke: '#1d1b26', strokeThickness: 2 }).setOrigin(0.5, 0).setDepth(62));
+  } else if (tier === 2) {
+    // 아크릴 간판 (보라 바탕, 테두리)
+    parts.push(board(scene, x3 - 4, y3 + 2, name, 0x5b3a7a, { depth: 62 }));
+  } else {
+    // 외벽 대형 간판: 3·4층에 걸친 큰 판, 저녁엔 조명
+    const w = Math.max(48, name.length * 9 + 10);
+    const cx = (b.x + b.w / 2) * T + 8; const top = facadeTop * T + 2;
+    if (evening) g.fillStyle(0xfff0a0, 0.28).fillCircle(cx, top + 12, w * 0.7);
+    g.fillStyle(0x1d1b26, 1).fillRect(cx - w / 2 - 2, top - 2, w + 4, 26);
+    g.fillStyle(evening ? 0xf0e0ff : 0x5b3a7a, 1).fillRect(cx - w / 2, top, w, 22);
+    parts.push(scene.add.text(cx, top + 5, name, { fontFamily: 'Galmuri11', fontSize: '12px', color: evening ? '#4a2a6a' : '#ffffff' }).setOrigin(0.5, 0).setDepth(62));
+  }
+  return parts;
+}
+
+// 동림상가 입구 층별 안내판 (문 옆 벽)
+export function drawFloorDirectory(scene, b, name, tier) {
+  const x = (b.door - 1) * T + 2; const y = (b.y + b.h - 1) * T + 1;
+  const lines = ['4 쿵탁탁구장', `3 302 ${tier >= 1 ? name : '(호실)'}`, '2 보습교실', '1 꼬마김밥'];
+  const g = scene.add.graphics().setDepth(63);
+  g.fillStyle(0x1d1b26, 1).fillRect(x - 1, y - 1, 14, 14);
+  g.fillStyle(0xd8d4c8, 1).fillRect(x, y, 12, 12);
+  for (let i = 0; i < 4; i++) g.fillStyle(i === 1 ? 0x5b3a7a : 0x5a5a6a, 1).fillRect(x + 2, y + 2 + i * 2.6, 8, 1.4);
+  return { g, lines, area: { x: b.door - 1, y: b.y + b.h - 1 } };
+}

@@ -238,6 +238,46 @@ for (const yb of alleyRows) for (let x = 0; x < W; x++) {
 console.log(`통로 검사: 골목 기둥 막힘 ${blockedCols}${blockedAt.length ? ` (${blockedAt.join(' ')})` : ''} · 소품 때문에 생긴 막다른 칸 ${propDead}${propDeadAt.length ? ` (${propDeadAt.join(' ')})` : ''}`);
 if (blockedCols || propDead) process.exitCode = 1;
 
+// ── 글자 겹침 검사 (24장 A-3) ──
+// 1) 글자-사람 자리: 역 출구 표지(출구 칸과 그 위 칸)·바닥 글자 둘레 2칸 안에 사람이 서는 자리(입구·바깥 자리)가 있으면 이름표와 겹친다
+// 2) 간판끼리 간격: 같은 줄 높이의 간판 판이 2px 보다 가까우면 붙어 보인다 (signs.js 와 같은 자리 계산)
+const { PLACES } = await import('../src/data/places.js');
+const { SHOPS } = await import('../src/data/shops.js');
+const standTiles = [];
+for (const [place, p] of Object.entries(places)) {
+  if (p.spots) for (const [name, s] of Object.entries(p.spots)) standTiles.push({ who: `${place}:${name}`, t: s });
+}
+const textBoxes = [];
+for (const e of STATION_EXITS) textBoxes.push({ what: e.label, x0: e.x - 1, x1: e.x + 1, y0: e.y - 1, y1: e.y + 1 });
+let textHits = 0; const textHitAt = [];
+for (const b of textBoxes) for (const s of standTiles) {
+  if (s.t[0] >= b.x0 - 1 && s.t[0] <= b.x1 + 1 && s.t[1] >= b.y0 && s.t[1] <= b.y1 + 1) { textHits++; textHitAt.push(`${b.what}~${s.who}`); }
+}
+const SIGN_W = (text) => text.length * 7 + 6;    // Galmuri7 8px: 글자 하나 ≈ 7px + 여백
+const boards = [];
+for (const b of buildingsOut) {
+  const facadeTop = b.y + b.roofH; const bottom = b.y + b.h - 1; const cx = (b.x + b.w / 2) * 16;
+  const add = (x, top, text) => boards.push({ who: b.place ?? b.shop ?? b.i, x0: x - SIGN_W(text) / 2, x1: x + SIGN_W(text) / 2, top });
+  if (b.kind === 'mall' && b.signs) {
+    b.signs.forEach((id, k) => { if (id && SHOPS[id]) add((b.x + 1.6) * 16, (facadeTop + k) * 16 + 1, SHOPS[id].sign); });
+    if (b.place && PLACES[b.place]) add(cx, (facadeTop - 1) * 16 + 2, b.place === 'sanctuary' ? '동림상가' : PLACES[b.place].name);
+  } else if (b.shop && SHOPS[b.shop]) add(cx, (b.floors >= 2 ? bottom - 1 : bottom) * 16 + 1, SHOPS[b.shop].sign);
+  else if (b.place && PLACES[b.place]) {
+    const label = PLACES[b.place].name.replace(' 신림역점', '');
+    if (PLACES[b.place].type === 'home') add((b.door + 0.5) * 16, (bottom - 1) * 16 + 2, label);
+    else add(cx, (b.floors >= 2 ? bottom - 1 : bottom) * 16 + 1, label);
+  }
+}
+let signHits = 0; const signHitAt = [];
+for (let i = 0; i < boards.length; i++) for (let j = i + 1; j < boards.length; j++) {
+  const a = boards[i]; const c = boards[j];
+  if (Math.abs(a.top - c.top) >= 11) continue;
+  const gap = Math.max(a.x0, c.x0) - Math.min(a.x1, c.x1);
+  if (gap < 2) { signHits++; signHitAt.push(`${a.who}|${c.who}`); }
+}
+console.log(`글자 겹침 검사: 글자-사람 자리 ${textHits}${textHitAt.length ? ` (${textHitAt.join(' ')})` : ''} · 간판끼리 붙음 ${signHits}${signHitAt.length ? ` (${signHitAt.join(' ')})` : ''}`);
+if (textHits || signHits) process.exitCode = 1;
+
 const cost = kind.map((row, y) => row.map((k, x) => (blocked[y][x] ? 0 : COST[k] ?? 1)).join('')).join('\n');
 
 const layer = (id, name, data) => ({

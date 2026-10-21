@@ -14,6 +14,7 @@ import { drawShape, board } from './signs.js';
 import { Walker } from './walker.js';
 import { lookOf } from './TownScene.js';
 import { app } from '../app.js';
+import { fill } from '../ui/text.js';
 
 const T = 16;
 const FURN = {   // 방 종류마다 놓는 가구 (실내 타일 번호, 방 왼쪽 위 기준 [dx, dy, 타일])
@@ -55,6 +56,13 @@ export class SanctuaryScene extends Phaser.Scene {
     for (const [dx, dy] of this.def.doors) {
       g.fillStyle(0x3a3346, 1).fillRect(dx * T, dy * T, T, T);
       g.fillStyle(0x6a6276, 1).fillRect(dx * T + 2, dy * T + 4, 12, 2).fillRect(dx * T + 2, dy * T + 9, 12, 2);
+    }
+    // 302호 문 앞 안내문 (간판 단계에 따라 A4 종이 → 인쇄 안내판)
+    const d0 = this.def.doors[0];
+    if (d0 && this.def.floor === 3) {
+      const tier = app.s.sanctuary.sign ?? 0;
+      const text = tier >= 2 ? `${app.s.leader.cultName} · 수·일 저녁 ${'{예배}'}` : `302 ${app.s.leader.cultName} · 신발 벗고 들어오세요`;
+      board(this, (d0[0] + 2.5) * T, (d0[1] - 1) * T + 2, fill(text, app.s), tier >= 2 ? 0x5b3a7a : 0xe8e4d8, { small: true, depth: 30, fg: tier >= 2 ? 0xffffff : 0x1d1b26 });
     }
     for (const st of this.def.stairs) {
       const ok = !!floors[st.to];

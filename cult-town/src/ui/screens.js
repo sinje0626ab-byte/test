@@ -83,7 +83,7 @@ export function showPhaseUp(s, phase, onClose) {
       h('h2', {}, e.title),
       ...e.text.map((t) => h('p', {}, fill(t, s))),
       h('p', {}, e.next),
-      h('p', { class: 'muted' }, `목표: 신도 ${PHASE4.members}명 + 봉천 지부 ${PHASE4.branch}명 + 신림동·봉천동 평판 모두 ${PHASE4.rep} 이상. 신림역 입구에서 '2호선 타기'. 밤 메뉴에 '봉천 지부'가 생긴다.`),
+      h('p', { class: 'muted' }, `목표: 6월 25일 월세 날까지 신도 ${PHASE4.members}명 + 봉천 지부 ${PHASE4.branch}명 + 신림동·봉천동 평판 모두 ${PHASE4.rep} 이상. 신림역 입구에서 '2호선 타기'. 밤 메뉴에 '봉천 지부'가 생긴다.`),
       h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '4단계 시작')))));
     return;
   }
@@ -93,7 +93,7 @@ export function showPhaseUp(s, phase, onClose) {
       h('h2', {}, e.title),
       ...e.text.map((t) => h('p', {}, fill(t, s))),
       h('p', {}, e.next),
-      h('p', { class: 'muted' }, `목표: 신도 ${PHASE3.members}명 + 동네 평판 유지 (최근 7일 내내 무너지지 않게) + 라이벌 교단 정리 (흡수·몰락·휴전). 밤 메뉴에 '라이벌'이 생긴다.`),
+      h('p', { class: 'muted' }, `목표: 5월 25일 월세 날까지 신도 ${PHASE3.members}명 + 동네 평판 유지 (최근 7일 내내 무너지지 않게) + 라이벌 교단 정리 (흡수·몰락·휴전). 밤 메뉴에 '라이벌'이 생긴다.`),
       h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '3단계 시작')))));
     return;
   }
@@ -102,7 +102,7 @@ export function showPhaseUp(s, phase, onClose) {
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
     h('p', {}, '2단계: 옆 칸을 터서 넓히고, 칸마다 방을 만들고, 간부를 세운다. 첫 간부는 엄마·오랜 친구·우연히 온 사람.'),
-    h('p', { class: 'muted' }, `목표: 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상. 밤 메뉴에 '공간·방', '간부', '간부 회의'가 생겼다.`),
+    h('p', { class: 'muted' }, `목표: 4월 25일 월세 날까지 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상 (월세는 제날짜에). 밤 메뉴에 '공간·방', '간부', '간부 회의'가 생겼다.`),
     h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '2단계 시작')))));
 }
 
@@ -134,13 +134,21 @@ export function showCredits(onClose) {
     h('div', { class: 'row end' }, h('button', { class: 'btn', onclick: () => { unmount('credits'); onClose(); } }, '닫기')))));
 }
 
+// 지금 단계 목표 한 줄 (메뉴)
+function goalLine(s) {
+  if (s.phase >= 4) return `4단계 목표: 신도 ${PHASE4.members}명 + 봉천 지부 ${PHASE4.branch}명 + 두 동네 평판 + 6월 25일 월세까지 넉 달 연속.`;
+  if (s.phase >= 3) return `3단계 목표: 신도 ${PHASE3.members}명 + 평판 유지 + 라이벌 정리 + 5월 25일 월세까지 석 달 연속.`;
+  if (s.phase >= 2) return `2단계 목표: 신도 ${PHASE2.members}명 + 3층 전체 + 간부 ${PHASE2.minOfficers}명 + 4월 25일 월세까지 두 달 연속.`;
+  return `목표: 신도 ${GOAL.members}명 + 첫 월세(3월 25일) 납부.`;
+}
+
 export function showMenu(app) {
   const close = () => { unmount('menu'); app.setBack('menu', null); app.modalClosed(); };
   app.modalOpened();
   app.setBack('menu', close);
   mount('menu', h('div', { class: 'screen' }, h('div', { class: 'panel box stack' },
     h('h2', {}, '메뉴'),
-    h('p', { class: 'muted' }, app.s.phase >= 2 ? `2단계 목표: 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상. 월세 ${won(rentNow(app.s))} (5일마다 말일 밤). 자동 저장된다.` : `목표: 신도 ${GOAL.members}명 + 월세 ${GOAL.rentStreak}달 연속 (월세 ${won(rentNow(app.s))}, 5일마다 말일 밤). 자동 저장된다.`),
+    h('p', { class: 'muted' }, `${goalLine(app.s)} 월세 ${won(rentNow(app.s))}는 매달 25일, 주간 지출은 일요일 밤. 자동 저장된다.`),
     h('table', { class: 'keys' }, h('tbody', {},
       [['방향키 · WASD', '걷기'], ['Shift + 방향키', '달리기 (피로 조금 더)'], ['Space · Enter', '말 걸기 · 들어가기'], ['`', '멈춤'], ['1', '재생'], ['2', '빠르게'], ['N', '부탁 수첩'], ['Esc · 오른쪽 클릭', '한 단계 뒤로 · 메뉴']]
         .map(([k, v]) => h('tr', {}, h('td', {}, h('kbd', {}, k)), h('td', {}, v))))),

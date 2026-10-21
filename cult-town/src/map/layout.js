@@ -183,7 +183,7 @@ export const SPOTS = {
   church: { yard: { from: 'church', dx: -2, dy: 1 } },
   temple: { yard: [62, 16] },
   fortune: { front: { from: 'fortune', dx: 1, dy: 0 } },
-  station: { exit3: [29, 9], exit4: [39, 9], plaza: [25, 9] },
+  station: { exit3: [27, 9], exit4: [41, 9], plaza: [24, 9] },
   stream: { path: [24, 2], bridge: [46, 2] },
   office: { smoke: { from: 'office', dx: 3, dy: 1 } },
   gosiwon: { front: { from: 'gosiwon', dx: 1, dy: 0 } },

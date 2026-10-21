@@ -56,6 +56,11 @@ export function v4Fields() {
   };
 }
 
+// 저장 v5 에서 생긴 칸 (실제 달력·간판·퀘스트·열혈 신자·교주 성장). 이 판에서 칸이 늘면 여기에 더한다
+export function v5Fields() {
+  return {};
+}
+
 export function newResident(r) {
   return {
     like: 0, sus: r.leader ? 8 : 4, stage: 'none', worships: 0,
@@ -78,7 +83,7 @@ export function newGame({ leaderName, age, family, sect, cultName, seed = Date.n
     followers: 0,
     followerOf: {},
     cast: {},
-    sanctuary: { props: {}, arrears: 0, rentStreak: 0, worshipDay: -1, lastAttend: [] },
+    sanctuary: { props: {}, arrears: 0, rentStreak: 0, worshipDay: -1, lastAttend: [], sign: 0 },
     clergy: {},
     shadow: [],
     flags: {},
@@ -89,6 +94,7 @@ export function newGame({ leaderName, age, family, sect, cultName, seed = Date.n
     ...v2Fields(),
     ...v3Fields(),
     ...v4Fields(),
+    ...v5Fields(),
   };
   for (const r of ALL_RESIDENTS) s.res[r.id] = newResident(r);
   for (const c of CAST) s.cast[c.id] = { sus: 0, talkIdx: 0, active: true };

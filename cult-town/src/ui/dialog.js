@@ -9,7 +9,7 @@ import { canTalk, startTalk, act, talkClergy } from '../sim/talk.js';
 import { fmtDate } from '../sim/clock.js';
 import { ALL_CLERGY } from '../data/clergy.js';
 import { h, mount, unmount, won } from './dom.js';
-import { fill, josa } from './text.js';
+import { fill, josa, speak } from './text.js';
 import { play } from './sound.js';
 import { toast } from './toast.js';
 import { textVars } from '../sim/rival.js';
@@ -41,7 +41,7 @@ export function openTalk(app, id) {
   if (!can.ok) {
     const line = can.reason === 'refuse' ? LINES[r.voice].refuse : null;
     mount('dialog', shell(app, face, r.name, sub,
-      line ? h('div', { class: 'say' }, line) : null,
+      line ? h('div', { class: 'say' }, speak(s, line)) : null,
       h('div', { class: 'narr' }, can.reason === 'refuse' ? `${josa(r.name, '이/가')} 걸음을 빨리해 지나간다.` : REASON[can.reason]),
       h('div', { class: 'row end' }, h('button', { class: 'btn', onclick: close }, '닫기'))));
     play('error');
@@ -51,6 +51,8 @@ export function openTalk(app, id) {
   play('talk');
   const ctx = { key: s.pos[id]?.key };
   const t = startTalk(s, id, ctx);
+  let showFx = false;
+  try { showFx = localStorage.getItem('cult-town:fx') === '1'; } catch { /* 없으면 꺼 둔다 */ }
   const CONTEXT_IDS = ['story', 'favorDone', 'relay', 'gift', 'lunch', 'umbrella', 'market', 'walk', 'coffee'];
   const optionBtn = (o) => {
     const meta = OPTIONS[o.id];
@@ -58,8 +60,21 @@ export function openTalk(app, id) {
     if (o.id === 'relay') label = label.replace('{이름}', RESIDENT_BY_ID[o.from].name);
     if (o.id === 'askRival') label = label.replace('{라이벌}', textVars(s).라이벌);
     if (o.id === 'invite' && id.startsWith('b_')) label = '봉천 지부에 초대하기';
-    const hint = o.id === 'special' ? '교단 유형의 특기. 지금 고민과 맞으면 잘 통한다.' : meta.hint;
-    return h('button', { class: `btn ${CONTEXT_IDS.includes(o.id) ? 'ctx' : ''}`, onclick: () => choose(o) }, label, h('small', {}, hint));
+    // 짧은 행동 설명만 보이고, 정확한 효과는 ⓘ를 켜거나 길게 누르면 보인다
+    const b = h('button', { class: `btn ${CONTEXT_IDS.includes(o.id) ? 'ctx' : ''}`, onclick: () => { if (b.dataset.held) { delete b.dataset.held; return; } choose(o); } },
+      label, h('small', {}, meta.hint), h('small', { class: 'fx' }, meta.fx));
+    let timer = null;
+    b.addEventListener('pointerdown', () => { timer = setTimeout(() => { b.dataset.held = '1'; b.classList.toggle('showfx'); }, 450); });
+    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, () => clearTimeout(timer));
+    b.addEventListener('contextmenu', (e) => e.preventDefault());
+    return b;
+  };
+  const fxToggle = () => {
+    const btn = h('button', { class: `btn info ${showFx ? 'on' : ''}`, title: '정확한 효과 보기 (길게 누르면 하나씩)', onclick: () => {
+      showFx = !showFx; try { localStorage.setItem('cult-town:fx', showFx ? '1' : ''); } catch { /* 저장 못 해도 된다 */ }
+      btn.classList.toggle('on', showFx); btn.closest('.dialog')?.classList.toggle('showfx', showFx);
+    } }, 'ⓘ');
+    return btn;
   };
   const choose = (o) => {
     play('select');
@@ -106,7 +121,7 @@ export function openTalk(app, id) {
     }
     mount('dialog', shell(app, face, r.name, sub,
       res.narr ? h('div', { class: 'narr' }, res.narr) : null,
-      res.line ? h('div', { class: 'say' }, res.line) : null,
+      res.line ? h('div', { class: 'say' }, speak(s, res.line)) : null,
       h('div', { class: 'delta' }, pills),
       stageNote ? h('div', { class: 'narr' }, stageNote) : null,
       res.nearNotice ? h('div', { class: 'narr muted' }, NOTICE_TEXT.nearTalk.replace('{장소}', nearPlace(app, ctx.key))) : null,
@@ -116,11 +131,14 @@ export function openTalk(app, id) {
 
   function showMain() {
     app.setBack('dialog', close);
-    mount('dialog', shell(app, face, r.name, sub,
-      h('div', { class: 'say' }, t.greet),
+    const box = shell(app, face, r.name, sub,
+      h('div', { class: 'say' }, speak(s, t.greet)),
       h('div', { class: 'narr' }, t.hint),
       h('div', { class: 'opts' }, t.options.map(optionBtn),
-        h('button', { class: 'btn wide', onclick: close }, OPTIONS.leave.label))));
+        h('button', { class: 'btn wide', onclick: close }, OPTIONS.leave.label)));
+    box.querySelector('.who').append(fxToggle());
+    box.classList.toggle('showfx', showFx);
+    mount('dialog', box);
   }
   showMain();
 }

@@ -10,7 +10,7 @@ import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { rand, pick, shuffle } from './rng.js';
 import { clamp, addFatigue, exhausted, shiftBelief, addMoney } from './leader.js';
 import { checkCurious, setStage, relationsOf } from './faith.js';
-import { nextWorshipDay } from './clock.js';
+import { nextWorshipDay, holidayOf } from './clock.js';
 import { topNeeds } from './residents.js';
 import { PREFS } from '../data/prefs.js';
 import { ITEMS } from '../data/items.js';
@@ -119,6 +119,8 @@ export function act(s, id, opt, card, ctx = {}) {
   if (s.weather?.market && (ctx.key ?? '').startsWith('market')) mL *= WEATHER.marketTalk;
   const near = noticeMul(s, ctx.key);       // 기성 종교 안내문 근처에선 말이 잘 안 붙는다
   mL *= near;
+  const hol = holidayOf(s.day);               // 계절 행사 (도림천 벚꽃: 산책로에서 말이 잘 붙는다)
+  if (hol?.talk && (ctx.key ?? '').split(':')[0] === hol.talk.place) mL *= hol.talk.mul;
   // 바로 전과 같은 화제면 효과 절반
   const topic = opt === 'listen' ? `listen:${card}` : opt;
   const repeat = ['smalltalk', 'listen', 'preach', 'special', 'lunch', 'walk', 'market'].includes(opt) && st.lastTopic === topic;

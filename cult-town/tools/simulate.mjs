@@ -11,6 +11,7 @@ import { SECTS, SECT_ORDER } from '../src/data/sects.js';
 import { gridFromMap, findPath, resolveKey, registerGrid } from '../src/sim/grid.js';
 import { newGame } from '../src/sim/state.js';
 import { startDay, endDay } from '../src/sim/week.js';
+import { daysToRent } from '../src/sim/clock.js';
 import { tickPeople, departures, targetKey, peopleOf, gridFor, sanctuaryKey } from '../src/sim/residents.js';
 import { canTalk, startTalk, act } from '../src/sim/talk.js';
 import { holdWorship, canWorship, buy, canBuy, seats, care } from '../src/sim/sanctuary.js';
@@ -232,7 +233,8 @@ function phase4Night(s) {
 function phase2Night(s) {
   const reserve = rentNow(s) * 1.1;
   const st = nextStep(s);
-  if (st && s.leader.money > st.deposit + (rentNow(s) + st.rent) * 1.3) expand(s, haggleChance(s) >= 0.5 ? 'haggle' : 'pay');
+  // 월세는 25일에 한 번: 월세날이 가까울 때만 한 달 치를 남겨 둔다
+  if (st && s.leader.money > st.deposit + (rentNow(s) + st.rent) * (daysToRent(s.day) <= 7 ? 1.1 : 0.5)) expand(s, haggleChance(s) >= 0.5 ? 'haggle' : 'pay');
   for (const slot of openSlots(s)) {
     if (!s.rooms[slot]) {
       const built = Object.values(s.rooms).map((r) => r.type);
@@ -281,6 +283,8 @@ function playGame(sect, seed, policy = 'normal', maxDays = 190) {
     if (r.phaseUp === 2) phase1Day = s.day;
     if (r.phaseUp === 3) phase2Day = s.day;
     if (r.phaseUp === 4) phase3Day = s.day;
+    // 빠른 조정용: STOP=n 이면 n단계를 끝내면 그 판을 멈춘다
+    if (process.env.STOP && r.phaseUp && r.phaseUp > Number(process.env.STOP)) return { over: 'stop', days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
     if (r.revelation) applyRevelation(s, r.revelation, REV_PICKS[r.revelation]);
     if (s.rival) rivalLog.push(rivalSize(s));
     if (process.env.P3DBG && seed === Number(process.env.P3DBG) && s.phase >= 3 && s.day % 3 === 0) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} rep${Math.round(s.rep)} exp${Math.round(s.exposure)} rep:${s.reporter.active ? 'on' : '-'}${s.reporter.due ? 'due' : ''} heat${Math.round(s.reporter.heat)} reports${s.reporter.reports} rival:${s.rival ? s.rival.status + rivalSize(s) + ' dirt' + s.rival.dirt + ' taken' + s.rival.taken : '-'} def${soreDefectors(s).length} prot${s.protest && !s.protest.done ? 'y' : '-'} notices${Object.keys(s.notices).length}${s.phase >= 4 ? ` | P4 repB${Math.round(s.repB)} br${s.branch.open ? branchCount(s) : '-'} bf${s.branch.followers} head${branchHead(s) ? Math.round(branchHead(s).discontent) : '-'}${s.branch.split ? 'SPLIT' : ''}` : ''}`);
@@ -298,41 +302,38 @@ function playGame(sect, seed, policy = 'normal', maxDays = 190) {
 
 if (!args.includes('--no-balance')) {
   const DAY_SECONDS = (CLOCK.dayEnd - CLOCK.dayStart) / CLOCK.minutesPerSecond + 45;
-  const P1_LIMIT = 24;   // 1단계를 이 날 안에 끝내면 성공 (약 2시간 10분, 하루 ≈ 5분 25초)
+  const P1_LIMIT = 24;   // 1단계를 첫 월세날(3월 25일) 다음 날까지 끝내면 성공 (약 2시간 10분, 하루 ≈ 5분 25초)
   console.log(`\n■ 균형 검사 (유형마다 ${GAMES}판, 하루 ≈ ${Math.round(DAY_SECONDS)}초, 1단계 성공 = ${P1_LIMIT}일 안에 목표)`);
   const median = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
   const min = (d) => Math.round((d * DAY_SECONDS) / 60);
-  let p1Total = 0; let n = 0; let p3Total = 0; let p3N = 0; let p4Total = 0; let p4N = 0;
+  let p1Total = 0; let n = 0; let p2Total = 0; let p2N = 0; let p3Total = 0; let p3N = 0; let p4Total = 0; let p4N = 0;
+  const LIMITS = [24, 55, 85, 116];   // 3/26 · 4/26 · 5/26 · 6/26
   for (const sect of (process.env.SECT ? [process.env.SECT] : SECT_ORDER)) {
     const res = [];
     for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
-    const p1 = res.filter((r) => r.phase1Day && r.phase1Day <= P1_LIMIT);
-    const p2 = res.filter((r) => r.phase2Day);
-    const p3 = res.filter((r) => r.phase3Day);                 // 3단계 목표를 채워 4단계로 넘어간 판
-    const wins = res.filter((r) => r.over === 'win');          // 4단계 목표
-    const reasons3 = {}; const reasons4 = {};
-    for (const r of res) if (r.phase2Day && !r.phase3Day) reasons3[r.over] = (reasons3[r.over] ?? 0) + 1;
-    for (const r of p3) reasons4[r.over] = (reasons4[r.over] ?? 0) + 1;
-    const fails2 = res.filter((r) => !r.phase2Day).map((r) => r.over);
-    p1Total += p1.length; n += res.length; p3Total += p3.length; p3N += p2.length; p4Total += wins.length; p4N += p3.length;
-    const p1d = p1.map((r) => r.phase1Day); const p2d = p2.map((r) => r.phase2Day); const p3d = p3.map((r) => r.phase3Day - r.phase2Day); const p4d = wins.map((r) => r.days - r.phase3Day);
+    // 단계마다 그달 25일 월세날 다음 날까지 끝내면 성공 (3/26 · 4/26 · 5/26 · 6/26)
+    const [L1, L2, L3, L4] = LIMITS;
+    const ok1 = res.filter((r) => r.phase1Day && r.phase1Day <= L1);
+    const ok2 = ok1.filter((r) => r.phase2Day && r.phase2Day <= L2);
+    const ok3 = ok2.filter((r) => r.phase3Day && r.phase3Day <= L3);
+    const ok4 = ok3.filter((r) => r.over === 'win' && r.days <= L4);
+    const why = (arr, next) => { const o = {}; for (const r of arr) if (!next.includes(r)) o[r.over] = (o[r.over] ?? 0) + 1; return Object.entries(o).map(([k, v]) => `${k}:${v}`).join(' '); };
+    p1Total += ok1.length; n += res.length; p2Total += ok2.length; p2N += ok1.length; p3Total += ok3.length; p3N += ok2.length; p4Total += ok4.length; p4N += ok3.length;
+    const d2 = ok2.map((r) => r.phase2Day - r.phase1Day); const d3 = ok3.map((r) => r.phase3Day - r.phase2Day); const d4 = ok4.map((r) => r.days - r.phase3Day);
     const md = (a) => (a.length ? `${median(a)}일 ≈ ${min(median(a))}분` : '-');
-    console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${p1.length}/${GAMES} (중앙 ${md(p1d)}) · 2단계 ${p2.length}/${GAMES} (중앙 ${md(p2d)})${fails2.length ? ` [2단계 전 끝: ${fails2.join(',')}]` : ''}`);
-    console.log(`  ${''.padEnd(10)} 3단계 ${p3.length}/${p2.length} (시작부터 중앙 ${md(p3d)}) ${Object.entries(reasons3).map(([k, v]) => `${k}:${v}`).join(' ')} · 4단계 ${wins.length}/${p3.length} (시작부터 중앙 ${md(p4d)}) ${Object.entries(reasons4).map(([k, v]) => `${k}:${v}`).join(' ')}`);
+    console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${ok1.length}/${GAMES} (${md(ok1.map((r) => r.phase1Day))}) · 2단계 ${ok2.length}/${ok1.length} (${md(d2)}) ${why(ok1, ok2)}`);
+    console.log(`  ${''.padEnd(10)} 3단계 ${ok3.length}/${ok2.length} (${md(d3)}) ${why(ok2, ok3)} · 4단계 ${ok4.length}/${ok3.length} (${md(d4)}) ${why(ok3, ok4)}`);
+    const chk = (k, a, b, d) => {
+      const rate = b.length ? a.length / b.length : 0;
+      if (rate < 0.6 || rate > 0.8) fail(`${SECTS[sect].name}: ${k}단계 성공률 ${Math.round(rate * 100)}% (목표 60~80%)`);
+      if (d && d.length) { const m = min(median(d)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: ${k}단계 ${m}분 (목표 2~3시간)`); }
+    };
+    chk(1, ok1, res, ok1.map((r) => r.phase1Day)); chk(2, ok2, ok1, d2); chk(3, ok3, ok2, d3); chk(4, ok4, ok3, d4);
     if (VERBOSE) console.log("    ", res[0].timeline.join(" "));
     if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "), "|", res.map((r, i) => `${1000 + i * 17}:${r.over}`).join(" "));
-    const rate = p1.length / GAMES;
-    if (rate < 0.6 || rate > 0.8) fail(`${SECTS[sect].name}: 1단계 성공률 ${Math.round(rate * 100)}% (목표 60~80%)`);
-    if (p2d.length) { const m = min(median(p2d)); if (m < 120 || m > 195) fail(`${SECTS[sect].name}: 2단계 목표까지 ${m}분 (목표 2시간~3시간 15분)`); }
-    else fail(`${SECTS[sect].name}: 2단계 목표에 닿은 판이 없다`);
-    const rate3 = p2.length ? p3.length / p2.length : 0;
-    if (rate3 < 0.6 || rate3 > 0.8) fail(`${SECTS[sect].name}: 3단계 성공률 ${Math.round(rate3 * 100)}% (목표 60~80%)`);
-    if (p3d.length) { const m = min(median(p3d)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: 3단계 시작부터 목표까지 ${m}분 (목표 2~3시간)`); }
-    const rate4 = p3.length ? wins.length / p3.length : 0;
-    if (rate4 < 0.6 || rate4 > 0.8) fail(`${SECTS[sect].name}: 4단계 성공률 ${Math.round(rate4 * 100)}% (목표 60~80%)`);
-    if (p4d.length) { const m = min(median(p4d)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: 4단계 시작부터 목표까지 ${m}분 (목표 2~3시간)`); }
   }
-  console.log(`  전체 1단계 성공률 ${Math.round((p1Total / n) * 100)}% · 3단계 성공률 ${p3N ? Math.round((p3Total / p3N) * 100) : 0}% · 4단계 성공률 ${p4N ? Math.round((p4Total / p4N) * 100) : 0}%`);
+  const pc = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+  console.log(`  전체 성공률 1단계 ${pc(p1Total, n)}% · 2단계 ${pc(p2Total, p2N)}% · 3단계 ${pc(p3Total, p3N)}% · 4단계 ${pc(p4Total, p4N)}%`);
   // 라이벌 혼자 크는가: 플레이어가 라이벌에 아무 대응도 안 하는 봇
   const alone = ['doomsday', 'meditation', 'shaman'].map((sect) => playGame(sect, 777, 'ignoreRival'));
   console.log(`\n■ 라이벌에 대응 안 하는 봇 (라이벌 규모, 등장부터 하루마다): `);
