@@ -22,3 +22,27 @@ for (const d of dirs) {
 }
 console.log(bad ? `✗ 금지 패턴 ${bad}개` : '✓ 금지 패턴 0개');
 process.exitCode = bad ? 1 : 0;
+
+// ── 24장 B 대사 검사 (개수 보고. 한도를 넘으면 실패) ──
+// 주민마다: 숫자가 든 줄 비율(30% 초과 금지) · 말줄임표로 시작하는 줄 비율(20% 초과 금지) · 같은 대사 중복
+// 사연 지문: "OOO가 ~한다." 틀 비율 보고
+const { VOICES, NEW_STORIES } = await import('../src/data/voices/index.js');
+const { RESIDENT_BY_ID } = await import('../src/data/residents.js');
+const linesOf = (v) => [v.first, ...Object.entries(v).filter(([k, x]) => Array.isArray(x) && k !== 'call').flatMap(([, x]) => x),
+  ...Object.values(v.ctx ?? {}).flat()].filter((x) => typeof x === 'string');
+const seen = new Map();
+let over = 0; let dup = 0; let rows = [];
+for (const [id, v] of Object.entries(VOICES)) {
+  const ls = linesOf(v);
+  const inner = (l) => l.replace(/^"|"$/g, '');
+  const num = ls.filter((l) => /[0-9]/.test(l)).length / ls.length;
+  const ell = ls.filter((l) => /^…|^\.\.\./.test(inner(l))).length / ls.length;
+  for (const l of ls) { if (seen.has(l)) dup++; else seen.set(l, id); }
+  if (num > 0.3 || ell > 0.2) over++;
+  rows.push(`${RESIDENT_BY_ID[id]?.name ?? id} ${ls.length}줄 숫자 ${Math.round(num * 100)}% 말줄임 ${Math.round(ell * 100)}%${num > 0.3 || ell > 0.2 ? ' ✗' : ''}`);
+}
+const stageDirs = Object.values(NEW_STORIES).flat().flatMap((st) => st.text.filter((t) => !t.startsWith('"')));
+const frame = stageDirs.filter((t) => /^\S{2,4}[이가]\s.+[다]\.$/.test(t)).length;
+console.log(`대사 검사: 주민 ${rows.length}명 · 한도 넘은 주민 ${over} · 같은 대사 중복 ${dup} · 사연 지문 "OOO가 ~한다." ${frame}/${stageDirs.length} (${stageDirs.length ? Math.round((frame / stageDirs.length) * 100) : 0}%)`);
+if (process.argv.includes('-v')) rows.forEach((r) => console.log('  ' + r));
+if (over || dup) process.exitCode = 1;

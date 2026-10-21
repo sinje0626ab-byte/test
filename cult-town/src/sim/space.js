@@ -1,5 +1,5 @@
 // 2단계: 공간 확장 · 방 · 방 효과. 상태: s.space.step · s.rooms[slot] = { type, level, dark }
-import { SPACE_STEPS, ROOMS, DARK_ROOM, NEGOTIATE, SANCTUARY, OFFICERS, PHASE3, PHASE4 } from '../config.js';
+import { SPACE_STEPS, ROOMS, DARK_ROOM, NEGOTIATE, SANCTUARY, OFFICERS, PHASE3, PHASE4, SIGN } from '../config.js';
 import { rand } from './rng.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
 
@@ -117,7 +117,7 @@ export function weeklyRooms(s, relationsOf) {
 export const extraSeats = (s) => Math.round(ROOMS.worship.seats * Math.max(0, roomPower(s, 'worship') - 1));
 export const leaveBonus = (s) => ROOMS.study.leave * roomPower(s, 'study') + ROOMS.dorm.leave * roomPower(s, 'dorm');
 export const offeringMul = (s) => 1 + ROOMS.office.offering * roomPower(s, 'office');
-export const inviteBonus = (s) => ROOMS.counsel.invite * roomPower(s, 'counsel');
+export const inviteBonus = (s) => ROOMS.counsel.invite * roomPower(s, 'counsel') + SIGN.invite * (s.sanctuary.sign ?? 0);
 export const memberLikeCut = (s) => ROOMS.counsel.needLike * roomPower(s, 'counsel');
 export const worshipLikeBonus = (s) => ROOMS.kitchen.worshipLike * roomPower(s, 'kitchen');
 export const followerBonus = (s) => ROOMS.kitchen.followers * roomPower(s, 'kitchen');

@@ -1,4 +1,5 @@
 // 교주 이동: 키보드(방향키·WASD) 또는 누른 곳까지 길찾기. 두 씬(동네·성소)이 같이 쓴다.
+import { fatigueLimit } from '../sim/growth.js';
 import { MOVE, TALK } from '../config.js';
 import { findPath, walkable } from '../sim/grid.js';
 
@@ -109,7 +110,7 @@ export class Walker {
     if (this.moved >= 1) {
       const n = Math.floor(this.moved);
       this.moved -= n;
-      s.leader.fatigue = Math.min(TALK.dailyFatigueLimit, s.leader.fatigue + n * (TALK.fatiguePerTile + (this.isRunning ? MOVE.runFatiguePerTile : 0)));
+      s.leader.fatigue = Math.min(fatigueLimit(s), s.leader.fatigue + n * (TALK.fatiguePerTile + (this.isRunning ? MOVE.runFatiguePerTile : 0)));
     }
   }
 }

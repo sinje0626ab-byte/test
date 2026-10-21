@@ -3,6 +3,7 @@
 //   favor.type: 'item' (item: items.js id 를 갖다준다) · 'deliver' (to: 다른 주민 id 에게 말을 전한다. relay: 받은 사람의 반응 대사) · 'place' (place: places.js id 에 다녀온다. note: 다녀와서 본 것 지문)
 //   ask: 부탁하는 대사 · done: 들어줬을 때 대사
 import { STORIES_B } from './residents-bongcheon.js';
+import { NEW_STORIES } from './voices/index.js';
 
 export const STORIES = {
   ...STORIES_B,
@@ -516,4 +517,5 @@ export const STORIES = {
       favor: { type: 'place', place: 'church', ask: '"도림천변교회에 대학생 모임 있는지 좀 봐 주실래요? 물어보기가 떨려서요."', done: '"떡볶이요? 그럼 금요일에 가 볼게요. 엄마한테 말하면 엄청 좋아하시겠다."', note: '교회 게시판에 "대학 청년부 금요일 저녁 7시. 처음 오신 분 환영. 떡볶이 있음"이 붙어 있다.' },
     },
   ],
+  ...NEW_STORIES,   // 24장 B 에서 새로 쓴 사연이 위의 예전 사연을 덮는다
 };

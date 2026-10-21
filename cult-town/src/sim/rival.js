@@ -103,7 +103,7 @@ export function rivalDaily(s) {
   // 경쟁 중: 저쪽 따라온 사람 몇이 우리 쪽으로
   if (s.rival.competeUntil >= s.day && s.rival.followers > 0) { const n = Math.min(s.rival.followers, RIVAL.compete.poach); s.rival.followers -= n; s.followers += n; }
   for (const id of s.week.left.filter((x) => s.res[x]?.rival === 'member' && s.res[x].stage === 'curious')) {
-    if (!s.flags[`stoleNote:${id}`]) { s.flags[`stoleNote:${id}`] = true; events.push({ type: 'rivalStole', text: fill(RIVAL_TEXT.stole, { ...textVars(s), 이름: RESIDENT_BY_ID[id].name }) }); }
+    if (!s.flags[`stoleNote:${id}`]) { s.flags[`stoleNote:${id}`] = true; events.push({ type: 'rivalStole', id, text: fill(RIVAL_TEXT.stole, { ...textVars(s), 이름: RESIDENT_BY_ID[id].name }) }); }
   }
   if (rivalSize(s) < RIVAL.collapseAt) { s.rival.status = 'collapsed'; events.push({ type: 'rival', text: fill(RIVAL_TEXT.collapsed, textVars(s)) }); }
   return events;

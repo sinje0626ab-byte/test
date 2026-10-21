@@ -1,4 +1,5 @@
 // 교주: 피로·돈·믿음 축 (-100 사기 ↔ +100 광신)
+import { fatigueLimit } from './growth.js';
 import { LEADER, TALK } from '../config.js';
 
 export const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
@@ -15,10 +16,10 @@ export function shiftBelief(s, d) {
 }
 
 export function addFatigue(s, d) {
-  s.leader.fatigue = clamp(s.leader.fatigue + d, 0, TALK.dailyFatigueLimit);
+  s.leader.fatigue = clamp(s.leader.fatigue + d, 0, fatigueLimit(s));
 }
 
-export const exhausted = (s) => s.leader.fatigue >= TALK.dailyFatigueLimit - TALK.fatiguePerTalk + 1;
+export const exhausted = (s) => s.leader.fatigue >= fatigueLimit(s) - TALK.fatiguePerTalk + 1;
 
 export function addMoney(s, d) {
   s.leader.money = Math.round(s.leader.money + d);

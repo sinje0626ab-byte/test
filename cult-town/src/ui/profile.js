@@ -1,4 +1,6 @@
 // 주민 프로필 카드 (주민을 누르면): 지금 고민 · 종교 · 관계 · 우리 교단에 대한 인상 · 상태
+import { seesSuspicion } from '../sim/growth.js';
+import { isZealot } from '../sim/zealots.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { PLACES } from '../data/places.js';
 import { NEED_NAMES, IMPRESSION, STAGE_NAMES, RELIGION_NAMES, RELATION_NAMES } from '../data/topics.js';
@@ -61,6 +63,9 @@ export function openProfile(app, id, { onTalk } = {}) {
       h('dt', {}, '종교'), h('dd', {}, RELIGION_NAMES[r.religion]),
       h('dt', {}, '집'), h('dd', {}, PLACES[r.home].name),
       lean ? h('dt', {}, '어느 쪽') : null, lean ? h('dd', {}, lean) : null,
+      seesSuspicion(app.s) && st.met ? h('dt', {}, '경계 (눈치)') : null,
+      seesSuspicion(app.s) && st.met ? h('dd', {}, st.sus >= 60 ? '많이 경계한다' : st.sus >= 30 ? '조금 경계한다' : '편하게 본다') : null,
+      isZealot(app.s, id) ? h('dt', {}, '열혈') : null, isZealot(app.s, id) ? h('dd', {}, '낮에 알아서 사람을 모은다') : null,
     ),
     isDefector(app.s, id) ? h('p', { class: 'quote' }, '302호를 떠난 사람이다. 동네 사람들에게 우리 얘기를 한다.') : null,
     isProtester(app.s, id) ? h('p', { class: 'quote' }, '오늘 상가 입구 앞에서 피켓을 들고 있다.') : null,

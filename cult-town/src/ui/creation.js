@@ -84,7 +84,7 @@ export function showCreation(onDone, onBack) {
       body.push(h('h2', {}, pick.cultName),
         h('p', {}, `교주 ${pick.name} (${pick.age}살) · ${FAMILIES[pick.family].name} ${s.name}`),
         h('p', { class: 'muted' }, `모임은 "${s.terms.worship}", 모이는 사람은 "${s.terms.member}", 302호는 "${s.terms.place}"라고 부른다.`),
-        h('p', {}, '목표: 신도 30명, 월세 석 달 연속 납부. 한 달은 5일로 센다. 월세는 말일 밤에 나간다.'),
+        h('p', {}, '2026년 3월 2일 월요일, 새 학기 첫날. 목표: 3월 25일 첫 월세 날까지 신도 30명, 월세 제날짜 납부. 전단 인쇄·보리차 같은 주간 지출은 일요일 밤에 나간다.'),
         h('p', { class: 'muted' }, '첫 신도는 세 명이다. 엄마, 오랜 친구, 그리고 화장실을 찾다 들어온 사람.'),
         h('div', { class: 'row between' }, prev, h('button', { class: 'btn primary', onclick: () => { play('confirm'); unmount('creation'); onDone({ ...pick }); } }, '302호 문 열기')));
     }

@@ -1,9 +1,12 @@
 // 화면 위: 날짜·시각·속도 / 돈·신도·평판·피로·믿음 축. 화면 아래: 상황에 맞는 큰 버튼 (말 걸기·들어가기·밤으로).
+import { fatigueLimit } from '../sim/growth.js';
 import { GOAL, TALK, LEADER, PHASE2, PHASE3, PHASE4 } from '../config.js';
-import { fmtDate, fmtTime, phaseOf } from '../sim/clock.js';
+import { fmtDate, fmtClock, tempAt, skyName, holidayOf } from '../sim/clock.js';
 import { branchCount, memberCount } from '../sim/faith.js';
 import { h, mount, won } from './dom.js';
 import { play, toggleMute, isMuted } from './sound.js';
+
+const HOLIDAY_SHORT = { semester: '새 학기', cherry: '벚꽃', holiday: '연휴', buddha: '부처님오신날', monsoon: '장마', chuseok: '추석', yearend: '연말' };
 
 export function createHud(app) {
   const date = h('div', { class: 'date' });
@@ -50,9 +53,12 @@ export function createHud(app) {
     update() {
       const s = app.s;
       if (!s) return;
+      // 휴대폰 잠금화면처럼: 날짜 / 시각 / 날씨·기온 · 동네
       date.textContent = fmtDate(s.day);
-      time.textContent = s.mode === 'night' ? '밤' : fmtTime(s.minute);
-      phase.textContent = s.mode === 'night' ? '성소 운영' : `${phaseOf(s.minute).name}${s.phase >= 4 ? ` · ${s.district === 'bongcheon' ? '봉천동' : '신림동'}` : ''}`;
+      time.textContent = s.mode === 'night' ? '밤' : fmtClock(s.minute);
+      const hol = holidayOf(s.day);
+      const where = s.phase >= 4 ? ` · ${s.district === 'bongcheon' ? '봉천동' : '신림동'}` : '';
+      phase.textContent = s.mode === 'night' ? `성소 운영 · ${skyName(s.weather)} ${tempAt(s, 21 * 60)}°` : `${skyName(s.weather)} ${tempAt(s)}°${where}${hol ? ` · ${HOLIDAY_SHORT[hol.id] ?? ''}` : ''}`;
       speedBtns.forEach((b, i) => b.classList.toggle('on', app.speed === i));
       money.textContent = won(s.leader.money);
       members.textContent = memberCount(s);
@@ -71,7 +77,7 @@ export function createHud(app) {
       }
       repBar.style.width = `${s.rep}%`;
       repBar.style.background = s.rep < 30 ? 'var(--bad)' : s.rep < 50 ? 'var(--warn)' : 'var(--good)';
-      fatBar.style.width = `${(s.leader.fatigue / TALK.dailyFatigueLimit) * 100}%`;
+      fatBar.style.width = `${(s.leader.fatigue / fatigueLimit(s)) * 100}%`;
       axis.style.left = `${((s.leader.belief + LEADER.beliefRange) / (2 * LEADER.beliefRange)) * 100}%`;
     },
     setAction(label, fn) {

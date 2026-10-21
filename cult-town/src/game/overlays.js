@@ -12,6 +12,7 @@ const EMO = {
   defector: { text: '떠남', color: '#5a5a6a', bg: 0xe0dcd0 },
   press: { text: '취재', color: '#b8601a', bg: 0xfff0d8 },
   rival: { text: '●', color: '#7a3a8a' },
+  zealot: { text: '열', color: '#c8401a', bg: 0xffe8d8 },   // 열혈 신자
 };
 
 // 직업 아이콘 텍스처를 한 번 만든다 (9×9 픽셀)
@@ -87,4 +88,16 @@ export function wallNotice(scene, x, y, text, { bg = 0xf6f2e6, color = '#1d1b26'
   g.fillStyle(0x1d1b26, 1).fillRect(-bw / 2 - 1, -bh / 2 - 1, bw + 2, bh + 2);
   g.fillStyle(bg, 1).fillRect(-bw / 2, -bh / 2, bw, bh);
   return scene.add.container(x, y, [g, t]);
+}
+
+// 퀘스트 표시 (메인 · 부탁 · 오늘): 노란 느낌표 깃발
+const QMARK = { main: 0xf0c020, favor: 0x9ad06a, today: 0x7ab8e8, fork: 0xe88aa0 };
+export function questMark(scene, why) {
+  const t = scene.add.text(0, 0, '!', { ...SMALL, fontSize: '9px', color: '#1d1b26' }).setOrigin(0.5, 1);
+  const g = scene.add.graphics();
+  g.fillStyle(0x1d1b26, 1).fillRect(-5, -13, 10, 12);
+  g.fillStyle(QMARK[why] ?? QMARK.main, 1).fillRect(-4, -12, 8, 10);
+  g.fillStyle(0x1d1b26, 1).fillTriangle(-3, -1, 3, -1, 0, 3);
+  t.setY(-2);
+  return scene.add.container(0, 0, [g, t]);
 }
