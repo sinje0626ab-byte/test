@@ -148,10 +148,11 @@ for (const l of LABELS) {
 // ── 손으로 놓은 소품 ──
 const shapeProps = [];
 const poles = [];
-const placeProp = (k, x, y) => {
+const propTiles = new Set();      // 골목에 흩뿌린 소품 칸 (통로 검사용)
+const placeProp = (k, x, y, onBlocked = false) => {
   const t = PROP[k];
   if (SHAPE_PROPS[k]) { shapeProps.push({ kind: k, sprite: SHAPE_PROPS[k], x, y }); blocked[y][x] = true; return; }
-  deco[y][x] = Array.isArray(t.base) ? t.base[Math.floor(rnd() * t.base.length)] : t.base;
+  if (onBlocked) above[y][x] = t.base; else deco[y][x] = Array.isArray(t.base) ? t.base[Math.floor(rnd() * t.base.length)] : t.base;
   if (t.top != null && inMap(x, y - 1)) above[y - 1][x] = t.top;
   if (t.top2 != null && inMap(x, y - 2)) above[y - 2][x] = t.top2;
   blocked[y][x] = true;
@@ -185,8 +186,13 @@ for (const yb of alleyRows) {
       if (walkable(x, yb + 1) && kind[yb + 1][x] !== 'water') continue;  // 아래로 빠지는 틈
       if (!walkable(x, yb - 1) || !walkable(x - 1, yb - 1) || !walkable(x + 1, yb - 1)) continue;
       if (x - last < 2) continue;
-      if (x - lastPole >= 8 && yb !== 9) { placeProp('pole', x, yb); lastPole = x; last = x; continue; }
-      if (rnd() < 0.22) { placeProp(KINDS[Math.floor(rnd() * KINDS.length)], x, yb); last = x; }
+      // 전봇대: 골목 뒷줄 너머 건물 칸(원래 못 걷는 칸)에 세운다. 위 두 칸은 사람 위에 그려진다
+      if (x - lastPole >= 8 && yb !== 9 && blocked[yb + 1]?.[x]) { placeProp('pole', x, yb + 1, true); lastPole = x; continue; }
+      // 나머지 소품: 뒷줄에만, 아래로 빠지는 샛길 입구 양옆에도 안 놓는다
+      if (walkable(x - 1, yb + 1) || walkable(x + 1, yb + 1)) continue;
+      // 옆 한 칸만 남기고 그 너머가 막혀 있으면 주머니(막다른 칸)가 생긴다
+      if ([-1, 1].some((d) => walkable(x + d, yb) && !walkable(x + 2 * d, yb))) continue;
+      if (rnd() < 0.22) { placeProp(KINDS[Math.floor(rnd() * KINDS.length)], x, yb); propTiles.add(`${x},${yb}`); last = x; }
     }
   }
 }
@@ -217,13 +223,21 @@ for (const b of buildingsOut) {
     for (const t of lost) { const [x, y] = t.split(',').map(Number); blocked[y][x] = true; deco[y][x] = PROP.fence.base; }
   }
 }
-// 막다른 골목 수 (세 방향이 막힌 칸)
-let deadEnds = 0;
+// 막다른 골목 수 (세 방향이 막힌 칸) · 소품 때문에 새로 생긴 막다른 칸
+const isDead = (x, y, walk) => walk(x, y) && [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => walk(x + dx, y + dy)).length === 1;
+const walkNoProps = (x, y) => walkable(x, y) || propTiles.has(`${x},${y}`);
+let deadEnds = 0; let propDead = 0; const propDeadAt = [];
 for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-  if (!walkable(x, y)) continue;
-  const open = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => walkable(x + dx, y + dy)).length;
-  if (open === 1) deadEnds++;
+  if (isDead(x, y, walkable)) { deadEnds++; if (!isDead(x, y, walkNoProps)) { propDead++; propDeadAt.push(`${x},${y}`); } }
 }
+// 골목 통로 검사: 골목 띠(두 줄)의 칸 기둥마다 걸을 수 있는 칸이 하나 이상
+let blockedCols = 0; const blockedAt = [];
+for (const yb of alleyRows) for (let x = 0; x < W; x++) {
+  const ys = [yb - 1, yb].filter((y) => ['alley', 'sidewalk', 'cross'].includes(kind[y]?.[x]) || propTiles.has(`${x},${y}`));
+  if (ys.length === 2 && !ys.some((y) => walkable(x, y))) { blockedCols++; blockedAt.push(`${x},${yb}`); }
+}
+console.log(`통로 검사: 골목 기둥 막힘 ${blockedCols}${blockedAt.length ? ` (${blockedAt.join(' ')})` : ''} · 소품 때문에 생긴 막다른 칸 ${propDead}${propDeadAt.length ? ` (${propDeadAt.join(' ')})` : ''}`);
+if (blockedCols || propDead) process.exitCode = 1;
 
 const cost = kind.map((row, y) => row.map((k, x) => (blocked[y][x] ? 0 : COST[k] ?? 1)).join('')).join('\n');
 
@@ -250,6 +264,7 @@ const town = tiledMap(W, H, [
   { name: 'places', type: 'string', value: JSON.stringify(places) },
   { name: 'buildings', type: 'string', value: JSON.stringify(buildingsOut) },
   { name: 'labels', type: 'string', value: JSON.stringify(LABELS) },
+  { name: 'cross', type: 'string', value: JSON.stringify(CROSSWALKS.flatMap((c) => { const out = []; for (let y = c.y; y < c.y + c.h; y++) for (let x = c.x; x < c.x + c.w; x++) out.push(y * W + x); return out; })) },
   { name: 'credit', type: 'string', value: 'Tiles: Kenney RPG Urban Pack (CC0). 신림동 구조를 손으로 단순화한 배치.' },
 ]);
 writeFileSync(out('town.json'), JSON.stringify(town));

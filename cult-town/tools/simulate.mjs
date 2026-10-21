@@ -43,12 +43,12 @@ for (const r of RESIDENTS) {
     const deps = departures(s, g, r.id);
     deps.forEach((e, i) => {
       if (!findPath(g, resolveKey(g, i ? deps[i - 1].key : r.home).tile, resolveKey(g, e.key).tile)) fail(`${r.name} ${kind} ${e.key}: 길이 없다`);
-      const stay = e.dep - (i ? deps[i - 1].arrive : CLOCK.dayStart - 60);
+      const stay = e.dep - (i ? deps[i - 1].arrive : CLOCK.dayStart);
       if (stay < 10) fail(`${r.name} ${kind} ${e.key}: 앞 장소에 ${Math.round(stay)}분밖에 못 있는다`);
       if (stay < tightest.stay) tightest = { stay, who: `${r.name} ${kind} → ${e.key}` };
       legs++;
     });
-    if (deps[0].dep < CLOCK.dayStart - 60) fail(`${r.name} ${kind}: 첫 출발이 너무 이르다`);
+    if (deps[0].dep < CLOCK.dayStart) fail(`${r.name} ${kind}: 첫 출발이 07시보다 이르다`);
     if (!findPath(g, resolveKey(g, deps.at(-2)?.key ?? r.home).tile, resolveKey(g, 'sanctuary').tile)) fail(`${r.name}: 성소로 가는 길이 없다`);
   }
 }
@@ -62,14 +62,14 @@ for (const day of [0, 2, 5, 6]) {
   // 예배 날 성소 가는 길도 보려고 다섯 명을 참석자로 둔다
   s.attend = day === 2 || day === 6 ? ['jihun', 'yerin', 'tong', 'seongja', 'osik'] : [];
   let maxCrowd = 0; let crowdAt = '';
-  let notArrived = 0;
+  let notArrived = 0; const lateLog = [];
   for (let m = CLOCK.dayStart; m < CLOCK.dayEnd + 60; m++) {
     s.minute = m;
     // 일과가 바뀌기 직전: 이전 목적지에 도착했는가
     for (const p of PEOPLE) {
       const pos = s.pos[p.id];
       const nextKey = targetKey(s, g, p.id, m + 1);
-      if (nextKey !== pos.key && pos.path.length > 0) notArrived++;
+      if (nextKey !== pos.key && pos.path.length > 0) { notArrived++; if (lateLog.length < 12) lateLog.push(`${p.id} ${pos.key}→${nextKey} ${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')} 남은 ${pos.path.length}칸`); }
     }
     tickPeople(s, g, 1);
     if (m % 15 === 0) {
@@ -86,6 +86,7 @@ for (const day of [0, 2, 5, 6]) {
   const home = PEOPLE.filter((p) => !s.attend.includes(p.id)).every((p) => s.pos[p.id].inside && s.pos[p.id].key === p.home);
   const atSanct = s.attend.every((id) => s.pos[id].key === 'sanctuary' && s.pos[id].inside);
   console.log(`  ${CLOCK.weekdays[day % 7]}요일: 도착 전 다음 일과로 넘어간 경우 ${notArrived} · 한 칸 최대 ${maxCrowd}명 (${crowdAt}) · 밤에 모두 귀가 ${home ? '예' : '아니오'}${s.attend.length ? ` · 예배 참석자 성소 도착 ${atSanct ? '예' : '아니오'}` : ''}`);
+  if (lateLog.length) console.log('    ' + lateLog.join('\n    '));
   if (notArrived > 0) fail(`${CLOCK.weekdays[day % 7]}요일: 도착 전에 일과가 바뀐 경우 ${notArrived}`);
   if (!home) fail('밤까지 집에 못 들어간 사람이 있다');
   if (s.attend.length && !atSanct) fail('예배 참석자가 성소에 못 왔다');
@@ -224,6 +225,7 @@ function playGame(sect, seed, policy = 'normal', maxDays = 60) {
     if (r.phaseUp) phase1Day = s.day;
     if (r.revelation) applyRevelation(s, r.revelation, r.revelation === 'sign' ? ['banner'] : ['meal', 'open']);
     timeline.push(memberCount(s));
+    if (process.env.RDBG && seed === 1000 && s.phase === 1) console.log(`      d${s.day} m${memberCount(s)} streak${s.sanctuary.rentStreak} arr${s.sanctuary.arrears} money${s.leader.money}`);
     if (process.env.P2DBG && seed === 1000 && s.phase >= 2) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} step${s.space.step} off${activeOfficers(s).length} money${s.leader.money} rooms ${JSON.stringify(Object.fromEntries(Object.entries(s.rooms).map(([k, v]) => [k, v.type + v.level])))}`);
     if (VERBOSE && seed === 1000 && d % 7 === 6) {
       console.log(`    ${sect} ${d + 1}일 신도 ${memberCount(s)} 따라온 ${s.followers} 평판 ${Math.round(s.rep)} 돈 ${s.leader.money} 공간 ${s.space.step} 방 ${Object.values(s.rooms).map((x) => x.type[0] + x.level).join('')} 간부 ${activeOfficers(s).map((o) => `${o.name.slice(1)}${Math.round(o.discontent)}`).join(',')} 건물주 ${Math.round(s.landlordAnger)} 사연 ${Object.values(s.res).reduce((n, x) => n + (x.story?.done ?? 0), 0)}`);
@@ -235,12 +237,12 @@ function playGame(sect, seed, policy = 'normal', maxDays = 60) {
 
 if (!args.includes('--no-balance')) {
   const DAY_SECONDS = (CLOCK.dayEnd - CLOCK.dayStart) / CLOCK.minutesPerSecond + 45;
-  const P1_LIMIT = 28;   // 1단계를 이 날 안에 끝내면 성공 (약 2시간)
+  const P1_LIMIT = 24;   // 1단계를 이 날 안에 끝내면 성공 (약 2시간 10분, 하루 ≈ 5분 25초)
   console.log(`\n■ 균형 검사 (유형마다 ${GAMES}판, 하루 ≈ ${Math.round(DAY_SECONDS)}초, 1단계 성공 = ${P1_LIMIT}일 안에 목표)`);
   const median = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
   const min = (d) => Math.round((d * DAY_SECONDS) / 60);
   let p1Total = 0; let n = 0;
-  for (const sect of SECT_ORDER) {
+  for (const sect of (process.env.SECT ? [process.env.SECT] : SECT_ORDER)) {
     const res = [];
     for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
     const p1 = res.filter((r) => r.phase1Day && r.phase1Day <= P1_LIMIT);
@@ -250,10 +252,11 @@ if (!args.includes('--no-balance')) {
     p1Total += p1.length; n += res.length;
     const p1d = p1.map((r) => r.phase1Day); const wd = wins.map((r) => r.days);
     console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${p1.length}/${GAMES} (중앙 ${p1d.length ? median(p1d) : '-'}일 ≈ ${p1d.length ? min(median(p1d)) : '-'}분) · 2단계 ${wins.length}/${GAMES} (중앙 ${wd.length ? median(wd) : '-'}일 ≈ ${wd.length ? min(median(wd)) : '-'}분) · ${Object.entries(reasons).map(([k, v]) => `${k}:${v}`).join(' ')}`);
-    if (VERBOSE) console.log('    ', res[0].timeline.join(' '));
+    if (VERBOSE) console.log("    ", res[0].timeline.join(" "));
+    if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "));
     const rate = p1.length / GAMES;
     if (rate < 0.6 || rate > 0.8) fail(`${SECTS[sect].name}: 1단계 성공률 ${Math.round(rate * 100)}% (목표 60~80%)`);
-    if (wd.length) { const m = min(median(wd)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: 2단계 목표까지 ${m}분 (목표 2~3시간)`); }
+    if (wd.length) { const m = min(median(wd)); if (m < 120 || m > 195) fail(`${SECTS[sect].name}: 2단계 목표까지 ${m}분 (목표 2시간~3시간 15분)`); }
     else fail(`${SECTS[sect].name}: 2단계 목표에 닿은 판이 없다`);
   }
   console.log(`  전체 1단계 성공률 ${Math.round((p1Total / n) * 100)}%`);

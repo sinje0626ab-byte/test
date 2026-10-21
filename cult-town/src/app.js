@@ -52,12 +52,29 @@ export const app = {
   saveTimer: 0,
   floor: 3,
   dpad: {},
+  running: false,
 
   gridFor(id) { return interiorGrids[id]; },
+
+  // ── 뒤로 (Esc · 오른쪽 클릭): 화면마다 지금의 '한 단계 뒤로' 함수를 등록한다. 마지막에 등록된 것부터 ──
+  backs: new Map(),
+  setBack(key, fn) { this.backs.delete(key); if (fn) this.backs.set(key, fn); },
+  back() {
+    const keys = [...this.backs.keys()];
+    while (keys.length) {
+      const k = keys.pop();
+      if (!document.querySelector(`#ui [data-id="${k}"]`)) { this.backs.delete(k); continue; }
+      this.backs.get(k)();
+      return true;
+    }
+    return false;
+  },
 
   onBoot(game) {
     this.game = game;
     window.addEventListener('keydown', (e) => this.onKey(e));
+    window.addEventListener('keyup', (e) => { if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.running = false; });
+    window.addEventListener('contextmenu', (e) => { if (!this.s) return; e.preventDefault(); this.back(); });
     createDpad(this);
     this.toTitle();
   },
@@ -335,16 +352,19 @@ export const app = {
     return makePortrait(img, id, look);
   },
 
+  // 단축키는 e.code 로 본다 (한글 입력 상태에서도 같은 자리의 키)
   onKey(e) {
-    if (!this.s || e.target.tagName === 'INPUT') return;
-    if (e.key === 'Escape') {
-      if ($ui().querySelector('[data-id="profile"]')) { closeProfile(); return; }
+    if (!this.s || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.running = true;
+    if (e.code === 'Escape') {
+      if (this.back()) return;
       if (this.modal === 0) this.openMenu();
+      return;
     }
     if (this.modal > 0) return;
-    if (e.key === 'p' || e.key === 'P') this.setSpeed(this.speed ? 0 : 1);
-    if (e.key === '1') this.setSpeed(1);
-    if (e.key === '2') this.setSpeed(2);
-    if (e.key === 'n' || e.key === 'N') this.openNotebook();
+    if (e.code === 'Backquote') { e.preventDefault(); this.setSpeed(0); }
+    if (e.code === 'Digit1') this.setSpeed(1);
+    if (e.code === 'Digit2') this.setSpeed(2);
+    if (e.code === 'KeyN') this.openNotebook();
   },
 };

@@ -45,10 +45,11 @@ export function openNight(app) {
         btn('officers', '간부', `${activeOfficers(s).length}명 · 배치·승진`),
         btn('meeting', '간부 회의', s.flags.meetingDay === s.day ? '오늘은 이미 했다' : '안건 하나', { disabled: s.flags.meetingDay === s.day || activeOfficers(s).length < 2 }),
       ] : []),
-      btn('sleep', NIGHT.menu.sleep, isMonthEnd(s.day) ? '월세가 나가는 날이다' : '다음 날 아침 7시', { wide: true, run: () => { unmount('night'); app.sleep(); } }),
+      btn('sleep', NIGHT.menu.sleep, isMonthEnd(s.day) ? '월세가 나가는 날이다' : '다음 날 아침 7시', { wide: true, run: () => { unmount('night'); app.setBack('night', null); app.sleep(); } }),
     );
 
-    const subEl = sub ? h('div', { class: 'sub' }, renderSub(sub)) : null;
+    const subEl = sub ? h('div', { class: 'sub' }, renderSub(sub), h('div', { class: 'row', style: 'margin-top:10px' }, h('button', { class: 'btn back', onclick: () => { play('click'); sub = null; render(); } }, '‹ 뒤로'))) : null;
+    app.setBack('night', sub ? () => { sub = null; render(); } : null);
     mount('night', h('div', { class: 'screen night' }, h('div', { class: 'panel box' },
       h('h2', {}, fill(NIGHT.title, s)),
       h('p', { class: 'muted' }, NIGHT.arrive, ' ', h('span', {}, mutter)),
@@ -126,7 +127,7 @@ export function openNight(app) {
       const w = s.week;
       const inflated = s.flags.inflatedWeek === s.bulletinNo;
       return h('div', { class: 'stack' },
-        h('p', {}, `이번 주 헌금 ${won(w.offering)} · 지갑 ${won(s.leader.money)} · 월세 ${won(rentNow(s))} (일요일 밤)`),
+        h('p', {}, `이번 주 헌금 ${won(w.offering)} · 지갑 ${won(s.leader.money)} · 월세 ${won(rentNow(s))} (말일 밤)`),
         h('p', { class: 'muted' }, `월세 연속 납부 ${s.sanctuary.rentStreak}달 · 체납 ${s.sanctuary.arrears}번 · 지금 신도 ${memberCount(s)}명`),
         h('div', { class: 'stack dark' }, h('button', { class: 'btn', disabled: inflated, onclick: () => {
           inflate(s); play('page'); note = [SHADOW.inflate.now]; app.refresh(); render();

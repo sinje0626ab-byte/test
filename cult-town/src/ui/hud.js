@@ -10,9 +10,9 @@ export function createHud(app) {
   const time = h('div', { class: 'time' });
   const phase = h('div', { class: 'phase' });
   const speedBtns = [
-    h('button', { class: 'btn', title: '일시정지 (P)', onclick: () => app.setSpeed(0) }, '❚❚'),
-    h('button', { class: 'btn', title: '보통 속도 (1)', onclick: () => app.setSpeed(1) }, '▶'),
-    h('button', { class: 'btn', title: '2배속 (2)', onclick: () => app.setSpeed(2) }, '▶▶'),
+    h('button', { class: 'btn', title: '멈춤 (` 키)', onclick: () => app.setSpeed(0) }, h('kbd', {}, '`'), ' 멈춤'),
+    h('button', { class: 'btn', title: '재생 (1 키)', onclick: () => app.setSpeed(1) }, h('kbd', {}, '1'), ' 재생'),
+    h('button', { class: 'btn', title: '빠르게 (2 키)', onclick: () => app.setSpeed(2) }, h('kbd', {}, '2'), ' 빠르게'),
   ];
   const sound = h('button', { class: 'btn', title: '소리', onclick: () => { sound.textContent = toggleMute() ? '🔇' : '🔊'; } }, isMuted() ? '🔇' : '🔊');
   const menu = h('button', { class: 'btn', title: '메뉴 (Esc)', onclick: () => { play('click'); app.openMenu(); } }, '☰');

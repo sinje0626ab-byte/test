@@ -18,7 +18,8 @@ export function impressionOf(st) {
 
 export function openProfile(app, id, { onTalk } = {}) {
   play('page');
-  const close = () => unmount('profile');
+  const close = () => { unmount('profile'); app.setBack('profile', null); };
+  app.setBack('profile', close);
   if (id.startsWith('c:')) {
     const c = CLERGY.find((x) => `c:${x.id}` === id);
     mount('profile', h('div', { class: 'profile box' },

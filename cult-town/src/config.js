@@ -8,14 +8,14 @@ export const GAME = {
   startAge: { min: 25, max: 60, default: 38 },
 };
 
-// ── 시간 ── 1일 = 실제 약 4분 (낮 3분 30초 + 밤 메뉴). 07:00~21:00 이 걸어 다니는 낮.
+// ── 시간 ── 1일 = 실제 약 5분 30초 (낮 4분 40초 + 밤 메뉴). 07:00~21:00 이 걸어 다니는 낮.
 export const CLOCK = {
   dayStart: 7 * 60,              // 분
   dayEnd: 21 * 60,               // 이때 "성소로 돌아가세요"
   forceHome: 22 * 60,            // 이때까지 안 들어가면 자동 귀가 (피로 +)
-  minutesPerSecond: 4,           // 1배속: 실제 1초 = 게임 4분 → 14시간 = 210초
+  minutesPerSecond: 3,           // 1배속: 실제 1초 = 게임 3분 → 14시간 = 280초 (걷는 속도는 MOVE 의 칸/초로 따로 정한다)
   fastFactor: 2,
-  daysPerMonth: 7,               // 압축 달력: 한 달 = 7일 (1단계를 1~2시간에 끝내려고)
+  daysPerMonth: 5,               // 압축 달력: 한 달 = 5일 (월세는 5일마다 말일 밤). 요일·예배·주보는 7일 주기 그대로
   weekdays: ['월', '화', '수', '목', '금', '토', '일'],
   phases: [                      // 시간대 (색조와 주민 일과 기준)
     { id: 'morning', name: '아침', from: 7 * 60 },
@@ -29,8 +29,19 @@ export const CLOCK = {
 // ── 이동 ──
 export const MOVE = {
   tile: 16,
-  playerSpeed: 90,               // px/초 (화면)
-  residentTilesPerMinute: 1.8,   // 게임 1분에 걷는 칸 수 (시뮬레이터와 화면이 같은 값). 일과 시각은 도착 시각, 그만큼 먼저 나선다
+  // 걷는 속도는 현실 1초당 칸 수 (1배속). 2배속이면 2배. 시뮬레이터는 ÷ minutesPerSecond 로 칸/게임분을 쓴다
+  playerTilesPerSecond: 3,
+  playerRunTilesPerSecond: 4.5,  // Shift · 모바일 방향키 길게
+  runFatiguePerTile: 0.05,       // 달리면 걸음마다 피로 더
+  resident: { base: [1.8, 2.2], old: [1.4, 1.7], young: [2.2, 2.6], npc: 2.0 },   // 칸/초 [최소, 최대] (사람마다 정해짐)
+  rainMul: 1.15,                 // 비 오는 날 빨리 걷는다
+  lateMul: 0.85,                 // 20시 넘어 귀가할 땐 느리게
+  lateFrom: 20 * 60,
+  // 가는 길에 멈춤 (현실 초 → 게임분으로 바꿔 씀)
+  pauseChance: 0.022,            // 한 칸 갈 때마다
+  signalChance: 0.5,             // 횡단보도 앞에서 신호 기다릴 확률
+  pauseSeconds: [2, 4],
+  yieldSeconds: 0.6,             // 좁은 길에서 마주치면 한쪽이 기다리는 시간
 };
 
 // ── 주민 욕구 ── 0~100 (높을수록 그 고민이 크다)
@@ -66,9 +77,9 @@ export const STAGES = {
   memberLike: 70,                // 새신자 → 신도 호감 조건
   memberWorships: 2,             // 예배 몇 번 참석하면 신도 후보
   leaveSuspicion: 80,            // 의심이 이 이상이면 단계가 하나 내려간다 (신도 이탈)
-  followersPerMemberWeek: 0.35,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
+  followersPerMemberWeek: 0.75,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
   followerCapPerMember: 2,
-  phase2Followers: { chance: 0.9, cap: 4 },   // 2단계: 신도가 지인을 더 잘 데려온다
+  phase2Followers: { chance: 1.3, cap: 5 },   // 2단계: 신도가 지인을 더 잘 데려온다
 };
 
 // ── 평판·소문·기성 종교 ──
@@ -90,7 +101,7 @@ export const RUMOR = {
 
 // ── 성소 ──
 export const SANCTUARY = {
-  rent: 250_000,                 // 한 달(7일)마다
+  rent: 180_000,                 // 한 달(5일)마다
   maxArrears: 3,                 // 연속 체납 3번이면 쫓겨남
   baseSeats: 6,                  // 소품 없이 앉을 자리
   worship: {
@@ -122,10 +133,10 @@ export const GOAL = {
 export const SECT_FX = {
   doomsday: { topic: { future: 1.6 }, preachSus: 1.15, invite: 1.1, worship: 1.15, offering: 1.0, convert: 1.15, secularSus: 1.1, ages: [17, 32], date: { day: 18, sus: 25 } },
   messiah: { topic: { lonely: 1.4 }, preachSus: 1.35, invite: 1.0, worship: 1.4, offering: 1.1, convert: 1.2, secularSus: 1.2, ages: [40, 65] },
-  meditation: { topic: { meaning: 1.6, health: 1.35, lonely: 1.15 }, preachSus: 0.75, invite: 1.2, worship: 1.05, offering: 1.0, convert: 1.0, secularSus: 0.6, ages: [24, 45] },
-  fortune: { topic: { money: 1.3, lonely: 1.05 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.25, convert: 1.0, secularSus: 1.1, ages: [45, 75] },
+  meditation: { topic: { meaning: 1.7, health: 1.45, lonely: 1.2 }, preachSus: 0.75, invite: 1.3, worship: 1.05, offering: 1.15, convert: 1.2, secularSus: 0.6, ages: [24, 45] },
+  fortune: { topic: { money: 1.22, lonely: 1.0 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.25, convert: 1.0, secularSus: 1.1, ages: [45, 75] },
   shaman: { topic: { future: 1.28, money: 1.12 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, ages: [30, 70], listenBonus: 1.0 },
-  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.05, worship: 1.05, offering: 1.05, convert: 1.0, secularSus: 0.9, ages: [55, 85], pharmacistSus: 1.2 },
+  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.1, worship: 1.05, offering: 1.05, convert: 1.1, secularSus: 0.9, ages: [55, 85], pharmacistSus: 1.2 },
 };
 
 // ── 성소 소품 ── (data/shop.js 의 id 와 같은 키) seats: 자리 + / mood: 분위기 +
@@ -178,13 +189,13 @@ export const EVENTS = { dailyChance: 0.28, minGapDays: 2 };
 // ════════ 2단계 (B) ════════
 export const PHASE2 = { members: 100, minSpaceStep: 2, minOfficers: 3, landlordAngerMax: 100 };
 
-// 공간 단계: 보증금(한 번) · 월세 추가(주마다) · 새로 생기는 방 자리
+// 공간 단계: 보증금(한 번) · 월세 추가(달마다) · 새로 생기는 방 자리
 export const SPACE_STEPS = [
   { id: 0, name: '302호', deposit: 0, rent: 0, slots: ['302'] },
-  { id: 1, name: '303호 벽 트기', deposit: 500_000, rent: 120_000, slots: ['303'] },
-  { id: 2, name: '3층 전체 (301·304호)', deposit: 800_000, rent: 220_000, slots: ['301', '304'] },
-  { id: 3, name: '2층 임대', deposit: 1_800_000, rent: 260_000, slots: ['201', '202'] },
-  { id: 4, name: '4층 임대', deposit: 1_800_000, rent: 260_000, slots: ['401', '402'] },
+  { id: 1, name: '303호 벽 트기', deposit: 350_000, rent: 85_000, slots: ['303'] },
+  { id: 2, name: '3층 전체 (301·304호)', deposit: 600_000, rent: 160_000, slots: ['301', '304'] },
+  { id: 3, name: '2층 임대', deposit: 1_800_000, rent: 190_000, slots: ['201', '202'] },
+  { id: 4, name: '4층 임대', deposit: 1_800_000, rent: 190_000, slots: ['401', '402'] },
 ];
 // 건물주 협상: 깎기 성공 확률 = base + 평판/repDiv + 간부 관리 최고치 × manage
 export const NEGOTIATE = { base: 0.25, repDiv: 250, manage: 0.06, cut: 0.3, failAnger: 12, longCut: 0.15, longAnger: -10 };
@@ -215,3 +226,66 @@ export const OFFICERS = {
 
 // 성장 계시 (ui/revelation.js, data/revelations.js)
 export const REVELATIONS = [{ id: 'sign', at: 50 }, { id: 'fence', at: 100 }];
+
+// ════════ 3단계: 바깥의 위협 (22장) ════════
+export const PHASE3 = {
+  members: 200, rep: 40, repFloor7: 30,          // 목표: 신도 200 + 평판 40 이상 (최근 7일 최저 30 이상) + 라이벌 정리
+  followers: { chance: 1.3, cap: 7 },            // 3단계: 신도 한 명이 데려오는 사람 한도가 늘어난다
+  rivalMajority: 0.5,                            // 우리 신도의 이 비율 넘게 라이벌로 가면 실패
+};
+
+// 노출 (0~100): 매일 목표치 쪽으로 30%씩. 목표치 = (60 - 평판) × repWeight + 방·탈퇴자·어두운 선택
+export const EXPOSURE = {
+  follow: 0.3, repWeight: 0.6, base: 10,
+  dorm: 8, broadcast: 7,                          // 방 레벨 1당
+  defector: 5, meeting: 10, dark: 4, darkDays: 5, // 어두운 선택은 며칠 동안 남는다
+  rivalExpose: 15, rivalExposeDays: 6,
+  report: -20,                                    // 보도가 나간 뒤에는 한동안 내려간다
+};
+
+// 기자 (x:reporter)
+export const REPORTER = {
+  appearAt: 40, cooldown: 6, stayDays: 3, reportAfter: 3,
+  interviewsPerHour: 1, startHour: 10, endHour: 18,
+  heat: { resident: 2, sus: 0.06, member: 8, defector: 12, meetingLink: 8, calmed: 0 },
+  sight: { tiles: 4, width: 3, loseSeconds: 6 },
+  face: { win: -14, lose: 10, winBase: 0.35, repDiv: 180, fatigue: 12 },
+  noComment: 4,
+  officer: { perTalk: -4, base: 6, disc: 5 },
+  evadeDay: 3,                                    // 피하기만 하면 기자가 동네를 더 돈다 (하루 열기 +)
+  // 보도: 평판 −(열기/rep + base) · 노출 report · 신도 의심 +열기/sus · 따라온 사람 −열기/followers %
+  report: { rep: 3, repBase: 4, sus: 10, followers: 2, low: 15, high: 35 },
+};
+
+// 신도 가족 시위
+export const PROTEST = { relativeSus: 50, chance: 0.6, cooldown: 3, passSus: 3, rep: -3, visitorAttend: 0.5, anger: 6, meetSus: -18, officerManage: 4 };
+
+// 탈퇴자
+export const DEFECTOR = { gossipSus: 3, gossipPerDay: 3, meetingAt: 2, bigMeeting: 3, reconcileBase: 0.3, reconcileLike: 150, reconcileStory: 0.1, hushMoney: 100_000, hushDue: 6 };
+
+// 기성 종교 공개 대응 (세 계열 같은 규칙)
+export const NOTICE = { members: 3, sus: 8, nearTiles: 6, nearMul: 0.7 };
+
+// 라이벌 교단
+export const RIVAL = {
+  startDelay: 3,
+  talksPerPreacher: 3,                            // 하루에 전도자마다 말 거는 주민 수 (교주 포함 3명)
+  like: { base: 7, topic: 6, sus: 0.08 },
+  leanAt: 35, memberAt: 65,                       // 라이벌 호감이 이만큼이면 기울기 · 라이벌 신도
+  stealGap: 12,                                   // 우리 신도인데 라이벌 호감이 우리 호감보다 이만큼 높으면 넘어간다
+  followers: { perMember: 0.7, base: 2 },         // 주마다 라이벌 따라온 사람
+  startFollowers: 12,
+  takeFollowers: 0.05,                            // 라이벌이 우리보다 크면 주마다 우리 따라온 사람 중 이 비율을 가져간다
+  compete: { days: 3, mul: 0.55, fatigue: 25 },
+  expose: { dirt: 3, cut: 0.45 },
+  merge: { base: 0.9, repDiv: 400, enemyCut: 0.3, absorb: 0.7 },
+  truce: { base: 0.35, repDiv: 200, sizeMin: 0.8 },
+  collapseAt: 3,
+  enemyMul: 1.5, enemyRep: -5,
+};
+
+// 행정: 민원이 쌓이면 구청·소방 점검. 숙소·방송실이 있으면 걸릴 확률이 높다. 경찰은 순찰만
+export const ADMIN = { complaintsAt: 30, chance: 0.5, cooldown: 7, fine: 150_000, roomRisk: 0.5, baseRisk: 0.15, patrolDays: 3, patrolAttend: 0.8 };
+
+// 3단계 계시
+export const REVELATIONS3 = [{ id: 'camera', at: 150 }, { id: 'neighbor' }];

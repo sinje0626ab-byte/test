@@ -30,8 +30,9 @@ export function openTalk(app, id) {
   const r = RESIDENT_BY_ID[id];
   const face = app.portrait(id);
   const sub = `${r.age}살 · ${r.job}`;
-  const close = () => { unmount('dialog'); app.modalClosed(); };
+  const close = () => { unmount('dialog'); app.setBack('dialog', null); app.modalClosed(); };
   app.modalOpened();
+  app.setBack('dialog', close);
 
   const can = canTalk(s, id);
   if (!can.ok) {
@@ -61,23 +62,30 @@ export function openTalk(app, id) {
     if (o.id === 'gift') return showGifts();
     finish(act(s, id, o.id, o.from, ctx));
   };
+  // 하위 화면의 '뒤로': 아무것도 고르지 않았으니 횟수·피로·호감이 그대로다
+  const backBtn = () => h('div', { class: 'row', style: 'margin-top:10px' }, h('button', { class: 'btn back', onclick: () => { play('click'); showMain(); } }, '‹ 뒤로'));
   const showGifts = () => {
     const have = Object.keys(s.inventory).filter((k) => s.inventory[k] > 0);
+    app.setBack('dialog', showMain);
     mount('dialog', shell(app, face, r.name, sub,
       h('div', { class: 'narr' }, '무엇을 줄까. 사람마다 좋아하는 게 다르다.'),
       h('div', { class: 'cards' }, have.map((k) => h('button', { class: 'card', onclick: () => { play('select'); finish(act(s, id, 'gift', k, ctx)); } },
         h('b', {}, ITEMS[k].name), h('small', {}, `${s.inventory[k]}개`)))),
+      backBtn(),
     ));
   };
   const showCards = () => {
+    app.setBack('dialog', showMain);
     mount('dialog', shell(app, face, r.name, sub,
       h('div', { class: 'narr' }, '어떤 고민을 들어 줄까. 아까 본 모습을 떠올려 보자.'),
       h('div', { class: 'narr' }, t.hint),
-      h('div', { class: 'cards' }, t.cards.map((c) => h('button', { class: 'card', onclick: () => { play('select'); finish(act(s, id, 'listen', c)); } },
+      h('div', { class: 'cards' }, t.cards.map((c) => h('button', { class: 'card', onclick: () => { play('select'); finish(act(s, id, 'listen', c, ctx)); } },
         h('span', { class: 'ic' }, CARDS[c].icon), h('b', {}, CARDS[c].name), h('small', {}, CARDS[c].desc)))),
+      backBtn(),
     ));
   };
   const finish = (res) => {
+    app.setBack('dialog', close);
     const pills = [];
     if (res.dLike) pills.push(h('span', { class: `pill ${res.dLike > 0 ? 'up' : 'down'}` }, `호감 ${res.dLike > 0 ? '+' : ''}${res.dLike}`));
     if (res.dSus) pills.push(h('span', { class: `pill ${res.dSus > 0 ? 'down' : 'up'}` }, `의심 ${res.dSus > 0 ? '+' : ''}${res.dSus}`));
@@ -100,11 +108,15 @@ export function openTalk(app, id) {
     app.afterTalk(id, res);
   };
 
-  mount('dialog', shell(app, face, r.name, sub,
-    h('div', { class: 'say' }, t.greet),
-    h('div', { class: 'narr' }, t.hint),
-    h('div', { class: 'opts' }, t.options.map(optionBtn),
-      h('button', { class: 'btn wide', onclick: close }, OPTIONS.leave.label))));
+  function showMain() {
+    app.setBack('dialog', close);
+    mount('dialog', shell(app, face, r.name, sub,
+      h('div', { class: 'say' }, t.greet),
+      h('div', { class: 'narr' }, t.hint),
+      h('div', { class: 'opts' }, t.options.map(optionBtn),
+        h('button', { class: 'btn wide', onclick: close }, OPTIONS.leave.label))));
+  }
+  showMain();
 }
 
 function favorText(f) {
@@ -118,7 +130,8 @@ export function openClergyTalk(app, clergyId) {
   const { name, line } = talkClergy(app.s, clergyId);
   app.modalOpened();
   play('talk');
-  const close = () => { unmount('dialog'); app.modalClosed(); };
+  const close = () => { unmount('dialog'); app.setBack('dialog', null); app.modalClosed(); };
+  app.setBack('dialog', close);
   mount('dialog', shell(app, app.portrait(`c:${clergyId}`), name, c.bio,
     h('div', { class: 'say' }, line),
     h('div', { class: 'narr' }, '포교 얘기를 꺼낼 분위기가 아니다. 인사만 하고 물러난다.'),

@@ -20,6 +20,7 @@ async function boot() {
     input: { activePointers: 2 },
     scene: [BootScene, TitleScene, TownScene, SanctuaryScene],
   });
+  app.game.registry.set('app', app);
   window.__app = app;   // 검증 스크립트용
 }
 boot();
