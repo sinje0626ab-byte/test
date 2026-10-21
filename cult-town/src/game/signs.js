@@ -75,9 +75,9 @@ export function drawRoof(scene, b) {
     g.fillStyle(0x1d1b26, 0.4).fillRect(tx + 5, ty, 4, 2);
   }
   // 실외기 1~2개
-  const n = 1 + (h >> 3) % 2;
+  const n = 1 + (h >>> 3) % 2;
   for (let k = 0; k < n; k++) {
-    const ax = left + 6 + ((h >> (5 + k * 3)) % Math.max(1, b.w - 1)) * T * 0.8;
+    const ax = left + 6 + ((h >>> (5 + k * 3)) % Math.max(1, b.w - 1)) * T * 0.8;
     const ay = top + roofPx - 12 - (k % 2) * 4;
     if (ax > left + wPx - 14) continue;
     g.fillStyle(0x1d1b26, 1).fillRect(ax - 1, ay - 1, 13, 10);
@@ -86,7 +86,7 @@ export function drawRoof(scene, b) {
     g.fillStyle(0x9a9a92, 1).fillRect(ax + 8, ay + 2, 2, 4);
   }
   // 빨래줄
-  if (b.roofH >= 3 && (h >> 9) % 2 === 0 && b.w >= 5) {
+  if (b.roofH >= 3 && (h >>> 9) % 2 === 0 && b.w >= 5) {
     const ly = top + roofPx / 2 + 2; const lx0 = left + 6; const lx1 = left + wPx - 8;
     g.lineStyle(1, 0x4a4a4a, 1).lineBetween(lx0, ly, lx1, ly);
     const colors = [0xe85a5a, 0xf0f0f0, 0x5a8ae8, 0xf0d040, 0x6ac86a];

@@ -6,8 +6,9 @@ export function createDpad(app) {
   if (!touch) return;
   const btn = (dir, label) => {
     const b = h('button', { class: `dpad-btn dpad-${dir}`, 'aria-label': dir }, label);
-    const on = (e) => { e.preventDefault(); app.dpad[dir] = true; b.classList.add('on'); };
-    const off = (e) => { e.preventDefault(); app.dpad[dir] = false; b.classList.remove('on'); };
+    let timer = null;
+    const on = (e) => { e.preventDefault(); app.dpad[dir] = true; b.classList.add('on'); clearTimeout(timer); timer = setTimeout(() => { app.dpadRun = true; b.classList.add('run'); }, 550); };
+    const off = (e) => { e.preventDefault(); app.dpad[dir] = false; b.classList.remove('on', 'run'); clearTimeout(timer); app.dpadRun = Object.values(app.dpad).some(Boolean) && app.dpadRun; };
     b.addEventListener('pointerdown', on);
     b.addEventListener('pointerup', off);
     b.addEventListener('pointercancel', off);

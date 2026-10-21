@@ -28,6 +28,23 @@ export function v2Fields() {
   };
 }
 
+// 저장 v3 에서 생긴 칸
+export function v3Fields() {
+  return {
+    phase3Day: null,
+    exposure: 0,
+    reporter: { active: false, since: -1, leaveDay: -1, heat: 0, interviewed: null, met: {}, cooldownUntil: 0, reports: 0, due: null, chase: false, talks: 0, evadedAt: -999, lastQ: null },
+    protest: null,
+    defectors: {},
+    meeting: null,
+    notices: {},
+    admin: { complaints: 0, last: -99, patrolUntil: -1 },
+    rival: null,
+    repLog: [],
+    darkLog: [],
+  };
+}
+
 export function newGame({ leaderName, age, family, sect, cultName, seed = Date.now() % 1e9 }) {
   const s = {
     v: GAME.saveVersion,
@@ -50,13 +67,14 @@ export function newGame({ leaderName, age, family, sect, cultName, seed = Date.n
     log: [],
     over: null,
     ...v2Fields(),
+    ...v3Fields(),
   };
   for (const r of RESIDENTS) {
     s.res[r.id] = {
       like: 0, sus: r.leader ? 8 : 4, stage: 'none', worships: 0,
       talked: -1, met: false, known: false, hint: null,
       needs: { ...r.needs }, attendDay: -1, missed: 0,
-      story: { done: 0, favor: null }, lastTopic: null,
+      story: { done: 0, favor: null }, lastTopic: null, rlike: 0, rival: 'none',
     };
   }
   for (const c of CAST) s.cast[c.id] = { sus: 0, talkIdx: 0, active: true };

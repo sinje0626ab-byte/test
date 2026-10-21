@@ -1,12 +1,17 @@
 // localStorage 저장. saveVersion 이 오르면 MIGRATIONS 에 한 단계씩 고치는 함수를 넣는다.
 import { GAME } from '../config.js';
-import { v2Fields } from './state.js';
+import { v2Fields, v3Fields } from './state.js';
 
 // MIGRATIONS[n]: 버전 n 저장을 n+1 로 바꾼다
 const MIGRATIONS = {
   1: (s) => {
     Object.assign(s, { ...v2Fields(), ...s });
     for (const r of Object.values(s.res)) { r.story ??= { done: 0, favor: null }; r.lastTopic ??= null; }
+    return s;
+  },
+  2: (s) => {
+    Object.assign(s, { ...v3Fields(), ...s });
+    for (const r of Object.values(s.res)) { r.rlike ??= 0; r.rival ??= 'none'; }
     return s;
   },
 };

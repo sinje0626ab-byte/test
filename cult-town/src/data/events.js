@@ -1,5 +1,9 @@
 // 돌발 사건 문장. 효과 숫자는 sim/events.js. {이름} {가족} {장소} {행사} 는 화면에서 바꿔 넣는다.
+import { ADMIN_TEXT } from './threats.js';
+
 export const EVENT_TEXT = {
+  district: ADMIN_TEXT.district,
+  firecheck: ADMIN_TEXT.fire,
   landlord: {
     title: '건물주가 계단에 서 있다',
     text: '아침 8시. 건물주 구만석 씨가 302호 문 앞에서 "잠깐 둘러봐도 되죠?" 한다. 손에 줄자를 들고 있다.',

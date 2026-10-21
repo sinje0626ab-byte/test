@@ -20,9 +20,14 @@ const PERSON = Object.fromEntries(PEOPLE.map((p) => [p.id, p]));
 // 낮 포교 중인 간부도 동네를 걷는다 ('o:<간부 id>'). 9시부터 90분마다 다른 바깥 자리로
 const STREET_SPOTS = ['station:plaza', 'market:entrance', 'cvs:front', 'park:plaza', 'stream:path', 'restaurant:front', 'station:exit4', 'market:walk', 'gosiwon:front', 'park:walk'];
 // 간부가 첫 신도(엄마·친구·민호)면 'o:<id>' 로 새로 걷고, 주민 출신이면 그 주민이 일과 대신 포교를 다닌다
+// 3단계: 기자(x:reporter, 역에서 올라온다)와 라이벌 교주·전도자(v:*, 관악로지스 빌딩 4층)도 같은 규칙으로 걷는다
+export const reporterOut = (s) => !!s.reporter?.active && s.day >= s.reporter.since && s.day <= s.reporter.leaveDay;
+export const rivalOut = (s) => !!s.rival && ['active', 'enemy'].includes(s.rival.status) && s.day >= s.rival.since;
 export function peopleOf(s) {
   const out = [...PEOPLE];
   for (const o of s.officers ?? []) if (!o.left && o.assign === 'street' && o.kind === 'cast') out.push({ id: `o:${o.id}`, home: 'sanctuary', kind: 'officer', oid: o.id });
+  if (reporterOut(s)) out.push({ id: 'x:reporter', home: 'station', kind: 'reporter' });
+  if (rivalOut(s)) for (const w of ['leader', 'p1', 'p2']) out.push({ id: `v:${w}`, home: 'office', kind: 'rival' });
   return out;
 }
 const onStreet = (s, id) => id.startsWith('o:') || (s.officers ?? []).some((o) => o.id === id && !o.left && o.assign === 'street');
@@ -38,7 +43,31 @@ function officerSchedule(s, id) {
   return officerCache.get(k);
 }
 const officerCache = new Map();
-const personAny = (id) => PERSON[id] ?? { id, home: 'sanctuary', kind: 'officer' };
+// 기자: 10시부터 한 시간마다 바깥 자리를 옮긴다 · 라이벌: 9시 반부터 80분마다
+const REPORTER_SPOTS = ['station:exit4', 'market:entrance', 'cvs:front', 'restaurant:front', 'park:plaza', 'market:walk', 'station:plaza', 'gosiwon:front', 'stream:path'];
+const RIVAL_SPOTS = ['station:exit3', 'market:walk', 'park:walk', 'cvs:front', 'gosiwon:front', 'station:plaza', 'stream:bridge', 'fortune:front', 'market:entrance'];
+const npcCache = new Map();
+function npcSchedule(s, id) {
+  const k = `${s.day}:${id}`;
+  if (!npcCache.has(k)) {
+    let h = 0; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const list = [];
+    if (id === 'x:reporter') {
+      list.push({ min: 9 * 60 + 30, key: 'station:exit4' });
+      for (let i = 0; i < 8; i++) list.push({ min: 10 * 60 + i * 60, key: REPORTER_SPOTS[(h + i * 4) % REPORTER_SPOTS.length] });
+      list.push({ min: 18 * 60 + 30, key: 'station' });
+    } else {
+      const off = id === 'v:leader' ? 0 : id === 'v:p1' ? 3 : 6;
+      for (let i = 0; i < 7; i++) list.push({ min: 9 * 60 + 30 + i * 80, key: RIVAL_SPOTS[(h + off + i * 2) % RIVAL_SPOTS.length] });
+      list.push({ min: 18 * 60 + 40, key: 'office' });
+    }
+    // 같은 자리가 이어지면 하나로
+    if (npcCache.size > 200) npcCache.clear();
+    npcCache.set(k, list.filter((e, i) => !i || e.key !== list[i - 1].key));
+  }
+  return npcCache.get(k);
+}
+const personAny = (id) => PERSON[id] ?? (id.startsWith('x:') ? { id, home: 'station', kind: 'reporter' } : id.startsWith('v:') ? { id, home: 'office', kind: 'rival' } : { id, home: 'sanctuary', kind: 'officer' });
 const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
 
 const parsed = new Map();
@@ -52,14 +81,22 @@ export function scheduleOf(s, id) {
   const p = personAny(id);
   if (onStreet(s, id)) return officerSchedule(s, id);
   if (p.kind === 'clergy') return parseList(CLERGY_SCHEDULE(CLERGY_BY_ID[p.clergy]));
+  if (p.kind === 'reporter' || p.kind === 'rival') return npcSchedule(s, id);
   const r = RESIDENT_BY_ID[id];
+  // 신도 가족 시위: 그날은 아침부터 상가 입구 앞에 선다 (대응하면 원래 일과로)
+  const pr = s.protest;
+  if (pr && !pr.done && pr.day === s.day && !pr.resolved && pr.id === id) return [{ min: 9 * 60 + 30, key: 'sanctuary:door' }, { min: 19 * 60, key: r.home }];
   let list = parseList(isWeekend(s.day) ? r.weekend : r.weekday);
+  // 탈퇴자 모임: 토요일 오후 솔밭 쉼터
+  if (s.meeting?.day === s.day && s.meeting.ids.includes(id) && !s.defectors?.[id]?.done && !s.defectors?.[id]?.hushed) {
+    list = [...list.filter((e) => e.min < 12 * 60 + 30), { min: 14 * 60, key: 'park:bench1' }, ...list.filter((e) => e.min >= 16 * 60 + 30)];
+  }
   if (s.weather?.rain) list = weatherList(list, 'rain', r.home);
   else if (s.weather?.market) list = weatherList(list, 'market', r.home);
   if (s.attend.includes(id)) {
     const offset = (id.charCodeAt(0) + id.length * 7) % 25;
     const arrive = WORSHIP_ARRIVE - 25 + offset;
-    list = [...list.filter((e) => e.min < arrive - 30), { min: arrive, key: 'sanctuary' }];
+    list = [...list.filter((e) => e.min < arrive - 90), { min: arrive, key: 'sanctuary' }];
   }
   return list;
 }
@@ -79,25 +116,57 @@ function weatherList(list, kind, home) {
   return weatherCache.get(k);
 }
 
-// 출발 시각표: 도착 시각에 맞춰 걸리는 시간만큼 먼저 나선다 (길 길이 / 걷는 속도 + 3분)
+// ── 걷는 속도: 현실 1초당 칸 수를 사람마다 정하고, 시뮬레이터는 칸/게임분으로 쓴다 ──
+const hash01 = (str) => {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  h ^= h >>> 16; h = Math.imul(h, 0x7feb352d); h ^= h >>> 15; h = Math.imul(h, 0x846ca68b); h ^= h >>> 16;   // 비슷한 글자열도 고르게 흩어지게
+  return (h >>> 0) / 4294967296;
+};
+const BUSY = ['busy', 'tired', 'sharp'];
+export function tilesPerSecond(id) {
+  const r = RESIDENT_BY_ID[id];
+  const R = MOVE.resident;
+  if (id === 'x:reporter') return 2.4;
+  if (!r) return R.npc;
+  const range = r.age >= 60 ? R.old : (r.age <= 30 || r.traits.some((t) => BUSY.includes(t))) ? R.young : R.base;
+  return range[0] + hash01(id) * (range[1] - range[0]);
+}
+// 지금 이 사람의 속도 (칸/게임분): 비 오는 날 빠르게, 밤늦은 귀가는 느리게
+export function speedOf(s, id, minute = s.minute) {
+  let tps = tilesPerSecond(id);
+  if (s.weather?.rain) tps *= MOVE.rainMul;
+  if (minute >= MOVE.lateFrom) tps *= MOVE.lateMul;
+  return tps / CLOCK.minutesPerSecond;
+}
+const PAUSE_MIN = ((MOVE.pauseSeconds[0] + MOVE.pauseSeconds[1]) / 2) * CLOCK.minutesPerSecond;   // 멈춤 한 번 평균 (게임분)
+
+// 출발 시각표: 도착 시각에 맞춰 걸리는 시간만큼 먼저 나선다 (길 길이 / 그 사람 속도 + 가다 멈출 시간 기대값 + 3분)
 const legCache = new Map();
-function travelMinutes(g, fromKey, toKey) {
+function legInfo(g, fromKey, toKey) {
   const k = fromKey + '>' + toKey;
   if (!legCache.has(k)) {
     const path = findPath(g, resolveKey(g, fromKey).tile, resolveKey(g, toKey).tile);
-    legCache.set(k, path ? path.length / MOVE.residentTilesPerMinute + 3 : 0);
+    const crosses = path ? path.filter(([x, y]) => g.cross?.has(y * g.w + x)).length : 0;
+    legCache.set(k, { tiles: path ? path.length : 0, crossings: Math.ceil(crosses / 3) });
   }
   return legCache.get(k);
+}
+export function travelMinutes(s, g, id, fromKey, toKey, minute = s.minute) {
+  const { tiles, crossings } = legInfo(g, fromKey, toKey);
+  if (!tiles) return 0;
+  const pauses = tiles * MOVE.pauseChance + crossings * MOVE.signalChance;
+  return (tiles + 2) / speedOf(s, id, minute) + pauses * PAUSE_MIN * 1.6 + 6;   // 멈춤이 몰리는 날도 있어 넉넉히
 }
 export function departures(s, g, id) {
   const p = personAny(id);
   let prev = p.home;
   const out = [];
   for (const e of scheduleOf(s, id)) {
-    out.push({ dep: e.min - travelMinutes(g, prev, e.key), arrive: e.min, key: e.key });
+    out.push({ dep: e.min - travelMinutes(s, g, id, prev, e.key, e.min), arrive: e.min, key: e.key });
     prev = e.key;
   }
-  out.push({ dep: CLOCK.dayEnd - travelMinutes(g, prev, p.home), arrive: CLOCK.dayEnd, key: s.attend.includes(id) ? 'sanctuary' : p.home });
+  out.push({ dep: CLOCK.dayEnd - travelMinutes(s, g, id, prev, p.home, CLOCK.dayEnd), arrive: CLOCK.dayEnd, key: s.attend.includes(id) ? 'sanctuary' : p.home });
   return out;
 }
 
@@ -140,30 +209,74 @@ export function snapAll(s, g) {
   }
 }
 
-// dtMin 게임 분만큼 움직인다
+// dtMin 게임 분만큼 움직인다. 가끔 멈추고(폰·가게 구경·신호), 좁은 길에서 마주치면 한쪽이 기다린다
+const PAUSE_KINDS = ['phone', 'look'];
 export function tickPeople(s, g, dtMin) {
-  for (const p of peopleOf(s)) {
+  const people = peopleOf(s);
+  // 지금 걷는 사람들의 칸 → 다음 칸 (마주침 판정)
+  const heading = new Map();
+  for (const p of people) { const q = s.pos[p.id]; if (q?.path?.length) heading.set(`${q.x},${q.y}`, { id: p.id, next: q.path[0] }); }
+  for (const p of people) {
     if (!s.pos[p.id]) { const { tile } = resolveKey(g, p.home); s.pos[p.id] = { x: tile[0], y: tile[1], path: [], prog: 0, key: p.home, inside: true }; }
     const pos = s.pos[p.id];
-    const key = targetKey(s, g, p.id);
+    // 기자가 교주를 따라온다: 교주 칸 옆까지 길을 다시 잡는다
+    if (p.id === 'x:reporter' && s.reporter?.chase && s.leaderTile) {
+      const [lx, ly] = s.leaderTile;
+      const end = pos.path.length ? pos.path.at(-1) : [pos.x, pos.y];
+      if (Math.abs(end[0] - lx) + Math.abs(end[1] - ly) > 1) {
+        const path = findPath(g, [pos.x, pos.y], [lx, ly]);
+        if (path) { pos.path = path.slice(0, -1); pos.key = 'chase'; pos.inside = false; pos.wait = 0; pos.pause = null; }
+      }
+    }
+    const key = pos.key === 'chase' && s.reporter?.chase ? 'chase' : targetKey(s, g, p.id);
     if (key !== pos.key) {
       const { tile } = spotFor(g, key, p.id);
       pos.key = key;
       pos.path = findPath(g, [pos.x, pos.y], tile) ?? [];
       pos.inside = false;
       pos.prog = 0;
+      pos.wait = 0; pos.pause = null;
     }
     if (pos.path.length) {
-      pos.prog += dtMin * MOVE.residentTilesPerMinute;
+      let dt = dtMin;
+      if (pos.wait > 0) { const used = Math.min(pos.wait, dt); pos.wait -= used; dt -= used; if (pos.wait <= 0) pos.pause = null; }
+      // 좁은 길(옆으로 비킬 칸이 없음)에서 마주 오는 사람이 있으면 한쪽(이름 순서 뒤)이 잠깐 기다린다
+      if (dt > 0 && pos.prog < 0.05) {
+        const [nx, ny] = pos.path[0];
+        const other = heading.get(`${nx},${ny}`);
+        if (other && other.id !== p.id && other.next[0] === pos.x && other.next[1] === pos.y && other.id < p.id && narrow(g, nx, ny)) {
+          pos.wait = MOVE.yieldSeconds * CLOCK.minutesPerSecond; pos.pause = 'yield'; dt = 0;
+        }
+      }
+      pos.prog += dt * speedOf(s, p.id);
       while (pos.prog >= 1 && pos.path.length) {
         const [nx, ny] = pos.path.shift();
         pos.dir = nx > pos.x ? 'right' : nx < pos.x ? 'left' : ny > pos.y ? 'down' : 'up';
         pos.x = nx; pos.y = ny; pos.prog -= 1;
+        if (!pos.path.length) break;
+        // 가다 멈춤: 횡단보도 앞 신호 · 폰 확인 · 가게 쳐다보기 (현실 2~4초)
+        const [ax, ay] = pos.path[0];
+        if (pos.calm > 0) { pos.calm--; continue; }      // 한 번 멈추면 한동안은 안 멈춘다
+        const roll = hash01(`${p.id}:${s.day}:${nx},${ny}`);
+        const atCross = g.cross?.has(ay * g.w + ax) && !g.cross.has(ny * g.w + nx);
+        if ((atCross && roll < MOVE.signalChance) || (!atCross && roll < MOVE.pauseChance)) {
+          const secs = MOVE.pauseSeconds[0] + hash01(`${p.id}${nx}${ny}`) * (MOVE.pauseSeconds[1] - MOVE.pauseSeconds[0]);
+          pos.wait = secs * CLOCK.minutesPerSecond;
+          pos.pause = atCross ? 'signal' : PAUSE_KINDS[Math.floor(roll * 1000) % 2];
+          pos.prog = Math.min(pos.prog, 0);
+          pos.calm = 10;
+          break;
+        }
       }
-      if (!pos.path.length) pos.prog = 0;
+      if (!pos.path.length) { pos.prog = 0; pos.wait = 0; pos.pause = null; pos.arrived = s.minute; }
     }
-    if (!pos.path.length) pos.inside = resolveKey(g, pos.key).inside;
+    if (!pos.path.length) pos.inside = pos.key === 'chase' ? false : resolveKey(g, pos.key).inside;
   }
+}
+// 옆으로 비킬 칸이 없는 칸 (1칸 샛길: 좌우나 위아래가 둘 다 막힘)
+function narrow(g, x, y) {
+  const w = (a, b) => a >= 0 && b >= 0 && a < g.w && b < g.h && g.cost[b * g.w + a] > 0;
+  return (!w(x - 1, y) && !w(x + 1, y)) || (!w(x, y - 1) && !w(x, y + 1));
 }
 
 export const personOf = (id) => personAny(id);

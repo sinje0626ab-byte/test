@@ -23,6 +23,7 @@ export const SECULAR_NEEDS = ['lonely', 'health', 'future', 'money'];
 
 // 대화 선택지 이름
 export const OPTIONS = {
+  askRival: { label: '{라이벌} 얘기 묻기', hint: '저쪽에 다니는 사람에게서 얘기를 듣는다. 폭로에 쓴다.' },
   smalltalk: { label: '안부 잡담', hint: '안전하다. 조금 친해진다.' },
   listen: { label: '고민 들어주기', hint: '고민 카드를 하나 고른다. 지금 고민과 맞으면 크게 친해진다.' },
   preach: { label: '교단 얘기 꺼내기', hint: '친하거나 같은 계열이면 통한다. 아니면 의심을 산다.' },

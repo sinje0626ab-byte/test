@@ -9,7 +9,8 @@ import { play } from './sound.js';
 export function openShop(app, place) {
   const s = app.s;
   app.modalOpened();
-  const close = () => { unmount('shop'); app.modalClosed(); app.refresh(); };
+  const close = () => { unmount('shop'); app.setBack('shop', null); app.modalClosed(); app.refresh(); };
+  app.setBack('shop', close);
   const render = (note = '') => {
     const needed = new Set(questList(s).filter((q) => q.type === 'item').map((q) => q.item));
     mount('shop', h('div', { class: 'screen' }, h('div', { class: 'panel box' },
@@ -30,7 +31,8 @@ export function openShop(app, place) {
 export function openNotebook(app) {
   const s = app.s;
   app.modalOpened();
-  const close = () => { unmount('notebook'); app.modalClosed(); };
+  const close = () => { unmount('notebook'); app.setBack('notebook', null); app.modalClosed(); };
+  app.setBack('notebook', close);
   const qs = questList(s);
   const inv = Object.entries(s.inventory).filter(([, n]) => n > 0);
   const where = (q) => (q.type === 'item' ? `${ITEMS[q.item].name} (${PLACES[ITEMS[q.item].shop].short})` : q.type === 'deliver' ? `${RESIDENT_BY_ID[q.to].name}에게` : PLACES[q.place].name);

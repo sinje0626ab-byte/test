@@ -250,3 +250,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .rv-outcome { font-size: 17px; line-height: 1.7; }
 .rv-outcome.tone-bad { color: #ffb8a8; }
 .rv-after { font-size: 15px; color: rgba(245,239,227,.85); }
+
+kbd { font-family: var(--font); font-size: 11px; border: 1.5px solid currentColor; border-radius: 3px; padding: 0 3px; opacity: .8; }
+.btn.back { background: var(--paper-2); }
+.keys { border-collapse: collapse; font-size: 13px; }
+.keys td { padding: 3px 8px 3px 0; }
+@media (max-width: 560px) { .hud .ctrl .btn kbd { display: none; } }

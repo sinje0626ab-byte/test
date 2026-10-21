@@ -59,7 +59,7 @@ export class Walker {
       const tx = nx * T; const ty = ny * T - 4;
       const dx = tx - this.sprite.x; const dy = ty - this.sprite.y;
       const dist = Math.hypot(dx, dy);
-      const step = MOVE.playerSpeed * dt;
+      const step = this.speedPx() * dt;
       if (dist <= step) {
         this.sprite.x = tx; this.sprite.y = ty; this.path.shift();
         this.moved += 1;
@@ -70,11 +70,11 @@ export class Walker {
     }
     if (vx || vy) {
       const len = Math.hypot(vx, vy);
-      const step = (MOVE.playerSpeed * dt) / len;
+      const step = (this.speedPx() * dt) / len;
       this.tryMove(vx * step, 0);
       this.tryMove(0, vy * step);
       this.face(vx, vy);
-      this.moved += (MOVE.playerSpeed * dt) / T;
+      this.moved += (this.speedPx() * dt) / T;
     } else this.idle();
   }
 
@@ -90,17 +90,26 @@ export class Walker {
     this.dir = dir;
     const anim = `${this.key}-walk-${dir}`;
     if (this.sprite.anims.currentAnim?.key !== anim || !this.sprite.anims.isPlaying) this.sprite.play(anim, true);
+    this.sprite.anims.timeScale = this.speedPx() / (2 * T);   // 걸음 박자 = 실제 속도 (초당 2칸에 8프레임)
   }
   idle() {
     this.sprite.anims.stop();
     this.sprite.setFrame(['down', 'left', 'right', 'up'].indexOf(this.dir) * 3);
   }
-  // 걸은 칸 수만큼 피로
+  // 현실 1초당 칸 수 × 16px × 게임 배속 (멈춤 상태에서도 걷기는 1배)
+  speedPx() {
+    const app = this.scene.registry.get('app');
+    const run = app?.running || app?.dpadRun;
+    this.isRunning = !!run;
+    return (run ? MOVE.playerRunTilesPerSecond : MOVE.playerTilesPerSecond) * T * Math.max(1, app?.speed ?? 1);
+  }
+
+  // 걸은 칸 수만큼 피로 (달리면 더)
   takeFatigue(s) {
     if (this.moved >= 1) {
       const n = Math.floor(this.moved);
       this.moved -= n;
-      s.leader.fatigue = Math.min(TALK.dailyFatigueLimit, s.leader.fatigue + n * TALK.fatiguePerTile);
+      s.leader.fatigue = Math.min(TALK.dailyFatigueLimit, s.leader.fatigue + n * (TALK.fatiguePerTile + (this.isRunning ? MOVE.runFatiguePerTile : 0)));
     }
   }
 }

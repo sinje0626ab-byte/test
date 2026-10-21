@@ -1,5 +1,5 @@
 // 2단계: 공간 확장 · 방 · 방 효과. 상태: s.space.step · s.rooms[slot] = { type, level, dark }
-import { SPACE_STEPS, ROOMS, DARK_ROOM, NEGOTIATE, SANCTUARY, OFFICERS } from '../config.js';
+import { SPACE_STEPS, ROOMS, DARK_ROOM, NEGOTIATE, SANCTUARY, OFFICERS, PHASE3 } from '../config.js';
 import { rand } from './rng.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
 
@@ -96,7 +96,7 @@ export function dailyRooms(s) {
   }
   if (dorm) { s.landlordAnger += ROOMS.dorm.anger * dorm / 2; s.rep = clamp(s.rep - ROOMS.dorm.rep * dorm); }
   if (broadcast) {
-    const add = ROOMS.broadcast.outsiders * broadcast;
+    const add = ROOMS.broadcast.outsiders * broadcast * (s.phase >= 3 ? PHASE3.outsiders : 1);
     const n = Math.floor(add) + (rand(s) < add % 1 ? 1 : 0);
     s.followers += n; s.outsiders += n;
     s.rep = clamp(s.rep - ROOMS.broadcast.rep * broadcast);

@@ -23,3 +23,12 @@ export const exhausted = (s) => s.leader.fatigue >= TALK.dailyFatigueLimit - TAL
 export function addMoney(s, d) {
   s.leader.money = Math.round(s.leader.money + d);
 }
+
+// "{이름}이(가)" 같은 조사 표기를 앞 글자 받침에 맞게 고른다 (이/가 · 을/를 · 은/는 · 과/와)
+export function josaFix(str) {
+  return str.replace(/([가-힣])(이\(가\)|을\(를\)|은\(는\)|과\(와\))/g, (m, ch, j) => {
+    const has = (ch.charCodeAt(0) - 0xac00) % 28 !== 0;
+    const [a, b] = j.replace(')', '').split('(');
+    return ch + (has ? a : b);
+  });
+}

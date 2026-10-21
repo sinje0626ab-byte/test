@@ -1,14 +1,22 @@
 // 낮: 동네 RPG. 맵·건물 간판·지붕·골목 소품·주민(행동·감정·수다)·교주·시간대 색조. 게임 시간은 여기서 흐른다.
 import Phaser from 'phaser';
 import { CLOCK, MOOD } from '../config.js';
+const LOOK_MIN = 4;   // 도착하고 두리번거리는 시간 (게임분)
 import { RESIDENT_BY_ID } from '../data/residents.js';
 import { CLERGY } from '../data/clergy.js';
 import { CAST } from '../data/cast.js';
-import { peopleOf } from '../sim/residents.js';
+import { peopleOf, speedOf } from '../sim/residents.js';
 import { activityOf, emotionOf, gossipLine, JOB_ICON } from '../sim/mood.js';
 import { registerPerson, LEADER_LOOK } from './people.js';
 import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel } from './signs.js';
-import { makeIconTextures, emotionBubble, speechBubble, nameTag } from './overlays.js';
+import { makeIconTextures, emotionBubble, speechBubble, nameTag, picket, wallNotice } from './overlays.js';
+import { REPORTER } from '../config.js';
+import { REPORTER_INFO, NOTICE_TEXT, PROTEST_TEXT } from '../data/threats.js';
+import { RIVAL_LOOKS } from '../data/rival.js';
+import { isDefector, protestToday, reporterTarget } from '../sim/threats.js';
+import { rivalInfo } from '../sim/rival.js';
+import { nameForNpc } from '../ui/threats.js';
+import { toast } from '../ui/toast.js';
 import { tintAt } from './tint.js';
 import { Walker } from './walker.js';
 import { app } from '../app.js';
@@ -16,9 +24,20 @@ import { app } from '../app.js';
 const T = 16;
 const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
 const CAST_BY = Object.fromEntries(CAST.map((c) => [c.id, c]));
-export const lookOf = (id) => (id.startsWith('c:') ? CLERGY_BY_ID[id.slice(2)].look : id.startsWith('o:') || id.startsWith('cast:') ? CAST_BY[id.split(':')[1]].look : RESIDENT_BY_ID[id].look);
-export const nameOf = (id) => (id.startsWith('c:') ? `${CLERGY_BY_ID[id.slice(2)].name} ${CLERGY_BY_ID[id.slice(2)].title}` : id.startsWith('o:') ? `${CAST_BY[id.slice(2)].name} (간부)` : RESIDENT_BY_ID[id].name);
+export const lookOf = (id) => (id.startsWith('c:') ? CLERGY_BY_ID[id.slice(2)].look : id.startsWith('o:') || id.startsWith('cast:') ? CAST_BY[id.split(':')[1]].look
+  : id === 'x:reporter' ? REPORTER_INFO.look : id.startsWith('v:') ? RIVAL_LOOKS[id.slice(2)] : RESIDENT_BY_ID[id].look);
+export const nameOf = (id) => (id.startsWith('c:') ? `${CLERGY_BY_ID[id.slice(2)].name} ${CLERGY_BY_ID[id.slice(2)].title}` : id.startsWith('o:') ? `${CAST_BY[id.slice(2)].name} (간부)`
+  : id.startsWith('x:') || id.startsWith('v:') ? nameForNpc(app.s, id) : RESIDENT_BY_ID[id].name);
+const FWD = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] };
+// 기자 앞쪽 시야: 바라보는 방향으로 1~4칸, 폭 3칸
+export function inSight(pos, tx, ty) {
+  const [fx, fy] = FWD[pos.dir ?? 'down'];
+  const dx = tx - pos.x; const dy = ty - pos.y;
+  const fwd = dx * fx + dy * fy; const lat = Math.abs(dx * fy - dy * fx);
+  return fwd >= 1 && fwd <= REPORTER.sight.tiles && lat <= (REPORTER.sight.width - 1) / 2;
+}
 const DIR_FRAME = { down: 0, left: 3, right: 6, up: 9 };
+const text2 = (t) => (t.length > 26 ? t.slice(0, 25) + '…' : t);
 
 export class TownScene extends Phaser.Scene {
   constructor() { super('town'); }
@@ -81,6 +100,11 @@ export class TownScene extends Phaser.Scene {
     this.hudTimer = 0; this.moodTimer = 0; this.gossipTimer = 0;
     this.gossip = null;
     this.near = null;
+    this.bubbles = [];
+    this.seenTalk = {};
+    this.notices = this.add.container(0, 0).setDepth(4800);
+    this.noticeKey = '';
+    this.lostT = 0;
     this.placePeople(0);
     this.refreshOverlays();
     app.setWeatherFx(s.weather);
@@ -100,28 +124,42 @@ export class TownScene extends Phaser.Scene {
     this.cameras.main.setZoom(z);
   }
 
-  // 주민 스프라이트를 시뮬레이션 위치에 맞추고, 서 있는 사람은 그 자리에 맞는 행동을 한다
-  placePeople(time) {
+  // 주민 스프라이트: 시뮬레이션 위치(격자)를 목표로 부드럽게 따라간다 → 출발·정지 가감속, 모퉁이를 살짝 돌아 걷는다.
+  // 마주치면 옆으로 비켜 지나가고, 도착하면 잠깐 두리번거린 뒤 그 자리 행동을 한다.
+  placePeople(time, dt = 0) {
     const s = app.s;
     const ids = peopleOf(s).map((p) => p.id);
     for (const id of ids) this.addPerson(id);
     for (const id of Object.keys(this.sprites)) if (!ids.includes(id)) { this.sprites[id].setVisible(false); continue; }
-    // 서 있는 사람 칸 표 (수다 상대 찾기)
     const standing = new Map();
     for (const id of ids) { const p = s.pos[id]; if (p && !p.inside && !p.path.length) standing.set(`${p.x},${p.y}`, id); }
     this.fx.clear();
+    const movers = [];
     for (const id of ids) {
       const pos = s.pos[id]; const sp = this.sprites[id];
       if (!pos) continue;
       let x = pos.x; let y = pos.y;
       if (pos.path.length && pos.prog > 0) { x += (pos.path[0][0] - pos.x) * pos.prog; y += (pos.path[0][1] - pos.y) * pos.prog; }
-      let px = Math.round(x * T); let py = Math.round(y * T - 4);
+      let tx = x * T; let ty = y * T - 4;
+      const wasHidden = !sp.visible;
       sp.setVisible(!pos.inside);
-      const moving = pos.path.length > 0 && app.speed > 0 && app.modal === 0;
+      if (sp.dispX == null || wasHidden || !dt) { sp.dispX = tx; sp.dispY = ty; }
+      const walking = pos.path.length > 0 && !(pos.wait > 0);
+      const moving = walking && app.speed > 0 && app.modal === 0;
+      const tps = speedOf(s, id) * CLOCK.minutesPerSecond;
+      let dirNow = pos.dir ?? 'down';
+      if (pos.path.length) dirNow = pos.path[0][0] > pos.x ? 'right' : pos.path[0][0] < pos.x ? 'left' : pos.path[0][1] > pos.y ? 'down' : 'up';
       if (pos.path.length) {
-        const dir = pos.path[0][0] > pos.x ? 'right' : pos.path[0][0] < pos.x ? 'left' : pos.path[0][1] > pos.y ? 'down' : 'up';
-        if (moving) sp.play(`${sp.animKey}-walk-${dir}`, true); else { sp.anims.stop(); sp.setFrame(DIR_FRAME[dir]); }
         sp.act = null;
+        if (moving) { sp.play(`${sp.animKey}-walk-${dirNow}`, true); sp.anims.timeScale = (tps * Math.max(1, app.speed)) / 2; }
+        else {
+          sp.anims.stop();
+          // 가다 멈춤: 폰 확인 · 가게 쳐다보기 · 신호 기다리기 · 비켜 서기
+          const pf = pos.pause === 'look' ? DIR_FRAME.up : DIR_FRAME[dirNow];
+          sp.setFrame(pos.pause === 'phone' ? DIR_FRAME.down : pf);
+          if (pos.pause === 'phone' && sp.visible) this.fx.fillStyle(0x9ad8ff, 1).fillRect(sp.dispX + 10, sp.dispY + 9, 2, 3);
+        }
+        if (moving) movers.push({ id, sp, dir: dirNow });
       } else if (!pos.inside) {
         sp.anims.stop();
         let neighbor = null;
@@ -130,22 +168,49 @@ export class TownScene extends Phaser.Scene {
         sp.act = act; sp.neighbor = neighbor?.id ?? null;
         let frame = DIR_FRAME.down;
         const beat = Math.floor(time / 400);
-        if (act === 'chat' && neighbor) frame = neighbor.dx > 0 ? DIR_FRAME.right : neighbor.dx < 0 ? DIR_FRAME.left : DIR_FRAME.down;
-        if (act === 'shop') frame = DIR_FRAME.up;
-        if (act === 'walk') frame = Math.floor(time / 1800 + id.length) % 2 ? DIR_FRAME.left : DIR_FRAME.right;
-        if (act === 'serve' && Math.floor(time / 2600 + id.length) % 3 === 0) frame = DIR_FRAME.left;
-        if (act === 'exercise') { py -= beat % 2; frame = DIR_FRAME.down + (beat % 2 ? 1 : 2); }
-        if (act === 'sit') py += 3;
+        const justArrived = pos.arrived != null && s.minute - pos.arrived < LOOK_MIN;
+        if (justArrived) frame = [DIR_FRAME.left, DIR_FRAME.down, DIR_FRAME.right][Math.floor(time / 350 + id.length) % 3];
+        else {
+          if (act === 'chat' && neighbor) frame = neighbor.dx > 0 ? DIR_FRAME.right : neighbor.dx < 0 ? DIR_FRAME.left : DIR_FRAME.down;
+          if (act === 'shop') frame = DIR_FRAME.up;
+          if (act === 'walk') frame = Math.floor(time / 1800 + id.length) % 2 ? DIR_FRAME.left : DIR_FRAME.right;
+          if (act === 'serve' && Math.floor(time / 2600 + id.length) % 3 === 0) frame = DIR_FRAME.left;
+          if (act === 'exercise') { ty -= beat % 2; frame = DIR_FRAME.down + (beat % 2 ? 1 : 2); }
+          if (act === 'sit') ty += 3;
+        }
         sp.setFrame(frame);
-        // 작은 효과: 폰 화면 불빛 · 담배 연기
-        if (act === 'phone' && sp.visible) { this.fx.fillStyle(0x9ad8ff, 1).fillRect(px + 10, py + 9, 2, 3); }
-        if (act === 'smoke' && sp.visible) {
+        if (!justArrived && act === 'phone' && sp.visible) this.fx.fillStyle(0x9ad8ff, 1).fillRect(sp.dispX + 10, sp.dispY + 9, 2, 3);
+        if (!justArrived && act === 'smoke' && sp.visible) {
           const t = (time / 900 + id.length) % 1;
-          this.fx.fillStyle(0xd8d8d8, 0.8 - t * 0.7).fillCircle(px + 12 + t * 3, py + 6 - t * 10, 1.5 + t * 2);
+          this.fx.fillStyle(0xd8d8d8, 0.8 - t * 0.7).fillCircle(sp.dispX + 12 + t * 3, sp.dispY + 6 - t * 10, 1.5 + t * 2);
         }
       }
+      sp.tx = tx; sp.ty = ty; sp.tps = tps;
+    }
+    // 마주치는 사람: 진행 방향에 수직으로 몇 픽셀 비켜 선다
+    for (let i = 0; i < movers.length; i++) for (let j = i + 1; j < movers.length; j++) {
+      const a = movers[i]; const b = movers[j];
+      if (Math.abs(a.sp.tx - b.sp.tx) > 12 || Math.abs(a.sp.ty - b.sp.ty) > 12) continue;
+      const side = a.id < b.id ? 1 : -1;
+      const horiz = a.dir === 'left' || a.dir === 'right';
+      if (horiz) { a.sp.ty -= 5 * side; b.sp.ty += 5 * side; } else { a.sp.tx -= 5 * side; b.sp.tx += 5 * side; }
+    }
+    for (const id of ids) {
+      const sp = this.sprites[id]; const pos = s.pos[id];
+      if (!pos || sp.tx == null) continue;
+      if (dt) {
+        // 지수 감쇠로 따라가되 한 프레임에 갈 수 있는 거리는 그 사람 속도의 1.6배까지 → 출발·정지에 짧은 가감속
+        const k = 1 - Math.exp(-dt * (pos.path.length ? 9 : 7));
+        let ddx = (sp.tx - sp.dispX) * k; let ddy = (sp.ty - sp.dispY) * k;
+        const maxStep = sp.tps * T * Math.max(1, app.speed) * dt * 1.6 + 0.5;
+        const d = Math.hypot(ddx, ddy);
+        if (d > maxStep) { ddx *= maxStep / d; ddy *= maxStep / d; }
+        if (Math.hypot(sp.tx - sp.dispX, sp.ty - sp.dispY) > T * 3) { sp.dispX = sp.tx; sp.dispY = sp.ty; }   // 너무 벌어지면 바로 맞춘다
+        else { sp.dispX += ddx; sp.dispY += ddy; }
+      }
+      const px = Math.round(sp.dispX); const py = Math.round(sp.dispY);
       sp.setPosition(px, py);
-      sp.setDepth(100 + y * T);
+      sp.setDepth(100 + py + 4);
       const tag = this.tags[id];
       if (tag) tag.setPosition(px + 8, py - 1).setVisible(sp.visible).setDepth(5060);
       const emo = this.emos[id];
@@ -163,7 +228,7 @@ export class TownScene extends Phaser.Scene {
     const s = app.s;
     for (const id of Object.keys(this.sprites)) {
       const known = id.includes(':') || s.res[id]?.met;
-      const want = known ? `n:${id.startsWith('c:') || id.startsWith('o:') ? nameOf(id) : RESIDENT_BY_ID[id].name}` : `i:${JOB_ICON[id] ?? 'star'}`;
+      const want = known ? `n:${id.includes(':') ? nameOf(id) : RESIDENT_BY_ID[id].name}` : `i:${JOB_ICON[id] ?? 'star'}`;
       const cur = this.tags[id];
       if (!cur || cur.want !== want) {
         cur?.destroy();
@@ -171,7 +236,13 @@ export class TownScene extends Phaser.Scene {
         t.want = want;
         this.tags[id] = t;
       }
-      const kind = id.includes(':') ? null : emotionOf(s, id);
+      let kind = null;
+      if (!id.includes(':')) {
+        if (isDefector(s, id)) kind = 'defector';
+        else if (s.reporter?.active && reporterTarget(s) === id) kind = 'press';
+        else if (s.rival && s.res[id].rival && s.res[id].rival !== 'none' && s.res[id].met) kind = 'rival';
+        else kind = emotionOf(s, id);
+      }
       const e = this.emos[id];
       if ((e?.kind ?? null) !== kind) {
         e?.c.destroy();
@@ -179,6 +250,85 @@ export class TownScene extends Phaser.Scene {
         else delete this.emos[id];
       }
     }
+  }
+
+  // 3단계: 피켓 · 벽 안내문 · 라이벌 간판 · 기자/탈퇴자/라이벌 말풍선
+  refreshThreats(time) {
+    const s = app.s;
+    if (s.phase < 3) return;
+    const P = protestToday(s);
+    const pid = P?.id;
+    if (this.picketC && this.picketC.pid !== pid) { this.picketC.destroy(); this.picketC = null; }
+    if (pid && !this.picketC) { this.picketC = picket(this, PROTEST_TEXT.signs[P.sign ?? 0]); this.picketC.pid = pid; }
+    const key = JSON.stringify([s.notices, s.rival?.status]);
+    if (key !== this.noticeKey) {
+      this.noticeKey = key;
+      this.notices.removeAll(true);
+      this.noticeAreas = [];
+      for (const c of CLERGY) {
+        if (s.notices[c.id] == null) continue;
+        const d = app.g.places[c.place].door;
+        const n = NOTICE_TEXT[c.id];
+        this.notices.add(wallNotice(this, d[0] * T + 8, (d[1] - 1) * T - 2, `${n.kind}\n${n.short}`, { w: 70 }));
+        this.noticeAreas.push({ x: d[0], y: d[1] - 1, text: `${n.where}: "${n.text}"` });
+      }
+      const R = rivalInfo(s);
+      if (R && ['active', 'enemy', 'truce'].includes(s.rival.status)) {
+        const d = app.g.places.office.door;
+        this.notices.add(wallNotice(this, d[0] * T + 8, (d[1] - 2) * T, `4층 ${R.name}`, { bg: 0x7a3a8a, color: '#ffffff', w: 60 }));
+        this.noticeAreas.push({ x: d[0], y: d[1] - 2, text: `관악로지스 빌딩 4층 "${R.name}". ${R.pitch}` });
+      }
+    }
+    // 말풍선: 교주 근처(12칸)에서만 들린다
+    const [px, py] = this.walker.tile;
+    const hear = (id) => { const p = s.pos[id]; const sp = this.sprites[id]; return p && sp?.visible && Math.abs(p.x - px) + Math.abs(p.y - py) <= 12; };
+    const once = (k, fn) => { if (!this.seenTalk[k]) { this.seenTalk[k] = true; fn(); } };
+    const q = s.reporter?.lastQ;
+    if (q && hear('x:reporter')) once(`r${s.day}:${q.minute}`, () => { this.say('x:reporter', REPORTER_INFO.questions[q.q], time); if (hear(q.id)) this.say(q.id, REPORTER_INFO.answers[q.a], time + 2200); });
+    const d = s.defectorTalk;
+    if (d && hear(d.id)) once(`d${s.day}:${d.minute}`, () => this.say(d.id, d.line, time));
+    const v = s.rivalTalk;
+    if (v && hear(v.walker)) once(`v${s.day}:${v.minute}`, () => this.say(v.walker, v.act, time));
+  }
+  say(id, text, at) { this.bubbles.push({ id, text, at, c: null }); }
+  updateBubbles(time) {
+    for (const b of this.bubbles) {
+      const sp = this.sprites[b.id];
+      if (!b.c && time >= b.at) { b.c = speechBubble(this, text2(b.text)); b.until = time + MOOD.bubbleSeconds * 1000 + 600; }
+      if (b.c && sp) b.c.setPosition(sp.x + 8, sp.y - 10).setDepth(5085).setVisible(sp.visible);
+    }
+    this.bubbles = this.bubbles.filter((b) => { if (b.c && time > b.until) { b.c.destroy(); return false; } return true; });
+    if (this.picketC) {
+      const sp = this.sprites[this.picketC.pid];
+      if (sp) this.picketC.setPosition(sp.x + 8, sp.y - 2).setDepth(5075).setVisible(sp.visible);
+    }
+  }
+
+  // 기자 시야에 들어가면 따라온다. 6초 동안 시야 밖에 있으면 놓친다. 붙잡히면 인터뷰
+  watchReporter(dt, free) {
+    const s = app.s;
+    const R = s.reporter;
+    const pos = s.pos['x:reporter']; const sp = this.sprites['x:reporter'];
+    if (!R?.active || !pos || !sp?.visible || !free) return;
+    const [px, py] = this.walker.tile;
+    const dist = Math.abs(pos.x - px) + Math.abs(pos.y - py);
+    // 시야를 땅에 옅게 그린다
+    const [fx, fy] = FWD[pos.dir ?? 'down'];
+    if (!R.interviewed) {
+      this.fx.fillStyle(R.chase ? 0xffa040 : 0xfff0a0, R.chase ? 0.16 : 0.12);
+      for (let f = 1; f <= REPORTER.sight.tiles; f++) for (let l = -1; l <= 1; l++) this.fx.fillRect((pos.x + fx * f + fy * l) * T, (pos.y + fy * f + fx * l) * T, T, T);
+    }
+    if (!R.chase) {
+      if (!R.interviewed && s.minute - R.evadedAt > 40 && inSight(pos, px, py)) {
+        R.chase = true; this.lostT = 0;
+        toast(`${REPORTER_INFO.name} 기자: ${REPORTER_INFO.chase}`, 'warn');
+        this.say('x:reporter', '"잠깐만요!"', this.time.now);
+      }
+      return;
+    }
+    if (inSight(pos, px, py) || dist <= 2) this.lostT = 0; else this.lostT += dt;
+    if (this.lostT >= REPORTER.sight.loseSeconds) { R.chase = false; toast(REPORTER_INFO.lost); return; }
+    if (dist <= 1) app.talkTo('x:reporter');
   }
 
   // 가까이 서 있는 두 주민이 짧게 수다 (교주가 가까이 있을 때만 들린다)
@@ -220,6 +370,8 @@ export class TownScene extends Phaser.Scene {
     const tx = Math.floor(wx / T); const ty = Math.floor(wy / T);
     const who = this.personAt(wx, wy);
     if (who) { app.showProfile(who, () => this.walker.chase(() => this.tileOf(who), () => app.talkTo(who))); return; }
+    const n = this.noticeAreas?.find((a) => Math.abs(a.x - tx) <= 2 && Math.abs(a.y - ty) <= 1);
+    if (n) { toast(n.text, '', 6000); return; }
     const b = this.buildingAt(tx, ty);
     if (b) {
       const door = [b.door, b.y + b.h];
@@ -265,7 +417,10 @@ export class TownScene extends Phaser.Scene {
     if (free && app.speed > 0) app.advance(dt * CLOCK.minutesPerSecond * app.speed);
     this.walker.update(dt, free);
     this.walker.takeFatigue(s);
-    this.placePeople(time);
+    s.leaderTile = this.walker.tile;
+    this.placePeople(time, dt);
+    this.watchReporter(dt, free);
+    this.updateBubbles(time);
     app.checkPlaceVisit(this.walker.tile);
 
     const near = free ? this.findNear() : null;
@@ -273,7 +428,7 @@ export class TownScene extends Phaser.Scene {
     if (key !== this.nearKey) { this.nearKey = key; this.near = near; app.setNearAction(near); }
 
     this.moodTimer += delta;
-    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); }
+    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); }
     this.gossipTimer += delta;
     if (this.gossip && time > this.gossip.until) { this.gossip.c.destroy(); this.gossip = null; }
     if (this.gossipTimer > MOOD.gossipEverySeconds * 1000 && free) { this.gossipTimer = 0; this.tryGossip(); }

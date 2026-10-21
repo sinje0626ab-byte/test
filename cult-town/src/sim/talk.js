@@ -16,6 +16,8 @@ import { PREFS } from '../data/prefs.js';
 import { ITEMS } from '../data/items.js';
 import { inviteBonus } from './space.js';
 import { storyReady, hearStory, favorReady, completeFavor, relaysFor, doRelay } from './stories.js';
+import { noticeMul } from './threats.js';
+import { canAskRival, askRival, ourTalkCools } from './rival.js';
 
 const LIKE_TRAITS = ['kind', 'simple', 'curious', 'lonely', 'cheerful', 'easygoing', 'gentle'];
 const SUS_TRAITS = ['sharp', 'careful', 'strict', 'blunt', 'stubborn', 'shrewd', 'oversee'];
@@ -94,6 +96,7 @@ export function optionsFor(s, id, ctx = {}) {
   if (invitable) opts.push({ id: 'invite' });
   else if (st.stage === 'none' || st.stage === 'curious') opts.push({ id: 'preach' });
   opts.push({ id: 'special', special: sect.terms.special });
+  if (canAskRival(s, id)) opts.push({ id: 'askRival' });
   return [...quick, ...contextOptions(s, id, ctx), ...opts];
 }
 
@@ -110,6 +113,8 @@ export function act(s, id, opt, card, ctx = {}) {
   const { sus: mS, fx, r } = mods(s, id);
   let { like: mL } = mods(s, id);
   if (s.weather?.market && (ctx.key ?? '').startsWith('market')) mL *= WEATHER.marketTalk;
+  const near = noticeMul(s, ctx.key);       // 기성 종교 안내문 근처에선 말이 잘 안 붙는다
+  mL *= near;
   // 바로 전과 같은 화제면 효과 절반
   const topic = opt === 'listen' ? `listen:${card}` : opt;
   const repeat = ['smalltalk', 'listen', 'preach', 'special', 'lunch', 'walk', 'market'].includes(opt) && st.lastTopic === topic;
@@ -161,6 +166,9 @@ export function act(s, id, opt, card, ctx = {}) {
   } else if (opt === 'coffee') {
     dl += CONTEXT.coffee.like * mL; s.inventory.coffee--;
     narr = '캔커피를 건넸다.'; line = voice.smalltalk;
+  } else if (opt === 'askRival') {
+    narr = askRival(s, id);
+    line = voice.smalltalk;
   } else if (opt === 'smalltalk') {
     dl += TALK.smalltalk.like * mL;
     line = voice.smalltalk;
@@ -224,6 +232,7 @@ export function act(s, id, opt, card, ctx = {}) {
   st.like = clamp(st.like + dl);
   st.sus = clamp(st.sus + ds);
   if (!quick) {
+    ourTalkCools(s, id);
     st.talked = s.day;
     st.lastTopic = topic;
     s.week.talks++;
@@ -231,7 +240,7 @@ export function act(s, id, opt, card, ctx = {}) {
   } else addFatigue(s, 3);
   checkCurious(s, id);
   return {
-    line, narr, money, story, repeat,
+    line, narr, money, story, repeat, nearNotice: near < 1,
     dLike: Math.round(st.like - before.like), dSus: Math.round(st.sus - before.sus),
     stageFrom: before.stage, stageTo: st.stage,
   };

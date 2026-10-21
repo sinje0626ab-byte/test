@@ -1,5 +1,6 @@
 // 주보 · 밤사이 소식 · 엔딩 · 크레딧 · 게임 메뉴
-import { GOAL, PHASE2 } from '../config.js';
+import { GOAL, PHASE2, PHASE3 } from '../config.js';
+import { PHASE3_INTRO } from '../data/threats.js';
 import { rentNow } from '../sim/space.js';
 import { BULLETIN, ENDINGS, DOOMSDAY_PASSED, SHADOW, LANDLORD, CLERGY_EVENT } from '../data/bulletin.js';
 import { CLERGY } from '../data/clergy.js';
@@ -73,9 +74,19 @@ export function showBulletin(s, b, onClose) {
 }
 
 // 1단계 끝 → 2단계 시작 장면
-export function showPhaseUp(s, onClose) {
-  const e = ENDINGS.phase1;
+export function showPhaseUp(s, phase, onClose) {
   play('jingle_good', 0.5);
+  if (phase === 3) {
+    const e = PHASE3_INTRO;
+    mount('phaseup', h('div', { class: 'screen ending' }, h('div', { class: 'panel box' },
+      h('h2', {}, e.title),
+      ...e.text.map((t) => h('p', {}, fill(t, s))),
+      h('p', {}, e.next),
+      h('p', { class: 'muted' }, `목표: 신도 ${PHASE3.members}명 + 동네 평판 유지 (최근 7일 내내 무너지지 않게) + 라이벌 교단 정리 (흡수·몰락·휴전). 밤 메뉴에 '라이벌'이 생긴다.`),
+      h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '3단계 시작')))));
+    return;
+  }
+  const e = ENDINGS.phase1;
   mount('phaseup', h('div', { class: 'screen ending' }, h('div', { class: 'panel box' },
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
@@ -91,7 +102,7 @@ export function showEnding(s, kind, { onTitle }) {
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
     h('p', { class: 'muted' }, `${fmtDate(s.day)} · 교주 ${s.leader.name} · ${s.leader.cultName}`),
-    kind === 'win' ? h('p', { class: 'muted' }, '3단계(기자·가족 시위·라이벌 교주)는 아직 만들지 않았다.') : null,
+    kind === 'win' ? h('p', { class: 'muted' }, '4단계(해외 진출)·5단계는 아직 만들지 않았다.') : null,
     h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('ending'); onTitle(); } }, '처음 화면으로')))));
 }
 
@@ -113,12 +124,16 @@ export function showCredits(onClose) {
 }
 
 export function showMenu(app) {
-  const close = () => { unmount('menu'); app.modalClosed(); };
+  const close = () => { unmount('menu'); app.setBack('menu', null); app.modalClosed(); };
   app.modalOpened();
+  app.setBack('menu', close);
   mount('menu', h('div', { class: 'screen' }, h('div', { class: 'panel box stack' },
     h('h2', {}, '메뉴'),
-    h('p', { class: 'muted' }, app.s.phase >= 2 ? `2단계 목표: 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상. 월세 ${won(rentNow(app.s))} (일요일 밤). 자동 저장된다.` : `목표: 신도 ${GOAL.members}명 + 월세 ${GOAL.rentStreak}달 연속 (월세 ${won(rentNow(app.s))}, 일요일 밤). 자동 저장된다.`),
-    h('p', { class: 'muted' }, 'PC: 방향키·WASD 이동, 스페이스·엔터 말 걸기, P 일시정지, 1·2 속도, N 부탁 수첩. 모바일: 왼쪽 아래 방향키 또는 가고 싶은 곳을 누른다. 사람을 누르면 프로필.'),
+    h('p', { class: 'muted' }, app.s.phase >= 2 ? `2단계 목표: 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상. 월세 ${won(rentNow(app.s))} (5일마다 말일 밤). 자동 저장된다.` : `목표: 신도 ${GOAL.members}명 + 월세 ${GOAL.rentStreak}달 연속 (월세 ${won(rentNow(app.s))}, 5일마다 말일 밤). 자동 저장된다.`),
+    h('table', { class: 'keys' }, h('tbody', {},
+      [['방향키 · WASD', '걷기'], ['Shift + 방향키', '달리기 (피로 조금 더)'], ['Space · Enter', '말 걸기 · 들어가기'], ['`', '멈춤'], ['1', '재생'], ['2', '빠르게'], ['N', '부탁 수첩'], ['Esc · 오른쪽 클릭', '한 단계 뒤로 · 메뉴']]
+        .map(([k, v]) => h('tr', {}, h('td', {}, h('kbd', {}, k)), h('td', {}, v))))),
+    h('p', { class: 'muted' }, '모바일: 왼쪽 아래 방향키 (길게 누르면 달리기) 또는 가고 싶은 곳을 누른다. 사람을 누르면 프로필. 한글 입력 상태에서도 단축키가 된다.'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); app.modalClosed(); app.openNotebook(); } }, '부탁 수첩'),
     h('button', { class: 'btn primary', onclick: close }, '계속하기'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); showCredits(() => app.modalClosed()); } }, '만든 사람들 · 에셋'),
