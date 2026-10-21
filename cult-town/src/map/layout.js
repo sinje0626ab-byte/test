@@ -1,139 +1,215 @@
 // 동네 배치 (사람이 읽고 고치는 원본). `npm run map` 이 이걸로 Tiled JSON(town.json)을 만든다.
-// 좌표는 16px 타일 단위 (x, y, 너비 w, 높이 h). 위쪽이 북쪽.
-// 실제 신림동 구조를 손으로 단순화했다: 위쪽 가장자리 도림천, 그 아래 남부순환로(가로),
-// 가운데 신림로(세로), 두 길이 만나는 곳에 신림역 출구. 역 남서쪽에 상가 골목·시장, 남동쪽 언덕에 원룸촌.
-// 정확한 지도가 아니다. 가게·교회·절·건물 이름은 전부 지어낸 것이다 (data/places.js).
+// 좌표는 16px 타일 단위. 위쪽이 북쪽.
+// 실제 신림동 구조를 손으로 단순화했다: 위쪽 가장자리 도림천, 그 아래 남부순환로(가로), 가운데 신림로(세로),
+// 두 길이 만나는 곳에 신림역 출구. 나머지는 차 한 대 지나갈 골목과 작은 건물이 촘촘하다. 정확한 지도가 아니다.
+// 가게·교회·절·건물 이름은 전부 지어낸 것이다 (data/places.js, data/shops.js).
+//
+// 건물은 '줄(row)' 단위로 늘어놓는다. 모든 건물은 남쪽(아래)에 정면과 문이 있고, 문 앞은 아래 골목이다.
+//   row(top, h, x, [건물 또는 틈 ...])
+//   건물: { w, kind, place?, shop?, floors?, h?, door?, wall?, roof?, signs? }
+//     kind: villa(원룸 빌라) · mixed(1층 가게 + 위층 주거) · mall(상가, 층마다 간판) · house(작은 집) · special
+//     place: 사람이 드나드는 장소 id (data/places.js) · shop: 1층 간판 (data/shops.js)
+//     h 가 줄 높이보다 작으면 아래에 붙고 위는 빈 땅 (뒷골목)
+//   틈: 숫자 n (n칸 골목) 또는 { gap: n, dead: 'top'|'bottom' } (한쪽 끝을 담으로 막은 막다른 골목)
 
 export const W = 72;
 export const H = 54;
 
-// 바닥 영역: 뒤에 나온 것이 앞의 것을 덮는다
-//   kind: water(못 걸음) · lot(빈 땅·주차장) · grass · sidewalk · road(걸을 수 있지만 길찾기 비용 큼) · alley · plaza · market
+// 큰 구조
+export const ROAD_H = { y: 4, h: 4, name: '남부순환로' };     // 가로 큰길
+export const ROAD_V = { x: 33, w: 4, name: '신림로' };        // 세로 큰길
+export const WALK_V = [32, 37];                               // 신림로 양쪽 인도
+export const ROWS = [10, 17, 24, 31, 38, 45];                 // 건물 줄 윗변 (높이 5, 아래 2칸 골목)
+export const ROW_H = 5;
+
+export const BUILDINGS = [];
+function row(top, x0, specs) {
+  let x = x0;
+  for (const sp of specs) {
+    if (typeof sp === 'number') { x += sp; continue; }
+    if (sp.gap) { if (sp.dead) DEAD_ENDS.push({ x, y: sp.dead === 'top' ? top : top + ROW_H - 1, w: sp.gap }); x += sp.gap; continue; }
+    const h = sp.h ?? ROW_H;
+    if (x + sp.w > W) throw new Error(`건물이 지도 밖으로 나간다: ${sp.place ?? sp.shop ?? sp.kind} x${x}+${sp.w}`);
+    BUILDINGS.push({ ...sp, x, y: top + ROW_H - h, h });
+    x += sp.w;
+  }
+}
+export const DEAD_ENDS = [];
+
+// ── 서쪽 (x 0~31) ──
+row(10, 0, [
+  { w: 5, kind: 'mixed', place: 'cvs', shopfront: true, floors: 2 }, { gap: 1 },
+  { w: 5, kind: 'mall', place: 'pcbang', floors: 3, signs: ['gym', null, null] },
+  { w: 3, kind: 'mixed', shop: 'chicken' }, 2,
+  { w: 5, kind: 'mixed', place: 'pharmacy', shopfront: true }, 2,
+  { w: 8, kind: 'mall', place: 'sanctuary', floors: 4, door: 26, signs: ['pingpong', null, 'tutor', 'kimbap'] },
+]);
+row(17, 0, [
+  { w: 4, kind: 'villa' },
+  { w: 5, kind: 'mixed', place: 'restaurant', shopfront: true }, { gap: 1, dead: 'top' },
+  { w: 4, kind: 'mixed', shop: 'laundry' }, 2,
+  { w: 4, kind: 'mixed', shop: 'hair' }, 1,
+  { w: 5, kind: 'mall', place: 'academy', floors: 3, signs: ['dental', null, null] },
+  { w: 6, kind: 'mall', shop: 'karaoke', floors: 3, signs: ['hof', null, 'karaoke'] },
+]);
+row(24, 0, [
+  { w: 5, kind: 'mixed', shop: 'bunsik' },
+  { w: 5, kind: 'villa', h: 4 },
+  { w: 4, kind: 'mixed', shop: 'cafe' }, 2,
+  // x16~31 은 시장 (MARKET)
+]);
+row(31, 0, [
+  { w: 5, kind: 'villa' }, { gap: 1, dead: 'bottom' },
+  { w: 5, kind: 'mixed', shop: 'hardware' },
+  { w: 3, kind: 'house', h: 4 }, 2,
+  { w: 6, kind: 'mixed', shop: 'laundry' },
+  { w: 5, kind: 'villa' }, 1,
+  { w: 4, kind: 'mixed', shop: 'bakery' },
+]);
+row(38, 0, [
+  { w: 5, kind: 'mixed', shop: 'glasses' },
+  { w: 5, kind: 'villa', h: 4 },
+  { w: 4, kind: 'mixed', shop: 'cleaner' }, 3,
+  { w: 8, kind: 'special', place: 'church', door: 21 }, 1,
+  { w: 6, kind: 'villa', place: 'villa_tong' },
+]);
+row(45, 16, [
+  { w: 5, kind: 'villa' },
+  { w: 5, kind: 'mixed', shop: 'bunsik2' }, { gap: 1, dead: 'top' },
+  { w: 5, kind: 'villa' },
+]);
+
+// ── 동쪽 (x 38~71) ──
+row(10, 38, [
+  { w: 8, kind: 'mall', place: 'office', floors: 4, signs: ['gym', 'dental', null, 'clinic'] }, 1,
+  { w: 5, kind: 'mixed', shop: 'realty' }, 2,
+  { w: 3, kind: 'mixed', shop: 'cafe2' }, 2,
+  { w: 9, kind: 'special', place: 'temple', door: 63 },
+  { w: 4, kind: 'villa', h: 4 },
+]);
+row(17, 38, [
+  { w: 4, kind: 'house', place: 'fortune' }, 1,
+  { w: 5, kind: 'villa', place: 'oneroom_a' },
+  { w: 5, kind: 'mixed', shop: 'phone' }, 2,
+  { w: 6, kind: 'mall', place: 'gosiwon', floors: 3 }, { gap: 1, dead: 'bottom' },
+  { w: 5, kind: 'villa', place: 'oneroom_b' },
+  { w: 5, kind: 'mixed', shop: 'kimbap' },
+]);
+row(24, 38, [
+  { w: 5, kind: 'villa', place: 'oneroom_c' }, 1,
+  { w: 6, kind: 'villa', place: 'villa_b' },
+  { w: 3, kind: 'mixed', shop: 'flower' }, 2,
+  { w: 5, kind: 'villa', place: 'oneroom_d' },
+  { w: 5, kind: 'mixed', shop: 'meat' }, 1,
+  { w: 6, kind: 'villa' },
+]);
+row(31, 38, [
+  { w: 6, kind: 'villa', place: 'oneroom_e' }, { gap: 2, dead: 'top' },
+  { w: 5, kind: 'mixed', shop: 'stationery' }, 2,
+  { w: 6, kind: 'villa', place: 'oneroom_f' },
+  { w: 5, kind: 'mixed', shop: 'nail' }, 1,
+  { w: 5, kind: 'villa', h: 4 },
+]);
+row(38, 38, [
+  { w: 5, kind: 'villa' },
+  { w: 5, kind: 'mixed', shop: 'bedding' }, 1,
+  { w: 4, kind: 'villa', h: 4 }, 2,
+  { w: 5, kind: 'mixed', shop: 'chicken2' },
+  { w: 5, kind: 'villa' }, { gap: 2, dead: 'bottom' },
+  { w: 5, kind: 'mixed', shop: 'mart' },
+]);
+row(45, 38, [
+  { w: 6, kind: 'villa' },
+  { w: 5, kind: 'mixed', shop: 'realty2' }, 1,
+  { w: 3, kind: 'house', h: 4 }, 2,
+  { w: 6, kind: 'villa' },
+  { w: 5, kind: 'mixed', shop: 'cafe' },
+  { w: 6, kind: 'villa', h: 4 },
+]);
+
+// 시장·공원 (건물 대신 바닥)
+export const MARKET = { x: 16, y: 24, w: 16, h: 7 };          // 도림골목시장 (가운데 걷는 길, 좌판 두 줄)
+export const PARK = { x: 0, y: 45, w: 14, h: 7 };             // 솔밭 쉼터
+
+// 바닥 덮기: 뒤에 나온 것이 앞의 것을 덮는다. 기본은 골목(alley)
+//   kind: water · path(산책로) · road · sidewalk · plaza · market · grass · lot
 export const GROUND = [
-  { kind: 'lot', x: 0, y: 0, w: W, h: H },
-  { kind: 'water', x: 0, y: 0, w: W, h: 3 },                 // 도림천
-  { kind: 'sidewalk', x: 0, y: 4, w: W, h: 1 },
-  { kind: 'road', x: 0, y: 5, w: W, h: 4, line: 'h', name: '남부순환로' },
-  { kind: 'sidewalk', x: 0, y: 9, w: W, h: 1 },
-  // 블록 사이 골목
-  { kind: 'alley', x: 0, y: 22, w: 32, h: 2 },
-  { kind: 'alley', x: 37, y: 22, w: 35, h: 2 },
-  { kind: 'alley', x: 0, y: 36, w: 32, h: 2 },
-  { kind: 'alley', x: 37, y: 36, w: 35, h: 2 },
-  { kind: 'alley', x: 0, y: 50, w: 32, h: 2 },
-  { kind: 'alley', x: 37, y: 50, w: 35, h: 2 },
-  { kind: 'alley', x: 14, y: 10, w: 2, h: 44 },
-  { kind: 'alley', x: 53, y: 10, w: 2, h: 44 },
-  { kind: 'sidewalk', x: 32, y: 9, w: 1, h: H - 9 },
-  { kind: 'sidewalk', x: 37, y: 9, w: 1, h: H - 9 },
-  { kind: 'road', x: 33, y: 5, w: 4, h: H - 5, line: 'v', name: '신림로' },
-  // 블록 바닥
-  { kind: 'sidewalk', x: 0, y: 10, w: 14, h: 4 },            // 편의점 앞 인도
-  { kind: 'plaza', x: 22, y: 10, w: 10, h: 3 },              // 역 앞 광장
-  { kind: 'sidewalk', x: 16, y: 10, w: 6, h: 5 },
-  { kind: 'market', x: 16, y: 24, w: 16, h: 12 },            // 전통시장
-  { kind: 'grass', x: 0, y: 38, w: 14, h: 12 },              // 솔밭 쉼터
-  { kind: 'plaza', x: 3, y: 41, w: 8, h: 6 },                // 공원 광장
-  { kind: 'sidewalk', x: 38, y: 10, w: 15, h: 3 },
-  { kind: 'plaza', x: 56, y: 10, w: 15, h: 2 },              // 절 앞마당
-  { kind: 'sidewalk', x: 0, y: 52, w: W, h: 2 },
+  { kind: 'water', x: 0, y: 0, w: W, h: 2 },
+  { kind: 'path', x: 0, y: 2, w: W, h: 2 },
+  { kind: 'road', x: 0, y: ROAD_H.y, w: W, h: ROAD_H.h, line: 'h' },
+  { kind: 'sidewalk', x: 0, y: 8, w: W, h: 2 },
+  { kind: 'road', x: ROAD_V.x, y: 8, w: ROAD_V.w, h: H - 8, line: 'v' },
+  { kind: 'sidewalk', x: WALK_V[0], y: 8, w: 1, h: H - 8 },
+  { kind: 'sidewalk', x: WALK_V[1], y: 8, w: 1, h: H - 8 },
+  { kind: 'plaza', x: 22, y: 8, w: 10, h: 2 },                 // 역 앞 광장
+  { kind: 'market', ...MARKET },
+  { kind: 'grass', ...PARK },
+  { kind: 'plaza', x: 3, y: 47, w: 8, h: 3 },                  // 공원 광장
+  { kind: 'plaza', x: 58, y: 15, w: 10, h: 2 },                // 절 앞마당
+  { kind: 'lot', x: 0, y: 52, w: W, h: 2 },                    // 남쪽 끝 언덕 (담·나무)
 ];
 
-// 횡단보도 (길찾기 비용이 인도와 같다)
+// 횡단보도
 export const CROSSWALKS = [
-  { x: 28, y: 5, w: 3, h: 4, dir: 'v' },     // 남부순환로 건너기 (역 서쪽)
-  { x: 40, y: 5, w: 3, h: 4, dir: 'v' },     // 남부순환로 건너기 (역 동쪽)
-  { x: 33, y: 10, w: 4, h: 2, dir: 'h' },    // 신림로 건너기 (역 앞)
-  { x: 33, y: 22, w: 4, h: 2, dir: 'h' },
-  { x: 33, y: 36, w: 4, h: 2, dir: 'h' },
-  { x: 33, y: 50, w: 4, h: 2, dir: 'h' },
+  { x: 28, y: 4, w: 3, h: 4, dir: 'v' },
+  { x: 40, y: 4, w: 3, h: 4, dir: 'v' },
+  ...[8, 15, 22, 29, 36, 43, 50].map((y) => ({ x: 33, y, w: 4, h: 2, dir: 'h' })),
 ];
 
-// 건물: 지붕(roof) 9칸 + 맨 아래 두 줄이 정면(wall: 창문·문). 문은 맨 아래 줄, 그 앞 칸이 입구.
-//   place: data/places.js 의 id · door: 문 x (기본 가운데) · sign: 간판 스프라이트 키 (도형으로 그림)
-//   enter: 'sanctuary' 면 실내 맵으로 들어간다
-export const BUILDINGS = [
-  { place: 'cvs', x: 1, y: 15, w: 6, h: 7, roof: 'gray', wall: 'gray', shopfront: true },
-  { place: 'pcbang', x: 7, y: 14, w: 7, h: 8, roof: 'beige', wall: 'orange' },
-  { place: 'pharmacy', x: 16, y: 15, w: 6, h: 7, roof: 'gray', wall: 'gray', shopfront: true },
-  { place: 'sanctuary', x: 23, y: 13, w: 9, h: 9, roof: 'beige', wall: 'red', door: 27, enter: 'sanctuary', floors: 4 },
-  { place: 'restaurant', x: 1, y: 28, w: 7, h: 8, roof: 'red', wall: 'orange', shopfront: true },
-  { place: 'academy', x: 8, y: 26, w: 6, h: 10, roof: 'gray', wall: 'gray' },
-  { place: 'church', x: 17, y: 40, w: 8, h: 10, roof: 'beige', wall: 'red', door: 21 },
-  { place: 'villa_tong', x: 26, y: 43, w: 6, h: 7, roof: 'orange', wall: 'orange' },
-  { place: 'office', x: 39, y: 12, w: 8, h: 10, roof: 'gray', wall: 'gray' },
-  { place: 'fortune', x: 47, y: 16, w: 6, h: 6, roof: 'red', wall: 'red' },
-  { place: 'temple', x: 58, y: 13, w: 10, h: 9, roof: 'orange', wall: 'orange', door: 63 },
-  { place: 'oneroom_a', x: 38, y: 27, w: 7, h: 9, roof: 'gray', wall: 'red' },
-  { place: 'oneroom_b', x: 45, y: 27, w: 8, h: 9, roof: 'beige', wall: 'orange' },
-  { place: 'gosiwon', x: 56, y: 26, w: 7, h: 10, roof: 'gray', wall: 'gray' },
-  { place: 'oneroom_c', x: 63, y: 27, w: 8, h: 9, roof: 'red', wall: 'red' },
-  { place: 'oneroom_d', x: 38, y: 41, w: 7, h: 9, roof: 'beige', wall: 'orange' },
-  { place: 'villa_b', x: 45, y: 40, w: 8, h: 10, roof: 'orange', wall: 'red' },
-  { place: 'oneroom_e', x: 56, y: 41, w: 7, h: 9, roof: 'gray', wall: 'gray' },
-  { place: 'oneroom_f', x: 63, y: 41, w: 8, h: 9, roof: 'beige', wall: 'red' },
-  { place: 'market_house', x: 1, y: 40, w: 0, h: 0 },        // 자리만 (시장 2층 살림집은 시장 안에 있다고 친다)
-].filter((b) => b.w > 0);
-
-// 소품 (못 지나감, 표시는 RPG Urban 타일). kind 는 build-map.mjs 의 PROPS 표
+// 손으로 놓는 소품 (나머지 골목 소품은 build-map 이 골목마다 흩뿌린다)
+//   kind 는 build-map.mjs 의 PROP 표
 export const PROPS = [
-  // 남부순환로 가로수
-  ...[2, 8, 14, 20, 44, 50, 56, 62, 68].map((x) => ({ kind: 'tree', x, y: 3 })),
-  // 편의점 앞 테이블·자판기
-  { kind: 'vending', x: 6, y: 11 }, { kind: 'bench', x: 2, y: 11 }, { kind: 'trash', x: 9, y: 10 },
-  { kind: 'lamp', x: 12, y: 10 },
-  // 역 앞
-  { kind: 'lamp', x: 22, y: 10 }, { kind: 'mailbox', x: 18, y: 10 }, { kind: 'bike', x: 20, y: 11 },
+  ...[3, 9, 15, 21, 45, 51, 57, 63, 69].map((x) => ({ kind: 'tree', x, y: 3 })),
+  { kind: 'vending', x: 6, y: 9 }, { kind: 'bench', x: 12, y: 9 }, { kind: 'lamp', x: 18, y: 9 },
+  { kind: 'mailbox', x: 21, y: 9 }, { kind: 'lamp', x: 44, y: 9 }, { kind: 'bench', x: 50, y: 9 },
   // 시장 좌판
-  ...[17, 20, 23, 26, 29].map((x) => ({ kind: 'stall', x, y: 26 })),
-  ...[17, 20, 23, 26, 29].map((x) => ({ kind: 'stall2', x, y: 31 })),
+  ...[17, 20, 23, 26, 29].map((x) => ({ kind: 'stall', x, y: 25 })),
+  ...[18, 21, 24, 27, 30].map((x) => ({ kind: 'stall2', x, y: 28 })),
   // 공원
-  { kind: 'tree', x: 1, y: 39 }, { kind: 'tree', x: 11, y: 39 }, { kind: 'tree', x: 1, y: 47 }, { kind: 'tree', x: 11, y: 47 },
-  { kind: 'tree', x: 6, y: 48 }, { kind: 'bench', x: 4, y: 44 }, { kind: 'bench', x: 8, y: 44 }, { kind: 'lamp', x: 3, y: 40 },
-  // 원룸촌 골목
-  { kind: 'trash', x: 44, y: 24 }, { kind: 'trash', x: 62, y: 24 }, { kind: 'bike', x: 47, y: 38 }, { kind: 'lamp', x: 55, y: 24 },
-  { kind: 'trash', x: 52, y: 52 }, { kind: 'vending', x: 63, y: 38 },
-  // 절 앞
-  { kind: 'tree', x: 57, y: 10 }, { kind: 'tree', x: 69, y: 10 },
-  // 교회 앞
-  { kind: 'bench', x: 16, y: 52 },
+  { kind: 'tree', x: 1, y: 46 }, { kind: 'tree', x: 12, y: 46 }, { kind: 'tree', x: 1, y: 51 }, { kind: 'tree', x: 12, y: 51 },
+  { kind: 'tree', x: 6, y: 51 }, { kind: 'bench', x: 4, y: 47 }, { kind: 'bench', x: 9, y: 47 }, { kind: 'lamp', x: 2, y: 48 },
+  // 남쪽 끝 담과 나무
+  ...[15, 19, 23, 27, 41, 47, 55, 61, 67].map((x) => ({ kind: 'tree', x, y: 53 })),
 ];
 
-// 장소의 바깥 자리 (주민이 서 있는 곳). 문 앞은 자동으로 생긴다.
-//   name: 일과에서 'park:bench' 처럼 부른다
+// 장소의 바깥 자리 (주민이 서 있는 곳). 문 앞(입구)은 자동. [x, y] 또는 { from: 'place', dx, dy } (그 장소 입구 기준)
 export const SPOTS = {
-  cvs: { front: [3, 12], table: [4, 11] },
-  pcbang: { smoke: [11, 12] },
-  pharmacy: { counter: [19, 22] },
-  restaurant: { front: [4, 37] },
-  market: { banchan: [18, 28], fruit: [24, 28], fish: [27, 33], walk: [21, 34], entrance: [24, 23] },
-  park: { bench1: [5, 45], bench2: [9, 45], plaza: [7, 43], walk: [3, 49] },
-  church: { yard: [20, 51] },
-  temple: { yard: [62, 11] },
-  fortune: { front: [50, 22] },
-  sanctuary: { door: [29, 22] },
-  station: { exit3: [27, 11], exit4: [38, 11], plaza: [25, 12] },
-  stream: { path: [24, 4], bridge: [46, 4] },
-  office: { smoke: [44, 23] },
-  gosiwon: { front: [59, 37] },
+  cvs: { front: { from: 'cvs', dx: 1, dy: 0 }, table: { from: 'cvs', dx: -2, dy: 0 } },
+  pcbang: { smoke: { from: 'pcbang', dx: 2, dy: 1 } },
+  pharmacy: { counter: { from: 'pharmacy', dx: 1, dy: 0 } },
+  restaurant: { front: { from: 'restaurant', dx: 2, dy: 0 } },
+  market: { banchan: [18, 26], fruit: [24, 26], fish: [26, 27], walk: [22, 26], entrance: [16, 27] },
+  park: { bench1: [4, 48], bench2: [9, 48], plaza: [7, 49], walk: [2, 50] },
+  church: { yard: { from: 'church', dx: -2, dy: 1 } },
+  temple: { yard: [62, 16] },
+  fortune: { front: { from: 'fortune', dx: 1, dy: 0 } },
+  station: { exit3: [29, 9], exit4: [39, 9], plaza: [25, 9] },
+  stream: { path: [24, 2], bridge: [46, 2] },
+  office: { smoke: { from: 'office', dx: 3, dy: 1 } },
+  gosiwon: { front: { from: 'gosiwon', dx: 1, dy: 0 } },
+  sanctuary: { door: { from: 'sanctuary', dx: 2, dy: 1 } },
 };
 
 // 신림역 출구 (도형 스프라이트)
 export const STATION_EXITS = [
-  { label: '신림역 3', x: 29, y: 10, sprite: 'station.exit' },
-  { label: '신림역 4', x: 38, y: 10, sprite: 'station.exit' },
+  { label: '신림역 3', x: 30, y: 8, sprite: 'station.exit' },
+  { label: '신림역 4', x: 38, y: 8, sprite: 'station.exit' },
 ];
 
-// 플레이어 시작 위치: 성소 건물 문 앞
-export const PLAYER_START = [27, 23];
+// 바닥 글자 (빈 칸에만. build-map 이 소품·자리와 겹치는지 검사)
+export const LABELS = [
+  { text: '남부순환로', x: 10, y: 5.5 }, { text: '남부순환로', x: 58, y: 5.5 },
+  { text: '신\n림\n로', x: 35, y: 26, tiles: [[34, 25], [35, 25], [34, 26], [35, 26], [34, 27], [35, 27]] },
+  { text: '도림천', x: 12, y: 1 }, { text: '도림천', x: 60, y: 1 },
+];
 
-// ── 성소 실내 (상가 3층 한 칸) ──
+// ── 성소 실내: build-map 이 공간 단계마다 한 장씩 만든다 (sim/space.js 의 SPACE_STEPS 와 같은 id)
 export const SANCTUARY = {
   w: 18, h: 13,
   door: [9, 12],                // 아래쪽 가운데 계단으로 나간다
-  pulpit: [9, 3],               // 단상
-  desk: [15, 3],                // 사무 책상
-  counsel: [2, 4],              // 상담 의자
-  seatArea: { x: 3, y: 6, w: 12, h: 5 },   // 접이식 의자가 놓이는 곳
+  pulpit: [9, 3],
+  desk: [15, 3],
+  counsel: [2, 4],
+  seatArea: { x: 3, y: 6, w: 12, h: 5 },
   window: [[3, 1], [6, 1], [12, 1], [15, 1]],
 };
