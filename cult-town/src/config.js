@@ -99,7 +99,7 @@ export const STAGES = {
   memberLike: 70,                // 새신자 → 신도 호감 조건
   memberWorships: 2,             // 예배 몇 번 참석하면 신도 후보
   leaveSuspicion: 80,            // 의심이 이 이상이면 단계가 하나 내려간다 (신도 이탈)
-  followersPerMemberWeek: 0.6,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
+  followersPerMemberWeek: 0.46,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
   followerCapPerMember: 2,
   phase2Followers: { chance: 1.0, cap: 5 },   // 2단계: 신도가 지인을 더 잘 데려온다
 };
@@ -162,12 +162,12 @@ export const GOAL = {
 // secularSus: 무교 주민 의심 배율 · ages: 잘 통하는 나이대 [최소, 최대] (그 안이면 호감 ×1.2)
 // p1Followers: 1단계 주마다 따라온 사람 배율 (실제 달력 첫 월세날 기준 성공률 맞춤)
 export const SECT_FX = {
-  doomsday: { topic: { future: 1.6 }, preachSus: 1.15, invite: 1.1, worship: 1.15, offering: 1.0, convert: 1.15, secularSus: 1.1, ages: [17, 32], p1Followers: 0.9, date: { day: 18, sus: 25 } },
-  messiah: { topic: { lonely: 1.4 }, preachSus: 1.35, invite: 1.0, worship: 1.4, offering: 1.1, convert: 1.2, secularSus: 1.2, ages: [40, 65], p1Followers: 0.92 },
+  doomsday: { topic: { future: 1.6 }, preachSus: 1.15, invite: 1.1, worship: 1.15, offering: 1.0, convert: 1.15, secularSus: 1.1, p2Cap: 3, ages: [17, 32], p1Followers: 0.9, date: { day: 18, sus: 25 } },
+  messiah: { topic: { lonely: 1.4 }, preachSus: 1.35, invite: 1.0, worship: 1.4, offering: 1.1, convert: 1.2, secularSus: 1.2, p2Cap: 1, ages: [40, 65], p1Followers: 0.86 },
   meditation: { topic: { meaning: 1.7, health: 1.45, lonely: 1.2 }, preachSus: 0.75, invite: 1.3, worship: 1.05, offering: 1.15, convert: 1.2, secularSus: 0.6, ages: [24, 45], p1Followers: 0.92 },
-  fortune: { topic: { money: 1.22, lonely: 1.0 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.25, convert: 1.0, secularSus: 1.1, ages: [45, 75] },
-  shaman: { topic: { future: 1.28, money: 1.12 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, ages: [30, 70], listenBonus: 1.0 },
-  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.1, worship: 1.05, offering: 1.05, convert: 1.1, secularSus: 0.9, ages: [55, 85], pharmacistSus: 1.2 },
+  fortune: { topic: { money: 1.22, lonely: 1.0 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.25, convert: 1.0, secularSus: 1.1, p1Followers: 0.9, ages: [45, 75] },
+  shaman: { topic: { future: 1.28, money: 1.12 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, p1Followers: 1.08, ages: [30, 70], listenBonus: 1.0 },
+  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.1, worship: 1.05, offering: 1.05, convert: 1.1, secularSus: 0.9, p1Followers: 1.15, p2Cap: 1, ages: [55, 85], pharmacistSus: 1.2 },
 };
 
 // ── 성소 소품 ── (data/shop.js 의 id 와 같은 키) seats: 자리 + / mood: 분위기 +
@@ -218,7 +218,7 @@ export const CONTEXT = {
 export const EVENTS = { dailyChance: 0.28, minGapDays: 2 };
 
 // ════════ 2단계 (B) ════════
-export const PHASE2 = { members: 120, minSpaceStep: 2, minOfficers: 3, landlordAngerMax: 100, rentStreak: 2 };   // 4월 25일 월세까지 두 달 연속
+export const PHASE2 = { members: 185, minSpaceStep: 2, minOfficers: 3, landlordAngerMax: 100, rentStreak: 2 };   // 목표: 신도 185 + 3층 전체 + 간부 셋 + 4월 25일 월세까지 두 달 연속
 
 // 공간 단계: 보증금(한 번) · 월세 추가(달마다) · 새로 생기는 방 자리
 export const SPACE_STEPS = [
@@ -260,10 +260,10 @@ export const REVELATIONS = [{ id: 'sign', at: 50 }, { id: 'fence', at: 100 }];
 
 // ════════ 3단계: 바깥의 위협 (22장) ════════
 export const PHASE3 = {
-  members: 180, rep: 40, repFloor7: 30, rentStreak: 3,   // 목표: 신도 200 + 평판 40 이상 (최근 7일 최저 30 이상) + 라이벌 정리 + 5월 25일 월세까지 석 달 연속
+  members: 195, rep: 40, repFloor7: 30, rentStreak: 3,   // 목표: 신도 195 + 평판 40 이상 (최근 7일 최저 30 이상) + 라이벌 정리 + 5월 25일 월세까지 석 달 연속
   followers: { chance: 0.25, cap: 6 }, outsiders: 0.3,   // 방송실 손님도 3단계엔 반쯤 (기사 보고 경계한다)            // 3단계: 신도 한 명이 데려오는 사람 한도가 조금 늘어난다
   // 유형별 3단계 보정: 재림 교주형은 기삿거리가 커서 보도가 세고, 신내림 점집 확장형은 상담 손님이 오래 안 남는다
-  sectFx: { messiah: { heat: 1.12 }, shaman: { followers: 0.7 } },
+  sectFx: { messiah: { heat: 1.12 }, shaman: { followers: 0.7 }, qigong: { heat: 0.85 } },
   rivalMajority: 0.5,                            // 우리 신도의 이 비율 넘게 라이벌로 가면 실패
 };
 
@@ -327,7 +327,7 @@ export const REVELATIONS3 = [{ id: 'camera', at: 150 }, { id: 'neighbor' }];
 
 // ════════ 4단계: 봉천동 지부 (23장) ════════
 export const PHASE4 = {
-  members: 320, branch: 100, rep: 40, rentStreak: 4,   // 목표: 신도 350 + 봉천 지부 100 + 두 동네 평판 40 이상 + 6월 25일 월세까지 넉 달 연속
+  members: 280, branch: 92, rep: 40, rentStreak: 4,   // 목표: 신도 280 + 봉천 지부 92 + 두 동네 평판 40 이상 + 6월 25일 월세까지 넉 달 연속
   followers: { chance: 0.6, cap: 7 },              // 4단계: 두 동네 소문이 이어져 지인을 더 잘 데려온다
   sectFx: { meditation: { heat: 1.14 }, fortune: { heat: 1.07 } },   // 유형별 4단계 보정: 명상·기복형은 지부가 늘며 기사거리가 커진다
   subway: { minutes: 20, fare: 1_400 },            // 신림역 ↔ 서울대입구역 2호선
@@ -386,7 +386,7 @@ export const DRAMA = {
 };
 
 // 예배 미니게임: 설교 카드 점수(0~1) → 효과 배율. 0.5 면 예전과 같다
-export const SERMON = { cards: 3, hand: 4, needWeight: 40, flow: 12, mulMin: 0.8, mulMax: 1.15, bigHit: 0.8 };
+export const SERMON = { cards: 3, hand: 4, needWeight: 40, flow: 12, mulMin: 0.8, mulMax: 1.05, bigHit: 0.8 };
 
 // 엿듣기: 들은 고민으로 말 걸기
 export const TIP = { days: 5, matchLike: 0.8, missLike: 2 };

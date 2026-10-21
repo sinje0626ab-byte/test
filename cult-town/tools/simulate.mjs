@@ -384,13 +384,14 @@ if (!args.includes('--no-balance')) {
       const [L1, L2, L3, L4] = LIMITS;
       const win = rs.filter((r) => r.phase1Day && r.phase1Day <= L1 && r.phase2Day && r.phase2Day <= L2 && r.phase3Day && r.phase3Day <= L3 && r.over === 'win' && r.days <= L4).length;
       const at = (d) => median(rs.map((r) => r.timeline[d] ?? r.timeline[r.timeline.length - 1] ?? 0));
+      const early = Math.round(rs.reduce((n, r) => n + r.timeline.slice(5, 41).reduce((a, x) => a + x, 0) / 36, 0) / rs.length);   // 5~40일 평균 신도
       const fails = rs.filter((r) => !['win', 'stop', 'timeout'].includes(r.over)).length;
-      return { win: pc(win, rs.length), d20: at(20), d50: at(50), fails: pc(fails, rs.length), acc: (rs.reduce((n, r) => n + (r.s.flags.accidents ?? 0), 0) / rs.length).toFixed(1) };
+      return { win: pc(win, rs.length), d20: at(20), d50: at(50), early, fails: pc(fails, rs.length), acc: (rs.reduce((n, r) => n + (r.s.flags.accidents ?? 0), 0) / rs.length).toFixed(1) };
     };
     const a = score(runs('normal')); const z = score(runs('zealot'));
-    console.log(`\n■ 열혈 신자 비교 (유형마다 ${N}판): 정석 20일째 신도 ${a.d20} · 50일째 ${a.d50} · 끝까지 성공 ${a.win}% · 중간 실패 ${a.fails}% · 사고 ${a.acc}회/판`);
-    console.log(`  ${''.padEnd(22)}열혈 20일째 신도 ${z.d20} · 50일째 ${z.d50} · 끝까지 성공 ${z.win}% · 중간 실패 ${z.fails}% · 사고 ${z.acc}회/판`);
-    if (!(z.d50 > a.d50)) fail('열혈 봇이 정석보다 빨리 모으지 못한다');
+    console.log(`\n■ 열혈 신자 비교 (유형마다 ${N}판): 정석 20일째 신도 ${a.d20} · 50일째 ${a.d50} · 5~40일 평균 ${a.early} · 끝까지 성공 ${a.win}% · 중간 실패 ${a.fails}% · 사고 ${a.acc}회/판`);
+    console.log(`  ${''.padEnd(22)}열혈 20일째 신도 ${z.d20} · 50일째 ${z.d50} · 5~40일 평균 ${z.early} · 끝까지 성공 ${z.win}% · 중간 실패 ${z.fails}% · 사고 ${z.acc}회/판`);
+    if (!(z.early > a.early)) fail('열혈 봇이 정석보다 빨리 모으지 못한다');
     if (!(z.fails > a.fails)) fail('열혈 봇이 정석보다 더 자주 실패하지 않는다');
   }
   // 라이벌 혼자 크는가: 플레이어가 라이벌에 아무 대응도 안 하는 봇

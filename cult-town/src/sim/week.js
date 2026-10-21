@@ -115,7 +115,7 @@ function weeklyFollowers(s) {
   for (const id of namedMembers(s)) {
     const have = s.followerOf[id] ?? 0;
     const F = s.phase >= 4 ? PHASE4.followers : s.phase >= 3 ? PHASE3.followers : STAGES.phase2Followers;
-    const cap = s.phase >= 2 ? F.cap : STAGES.followerCapPerMember;
+    const cap = s.phase >= 2 ? F.cap + (s.phase === 2 ? SECT_FX[s.leader.sect].p2Cap ?? 0 : 0) : STAGES.followerCapPerMember;   // p2Cap: 2단계 유형 보정
     const chance = (s.phase >= 2 ? F.chance * (s.phase >= 3 ? PHASE3.sectFx[s.leader.sect]?.followers ?? 1 : 1) : STAGES.followersPerMemberWeek * (SECT_FX[s.leader.sect].p1Followers ?? 1)) + followerBonus(s);
     if (have < cap && rand(s) < chance) {
       s.followerOf[id] = have + 1; gained++;

@@ -166,7 +166,7 @@ export function openNight(app) {
         play('coins');
         note = [verdict, fill(NIGHT.worshipDone, s, { n: r.heads, 돈: r.offering })];
         if (score >= SERMON.bigHit) s.week.bigSermon = true;
-        for (const [id, st] of r.promoted) if (st === 'member') cutin(app, { kicker: fill('{신도}가 되었다', s), title: RESIDENT_BY_ID[id].name, line: speak(s, lineFor(s, id, 'member')), face: app.portrait(id) });
+        for (const [id, st] of r.promoted) if (st === 'member') cutin(app, { kicker: josa(fill('{신도}', s), '이/가') + ' 되었다', title: RESIDENT_BY_ID[id].name, line: speak(s, lineFor(s, id, 'member')), face: app.portrait(id) });
         if (r.standing) note.push(fill(NIGHT.seatsFull, s, { n: r.standing }));
         for (const [id, st] of r.promoted) note.push(`${josa(RESIDENT_BY_ID[id].name, '이/가')} ${josa(STAGE_NAMES[st], '이/가')} 되었다.`);
         if (opts.doubleBasket) note.push(SHADOW.doubleBasket.now);
