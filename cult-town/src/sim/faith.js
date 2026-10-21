@@ -2,6 +2,10 @@
 import { STAGES, TALK } from '../config.js';
 import { RELATIONS, RESIDENT_BY_ID } from '../data/residents.js';
 import { clamp } from './leader.js';
+import { leaveBonus } from './space.js';
+import { ruleLeave } from './revelation.js';
+
+export const leaveThreshold = (s) => STAGES.leaveSuspicion + leaveBonus(s) + ruleLeave(s) + (s.flags?.leaveBoost?.until >= s.day ? s.flags.leaveBoost.add : 0);
 
 export const stageIndex = (st) => STAGES.order.indexOf(st);
 
@@ -40,7 +44,7 @@ export function checkCurious(s, id) {
 export function checkLeave(s) {
   const left = [];
   for (const [id, st] of Object.entries(s.res)) {
-    if (st.sus < STAGES.leaveSuspicion || st.stage === 'none') continue;
+    if (st.sus < leaveThreshold(s) || st.stage === 'none') continue;
     const i = stageIndex(st.stage);
     const to = st.stage === 'visitor' ? 'curious' : STAGES.order[i - 1];
     if (st.stage === 'member') left.push(id);

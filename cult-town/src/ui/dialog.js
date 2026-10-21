@@ -1,6 +1,8 @@
 // 포교 대화창: 인사 → 단서(지문) → 선택지 3~4개 → (고민 카드) → 반응 대사 + 변화
 // 원칙: 교주의 말은 선택지 이름으로만 보인다. 주민의 반응만 대사로 나온다.
 import { RESIDENT_BY_ID } from '../data/residents.js';
+import { ITEMS } from '../data/items.js';
+import { PLACES } from '../data/places.js';
 import { OPTIONS, CARDS, STAGE_NAMES } from '../data/topics.js';
 import { LINES } from '../data/lines.js';
 import { canTalk, startTalk, act, talkClergy } from '../sim/talk.js';
@@ -43,17 +45,29 @@ export function openTalk(app, id) {
   }
 
   play('talk');
-  const t = startTalk(s, id);
+  const ctx = { key: s.pos[id]?.key };
+  const t = startTalk(s, id, ctx);
+  const CONTEXT_IDS = ['story', 'favorDone', 'relay', 'gift', 'lunch', 'umbrella', 'market', 'walk', 'coffee'];
   const optionBtn = (o) => {
     const meta = OPTIONS[o.id];
-    const label = o.id === 'special' ? o.special : meta.label;
+    let label = o.id === 'special' ? o.special : meta.label;
+    if (o.id === 'relay') label = label.replace('{이름}', RESIDENT_BY_ID[o.from].name);
     const hint = o.id === 'special' ? '교단 유형의 특기. 지금 고민과 맞으면 잘 통한다.' : meta.hint;
-    return h('button', { class: 'btn', onclick: () => choose(o.id) }, label, h('small', {}, hint));
+    return h('button', { class: `btn ${CONTEXT_IDS.includes(o.id) ? 'ctx' : ''}`, onclick: () => choose(o) }, label, h('small', {}, hint));
   };
-  const choose = (opt) => {
+  const choose = (o) => {
     play('select');
-    if (opt === 'listen') return showCards();
-    finish(act(s, id, opt));
+    if (o.id === 'listen') return showCards();
+    if (o.id === 'gift') return showGifts();
+    finish(act(s, id, o.id, o.from, ctx));
+  };
+  const showGifts = () => {
+    const have = Object.keys(s.inventory).filter((k) => s.inventory[k] > 0);
+    mount('dialog', shell(app, face, r.name, sub,
+      h('div', { class: 'narr' }, '무엇을 줄까. 사람마다 좋아하는 게 다르다.'),
+      h('div', { class: 'cards' }, have.map((k) => h('button', { class: 'card', onclick: () => { play('select'); finish(act(s, id, 'gift', k, ctx)); } },
+        h('b', {}, ITEMS[k].name), h('small', {}, `${s.inventory[k]}개`)))),
+    ));
   };
   const showCards = () => {
     mount('dialog', shell(app, face, r.name, sub,
@@ -68,7 +82,9 @@ export function openTalk(app, id) {
     if (res.dLike) pills.push(h('span', { class: `pill ${res.dLike > 0 ? 'up' : 'down'}` }, `호감 ${res.dLike > 0 ? '+' : ''}${res.dLike}`));
     if (res.dSus) pills.push(h('span', { class: `pill ${res.dSus > 0 ? 'down' : 'up'}` }, `의심 ${res.dSus > 0 ? '+' : ''}${res.dSus}`));
     if (res.money) pills.push(h('span', { class: 'pill up' }, `상담비 ${won(res.money)}`));
+    if (res.repeat) pills.push(h('span', { class: 'pill down' }, '같은 얘기'));
     let stageNote = null;
+    if (res.story) stageNote = `부탁을 받았다: ${favorText(res.story.favor)} (부탁 수첩 N)`;
     if (res.stageTo !== res.stageFrom) {
       pills.push(h('span', { class: 'pill stage' }, STAGE_NAMES[res.stageTo]));
       if (res.stageTo === 'curious') stageNote = `${josa(r.name, '이/가')} 302호에 관심이 생겼다. 더 친해지면 초대할 수 있다.`;
@@ -89,6 +105,12 @@ export function openTalk(app, id) {
     h('div', { class: 'narr' }, t.hint),
     h('div', { class: 'opts' }, t.options.map(optionBtn),
       h('button', { class: 'btn wide', onclick: close }, OPTIONS.leave.label))));
+}
+
+function favorText(f) {
+  if (f.type === 'item') return `${ITEMS[f.item].name} 갖다주기 (${PLACES[ITEMS[f.item].shop].short})`;
+  if (f.type === 'deliver') return `${RESIDENT_BY_ID[f.to].name}에게 말 전하기`;
+  return `${PLACES[f.place].name}에 다녀오기`;
 }
 
 export function openClergyTalk(app, clergyId) {

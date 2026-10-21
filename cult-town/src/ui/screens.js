@@ -1,5 +1,6 @@
 // 주보 · 밤사이 소식 · 엔딩 · 크레딧 · 게임 메뉴
-import { GOAL, SANCTUARY } from '../config.js';
+import { GOAL, PHASE2 } from '../config.js';
+import { rentNow } from '../sim/space.js';
 import { BULLETIN, ENDINGS, DOOMSDAY_PASSED, SHADOW, LANDLORD, CLERGY_EVENT } from '../data/bulletin.js';
 import { CLERGY } from '../data/clergy.js';
 import { CAST_BY_ID } from '../data/cast.js';
@@ -18,6 +19,8 @@ export function eventLines(s, events) {
       out.push(fill(CLERGY_EVENT, s, { 직함: c.title, 이름: c.name }) + ' ' + e.line);
     } else if (e.type === 'shadow') out.push(e.text);
     else if (e.type === 'doomsday') out.push(DOOMSDAY_PASSED);
+    else if (e.text) out.push(e.text);
+    else if (e.type === 'outsiders') out.push(`방송을 보고 동네 밖에서 ${e.n}명이 302호를 찾아왔다.`);
     else if (e.type === 'left') out.push(`${josa(RESIDENT_BY_ID[e.id].name, '이/가')} 더 이상 302호에 오지 않는다.`);
     else if (e.type === 'castLeft') out.push(`${CAST_BY_ID[e.id].name}(${CAST_BY_ID[e.id].role})에게서 "당분간 못 갈 것 같다"는 문자가 왔다.`);
     else if (e.type === 'rent') {
@@ -69,6 +72,18 @@ export function showBulletin(s, b, onClose) {
     h('div', { class: 'row end', style: 'margin-top:12px' }, h('button', { class: 'btn primary', onclick: () => { play('page'); unmount('bulletin'); onClose(); } }, '주보 접기')))));
 }
 
+// 1단계 끝 → 2단계 시작 장면
+export function showPhaseUp(s, onClose) {
+  const e = ENDINGS.phase1;
+  play('jingle_good', 0.5);
+  mount('phaseup', h('div', { class: 'screen ending' }, h('div', { class: 'panel box' },
+    h('h2', {}, e.title),
+    ...e.text.map((t) => h('p', {}, fill(t, s))),
+    h('p', {}, '2단계: 옆 칸을 터서 넓히고, 칸마다 방을 만들고, 간부를 세운다. 첫 간부는 엄마·오랜 친구·우연히 온 사람.'),
+    h('p', { class: 'muted' }, `목표: 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상. 밤 메뉴에 '공간·방', '간부', '간부 회의'가 생겼다.`),
+    h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '2단계 시작')))));
+}
+
 export function showEnding(s, kind, { onTitle }) {
   const e = ENDINGS[kind];
   play(kind === 'win' ? 'jingle_good' : 'jingle_bad', 0.5);
@@ -76,7 +91,7 @@ export function showEnding(s, kind, { onTitle }) {
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
     h('p', { class: 'muted' }, `${fmtDate(s.day)} · 교주 ${s.leader.name} · ${s.leader.cultName}`),
-    kind === 'win' ? h('p', { class: 'muted' }, '2단계(성소 확장·간부·계열 혼합)는 아직 만들지 않았다.') : null,
+    kind === 'win' ? h('p', { class: 'muted' }, '3단계(기자·가족 시위·라이벌 교주)는 아직 만들지 않았다.') : null,
     h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('ending'); onTitle(); } }, '처음 화면으로')))));
 }
 
@@ -102,8 +117,9 @@ export function showMenu(app) {
   app.modalOpened();
   mount('menu', h('div', { class: 'screen' }, h('div', { class: 'panel box stack' },
     h('h2', {}, '메뉴'),
-    h('p', { class: 'muted' }, `목표: 신도 ${GOAL.members}명 + 월세 ${GOAL.rentStreak}달 연속 (월세 ${won(SANCTUARY.rent)}, 일요일 밤). 자동 저장된다.`),
-    h('p', { class: 'muted' }, 'PC: 방향키·WASD 이동, 스페이스·엔터 말 걸기, P 일시정지, 1·2 속도. 모바일: 가고 싶은 곳을 누르면 걸어간다. 사람을 누르면 프로필.'),
+    h('p', { class: 'muted' }, app.s.phase >= 2 ? `2단계 목표: 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상. 월세 ${won(rentNow(app.s))} (일요일 밤). 자동 저장된다.` : `목표: 신도 ${GOAL.members}명 + 월세 ${GOAL.rentStreak}달 연속 (월세 ${won(rentNow(app.s))}, 일요일 밤). 자동 저장된다.`),
+    h('p', { class: 'muted' }, 'PC: 방향키·WASD 이동, 스페이스·엔터 말 걸기, P 일시정지, 1·2 속도, N 부탁 수첩. 모바일: 왼쪽 아래 방향키 또는 가고 싶은 곳을 누른다. 사람을 누르면 프로필.'),
+    h('button', { class: 'btn', onclick: () => { unmount('menu'); app.modalClosed(); app.openNotebook(); } }, '부탁 수첩'),
     h('button', { class: 'btn primary', onclick: close }, '계속하기'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); showCredits(() => app.modalClosed()); } }, '만든 사람들 · 에셋'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); app.toTitle(); } }, '처음 화면으로 (저장은 남는다)'))));

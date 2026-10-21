@@ -10,7 +10,7 @@
 | Interface Sounds (select, confirm, error, talk) | 효과음 | Kenney | CC0 1.0 | https://kenney.nl/assets/interface-sounds |
 | UI Audio (click) | 효과음 | Kenney | CC0 1.0 | https://kenney.nl/assets/ui-audio |
 | Music Jingles (jingle_good, jingle_bad, jingle_week) | 주보·엔딩 | Kenney | CC0 1.0 | https://kenney.nl/assets/music-jingles |
-| 갈무리 Galmuri11 · Galmuri11 Bold · Galmuri14 · GalmuriMono11 (npm `galmuri` 2.40.3) | 모든 한글 글자 | Lee Minseo (quiple) | SIL OFL 1.1 | https://github.com/quiple/galmuri |
+| 갈무리 Galmuri11 · Galmuri11 Bold · Galmuri14 · GalmuriMono11 · Galmuri7 (npm `galmuri` 2.40.3) | 모든 한글 글자 (Galmuri7: 간판·이름표·말풍선) | Lee Minseo (quiple) | SIL OFL 1.1 | https://github.com/quiple/galmuri |
 | Phaser 3.90 | 맵·캐릭터 그리기 | Phaser Studio | MIT | https://phaser.io |
 | Vite | 개발 서버·빌드 | Vite 팀 | MIT | https://vitejs.dev |
 
@@ -20,6 +20,8 @@
 ## 코드로 그린 것 (에셋 아님)
 - 주민 30명 + 성직자 3명 + 첫 신도 3명의 머리·피부·옷 색과 모자·올림머리·묶음머리 (`src/game/people.js`, RPG Urban 몸 틀을 다시 칠함)
 - 간판, 신림역 출구, 방석, 전기포트, 현수막, 창문, 계단 (`src/game/signs.js`, `SanctuaryScene.js`). 모두 스프라이트 키로 부르므로 같은 키의 이미지를 넣으면 바뀐다.
+- 2단계 추가분: 지붕 물탱크·실외기·빨래줄, 골목 분리수거함·자전거·실외기, 전선, 감정 말풍선, 직업 아이콘, 비, 계시 연출의 빛줄기·먼지 (전부 코드). 전봇대·주차 차량·쓰레기 봉투·좌판은 RPG Urban Pack 타일.
+- 계시 연출은 같은 레포 `faith-game/` 의 코드를 옮겨 다듬었다.
 
 ## 지도
 - 신림동·신림역·남부순환로·신림로·도림천은 실제 이름이다. 길 배치는 손으로 단순화했다.

@@ -1,21 +1,29 @@
 // 노드 시뮬레이터
 //  1) 주민 일과 검사: 모든 일과 장소에 길이 있는가, 다음 일과 전에 도착하는가, 같은 칸에 너무 몰리지 않는가
-//  2) 균형 검사: 간단한 봇이 여섯 유형으로 여러 판 해 보고, 1단계 목표까지 걸리는 날 수와 실제 시간을 잰다
-// 사용: node tools/simulate.mjs [--games 20] [--verbose]
+//  2) 균형 검사: '정석' 봇이 여섯 유형으로 여러 판 해 보고, 1단계 목표(성공률 60~80%)와 2단계 목표(2~3시간)까지 잰다
+// 사용: node tools/simulate.mjs [--games 20] [--verbose] [--no-balance]
 import { readFileSync } from 'node:fs';
-import { CLOCK, MOVE, SHOP, SANCTUARY, GOAL, TALK } from '../src/config.js';
+import { CLOCK, MOVE, SHOP, SANCTUARY, TALK, SPACE_STEPS, OFFICERS } from '../src/config.js';
+import { ITEMS } from '../src/data/items.js';
+import { PREFS } from '../src/data/prefs.js';
 import { RESIDENTS } from '../src/data/residents.js';
 import { SECTS, SECT_ORDER } from '../src/data/sects.js';
 import { gridFromMap, findPath, resolveKey } from '../src/sim/grid.js';
 import { newGame } from '../src/sim/state.js';
 import { startDay, endDay } from '../src/sim/week.js';
 import { tickPeople, departures, targetKey, PEOPLE } from '../src/sim/residents.js';
-import { canTalk, startTalk, act, optionsFor } from '../src/sim/talk.js';
+import { canTalk, startTalk, act } from '../src/sim/talk.js';
 import { holdWorship, canWorship, buy, canBuy, seats, care } from '../src/sim/sanctuary.js';
 import { memberCount } from '../src/sim/faith.js';
+import { eventOptions, resolveEvent, DARK_EVENT_OPTIONS } from '../src/sim/events.js';
+import { visitPlace, buyItem } from '../src/sim/stories.js';
+import { rentNow, nextStep, expand, haggleChance, openSlots, buildRoom, upgradeRoom, roomCost } from '../src/sim/space.js';
+import { activeOfficers, canPromote, promote, assign, streetTick, pickAgenda, decideAgenda } from '../src/sim/officers.js';
+import { applyRevelation } from '../src/sim/revelation.js';
+import { AGENDAS } from '../src/data/officers.js';
 
 const args = process.argv.slice(2);
-const GAMES = Number(args[args.indexOf('--games') + 1]) || 20;
+const GAMES = args.includes('--games') ? Number(args[args.indexOf('--games') + 1]) : 20;
 const VERBOSE = args.includes('--verbose');
 const g = gridFromMap(JSON.parse(readFileSync(new URL('../src/map/town.json', import.meta.url))));
 
@@ -85,115 +93,174 @@ for (const day of [0, 2, 5, 6]) {
 }
 
 // ── 2) 균형 검사 ──
-// 봇: 하루 동안 바깥에 나온 주민 중 피로가 허락하는 만큼 말을 건다.
-//   단서(hint)를 보고 고민 카드를 고른다 (단서는 70%만 맞다). 초대할 수 있으면 초대, 특기가 맞을 것 같으면 특기.
-//   밤엔 예배, 자리가 모자라면 의자, 돈이 남으면 분위기 소품, 새신자 돌보기.
+// '정석' 봇: 단서를 보고 고민 카드를 고르고, 사연 부탁을 들어주고, 좋아하는 선물을 주고, 어두운 선택은 하지 않는다.
+// 밤: 예배·의자·소품·돌보기. 2단계: 돈이 되면 확장, 상담실·주방·공부방·사무실 순으로 방, 간부 승진·배치, 회의는 불만 적은 쪽.
 const SPECIAL_FIT = {
   doomsday: ['future'], messiah: ['lonely'], meditation: ['meaning', 'health'],
   fortune: ['money', 'lonely'], shaman: ['future', 'money'], qigong: ['health'],
 };
-const TALK_TILES = 25; // 말 걸러 가는 평균 걸음 (피로)
+const TALK_TILES = 25;
+const EVENT_PREF = ['tea', 'mat', 'apologize', 'explain', 'short', 'buy', 'pickup', 'order', 'sorry', 'let', 'none', 'later', 'refuse', 'ignore'];
+const ROOM_ORDER = ['broadcast', 'counsel', 'kitchen', 'office', 'study', 'worship', 'worship', 'study'];
 
 function seenToday(s) {
-  const seen = new Set();
+  const seen = new Map();
   const s2 = structuredClone({ ...s });
-  for (let m = CLOCK.dayStart; m < CLOCK.dayEnd; m += 2) {
+  for (let m = CLOCK.dayStart; m < CLOCK.dayEnd; m += 5) {
     s2.minute = m;
-    tickPeople(s2, g, 2);
-    if (m % 20 === 0) for (const r of RESIDENTS) if (!s2.pos[r.id].inside) seen.add(r.id);
+    tickPeople(s2, g, 5);
+    if (m % 30 === 0) for (const r of RESIDENTS) if (!s2.pos[r.id].inside && !seen.has(r.id)) seen.set(r.id, s2.pos[r.id].key);
   }
-  return [...seen];
+  return seen;
+}
+
+function botTalk(s, id, key, policy) {
+  const can = canTalk(s, id);
+  if (!can.ok) return false;
+  s.leader.fatigue += TALK_TILES * TALK.fatiguePerTile;
+  const t = startTalk(s, id, { key });
+  const st = s.res[id];
+  const ids = t.options.map((o) => o.id);
+  const guess = st.known ? Object.entries(st.needs).sort((a, b) => b[1] - a[1])[0][0] : st.hint;
+  const loved = Object.keys(s.inventory).find((k) => s.inventory[k] > 0 && PREFS[id].likes.includes(k));
+  let opt; let card;
+  if (ids.includes('favorDone')) opt = 'favorDone';
+  else if (ids.includes('relay')) { opt = 'relay'; card = t.options.find((o) => o.id === 'relay').from; }
+  else if (policy === 'reckless') opt = ids.includes('invite') ? 'invite' : ids.includes('preach') ? 'preach' : 'special';
+  else if (ids.includes('invite')) opt = 'invite';
+  else if (ids.includes('story')) opt = 'story';
+  else if (ids.includes('gift') && loved) { opt = 'gift'; card = loved; }
+  else if (ids.includes('umbrella')) opt = 'umbrella';
+  else if (ids.includes('lunch') && st.like < 60) opt = 'lunch';
+  else if (st.known && SPECIAL_FIT[s.leader.sect].includes(guess) && st.like >= 20 && st.lastTopic !== 'special') opt = 'special';
+  else if (ids.includes('walk') || ids.includes('market')) opt = ids.includes('walk') ? 'walk' : 'market';
+  else opt = 'listen';
+  if (opt === 'listen') { card = t.cards.includes(guess) ? guess : t.cards[0]; if (st.lastTopic === `listen:${card}`) opt = 'smalltalk'; }
+  act(s, id, opt, card, { key });
+  return true;
 }
 
 function playDay(s, policy) {
-  const seen = seenToday(s);
-  const order = seen.slice().sort((a, b) => {
-    const A = s.res[a]; const B = s.res[b];
-    // 신도·방문 약속한 사람은 뒤로. 초대 직전인 사람, 새신자, 친해지는 중인 사람 순
-    const score = (x) => (x.stage === 'member' || x.stage === 'visitor' ? -200 : 0) + (x.stage === 'curious' ? 200 : 0) + (x.stage === 'newcomer' ? 100 : 0) + x.like - x.sus * 2;
-    return score(B) - score(A);
-  });
-  for (const id of order) {
-    if (!canTalk(s, id).ok) continue;
-    s.leader.fatigue += TALK_TILES * TALK.fatiguePerTile;
-    const t = startTalk(s, id);
-    const st = s.res[id];
-    const ids = t.options.map((o) => o.id);
-    let opt = 'listen';
-    const guess = st.known ? Object.entries(st.needs).sort((a, b) => b[1] - a[1])[0][0] : st.hint;
-    if (policy === 'reckless') opt = ids.includes('invite') ? 'invite' : ids.includes('preach') ? 'preach' : 'special';
-    else if (ids.includes('invite')) opt = 'invite';
-    else if (st.known && SPECIAL_FIT[s.leader.sect].includes(guess) && st.like >= 20) opt = 'special';
-    const card = t.cards.includes(guess) ? guess : t.cards[0];
-    act(s, id, opt, card);
+  if (s.events.pending) {
+    const opts = eventOptions(s, s.events.pending).filter((o) => policy === 'reckless' || !DARK_EVENT_OPTIONS.includes(o));
+    resolveEvent(s, EVENT_PREF.find((o) => opts.includes(o)) ?? opts[0]);
   }
+  // 사연 부탁 준비: 물건 사기 · 장소 다녀오기
+  for (const st of Object.values(s.res)) {
+    const f = st.story?.favor;
+    if (!f) continue;
+    if (f.type === 'item' && !(s.inventory[f.item] > 0) && s.leader.money > rentNow(s) * 0.5) { buyItem(s, f.item); s.leader.fatigue += 2; }
+    if (f.type === 'place' && !f.visited) { visitPlace(s, f.place); s.leader.fatigue += 3; }
+  }
+  if (s.weather.rain && !(s.inventory.umbrella > 0) && s.leader.money > rentNow(s)) buyItem(s, 'umbrella');
+  const seen = seenToday(s);
+  const order = [...seen.keys()].sort((a, b) => {
+    const score = (id) => {
+      const x = s.res[id];
+      const quick = x.story?.favor && ((x.story.favor.type === 'item' && s.inventory[x.story.favor.item] > 0) || x.story.favor.relayed || x.story.favor.visited);
+      const relayTarget = Object.values(s.res).some((o) => o.story?.favor?.type === 'deliver' && o.story.favor.to === id && !o.story.favor.relayed);
+      return (quick || relayTarget ? 400 : 0) + (x.stage === 'member' || x.stage === 'visitor' ? -200 : 0) + (x.stage === 'curious' ? 200 : 0) + (x.stage === 'newcomer' ? 100 : 0) + x.like - x.sus * 2;
+    };
+    return score(b) - score(a);
+  });
+  for (let hour = 9; hour < 19; hour++) streetTick(s);
+  for (const id of order) botTalk(s, id, seen.get(id), policy);
   s.minute = CLOCK.dayEnd;
 }
 
 function playNight(s) {
   if (canWorship(s)) {
     const expected = s.attend.length + 3 + s.followers;
-    while (expected > seats(s) && canBuy(s, 'chair').ok && s.leader.money - SHOP.chair.price > SANCTUARY.rent * 0.6) buy(s, 'chair');
+    while (expected > seats(s) && canBuy(s, 'chair').ok && s.leader.money - SHOP.chair.price > rentNow(s) * 0.6) buy(s, 'chair');
     holdWorship(s);
   }
   for (const item of ['kettle', 'banner', 'light', 'board', 'speaker', 'plant']) {
-    if (canBuy(s, item).ok && s.leader.money - SHOP[item].price > SANCTUARY.rent * 1.3) buy(s, item);
+    if (canBuy(s, item).ok && s.leader.money - SHOP[item].price > rentNow(s) * 1.3) buy(s, item);
   }
   const newcomers = Object.keys(s.res).filter((id) => s.res[id].stage === 'newcomer').sort((a, b) => s.res[a].like - s.res[b].like);
-  if (newcomers[0]) care(s, newcomers[0]);
+  for (const id of newcomers.slice(0, 2)) care(s, id);
+  if (s.phase >= 2) phase2Night(s);
 }
 
-function playGame(sect, seed, policy = 'normal') {
+function phase2Night(s) {
+  const reserve = rentNow(s) * 1.1;
+  const st = nextStep(s);
+  if (st && s.leader.money > st.deposit + (rentNow(s) + st.rent) * 1.3) expand(s, haggleChance(s) >= 0.5 ? 'haggle' : 'pay');
+  for (const slot of openSlots(s)) {
+    if (!s.rooms[slot]) {
+      const built = Object.values(s.rooms).map((r) => r.type);
+      const type = ROOM_ORDER.find((t, i) => ROOM_ORDER.slice(0, i + 1).filter((x) => x === t).length > built.filter((x) => x === t).length);
+      if (type && s.leader.money > roomCost(s, slot, type) + reserve) buildRoom(s, slot, type);
+    }
+  }
+  for (const slot of openSlots(s)) if (s.rooms[slot] && s.rooms[slot].level < 2 && s.leader.money > roomCost(s, slot) + reserve * 1.5) upgradeRoom(s, slot, false);
+  for (const id of Object.keys(s.res)) if (activeOfficers(s).length < 5 && canPromote(s, id)) promote(s, id);
+  // 배치: 관리 좋은 사람은 방, 말솜씨 좋은 사람은 낮 포교
+  const roomSlots = Object.keys(s.rooms).filter((x) => x !== '302');
+  for (const o of activeOfficers(s).sort((a, b) => b.manage - a.manage)) {
+    if (o.talk >= o.manage && o.talk >= 3) { if (o.assign !== 'street') assign(s, o.id, 'street'); continue; }
+    const free = roomSlots.find((x) => !activeOfficers(s).some((y) => y.assign === `room:${x}`));
+    if (!o.assign) assign(s, o.id, free ? `room:${free}` : 'street');
+  }
+  const ag = pickAgenda(s);
+  if (ag) {
+    const a = AGENDAS.find((x) => x.id === ag.id);
+    const scoreOf = (fx) => -(fx.disc ?? 0) - (fx.discAll ?? 0) * 2 - (fx.discOther ?? 0) - (fx.shadow ? 30 : 0) + (fx.money ?? 0) / 10000 - (fx.belief && fx.belief < 0 ? 20 : 0);
+    let best = 0; a.options.forEach((o, i) => { if (scoreOf(o.fx) > scoreOf(a.options[best].fx)) best = i; });
+    decideAgenda(s, ag, best);
+  }
+}
+
+function playGame(sect, seed, policy = 'normal', maxDays = 60) {
   const family = SECTS[sect].family[0];
   const s = newGame({ leaderName: '봇', age: 40, family, sect, cultName: '봇', seed });
   startDay(s, g);
   const timeline = [];
-  for (let d = 0; d < 45; d++) {
+  let phase1Day = null;
+  for (let d = 0; d < maxDays; d++) {
     playDay(s, policy);
     playNight(s);
     const r = endDay(s, g, { rentChoice: 'promise' });
+    if (r.phaseUp) phase1Day = s.day;
+    if (r.revelation) applyRevelation(s, r.revelation, r.revelation === 'sign' ? ['banner'] : ['meal', 'open']);
     timeline.push(memberCount(s));
-    if (VERBOSE && seed === 1000 && (d % 7 === 6)) {
-      const st = {}; for (const r of Object.values(s.res)) st[r.stage] = (st[r.stage] ?? 0) + 1;
-      const sus = Object.values(s.res).map((r) => Math.round(r.sus));
-      console.log(`    ${sect} ${d + 1}일 stage ${JSON.stringify(st)} 따라온 ${s.followers} 평판 ${Math.round(s.rep)} 돈 ${s.leader.money} 자리 ${seats(s)} 의심 평균 ${Math.round(sus.reduce((a, b) => a + b) / sus.length)} 최대 ${Math.max(...sus)}`);
+    if (process.env.P2DBG && seed === 1000 && s.phase >= 2) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} step${s.space.step} off${activeOfficers(s).length} money${s.leader.money} rooms ${JSON.stringify(Object.fromEntries(Object.entries(s.rooms).map(([k, v]) => [k, v.type + v.level])))}`);
+    if (VERBOSE && seed === 1000 && d % 7 === 6) {
+      console.log(`    ${sect} ${d + 1}일 신도 ${memberCount(s)} 따라온 ${s.followers} 평판 ${Math.round(s.rep)} 돈 ${s.leader.money} 공간 ${s.space.step} 방 ${Object.values(s.rooms).map((x) => x.type[0] + x.level).join('')} 간부 ${activeOfficers(s).map((o) => `${o.name.slice(1)}${Math.round(o.discontent)}`).join(',')} 건물주 ${Math.round(s.landlordAnger)} 사연 ${Object.values(s.res).reduce((n, x) => n + (x.story?.done ?? 0), 0)}`);
     }
-    if (r.over) return { over: r.over, days: s.day + 1, timeline, s };
+    if (r.over) return { over: r.over, days: s.day + 1, phase1Day, timeline, s };
   }
-  return { over: 'timeout', days: 45, timeline, s };
+  return { over: 'timeout', days: maxDays, phase1Day, timeline, s };
 }
 
-const DAY_SECONDS = (CLOCK.dayEnd - CLOCK.dayStart) / CLOCK.minutesPerSecond + 45; // 낮 + 밤 메뉴 약 45초
-console.log(`\n■ 균형 검사 (유형마다 ${GAMES}판, 하루 ≈ ${Math.round(DAY_SECONDS)}초)`);
-const median = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
-const rows = [];
-for (const sect of SECT_ORDER) {
-  const res = [];
-  for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
-  const wins = res.filter((r) => r.over === 'win');
-  const days = wins.map((r) => r.days);
-  const reasons = {};
-  for (const r of res) reasons[r.over] = (reasons[r.over] ?? 0) + 1;
-  const d14 = median(res.map((r) => r.timeline[13] ?? r.timeline.at(-1)));
-  const row = {
-    sect: SECTS[sect].name, win: `${wins.length}/${GAMES}`,
-    days: days.length ? `${Math.min(...days)}~${Math.max(...days)} (중앙 ${median(days)})` : '-',
-    minutes: days.length ? Math.round((median(days) * DAY_SECONDS) / 60) : '-',
-    members14: d14, reasons: Object.entries(reasons).map(([k, v]) => `${k}:${v}`).join(' '),
-  };
-  rows.push(row);
-  console.log(`  ${row.sect.padEnd(10)} 승 ${row.win.padEnd(6)} 걸린 날 ${String(row.days).padEnd(16)} ≈ ${row.minutes}분 · 14일째 신도 ${row.members14} · ${row.reasons}`);
-  if (VERBOSE) console.log('    ', res[0].timeline.join(' '));
-  const mins = days.length ? (median(days) * DAY_SECONDS) / 60 : Infinity;
-  if (wins.length < GAMES * 0.6) fail(`${row.sect}: 승률이 낮다`);
-  if (mins < 55 || mins > 125) fail(`${row.sect}: 목표까지 ${Math.round(mins)}분 (목표 1~2시간)`);
+if (!args.includes('--no-balance')) {
+  const DAY_SECONDS = (CLOCK.dayEnd - CLOCK.dayStart) / CLOCK.minutesPerSecond + 45;
+  const P1_LIMIT = 28;   // 1단계를 이 날 안에 끝내면 성공 (약 2시간)
+  console.log(`\n■ 균형 검사 (유형마다 ${GAMES}판, 하루 ≈ ${Math.round(DAY_SECONDS)}초, 1단계 성공 = ${P1_LIMIT}일 안에 목표)`);
+  const median = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
+  const min = (d) => Math.round((d * DAY_SECONDS) / 60);
+  let p1Total = 0; let n = 0;
+  for (const sect of SECT_ORDER) {
+    const res = [];
+    for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
+    const p1 = res.filter((r) => r.phase1Day && r.phase1Day <= P1_LIMIT);
+    const wins = res.filter((r) => r.over === 'win');
+    const reasons = {};
+    for (const r of res) reasons[r.over] = (reasons[r.over] ?? 0) + 1;
+    p1Total += p1.length; n += res.length;
+    const p1d = p1.map((r) => r.phase1Day); const wd = wins.map((r) => r.days);
+    console.log(`  ${SECTS[sect].name.padEnd(10)} 1단계 ${p1.length}/${GAMES} (중앙 ${p1d.length ? median(p1d) : '-'}일 ≈ ${p1d.length ? min(median(p1d)) : '-'}분) · 2단계 ${wins.length}/${GAMES} (중앙 ${wd.length ? median(wd) : '-'}일 ≈ ${wd.length ? min(median(wd)) : '-'}분) · ${Object.entries(reasons).map(([k, v]) => `${k}:${v}`).join(' ')}`);
+    if (VERBOSE) console.log('    ', res[0].timeline.join(' '));
+    const rate = p1.length / GAMES;
+    if (rate < 0.6 || rate > 0.8) fail(`${SECTS[sect].name}: 1단계 성공률 ${Math.round(rate * 100)}% (목표 60~80%)`);
+    if (wd.length) { const m = min(median(wd)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: 2단계 목표까지 ${m}분 (목표 2~3시간)`); }
+    else fail(`${SECTS[sect].name}: 2단계 목표에 닿은 판이 없다`);
+  }
+  console.log(`  전체 1단계 성공률 ${Math.round((p1Total / n) * 100)}%`);
+  const reckless = SECT_ORDER.map((sect) => playGame(sect, 4242, 'reckless', 45));
+  console.log(`\n■ 교단 얘기만 하는 봇: ${reckless.map((r) => `${r.over}@${r.days}일`).join(' · ')}`);
+  if (reckless.filter((r) => r.phase1Day).length > 1) fail('교단 얘기만 해도 1단계를 넘긴다 (의심 장치가 약하다)');
 }
-
-// 막 나가는 봇(교단 얘기만 한다)은 실패해야 한다
-const reckless = SECT_ORDER.map((sect) => playGame(sect, 4242, 'reckless'));
-const recklessWins = reckless.filter((r) => r.over === 'win').length;
-console.log(`\n■ 교단 얘기만 하는 봇: ${reckless.map((r) => `${r.over}@${r.days}일`).join(' · ')}`);
-if (recklessWins > 1) fail('교단 얘기만 해도 이긴다 (의심 장치가 약하다)');
 
 console.log(problems ? `\n✗ 문제 ${problems}개` : '\n✓ 문제 없음');
 process.exitCode = problems ? 1 : 0;

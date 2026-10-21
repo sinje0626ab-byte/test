@@ -29,6 +29,16 @@ export const OPTIONS = {
   invite: { label: '성소에 초대하기', hint: '다음 예배에 오라고 한다.' },
   special: { label: '', hint: '교단 유형마다 다른 특기.' },
   leave: { label: '그냥 인사하고 가기', hint: '' },
+  // 상황 선택지
+  story: { label: '사연 듣기', hint: '친해져서 열린 이야기. 작은 부탁을 받는다.' },
+  favorDone: { label: '부탁 들어준 것 알리기', hint: '호감이 크게 오르고 다음 사연이 열린다.' },
+  relay: { label: '{이름}의 말 전하기', hint: '부탁받은 말을 전한다. 오늘 이미 얘기했어도 된다.' },
+  gift: { label: '선물 주기', hint: '가진 물건 중 하나. 좋아하는 게 따로 있다.' },
+  lunch: { label: '점심 같이 먹기', hint: '9,000원. 외로운 사람이 특히 좋아한다.' },
+  umbrella: { label: '우산 씌워 주기', hint: '비닐우산 하나를 준다.' },
+  market: { label: '장 같이 보기', hint: '장날 시장. 장바구니를 들어 준다.' },
+  walk: { label: '같이 걷기', hint: '산책로 한 바퀴. 건강 걱정이 줄어든다.' },
+  coffee: { label: '캔커피 건네기', hint: '아침 인사로.' },
 };
 
 // 말 걸었을 때 보이는 모습 (지금 고민의 단서). 지문이라 말투와 상관없다.

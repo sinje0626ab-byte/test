@@ -3,7 +3,7 @@
 export const GAME = {
   title: '',                     // 게임 이름(미정). 정해지면 여기만.
   saveKey: 'cult-town-save',
-  saveVersion: 1,
+  saveVersion: 2,
   startMoney: 400_000,           // 교주 지갑 = 교단 돈 (원)
   startAge: { min: 25, max: 60, default: 38 },
 };
@@ -68,6 +68,7 @@ export const STAGES = {
   leaveSuspicion: 80,            // 의심이 이 이상이면 단계가 하나 내려간다 (신도 이탈)
   followersPerMemberWeek: 0.35,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
   followerCapPerMember: 2,
+  phase2Followers: { chance: 0.9, cap: 4 },   // 2단계: 신도가 지인을 더 잘 데려온다
 };
 
 // ── 평판·소문·기성 종교 ──
@@ -121,10 +122,10 @@ export const GOAL = {
 export const SECT_FX = {
   doomsday: { topic: { future: 1.6 }, preachSus: 1.15, invite: 1.1, worship: 1.15, offering: 1.0, convert: 1.15, secularSus: 1.1, ages: [17, 32], date: { day: 18, sus: 25 } },
   messiah: { topic: { lonely: 1.4 }, preachSus: 1.35, invite: 1.0, worship: 1.4, offering: 1.1, convert: 1.2, secularSus: 1.2, ages: [40, 65] },
-  meditation: { topic: { meaning: 1.4, health: 1.2 }, preachSus: 0.75, invite: 1.15, worship: 0.9, offering: 0.9, convert: 0.8, secularSus: 0.6, ages: [24, 45] },
-  fortune: { topic: { money: 1.5, lonely: 1.1 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.35, convert: 1.0, secularSus: 1.1, ages: [45, 75] },
-  shaman: { topic: { future: 1.4, money: 1.2 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, ages: [30, 70], listenBonus: 1.3 },
-  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.05, worship: 1.05, offering: 1.05, convert: 1.0, secularSus: 0.9, ages: [55, 85], pharmacistSus: 1.8 },
+  meditation: { topic: { meaning: 1.6, health: 1.35, lonely: 1.15 }, preachSus: 0.75, invite: 1.2, worship: 1.05, offering: 1.0, convert: 1.0, secularSus: 0.6, ages: [24, 45] },
+  fortune: { topic: { money: 1.3, lonely: 1.05 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.25, convert: 1.0, secularSus: 1.1, ages: [45, 75] },
+  shaman: { topic: { future: 1.28, money: 1.12 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, ages: [30, 70], listenBonus: 1.0 },
+  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.05, worship: 1.05, offering: 1.05, convert: 1.0, secularSus: 0.9, ages: [55, 85], pharmacistSus: 1.2 },
 };
 
 // ── 성소 소품 ── (data/shop.js 의 id 와 같은 키) seats: 자리 + / mood: 분위기 +
@@ -138,3 +139,79 @@ export const SHOP = {
   plant: { price: 18_000, seats: 0, mood: 2, max: 3 },
   speaker: { price: 90_000, seats: 0, mood: 7, max: 1 },
 };
+
+// ════════ 1단계 보강 (A) ════════
+// 감정 말풍선: window 분마다 바뀜 · 의심 angrySus 이상이면 짜증 · 호감 heartLike 이상이면 하트 · 고민 sighAt 이상이면 한숨
+export const MOOD = { window: 20, angrySus: 40, heartLike: 60, sighAt: 60, bubbleSeconds: 2.4, gossipEverySeconds: 5, hearTiles: 6 };
+
+// 날씨·요일
+export const WEATHER = {
+  rainChance: 0.2,               // 하루가 비일 확률
+  rainLonely: 5,                 // 비 오는 아침 모든 주민 외로움 +
+  rainSkip: ['park', 'stream'],  // 비 오면 안 가는 곳 (집에 있는다)
+  marketWeekday: 5,              // 토요일 장날
+  marketTalk: 1.2,               // 장날 시장에서 대화 호감 배율
+};
+
+// 사연 3단계 (data/stories.js) · 선물 · 반복
+export const STORY = {
+  unlockLike: [25, 45, 65],      // 단계마다 열리는 호감
+  doneLike: 15,                  // 부탁을 들어주면 호감 +
+  doneSus: -6,                   // 의심 -
+  listenLike: 4,                 // 사연을 들어 주기만 해도
+  relayLike: 5,                  // 말 전하기를 받은 사람 호감 +
+};
+export const GIFT = { like: 8, loved: 16, hated: -6, hatedSus: 3 };
+export const REPEAT = { factor: 0.5 };   // 같은 사람에게 바로 전과 같은 화제: 효과 ×0.5
+// 상황 선택지 효과 (호감 / 의심 / 돈 / 피로)
+export const CONTEXT = {
+  lunch: { like: 10, money: -9_000, fatigue: 6 },     // 점심 같이 (11~14시, 순댓국집·편의점 앞)
+  umbrella: { like: 12 },                              // 우산 씌워 주기 (비, 우산 있으면 우산이 하나 줄어든다)
+  market: { like: 9 },                                 // 장 같이 보기 (장날 시장)
+  walk: { like: 8, health: -6 },                       // 같이 걷기 (공원·산책로)
+  coffee: { like: 7 },                                 // 커피 건네기 (캔커피 있으면, 아침)
+};
+
+// 돌발 사건 (data/events.js): 하루 끝마다 이 확률로 하나. 주 1~2회
+export const EVENTS = { dailyChance: 0.28, minGapDays: 2 };
+
+// ════════ 2단계 (B) ════════
+export const PHASE2 = { members: 100, minSpaceStep: 2, minOfficers: 3, landlordAngerMax: 100 };
+
+// 공간 단계: 보증금(한 번) · 월세 추가(주마다) · 새로 생기는 방 자리
+export const SPACE_STEPS = [
+  { id: 0, name: '302호', deposit: 0, rent: 0, slots: ['302'] },
+  { id: 1, name: '303호 벽 트기', deposit: 500_000, rent: 120_000, slots: ['303'] },
+  { id: 2, name: '3층 전체 (301·304호)', deposit: 800_000, rent: 220_000, slots: ['301', '304'] },
+  { id: 3, name: '2층 임대', deposit: 1_800_000, rent: 260_000, slots: ['201', '202'] },
+  { id: 4, name: '4층 임대', deposit: 1_800_000, rent: 260_000, slots: ['401', '402'] },
+];
+// 건물주 협상: 깎기 성공 확률 = base + 평판/repDiv + 간부 관리 최고치 × manage
+export const NEGOTIATE = { base: 0.25, repDiv: 250, manage: 0.06, cut: 0.3, failAnger: 12, longCut: 0.15, longAnger: -10 };
+
+// 방: 짓는 값(레벨 1) · 업그레이드 값(레벨 2, 3) · 효과(레벨당)
+export const ROOMS = {
+  worship: { build: 200_000, up: [300_000, 450_000], seats: 10 },
+  counsel: { build: 250_000, up: [350_000, 500_000], invite: 0.08, needLike: 5, visitorExtra: 0.12 },
+  study: { build: 250_000, up: [350_000, 500_000], memberLike: 2, leave: 5 },
+  kitchen: { build: 300_000, up: [400_000, 550_000], worshipLike: 3, followers: 0.15 },
+  dorm: { build: 400_000, up: [500_000, 650_000], leave: 15, familySus: 2, anger: 3, rep: 0.4 },
+  broadcast: { build: 450_000, up: [550_000, 700_000], outsiders: 3.6, rep: 0.35, clergySus: 1 },
+  office: { build: 200_000, up: [300_000, 450_000], offering: 0.1 },
+};
+// 어두운 업그레이드 (레벨 3 대신): 효율 배율 · 그림자 장부 무게
+export const DARK_ROOM = { mult: 1.6, cost: 0.8 };
+
+// 간부
+export const OFFICERS = {
+  max: 6,
+  promoteLike: 75,               // 이 호감 이상인 신도만 간부로
+  roomBonus: 0.15,               // 방 담당: 관리 1점당 효율 +15%
+  street: { perHour: 1, like: 3, talkLike: 2, slipBase: 0.24, slipTalk: 0.03, slipSus: 7, startHour: 9, endHour: 18 },
+  discontent: { idle: 2, rival: 3, dark: 6, extreme: 1, good: -2, loyalCut: 0.12, decay: 1 },
+  embezzleAt: 50, factionAt: 70, leaveAt: 90,
+  embezzleShare: 0.06, factionSus: 10, exposeDays: 4, exposeRep: -15, exposeSus: 10,
+};
+
+// 성장 계시 (ui/revelation.js, data/revelations.js)
+export const REVELATIONS = [{ id: 'sign', at: 50 }, { id: 'fence', at: 100 }];
