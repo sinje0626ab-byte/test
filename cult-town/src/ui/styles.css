@@ -186,10 +186,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 /* ── 모바일 방향키 · 비 · 부탁 수첩 ── */
-.dpad { position: fixed; left: 14px; bottom: calc(env(safe-area-inset-bottom) + 14px); width: 132px; height: 132px; z-index: 14; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); gap: 2px; opacity: .82; touch-action: none; }
-.dpad-btn { background: var(--paper); border: var(--line); border-radius: 8px; font-size: 16px; box-shadow: 0 3px 0 var(--ink); user-select: none; -webkit-user-select: none; touch-action: none; }
-.dpad-btn.on { background: var(--ink); color: var(--paper); transform: translateY(2px); box-shadow: none; }
-.dpad-up { grid-area: 1 / 2; } .dpad-left { grid-area: 2 / 1; } .dpad-right { grid-area: 2 / 3; } .dpad-down { grid-area: 3 / 2; }
 @media (pointer: coarse) { .actionbar { justify-content: flex-end; padding-left: 160px; } }
 #rain { position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: .45;
   background-image: repeating-linear-gradient(105deg, transparent 0 14px, rgba(200, 220, 255, .55) 14px 15px, transparent 15px 31px);
@@ -297,3 +293,12 @@ kbd { font-family: var(--font); font-size: 11px; border: 1.5px solid currentColo
 .cutinbar .kicker { font-size: 11px; color: var(--accent); }
 .cutinbar b { font-size: 17px; display: block; }
 .cutinbar .say { font-size: 13px; margin-top: 2px; }
+
+/* 모바일 이동 스틱 (터치 기기에서만): 받침 원 + 손잡이. 끝까지 밀면 달리기 (손잡이가 빨개진다) */
+.dpad { position: fixed; left: 14px; bottom: calc(env(safe-area-inset-bottom) + 14px); z-index: 14; touch-action: none; user-select: none; -webkit-user-select: none; }
+.dpad.hidden { display: none; }
+.stick-base { position: relative; width: 128px; height: 128px; border-radius: 50%; background: rgba(246, 239, 217, .55); border: 3px solid rgba(29, 27, 38, .8); box-shadow: inset 0 0 0 10px rgba(29, 27, 38, .08); display: grid; place-items: center; }
+.stick-knob { width: 56px; height: 56px; border-radius: 50%; background: var(--paper); border: var(--line); box-shadow: 0 3px 0 var(--ink); transition: transform .12s ease-out; pointer-events: none; }
+.dpad.on .stick-knob { transition: none; background: var(--paper-2); box-shadow: 0 1px 0 var(--ink); }
+.dpad.run .stick-knob { background: var(--accent); }
+.dpad.on .stick-base { background: rgba(246, 239, 217, .75); }

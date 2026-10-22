@@ -432,7 +432,11 @@ export const app = {
 
   modalOpened() { this.modal++; this.dpadShow(false); },
   modalClosed() { this.modal = Math.max(0, this.modal - 1); if (!this.modal) this.dpadShow(true); },
-  dpadShow(on) { const el = document.querySelector('.dpad'); if (el) el.classList.toggle('hidden', !on || !this.s); },
+  dpadShow(on) {
+    const el = document.querySelector('.dpad');
+    if (el) el.classList.toggle('hidden', !on || !this.s);
+    if (!on) { this.dpad = {}; this.dpadRun = false; el?.classList.remove('on', 'run'); el?.querySelector('.stick-knob')?.style.removeProperty('transform'); }   // 메뉴가 뜨면 스틱을 놓은 것으로
+  },
   openMenu() { showMenu(this); },
 
   portrait(id) {

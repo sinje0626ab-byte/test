@@ -428,7 +428,7 @@ export class TownScene extends Phaser.Scene {
     const wx = ptr.worldX; const wy = ptr.worldY;
     const tx = Math.floor(wx / T); const ty = Math.floor(wy / T);
     const who = this.personAt(wx, wy);
-    if (who) { app.showProfile(who, () => this.walker.chase(() => this.tileOf(who), () => app.talkTo(who))); return; }
+    if (who) { app.showProfile(who, () => this.walker.chase(() => this.tileOf(who), () => app.talkTo(who), () => { const sp = this.sprites[who]; return sp ? [sp.x + 8, sp.y + 14] : null; })); return; }
     if (this.directory && Math.abs(this.directory.x - tx) <= 0 && Math.abs(this.directory.y - ty) <= 0) { toast(this.directory.text, '', 6000); return; }
     const n = this.noticeAreas?.find((a) => Math.abs(a.x - tx) <= 2 && Math.abs(a.y - ty) <= 1);
     if (n) { toast(n.text, '', 6000); return; }
