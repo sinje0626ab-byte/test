@@ -15,7 +15,7 @@ import { daysToRent } from '../src/sim/clock.js';
 import { tickPeople, departures, targetKey, peopleOf, gridFor, sanctuaryKey } from '../src/sim/residents.js';
 import { canTalk, startTalk, act } from '../src/sim/talk.js';
 import { holdWorship, canWorship, buy, canBuy, seats, care } from '../src/sim/sanctuary.js';
-import { memberCount } from '../src/sim/faith.js';
+import { memberCount, namedMembers } from '../src/sim/faith.js';
 import { eventOptions, resolveEvent, DARK_EVENT_OPTIONS } from '../src/sim/events.js';
 import { visitPlace, buyItem } from '../src/sim/stories.js';
 import { visitSpot, currentStep } from '../src/sim/quests.js';
@@ -316,7 +316,9 @@ function playGame(sect, seed, policy = 'normal', maxDays = 190) {
   s.botPolicy = policy;
   startDay(s, g);
   const timeline = [];
-  let phase1Day = null; let phase2Day = null; let phase3Day = null; let rivalLog = [];
+  let phase1Day = null; let phase2Day = null; let phase3Day = null; let rivalLog = []; let firstMember = null;
+  // 판 결과: 숫자만 남기고 게임 상태(s)는 버린다 (여러 판을 모아도 메모리가 늘지 않게)
+  const done = (over, days) => ({ over, days, phase1Day, phase2Day, phase3Day, timeline, rivalLog, firstMember, accidents: s.flags.accidents ?? 0, rivalSect: s.rival?.sect ?? null });
   for (let d = 0; d < maxDays; d++) {
     playDay(s, policy);
     playNight(s);
@@ -326,20 +328,21 @@ function playGame(sect, seed, policy = 'normal', maxDays = 190) {
     if (r.phaseUp === 3) phase2Day = s.day;
     if (r.phaseUp === 4) phase3Day = s.day;
     // 빠른 조정용: STOP=n 이면 n단계를 끝내면 그 판을 멈춘다
-    if (process.env.STOP && r.phaseUp && r.phaseUp > Number(process.env.STOP)) return { over: 'stop', days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
+    if (process.env.STOP && r.phaseUp && r.phaseUp > Number(process.env.STOP)) return done('stop', s.day + 1);
     if (r.revelation) applyRevelation(s, r.revelation, REV_PICKS[r.revelation]);
     if (s.rival) rivalLog.push(rivalSize(s));
     if (process.env.P3DBG && seed === Number(process.env.P3DBG) && s.phase >= 3 && s.day % 3 === 0) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} rep${Math.round(s.rep)} exp${Math.round(s.exposure)} rep:${s.reporter.active ? 'on' : '-'}${s.reporter.due ? 'due' : ''} heat${Math.round(s.reporter.heat)} reports${s.reporter.reports} rival:${s.rival ? s.rival.status + rivalSize(s) + ' dirt' + s.rival.dirt + ' taken' + s.rival.taken : '-'} def${soreDefectors(s).length} prot${s.protest && !s.protest.done ? 'y' : '-'} notices${Object.keys(s.notices).length}${s.phase >= 4 ? ` | P4 repB${Math.round(s.repB)} br${s.branch.open ? branchCount(s) : '-'} bf${s.branch.followers} head${branchHead(s) ? Math.round(branchHead(s).discontent) : '-'}${s.branch.split ? 'SPLIT' : ''}` : ''}`);
     timeline.push(memberCount(s));
+    if (firstMember == null && namedMembers(s).length) firstMember = s.day;   // 첫 신도 전환 (이름 있는 주민)
     if (process.env.RDBG && seed === 1000 && s.phase === 1) console.log(`      d${s.day} m${memberCount(s)} streak${s.sanctuary.rentStreak} arr${s.sanctuary.arrears} money${s.leader.money}`);
     if (process.env.P2DBG && seed === 1000 && s.phase >= 2) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} step${s.space.step} off${activeOfficers(s).length} money${s.leader.money} rooms ${JSON.stringify(Object.fromEntries(Object.entries(s.rooms).map(([k, v]) => [k, v.type + v.level])))}`);
     if (VERBOSE && seed === 1000 && d % 7 === 6) {
       console.log(`    ${sect} ${d + 1}일 신도 ${memberCount(s)} 따라온 ${s.followers} 평판 ${Math.round(s.rep)} 돈 ${s.leader.money} 공간 ${s.space.step} 방 ${Object.values(s.rooms).map((x) => x.type[0] + x.level).join('')} 간부 ${activeOfficers(s).map((o) => `${o.name.slice(1)}${Math.round(o.discontent)}`).join(',')} 건물주 ${Math.round(s.landlordAnger)} 사연 ${Object.values(s.res).reduce((n, x) => n + (x.story?.done ?? 0), 0)}`);
     }
-    if (r.over) return { over: r.over, days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
-    if (policy === 'ignoreRival' && rivalLog.length >= 15) return { over: 'probe', days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
+    if (r.over) return done(r.over, s.day + 1);
+    if (policy === 'ignoreRival' && rivalLog.length >= 15) return done('probe', s.day + 1);
   }
-  return { over: 'timeout', days: maxDays, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
+  return done('timeout', maxDays);
 }
 
 if (!args.includes('--no-balance')) {
@@ -386,7 +389,7 @@ if (!args.includes('--no-balance')) {
       const at = (d) => median(rs.map((r) => r.timeline[d] ?? r.timeline[r.timeline.length - 1] ?? 0));
       const early = Math.round(rs.reduce((n, r) => n + r.timeline.slice(5, 41).reduce((a, x) => a + x, 0) / 36, 0) / rs.length);   // 5~40일 평균 신도
       const fails = rs.filter((r) => !['win', 'stop', 'timeout'].includes(r.over)).length;
-      return { win: pc(win, rs.length), d20: at(20), d50: at(50), early, fails: pc(fails, rs.length), acc: (rs.reduce((n, r) => n + (r.s.flags.accidents ?? 0), 0) / rs.length).toFixed(1) };
+      return { win: pc(win, rs.length), d20: at(20), d50: at(50), early, fails: pc(fails, rs.length), acc: (rs.reduce((n, r) => n + r.accidents, 0) / rs.length).toFixed(1) };
     };
     const a = score(runs('normal')); const z = score(runs('zealot'));
     console.log(`\n■ 열혈 신자 비교 (유형마다 ${N}판): 정석 20일째 신도 ${a.d20} · 50일째 ${a.d50} · 5~40일 평균 ${a.early} · 끝까지 성공 ${a.win}% · 중간 실패 ${a.fails}% · 사고 ${a.acc}회/판`);
@@ -397,7 +400,7 @@ if (!args.includes('--no-balance')) {
   // 라이벌 혼자 크는가: 플레이어가 라이벌에 아무 대응도 안 하는 봇
   const alone = ['doomsday', 'meditation', 'shaman'].map((sect) => playGame(sect, 777, 'ignoreRival'));
   console.log(`\n■ 라이벌에 대응 안 하는 봇 (라이벌 규모, 등장부터 하루마다): `);
-  for (const r of alone) console.log(`    ${r.s.rival ? r.s.rival.sect : '-'}: ${r.rivalLog.join(' ')}`);
+  for (const r of alone) console.log(`    ${r.rivalSect ?? '-'}: ${r.rivalLog.join(' ')}`);
   for (const r of alone) if (!r.rivalLog.length || r.rivalLog.at(-1) < r.rivalLog[0] * 1.5) fail(`라이벌이 혼자서는 신도를 못 모은다 (${r.rivalLog[0]} → ${r.rivalLog.at(-1)})`);
   const reckless = SECT_ORDER.map((sect) => playGame(sect, 4242, 'reckless', 45));
   console.log(`\n■ 교단 얘기만 하는 봇: ${reckless.map((r) => `${r.over}@${r.days}일`).join(' · ')}`);

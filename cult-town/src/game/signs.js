@@ -196,10 +196,18 @@ export function drawSanctuarySign(scene, b, name, tier, evening = false) {
   const g = scene.add.graphics().setDepth(61);
   const parts = [g];
   if (tier === 0) {
-    // 창문에 붙인 A4 종이 + 테이프 두 줄
-    g.fillStyle(0xf8f6ee, 1).fillRect(x3 - 7, y3 + 3, 14, 10);
-    g.fillStyle(0xd8c890, 0.9).fillRect(x3 - 7, y3 + 2, 4, 2).fillRect(x3 + 3, y3 + 2, 4, 2);
-    parts.push(scene.add.text(x3, y3 + 4, '302', { ...SIGN_FONT, color: '#1d1b26' }).setOrigin(0.5, 0).setDepth(62));
+    // 창문에 붙인 A4 용지: 매직으로 쓴 교단 이름 (조금 삐뚤게) + 테이프 두 줄 + 아래에 작게 302
+    const t = scene.add.text(0, 0, name, { fontFamily: 'Galmuri11', fontSize: '10px', color: '#1d1b26' }).setDepth(63);
+    const maxW = (b.w - 2) * T - 8;
+    if (t.width > maxW) t.setScale(maxW / t.width);
+    const pw = Math.ceil(t.displayWidth) + 22; const ph = 15;
+    const cx = (b.x + b.w / 2) * T + 8;
+    const px = Math.round(cx - pw / 2); const py = y3 + 1;
+    g.fillStyle(0x1d1b26, 0.35).fillRect(px + 1, py + 1, pw, ph);
+    g.fillStyle(0xfbfaf4, 1).fillRect(px, py, pw, ph);
+    g.fillStyle(0xd8c890, 0.95).fillRect(px - 2, py - 1, 7, 3).fillRect(px + pw - 5, py - 1, 7, 3);
+    t.setOrigin(0.5, 0).setPosition(cx + 7, py + 1).setAngle(-2);
+    parts.push(t, scene.add.text(px + 3, py + 5, '302', { ...SIGN_FONT, fontSize: '7px', color: '#6a6a7a' }).setDepth(63));
   } else if (tier === 1) {
     // 창문 시트지 글씨 (흰 글씨, 바탕 없음)
     parts.push(scene.add.text(x3 - 4, y3 + 3, `302 ${name}`, { ...SIGN_FONT, color: '#ffffff', stroke: '#1d1b26', strokeThickness: 2 }).setOrigin(0.5, 0).setDepth(62));
@@ -218,13 +226,21 @@ export function drawSanctuarySign(scene, b, name, tier, evening = false) {
   return parts;
 }
 
-// 동림상가 입구 층별 안내판 (문 옆 벽)
+// 동림상가 입구 층별 안내판: 문 오른쪽 벽에 붙은 큰 판 (첫날부터 3층에 교단 이름). 탭하면 층별 안내 (TownScene)
 export function drawFloorDirectory(scene, b, name, tier) {
-  const x = (b.door - 1) * T + 2; const y = (b.y + b.h - 1) * T + 1;
-  const lines = ['4 쿵탁탁구장', `3 302 ${tier >= 1 ? name : '(호실)'}`, '2 보습교실', '1 꼬마김밥'];
-  const g = scene.add.graphics().setDepth(63);
-  g.fillStyle(0x1d1b26, 1).fillRect(x - 1, y - 1, 14, 14);
-  g.fillStyle(0xd8d4c8, 1).fillRect(x, y, 12, 12);
-  for (let i = 0; i < 4; i++) g.fillStyle(i === 1 ? 0x5b3a7a : 0x5a5a6a, 1).fillRect(x + 2, y + 2 + i * 2.6, 8, 1.4);
-  return { g, lines, area: { x: b.door - 1, y: b.y + b.h - 1 } };
+  const lines = ['4층 쿵탁탁구장', `3층 302호 ${name}`, '2층 보습교실', '1층 꼬마김밥'];
+  const left = (b.door + 1) * T + 2;                    // 문 바로 오른쪽부터 건물 끝까지
+  const right = (b.x + b.w) * T - 2;
+  const w = right - left; const top = (b.y + b.h - 2) * T + 4; const hgt = 26;
+  const g = scene.add.graphics().setDepth(70);
+  g.fillStyle(0x1d1b26, 1).fillRect(left - 1, top - 1, w + 2, hgt + 2);
+  g.fillStyle(0x3a3e4a, 1).fillRect(left, top, w, hgt);
+  g.fillStyle(0x5b3a7a, 1).fillRect(left + 1, top + 1 + 6.2, w - 2, 6.2);       // 3층 줄은 보라 바탕
+  const parts = [g];
+  lines.forEach((l, i) => {
+    const t = scene.add.text(left + 3, top + 1 + i * 6.2, l, { fontFamily: 'Galmuri7', fontSize: '8px', color: i === 1 ? '#fff6c8' : '#e8e4d8' }).setDepth(71);
+    t.setScale(Math.min(0.78, (w - 6) / t.width));
+    parts.push(t);
+  });
+  return { g, parts, lines, area: { x0: b.door + 1, x1: b.x + b.w - 1, y0: b.y + b.h - 2, y1: b.y + b.h - 1 } };
 }

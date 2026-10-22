@@ -13,7 +13,8 @@ import { gridFromMap, registerGrid } from './sim/grid.js';
 import { newGame } from './sim/state.js';
 import { startDay, endDay } from './sim/week.js';
 import { tickPeople, snapAll } from './sim/residents.js';
-import { isRentDay as isMonthEnd, fmtTime, season, holidayOf, dayOfMonth, fmtDate, tempAt, skyName } from './sim/clock.js';
+import { isRentDay as isMonthEnd, fmtTime, season, holidayOf, dayOfMonth, fmtDate, tempAt, skyName, isWorshipDay } from './sim/clock.js';
+import { emotionOf } from './sim/mood.js';
 import { tone } from './sim/leader.js';
 import { pick } from './sim/rng.js';
 import { saveGame, loadGame, clearSave } from './sim/save.js';
@@ -42,7 +43,7 @@ import { sameFamily } from './sim/talk.js';
 import { showEvent } from './ui/event.js';
 import { showRevelation } from './ui/revelation.js';
 import { createDpad } from './ui/dpad.js';
-import { toast } from './ui/toast.js';
+import { toast, setToastGate, clearToasts } from './ui/toast.js';
 import { play } from './ui/sound.js';
 import { $ui, unmount, h } from './ui/dom.js';
 import { fill } from './ui/text.js';
@@ -95,6 +96,8 @@ export const app = {
     window.addEventListener('keyup', (e) => { if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.running = false; });
     window.addEventListener('contextmenu', (e) => { if (!this.s) return; e.preventDefault(); this.back(); });
     createDpad(this);
+    // 알림은 창(대화·밤 메뉴·사건·장면)이 하나도 없을 때만 차례로 뜬다
+    setToastGate(() => this.modal === 0 && !document.querySelector('[data-id=cutin],[data-id=event],[data-id=morning],[data-id=bulletin],[data-id=opening]'));
     this.toTitle();
   },
 
@@ -220,6 +223,7 @@ export const app = {
 
   sleep() {
     const s = this.s;
+    clearToasts();                                // 밤에 못 띄운 알림은 버린다 (아침 알림과 섞이지 않게)
     play('page');
     const finish = (rentChoice) => {
       const r = endDay(s, this.g, { rentChoice });
@@ -242,8 +246,9 @@ export const app = {
         toast(`${s.leader.name}: ${pick(s, LEADER_TONE[tone(s)].morning)}`);
         const hol = holidayOf(s.day);
         if (hol && dayOfMonth(s.day) === hol.from) toast(hol.text, '', 6000);
-        if (s.weather.rain) toast(s.weather.snow ? `${fmtDate(s.day)}. 눈이 온다. 골목이 미끄럽다.` : `${fmtDate(s.day)}. 비가 온다 (${tempAt(s)}°). 공원·산책로에 사람이 없다. 우산을 씌워 주면 좋아한다.`);
-        if (s.weather.market) toast('오늘은 토요일 장날. 시장에 사람이 많다.');
+        if (s.weather.rain) this.tipOnce(s.weather.snow ? 'snow' : 'rain', s.weather.snow ? '눈이 오는 날은 골목이 미끄럽다. 밖에 나온 사람이 적다.' : '비 오는 날엔 공원·산책로에 사람이 없다. 편의점 비닐우산을 씌워 주면 좋아한다.');
+        if (s.weather.market) this.tipOnce('market', '토요일은 장날. 시장에 사람이 많고, 장바구니를 들어 주는 선택지가 생긴다.');
+        if (isWorshipDay(s.day)) this.tipOnce('worshipDay', '수요일·일요일 밤은 예배. 저녁에 성소로 돌아와 밤 메뉴에서 연다.');
         this.todayToast();
         // 밤사이 결정적 순간 (첫 열혈 신자 · 라이벌에게 간 사람)
         for (const e of r.events) {
@@ -278,6 +283,7 @@ export const app = {
     if (!near) return this.hud.setAction(null);
     if (near.kind === 'person') {
       const id = near.id;
+      if (RESIDENT_BY_ID[id] && emotionOf(this.s, id) === 'sigh') this.tipOnce('sigh', '머리 위 "휴"는 지금 고민이 큰 사람. 고민 들어주기가 잘 통한다.');
       const npc = id.startsWith('x:') || id.startsWith('v:');
       const name = id.startsWith('c:') ? `${CLERGY_BY_ID[id.slice(2)].name} ${CLERGY_BY_ID[id.slice(2)].title}` : id.startsWith('o:') ? CAST_BY[id.slice(2)].name : npc ? nameForNpc(this.s, id) : RESIDENT_BY_ID[id].name;
       const verb = id === 'x:reporter' ? '인터뷰 받기' : id.startsWith('o:') || id.startsWith('v:') ? '인사' : isProtester(this.s, id) ? '피켓 앞으로' : isDefector(this.s, id) ? '다가가기' : '말 걸기';
@@ -321,7 +327,7 @@ export const app = {
     else if (isDefector(this.s, id)) openDefector(this, id);
     else openTalk(this, id);
   },
-  showProfile(id, onTalk) { openProfile(this, id, { onTalk }); },
+  showProfile(id, onTalk) { openProfile(this, id, { onTalk }); this.tipOnce('profile', '프로필의 "지금 고민"은 얘기를 나눠 봐야 알게 된다. 수첩(N)에 사연·부탁이 쌓인다.'); },
   useDoor(place) {
     this.visitAt(place);
     if (place === 'sanctuary') {
@@ -393,6 +399,15 @@ export const app = {
     for (const t of res?.todayDone ?? []) toast(t.id === 'all' ? '오늘 할 일 셋을 다 했다. 보리차값 1만 원이 굳었다.' : `오늘 할 일: ${dailyName(t)} ✓`, 'good');
     saveGame(this.s); this.hud?.update();
     if (this.s.quest?.news?.length) setTimeout(() => showQuestNews(this), 300);
+  },
+  // 그 상황이 처음 올 때 한 번만 보이는 안내
+  tipOnce(key, text) {
+    const s = this.s;
+    if (!s) return;
+    s.flags.tips ??= {};
+    if (s.flags.tips[key]) return;
+    s.flags.tips[key] = true;
+    toast(text, 'tip', 6000);
   },
   todayToast() {
     const t = this.s.today;
