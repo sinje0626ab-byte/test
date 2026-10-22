@@ -360,7 +360,7 @@ if (!args.includes('--no-balance')) {
   const LIMITS = [24, 55, 85, 116];   // 3/26 · 4/26 · 5/26 · 6/26
   for (const sect of (process.env.SECT ? [process.env.SECT] : SECT_ORDER)) {
     const res = [];
-    for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
+    for (let i = 0; i < GAMES; i++) { res.push(playGame(sect, 1000 + i * 17)); if (process.env.MEM) console.log(`      heap ${Math.round(process.memoryUsage().heapUsed / 1e6)}MB`); if (process.env.SNAP && (i === 0 || i === 2)) { globalThis.gc?.(); (await import("v8")).writeHeapSnapshot(`${process.env.SNAP}/h${i}.heapsnapshot`); } }
     firsts.push(...res.map((r) => r.firstMember ?? 99));
     // 단계마다 그달 25일 월세날 다음 날까지 끝내면 성공 (3/26 · 4/26 · 5/26 · 6/26)
     const [L1, L2, L3, L4] = LIMITS;
