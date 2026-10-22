@@ -240,7 +240,14 @@ export class SanctuaryScene extends Phaser.Scene {
     });
     const f = this.def.furniture302;
     if (f) { this.walker.stop(); this.player.setPosition(f.pulpit[0] * T, (f.pulpit[1] + 1) * T - 4); this.walker.dir = 'down'; this.walker.idle(); }
-    this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
+    // 단상과 앉은 사람이 다 보이게: 둘 사이 가운데를 보고, 아래 카드 줄만큼 화면 위쪽으로 올린다
+    const cam = this.cameras.main;
+    cam.stopFollow();
+    const pts = [[this.player.x, this.player.y], ...this.audience.slice(0, 16).map((a) => [a.sp.x, a.sp.y])];
+    const xs = pts.map((p) => p[0]); const ys = pts.map((p) => p[1]);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2 + 8;
+    const cy = (Math.min(...ys) + Math.max(...ys)) / 2 + 8;
+    cam.pan(cx, cy + (this.scale.height * 0.2) / cam.zoom, 400, 'Sine.easeInOut');
     return this.audience;
   }
   // 앉은 사람 머리 위 말풍선 (몇 초 뒤 사라진다)
@@ -281,6 +288,7 @@ export class SanctuaryScene extends Phaser.Scene {
   }
   endLiveWorship() {
     this.audience = null;
+    this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     this.bubbles?.forEach((b) => b.destroy());
     this.bubbles = [];
   }
