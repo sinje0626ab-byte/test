@@ -186,7 +186,7 @@ function botTalk(s, id, key, policy) {
 
 function playDay(s, policy) {
   if (isOpeningDay(s)) applyOpeningDay(s);         // 개업 첫날 짜인 일 (간판 · 통장님 · 민호 · 하윤서)
-  botBigDay(s);                                   // 매주 큰 날: 어두운 쪽이 아닌 행동
+  if (!process.env.NOBIG) botBigDay(s);                                   // 매주 큰 날: 어두운 쪽이 아닌 행동
   // 4단계: 어느 동네에서 하루를 보낼까 (지부 전엔 이틀에 하루, 지부 뒤엔 지부가 목표에 못 미치면 사흘에 이틀)
   s.district = 'sillim';
   if (s.phase >= 4) {
