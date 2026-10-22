@@ -54,8 +54,8 @@ export function openTalk(app, id) {
   play('talk');
   const ctx = { key: s.pos[id]?.key };
   const t = startTalk(s, id, ctx);
-  let showFx = false;
-  try { showFx = localStorage.getItem('cult-town:fx') === '1'; } catch { /* 없으면 꺼 둔다 */ }
+  let showFx = true;                          // 정확한 효과(빨간 글씨)는 기본으로 보인다. ⓘ 로 숨길 수 있다
+  try { showFx = localStorage.getItem('cult-town:fx') !== '0'; } catch { /* 없으면 보인다 */ }
   const CONTEXT_IDS = ['heard', 'comfort', 'exploit', 'fork', 'story', 'favorDone', 'relay', 'gift', 'lunch', 'umbrella', 'market', 'walk', 'coffee'];
   const optionBtn = (o) => {
     const meta = OPTIONS[o.id];
@@ -74,9 +74,9 @@ export function openTalk(app, id) {
     return b;
   };
   const fxToggle = () => {
-    const btn = h('button', { class: `btn info ${showFx ? 'on' : ''}`, title: '정확한 효과 보기 (길게 누르면 하나씩)', onclick: () => {
-      showFx = !showFx; try { localStorage.setItem('cult-town:fx', showFx ? '1' : ''); } catch { /* 저장 못 해도 된다 */ }
-      btn.classList.toggle('on', showFx); btn.closest('.dialog')?.classList.toggle('showfx', showFx);
+    const btn = h('button', { class: `btn info ${showFx ? 'on' : ''}`, title: '정확한 효과 보이기·숨기기 (숨겼을 땐 길게 누르면 하나씩)', onclick: () => {
+      showFx = !showFx; try { localStorage.setItem('cult-town:fx', showFx ? '1' : '0'); } catch { /* 저장 못 해도 된다 */ }
+      btn.classList.toggle('on', showFx); btn.closest('.dialog')?.classList.toggle('hidefx', !showFx);
     } }, 'ⓘ');
     return btn;
   };
@@ -153,7 +153,7 @@ export function openTalk(app, id) {
       h('div', { class: 'opts' }, t.options.map(optionBtn),
         h('button', { class: 'btn wide', onclick: close }, OPTIONS.leave.label)));
     box.querySelector('.who').append(fxToggle());
-    box.classList.toggle('showfx', showFx);
+    box.classList.toggle('hidefx', !showFx);
     mount('dialog', box);
   }
   showMain();

@@ -100,8 +100,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .dialog .who { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
 .dialog .who .info { margin-left: auto; min-width: 36px; padding: 4px 8px; font-size: 16px; }
 .dialog .who .info.on { background: var(--ink); color: var(--paper); }
-.opts small.fx { display: none; color: var(--accent, #a33); }
-.dialog.showfx .opts small.fx, .opts .btn.showfx small.fx { display: block; }
+.opts small.fx { display: block; color: var(--accent, #a33); }
+.dialog.hidefx .opts small.fx { display: none; }
+.dialog.hidefx .opts .btn.showfx small.fx { display: block; }   /* 숨겼을 때도 길게 누르면 그 선택지만 */
 .opts .btn { -webkit-touch-callout: none; user-select: none; }
 .dialog .who img, .profile img.face { width: 56px; height: 56px; image-rendering: pixelated; background: var(--paper-2); border: 2px solid var(--ink); border-radius: 4px; }
 .dialog .name { font-family: var(--font-title); font-size: 17px; }
