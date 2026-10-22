@@ -251,6 +251,7 @@ function makeBulletin(s) {
   for (const r of w.reports ?? []) town.push(`이번 주 ${r}`);
   for (const d of (s.drama?.log ?? []).filter((x) => s.day - x.day < 7).slice(0, 2)) town.push(`동네 소식: ${d.text}`);   // 주민끼리의 일 (24장 D-4)
   if (w.bigSermon) town.push('이번 주 설교 때 앞줄에서 손수건이 나왔다. 1면감.');
+  for (const r of (w.sermonReviews ?? []).slice(-2)) town.push(`예배 한 줄 평: ${r}`);   // 25장 C
   if (w.shadow.some((x) => x.kind === 'doomsday')) town.push('doomsday');
   // 기성 종교의 생활 소식 한 줄 (돌아가며)
   const c = CLERGY[(s.bulletinNo - 1) % CLERGY.length];

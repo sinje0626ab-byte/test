@@ -15,6 +15,8 @@ import { Walker } from './walker.js';
 import { lookOf } from './TownScene.js';
 import { app } from '../app.js';
 import { fill } from '../ui/text.js';
+import { speechBubble, emotionBubble } from './overlays.js';
+import { play } from '../ui/sound.js';
 
 const T = 16;
 const FURN = {   // 방 종류마다 놓는 가구 (실내 타일 번호, 방 왼쪽 위 기준 [dx, dy, 타일])
@@ -134,6 +136,7 @@ export class SanctuaryScene extends Phaser.Scene {
     }
     if (!s.sanctuary.props.light) { this.dim?.destroy(); this.dim = this.add.rectangle(0, 0, this.wPx, this.hPx, 0x000020, 0.12).setOrigin(0).setDepth(80); }
     else { this.dim?.destroy(); this.dim = null; }
+    this.seats302 = seatSpots['302'] ?? [];
     this.placePeople(seatSpots);
   }
 
@@ -214,6 +217,72 @@ export class SanctuaryScene extends Phaser.Scene {
       }
     }
     void RESIDENTS;
+  }
+
+  // ── 25장 C: 성소에서 하는 예배 ──
+  // 앉히기: 이름 있는 참석자 → 첫 신도 → 따라온 사람 순으로 의자에. 교주는 단상 앞
+  liveWorship(named, cast, followers) {
+    this.peopleLayer.removeAll(true);
+    this.wanderers = [];
+    this.bubbles?.forEach((b) => b.destroy());
+    this.bubbles = [];
+    const main = this.roomRect('302');
+    const seats = this.seats302;
+    const list = [...named.map((id) => ({ kind: 'res', id })), ...cast.map((id) => ({ kind: 'cast', id })), ...Array.from({ length: Math.min(followers, 40) }, (_, k) => ({ kind: 'follower', id: `f${k}`, k }))];
+    this.audience = list.map((a, k) => {
+      const spot = seats[k] ?? [main.x + 2 + (k % 13), 11];
+      const key = a.kind === 'res' ? `p:${a.id}` : a.kind === 'cast' ? `p:cast:${a.id}` : `p:follower:${a.k % 8}`;
+      const look = a.kind === 'res' ? lookOf(a.id) : a.kind === 'cast' ? CAST.find((c) => c.id === a.id).look : followerLook(a.k);
+      registerPerson(this, key, look);
+      const sp = this.add.sprite(spot[0] * T, spot[1] * T - 4, key, 9).setOrigin(0);
+      this.peopleLayer.add(sp);
+      return { ...a, sp };
+    });
+    const f = this.def.furniture302;
+    if (f) { this.walker.stop(); this.player.setPosition(f.pulpit[0] * T, (f.pulpit[1] + 1) * T - 4); this.walker.dir = 'down'; this.walker.idle(); }
+    this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
+    return this.audience;
+  }
+  // 앉은 사람 머리 위 말풍선 (몇 초 뒤 사라진다)
+  sayAt(sp, text, delay = 0, lift = 0) {
+    this.time.delayedCall(delay, () => {
+      const c = speechBubble(this, text).setDepth(5080 + lift);
+      c.setPosition(sp.x + 8, sp.y - 2 - lift);
+      this.bubbles.push(c);
+      this.tweens.add({ targets: c, y: c.y - 3, duration: 300, ease: 'Sine.easeOut' });
+      this.time.delayedCall(2600, () => { if (c.active) c.destroy(); this.bubbles = this.bubbles.filter((x) => x !== c); });
+    });
+  }
+  clearBubbles() { this.bubbles?.forEach((b) => b.destroy()); this.bubbles = []; }
+  emoteAt(sp, kind, delay = 0) {
+    this.time.delayedCall(delay, () => {
+      const c = emotionBubble(this, kind).setDepth(5080).setPosition(sp.x + 12, sp.y - 2);
+      this.bubbles.push(c);
+      this.time.delayedCall(2600, () => { if (c.active) c.destroy(); this.bubbles = this.bubbles.filter((x) => x !== c); });
+    });
+  }
+  // 헌금 바구니가 앉은 줄을 따라 돈다
+  basketRun(onDone) {
+    const seats = (this.audience ?? []).map((a) => [a.sp.x + 8, a.sp.y + 10]).slice(0, 18);
+    if (!seats.length) { onDone?.(); return; }
+    const g = this.add.graphics().setDepth(5070);
+    g.fillStyle(0x1d1b26, 1).fillEllipse(0, 0, 13, 7);
+    g.fillStyle(0xb8864a, 1).fillEllipse(0, 0, 11, 5);
+    g.fillStyle(0xf0d070, 1).fillCircle(-2, -1, 1.5).fillCircle(2, 0, 1.5);
+    g.setPosition(seats[0][0], seats[0][1]);
+    let i = 0;
+    const step = () => {
+      i++;
+      if (i >= seats.length) { this.tweens.add({ targets: g, alpha: 0, duration: 300, onComplete: () => { g.destroy(); onDone?.(); } }); return; }
+      play('coins', 0.15);
+      this.tweens.add({ targets: g, x: seats[i][0], y: seats[i][1], duration: 170, onComplete: step });
+    };
+    step();
+  }
+  endLiveWorship() {
+    this.audience = null;
+    this.bubbles?.forEach((b) => b.destroy());
+    this.bubbles = [];
   }
 
   update(time, delta) {

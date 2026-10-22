@@ -398,3 +398,16 @@ export const OPENING = {
   firstConvertLike: 30,          // 이름 있는 신도가 아직 없을 때 새신자 → 신도 호감 문턱
   firstWeekRate: 1.4, firstWeekDays: 7,   // 첫 주는 시계가 1.4배 (하루 ≈ 4분)
 };
+
+// 예배 (25장 C): 위험 카드 · 돌발
+export const WORSHIP_LIVE = {
+  riskChance: 0.5,                         // 손패에 위험 카드가 끼는 날 비율
+  risk: { base: 0.35, perCharisma: 0.08, win: 32, lose: -12, loseSus: 5 },
+  disruptChance: 0.45,                     // 예배 한 번에 돌발이 생길 확률
+  disrupt: {                               // 게이지 변화 · 부수 효과
+    phone: { ignore: -4, joke: 6, pause: 0 },
+    baby: { ignore: -6, joke: 5, pause: 2 },
+    late: { ignore: -2, joke: 4, pause: 3 },
+    kimbap: { ignore: -2, joke: 4, pause: -4, ignoreAnger: 6, ignoreRep: -1, jokeMoney: -30_000 },
+  },
+};
