@@ -389,7 +389,7 @@ if (!args.includes('--no-balance')) {
   if (in3 < firsts.length) fail(`첫 신도 전환이 3일째 안에 안 일어난 판이 있다 (${firsts.length - in3}판)`);
   console.log(`  전체 성공률 1단계 ${pc(p1Total, n)}% · 2단계 ${pc(p2Total, p2N)}% · 3단계 ${pc(p3Total, p3N)}% · 4단계 ${pc(p4Total, p4N)}%`);
   // 열혈 신자를 많이 쓰는 봇: 더 빨리 모으지만 사고로 더 자주 실패한다
-  {
+  if (!process.env.SECT) {   // 한 유형만 돌릴 땐 건너뛴다
     const N = Math.max(4, Math.round(GAMES / 2));
     const runs = (policy) => SECT_ORDER.flatMap((sect) => Array.from({ length: N }, (_, i) => playGame(sect, 5000 + i * 31, policy)));
     const score = (rs) => {

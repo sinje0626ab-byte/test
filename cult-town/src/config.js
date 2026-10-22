@@ -99,7 +99,7 @@ export const STAGES = {
   memberLike: 70,                // 새신자 → 신도 호감 조건
   memberWorships: 2,             // 예배 몇 번 참석하면 신도 후보
   leaveSuspicion: 80,            // 의심이 이 이상이면 단계가 하나 내려간다 (신도 이탈)
-  followersPerMemberWeek: 0.46,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
+  followersPerMemberWeek: 0.32,  // 신도 한 명이 한 주에 데려오는 '따라온 사람' 기대값
   followerCapPerMember: 2,
   phase2Followers: { chance: 1.0, cap: 5 },   // 2단계: 신도가 지인을 더 잘 데려온다
 };
@@ -162,12 +162,12 @@ export const GOAL = {
 // secularSus: 무교 주민 의심 배율 · ages: 잘 통하는 나이대 [최소, 최대] (그 안이면 호감 ×1.2)
 // p1Followers: 1단계 주마다 따라온 사람 배율 (실제 달력 첫 월세날 기준 성공률 맞춤)
 export const SECT_FX = {
-  doomsday: { topic: { future: 1.6 }, preachSus: 1.15, invite: 1.1, worship: 1.15, offering: 1.0, convert: 1.15, secularSus: 1.1, p2Cap: 3, ages: [17, 32], p1Followers: 0.9, date: { day: 18, sus: 25 } },
+  doomsday: { topic: { future: 1.6 }, preachSus: 1.15, invite: 1.1, worship: 1.15, offering: 1.0, convert: 1.15, secularSus: 1.1, p2Cap: 3, ages: [17, 32], p1Followers: 0.8, date: { day: 18, sus: 25 } },
   messiah: { topic: { lonely: 1.4 }, preachSus: 1.35, invite: 1.0, worship: 1.4, offering: 1.1, convert: 1.2, secularSus: 1.2, p2Cap: 1, ages: [40, 65], p1Followers: 0.86 },
-  meditation: { topic: { meaning: 1.7, health: 1.45, lonely: 1.2 }, preachSus: 0.75, invite: 1.3, worship: 1.05, offering: 1.15, convert: 1.2, secularSus: 0.6, ages: [24, 45], p1Followers: 0.92 },
+  meditation: { topic: { meaning: 1.7, health: 1.45, lonely: 1.2 }, preachSus: 0.75, invite: 1.3, worship: 1.05, offering: 1.15, convert: 1.2, secularSus: 0.6, ages: [24, 45], p1Followers: 0.88 },
   fortune: { topic: { money: 1.22, lonely: 1.0 }, preachSus: 1.0, invite: 1.0, worship: 1.0, offering: 1.25, convert: 1.0, secularSus: 1.1, p1Followers: 0.9, ages: [45, 75] },
   shaman: { topic: { future: 1.28, money: 1.12 }, preachSus: 1.0, invite: 0.85, worship: 1.0, offering: 1.25, convert: 0.95, secularSus: 1.0, p1Followers: 1.08, ages: [30, 70], listenBonus: 1.0 },
-  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.1, worship: 1.05, offering: 1.05, convert: 1.1, secularSus: 0.9, p1Followers: 1.15, p2Cap: 1, ages: [55, 85], pharmacistSus: 1.2 },
+  qigong: { topic: { health: 1.7 }, preachSus: 1.0, invite: 1.1, worship: 1.05, offering: 1.05, convert: 1.1, secularSus: 0.9, p1Followers: 1.08, p2Cap: 1, ages: [55, 85], pharmacistSus: 1.2 },
 };
 
 // ── 성소 소품 ── (data/shop.js 의 id 와 같은 키) seats: 자리 + / mood: 분위기 +

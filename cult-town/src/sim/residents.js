@@ -82,8 +82,10 @@ const CLERGY_BY_ID = Object.fromEntries([...CLERGY, ...CLERGY_B].map((c) => [c.i
 
 const parsed = new Map();
 function parseList(list) {
-  if (!parsed.has(list)) parsed.set(list, list.map((e) => { const [t, key] = e.split(' '); return { min: parseTime(t), key }; }));
-  return parsed.get(list);
+  // 글자로 묶어 둔다 (성직자 일과처럼 부를 때마다 새 배열이 와도 캐시가 늘지 않게)
+  const k = list.join('|');
+  if (!parsed.has(k)) parsed.set(k, list.map((e) => { const [t, key] = e.split(' '); return { min: parseTime(t), key }; }));
+  return parsed.get(k);
 }
 
 // 오늘 일과 (예배 날 참석자는 저녁에 성소로 간다). 시각은 '도착' 시각이다.
