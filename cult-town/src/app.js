@@ -38,6 +38,8 @@ import { openNotebook, showQuestNews, dailyName } from './ui/notebook.js';
 import { visitSpot, questMarkers, checkQuests } from './sim/quests.js';
 import { cutin } from './ui/cutin.js';
 import { openingPanel } from './ui/opening.js';
+import { bigDayOf, bigDayAct } from './sim/bigdays.js';
+import { BIGDAY_TEXT, BIGDAY_UI } from './data/bigdays.js';
 import { OPENING as OPENING_TEXT } from './data/opening.js';
 import { isOpeningDay, openingDone, openingSign, openingTong, openingMinho, openingVisitor } from './sim/opening.js';
 import { canStreetSermon, streetSermon } from './sim/growth.js';
@@ -301,6 +303,11 @@ export const app = {
         if (hol && dayOfMonth(s.day) === hol.from) toast(hol.text, '', 6000);
         if (s.weather.rain) this.tipOnce(s.weather.snow ? 'snow' : 'rain', s.weather.snow ? '눈이 오는 날은 골목이 미끄럽다. 밖에 나온 사람이 적다.' : '비 오는 날엔 공원·산책로에 사람이 없다. 편의점 비닐우산을 씌워 주면 좋아한다.');
         if (s.weather.market) this.tipOnce('market', '토요일은 장날. 시장에 사람이 많고, 장바구니를 들어 주는 선택지가 생긴다.');
+        const bd = bigDayOf(s);
+        if (bd && s.district === 'sillim') {
+          toast(BIGDAY_UI.today.replace('{이름}', bd.name).replace('{장소}', PLACES[bd.place]?.short ?? '').replace('{시간}', `${Math.floor(bd.from / 60)}시~${Math.floor(bd.to / 60)}시`), 'good', 6000);
+          this.tipOnce('bigday', '큰 날엔 행사 자리에 현수막이 걸린다. 가까이 가면 그날만 할 수 있는 일이 있다. 수첩(N) 달력에 다음 행사가 보인다.');
+        }
         if (isWorshipDay(s.day)) this.tipOnce('worshipDay', '수요일·일요일 밤은 예배. 저녁에 성소로 돌아와 밤 메뉴에서 연다.');
         this.todayToast();
         // 밤사이 결정적 순간 (첫 열혈 신자 · 라이벌에게 간 사람)
@@ -348,6 +355,8 @@ export const app = {
       this.hud.setAction(label, () => this.useDoor(near.place));
     } else if (near.kind === 'shop') {
       this.hud.setAction(`살펴보기 · ${SHOPS[near.b.shop].name}`, () => this.lookShop(near.b));
+    } else if (near.kind === 'bigday') {
+      this.hud.setAction(BIGDAY_UI.near.replace('{이름}', bigDayOf(this.s).name), () => this.openBigDay());
     } else if (near.kind === 'exit') {
       this.hud.setAction(this.s.mode === 'night' ? null : '계단 내려가기', () => this.leaveSanctuary());
     } else if (near.kind === 'stairs') {
@@ -361,6 +370,7 @@ export const app = {
     if (n.kind === 'person') this.talkTo(n.id);
     else if (n.kind === 'door') this.useDoor(n.place);
     else if (n.kind === 'shop') this.lookShop(n.b);
+    else if (n.kind === 'bigday') this.openBigDay();
     else if (n.kind === 'exit') this.leaveSanctuary();
     else if (n.kind === 'stairs') this.useStairs(n.to);
   },
@@ -452,6 +462,26 @@ export const app = {
     for (const t of res?.todayDone ?? []) toast(t.id === 'all' ? '오늘 할 일 셋을 다 했다. 보리차값 1만 원이 굳었다.' : `오늘 할 일: ${dailyName(t)} ✓`, 'good');
     saveGame(this.s); this.hud?.update();
     if (this.s.quest?.news?.length) setTimeout(() => showQuestNews(this), 300);
+  },
+  // 큰 날 행사 (25장 D): 그날만 할 수 있는 일 1~2개
+  openBigDay() {
+    const s = this.s;
+    const bd = bigDayOf(s);
+    if (!bd || this.modal > 0 || s.mode !== 'day') return;
+    this.scene()?.walker?.stop();
+    openingPanel(this, {
+      title: PLACES[bd.place]?.name, name: bd.name, scene: bd.intro,
+      choices: [...Object.entries(bd.actions).map(([id, a]) => ({ id, label: a.label, hint: a.hint })), { id: 'skip', label: '구경만 한다', hint: '' }],
+      onChoice: (id) => {
+        if (id === 'skip') return '한 바퀴 둘러봤다. 오늘은 그냥 지나간다.';
+        const line = bigDayAct(s, id);
+        play('jingle_good', 0.4);
+        this.hud?.update();
+        this.scene()?.nearKey && (this.scene().nearKey = null);
+        return line ?? BIGDAY_UI.done;
+      },
+      onDone: () => checkQuests(s),
+    });
   },
   // 그 상황이 처음 올 때 한 번만 보이는 안내
   tipOnce(key, text) {

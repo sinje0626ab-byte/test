@@ -1,6 +1,7 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
 import { dueLater, endToday, checkQuests, newToday } from './quests.js';
 import { isOpeningDay } from './opening.js';
+import { bigDayOf } from './bigdays.js';
 import { OPENING as OPENING_TEXT } from '../data/opening.js';
 import { dailyZealots } from './zealots.js';
 import { dailyDrama } from './drama.js';
@@ -39,6 +40,7 @@ export function startDay(s, g) {
   const rain = rand(s) < CALENDAR.rain[mi];
   const tempDelta = Math.round((rand(s) * 2 - 1) * 3);
   s.weather = { rain, snow: rain && CALENDAR.temp[mi] + tempDelta <= 1, cloudy: !rain && rand(s) < CALENDAR.cloudy, tempDelta, market: (s.day % 7) === WEATHER.marketWeekday };
+  if (bigDayOf(s)?.rain) s.weather.rain = true;   // 우산 나눔 날은 비
   if (s.weather.rain) for (const r of Object.values(s.res)) r.needs.lonely = Math.min(100, r.needs.lonely + WEATHER.rainLonely);
   // 계절·행사가 고민을 조금씩 움직인다 (신림동은 늘, 봉천동은 4단계부터)
   const push = { ...(CALENDAR.seasonNeeds[season(s.day)] ?? {}) };

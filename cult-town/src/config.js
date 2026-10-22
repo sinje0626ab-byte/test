@@ -411,3 +411,17 @@ export const WORSHIP_LIVE = {
     kimbap: { ignore: -2, joke: 4, pause: -4, ignoreAnger: 6, ignoreRep: -1, jokeMoney: -30_000 },
   },
 };
+
+// 매주 큰 날 (25장 D): 몰리는 주민 비율 · 행동 효과
+export const BIGDAY = {
+  crowdShare: 0.3,
+  fx: {
+    market_dum: { dum: { money: -10_000, rep: 1, crowdLike: 5, crowdMax: 8 }, carry: { fatigue: 18, who: ['banchan', 'youngsuk', 'namgung'], whoLike: 7 } },
+    assembly: { yes: { who: ['tong'], whoLike: 8, rep: 2, allSus: -2 }, no: { membersLike: 3, who: ['tong'], whoSus: 8, rep: -1 } },
+    bazaar: { buy: { money: -15_000, religion: 'protestant', religionLike: 3, religionSus: -3 }, stall: { money: 40_000, religion: 'protestant', religionSus: 8, rep: -2, dark: true, belief: -3 } },
+    umbrella: { share: { money: -30_000, rep: 3, crowdLike: 4 } },
+    cherry: { photo: { crowdLike: 4, crowdMax: 8, fatigue: 8 }, flyers: { crowdLike: 2, crowdSus: 3, rep: -1 } },
+    festival: { booth: { money: -20_000, rep: 3, crowdLike: 3 }, stage: { fatigue: 25 } },
+    rival_open: { peek: { rivalDirt: 1 }, wreath: { money: -70_000, rep: 1, rivalCalm: true } },
+  },
+};

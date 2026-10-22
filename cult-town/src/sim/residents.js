@@ -1,5 +1,6 @@
 // 주민 일과 → 목표 칸 → 격자 이동. 화면(TownScene)과 노드 시뮬레이터가 같은 함수를 쓴다.
 // 위치는 state.pos[id] = { x, y, path, prog, key, inside }. path[0] 이 다음 칸, prog(0~1)가 그 칸까지 간 정도.
+import { bigDayOf, bigDayCrowd } from './bigdays.js';
 import { CLOCK, MOVE, NEEDS, WEATHER } from '../config.js';
 import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { CLERGY, CLERGY_B } from '../data/clergy.js';
@@ -103,6 +104,21 @@ export function scheduleOf(s, id) {
   }
   if (s.weather?.rain) list = weatherList(list, 'rain', r.home);
   else if (s.weather?.market) list = weatherList(list, 'market', r.home);
+  // 큰 날 (25장 D): 몰리는 주민은 행사 시간에 그 근처 자리로 간다 (신림동만, 자리마다 몇 명씩 흩어서)
+  const bd = bigDayOf(s);
+  if (bd && !bong) {
+    const crowd = bigDayCrowd(s, bd);
+    const n = crowd.indexOf(id);
+    if (n >= 0) {
+      const offset = (id.charCodeAt(0) + id.length * 11) % 40;
+      const spot = bd.spots[n % bd.spots.length];
+      const before = list.filter((e) => e.min < bd.from - 90);
+      const after = list.filter((e) => e.min >= bd.to + 40 && e.key !== spot);
+      list = [...before, { min: bd.from + offset, key: spot }, ...(after.length ? after : [{ min: bd.to + 40, key: r.home }])];
+    }
+  }
+  // 비로 바뀐 일과·큰 날 일과에 같은 곳이 이어지면 하나로
+  list = list.filter((e, i) => i === 0 || e.key !== list[i - 1].key);
   if (s.attend.includes(id)) {
     const offset = (id.charCodeAt(0) + id.length * 7) % 25;
     const arrive = WORSHIP_ARRIVE - 25 + offset;
@@ -173,7 +189,10 @@ export function departures(s, g, id) {
   let prev = p.home;
   const out = [];
   for (const e of scheduleOf(s, id)) {
-    out.push({ dep: e.min - travelMinutes(s, g, id, prev, e.key, e.min), arrive: e.min, key: e.key });
+    // 비·큰 날로 바뀐 일과가 앞 장소와 너무 붙으면 앞 장소에 10분은 있다가 나선다 (그만큼 늦게 도착)
+    const t = travelMinutes(s, g, id, prev, e.key, e.min);
+    const dep = out.length ? Math.max(e.min - t, out.at(-1).arrive + 10) : e.min - t;
+    out.push({ dep, arrive: dep + t, key: e.key });
     prev = e.key;
   }
   out.push({ dep: CLOCK.dayEnd - travelMinutes(s, g, id, prev, p.home, CLOCK.dayEnd), arrive: CLOCK.dayEnd, key: s.attend.includes(id) ? sanctuaryKey(id) : p.home });

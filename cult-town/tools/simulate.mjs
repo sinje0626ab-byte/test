@@ -23,6 +23,7 @@ import { FLYER_SPOTS } from '../src/data/quests.js';
 import { upgradeSign, nextSignCost } from '../src/sim/sanctuary.js';
 import { bestSermon } from '../src/sim/sermon.js';
 import { isOpeningDay, applyOpeningDay } from '../src/sim/opening.js';
+import { botBigDay } from '../src/sim/bigdays.js';
 import { autoRaise, canStreetSermon, streetSermon } from '../src/sim/growth.js';
 import { zealotsOf, zealotCandidates, makeZealot, calmZealot } from '../src/sim/zealots.js';
 import { sameFamily } from '../src/sim/talk.js';
@@ -56,7 +57,7 @@ for (const r of ALL_RESIDENTS) {
   const rg = gridFor(r.id, g);
   for (const kind of ['weekday', 'weekend']) {
     const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 1 });
-    s.day = kind === 'weekday' ? 0 : 5;
+    s.day = kind === 'weekday' ? 0 : 12;   // 큰 날이 없는 평일·주말 (큰 날 일과는 아래 하루 돌리기에서 본다)
     s.attend = [];
     const deps = departures(s, g, r.id);
     deps.forEach((e, i) => {
@@ -73,7 +74,7 @@ for (const r of ALL_RESIDENTS) {
 console.log(`  이동 ${legs}구간 검사, 가장 빠듯한 곳: ${tightest.who} (머무는 시간 ${Math.round(tightest.stay)}분)`);
 
 // 실제로 하루를 돌려 본다: 모두 목적지에 닿는가, 막히는 사람은 없는가, 한 칸에 몇 명까지 몰리나
-for (const day of [0, 2, 5, 6]) {
+for (const day of [0, 2, 5, 6, 10, 19, 22, 33]) {   // 5·10·19·22·33 = 큰 날
   const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 7 });
   s.day = day;
   s.phase = 4;      // 봉천동 주민까지 같이 걷게
@@ -185,6 +186,7 @@ function botTalk(s, id, key, policy) {
 
 function playDay(s, policy) {
   if (isOpeningDay(s)) applyOpeningDay(s);         // 개업 첫날 짜인 일 (간판 · 통장님 · 민호 · 하윤서)
+  botBigDay(s);                                   // 매주 큰 날: 어두운 쪽이 아닌 행동
   // 4단계: 어느 동네에서 하루를 보낼까 (지부 전엔 이틀에 하루, 지부 뒤엔 지부가 목표에 못 미치면 사흘에 이틀)
   s.district = 'sillim';
   if (s.phase >= 4) {
