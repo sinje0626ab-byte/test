@@ -1,5 +1,7 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
 import { dueLater, endToday, checkQuests, newToday } from './quests.js';
+import { isOpeningDay } from './opening.js';
+import { OPENING as OPENING_TEXT } from '../data/opening.js';
 import { dailyZealots } from './zealots.js';
 import { dailyDrama } from './drama.js';
 import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, PHASE4, OFFICERS, REPORTER, CALENDAR, SECT_FX } from '../config.js';
@@ -170,6 +172,12 @@ export function endDay(s, g, opts = {}) {
   if (isRentDay(s.day)) {
     const r = payRent(s, opts.rentChoice);
     events.push({ type: 'rent', ...r });
+  }
+  if (isOpeningDay(s)) {
+    // 개업 첫날 주보 0호 (호수는 늘리지 않는다. 한 주 결산은 일요일에 그대로)
+    bulletin = makeBulletin(s);
+    s.bulletinNo--;
+    Object.assign(bulletin, { no: 0, opening: true, town: [...OPENING_TEXT.bulletin.town, ...bulletin.town.slice(-1)], notice: OPENING_TEXT.bulletin.notice });
   }
   if (isSunday(s.day)) {
     // 주간 지출: 전단 인쇄 · 보리차 · 전기료 (공간이 넓을수록 더)

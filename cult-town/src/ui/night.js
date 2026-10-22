@@ -11,6 +11,8 @@ import { RESIDENT_BY_ID } from '../data/residents.js';
 import { STAGE_NAMES } from '../data/topics.js';
 import { LEADER_TONE } from '../data/lines.js';
 import { openSermon } from './worship.js';
+import { isOpeningDay } from '../sim/opening.js';
+import { OPENING as OPENING_TEXT } from '../data/opening.js';
 import { zealotsOf, zealotCandidates, makeZealot, calmZealot, releaseZealot } from '../sim/zealots.js';
 import { ZEALOT_TEXT } from '../data/zealots.js';
 import { STAT_IDS, stat, levelOf, freePoints, raiseStat, axisUnlock, axisAction } from '../sim/growth.js';
@@ -59,7 +61,9 @@ export function openNight(app) {
     // 큰 버튼 셋 (예배 · 돌보기·이야기 · 잠자기) + '더 보기'. 하위 메뉴는 화면을 바꿔서 보여 준다 (25장 A-3)
     const sleepRun = () => { unmount('night'); app.setBack('night', null); app.sleep(); };
     const main = h('div', { class: 'menu big' },
-      btn('worship', fill(NIGHT.menu.worship, s), canWorship(s) ? `올 사람 약 ${expected}명 · 자리 ${seats(s)}` : fill(NIGHT.worshipNone, s), { disabled: !canWorship(s), primary: canWorship(s), wide: true }),
+      isOpeningDay(s)
+        ? btn('worship', OPENING_TEXT.worship.menu, fill(OPENING_TEXT.worship.hint, s), { disabled: !canWorship(s), primary: canWorship(s), wide: true })
+        : btn('worship', fill(NIGHT.menu.worship, s), canWorship(s) ? `올 사람 약 ${expected}명 · 자리 ${seats(s)}` : fill(NIGHT.worshipNone, s), { disabled: !canWorship(s), primary: canWorship(s), wide: true }),
       btn('people', '돌보기 · 이야기', '신도에게 전화 · 엄마·친구·민호와 얘기'),
       btn('sleep', NIGHT.menu.sleep, isMonthEnd(s.day) ? '월세가 나가는 날이다' : '다음 날 아침 7시', { run: sleepRun, primary: !canWorship(s) }),
     );
@@ -189,7 +193,13 @@ export function openNight(app) {
         play('coins');
         note = [verdict, fill(NIGHT.worshipDone, s, { n: r.heads, 돈: r.offering })];
         if (score >= SERMON.bigHit) s.week.bigSermon = true;
-        for (const [id, st] of r.promoted) if (st === 'member') cutin(app, { kicker: josa(fill('{신도}', s), '이/가') + ' 되었다', title: RESIDENT_BY_ID[id].name, line: speak(s, lineFor(s, id, 'member')), face: app.portrait(id) });
+        for (const [id, st] of r.promoted) {
+          if (st !== 'member') continue;
+          const first = !s.flags.firstConvertDone;      // 첫 신도 전환은 그 사람 사연에 맞는 한 줄로
+          s.flags.firstConvertDone = true;
+          cutin(app, { kicker: first ? `첫 ${fill('{신도}', s)}` : josa(fill('{신도}', s), '이/가') + ' 되었다', title: RESIDENT_BY_ID[id].name,
+            line: first ? (OPENING_TEXT.firstConvert[id] ?? OPENING_TEXT.firstConvert.default) : speak(s, lineFor(s, id, 'member')), face: app.portrait(id) });
+        }
         if (r.standing) note.push(fill(NIGHT.seatsFull, s, { n: r.standing }));
         for (const [id, st] of r.promoted) note.push(`${josa(RESIDENT_BY_ID[id].name, '이/가')} ${josa(STAGE_NAMES[st], '이/가')} 되었다.`);
         if (opts.doubleBasket) note.push(SHADOW.doubleBasket.now);

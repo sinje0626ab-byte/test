@@ -1,7 +1,8 @@
 // 성소: 자리·분위기·소품·예배·헌금·월세·신도 돌보기
 import { worshipMul } from './growth.js';
 import { noteWorship, addXp } from './quests.js';
-import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR, SIGN, GROWTH, SERMON } from '../config.js';
+import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR, SIGN, GROWTH, SERMON, OPENING } from '../config.js';
+import { openingWorshipOpen, afterOpeningWorship, isOpeningDay } from './opening.js';
 import { rand } from './rng.js';
 import { districtOf } from '../data/residents.js';
 import { clamp, addMoney, shiftBelief } from './leader.js';
@@ -35,11 +36,11 @@ export function decideAttendance(s) {
   for (const [id, st] of Object.entries(s.res)) {
     if (st.sus >= RUMOR.refuseSus) continue;
     if (st.stage === 'visitor' && st.attendDay <= s.day) s.attend.push(id);
-    else if ((st.stage === 'newcomer' || st.stage === 'member') && rand(s) < 0.9) s.attend.push(id);
+    else if ((st.stage === 'newcomer' || st.stage === 'member') && (rand(s) < 0.9 || id === s.flags.firstConvertId)) s.attend.push(id);   // 첫날 온 신입생은 꼭 다시 온다
   }
 }
 
-export const canWorship = (s) => isWorshipDay(s.day) && s.sanctuary.worshipDay !== s.day;
+export const canWorship = (s) => (isWorshipDay(s.day) || openingWorshipOpen(s)) && s.sanctuary.worshipDay !== s.day;   // 첫날 저녁은 첫 모임
 
 // 예배. opts.fast (금식 권하기) · opts.doubleBasket (헌금 바구니 한 바퀴 더)
 export function holdWorship(s, opts = {}) {
@@ -52,7 +53,8 @@ export function holdWorship(s, opts = {}) {
   const crowd = standing > 0 ? 0.85 : 1;
   const promoted = [];
   const sermonMul = opts.sermon == null ? 1 : SERMON.mulMin + (SERMON.mulMax - SERMON.mulMin) * opts.sermon;   // 예배 미니게임 점수
-  const needLike = STAGES.memberLike - (fx.convert - 1) * 40 - memberLikeCut(s);
+  let needLike = STAGES.memberLike - (fx.convert - 1) * 40 - memberLikeCut(s);
+  if (!Object.values(s.res).some((x) => x.stage === 'member')) needLike = Math.min(needLike, OPENING.firstConvertLike);   // 첫 신도 전환은 쉽게 (25장 B-2)
   const kitchen = worshipLikeBonus(s) + (s.flags.snackDay === s.day ? 3 : 0);
   for (const id of named) {
     const st = s.res[id];
@@ -85,6 +87,7 @@ export function holdWorship(s, opts = {}) {
   s.sanctuary.worshipDay = s.day;
   s.sanctuary.lastAttend = named;
   noteWorship(s, heads);
+  if (isOpeningDay(s)) afterOpeningWorship(s);
   addXp(s, GROWTH.worshipXp);
   s.leader.nightFatigue = (s.leader.nightFatigue ?? 0) + 10;
   return { heads, named, standing, seats: seatN, offering, promoted, sermon: opts.sermon ?? null };

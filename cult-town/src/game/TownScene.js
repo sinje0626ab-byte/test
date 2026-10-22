@@ -23,6 +23,7 @@ import { tintAt } from './tint.js';
 import { Walker } from './walker.js';
 import { app } from '../app.js';
 import { speak } from '../ui/text.js';
+import { play } from '../ui/sound.js';
 import { sightCut } from '../sim/growth.js';
 import { questMarkers, hear } from '../sim/quests.js';
 
@@ -68,8 +69,9 @@ export class TownScene extends Phaser.Scene {
     // 동림상가: 교단 간판(단계별) · 입구 층별 안내판
     this.noticeAreas = [];
     const mall = !bong && this.buildings.find((b) => b.place === 'sanctuary');
+    this.mall = mall;
     if (mall) {
-      drawSanctuarySign(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0, s.minute >= 18 * 60);
+      this.sanctuarySign = drawSanctuarySign(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0, s.minute >= 18 * 60);
       const dir = drawFloorDirectory(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0);
       this.directory = { ...dir.area, text: `동림상가 층별 안내: ${dir.lines.join(' · ')}` };
     }
@@ -286,6 +288,42 @@ export class TownScene extends Phaser.Scene {
     this.say(id, ZEALOT_TEXT.bubbles[Math.floor(Math.random() * ZEALOT_TEXT.bubbles.length)], time);
   }
 
+  // 간판 바꾸는 장면 (25장 A-1): 카메라가 상가 3층으로 가고, 시트지 글자가 한 자씩 붙는다 → 간판을 새로 그리고 돌아온다
+  signScene(tier, onDone) {
+    const b = this.mall;
+    if (!b) { onDone?.(); return; }
+    const cam = this.cameras.main;
+    const s = app.s;
+    const cx = (b.x + b.w / 2) * T + 8; const cy = (b.y + b.roofH + 1) * T + 8;
+    cam.stopFollow();
+    cam.pan(cx, cy + 24, 900, 'Sine.easeInOut');
+    const prevZoom = cam.zoom;
+    cam.zoomTo(prevZoom * 1.4, 900, 'Sine.easeInOut');
+    const letters = [];
+    const name = tier >= 1 ? `302 ${s.leader.cultName}` : s.leader.cultName;
+    this.time.delayedCall(1000, () => {
+      // 예전 간판을 지우고 글자를 한 자씩
+      for (const p of [].concat(this.sanctuarySign ?? [])) p?.destroy?.();
+      const startX = cx - (name.length * 7) / 2;
+      [...name].forEach((ch, i) => {
+        this.time.delayedCall(i * 170, () => {
+          const t = this.add.text(startX + i * 7, cy - 6, ch, { fontFamily: 'Galmuri7', fontSize: '8px', color: '#ffffff', stroke: '#1d1b26', strokeThickness: 2 }).setDepth(90).setScale(1.6).setAlpha(0);
+          this.tweens.add({ targets: t, scale: 1, alpha: 1, duration: 160, ease: 'Back.easeOut' });
+          letters.push(t);
+          play('click', 0.25);
+        });
+      });
+      this.time.delayedCall(name.length * 170 + 900, () => {
+        for (const t of letters) t.destroy();
+        this.sanctuarySign = drawSanctuarySign(this, b, s.leader.cultName, tier, s.minute >= 18 * 60);
+        this.time.delayedCall(700, () => {
+          cam.zoomTo(prevZoom, 700, 'Sine.easeInOut');
+          cam.pan(this.player.x, this.player.y, 700, 'Sine.easeInOut', false, (c, prog) => { if (prog === 1) { cam.startFollow(this.player, true, 0.2, 0.2); onDone?.(); } });
+        });
+      });
+    });
+  }
+
   // 퀘스트 표시: 사람 머리 위 · 장소 입구 위
   refreshQuestMarks() {
     const marks = questMarkers(app.s);
@@ -475,7 +513,7 @@ export class TownScene extends Phaser.Scene {
     if (!s) return;
     const dt = Math.min(delta, 100) / 1000;
     const free = app.modal === 0 && s.mode === 'day';
-    if (free && app.speed > 0) app.advance(dt * CLOCK.minutesPerSecond * app.speed);
+    if (free && app.speed > 0) app.advance(dt * CLOCK.minutesPerSecond * app.speed * app.clockRate());
     this.walker.update(dt, free);
     this.walker.takeFatigue(s);
     s.leaderTile = this.walker.tile;

@@ -313,3 +313,4 @@ kbd { font-family: var(--font); font-size: 11px; border: 1.5px solid currentColo
 .night .btn.more { margin-top: 8px; background: var(--paper-2); }
 .night .btn.more.on { background: var(--paper-3); }
 .night h3 { font-size: 15px; margin: 10px 0 4px; }
+.bulletin .opening-head { text-align: center; margin: 4px 0 8px; font-size: 18px; letter-spacing: 2px; }

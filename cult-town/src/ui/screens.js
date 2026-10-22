@@ -12,6 +12,7 @@ import { fmtDate } from '../sim/clock.js';
 import { h, mount, unmount, won } from './dom.js';
 import { fill, josa } from './text.js';
 import { play } from './sound.js';
+import { OPENING as OPENING_TEXT } from '../data/opening.js';
 
 // 잠든 사이 일어난 일 (성직자 경고, 그림자 장부, 이탈, 월세)
 export function eventLines(s, events) {
@@ -62,7 +63,8 @@ export function showBulletin(s, b, onClose) {
     h('div', { class: 'mast' },
       h('div', { class: 'name' }, fill(BULLETIN.head, s)),
       h('div', { class: 'meta' }, `${fill(BULLETIN.issue, s, { n: b.no })} · ${b.date} · 신림동 동림상가 302호`)),
-    h('span', { class: 'stamp' }, b.stats.members >= GOAL.members ? '만석' : '배포용'),
+    h('span', { class: 'stamp' }, b.opening ? '개업' : b.stats.members >= GOAL.members ? '만석' : '배포용'),
+    b.opening ? h('h3', { class: 'opening-head' }, OPENING_TEXT.bulletin.title) : null,
     h('h4', {}, fill(S.worship, s)), h('ul', {}, worshipText.map((t) => h('li', {}, t))),
     h('h4', {}, S.newcomers), newNames.length ? h('ul', {}, newNames.map((t) => h('li', {}, t))) : h('p', {}, BULLETIN.noNewcomers),
     b.followers ? h('p', {}, `신도들이 데려온 사람 ${b.followers}명이 뒷자리에 앉았다.`) : null,

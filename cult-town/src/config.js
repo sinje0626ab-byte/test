@@ -390,3 +390,11 @@ export const SERMON = { cards: 3, hand: 4, needWeight: 40, flow: 12, mulMin: 0.8
 
 // 엿듣기: 들은 고민으로 말 걸기
 export const TIP = { days: 5, matchLike: 0.8, missLike: 2 };
+
+// 개업 첫날 (25장 B): 통장님 첫 대화 선택 효과 · 소리 듣고 올라오는 신입생 · 첫 신도 전환 문턱 · 첫 주 시계
+export const OPENING = {
+  tong: { study: { like: 6, sus: -3 }, name: { like: 4, sus: 2 } },
+  visitor: 'yoonseo', visitorLike: 45, afterLike: 8, nextWorshipDay: 2,   // 3월 4일 수요일 예배
+  firstConvertLike: 30,          // 이름 있는 신도가 아직 없을 때 새신자 → 신도 호감 문턱
+  firstWeekRate: 1.4, firstWeekDays: 7,   // 첫 주는 시계가 1.4배 (하루 ≈ 4분)
+};

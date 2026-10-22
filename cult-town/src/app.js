@@ -1,7 +1,7 @@
 // 앱 제어: 상태(app.s) · 씬 전환 · 시간 흐름 · DOM UI 연결. 게임 규칙은 전부 sim/ 에 있다.
 import townMap from './map/town.json';
 import bongcheonMap from './map/bongcheon.json';
-import { CLOCK, OFFICERS, PHASE4, GROWTH } from './config.js';
+import { CLOCK, OFFICERS, PHASE4, GROWTH, OPENING } from './config.js';
 import { BRANCH_TEXT } from './data/branch.js';
 import { PLACES } from './data/places.js';
 import { SHOPS } from './data/shops.js';
@@ -37,6 +37,9 @@ import { openShop } from './ui/shop.js';
 import { openNotebook, showQuestNews, dailyName } from './ui/notebook.js';
 import { visitSpot, questMarkers, checkQuests } from './sim/quests.js';
 import { cutin } from './ui/cutin.js';
+import { openingPanel } from './ui/opening.js';
+import { OPENING as OPENING_TEXT } from './data/opening.js';
+import { isOpeningDay, openingDone, openingSign, openingTong, openingMinho, openingVisitor } from './sim/opening.js';
 import { canStreetSermon, streetSermon } from './sim/growth.js';
 import { GROWTH_TEXT } from './data/growth.js';
 import { sameFamily } from './sim/talk.js';
@@ -126,11 +129,58 @@ export const app = {
     this.floor = 3;
     saveGame(s);
     this.hud = createHud(this);
-    this.goTown('start');
-    setTimeout(() => toast(`${s.leader.name}: ${LEADER_TONE.neutral.morning[0]}`), 600);
-    setTimeout(() => toast('사람을 누르면 프로필이 보인다. 머리 위 "휴" 말풍선은 고민이 큰 사람. 수요일·일요일 밤에는 예배.'), 1600);
-    setTimeout(() => toast(`이번 달 할 일: 개업. 첫 단계는 "간판 달기". 수첩(N)에 적어 뒀다.`, '', 6000), 2600);
-    setTimeout(() => this.todayToast(), 3600);
+    // 개업 첫날 (25장 B): 302호에서 시작 → 엄마 → 간판 달기 장면 → 통장님
+    this.goSanctuary('door');
+    setTimeout(() => this.openingMorning(), 500);
+  },
+
+  // ── 개업 첫날 짜인 흐름 ──
+  openingMorning() {
+    const s = this.s;
+    const O = OPENING_TEXT;
+    openingPanel(this, { title: O.mom.title, name: CAST_BY.mom.name, face: this.portrait('o:mom'), scene: O.mom.scene, lines: O.mom.lines, next: O.mom.next,
+      onDone: () => {
+        this.goTown('sanctuary');
+        setTimeout(() => {
+          this.modalOpened();
+          this.scene()?.signScene?.(1, () => {
+            this.modalClosed();
+            openingSign(s);
+            checkQuests(s);
+            saveGame(s);
+            openingPanel(this, { title: '동림상가 앞', name: this.s.leader.name, scene: O.sign.caption, lines: [O.sign.after], next: '계속',
+              onDone: () => showQuestNews(this, () => this.openingTong()) });
+          });
+        }, 700);
+      } });
+  },
+  openingTong() {
+    const s = this.s;
+    const T = OPENING_TEXT.tong;
+    openingPanel(this, { title: T.title, name: RESIDENT_BY_ID.tong.name, face: this.portrait('tong'), scene: T.scene, lines: [T.ask],
+      choices: Object.entries(T.choices).map(([id, c]) => ({ id, label: c.label, hint: c.hint })),
+      onChoice: (id) => { openingTong(s, id); return T.choices[id].reply; },
+      onDone: () => {
+        saveGame(s);
+        this.todayToast();
+        this.tipOnce('fastWeek', OPENING_TEXT.fastWeek);
+        this.tipOnce('profile0', '사람을 누르면 프로필이 보인다. 다가가서 말을 걸자.');
+      } });
+  },
+  // 첫날 낮·저녁에 시간이 되면 (advance 가 부른다)
+  openingTimed() {
+    const s = this.s;
+    if (!isOpeningDay(s) || this.modal > 0) return;
+    const O = OPENING_TEXT;
+    if (s.minute >= 12 * 60 && !openingDone(s, 'minho')) {
+      openingMinho(s);
+      const inside = this.scene()?.scene.key === 'sanctuary';
+      openingPanel(this, { title: O.minho.title, name: CAST_BY.stranger.name, face: this.portrait('o:stranger'), scene: inside ? O.minho.inside : O.minho.outside, lines: inside ? O.minho.lines : [O.minho.lines[2]], onDone: () => saveGame(s) });
+    } else if (s.minute >= 18 * 60 && !openingDone(s, 'visitor')) {
+      openingVisitor(s);
+      openingPanel(this, { title: O.visitor.title, name: RESIDENT_BY_ID.yoonseo.name, face: this.portrait('yoonseo'), scene: O.visitor.scene, lines: [O.visitor.line],
+        onDone: () => { saveGame(s); toast('오늘 저녁 첫 모임에 넷이 앉는다. 밤이 되면 성소로 돌아가 밤 메뉴에서 연다.', 'tip', 6000); } });
+    }
   },
 
   resume(s) {
@@ -189,12 +239,15 @@ export const app = {
       if (s.phase >= 3 && Math.floor(before / 60) !== hour) threatHour(s, this.g, hour);
       if (before < CLOCK.dayEnd && s.minute >= CLOCK.dayEnd) { toast(s.district === 'bongcheon' ? BRANCH_TEXT.nightB : '21시. 동네가 문을 닫는다. 302호로 돌아가자.', 'warn'); play('error'); }
       if (s.minute >= CLOCK.forceHome) { this.forceNight(); return; }
+      if (isOpeningDay(s) && (before < 12 * 60 && s.minute >= 12 * 60 || before < 18 * 60 && s.minute >= 18 * 60)) { this.openingTimed(); left -= step; break; }
       left -= step;
     }
     this.saveTimer += dMin;
     if (this.saveTimer > 60) { this.saveTimer = 0; saveGame(s); }
   },
   setSpeed(n) { this.speed = n; play('click'); this.hud?.update(); },
+  // 첫 주는 시계가 조금 빠르다 (하루 ≈ 4분, 25장 B-4)
+  clockRate() { return this.s && this.s.day < OPENING.firstWeekDays ? OPENING.firstWeekRate : 1; },
 
   forceNight() {
     const s = this.s;

@@ -221,7 +221,7 @@ export class SanctuaryScene extends Phaser.Scene {
     if (!s) return;
     const dt = Math.min(delta, 100) / 1000;
     const free = app.modal === 0;
-    if (free && s.mode === 'day' && app.speed > 0) app.advance(dt * CLOCK.minutesPerSecond * app.speed);
+    if (free && s.mode === 'day' && app.speed > 0) app.advance(dt * CLOCK.minutesPerSecond * app.speed * app.clockRate());
     this.walker.update(dt, free);
     this.player.setDepth(60);
     // 돌아다니는 신도
