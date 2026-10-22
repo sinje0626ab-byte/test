@@ -218,7 +218,7 @@ export const CONTEXT = {
 export const EVENTS = { dailyChance: 0.28, minGapDays: 2 };
 
 // ════════ 2단계 (B) ════════
-export const PHASE2 = { members: 240, minSpaceStep: 2, minOfficers: 3, landlordAngerMax: 100, rentStreak: 2 };   // 목표: 신도 240 + 3층 전체 + 간부 셋 + 4월 25일 월세까지 두 달 연속
+export const PHASE2 = { members: 215, minSpaceStep: 2, minOfficers: 3, landlordAngerMax: 100, rentStreak: 2 };   // 목표: 신도 215 + 3층 전체 + 간부 셋 + 4월 25일 월세까지 두 달 연속
 
 // 공간 단계: 보증금(한 번) · 월세 추가(달마다) · 새로 생기는 방 자리
 export const SPACE_STEPS = [
@@ -327,7 +327,7 @@ export const REVELATIONS3 = [{ id: 'camera', at: 150 }, { id: 'neighbor' }];
 
 // ════════ 4단계: 봉천동 지부 (23장) ════════
 export const PHASE4 = {
-  members: 325, branch: 92, rep: 40, rentStreak: 4,   // 목표: 신도 325 + 봉천 지부 92 + 두 동네 평판 40 이상 + 6월 25일 월세까지 넉 달 연속
+  members: 345, branch: 92, rep: 40, rentStreak: 4,   // 목표: 신도 345 + 봉천 지부 92 + 두 동네 평판 40 이상 + 6월 25일 월세까지 넉 달 연속
   followers: { chance: 0.6, cap: 7 },              // 4단계: 두 동네 소문이 이어져 지인을 더 잘 데려온다
   sectFx: { meditation: { heat: 1.14 }, fortune: { heat: 1.07 } },   // 유형별 4단계 보정: 명상·기복형은 지부가 늘며 기사거리가 커진다
   subway: { minutes: 20, fare: 1_400 },            // 신림역 ↔ 서울대입구역 2호선
