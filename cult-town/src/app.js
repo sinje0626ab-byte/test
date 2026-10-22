@@ -1,7 +1,7 @@
 // 앱 제어: 상태(app.s) · 씬 전환 · 시간 흐름 · DOM UI 연결. 게임 규칙은 전부 sim/ 에 있다.
 import townMap from './map/town.json';
 import bongcheonMap from './map/bongcheon.json';
-import { CLOCK, OFFICERS, PHASE4, GROWTH } from './config.js';
+import { CLOCK, OFFICERS, PHASE4, GROWTH, OPENING } from './config.js';
 import { BRANCH_TEXT } from './data/branch.js';
 import { PLACES } from './data/places.js';
 import { SHOPS } from './data/shops.js';
@@ -13,7 +13,8 @@ import { gridFromMap, registerGrid } from './sim/grid.js';
 import { newGame } from './sim/state.js';
 import { startDay, endDay } from './sim/week.js';
 import { tickPeople, snapAll } from './sim/residents.js';
-import { isRentDay as isMonthEnd, fmtTime, season, holidayOf, dayOfMonth, fmtDate, tempAt, skyName } from './sim/clock.js';
+import { isRentDay as isMonthEnd, fmtTime, season, holidayOf, dayOfMonth, fmtDate, tempAt, skyName, isWorshipDay } from './sim/clock.js';
+import { emotionOf } from './sim/mood.js';
 import { tone } from './sim/leader.js';
 import { pick } from './sim/rng.js';
 import { saveGame, loadGame, clearSave } from './sim/save.js';
@@ -36,13 +37,18 @@ import { openShop } from './ui/shop.js';
 import { openNotebook, showQuestNews, dailyName } from './ui/notebook.js';
 import { visitSpot, questMarkers, checkQuests } from './sim/quests.js';
 import { cutin } from './ui/cutin.js';
+import { openingPanel } from './ui/opening.js';
+import { bigDayOf, bigDayAct } from './sim/bigdays.js';
+import { BIGDAY_TEXT, BIGDAY_UI } from './data/bigdays.js';
+import { OPENING as OPENING_TEXT } from './data/opening.js';
+import { isOpeningDay, openingDone, openingSign, openingTong, openingMinho, openingVisitor } from './sim/opening.js';
 import { canStreetSermon, streetSermon } from './sim/growth.js';
 import { GROWTH_TEXT } from './data/growth.js';
 import { sameFamily } from './sim/talk.js';
 import { showEvent } from './ui/event.js';
 import { showRevelation } from './ui/revelation.js';
 import { createDpad } from './ui/dpad.js';
-import { toast } from './ui/toast.js';
+import { toast, setToastGate, clearToasts } from './ui/toast.js';
 import { play } from './ui/sound.js';
 import { $ui, unmount, h } from './ui/dom.js';
 import { fill } from './ui/text.js';
@@ -95,6 +101,8 @@ export const app = {
     window.addEventListener('keyup', (e) => { if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.running = false; });
     window.addEventListener('contextmenu', (e) => { if (!this.s) return; e.preventDefault(); this.back(); });
     createDpad(this);
+    // 알림은 창(대화·밤 메뉴·사건·장면)이 하나도 없을 때만 차례로 뜬다
+    setToastGate(() => this.modal === 0 && !document.querySelector('[data-id=cutin],[data-id=event],[data-id=morning],[data-id=bulletin],[data-id=opening]'));
     this.toTitle();
   },
 
@@ -123,11 +131,58 @@ export const app = {
     this.floor = 3;
     saveGame(s);
     this.hud = createHud(this);
-    this.goTown('start');
-    setTimeout(() => toast(`${s.leader.name}: ${LEADER_TONE.neutral.morning[0]}`), 600);
-    setTimeout(() => toast('사람을 누르면 프로필이 보인다. 머리 위 "휴" 말풍선은 고민이 큰 사람. 수요일·일요일 밤에는 예배.'), 1600);
-    setTimeout(() => toast(`이번 달 할 일: 개업. 첫 단계는 "간판 달기". 수첩(N)에 적어 뒀다.`, '', 6000), 2600);
-    setTimeout(() => this.todayToast(), 3600);
+    // 개업 첫날 (25장 B): 302호에서 시작 → 엄마 → 간판 달기 장면 → 통장님
+    this.goSanctuary('door');
+    setTimeout(() => this.openingMorning(), 500);
+  },
+
+  // ── 개업 첫날 짜인 흐름 ──
+  openingMorning() {
+    const s = this.s;
+    const O = OPENING_TEXT;
+    openingPanel(this, { title: O.mom.title, name: CAST_BY.mom.name, face: this.portrait('o:mom'), scene: O.mom.scene, lines: O.mom.lines, next: O.mom.next,
+      onDone: () => {
+        this.goTown('sanctuary');
+        setTimeout(() => {
+          this.modalOpened();
+          this.scene()?.signScene?.(1, () => {
+            this.modalClosed();
+            openingSign(s);
+            checkQuests(s);
+            saveGame(s);
+            openingPanel(this, { title: '동림상가 앞', name: this.s.leader.name, scene: O.sign.caption, lines: [O.sign.after], next: '계속',
+              onDone: () => showQuestNews(this, () => this.openingTong()) });
+          });
+        }, 700);
+      } });
+  },
+  openingTong() {
+    const s = this.s;
+    const T = OPENING_TEXT.tong;
+    openingPanel(this, { title: T.title, name: RESIDENT_BY_ID.tong.name, face: this.portrait('tong'), scene: T.scene, lines: [T.ask],
+      choices: Object.entries(T.choices).map(([id, c]) => ({ id, label: c.label, hint: c.hint })),
+      onChoice: (id) => { openingTong(s, id); return T.choices[id].reply; },
+      onDone: () => {
+        saveGame(s);
+        this.todayToast();
+        this.tipOnce('fastWeek', OPENING_TEXT.fastWeek);
+        this.tipOnce('profile0', '사람을 누르면 프로필이 보인다. 다가가서 말을 걸자.');
+      } });
+  },
+  // 첫날 낮·저녁에 시간이 되면 (advance 가 부른다)
+  openingTimed() {
+    const s = this.s;
+    if (!isOpeningDay(s) || this.modal > 0) return;
+    const O = OPENING_TEXT;
+    if (s.minute >= 12 * 60 && !openingDone(s, 'minho')) {
+      openingMinho(s);
+      const inside = this.scene()?.scene.key === 'sanctuary';
+      openingPanel(this, { title: O.minho.title, name: CAST_BY.stranger.name, face: this.portrait('o:stranger'), scene: inside ? O.minho.inside : O.minho.outside, lines: inside ? O.minho.lines : [O.minho.lines[2]], onDone: () => saveGame(s) });
+    } else if (s.minute >= 18 * 60 && !openingDone(s, 'visitor')) {
+      openingVisitor(s);
+      openingPanel(this, { title: O.visitor.title, name: RESIDENT_BY_ID.yoonseo.name, face: this.portrait('yoonseo'), scene: O.visitor.scene, lines: [O.visitor.line],
+        onDone: () => { saveGame(s); toast('오늘 저녁 첫 모임에 넷이 앉는다. 밤이 되면 성소로 돌아가 밤 메뉴에서 연다.', 'tip', 6000); } });
+    }
   },
 
   resume(s) {
@@ -186,12 +241,15 @@ export const app = {
       if (s.phase >= 3 && Math.floor(before / 60) !== hour) threatHour(s, this.g, hour);
       if (before < CLOCK.dayEnd && s.minute >= CLOCK.dayEnd) { toast(s.district === 'bongcheon' ? BRANCH_TEXT.nightB : '21시. 동네가 문을 닫는다. 302호로 돌아가자.', 'warn'); play('error'); }
       if (s.minute >= CLOCK.forceHome) { this.forceNight(); return; }
+      if (isOpeningDay(s) && (before < 12 * 60 && s.minute >= 12 * 60 || before < 18 * 60 && s.minute >= 18 * 60)) { this.openingTimed(); left -= step; break; }
       left -= step;
     }
     this.saveTimer += dMin;
     if (this.saveTimer > 60) { this.saveTimer = 0; saveGame(s); }
   },
   setSpeed(n) { this.speed = n; play('click'); this.hud?.update(); },
+  // 첫 주는 시계가 조금 빠르다 (하루 ≈ 4분, 25장 B-4)
+  clockRate() { return this.s && this.s.day < OPENING.firstWeekDays ? OPENING.firstWeekRate : 1; },
 
   forceNight() {
     const s = this.s;
@@ -220,6 +278,7 @@ export const app = {
 
   sleep() {
     const s = this.s;
+    clearToasts();                                // 밤에 못 띄운 알림은 버린다 (아침 알림과 섞이지 않게)
     play('page');
     const finish = (rentChoice) => {
       const r = endDay(s, this.g, { rentChoice });
@@ -242,8 +301,14 @@ export const app = {
         toast(`${s.leader.name}: ${pick(s, LEADER_TONE[tone(s)].morning)}`);
         const hol = holidayOf(s.day);
         if (hol && dayOfMonth(s.day) === hol.from) toast(hol.text, '', 6000);
-        if (s.weather.rain) toast(s.weather.snow ? `${fmtDate(s.day)}. 눈이 온다. 골목이 미끄럽다.` : `${fmtDate(s.day)}. 비가 온다 (${tempAt(s)}°). 공원·산책로에 사람이 없다. 우산을 씌워 주면 좋아한다.`);
-        if (s.weather.market) toast('오늘은 토요일 장날. 시장에 사람이 많다.');
+        if (s.weather.rain) this.tipOnce(s.weather.snow ? 'snow' : 'rain', s.weather.snow ? '눈이 오는 날은 골목이 미끄럽다. 밖에 나온 사람이 적다.' : '비 오는 날엔 공원·산책로에 사람이 없다. 편의점 비닐우산을 씌워 주면 좋아한다.');
+        if (s.weather.market) this.tipOnce('market', '토요일은 장날. 시장에 사람이 많고, 장바구니를 들어 주는 선택지가 생긴다.');
+        const bd = bigDayOf(s);
+        if (bd && s.district === 'sillim') {
+          toast(BIGDAY_UI.today.replace('{이름}', bd.name).replace('{장소}', PLACES[bd.place]?.short ?? '').replace('{시간}', `${Math.floor(bd.from / 60)}시~${Math.floor(bd.to / 60)}시`), 'good', 6000);
+          this.tipOnce('bigday', '큰 날엔 행사 자리에 현수막이 걸린다. 가까이 가면 그날만 할 수 있는 일이 있다. 수첩(N) 달력에 다음 행사가 보인다.');
+        }
+        if (isWorshipDay(s.day)) this.tipOnce('worshipDay', '수요일·일요일 밤은 예배. 저녁에 성소로 돌아와 밤 메뉴에서 연다.');
         this.todayToast();
         // 밤사이 결정적 순간 (첫 열혈 신자 · 라이벌에게 간 사람)
         for (const e of r.events) {
@@ -278,6 +343,7 @@ export const app = {
     if (!near) return this.hud.setAction(null);
     if (near.kind === 'person') {
       const id = near.id;
+      if (RESIDENT_BY_ID[id] && emotionOf(this.s, id) === 'sigh') this.tipOnce('sigh', '머리 위 "휴"는 지금 고민이 큰 사람. 고민 들어주기가 잘 통한다.');
       const npc = id.startsWith('x:') || id.startsWith('v:');
       const name = id.startsWith('c:') ? `${CLERGY_BY_ID[id.slice(2)].name} ${CLERGY_BY_ID[id.slice(2)].title}` : id.startsWith('o:') ? CAST_BY[id.slice(2)].name : npc ? nameForNpc(this.s, id) : RESIDENT_BY_ID[id].name;
       const verb = id === 'x:reporter' ? '인터뷰 받기' : id.startsWith('o:') || id.startsWith('v:') ? '인사' : isProtester(this.s, id) ? '피켓 앞으로' : isDefector(this.s, id) ? '다가가기' : '말 걸기';
@@ -289,6 +355,8 @@ export const app = {
       this.hud.setAction(label, () => this.useDoor(near.place));
     } else if (near.kind === 'shop') {
       this.hud.setAction(`살펴보기 · ${SHOPS[near.b.shop].name}`, () => this.lookShop(near.b));
+    } else if (near.kind === 'bigday') {
+      this.hud.setAction(BIGDAY_UI.near.replace('{이름}', bigDayOf(this.s).name), () => this.openBigDay());
     } else if (near.kind === 'exit') {
       this.hud.setAction(this.s.mode === 'night' ? null : '계단 내려가기', () => this.leaveSanctuary());
     } else if (near.kind === 'stairs') {
@@ -302,6 +370,7 @@ export const app = {
     if (n.kind === 'person') this.talkTo(n.id);
     else if (n.kind === 'door') this.useDoor(n.place);
     else if (n.kind === 'shop') this.lookShop(n.b);
+    else if (n.kind === 'bigday') this.openBigDay();
     else if (n.kind === 'exit') this.leaveSanctuary();
     else if (n.kind === 'stairs') this.useStairs(n.to);
   },
@@ -321,7 +390,7 @@ export const app = {
     else if (isDefector(this.s, id)) openDefector(this, id);
     else openTalk(this, id);
   },
-  showProfile(id, onTalk) { openProfile(this, id, { onTalk }); },
+  showProfile(id, onTalk) { openProfile(this, id, { onTalk }); this.tipOnce('profile', '프로필의 "지금 고민"은 얘기를 나눠 봐야 알게 된다. 수첩(N)에 사연·부탁이 쌓인다.'); },
   useDoor(place) {
     this.visitAt(place);
     if (place === 'sanctuary') {
@@ -393,6 +462,35 @@ export const app = {
     for (const t of res?.todayDone ?? []) toast(t.id === 'all' ? '오늘 할 일 셋을 다 했다. 보리차값 1만 원이 굳었다.' : `오늘 할 일: ${dailyName(t)} ✓`, 'good');
     saveGame(this.s); this.hud?.update();
     if (this.s.quest?.news?.length) setTimeout(() => showQuestNews(this), 300);
+  },
+  // 큰 날 행사 (25장 D): 그날만 할 수 있는 일 1~2개
+  openBigDay() {
+    const s = this.s;
+    const bd = bigDayOf(s);
+    if (!bd || this.modal > 0 || s.mode !== 'day') return;
+    this.scene()?.walker?.stop();
+    openingPanel(this, {
+      title: PLACES[bd.place]?.name, name: bd.name, scene: bd.intro,
+      choices: [...Object.entries(bd.actions).map(([id, a]) => ({ id, label: a.label, hint: a.hint })), { id: 'skip', label: '구경만 한다', hint: '' }],
+      onChoice: (id) => {
+        if (id === 'skip') return '한 바퀴 둘러봤다. 오늘은 그냥 지나간다.';
+        const line = bigDayAct(s, id);
+        play('jingle_good', 0.4);
+        this.hud?.update();
+        this.scene()?.nearKey && (this.scene().nearKey = null);
+        return line ?? BIGDAY_UI.done;
+      },
+      onDone: () => checkQuests(s),
+    });
+  },
+  // 그 상황이 처음 올 때 한 번만 보이는 안내
+  tipOnce(key, text) {
+    const s = this.s;
+    if (!s) return;
+    s.flags.tips ??= {};
+    if (s.flags.tips[key]) return;
+    s.flags.tips[key] = true;
+    toast(text, 'tip', 6000);
   },
   todayToast() {
     const t = this.s.today;

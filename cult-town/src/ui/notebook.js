@@ -6,11 +6,13 @@ import { DAILY, FLYER_SPOTS } from '../data/quests.js';
 import { questList } from '../sim/stories.js';
 import { mainOf } from '../sim/quests.js';
 import { fmtDateShort } from '../sim/clock.js';
+import { upcomingBigDays } from '../sim/bigdays.js';
+import { BIGDAY_UI } from '../data/bigdays.js';
 import { h, mount, unmount, won } from './dom.js';
 import { play } from './sound.js';
 import { fill, speak } from './text.js';
 
-const TABS = [['main', '메인'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문']];
+const TABS = [['main', '메인'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문'], ['cal', BIGDAY_UI.calendar]];
 let lastTab = 'main';
 
 export const dailyName = (t) => DAILY[t.id].name.replace('{장소}', PLACES[t.arg]?.short ?? PLACES[t.arg]?.name ?? '');
@@ -62,6 +64,14 @@ const BODY = {
         h('b', {}, `${x.done ? '✓ ' : ''}${dailyName(x)}`),
         DAILY[x.id].need > 1 ? h('small', {}, `${Math.min(x.n, DAILY[x.id].need)}/${DAILY[x.id].need}`) : null))),
       h('p', { class: 'muted small' }, t.paid ? '오늘 몫은 다 했다.' : `셋 다 하면 보리차값 ${won(10_000)}. 하나도 안 하면 첫 신도들이 조금 서운해한다.`));
+  },
+  // 다가오는 큰 날 (25장 D)
+  cal(s) {
+    const list = upcomingBigDays(s, 5);
+    if (!list.length) return h('p', { class: 'muted' }, BIGDAY_UI.none);
+    return h('ul', { class: 'quests' }, list.map((b) => h('li', { class: b.day === s.day ? 'on' : '' },
+      h('b', {}, `${fmtDateShort(b.day)} · ${b.name}`),
+      h('small', {}, `${PLACES[b.place]?.short ?? ''} ${Math.floor(b.from / 60)}시~${Math.floor(b.to / 60)}시 · ${Object.values(b.actions).map((a) => a.label).join(' / ')}`))));
   },
   heard(s) {
     const list = s.heard ?? [];

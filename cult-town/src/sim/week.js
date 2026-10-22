@@ -1,5 +1,8 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
 import { dueLater, endToday, checkQuests, newToday } from './quests.js';
+import { isOpeningDay } from './opening.js';
+import { bigDayOf } from './bigdays.js';
+import { OPENING as OPENING_TEXT } from '../data/opening.js';
 import { dailyZealots } from './zealots.js';
 import { dailyDrama } from './drama.js';
 import { CLOCK, TALK, STAGES, SANCTUARY, GOAL, RUMOR, WEATHER, PHASE2, PHASE3, PHASE4, OFFICERS, REPORTER, CALENDAR, SECT_FX } from '../config.js';
@@ -37,6 +40,7 @@ export function startDay(s, g) {
   const rain = rand(s) < CALENDAR.rain[mi];
   const tempDelta = Math.round((rand(s) * 2 - 1) * 3);
   s.weather = { rain, snow: rain && CALENDAR.temp[mi] + tempDelta <= 1, cloudy: !rain && rand(s) < CALENDAR.cloudy, tempDelta, market: (s.day % 7) === WEATHER.marketWeekday };
+  if (bigDayOf(s)?.rain) s.weather.rain = true;   // 우산 나눔 날은 비
   if (s.weather.rain) for (const r of Object.values(s.res)) r.needs.lonely = Math.min(100, r.needs.lonely + WEATHER.rainLonely);
   // 계절·행사가 고민을 조금씩 움직인다 (신림동은 늘, 봉천동은 4단계부터)
   const push = { ...(CALENDAR.seasonNeeds[season(s.day)] ?? {}) };
@@ -171,6 +175,12 @@ export function endDay(s, g, opts = {}) {
     const r = payRent(s, opts.rentChoice);
     events.push({ type: 'rent', ...r });
   }
+  if (isOpeningDay(s)) {
+    // 개업 첫날 주보 0호 (호수는 늘리지 않는다. 한 주 결산은 일요일에 그대로)
+    bulletin = makeBulletin(s);
+    s.bulletinNo--;
+    Object.assign(bulletin, { no: 0, opening: true, town: [...OPENING_TEXT.bulletin.town, ...bulletin.town.slice(-1)], notice: OPENING_TEXT.bulletin.notice });
+  }
   if (isSunday(s.day)) {
     // 주간 지출: 전단 인쇄 · 보리차 · 전기료 (공간이 넓을수록 더)
     const W = SANCTUARY.weekly;
@@ -243,6 +253,7 @@ function makeBulletin(s) {
   for (const r of w.reports ?? []) town.push(`이번 주 ${r}`);
   for (const d of (s.drama?.log ?? []).filter((x) => s.day - x.day < 7).slice(0, 2)) town.push(`동네 소식: ${d.text}`);   // 주민끼리의 일 (24장 D-4)
   if (w.bigSermon) town.push('이번 주 설교 때 앞줄에서 손수건이 나왔다. 1면감.');
+  for (const r of (w.sermonReviews ?? []).slice(-2)) town.push(`예배 한 줄 평: ${r}`);   // 25장 C
   if (w.shadow.some((x) => x.kind === 'doomsday')) town.push('doomsday');
   // 기성 종교의 생활 소식 한 줄 (돌아가며)
   const c = CLERGY[(s.bulletinNo - 1) % CLERGY.length];

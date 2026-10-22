@@ -303,3 +303,26 @@ kbd { font-family: var(--font); font-size: 11px; border: 1.5px solid currentColo
 .dpad.on .stick-knob { transition: none; background: var(--paper-2); box-shadow: 0 1px 0 var(--ink); }
 .dpad.run .stick-knob { background: var(--accent); }
 .dpad.on .stick-base { background: rgba(246, 239, 217, .75); }
+.toast { pointer-events: auto; cursor: pointer; transition: opacity .2s, transform .2s; }
+.toast.out { opacity: 0; transform: translateY(-6px); }
+.toast.tip { background: #2a3a5a; }
+.toast.good { background: #1e4a2a; }
+/* 밤 메뉴: 큰 버튼 셋 + 더 보기 (25장 A-3) */
+.night .menu.big .btn { font-size: 18px; padding: 14px 12px; }
+.night .menu.big .btn small { font-size: 13px; }
+.night .btn.more { margin-top: 8px; background: var(--paper-2); }
+.night .btn.more.on { background: var(--paper-3); }
+.night h3 { font-size: 15px; margin: 10px 0 4px; }
+.bulletin .opening-head { text-align: center; margin: 4px 0 8px; font-size: 18px; letter-spacing: 2px; }
+/* 예배 (25장 C): 성소 맵 위 아래쪽 카드 줄. 팝업 위 팝업 없이 */
+.worshipbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 10px); width: min(720px, calc(100% - 2 * var(--gutter))); z-index: 30; padding: 10px 12px; }
+.worshipbar .gauge { display: flex; align-items: center; gap: 6px; flex: 1; }
+.worshipbar .gauge .bar { flex: 1; height: 10px; border: 2px solid var(--ink); background: var(--paper-2); border-radius: 3px; overflow: hidden; }
+.worshipbar .gauge .bar i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
+.worshipbar .log { margin: 6px 0; font-size: 13px; }
+.worshipbar .played { font-size: 12px; color: var(--ink-soft); margin: 4px 0; }
+.worshipbar .cards { display: flex; flex-wrap: wrap; gap: 6px; }
+.worshipbar .card { flex: 1 1 150px; min-height: 44px; }
+.worshipbar .card.risk { border-color: var(--warn); background: #fff3d8; }
+.worshipbar .disrupt .narr { font-weight: bold; }
+.worshipbar .card { display: block; text-align: left; }

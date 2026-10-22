@@ -6,7 +6,8 @@ import { TIP, GROWTH, TALK, RUMOR, SECT_FX, GIFT, REPEAT, CONTEXT, WEATHER } fro
 import { RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { FAMILIES, SECTS } from '../data/sects.js';
 import { lineFor } from './voice.js';
-import { HINTS, NEED_NAMES } from '../data/topics.js';
+import { HINTS, NEED_NAMES, hintGroups } from '../data/topics.js';
+import { VOICES } from '../data/voices/index.js';
 import { SPECIAL_TEXT } from '../data/bulletin.js';
 import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { rand, pick, shuffle } from './rng.js';
@@ -65,7 +66,21 @@ export function startTalk(s, id, ctx = {}) {
   if (!st.hint) st.hint = rand(s) < hintAccuracy(s) ? top[0] : top[1];        // 단서가 늘 정확하진 않다
   rand(s);                                                         // 예전 인사 고르기 난수 자리 (시뮬레이션 순서 유지)
   const greet = st.met ? lineFor(s, id, 'greet') : lineFor(s, id, 'first') || r.greet[0];
-  return { greet, hint: pick(s, HINTS[st.hint]), options: optionsFor(s, id, ctx), cards: cardsFor(s, id) };
+  return { greet, hint: pick(s, hintsFor(id, st.hint)), options: optionsFor(s, id, ctx), cards: cardsFor(s, id) };
+}
+
+// 그 사람에게 어울리는 지문만 (나이·직업 묶음). 딱 맞는 게 없으면 그 주민 전용 지문 → 누구나 쓰는 지문
+const hintCache = new Map();
+export function hintsFor(id, need) {
+  const k = `${id}:${need}`;
+  if (!hintCache.has(k)) {
+    const g = hintGroups(RESIDENT_BY_ID[id]);
+    const fit = HINTS[need].filter((h) => h.for.some((x) => x !== 'all' && g.has(x))).map((h) => h.t);
+    const all = HINTS[need].filter((h) => h.for.includes('all')).map((h) => h.t);
+    const own = VOICES[id]?.hints?.[need] ?? [];
+    hintCache.set(k, fit.length ? [...fit, ...all] : own.length ? own : all);
+  }
+  return hintCache.get(k);
 }
 
 // 부탁 끝내기 · 말 전하기: 오늘 이미 얘기했어도 할 수 있다

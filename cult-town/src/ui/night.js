@@ -11,6 +11,8 @@ import { RESIDENT_BY_ID } from '../data/residents.js';
 import { STAGE_NAMES } from '../data/topics.js';
 import { LEADER_TONE } from '../data/lines.js';
 import { openSermon } from './worship.js';
+import { isOpeningDay } from '../sim/opening.js';
+import { OPENING as OPENING_TEXT } from '../data/opening.js';
 import { zealotsOf, zealotCandidates, makeZealot, calmZealot, releaseZealot } from '../sim/zealots.js';
 import { ZEALOT_TEXT } from '../data/zealots.js';
 import { STAT_IDS, stat, levelOf, freePoints, raiseStat, axisUnlock, axisAction } from '../sim/growth.js';
@@ -36,9 +38,15 @@ import { branchCount } from '../sim/faith.js';
 const SIGN_HINT = ['', '창문에 흰 글씨로 교단 이름. 3층을 올려다보면 보인다.', '아크릴 판. 상가 앞을 지나는 사람이 다 본다.', '외벽 대형 간판, 저녁엔 불이 들어온다. 역 앞에서도 보인다.'];
 const SIGN_TEXT = ['', '시트지 업자가 창문에 "{교단}" 글씨를 붙이고 갔다. 거꾸로 붙은 글자는 없다.', '아크릴 간판을 달았다. 1층 김밥집 사장님이 올려다보고 "어, 이름이 그거였어요?" 했다.', '외벽에 큰 간판이 올라갔다. 저녁 여섯 시에 조명이 켜지자 역 3번 출구 쪽에서 사람들이 고개를 들었다.'];
 
+const SUB_TITLES = {
+  worship: '{예배}', people: '돌보기 · 이야기', care: '신도 돌보기', cast: '첫 신도들', shop: '소품 사기', sign: '간판', growth: '교주',
+  zealots: '열혈 신자', ledger: '장부', space: '공간 · 방', officers: '간부', meeting: '간부 회의', branch: '봉천 지부', rival: '라이벌',
+};
+
 export function openNight(app) {
   const s = app.s;
-  let sub = null;           // 펼친 하위 메뉴
+  let sub = null;           // 지금 보고 있는 하위 화면
+  let more = false;         // '더 보기' 펼침
   let note = [];            // 방금 한 일
   const mutter = pick(s, LEADER_TONE[tone(s)].night);
 
@@ -50,12 +58,20 @@ export function openNight(app) {
       onclick: () => { play('click'); if (opts.run) opts.run(); else { sub = sub === key ? null : key; render(); } },
     }, label, hint ? h('small', {}, hint) : null);
 
-    const menu = h('div', { class: 'menu' },
-      btn('worship', fill(NIGHT.menu.worship, s), canWorship(s) ? `올 사람 약 ${expected}명 · 자리 ${seats(s)}` : fill(NIGHT.worshipNone, s), { disabled: !canWorship(s), primary: canWorship(s) }),
+    // 큰 버튼 셋 (예배 · 돌보기·이야기 · 잠자기) + '더 보기'. 하위 메뉴는 화면을 바꿔서 보여 준다 (25장 A-3)
+    const sleepRun = () => { unmount('night'); app.setBack('night', null); app.sleep(); };
+    const main = h('div', { class: 'menu big' },
+      isOpeningDay(s)
+        ? btn('worship', OPENING_TEXT.worship.menu, fill(OPENING_TEXT.worship.hint, s), { disabled: !canWorship(s), primary: canWorship(s), wide: true })
+        : btn('worship', fill(NIGHT.menu.worship, s), canWorship(s) ? `올 사람 약 ${expected}명 · 자리 ${seats(s)}` : fill(NIGHT.worshipNone, s), { disabled: !canWorship(s), primary: canWorship(s), wide: true }),
+      btn('people', '돌보기 · 이야기', '신도에게 전화 · 엄마·친구·민호와 얘기'),
+      btn('sleep', NIGHT.menu.sleep, isMonthEnd(s.day) ? '월세가 나가는 날이다' : '다음 날 아침 7시', { run: sleepRun, primary: !canWorship(s) }),
+    );
+    const moreBadge = [freePoints(s) > 0 ? `교주 점수 ${freePoints(s)}` : null, zealotCandidates(s).length ? '열혈 후보' : null, s.branch?.split ? '지부 독립 예고!' : null].filter(Boolean).join(' · ');
+    const moreBtn = h('button', { class: `btn wide more ${more ? 'on' : ''}`, onclick: () => { play('click'); more = !more; render(); } }, more ? '▲ 접기' : '▼ 더 보기', moreBadge ? h('small', {}, moreBadge) : null);
+    const extra = more ? h('div', { class: 'menu' },
       btn('shop', NIGHT.menu.shop, `자리 ${seats(s)} · 분위기 ${mood(s)}`),
       btn('sign', '간판', `지금: ${SIGN.names[signTier(s)]}${nextSignCost(s) != null ? ` · 다음 ${won(nextSignCost(s))}` : ' · 더 바꿀 게 없다'}`),
-      btn('care', NIGHT.menu.care, '전화로 30분. 호감이 오르고 의심이 내린다.'),
-      btn('cast', NIGHT.menu.cast, '엄마, 오랜 친구, 우연히 온 사람'),
       btn('growth', '교주', `레벨 ${levelOf(s).level}${freePoints(s) > 0 ? ` · 점수 ${freePoints(s)} 남음` : ''}`),
       ...(zealotsOf(s).length || zealotCandidates(s).length ? [btn('zealots', ZEALOT_TEXT.menu, `${zealotsOf(s).length}명${zealotCandidates(s).length ? ` · 세울 수 있는 사람 ${zealotCandidates(s).length}` : ''}`)] : []),
       btn('vigil', NIGHT.menu.vigil, s.flags.vigilDay === s.day ? '오늘은 이미 했다' : '광신 쪽으로. 내일 많이 피곤하다.', { disabled: s.flags.vigilDay === s.day, run: doVigil }),
@@ -67,17 +83,28 @@ export function openNight(app) {
       ] : []),
       ...(s.phase >= 4 ? [btn('branch', BRANCH_TEXT.menu, s.branch.open ? `지부장 ${branchHead(s)?.name ?? '없음'} · ${branchCount(s)}명${s.branch.split ? ' · 독립 예고!' : ''}` : '봉천프라자 2층 임대')] : []),
       ...(s.phase >= 3 && s.rival ? [btn('rival', `라이벌 · ${rivalInfo(s).name}`, s.flags.rivalNight === s.day ? '오늘은 이미 정했다' : '경쟁 · 폭로 · 합병 · 휴전')] : []),
-      btn('sleep', NIGHT.menu.sleep, isMonthEnd(s.day) ? '월세가 나가는 날이다' : '다음 날 아침 7시', { wide: true, run: () => { unmount('night'); app.setBack('night', null); app.sleep(); } }),
-    );
+    ) : null;
 
-    const subEl = sub ? h('div', { class: 'sub' }, renderSub(sub), h('div', { class: 'row', style: 'margin-top:10px' }, h('button', { class: 'btn back', onclick: () => { play('click'); sub = null; render(); } }, '‹ 뒤로'))) : null;
+    const noteEl = note.length ? h('div', { class: 'stack' }, note.map((n) => h('div', { class: 'narr', style: 'border-left:3px solid var(--accent);padding-left:8px' }, n))) : null;
     app.setBack('night', sub ? () => { sub = null; render(); } : null);
+    if (sub) {
+      // 하위 화면: 제목 + 내용 + 뒤로 (메뉴는 숨긴다)
+      mount('night', h('div', { class: 'screen night' }, h('div', { class: 'panel box' },
+        h('div', { class: 'row', style: 'align-items:center;gap:8px' }, h('button', { class: 'btn back small', onclick: () => { play('click'); sub = null; render(); } }, '‹ 밤 메뉴'), h('h2', { style: 'margin:0' }, SUB_TITLES[sub] ? fill(SUB_TITLES[sub], s) : '')),
+        noteEl,
+        h('div', { class: 'sub' }, sub === 'people'
+          ? h('div', { class: 'stack' }, h('h3', {}, '신도에게 전화'), renderSub('care'), h('h3', {}, '엄마 · 친구 · 민호'), renderSub('cast'))
+          : renderSub(sub)),
+        h('div', { class: 'row', style: 'margin-top:10px' }, h('button', { class: 'btn back', onclick: () => { play('click'); sub = null; render(); } }, '‹ 뒤로')),
+      )));
+      return;
+    }
     mount('night', h('div', { class: 'screen night' }, h('div', { class: 'panel box' },
       h('h2', {}, fill(NIGHT.title, s)),
       h('p', { class: 'muted' }, NIGHT.arrive, ' ', h('span', {}, mutter)),
       s.phase >= 3 ? h('p', { class: 'muted' }, `바깥 눈길: ${exposureWord(s)}.${s.reporter.active ? ' 관악생활신문 기자가 동네를 돈다.' : ''}${s.reporter.due ? ' 기사가 곧 나온다.' : ''}`) : null,
-      note.length ? h('div', { class: 'stack' }, note.map((n) => h('div', { class: 'narr', style: 'border-left:3px solid var(--accent);padding-left:8px' }, n))) : null,
-      menu, subEl,
+      noteEl,
+      main, moreBtn, extra,
     )));
   };
 
@@ -166,7 +193,13 @@ export function openNight(app) {
         play('coins');
         note = [verdict, fill(NIGHT.worshipDone, s, { n: r.heads, 돈: r.offering })];
         if (score >= SERMON.bigHit) s.week.bigSermon = true;
-        for (const [id, st] of r.promoted) if (st === 'member') cutin(app, { kicker: josa(fill('{신도}', s), '이/가') + ' 되었다', title: RESIDENT_BY_ID[id].name, line: speak(s, lineFor(s, id, 'member')), face: app.portrait(id) });
+        for (const [id, st] of r.promoted) {
+          if (st !== 'member') continue;
+          const first = !s.flags.firstConvertDone;      // 첫 신도 전환은 그 사람 사연에 맞는 한 줄로
+          s.flags.firstConvertDone = true;
+          cutin(app, { kicker: first ? `첫 ${fill('{신도}', s)}` : josa(fill('{신도}', s), '이/가') + ' 되었다', title: RESIDENT_BY_ID[id].name,
+            line: first ? (OPENING_TEXT.firstConvert[id] ?? OPENING_TEXT.firstConvert.default) : speak(s, lineFor(s, id, 'member')), face: app.portrait(id) });
+        }
         if (r.standing) note.push(fill(NIGHT.seatsFull, s, { n: r.standing }));
         for (const [id, st] of r.promoted) note.push(`${josa(RESIDENT_BY_ID[id].name, '이/가')} ${josa(STAGE_NAMES[st], '이/가')} 되었다.`);
         if (opts.doubleBasket) note.push(SHADOW.doubleBasket.now);

@@ -15,13 +15,15 @@ import { daysToRent } from '../src/sim/clock.js';
 import { tickPeople, departures, targetKey, peopleOf, gridFor, sanctuaryKey } from '../src/sim/residents.js';
 import { canTalk, startTalk, act } from '../src/sim/talk.js';
 import { holdWorship, canWorship, buy, canBuy, seats, care } from '../src/sim/sanctuary.js';
-import { memberCount } from '../src/sim/faith.js';
+import { memberCount, namedMembers } from '../src/sim/faith.js';
 import { eventOptions, resolveEvent, DARK_EVENT_OPTIONS } from '../src/sim/events.js';
 import { visitPlace, buyItem } from '../src/sim/stories.js';
 import { visitSpot, currentStep } from '../src/sim/quests.js';
 import { FLYER_SPOTS } from '../src/data/quests.js';
 import { upgradeSign, nextSignCost } from '../src/sim/sanctuary.js';
 import { bestSermon } from '../src/sim/sermon.js';
+import { isOpeningDay, applyOpeningDay } from '../src/sim/opening.js';
+import { botBigDay } from '../src/sim/bigdays.js';
 import { autoRaise, canStreetSermon, streetSermon } from '../src/sim/growth.js';
 import { zealotsOf, zealotCandidates, makeZealot, calmZealot } from '../src/sim/zealots.js';
 import { sameFamily } from '../src/sim/talk.js';
@@ -55,7 +57,7 @@ for (const r of ALL_RESIDENTS) {
   const rg = gridFor(r.id, g);
   for (const kind of ['weekday', 'weekend']) {
     const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 1 });
-    s.day = kind === 'weekday' ? 0 : 5;
+    s.day = kind === 'weekday' ? 0 : 12;   // 큰 날이 없는 평일·주말 (큰 날 일과는 아래 하루 돌리기에서 본다)
     s.attend = [];
     const deps = departures(s, g, r.id);
     deps.forEach((e, i) => {
@@ -72,7 +74,7 @@ for (const r of ALL_RESIDENTS) {
 console.log(`  이동 ${legs}구간 검사, 가장 빠듯한 곳: ${tightest.who} (머무는 시간 ${Math.round(tightest.stay)}분)`);
 
 // 실제로 하루를 돌려 본다: 모두 목적지에 닿는가, 막히는 사람은 없는가, 한 칸에 몇 명까지 몰리나
-for (const day of [0, 2, 5, 6]) {
+for (const day of [0, 2, 5, 6, 10, 19, 22, 33]) {   // 5·10·19·22·33 = 큰 날
   const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 7 });
   s.day = day;
   s.phase = 4;      // 봉천동 주민까지 같이 걷게
@@ -183,6 +185,8 @@ function botTalk(s, id, key, policy) {
 }
 
 function playDay(s, policy) {
+  if (isOpeningDay(s)) applyOpeningDay(s);         // 개업 첫날 짜인 일 (간판 · 통장님 · 민호 · 하윤서)
+  if (!process.env.NOBIG) botBigDay(s);                                   // 매주 큰 날: 어두운 쪽이 아닌 행동
   // 4단계: 어느 동네에서 하루를 보낼까 (지부 전엔 이틀에 하루, 지부 뒤엔 지부가 목표에 못 미치면 사흘에 이틀)
   s.district = 'sillim';
   if (s.phase >= 4) {
@@ -316,7 +320,9 @@ function playGame(sect, seed, policy = 'normal', maxDays = 190) {
   s.botPolicy = policy;
   startDay(s, g);
   const timeline = [];
-  let phase1Day = null; let phase2Day = null; let phase3Day = null; let rivalLog = [];
+  let phase1Day = null; let phase2Day = null; let phase3Day = null; let rivalLog = []; let firstMember = null;
+  // 판 결과: 숫자만 남기고 게임 상태(s)는 버린다 (여러 판을 모아도 메모리가 늘지 않게)
+  const done = (over, days) => ({ over, days, phase1Day, phase2Day, phase3Day, timeline, rivalLog, firstMember, accidents: s.flags.accidents ?? 0, rivalSect: s.rival?.sect ?? null });
   for (let d = 0; d < maxDays; d++) {
     playDay(s, policy);
     playNight(s);
@@ -326,20 +332,21 @@ function playGame(sect, seed, policy = 'normal', maxDays = 190) {
     if (r.phaseUp === 3) phase2Day = s.day;
     if (r.phaseUp === 4) phase3Day = s.day;
     // 빠른 조정용: STOP=n 이면 n단계를 끝내면 그 판을 멈춘다
-    if (process.env.STOP && r.phaseUp && r.phaseUp > Number(process.env.STOP)) return { over: 'stop', days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
+    if (process.env.STOP && r.phaseUp && r.phaseUp > Number(process.env.STOP)) return done('stop', s.day + 1);
     if (r.revelation) applyRevelation(s, r.revelation, REV_PICKS[r.revelation]);
     if (s.rival) rivalLog.push(rivalSize(s));
     if (process.env.P3DBG && seed === Number(process.env.P3DBG) && s.phase >= 3 && s.day % 3 === 0) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} rep${Math.round(s.rep)} exp${Math.round(s.exposure)} rep:${s.reporter.active ? 'on' : '-'}${s.reporter.due ? 'due' : ''} heat${Math.round(s.reporter.heat)} reports${s.reporter.reports} rival:${s.rival ? s.rival.status + rivalSize(s) + ' dirt' + s.rival.dirt + ' taken' + s.rival.taken : '-'} def${soreDefectors(s).length} prot${s.protest && !s.protest.done ? 'y' : '-'} notices${Object.keys(s.notices).length}${s.phase >= 4 ? ` | P4 repB${Math.round(s.repB)} br${s.branch.open ? branchCount(s) : '-'} bf${s.branch.followers} head${branchHead(s) ? Math.round(branchHead(s).discontent) : '-'}${s.branch.split ? 'SPLIT' : ''}` : ''}`);
     timeline.push(memberCount(s));
+    if (firstMember == null && namedMembers(s).length) firstMember = s.day - 1;   // 첫 신도 전환 (이름 있는 주민, endDay 가 날짜를 넘기기 전 날)
     if (process.env.RDBG && seed === 1000 && s.phase === 1) console.log(`      d${s.day} m${memberCount(s)} streak${s.sanctuary.rentStreak} arr${s.sanctuary.arrears} money${s.leader.money}`);
     if (process.env.P2DBG && seed === 1000 && s.phase >= 2) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} step${s.space.step} off${activeOfficers(s).length} money${s.leader.money} rooms ${JSON.stringify(Object.fromEntries(Object.entries(s.rooms).map(([k, v]) => [k, v.type + v.level])))}`);
     if (VERBOSE && seed === 1000 && d % 7 === 6) {
       console.log(`    ${sect} ${d + 1}일 신도 ${memberCount(s)} 따라온 ${s.followers} 평판 ${Math.round(s.rep)} 돈 ${s.leader.money} 공간 ${s.space.step} 방 ${Object.values(s.rooms).map((x) => x.type[0] + x.level).join('')} 간부 ${activeOfficers(s).map((o) => `${o.name.slice(1)}${Math.round(o.discontent)}`).join(',')} 건물주 ${Math.round(s.landlordAnger)} 사연 ${Object.values(s.res).reduce((n, x) => n + (x.story?.done ?? 0), 0)}`);
     }
-    if (r.over) return { over: r.over, days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
-    if (policy === 'ignoreRival' && rivalLog.length >= 15) return { over: 'probe', days: s.day + 1, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
+    if (r.over) return done(r.over, s.day + 1);
+    if (policy === 'ignoreRival' && rivalLog.length >= 15) return done('probe', s.day + 1);
   }
-  return { over: 'timeout', days: maxDays, phase1Day, phase2Day, phase3Day, timeline, rivalLog, s };
+  return done('timeout', maxDays);
 }
 
 if (!args.includes('--no-balance')) {
@@ -348,11 +355,13 @@ if (!args.includes('--no-balance')) {
   console.log(`\n■ 균형 검사 (유형마다 ${GAMES}판, 하루 ≈ ${Math.round(DAY_SECONDS)}초, 1단계 성공 = ${P1_LIMIT}일 안에 목표)`);
   const median = (a) => { const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
   const min = (d) => Math.round((d * DAY_SECONDS) / 60);
+  const firsts = [];   // 첫 신도 전환 날 (모든 판)
   let p1Total = 0; let n = 0; let p2Total = 0; let p2N = 0; let p3Total = 0; let p3N = 0; let p4Total = 0; let p4N = 0;
   const LIMITS = [24, 55, 85, 116];   // 3/26 · 4/26 · 5/26 · 6/26
   for (const sect of (process.env.SECT ? [process.env.SECT] : SECT_ORDER)) {
     const res = [];
-    for (let i = 0; i < GAMES; i++) res.push(playGame(sect, 1000 + i * 17));
+    for (let i = 0; i < GAMES; i++) { res.push(playGame(sect, 1000 + i * 17)); if (process.env.MEM) console.log(`      heap ${Math.round(process.memoryUsage().heapUsed / 1e6)}MB`); if (process.env.SNAP && (i === 0 || i === 2)) { globalThis.gc?.(); (await import("v8")).writeHeapSnapshot(`${process.env.SNAP}/h${i}.heapsnapshot`); } }
+    firsts.push(...res.map((r) => r.firstMember ?? 99));
     // 단계마다 그달 25일 월세날 다음 날까지 끝내면 성공 (3/26 · 4/26 · 5/26 · 6/26)
     const [L1, L2, L3, L4] = LIMITS;
     const ok1 = res.filter((r) => r.phase1Day && r.phase1Day <= L1);
@@ -372,12 +381,16 @@ if (!args.includes('--no-balance')) {
     };
     chk(1, ok1, res, ok1.map((r) => r.phase1Day)); chk(2, ok2, ok1, d2); chk(3, ok3, ok2, d3); chk(4, ok4, ok3, d4);
     if (VERBOSE) console.log("    ", res[0].timeline.join(" "));
+    if (process.env.TL) for (const r of res) console.log("     tl", r.phase1Day, r.phase2Day, r.phase3Day, r.days, r.over, "|", [40, 48, 55, 70, 78, 85, 100, 108, 116].map((d) => r.timeline[d] ?? "-").join(" "));
     if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "), "|", res.map((r, i) => `${1000 + i * 17}:${r.over}`).join(" "));
   }
   const pc = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+  const in3 = firsts.filter((d) => d <= 2).length;
+  console.log(`  첫 신도 전환: 중앙 ${median(firsts) + 1}일째 · 3일째(3/4) 안에 ${pc(in3, firsts.length)}%`);
+  if (in3 < firsts.length) fail(`첫 신도 전환이 3일째 안에 안 일어난 판이 있다 (${firsts.length - in3}판)`);
   console.log(`  전체 성공률 1단계 ${pc(p1Total, n)}% · 2단계 ${pc(p2Total, p2N)}% · 3단계 ${pc(p3Total, p3N)}% · 4단계 ${pc(p4Total, p4N)}%`);
   // 열혈 신자를 많이 쓰는 봇: 더 빨리 모으지만 사고로 더 자주 실패한다
-  {
+  if (!process.env.SECT) {   // 한 유형만 돌릴 땐 건너뛴다
     const N = Math.max(4, Math.round(GAMES / 2));
     const runs = (policy) => SECT_ORDER.flatMap((sect) => Array.from({ length: N }, (_, i) => playGame(sect, 5000 + i * 31, policy)));
     const score = (rs) => {
@@ -386,7 +399,7 @@ if (!args.includes('--no-balance')) {
       const at = (d) => median(rs.map((r) => r.timeline[d] ?? r.timeline[r.timeline.length - 1] ?? 0));
       const early = Math.round(rs.reduce((n, r) => n + r.timeline.slice(5, 41).reduce((a, x) => a + x, 0) / 36, 0) / rs.length);   // 5~40일 평균 신도
       const fails = rs.filter((r) => !['win', 'stop', 'timeout'].includes(r.over)).length;
-      return { win: pc(win, rs.length), d20: at(20), d50: at(50), early, fails: pc(fails, rs.length), acc: (rs.reduce((n, r) => n + (r.s.flags.accidents ?? 0), 0) / rs.length).toFixed(1) };
+      return { win: pc(win, rs.length), d20: at(20), d50: at(50), early, fails: pc(fails, rs.length), acc: (rs.reduce((n, r) => n + r.accidents, 0) / rs.length).toFixed(1) };
     };
     const a = score(runs('normal')); const z = score(runs('zealot'));
     console.log(`\n■ 열혈 신자 비교 (유형마다 ${N}판): 정석 20일째 신도 ${a.d20} · 50일째 ${a.d50} · 5~40일 평균 ${a.early} · 끝까지 성공 ${a.win}% · 중간 실패 ${a.fails}% · 사고 ${a.acc}회/판`);
@@ -397,7 +410,7 @@ if (!args.includes('--no-balance')) {
   // 라이벌 혼자 크는가: 플레이어가 라이벌에 아무 대응도 안 하는 봇
   const alone = ['doomsday', 'meditation', 'shaman'].map((sect) => playGame(sect, 777, 'ignoreRival'));
   console.log(`\n■ 라이벌에 대응 안 하는 봇 (라이벌 규모, 등장부터 하루마다): `);
-  for (const r of alone) console.log(`    ${r.s.rival ? r.s.rival.sect : '-'}: ${r.rivalLog.join(' ')}`);
+  for (const r of alone) console.log(`    ${r.rivalSect ?? '-'}: ${r.rivalLog.join(' ')}`);
   for (const r of alone) if (!r.rivalLog.length || r.rivalLog.at(-1) < r.rivalLog[0] * 1.5) fail(`라이벌이 혼자서는 신도를 못 모은다 (${r.rivalLog[0]} → ${r.rivalLog.at(-1)})`);
   const reckless = SECT_ORDER.map((sect) => playGame(sect, 4242, 'reckless', 45));
   console.log(`\n■ 교단 얘기만 하는 봇: ${reckless.map((r) => `${r.over}@${r.days}일`).join(' · ')}`);

@@ -4,7 +4,7 @@ import { ZEALOT_TEXT } from '../data/zealots.js';
 import Phaser from 'phaser';
 import { CLOCK, MOOD } from '../config.js';
 const LOOK_MIN = 4;   // 도착하고 두리번거리는 시간 (게임분)
-import { RESIDENT_BY_ID } from '../data/residents.js';
+import { RESIDENT_BY_ID, RESIDENTS } from '../data/residents.js';
 import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { CAST } from '../data/cast.js';
 import { peopleOf, speedOf } from '../sim/residents.js';
@@ -23,8 +23,11 @@ import { tintAt } from './tint.js';
 import { Walker } from './walker.js';
 import { app } from '../app.js';
 import { speak } from '../ui/text.js';
+import { play } from '../ui/sound.js';
 import { sightCut } from '../sim/growth.js';
 import { questMarkers, hear } from '../sim/quests.js';
+import { bigDayOf, bigDayActive, bigDayDone } from '../sim/bigdays.js';
+import { walkable } from '../sim/grid.js';
 
 const T = 16;
 const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
@@ -68,10 +71,11 @@ export class TownScene extends Phaser.Scene {
     // 동림상가: 교단 간판(단계별) · 입구 층별 안내판
     this.noticeAreas = [];
     const mall = !bong && this.buildings.find((b) => b.place === 'sanctuary');
+    this.mall = mall;
     if (mall) {
-      drawSanctuarySign(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0, s.minute >= 18 * 60);
+      this.sanctuarySign = drawSanctuarySign(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0, s.minute >= 18 * 60);
       const dir = drawFloorDirectory(this, mall, s.leader.cultName, s.sanctuary.sign ?? 0);
-      this.directory = { x: dir.area.x, y: dir.area.y, text: `동림상가 층별 안내: ${dir.lines.join(' · ')}` };
+      this.directory = { ...dir.area, text: `동림상가 층별 안내: ${dir.lines.join(' · ')}` };
     }
     // 골목 소품·전봇대·역 출구
     const poles = [];
@@ -87,6 +91,33 @@ export class TownScene extends Phaser.Scene {
     if (s.weather?.market && !bong) {
       for (const x of [18, 21, 24, 27, 30]) this.add.image(x * T, 24 * T, 'urbanSheet', 277).setOrigin(0).setDepth(3);
       drawGroundLabel(this, '오늘 장날', 24 * T, 30.5 * T, { color: '#7a3a1a', alpha: 0.85 });
+    }
+    // 큰 날 (25장 D): 행사 자리에 현수막과 좌판
+    this.bigDay = !bong ? bigDayOf(s) : null;
+    if (this.bigDay) {
+      const bd = this.bigDay;
+      const [place, spot] = bd.spot.split(':');
+      const t = here.places[place]?.spots?.[spot];
+      if (t) {
+        this.bigDayTile = t;
+        for (const dx of [-3, 3]) {
+          const x = t[0] + dx; const y = t[1] - 1;
+          if (walkable(here, x, y)) this.add.image(x * T, y * T, 'urbanSheet', 277).setOrigin(0).setDepth(3);
+        }
+        wallNotice(this, t[0] * T + 8, (t[1] - 2) * T, bd.banner, { bg: 0xc23a3a, color: '#fff6e0', w: 72 }).setDepth(4790);
+        // 이름 없는 구경꾼: 행사 시간에만 자리 주변에 서 있다 (화면 장식, 말 걸 수 없음)
+        this.bigDayExtras = [];
+        const ring = [[-2, 1], [2, 1], [-1, 2], [1, 2], [-3, 0], [3, 0], [0, 3], [-2, 3], [2, 3], [4, 2]];
+        ring.forEach(([dx, dy], k) => {
+          const x = t[0] + dx; const y = t[1] + dy;
+          if (!walkable(here, x, y)) return;
+          const key = `p:extra:${k % 6}`;
+          const base = RESIDENTS[(k * 11 + 3) % RESIDENTS.length].look;
+          registerPerson(this, key, { ...base, hairColor: ['#3a3030', '#5a4a3a', '#2a2a2a'][k % 3], top: ['#8a6a5a', '#5a7a9a', '#9a8a5a', '#6a8a6a', '#a07a8a', '#7a7a8a'][k % 6] });
+          const sp = this.add.sprite(x * T, y * T - 4, key, (dx < 0 ? 2 : dx > 0 ? 1 : 3) * 3).setOrigin(0, 0).setDepth(100 + y * T).setVisible(false);
+          this.bigDayExtras.push(sp);
+        });
+      }
     }
 
     // 사람들
@@ -286,6 +317,42 @@ export class TownScene extends Phaser.Scene {
     this.say(id, ZEALOT_TEXT.bubbles[Math.floor(Math.random() * ZEALOT_TEXT.bubbles.length)], time);
   }
 
+  // 간판 바꾸는 장면 (25장 A-1): 카메라가 상가 3층으로 가고, 시트지 글자가 한 자씩 붙는다 → 간판을 새로 그리고 돌아온다
+  signScene(tier, onDone) {
+    const b = this.mall;
+    if (!b) { onDone?.(); return; }
+    const cam = this.cameras.main;
+    const s = app.s;
+    const cx = (b.x + b.w / 2) * T + 8; const cy = (b.y + b.roofH + 1) * T + 8;
+    cam.stopFollow();
+    cam.pan(cx, cy + 24, 900, 'Sine.easeInOut');
+    const prevZoom = cam.zoom;
+    cam.zoomTo(prevZoom * 1.4, 900, 'Sine.easeInOut');
+    const letters = [];
+    const name = tier >= 1 ? `302 ${s.leader.cultName}` : s.leader.cultName;
+    this.time.delayedCall(1000, () => {
+      // 예전 간판을 지우고 글자를 한 자씩
+      for (const p of [].concat(this.sanctuarySign ?? [])) p?.destroy?.();
+      const startX = cx - (name.length * 7) / 2;
+      [...name].forEach((ch, i) => {
+        this.time.delayedCall(i * 170, () => {
+          const t = this.add.text(startX + i * 7, cy - 6, ch, { fontFamily: 'Galmuri7', fontSize: '8px', color: '#ffffff', stroke: '#1d1b26', strokeThickness: 2 }).setDepth(90).setScale(1.6).setAlpha(0);
+          this.tweens.add({ targets: t, scale: 1, alpha: 1, duration: 160, ease: 'Back.easeOut' });
+          letters.push(t);
+          play('click', 0.25);
+        });
+      });
+      this.time.delayedCall(name.length * 170 + 900, () => {
+        for (const t of letters) t.destroy();
+        this.sanctuarySign = drawSanctuarySign(this, b, s.leader.cultName, tier, s.minute >= 18 * 60);
+        this.time.delayedCall(700, () => {
+          cam.zoomTo(prevZoom, 700, 'Sine.easeInOut');
+          cam.pan(this.player.x, this.player.y, 700, 'Sine.easeInOut', false, (c, prog) => { if (prog === 1) { cam.startFollow(this.player, true, 0.2, 0.2); onDone?.(); } });
+        });
+      });
+    });
+  }
+
   // 퀘스트 표시: 사람 머리 위 · 장소 입구 위
   refreshQuestMarks() {
     const marks = questMarkers(app.s);
@@ -429,7 +496,8 @@ export class TownScene extends Phaser.Scene {
     const tx = Math.floor(wx / T); const ty = Math.floor(wy / T);
     const who = this.personAt(wx, wy);
     if (who) { app.showProfile(who, () => this.walker.chase(() => this.tileOf(who), () => app.talkTo(who), () => { const sp = this.sprites[who]; return sp ? [sp.x + 8, sp.y + 14] : null; })); return; }
-    if (this.directory && Math.abs(this.directory.x - tx) <= 0 && Math.abs(this.directory.y - ty) <= 0) { toast(this.directory.text, '', 6000); return; }
+    const D = this.directory;
+    if (D && tx >= D.x0 && tx <= D.x1 && ty >= D.y0 && ty <= D.y1) { toast(D.text, '', 6000); return; }
     const n = this.noticeAreas?.find((a) => Math.abs(a.x - tx) <= 2 && Math.abs(a.y - ty) <= 1);
     if (n) { toast(n.text, '', 6000); return; }
     const b = this.buildingAt(tx, ty);
@@ -462,6 +530,11 @@ export class TownScene extends Phaser.Scene {
     for (const b of this.buildings) {
       if (Math.abs(b.door - tx) <= 1 && b.y + b.h === ty) return b.place ? { kind: 'door', place: b.place } : b.shop ? { kind: 'shop', b } : null;
     }
+    // 큰 날 행사 자리 (행사 시간에, 아직 안 했으면)
+    if (this.bigDayTile && bigDayActive(app.s) && !bigDayDone(app.s)) {
+      const [bx, by] = this.bigDayTile;
+      if (Math.abs(bx - tx) + Math.abs(by - ty) <= 3) return { kind: 'bigday', id: `big:${this.bigDay.id}` };
+    }
     for (const place of ['market', 'park', 'station', 'stream', 'b_station', 'b_food', 'b_park']) {
       const d = app.here().places[place]?.door;
       if (d && Math.abs(d[0] - tx) + Math.abs(d[1] - ty) <= 1) return { kind: 'door', place };
@@ -474,7 +547,7 @@ export class TownScene extends Phaser.Scene {
     if (!s) return;
     const dt = Math.min(delta, 100) / 1000;
     const free = app.modal === 0 && s.mode === 'day';
-    if (free && app.speed > 0) app.advance(dt * CLOCK.minutesPerSecond * app.speed);
+    if (free && app.speed > 0) app.advance(dt * CLOCK.minutesPerSecond * app.speed * app.clockRate());
     this.walker.update(dt, free);
     this.walker.takeFatigue(s);
     s.leaderTile = this.walker.tile;
@@ -488,6 +561,10 @@ export class TownScene extends Phaser.Scene {
     if (key !== this.nearKey) { this.nearKey = key; this.near = near; app.setNearAction(near); }
 
     this.moodTimer += delta;
+    if (this.moodTimer > 500) {
+      const on = !!bigDayActive(s);
+      for (const sp of this.bigDayExtras ?? []) sp.setVisible(on);
+    }
     if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); this.zealotTalk(time); }
     this.gossipTimer += delta;
     if (this.gossip && time > this.gossip.until) { this.gossip.c.destroy(); this.gossip = null; }
