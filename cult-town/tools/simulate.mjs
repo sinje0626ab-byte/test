@@ -381,6 +381,7 @@ if (!args.includes('--no-balance')) {
     };
     chk(1, ok1, res, ok1.map((r) => r.phase1Day)); chk(2, ok2, ok1, d2); chk(3, ok3, ok2, d3); chk(4, ok4, ok3, d4);
     if (VERBOSE) console.log("    ", res[0].timeline.join(" "));
+    if (process.env.TL) for (const r of res) console.log("     tl", r.phase1Day, r.phase2Day, r.phase3Day, r.days, r.over, "|", [40, 48, 55, 70, 78, 85, 100, 108, 116].map((d) => r.timeline[d] ?? "-").join(" "));
     if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "), "|", res.map((r, i) => `${1000 + i * 17}:${r.over}`).join(" "));
   }
   const pc = (a, b) => (b ? Math.round((a / b) * 100) : 0);
