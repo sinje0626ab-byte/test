@@ -17,7 +17,7 @@ export const RESIDENTS = [
     weekday: ['8:50 park:walk', '11:00 market:entrance', '12:40 station:plaza', '15:00 villa_tong', '16:40 market:walk', '18:50 park:plaza', '20:40 villa_tong'],
     weekend: ['8:50 park:walk', '10:30 church', '13:00 market:walk', '15:10 park:plaza', '17:30 villa_tong'],
     needs: { lonely: 30, money: 25, health: 45, future: 30, meaning: 20 },
-    look: { base: 1, hair: 'perm', hairColor: '#a7a2a0', skin: 1, top: '#7b5ea7', bottom: '#4a4a5a' },
+    look: { body: 2, eyes: 1, hair: '24_05', outfit: ['23_01', '11_01'], acc: null },
     greet: ['"어, 처음 보는 얼굴인데. 이 동네 새로 왔어요?"', '"오늘 음식물 쓰레기 버리는 날인 거 알죠?"'],
   },
   {
@@ -27,7 +27,7 @@ export const RESIDENTS = [
     weekday: ['7:30 market:banchan', '13:00 market_house', '14:00 market:banchan', '20:30 market_house'],
     weekend: ['7:30 market:banchan', '12:30 temple:yard', '15:10 market:banchan', '20:00 market_house'],
     needs: { lonely: 25, money: 55, health: 40, future: 35, meaning: 25 },
-    look: { base: 1, hair: 'perm', hairColor: '#3a2a22', skin: 2, top: '#d9534f', bottom: '#3b3b4a' },
+    look: { body: 7, eyes: 1, hair: '23_04', outfit: ['18_03', '14_02'], acc: null },
     greet: ['"멸치볶음 금방 했어요. 한 번 집어 봐요."', '"뭐 찾아요? 깻잎이 오늘 좋은데."'],
   },
   {
@@ -37,7 +37,7 @@ export const RESIDENTS = [
     weekday: ['9:00 pharmacy:counter', '12:30 restaurant:front', '13:40 pharmacy:counter', '20:00 villa_b'],
     weekend: ['9:30 pharmacy:counter', '13:00 villa_b', '17:00 stream:path', '19:40 villa_b'],
     needs: { lonely: 20, money: 35, health: 25, future: 40, meaning: 35 },
-    look: { base: 4, hair: 'short', hairColor: '#2b2b2b', skin: 0, top: '#f0f0f0', bottom: '#2f3b52' },
+    look: { body: 2, eyes: 1, hair: '18_07', outfit: ['08_01', '08_01'], acc: '15_04' },
     greet: ['"어디 불편한 데 있으세요?"', '"감기약은 졸릴 수 있어요. 운전하시면 이거 말고 저거."'],
   },
   {
@@ -47,7 +47,7 @@ export const RESIDENTS = [
     weekday: ['8:30 academy', '12:00 cvs:table', '13:30 academy', '17:50 cvs:table', '20:40 gosiwon'],
     weekend: ['9:30 gosiwon', '12:30 cvs:table', '14:00 academy', '19:00 gosiwon'],
     needs: { lonely: 60, money: 65, health: 35, future: 85, meaning: 55 },
-    look: { base: 0, hair: 'buzz', hairColor: '#1d1a1a', skin: 0, top: '#5b6b7a', bottom: '#3a3a44' },
+    look: { body: 3, eyes: 1, hair: '12_07', outfit: ['21_02', '01_02'], acc: '15_01' },
     greet: ['"…네? 아, 길 막았어요? 죄송해요."', '"저 지금 행정법 외우는 중이라…"'],
   },
   {
@@ -57,7 +57,7 @@ export const RESIDENTS = [
     weekday: ['8:30 station:exit3', '13:50 stream:path', '15:50 oneroom_a', '18:00 cvs:front', '18:40 cvs'],
     weekend: ['11:00 cvs:table', '12:30 market:walk', '14:20 park:bench1', '17:00 oneroom_a'],
     needs: { lonely: 55, money: 60, health: 25, future: 55, meaning: 40 },
-    look: { base: 3, hair: 'long', hairColor: '#4a2f22', skin: 0, top: '#f2a7c3', bottom: '#2c3e66' },
+    look: { body: 2, eyes: 1, hair: '15_03', outfit: ['02_04', '13_02'], acc: null },
     greet: ['"어서 오세요~ 아 손님 아니구나. 안녕하세요!"', '"이거 2+1인데 하나 더 가져가실래요?"'],
   },
   {
@@ -67,7 +67,7 @@ export const RESIDENTS = [
     weekday: ['8:15 office', '12:10 restaurant:front', '14:10 office', '15:40 office:smoke', '17:40 cvs:front', '20:40 oneroom_b'],
     weekend: ['12:40 cvs:table', '15:30 oneroom_b', '18:00 stream:path', '20:40 oneroom_b'],
     needs: { lonely: 50, money: 45, health: 45, future: 55, meaning: 70 },
-    look: { base: 2, hair: 'short', hairColor: '#2e241f', skin: 1, top: '#d7dde5', bottom: '#2a2f3a' },
+    look: { body: 3, eyes: 1, hair: '22_04', outfit: ['05_01', '12_01'], acc: null },
     greet: ['"아, 네. 무슨 일이세요? 제가 지금 점심시간이라."', '"오늘 금요일 맞죠? 아니구나. 화요일이구나."'],
   },
   {
@@ -77,7 +77,7 @@ export const RESIDENTS = [
     weekday: ['8:20 office', '12:10 cvs:table', '14:10 office', '18:20 stream:path', '20:40 oneroom_c'],
     weekend: ['11:00 oneroom_c', '14:00 market:walk', '15:30 church', '17:20 oneroom_c'],
     needs: { lonely: 70, money: 40, health: 30, future: 50, meaning: 60 },
-    look: { base: 3, hair: 'bob', hairColor: '#1f1a17', skin: 0, top: '#6d8fb3', bottom: '#2b2b2b' },
+    look: { body: 2, eyes: 1, hair: '10_07', outfit: ['05_03', '12_03'], acc: null },
     greet: ['"네? 저요? 혹시 설문조사 같은 거면 괜찮아요."', '"죄송한데 제가 사람 이름을 잘 못 외워서요."'],
   },
   {
@@ -87,7 +87,7 @@ export const RESIDENTS = [
     weekday: ['8:30 academy', '12:20 cvs:table', '13:50 academy', '18:20 pcbang:smoke', '20:40 villa_b'],
     weekend: ['11:00 pcbang', '15:00 cvs:table', '16:30 academy', '20:00 villa_b'],
     needs: { lonely: 45, money: 30, health: 20, future: 80, meaning: 50 },
-    look: { base: 0, hair: 'cap', hairColor: '#1a1a1a', skin: 0, top: '#2b2b2b', bottom: '#3c4a5a' },
+    look: { body: 3, eyes: 1, hair: '01_07', outfit: ['03_01', '01_06'], acc: '04_06' },
     greet: ['"…왜요."', '"저 학원 늦었는데요."'],
   },
   {
@@ -97,7 +97,7 @@ export const RESIDENTS = [
     weekday: ['8:25 station:exit4', '16:30 academy', '18:40 pharmacy:counter', '20:40 villa_b'],
     weekend: ['10:00 villa_b', '13:00 cvs:table', '15:00 park:bench2', '17:20 villa_b'],
     needs: { lonely: 35, money: 15, health: 15, future: 60, meaning: 45 },
-    look: { base: 3, hair: 'pony', hairColor: '#2a1f1a', skin: 0, top: '#3a5a8a', bottom: '#3a5a8a' },
+    look: { body: 2, eyes: 1, hair: '09_04', outfit: ['28_01', '28_02'], acc: null },
     greet: ['"안녕하세요! 혹시 저희 아빠 아세요? 약국 하시는데."', '"저 학원 가는 길이라서요!"'],
   },
   {
@@ -107,7 +107,7 @@ export const RESIDENTS = [
     weekday: ['8:30 park:bench1', '11:30 restaurant:front', '13:40 park:bench1', '17:00 villa_tong'],
     weekend: ['9:00 park:bench1', '12:00 market:walk', '14:10 park:bench1', '17:00 villa_tong'],
     needs: { lonely: 55, money: 30, health: 60, future: 25, meaning: 45 },
-    look: { base: 4, hair: 'bald', hairColor: '#cfcfcf', skin: 1, top: '#8a6a4a', bottom: '#4a4a4a' },
+    look: { body: 1, eyes: 1, hair: null, outfit: ['18_02', '22_03'], acc: '08_03' },
     greet: ['"장기 둘 줄 알아? 모르면 저리 가."', '"젊은 사람이 대낮에 뭐 해."'],
   },
   {
@@ -117,7 +117,7 @@ export const RESIDENTS = [
     weekday: ['9:30 restaurant', '10:30 restaurant:front', '15:00 market:fish', '16:20 restaurant:front', '20:30 oneroom_d'],
     weekend: ['9:30 restaurant', '11:00 restaurant:front', '19:30 oneroom_d'],
     needs: { lonely: 35, money: 70, health: 50, future: 45, meaning: 30 },
-    look: { base: 1, hair: 'bob', hairColor: '#3a1f1a', skin: 2, top: '#e8e0d0', bottom: '#5a3a3a' },
+    look: { body: 7, eyes: 1, hair: '10_04', outfit: ['18_01', '14_03'], acc: null },
     greet: ['"한 그릇 하고 가. 오늘 머릿고기 좋아."', '"자리 없어, 저 끝에 합석해."'],
   },
   {
@@ -127,7 +127,7 @@ export const RESIDENTS = [
     weekday: ['10:30 restaurant', '15:00 pcbang:smoke', '16:30 restaurant', '20:30 oneroom_d'],
     weekend: ['11:00 restaurant', '15:00 pcbang', '18:10 restaurant:front', '20:40 oneroom_d'],
     needs: { lonely: 40, money: 55, health: 20, future: 60, meaning: 65 },
-    look: { base: 2, hair: 'short', hairColor: '#7a4a2a', skin: 1, top: '#f0c020', bottom: '#2a2a3a' },
+    look: { body: 3, eyes: 1, hair: '03_02', outfit: ['02_01', '07_01'], acc: null },
     greet: ['"어서 오세… 아 밥 먹으러 온 거 아니에요?"', '"제 채널 구독 좀 해 주실래요? 먹방이에요."'],
   },
   {
@@ -137,7 +137,7 @@ export const RESIDENTS = [
     weekday: ['8:20 station:exit4', '12:00 cvs:front', '14:10 fortune:front', '15:50 market:entrance', '17:50 cvs:table', '20:40 oneroom_e'],
     weekend: ['10:00 oneroom_e', '13:00 restaurant:front', '15:40 stream:bridge', '17:50 oneroom_e'],
     needs: { lonely: 45, money: 75, health: 65, future: 50, meaning: 40 },
-    look: { base: 5, hair: 'cap', hairColor: '#1a1a1a', skin: 2, top: '#3a6a3a', bottom: '#2a2a2a' },
+    look: { addon: 'Postman_1' },
     greet: ['"아 잠깐만요, 이거 302호 거 맞죠?"', '"짧게요, 짧게. 차 대 놨어요."'],
   },
   {
@@ -147,7 +147,7 @@ export const RESIDENTS = [
     weekday: ['10:30 cvs:table', '13:20 oneroom_f', '15:40 park:bench2', '17:20 pcbang', '20:10 oneroom_f'],
     weekend: ['11:00 oneroom_f', '14:00 stream:path', '16:40 park:bench2', '19:00 oneroom_f'],
     needs: { lonely: 75, money: 60, health: 30, future: 70, meaning: 65 },
-    look: { base: 3, hair: 'long', hairColor: '#6a3a6a', skin: 0, top: '#5a8a6a', bottom: '#3a3a3a' },
+    look: { body: 2, eyes: 1, hair: '04_03', outfit: ['21_03', '13_03'], acc: '11_04' },
     greet: ['"아… 저 지금 사람 관찰하는 중이었어요. 콘티 짜느라."', '"혹시 얼굴 좀 그려도 돼요? 엑스트라로."'],
   },
   {
@@ -157,7 +157,7 @@ export const RESIDENTS = [
     weekday: ['11:00 pcbang', '14:00 pcbang:smoke', '14:40 pcbang', '17:20 restaurant:front', '18:20 pcbang'],
     weekend: ['12:00 pcbang', '17:00 pcbang:smoke', '17:40 pcbang'],
     needs: { lonely: 50, money: 70, health: 55, future: 55, meaning: 40 },
-    look: { base: 4, hair: 'short', hairColor: '#3a3a3a', skin: 1, top: '#2a2a3a', bottom: '#4a4a4a' },
+    look: { body: 7, eyes: 1, hair: '19_06', outfit: ['03_02', '01_09'], acc: '13_02' },
     greet: ['"자리 없어. 30분 기다려."', '"뭐 팔러 왔으면 저쪽."'],
   },
   {
@@ -167,7 +167,7 @@ export const RESIDENTS = [
     weekday: ['7:40 market:fruit', '12:30 market_house', '13:30 market:fruit', '19:30 market_house'],
     weekend: ['8:00 market:fruit', '12:00 fortune:front', '13:40 market:fruit', '19:00 market_house'],
     needs: { lonely: 50, money: 80, health: 50, future: 60, meaning: 30 },
-    look: { base: 1, hair: 'perm', hairColor: '#5a5a5a', skin: 2, top: '#4a7a4a', bottom: '#5a4a3a' },
+    look: { body: 7, eyes: 1, hair: '23_06', outfit: ['23_04', '14_04'], acc: null },
     greet: ['"사과 하나 먹어 봐. 맛보기는 공짜야."', '"요새 장사가 영 안 돼."'],
   },
   {
@@ -177,7 +177,7 @@ export const RESIDENTS = [
     weekday: ['7:40 market:fish', '13:00 market_house', '15:00 market:fish', '20:00 market_house'],
     weekend: ['7:40 market:fish', '12:00 temple:yard', '14:30 market:fish', '19:30 market_house'],
     needs: { lonely: 30, money: 60, health: 55, future: 35, meaning: 30 },
-    look: { base: 5, hair: 'buzz', hairColor: '#2a2a2a', skin: 2, top: '#2a5a8a', bottom: '#3a3a3a' },
+    look: { body: 1, eyes: 1, hair: '20_06', outfit: ['16_02', '16_03'], acc: '12_02' },
     greet: ['"고등어 세 손에 만 원! 오늘만!"', '"뭐여, 생선 안 사?"'],
   },
   {
@@ -187,7 +187,7 @@ export const RESIDENTS = [
     weekday: ['12:30 cvs:table', '14:00 academy', '18:00 restaurant:front', '19:00 academy'],
     weekend: ['10:00 church', '13:00 restaurant:front', '14:50 oneroom_c'],
     needs: { lonely: 45, money: 35, health: 40, future: 45, meaning: 40 },
-    look: { base: 3, hair: 'bob', hairColor: '#2a1a1a', skin: 0, top: '#e0e0e0', bottom: '#4a3a5a' },
+    look: { body: 2, eyes: 1, hair: '09_07', outfit: ['20_01', '12_02'], acc: '15_02' },
     greet: ['"수업 5분 전이라 짧게만요."', '"혹시 학부모세요?"'],
   },
   {
@@ -197,7 +197,7 @@ export const RESIDENTS = [
     weekday: ['10:00 academy', '12:30 restaurant:front', '13:30 academy', '20:30 oneroom_f'],
     weekend: ['11:00 academy', '15:00 market:walk', '16:00 academy', '19:00 oneroom_f'],
     needs: { lonely: 30, money: 75, health: 40, future: 60, meaning: 45 },
-    look: { base: 2, hair: 'short', hairColor: '#1a1a1a', skin: 0, top: '#3a3a5a', bottom: '#2a2a2a' },
+    look: { body: 3, eyes: 1, hair: '26_07', outfit: ['06_01', '06_02'], acc: null },
     greet: ['"상담 오셨어요? 아니면 전단지?"', '"저희 원생 학부모님이시면 원장실로."'],
   },
   {
@@ -207,7 +207,7 @@ export const RESIDENTS = [
     weekday: ['8:50 market:entrance', '10:20 cvs:front', '12:40 park:bench2', '15:20 station:plaza', '17:50 oneroom_e'],
     weekend: ['8:50 market:entrance', '11:00 park:bench2', '15:00 oneroom_e'],
     needs: { lonely: 85, money: 80, health: 70, future: 40, meaning: 50 },
-    look: { base: 1, hair: 'perm', hairColor: '#e0e0e0', skin: 2, top: '#8a5a7a', bottom: '#5a5a5a' },
+    look: { body: 1, eyes: 1, hair: '23_05', outfit: ['10_03', '11_04'], acc: null },
     greet: ['"아이고, 그 박스 버리는 거면 나 줘."', '"밥은 먹었어?"'],
   },
   {
@@ -217,7 +217,7 @@ export const RESIDENTS = [
     weekday: ['13:00 restaurant:front', '14:40 park:plaza', '16:40 cvs:front', '18:10 station:exit3', '20:20 oneroom_d'],
     weekend: ['12:00 oneroom_d', '15:00 park:plaza', '18:00 oneroom_d'],
     needs: { lonely: 50, money: 65, health: 60, future: 45, meaning: 35 },
-    look: { base: 5, hair: 'short', hairColor: '#2a2a2a', skin: 1, top: '#6a8aa0', bottom: '#2a2a3a' },
+    look: { body: 7, eyes: 1, hair: '01_06', outfit: ['10_01', '01_08'], acc: '13_01' },
     greet: ['"어디 가요? 아 지금은 영업 안 해요."', '"어제 손님이 차에 지갑을 놓고 내렸잖아."'],
   },
   {
@@ -227,7 +227,7 @@ export const RESIDENTS = [
     weekday: ['8:30 office', '12:40 pharmacy:counter', '14:10 office', '18:30 market:walk', '20:10 oneroom_a'],
     weekend: ['10:30 oneroom_a', '13:00 park:bench2', '15:20 oneroom_a'],
     needs: { lonely: 50, money: 50, health: 35, future: 45, meaning: 40 },
-    look: { base: 3, hair: 'pony', hairColor: '#3a2a1a', skin: 0, top: '#9ad0c0', bottom: '#9ad0c0' },
+    look: { body: 2, eyes: 1, hair: '11_07', outfit: ['13_01', '13_01'], acc: null },
     greet: ['"접수는 1층에서 하시면 돼요. 아 환자분 아니구나."', '"점심시간이라 10분만 앉아 있을게요."'],
   },
   {
@@ -237,7 +237,7 @@ export const RESIDENTS = [
     weekday: ['9:20 cvs:front', '11:50 gosiwon', '16:00 cvs:table', '17:00 pcbang', '20:00 gosiwon'],
     weekend: ['14:00 gosiwon', '16:20 stream:path', '18:10 pcbang'],
     needs: { lonely: 55, money: 70, health: 55, future: 65, meaning: 50 },
-    look: { base: 0, hair: 'short', hairColor: '#c08040', skin: 0, top: '#4a4a8a', bottom: '#2a2a2a' },
+    look: { body: 2, eyes: 1, hair: '05_02', outfit: ['21_04', '01_04'], acc: null },
     greet: ['"…아, 아침이에요? 저녁이에요?"', '"제가 지금 퇴근길이라서요… 졸려서요."'],
   },
   {
@@ -247,7 +247,7 @@ export const RESIDENTS = [
     weekday: ['7:50 church:yard', '9:30 market:walk', '11:10 villa_tong', '15:00 park:plaza', '17:00 church:yard', '18:00 villa_tong'],
     weekend: ['8:00 church', '13:00 church:yard', '15:00 villa_tong'],
     needs: { lonely: 30, money: 35, health: 50, future: 25, meaning: 15 },
-    look: { base: 1, hair: 'perm', hairColor: '#3a3030', skin: 1, top: '#c0a0c0', bottom: '#3a3a4a' },
+    look: { body: 3, eyes: 1, hair: '23_07', outfit: ['23_02', '11_02'], acc: null },
     greet: ['"어머, 처음 뵙네. 교회는 어디 다녀요?"', '"이 동네 오래 살았어요?"'],
   },
   {
@@ -257,7 +257,7 @@ export const RESIDENTS = [
     weekday: ['11:30 cvs:table', '14:10 oneroom_b', '16:40 pcbang', '18:20 restaurant:front', '20:40 oneroom_b'],
     weekend: ['13:00 pcbang', '17:50 cvs:table', '20:40 oneroom_b'],
     needs: { lonely: 65, money: 50, health: 50, future: 55, meaning: 70 },
-    look: { base: 2, hair: 'long', hairColor: '#2a2a2a', skin: 0, top: '#4a4a4a', bottom: '#3a4a5a' },
+    look: { body: 2, eyes: 1, hair: '16_07', outfit: ['03_03', '01_05'], acc: '15_03' },
     greet: ['"아, 네. 근데 저 지금 빌드 돌리는 중이라."', '"혹시 와이파이 비번 아세요? 아니구나."'],
   },
   {
@@ -267,7 +267,7 @@ export const RESIDENTS = [
     weekday: ['9:00 office', '11:00 market:walk', '12:30 restaurant:front', '14:00 station:plaza', '16:00 office', '19:00 villa_b'],
     weekend: ['10:00 temple:yard', '13:00 villa_b', '16:00 park:plaza', '18:40 villa_b'],
     needs: { lonely: 35, money: 65, health: 40, future: 50, meaning: 35 },
-    look: { base: 3, hair: 'bob', hairColor: '#5a3a2a', skin: 1, top: '#c03a5a', bottom: '#2a2a2a' },
+    look: { body: 3, eyes: 1, hair: '10_03', outfit: ['05_04', '07_03'], acc: null },
     greet: ['"어머, 반가워요. 혹시 실비 하나 들어 놓으셨어요?"', '"명함 하나 드릴게요. 앞뒤 다 읽어 보세요."'],
   },
   {
@@ -277,7 +277,7 @@ export const RESIDENTS = [
     weekday: ['9:30 office', '12:00 cvs:front', '14:00 office', '17:00 stream:path', '18:50 office', '20:30 oneroom_c'],
     weekend: ['10:00 stream:bridge', '12:00 office', '17:00 oneroom_c'],
     needs: { lonely: 40, money: 45, health: 20, future: 50, meaning: 55 },
-    look: { base: 5, hair: 'buzz', hairColor: '#1a1a1a', skin: 1, top: '#e04040', bottom: '#2a2a2a' },
+    look: { body: 7, eyes: 1, hair: '20_07', outfit: ['19_01', '25_01'], acc: null },
     greet: ['"회원님! 아 회원님 아니시구나. 운동하세요?"', '"오늘 하체 하는 날이라 계단으로 왔어요."'],
   },
   {
@@ -287,7 +287,7 @@ export const RESIDENTS = [
     weekday: ['9:00 market:walk', '10:50 villa_b', '14:30 park:plaza', '16:30 market:walk', '18:20 villa_b'],
     weekend: ['10:00 temple:yard', '12:00 villa_b', '15:00 park:plaza', '17:50 villa_b'],
     needs: { lonely: 65, money: 50, health: 40, future: 55, meaning: 45 },
-    look: { base: 3, hair: 'pony', hairColor: '#4a3020', skin: 1, top: '#f0d060', bottom: '#5a5a6a' },
+    look: { body: 2, eyes: 1, hair: '09_03', outfit: ['21_01', '13_04'], acc: null },
     greet: ['"아, 혹시 이 근처 소아과 아세요?"', '"우리 애가 지금 저기 그네에…"'],
   },
   {
@@ -297,7 +297,7 @@ export const RESIDENTS = [
     weekday: ['9:00 station:plaza', '10:20 sanctuary:door', '12:10 restaurant:front', '14:00 sanctuary:door', '19:00 oneroom_a'],
     weekend: ['9:00 sanctuary:door', '14:00 park:bench1', '17:30 oneroom_a'],
     needs: { lonely: 55, money: 60, health: 55, future: 40, meaning: 45 },
-    look: { base: 4, hair: 'cap', hairColor: '#5a5a5a', skin: 1, top: '#4a5a4a', bottom: '#3a3a3a' },
+    look: { body: 3, eyes: 1, hair: '22_05', outfit: ['20_03', '20_02'], acc: '06_01' },
     greet: ['"302호요? 계단 조심해요. 3층 형광등 나갔어."', '"택배는 경비실에 두면 돼요."'],
   },
   {
@@ -307,7 +307,7 @@ export const RESIDENTS = [
     weekday: ['9:15 station:exit3', '15:50 cvs:table', '17:50 stream:path', '20:40 oneroom_f'],
     weekend: ['11:00 cvs:table', '13:00 market:walk', '14:30 church', '16:30 oneroom_f'],
     needs: { lonely: 75, money: 50, health: 25, future: 55, meaning: 50 },
-    look: { base: 3, hair: 'long', hairColor: '#1a1a1a', skin: 0, top: '#a0c0e0', bottom: '#e0e0e0' },
+    look: { body: 2, eyes: 1, hair: '15_07', outfit: ['02_02', '01_07'], acc: null },
     greet: ['"저 이 동네 처음이라… 혹시 신림역 4번 출구가 어디예요?"', '"서울 사람들은 다 바쁘네요."'],
   },
 ];

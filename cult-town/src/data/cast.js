@@ -2,13 +2,13 @@
 // 2단계에서 첫 간부가 된다 (officer: 맡을 자리).
 //   talk: 밤에 말 걸면 순서대로 하나씩 (다 쓰면 처음부터)
 //   zealot / fraud: 교주가 광신 쪽 / 사기 쪽으로 기울었을 때 하는 말
-//   look: 주민과 같은 합성 규칙 (game/people.js)
+//   look: 주민과 같은 생성기 부위 조합 (data/looks.js 설명)
 
 export const CAST = [
   {
     id: 'mom', name: '박영숙', role: '엄마', ageFrom: 'leader+27', officer: '살림 담당',
     bio: '교주의 어머니. 자식이 뭘 한다고 하면 일단 가 보고 본다. 보리차를 큰 페트병에 담아 온다.',
-    look: { base: 1, hair: 'perm', hairColor: '#8a8580', skin: 1, top: '#c06080', bottom: '#4a4a5a' },
+    look: { body: 2, eyes: 1, hair: '24_04', outfit: ['23_02', '11_02'], acc: null },
     talk: [
       '"밥은 먹었어? 보온병에 미역국 있다. 아, 신도분들도 한 그릇씩 드세요. 많아요."',
       '"의자가 접는 거라 엉덩이가 배기더라. 방석 몇 개 갖다 놓을게."',
@@ -25,7 +25,7 @@ export const CAST = [
   {
     id: 'friend', name: '최태식', role: '오랜 친구', ageFrom: 'leader', officer: '총무',
     bio: '중학교 짝꿍. 치킨집을 두 번 접고 지금은 대리운전을 한다. "너 진짜 하는 거냐?" 하면서도 매번 온다.',
-    look: { base: 0, hair: 'short', hairColor: '#2a2a2a', skin: 1, top: '#4a6a4a', bottom: '#2a2a3a' },
+    look: { body: 3, eyes: 1, hair: '19_07', outfit: ['18_01', '01_05'], acc: null },
     talk: [
       '"야, 솔직히 처음엔 장난인 줄 알았거든. 근데 사람이 진짜 오네?"',
       '"현수막 글씨 내가 썼다. 궁서체. 괜찮냐? 괜찮지?"',
@@ -41,7 +41,7 @@ export const CAST = [
   {
     id: 'stranger', name: '남민호', role: '우연히 들어온 사람', ageFrom: '29', officer: '안내',
     bio: '비 오는 날 3층에서 화장실을 찾다가 문을 잘못 열었다. 그날 보리차를 얻어 마시고 그다음 주에도 왔다.',
-    look: { base: 0, hair: 'long', hairColor: '#3a2a1a', skin: 0, top: '#8a6aa0', bottom: '#3a3a4a' },
+    look: { body: 2, eyes: 1, hair: '07_03', outfit: ['03_02', '01_01'], acc: null },
     talk: [
       '"저 원래 화장실 찾다가 들어온 거 아시죠. 근데 여기 화장실 진짜 없더라고요."',
       '"편의점에서 우산 몇 개 사 놨어요. 비 오는 날 오시는 분들 드리려고요."',

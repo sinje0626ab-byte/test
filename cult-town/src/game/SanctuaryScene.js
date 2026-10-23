@@ -3,31 +3,35 @@
 import Phaser from 'phaser';
 import { SANCTUARY, CLOCK, ROOMS } from '../config.js';
 import { SHOP_ITEMS } from '../data/shop.js';
-import { CAST } from '../data/cast.js';
-import { RESIDENTS } from '../data/residents.js';
 import { ROOM_NAMES } from '../data/rooms.js';
 import { activeCast, namedMembers } from '../sim/faith.js';
 import { activeOfficers } from '../sim/officers.js';
 import { SPACE_MAP_BY_ID, mapsForStep } from '../map/interiors.js';
-import { registerPerson, LEADER_LOOK } from './people.js';
+import { registerPerson, idleFrame, sitFrame, HEAD_LIFT, PERSON_ORIGIN_Y } from './people.js';
 import { drawShape, board } from './signs.js';
 import { Walker } from './walker.js';
-import { lookOf } from './TownScene.js';
 import { app } from '../app.js';
 import { fill } from '../ui/text.js';
 import { speechBubble, emotionBubble } from './overlays.js';
 import { play } from '../ui/sound.js';
 
 const T = 16;
-const FURN = {   // 방 종류마다 놓는 가구 (실내 타일 번호, 방 왼쪽 위 기준 [dx, dy, 타일])
-  worship: [[2, 1, 113], [6, 1, 392]],
-  counsel: [[1, 1, 55], [2, 1, 97], [3, 1, 55], [6, 1, 16], [1, 6, 166], [2, 6, 167], [3, 6, 169]],
-  study: [[1, 1, 344], [2, 1, 345], [1, 4, 0], [2, 4, 1], [3, 4, 2], [1, 7, 0], [2, 7, 1], [3, 7, 2], [6, 4, 0], [7, 4, 1], [8, 4, 2]],
-  kitchen: [[1, 1, 324], [2, 1, 329], [3, 1, 331], [4, 1, 332], [5, 1, 330], [2, 5, 3], [3, 5, 4], [4, 5, 5], [2, 7, 3], [3, 7, 4], [4, 7, 5]],
-  dorm: [[1, 1, 8], [2, 1, 9], [1, 3, 8], [2, 3, 9], [1, 5, 62], [2, 5, 63], [1, 7, 62], [2, 7, 63], [5, 1, 8], [6, 1, 9], [5, 3, 62], [6, 3, 63]],
-  broadcast: [[1, 1, 392], [2, 1, 419], [4, 1, 112], [5, 1, 113], [3, 3, 371], [7, 1, 392]],
-  office: [[1, 1, 112], [2, 1, 113], [4, 1, 324], [5, 1, 325], [6, 1, 129], [1, 4, 55]],
+// 방 종류마다 놓는 가구 (LimeZu 실내 아틀라스 'lzIn' 프레임 이름, 방 왼쪽 위 기준 [dx, dy(물건 아래 칸), 이름])
+const FURN = {
+  worship: [[2, 2, 'pulpit'], [6, 3, 'speaker']],
+  counsel: [[1, 2, 'counsel'], [4, 2, 'table'], [7, 2, 'counsel'], [9, 3, 'plant'], [1, 7, 'counsel0'], [3, 7, 'counsel0']],
+  study: [[1, 3, 'shelf'], [4, 3, 'shelf'], [8, 2, 'board'], [2, 6, 'studydesk'], [5, 6, 'studydesk'], [8, 6, 'studydesk'], [2, 9, 'studydesk'], [5, 9, 'studydesk']],
+  kitchen: [[1, 3, 'fridge'], [2, 2, 'stove'], [3, 1, 'sink'], [6, 2, 'kettle'], [2, 5, 'dtable'], [3, 5, 'dtable'], [2, 4, 'dchair'], [3, 4, 'dchair'], [2, 8, 'dtable'], [3, 8, 'dtable']],
+  dorm: [[1, 2, 'futon'], [4, 2, 'futon2'], [7, 2, 'futon'], [1, 6, 'futon2'], [4, 6, 'futon'], [7, 6, 'futon2']],
+  broadcast: [[1, 2, 'camera'], [4, 3, 'softbox'], [6, 2, 'monitor'], [3, 5, 'mic'], [8, 2, 'speaker']],
+  office: [[1, 2, 'deskpc'], [2, 2, 'desk'], [4, 3, 'counter'], [7, 2, 'locker'], [1, 5, 'counsel0']],
 };
+// 꾸밈 단계 (화면만): 소품 수 + 간판 단계 + 공간 단계×2 → 0 초라한 상가 방(시멘트·회색 벽) · 1 장판 · 2 마루 · 3 꾸민 예배실
+export function decoLevel(s) {
+  const owned = Object.values(s.sanctuary.props ?? {}).filter(Boolean).length;
+  const score = owned + (s.sanctuary.sign ?? 0) + (s.space?.step ?? 0) * 2;
+  return score >= 9 ? 3 : score >= 6 ? 2 : score >= 3 ? 1 : 0;
+}
 const SEAT_ROWS = { worship: 4, counsel: 2, study: 6, kitchen: 6, dorm: 4, broadcast: 3, office: 2 };
 
 export class SanctuaryScene extends Phaser.Scene {
@@ -41,9 +45,10 @@ export class SanctuaryScene extends Phaser.Scene {
     if (!floors[app.floor]) app.floor = 3;
     this.def = SPACE_MAP_BY_ID[floors[app.floor]];
     const map = this.make.tilemap({ key: `sanct-${this.def.id}` });
-    const ts = map.addTilesetImage('indoor', 'indoor', 16, 16, 0, 1);
-    map.createLayer('ground', ts, 0, 0).setDepth(0);
-    map.createLayer('walls', ts, 0, 0).setDepth(1).setTint(0xc8b8a0);
+    const ts = map.addTilesetImage('indoor', 'lzIn', 16, 16, 0, 0);
+    this.groundLayer = map.createLayer('ground', ts, 0, 0).setDepth(0);
+    this.wallLayer = map.createLayer('walls', ts, 0, 0).setDepth(1);
+    this.deco = 0;    // 지도는 0단계 타일로 뽑혀 있다. refreshFurniture 가 꾸밈 단계에 맞춰 바꿔 끼운다
     this.grid = app.gridFor(this.def.id);
     const w = map.widthInPixels; const h = map.heightInPixels;
     this.wPx = w; this.hPx = h;
@@ -75,10 +80,10 @@ export class SanctuaryScene extends Phaser.Scene {
     this.peopleLayer = this.add.container(0, 0).setDepth(50);
     this.wanderers = [];
 
-    registerPerson(this, 'p:leader', LEADER_LOOK);
+    registerPerson(this, 'p:leader');
     const start = this.entry === 'door' && this.def.doors[0] ? [this.def.doors[0][0], this.def.doors[0][1] - 1]
       : this.def.stairs[0] ? [this.def.stairs[0].x, this.def.stairs[0].y - 1] : [2, 10];
-    this.player = this.add.sprite(start[0] * T, start[1] * T - 4, 'p:leader', 9).setOrigin(0).setDepth(60);
+    this.player = this.add.sprite(start[0] * T, start[1] * T - 4, 'p:leader', idleFrame('up')).setOrigin(0, PERSON_ORIGIN_Y).setDepth(60);
     this.walker = new Walker(this, this.player, this.grid, 'p:leader', () => app.dpad);
     this.walker.dir = 'up';
 
@@ -113,10 +118,25 @@ export class SanctuaryScene extends Phaser.Scene {
   }
 
   roomRect(slot) { return this.def.rooms.find((r) => r.slot === slot); }
+  // 실내 아틀라스 물건 하나: (tx, ty) 칸 아래에 바닥을 맞춘다 (키 큰 물건은 위 칸으로 올라간다)
+  put(name, tx, ty) { return this.add.image(tx * T, (ty + 1) * T, 'lzIn', name).setOrigin(0, 1); }
+
+  // 꾸밈 단계에 맞춰 바닥·벽 타일 바꾸기
+  applyDeco() {
+    const next = decoLevel(app.s);
+    const tiles = this.cache.json.get('lzInMeta')?.tiles;
+    if (!tiles || next === this.deco) return;
+    const swap = (layer, from, to) => layer.replaceByIndex(tiles[from] + 1, tiles[to] + 1);
+    swap(this.groundLayer, `floor${this.deco}`, `floor${next}`);
+    swap(this.wallLayer, `wall${this.deco}a`, `wall${next}a`);
+    swap(this.wallLayer, `wall${this.deco}b`, `wall${next}b`);
+    this.deco = next;
+  }
 
   // 산 소품·방 가구·(사람들) 다시 놓기
   refreshFurniture() {
     const s = app.s;
+    this.applyDeco();
     this.furniture.removeAll(true);
     this.peopleLayer.removeAll(true);
     this.wanderers = [];
@@ -128,10 +148,11 @@ export class SanctuaryScene extends Phaser.Scene {
       seatSpots[r.slot] = [];
       if (r.slot === '302' || (room?.type === 'worship')) this.placeWorship(r, seatSpots[r.slot], r.slot === '302');
       else if (room) {
-        for (const [dx, dy, tile] of FURN[room.type]) if (dx < r.w - 1 && dy < r.h) this.furniture.add(this.add.image((r.x + dx) * T, (r.y + dy) * T, 'indoorSheet', tile).setOrigin(0));
+        for (const [dx, dy, name] of FURN[room.type]) if (dx < r.w - 1 && dy < r.h) this.furniture.add(this.put(name, r.x + dx, r.y + dy));
         for (let y = r.y + 3; y < r.y + r.h - 1 && seatSpots[r.slot].length < SEAT_ROWS[room.type] * 2; y += 2) for (let x = r.x + 2; x < r.x + r.w - 1; x += 3) seatSpots[r.slot].push([x, y]);
       } else {
-        for (const [dx, dy] of [[2, 3], [5, 6], [8, 4]]) if (dx < r.w - 1) this.furniture.add(this.add.image((r.x + dx) * T, (r.y + dy) * T, 'indoorSheet', 237).setOrigin(0).setAlpha(0.6));
+        // 빈 칸: 전 세입자가 두고 간 고장 난 가구
+        for (const [dx, dy, name] of [[2, 4, 'junk'], [6, 7, 'junk2'], [8, 4, 'junk2']]) if (dx < r.w - 1) this.furniture.add(this.put(name, r.x + dx, r.y + dy).setAlpha(0.8));
       }
     }
     if (!s.sanctuary.props.light) { this.dim?.destroy(); this.dim = this.add.rectangle(0, 0, this.wPx, this.hPx, 0x000020, 0.12).setOrigin(0).setDepth(80); }
@@ -145,30 +166,33 @@ export class SanctuaryScene extends Phaser.Scene {
     const props = s.sanctuary.props;
     if (main) {
       const f = this.def.furniture302;
-      for (const [k, tile] of [['pulpit', 113], ['desk', 112], ['counsel', 55]]) this.furniture.add(this.add.image(f[k][0] * T, f[k][1] * T, 'indoorSheet', tile).setOrigin(0));
+      const look = { pulpit: this.deco >= 2 ? 'pulpit' : 'pulpit0', desk: 'deskpc', counsel: this.deco >= 1 ? 'counsel' : 'counsel0' };
+      for (const k of ['pulpit', 'desk', 'counsel']) this.furniture.add(this.put(look[k], f[k][0], f[k][1]));
+      // 3단계: 벽에 걸린 천 현수막
+      if (this.deco >= 3) for (const dx of [2, 13]) this.furniture.add(this.put(dx < 8 ? 'bannerRed' : 'bannerBlue', r.x + dx, 1));
       if (props.banner) this.furniture.add(drawShape(this, 'shape.banner', (r.x + 4) * T, 1 * T, { width: 8 * T, text: s.leader.cultName }));
-      if (props.kettle) this.furniture.add(drawShape(this, 'shape.kettle', f.desk[0] * T, (f.desk[1] - 1) * T + 6));
-      if (props.board) this.furniture.add(this.add.image((r.x + 12) * T, 1 * T, 'indoorSheet', SHOP_ITEMS.board.sprite).setOrigin(0));
-      if (props.speaker) this.furniture.add(this.add.image((r.x + 6) * T, 3 * T, 'indoorSheet', SHOP_ITEMS.speaker.sprite).setOrigin(0));
-      if (props.light) { this.furniture.add(this.add.image((r.x + 15) * T, 4 * T, 'indoorSheet', 127).setOrigin(0)); this.furniture.add(this.add.image((r.x + 15) * T, 5 * T, 'indoorSheet', 154).setOrigin(0)); }
+      if (props.kettle) this.furniture.add(this.put(SHOP_ITEMS.kettle.sprite, f.desk[0] + 1, f.desk[1]));
+      if (props.board) this.furniture.add(this.put(SHOP_ITEMS.board.sprite, r.x + 11, 3));
+      if (props.speaker) this.furniture.add(this.put(SHOP_ITEMS.speaker.sprite, r.x + 6, 3));
+      if (props.light) this.furniture.add(this.put(SHOP_ITEMS.light.sprite, r.x + 15, 5));
       const plants = [[r.x, 2], [r.x + 15, 10], [r.x, 10]];
-      for (let p = 0; p < (props.plant ?? 0); p++) this.furniture.add(this.add.image(plants[p][0] * T, plants[p][1] * T, 'indoorSheet', SHOP_ITEMS.plant.sprite).setOrigin(0));
+      for (let p = 0; p < (props.plant ?? 0); p++) this.furniture.add(this.put(SHOP_ITEMS.plant.sprite, plants[p][0], plants[p][1]));
     }
     const tiles = [];
     for (let y = 6; y < 11; y++) for (let x = r.x + 2; x < r.x + r.w - 2; x++) if (x !== r.x + 8) tiles.push([x, y]);
     let i = 0;
     const chairs = main ? (props.chair ?? 0) * 2 : Math.round(ROOMS.worship.seats * (app.s.rooms[r.slot]?.level ?? 1));
-    for (let c = 0; c < chairs && i < tiles.length; c++, i++) { this.furniture.add(this.add.image(tiles[i][0] * T, tiles[i][1] * T, 'indoorSheet', SHOP_ITEMS.chair.sprite).setOrigin(0)); seats.push(tiles[i]); }
-    if (main) for (let c = 0; c < (props.cushion ?? 0) && i < tiles.length; c++, i++) { this.furniture.add(drawShape(this, SHOP_ITEMS.cushion.sprite, tiles[i][0] * T, tiles[i][1] * T)); seats.push(tiles[i]); }
+    for (let c = 0; c < chairs && i < tiles.length; c++, i++) { this.furniture.add(this.put(SHOP_ITEMS.chair.sprite, tiles[i][0], tiles[i][1])); seats.push(tiles[i]); }
+    if (main) for (let c = 0; c < (props.cushion ?? 0) && i < tiles.length; c++, i++) { this.furniture.add(this.put(this.deco >= 2 ? 'zaisu' : SHOP_ITEMS.cushion.sprite, tiles[i][0], tiles[i][1])); seats.push(tiles[i]); }
     if (main) for (let c = 0; c < SANCTUARY.baseSeats && i < tiles.length; c++, i++) seats.push(tiles[i]);
   }
 
   // 방마다 신도들 (밤엔 예배 참석자 + 첫 신도, 낮엔 방 담당 간부와 신도 몇 명이 돌아다닌다)
   placePeople(seatSpots) {
     const s = app.s;
-    const add = (key, look, x, y, wander) => {
-      registerPerson(this, key, look);
-      const sp = this.add.sprite(x * T, y * T - 4, key, 0).setOrigin(0);
+    const add = (key, x, y, wander) => {
+      registerPerson(this, key);
+      const sp = this.add.sprite(x * T, y * T - 4, key, idleFrame('down')).setOrigin(0, PERSON_ORIGIN_Y);
       this.peopleLayer.add(sp);
       if (wander) this.wanderers.push({ sp, key, room: wander, next: 0 });
       return sp;
@@ -182,9 +206,8 @@ export class SanctuaryScene extends Phaser.Scene {
         const slot = o?.assign?.startsWith('room:') ? o.assign.slice(5) : null;
         const r = slot ? this.roomRect(slot) : null;
         if (o?.assign === 'street' && !night) return;
-        const c = CAST.find((x) => x.id === id);
-        if (r) add(`p:cast:${id}`, c.look, r.x + 2, r.y + 2, r);
-        else if (night || s.phase >= 2) add(`p:cast:${id}`, c.look, castSpots[k][0], castSpots[k][1], null);
+        if (r) add(`p:cast:${id}`, r.x + 2, r.y + 2, r);
+        else if (night || s.phase >= 2) add(`p:cast:${id}`, castSpots[k][0], castSpots[k][1], null);
       });
     }
     // 예배에 온 사람 (302 자리)
@@ -195,8 +218,8 @@ export class SanctuaryScene extends Phaser.Scene {
       const seats = seatSpots['302'] ?? [];
       for (let k = 0; k < total; k++) {
         const spot = seats[k] ?? [main.x + 2 + (k % 13), 11];
-        if (k < named.length) add(`p:${named[k]}`, lookOf(named[k]), spot[0], spot[1], null).setFrame(9);
-        else add(`p:follower:${k % 8}`, followerLook(k), spot[0], spot[1], null).setFrame(9);
+        if (k < named.length) add(`p:${named[k]}`, spot[0], spot[1], null).setFrame(idleFrame('up'));
+        else add(`p:follower:${k % 8}`, spot[0], spot[1], null).setFrame(idleFrame('up'));
       }
     }
     // 다른 방: 신도들이 방에 따라 앉아 있거나 걷는다
@@ -211,12 +234,11 @@ export class SanctuaryScene extends Phaser.Scene {
           const spot = seatSpots[r.slot][k];
           const id = members[m++ % Math.max(1, members.length)];
           const walk = room.type === 'kitchen' || room.type === 'broadcast' || k % 3 === 2;
-          if (id) add(`p:${id}`, lookOf(id), spot[0], spot[1], walk ? r : null).setFrame(walk ? 0 : 9);
-          else add(`p:follower:${k % 8}`, followerLook(k), spot[0], spot[1], walk ? r : null);
+          if (id) add(`p:${id}`, spot[0], spot[1], walk ? r : null).setFrame(walk ? idleFrame('down') : sitFrame(k % 2 ? 'left' : 'right'));
+          else add(`p:follower:${k % 8}`, spot[0], spot[1], walk ? r : null);
         }
       }
     }
-    void RESIDENTS;
   }
 
   // ── 25장 C: 성소에서 하는 예배 ──
@@ -232,9 +254,8 @@ export class SanctuaryScene extends Phaser.Scene {
     this.audience = list.map((a, k) => {
       const spot = seats[k] ?? [main.x + 2 + (k % 13), 11];
       const key = a.kind === 'res' ? `p:${a.id}` : a.kind === 'cast' ? `p:cast:${a.id}` : `p:follower:${a.k % 8}`;
-      const look = a.kind === 'res' ? lookOf(a.id) : a.kind === 'cast' ? CAST.find((c) => c.id === a.id).look : followerLook(a.k);
-      registerPerson(this, key, look);
-      const sp = this.add.sprite(spot[0] * T, spot[1] * T - 4, key, 9).setOrigin(0);
+      registerPerson(this, key);
+      const sp = this.add.sprite(spot[0] * T, spot[1] * T - 4, key, idleFrame('up')).setOrigin(0, PERSON_ORIGIN_Y);
       this.peopleLayer.add(sp);
       return { ...a, sp };
     });
@@ -254,7 +275,7 @@ export class SanctuaryScene extends Phaser.Scene {
   sayAt(sp, text, delay = 0, lift = 0) {
     this.time.delayedCall(delay, () => {
       const c = speechBubble(this, text).setDepth(5080 + lift);
-      c.setPosition(sp.x + 8, sp.y - 2 - lift);
+      c.setPosition(sp.x + 8, sp.y - 2 - HEAD_LIFT - lift);
       this.bubbles.push(c);
       this.tweens.add({ targets: c, y: c.y - 3, duration: 300, ease: 'Sine.easeOut' });
       this.time.delayedCall(2600, () => { if (c.active) c.destroy(); this.bubbles = this.bubbles.filter((x) => x !== c); });
@@ -263,7 +284,7 @@ export class SanctuaryScene extends Phaser.Scene {
   clearBubbles() { this.bubbles?.forEach((b) => b.destroy()); this.bubbles = []; }
   emoteAt(sp, kind, delay = 0) {
     this.time.delayedCall(delay, () => {
-      const c = emotionBubble(this, kind).setDepth(5080).setPosition(sp.x + 12, sp.y - 2);
+      const c = emotionBubble(this, kind).setDepth(5080).setPosition(sp.x + 12, sp.y - 2 - HEAD_LIFT);
       this.bubbles.push(c);
       this.time.delayedCall(2600, () => { if (c.active) c.destroy(); this.bubbles = this.bubbles.filter((x) => x !== c); });
     });
@@ -309,7 +330,7 @@ export class SanctuaryScene extends Phaser.Scene {
         const ty = (w.room.y + 2 + Math.floor(Math.random() * (w.room.h - 3))) * T - 4;
         const dir = Math.abs(tx - w.sp.x) > Math.abs(ty - w.sp.y) ? (tx > w.sp.x ? 'right' : 'left') : ty > w.sp.y ? 'down' : 'up';
         w.sp.play(`${w.key}-walk-${dir}`, true);
-        this.tweens.add({ targets: w.sp, x: tx, y: ty, duration: Math.hypot(tx - w.sp.x, ty - w.sp.y) * 30 + 10, onComplete: () => { w.sp.anims.stop(); w.sp.setFrame(0); } });
+        this.tweens.add({ targets: w.sp, x: tx, y: ty, duration: Math.hypot(tx - w.sp.x, ty - w.sp.y) * 30 + 10, onComplete: () => { w.sp.anims.stop(); w.sp.setFrame(idleFrame('down')); } });
       }
     }
     const [tx, ty] = this.walker.tile;
@@ -322,10 +343,4 @@ export class SanctuaryScene extends Phaser.Scene {
     this.hudTimer += delta;
     if (this.hudTimer > 200) { this.hudTimer = 0; app.hud?.update(); }
   }
-}
-
-const FOLLOWER_TOPS = ['#7a8a9a', '#9a7a6a', '#6a8a6a', '#8a6a8a', '#a89a5a', '#5a7a9a'];
-function followerLook(k) {
-  const base = RESIDENTS[(k * 7) % RESIDENTS.length].look;
-  return { ...base, hairColor: ['#3a3030', '#5a4a3a', '#2a2a2a'][k % 3], top: FOLLOWER_TOPS[k % FOLLOWER_TOPS.length] };
 }

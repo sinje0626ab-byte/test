@@ -1,4 +1,5 @@
 // 교주 이동: 키보드(방향키·WASD) 또는 누른 곳까지 길찾기. 두 씬(동네·성소)이 같이 쓴다.
+import { idleFrame } from './people.js';
 import { fatigueLimit } from '../sim/growth.js';
 import { MOVE, TALK } from '../config.js';
 import { findPath, walkable } from '../sim/grid.js';
@@ -140,7 +141,7 @@ export class Walker {
   }
   idle() {
     this.sprite.anims.stop();
-    this.sprite.setFrame(['down', 'left', 'right', 'up'].indexOf(this.dir) * 3);
+    this.sprite.setFrame(idleFrame(this.dir));
   }
   // 현실 1초당 칸 수 × 16px × 게임 배속 (멈춤 상태에서도 걷기는 1배)
   speedPx() {

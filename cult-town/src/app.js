@@ -22,11 +22,9 @@ import { rentNow } from './sim/space.js';
 import { visitPlace } from './sim/stories.js';
 import { streetTick } from './sim/officers.js';
 import { threatHour, setThreatGrid, isProtester, isDefector } from './sim/threats.js';
-import { REPORTER_INFO } from './data/threats.js';
-import { RIVAL_LOOKS } from './data/rival.js';
 import { openInterview, openProtest, openDefector, rivalHello, nameForNpc } from './ui/threats.js';
 import { mapsForStep } from './map/interiors.js';
-import { portrait as makePortrait, LEADER_LOOK, setSeason } from './game/people.js';
+import { portrait as makePortrait, setSeason } from './game/people.js';
 import { createHud } from './ui/hud.js';
 import { showTitle, hideTitle, showCreation } from './ui/creation.js';
 import { openTalk, openClergyTalk } from './ui/dialog.js';
@@ -538,15 +536,9 @@ export const app = {
   openMenu() { showMenu(this); },
 
   portrait(id) {
-    const img = this.game.textures.get('urban').getSourceImage();
-    let look;
-    if (id === 'leader') look = LEADER_LOOK;
-    else if (id.startsWith('c:')) look = CLERGY_BY_ID[id.slice(2)].look;
-    else if (id.startsWith('cast:') || id.startsWith('o:')) look = CAST_BY[id.split(':')[1]].look;
-    else if (id === 'x:reporter') look = REPORTER_INFO.look;
-    else if (id.startsWith('v:')) look = RIVAL_LOOKS[id.slice(2)];
-    else look = RESIDENT_BY_ID[id].look;
-    return makePortrait(img, id, look);
+    // 아틀라스 줄 이름: 주민 id · leader · c:성직자 · cast:첫 신도 · x:reporter · v:라이벌
+    const key = id.startsWith('o:') ? `cast:${id.slice(2)}` : id;
+    return makePortrait({ cache: this.game.cache, textures: this.game.textures }, key);
   },
 
   // 단축키는 e.code 로 본다 (한글 입력 상태에서도 같은 자리의 키)
