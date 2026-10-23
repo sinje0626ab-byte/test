@@ -12,32 +12,37 @@ const { W, H, GROUND, CROSSWALKS, BUILDINGS, PROPS, SPOTS, STATION_EXITS, LABELS
 
 const out = (name) => new URL(`../src/map/${name}`, import.meta.url);
 
-// ── RPG Urban 타일 ──
+// ── 동네 타일: LimeZu Modern Exteriors 아틀라스 (tools/build-assets.py → public/assets/lz/town.png · town.json 의 tiles) ──
+const LZ_TOWN = JSON.parse(readFileSync(new URL('../public/assets/lz/town.json', import.meta.url)));
+const TI = (name) => { const i = LZ_TOWN.tiles[name]; if (i == null) throw new Error(`동네 타일 없음: ${name}`); return i; };
 const U = {
-  lot: 36, sidewalk: 36, plaza: 117, alley: 460, road: 460, market: 109, grass: 28, path: 36,
-  water: 198, waterBottom: 225, laneH: 433, laneV: 462, crossV: 432, crossH: 435,
+  lot: TI('sidewalk'), sidewalk: TI('sidewalk'), plaza: TI('plaza'), alley: TI('alley'), road: TI('road'), market: TI('market'), grass: TI('grass'), path: TI('sidewalk'),
+  water: TI('water'), waterBottom: TI('waterBottom'), laneH: TI('laneH'), laneV: TI('laneV'), crossV: TI('crossV'), crossH: TI('crossH'),
 };
-const nine = (t) => [[t, t + 1, t + 2], [t + 27, t + 28, t + 29], [t + 54, t + 55, t + 56]];
-const ROOF = [nine(81), nine(89)];
-const WALL = {
-  red: { top: [17, 18, 19], mid: [71, 72, 73], bottom: [98, 99, 100] },
-  red2: { top: [20, 21, 22], mid: [74, 75, 76], bottom: [101, 102, 103] },
-  orange: { top: [125, 126, 127], mid: [179, 180, 181], bottom: [206, 207, 208] },
-  orange2: { top: [128, 129, 130], mid: [182, 183, 184], bottom: [209, 210, 211] },
-};
+// 지붕 9칸 [왼위·위·오른위 / 왼·가운데·오른 / 왼아래·아래·오른아래] 두 가지 + 한 줄짜리 지붕
+const roof9 = (k) => [[0, 1, 2], [3, 4, 5], [6, 7, 8]].map((r) => r.map((i) => TI(`roof${k}_${i}`)));
+const ROOF = [roof9('A'), roof9('B')];
+const ROOF_THIN = { A: [0, 1, 2].map((i) => TI(`roofA_thin_${i}`)), B: [0, 1, 2].map((i) => TI(`roofB_thin_${i}`)) };
+// 벽 색 넷 (예전 이름 그대로: red·red2·orange·orange2 → 분홍·노랑·크림·회색)
+const WALL_COLOR = { red: 'rose', red2: 'yellow', orange: 'cream', orange2: 'grey' };
+const WALL = Object.fromEntries(Object.entries(WALL_COLOR).map(([k, c]) => [k, {
+  top: ['L', 'M', 'R'].map((x) => TI(`wall_${c}_top_${x}`)), mid: ['L', 'M', 'R'].map((x) => TI(`wall_${c}_mid_${x}`)), bottom: ['L', 'M', 'R'].map((x) => TI(`wall_${c}_bottom_${x}`)),
+  window: [TI(`window_${c}_0`), TI(`window_${c}_1`)], door: TI(`door_${c}`),
+}]));
 const WALLS = Object.keys(WALL);
-const WINDOW = [335, 362, 336];
-const DOOR = { villa: 283, house: 282, shop: 285, mall: 339, church: 284, temple: 284, sanctuary: 312, gosiwon: 255 };
-const AWNING = [328, 329, 332];
-const STOREFRONT = [386, 387, 388];
+const DOOR = { shop: TI('door_shop'), mall: TI('door_mall') };
+const AWNING = ['L', 'M', 'R'].map((x) => TI(`awning_${x}`));
+const STOREFRONT = ['L', 'M', 'R'].map((x) => TI(`store_${x}`));
+// 소품: 지도 오브젝트 'lz' (TownScene 이 사람과 같이 y 정렬해 그린다). 담만 타일
 const PROP = {
-  tree: { base: 259, top: 232 }, lamp: { base: 191, top: 164 }, vending: { base: 281 }, bench: { base: 381 },
-  trash: { base: 279 }, mailbox: { base: 306 }, stall: { base: 276 }, stall2: { base: 303 }, fence: { base: 383 },
-  pole: { base: 216, top: 189, top2: 162 }, car: { base: [422, 425, 476, 479] }, plant: { base: 292 }, bags: { base: 254 },
-  bin: { base: 253 },
+  tree: { lz: 'tree' }, lamp: { lz: 'lamp' }, vending: { lz: 'vending' }, bench: { lz: 'bench' }, trash: { lz: 'trash' }, mailbox: { lz: 'mailbox' },
+  stall: { lz: 'stall' }, stall2: { lz: 'stall2' }, fence: { base: TI('fence') }, pole: { lz: 'pole' }, plant: { lz: 'plant' }, bags: { lz: 'bags' }, bin: { lz: 'bin' },
+  // 골목에 주차된 차 자리: LimeZu 차는 두 칸 폭이라 2칸 골목을 막는다 → 상자·화분·쓰레기통으로 (난수 순서는 그대로)
+  car: { lz: ['bags2', 'plant2', 'trash2', 'recycle2'] },
 };
 // 도형으로 그리는 소품 (TownScene 이 스프라이트 키로 그린다)
-const SHAPE_PROPS = { recycle: 'prop.recycle', bike: 'prop.bike' };
+const SHAPE_PROPS = { bike: 'prop.bike' };
+PROP.recycle = { lz: 'recycle' };
 const COST = { water: 0, lot: 2, grass: 2, sidewalk: 1, path: 1, road: 6, alley: 1, plaza: 1, market: 1, cross: 1 };
 
 // 시드 고정 난수 (지도가 매번 같게)
@@ -80,7 +85,8 @@ BUILDINGS.forEach((b, i) => {
   const floors = b.floors ?? (b.kind === 'villa' ? Math.min(3, b.h - 2) : b.kind === 'house' ? 2 : 2);
   const roofH = Math.max(1, b.h - floors);
   const facade = b.h - roofH;
-  const R = ROOF[hash(i) % 2];
+  const RK = hash(i) % 2;
+  const R = ROOF[RK];
   const base = b.place?.replace(/^b_/, '');   // 봉천동 장소는 b_ 를 떼고 같은 모양
   const wallName = b.wall ?? (base === 'church' ? 'red' : base === 'temple' ? 'orange' : WALLS[hash(i + 7) % WALLS.length]);
   const Wl = WALL[wallName];
@@ -91,7 +97,7 @@ BUILDINGS.forEach((b, i) => {
     blocked[y][x] = true; kind[y][x] = 'block';
     const ry = y - b.y;
     if (ry < roofH) {
-      const r = roofH === 1 ? R[1] : ry === 0 ? R[0] : ry === roofH - 1 ? R[2] : R[1];
+      const r = roofH === 1 ? ROOF_THIN[RK ? 'B' : 'A'] : ry === 0 ? R[0] : ry === roofH - 1 ? R[2] : R[1];
       build[y][x] = col(x, r);
     } else {
       const fy = ry - roofH;
@@ -100,11 +106,11 @@ BUILDINGS.forEach((b, i) => {
       const last = fy === facade - 1;
       if (last && isShop) deco[y][x] = col(x, STOREFRONT);
       else if (!last && isShop && fy === facade - 2) deco[y][x] = col(x, AWNING);
-      else if ((x - b.x) % 2 === 1 && x < b.x + b.w - 1 && Math.abs(x - doorX) > 0) deco[y][x] = WINDOW[fy % 3];
+      else if ((x - b.x) % 2 === 1 && x < b.x + b.w - 1 && Math.abs(x - doorX) > 0) build[y][x] = Wl.window[(fy + x) % 2];
     }
   }
   const doorY = b.y + b.h - 1;
-  deco[doorY][doorX] = isShop && b.kind !== 'mall' ? DOOR.shop : DOOR[base] ?? DOOR[b.kind] ?? DOOR.villa;
+  deco[doorY][doorX] = isShop && b.kind !== 'mall' ? DOOR.shop : b.kind === 'mall' ? DOOR.mall : Wl.door;
   const entrance = [doorX, doorY + 1];
   reserved[entrance[1]][entrance[0]] = true;
   if (b.place) {
@@ -148,14 +154,15 @@ for (const l of LABELS) {
 const shapeProps = [];
 const poles = [];
 const propTiles = new Set();      // 골목에 흩뿌린 소품 칸 (통로 검사용)
+const lzProps = [];               // LimeZu 소품 오브젝트 { sprite, x, y, wall? }
 const placeProp = (k, x, y, onBlocked = false) => {
   const t = PROP[k];
   if (SHAPE_PROPS[k]) { shapeProps.push({ kind: k, sprite: SHAPE_PROPS[k], x, y }); blocked[y][x] = true; return; }
-  if (onBlocked) above[y][x] = t.base; else deco[y][x] = Array.isArray(t.base) ? t.base[Math.floor(rnd() * t.base.length)] : t.base;
-  if (t.top != null && inMap(x, y - 1)) above[y - 1][x] = t.top;
-  if (t.top2 != null && inMap(x, y - 2)) above[y - 2][x] = t.top2;
+  if (t.lz) lzProps.push({ sprite: Array.isArray(t.lz) ? t.lz[Math.floor(rnd() * t.lz.length)] : t.lz, x, y });
+  else deco[y][x] = t.base;
   blocked[y][x] = true;
   if (k === 'pole') poles.push([x, y]);
+  void onBlocked;
 };
 for (const p of PROPS) {
   if (!inMap(p.x, p.y)) continue;
@@ -199,9 +206,16 @@ for (const yb of alleyRows) {
 for (const b of buildingsOut) {
   if (b.kind === 'special' || hash(b.i * 3) % 3 === 0) continue;
   const x = b.x + b.w - 1; const y = b.y + b.h - 1;
-  if (x !== b.door) shapeProps.push({ kind: 'ac', sprite: 'prop.ac', x, y, onWall: true });
+  if (x !== b.door) lzProps.push({ sprite: 'ac', x, y, wall: true });
 }
 
+// 큰길에 선 차: 차가 덮는 칸(가로 4×2 · 세로 2×4)은 막는다. 횡단보도·입구·자리 둘레는 비운다
+for (const g of GROUND.filter((r) => r.kind === 'road' && r.line)) {
+  const free = (x0, y0, w, h) => { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) if (!inMap(x, y) || kind[y][x] !== 'road' || reserved[y][x] || blocked[y][x] || CROSSWALKS.some((c) => x >= c.x - 1 && x <= c.x + c.w && y >= c.y - 1 && y <= c.y + c.h)) return false; return true; };
+  const park = (sprite, x, y, w, h) => { lzProps.push({ sprite, x, y: y + h - 1, road: true, w }); for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) blocked[yy][xx] = true; };
+  if (g.line === 'h') for (let x = 5; x < g.x + g.w - 4; x += 13) { const y = g.y + 1 + (x % 2); if (free(x, y, 4, 2)) park(x % 3 ? 'carL1' : 'carR1', x, y, 4, 2); }
+  if (g.line === 'v') for (let y = g.y + 6, n = -99; y < g.y + g.h - 4; y++) { const x = g.x + (y % 2 ? 0 : 2); if (y - n >= 9 && free(x, y, 2, 4)) { park(['carU1', 'carD1', 'carU2', 'carD2'][y % 4], x, y, 2, 4); n = y; } }
+}
 // ── 연결 검사: 걸을 수 있는 칸이 모두 한 덩어리인가 ──
 {
   const seen = grid(W, H, false);
@@ -289,7 +303,8 @@ const tiledMap = (w, h, layers, tileset, properties) => ({
   width: w, height: h, tilewidth: 16, tileheight: 16, infinite: false, nextlayerid: layers.length + 1, nextobjectid: oid,
   layers, tilesets: [tileset], properties,
 });
-const URBAN = { firstgid: 1, name: 'urban', image: '../../public/assets/tiles/urban.png', imagewidth: 432, imageheight: 288, columns: 27, tilecount: 486, tilewidth: 16, tileheight: 16, margin: 0, spacing: 0 };
+const URBAN = { firstgid: 1, name: 'town', image: '../../public/assets/lz/town.png', imagewidth: LZ_TOWN.meta.size.w, imageheight: LZ_TOWN.meta.size.h, columns: LZ_TOWN.columns,
+  tilecount: LZ_TOWN.columns * (LZ_TOWN.meta.size.h / 16), tilewidth: 16, tileheight: 16, margin: 0, spacing: 0 };
 // 실내: LimeZu Modern Interiors 아틀라스 (tools/build-assets.py → public/assets/lz/indoor.png · indoor.json 의 tiles)
 const LZ_IN = JSON.parse(readFileSync(new URL('../public/assets/lz/indoor.json', import.meta.url)));
 const INDOOR = { firstgid: 1, name: 'indoor', image: '../../public/assets/lz/indoor.png', imagewidth: LZ_IN.meta.size.w, imageheight: LZ_IN.meta.size.h, columns: LZ_IN.columns,
@@ -297,6 +312,8 @@ const INDOOR = { firstgid: 1, name: 'indoor', image: '../../public/assets/lz/ind
 
 for (const s of shapeProps) objects.push({ id: oid++, name: s.kind, type: 'shape', x: s.x * 16, y: s.y * 16, width: 16, height: 16, properties: [{ name: 'sprite', type: 'string', value: s.sprite }] });
 for (const [x, y] of poles) objects.push({ id: oid++, name: 'pole', type: 'pole', x: x * 16, y: y * 16, width: 16, height: 16 });
+for (const p of lzProps) objects.push({ id: oid++, name: p.sprite, type: 'lz', x: p.x * 16, y: p.y * 16, width: 16, height: 16,
+  properties: [{ name: 'sprite', type: 'string', value: p.sprite }, { name: 'wall', type: 'bool', value: !!p.wall }, { name: 'w', type: 'int', value: p.w ?? 1 }] });
 
 const town = tiledMap(W, H, [
   layer(1, 'ground', ground), layer(2, 'detail', detail), layer(3, 'buildings', build), layer(4, 'deco', deco), layer(5, 'above', above),

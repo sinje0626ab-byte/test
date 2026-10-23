@@ -10,7 +10,7 @@ import { CAST } from '../data/cast.js';
 import { peopleOf, speedOf } from '../sim/residents.js';
 import { activityOf, emotionOf, gossipLine, lastGossip, JOB_ICON } from '../sim/mood.js';
 import { registerPerson, idleFrame, walkFrame, sitFrame, phoneFrame, HEAD_LIFT, PERSON_ORIGIN_Y } from './people.js';
-import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel, drawSanctuarySign, drawFloorDirectory } from './signs.js';
+import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel, drawSanctuarySign, drawFloorDirectory, drawLzProps } from './signs.js';
 import { makeIconTextures, emotionBubble, speechBubble, nameTag, picket, wallNotice, questMark } from './overlays.js';
 import { REPORTER } from '../config.js';
 import { REPORTER_INFO, NOTICE_TEXT, PROTEST_TEXT } from '../data/threats.js';
@@ -55,7 +55,7 @@ export class TownScene extends Phaser.Scene {
     const bong = this.district === 'bongcheon';
     const here = app.here();
     const map = this.make.tilemap({ key: bong ? 'bongcheon' : 'town' });
-    const ts = map.addTilesetImage('urban', 'urban');
+    const ts = map.addTilesetImage('town', 'lzTown');
     ['ground', 'detail', 'buildings', 'deco'].forEach((n, i) => map.createLayer(n, ts, 0, 0).setDepth(i));
     map.createLayer('above', ts, 0, 0).setDepth(5000);
     this.mapW = map.widthInPixels; this.mapH = map.heightInPixels;
@@ -82,11 +82,12 @@ export class TownScene extends Phaser.Scene {
       if (o.type === 'pole') poles.push([o.x / T, o.y / T]);
       if (o.type === 'exit') drawStationExit(this, sprite, o.x, o.y, o.properties.find((p) => p.name === 'label').value);
     }
+    drawLzProps(this, map.getObjectLayer('places').objects);
     drawWires(this, poles);
     for (const l of prop('labels')) drawGroundLabel(this, l.text, l.x * T, l.y * T, { color: l.text === '도림천' ? '#ffffff' : '#e8e4f0' });
     // 장날: 시장 위쪽에 좌판이 더 나온다
     if (s.weather?.market && !bong) {
-      for (const x of [18, 21, 24, 27, 30]) this.add.image(x * T, 24 * T, 'urbanSheet', 277).setOrigin(0).setDepth(3);
+      [18, 21, 24, 27, 30].forEach((x, k) => this.add.image(x * T + 8, 25 * T, 'lzTown', ['stall', 'stall2', 'stall3'][k % 3]).setOrigin(0.5, 1).setDepth(3));
       drawGroundLabel(this, '오늘 장날', 24 * T, 30.5 * T, { color: '#7a3a1a', alpha: 0.85 });
     }
     // 큰 날 (25장 D): 행사 자리에 현수막과 좌판
@@ -99,7 +100,7 @@ export class TownScene extends Phaser.Scene {
         this.bigDayTile = t;
         for (const dx of [-3, 3]) {
           const x = t[0] + dx; const y = t[1] - 1;
-          if (walkable(here, x, y)) this.add.image(x * T, y * T, 'urbanSheet', 277).setOrigin(0).setDepth(3);
+          if (walkable(here, x, y)) this.add.image(x * T + 8, (y + 1) * T, 'lzTown', dx < 0 ? 'stall' : 'stall3').setOrigin(0.5, 1).setDepth(3);
         }
         wallNotice(this, t[0] * T + 8, (t[1] - 2) * T, bd.banner, { bg: 0xc23a3a, color: '#fff6e0', w: 72 }).setDepth(4790);
         // 이름 없는 구경꾼: 행사 시간에만 자리 주변에 서 있다 (화면 장식, 말 걸 수 없음)

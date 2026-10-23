@@ -19,7 +19,7 @@ export function board(scene, cx, top, text, color, { depth = 60, fg = 0xffffff, 
   const w = Math.ceil(t.width) + 4; const hgt = small ? 9 : 10;
   t.setY(small ? 0 : 1);
   const g = scene.add.graphics();
-  g.fillStyle(0x1d1b26, 1).fillRect(-w / 2 - 1, -1, w + 2, hgt + 2);
+  g.fillStyle(0x46465e, 1).fillRect(-w / 2 - 1, -1, w + 2, hgt + 2);
   g.fillStyle(color, 1).fillRect(-w / 2, 0, w, hgt);
   g.fillStyle(0xffffff, 0.18).fillRect(-w / 2, 0, w, 2);
   return scene.add.container(cx, top + 1, [g, t]).setDepth(depth);
@@ -68,11 +68,11 @@ export function drawRoof(scene, b) {
     // 물탱크 (초록·파랑 원통)
     const tx = left + (h % 2 ? 4 : wPx - 18); const ty = top + 3;
     const c = h % 3 === 0 ? 0x3a7aa8 : 0x3a9a5a;
-    g.fillStyle(0x1d1b26, 1).fillRect(tx - 1, ty - 1, 16, 14);
+    g.fillStyle(0x46465e, 1).fillRect(tx - 1, ty - 1, 16, 14);
     g.fillStyle(c, 1).fillRect(tx, ty + 2, 14, 10);
     g.fillStyle(0xffffff, 0.25).fillRect(tx + 2, ty + 3, 3, 8);
     g.fillStyle(c, 1).fillEllipse(tx + 7, ty + 2, 14, 5);
-    g.fillStyle(0x1d1b26, 0.4).fillRect(tx + 5, ty, 4, 2);
+    g.fillStyle(0x46465e, 0.4).fillRect(tx + 5, ty, 4, 2);
   }
   // 실외기 1~2개
   const n = 1 + (h >>> 3) % 2;
@@ -80,7 +80,7 @@ export function drawRoof(scene, b) {
     const ax = left + 6 + ((h >>> (5 + k * 3)) % Math.max(1, b.w - 1)) * T * 0.8;
     const ay = top + roofPx - 12 - (k % 2) * 4;
     if (ax > left + wPx - 14) continue;
-    g.fillStyle(0x1d1b26, 1).fillRect(ax - 1, ay - 1, 13, 10);
+    g.fillStyle(0x46465e, 1).fillRect(ax - 1, ay - 1, 13, 10);
     g.fillStyle(0xd8d8d0, 1).fillRect(ax, ay, 11, 8);
     g.lineStyle(1, 0x7a7a72, 1).strokeCircle(ax + 4, ay + 4, 2.5);
     g.fillStyle(0x9a9a92, 1).fillRect(ax + 8, ay + 2, 2, 4);
@@ -98,22 +98,41 @@ export function drawRoof(scene, b) {
 }
 
 // 골목 도형 소품 (분리수거함·자전거·실외기)
+// LimeZu 동네 소품 (지도 오브젝트 'lz'): 칸 아래 가운데에 바닥을 맞추고, 사람과 같은 규칙으로 y 정렬
+// wall: 건물 벽 장식(실외기)은 건물 바로 위 · road: 큰길에 선 차 (막지 않는 장식)
+export function drawLzProps(scene, objects) {
+  const out = [];
+  for (const o of objects) {
+    if (o.type !== 'lz') continue;
+    const prop = (n) => o.properties?.find((p) => p.name === n)?.value;
+    const sprite = prop('sprite');
+    if (!scene.textures.get('lzTown').has(sprite)) continue;
+    // w: 몇 칸 폭을 차지하나 (큰길의 차). 그 칸들 가운데에 맞춘다
+    const w = prop('w') ?? 1;
+    const img = scene.add.image(o.x + (w * 16) / 2, o.y + 16, 'lzTown', sprite).setOrigin(0.5, 1);
+    img.setDepth(prop('wall') ? 4 : 100 + o.y + 8);
+    if (prop('wall')) img.setOrigin(0.5, 1).setPosition(o.x + 8, o.y + 14);
+    out.push(img);
+  }
+  return out;
+}
+
 export function drawShapeProp(scene, key, px, py) {
   if (scene.textures.exists(key)) return scene.add.image(px, py, key).setOrigin(0, 0).setDepth(100 + py + 12);
   const g = scene.add.graphics({ x: px, y: py }).setDepth(100 + py + 12);
   if (key === 'prop.recycle') {
     const cols = [0x3a8a4a, 0x3a6ac8, 0xd8a020];
     cols.forEach((c, k) => {
-      g.fillStyle(0x1d1b26, 1).fillRect(k * 5, 5, 6, 11);
+      g.fillStyle(0x46465e, 1).fillRect(k * 5, 5, 6, 11);
       g.fillStyle(c, 1).fillRect(k * 5 + 1, 6, 4, 9);
       g.fillStyle(0xffffff, 0.35).fillRect(k * 5 + 1, 6, 4, 2);
     });
   } else if (key === 'prop.bike') {
-    g.lineStyle(2, 0x1d1b26, 1).strokeCircle(4, 11, 3.5).strokeCircle(12, 11, 3.5);
+    g.lineStyle(2, 0x46465e, 1).strokeCircle(4, 11, 3.5).strokeCircle(12, 11, 3.5);
     g.lineStyle(1, 0xc83a3a, 1).lineBetween(4, 11, 8, 6).lineBetween(8, 6, 12, 11).lineBetween(8, 6, 7, 3);
     g.lineStyle(1, 0x4a4a4a, 1).lineBetween(11, 4, 13, 4);
   } else if (key === 'prop.ac') {
-    g.fillStyle(0x1d1b26, 1).fillRect(2, 5, 13, 10);
+    g.fillStyle(0x46465e, 1).fillRect(2, 5, 13, 10);
     g.fillStyle(0xe0e0d8, 1).fillRect(3, 6, 11, 8);
     g.lineStyle(1, 0x8a8a82, 1).strokeCircle(7, 10, 2.5);
     g.fillStyle(0x9a9a92, 1).fillRect(11, 8, 2, 4);
@@ -144,15 +163,16 @@ export function drawWires(scene, poles) {
 
 export function drawStationExit(scene, key, x, y, label) {
   if (scene.textures.exists(key)) return scene.add.image(x, y, key).setOrigin(0, 0).setDepth(50);
+  // 아래로 내려가는 계단(LimeZu 지하철 계단) 위에 초록 출구 번호판
   const g = scene.add.graphics();
-  g.fillStyle(0x1d1b26, 1).fillRect(-1, -1, 18, 18);
-  g.fillStyle(0x3cb44a, 1).fillRect(0, 0, 16, 16);
-  g.fillStyle(0x2a2a33, 1).fillRect(3, 8, 10, 8);
-  for (let i = 0; i < 4; i++) g.fillStyle(0x888899, 1).fillRect(3, 9 + i * 2, 10, 1);
+  const stairs = scene.textures.get('lzTown')?.has('stairsDown') ? scene.add.image(0, 0, 'lzTown', 'stairsDown').setOrigin(0) : null;
+  if (!stairs) { g.fillStyle(0x2a2a33, 1).fillRect(3, 8, 10, 8); for (let i = 0; i < 4; i++) g.fillStyle(0x888899, 1).fillRect(3, 9 + i * 2, 10, 1); }
+  g.fillStyle(0x46465e, 1).fillRect(3, -1, 10, 8);
+  g.fillStyle(0x3cb44a, 1).fillRect(4, 0, 8, 6);
   const parts = label.split(' ');      // '신림역 3' · '서울대입구역 4' → 역 이름 + 출구 번호
-  const num = scene.add.text(8, 4, parts.at(-1), SIGN_FONT).setOrigin(0.5);
-  const tag = scene.add.text(8, -5, parts.slice(0, -1).join(' '), { ...SIGN_FONT, color: '#1d1b26', backgroundColor: '#ffffff' }).setOrigin(0.5).setPadding(1, 0, 1, 0);
-  return scene.add.container(x, y, [g, num, tag]).setDepth(50);
+  const num = scene.add.text(8, 3, parts.at(-1), SIGN_FONT).setOrigin(0.5);
+  const tag = scene.add.text(8, -7, parts.slice(0, -1).join(' '), { ...SIGN_FONT, color: '#1d1b26', backgroundColor: '#ffffff' }).setOrigin(0.5).setPadding(1, 0, 1, 0);
+  return scene.add.container(x, y, [...(stairs ? [stairs] : []), g, num, tag]).setDepth(50);
 }
 
 // 길 이름 (바닥 글씨, 빈 칸에만)
@@ -167,7 +187,7 @@ export function drawShape(scene, key, x, y, extra = {}) {
   const g = scene.add.graphics({ x, y });
   if (key === 'shape.banner') {
     const w = extra.width ?? 96;
-    g.fillStyle(0x1d1b26, 1).fillRect(-1, -1, w + 2, 16);
+    g.fillStyle(0x46465e, 1).fillRect(-1, -1, w + 2, 16);
     g.fillStyle(0xfff6e0, 1).fillRect(0, 0, w, 14);
     g.fillStyle(0xb8433a, 1).fillRect(0, 0, w, 2).fillRect(0, 12, w, 2);
     const t = scene.add.text(x + w / 2, y + 7, extra.text ?? '', { ...FONT, color: '#7a1e1a' }).setOrigin(0.5);
@@ -194,7 +214,7 @@ export function drawSanctuarySign(scene, b, name, tier, evening = false) {
     const pw = Math.ceil(t.displayWidth) + 22; const ph = 15;
     const cx = (b.x + b.w / 2) * T + 8;
     const px = Math.round(cx - pw / 2); const py = y3 + 1;
-    g.fillStyle(0x1d1b26, 0.35).fillRect(px + 1, py + 1, pw, ph);
+    g.fillStyle(0x46465e, 0.35).fillRect(px + 1, py + 1, pw, ph);
     g.fillStyle(0xfbfaf4, 1).fillRect(px, py, pw, ph);
     g.fillStyle(0xd8c890, 0.95).fillRect(px - 2, py - 1, 7, 3).fillRect(px + pw - 5, py - 1, 7, 3);
     t.setOrigin(0.5, 0).setPosition(cx + 7, py + 1).setAngle(-2);
@@ -210,7 +230,7 @@ export function drawSanctuarySign(scene, b, name, tier, evening = false) {
     const w = Math.max(48, name.length * 9 + 10);
     const cx = (b.x + b.w / 2) * T + 8; const top = facadeTop * T + 2;
     if (evening) g.fillStyle(0xfff0a0, 0.28).fillCircle(cx, top + 12, w * 0.7);
-    g.fillStyle(0x1d1b26, 1).fillRect(cx - w / 2 - 2, top - 2, w + 4, 26);
+    g.fillStyle(0x46465e, 1).fillRect(cx - w / 2 - 2, top - 2, w + 4, 26);
     g.fillStyle(evening ? 0xf0e0ff : 0x5b3a7a, 1).fillRect(cx - w / 2, top, w, 22);
     parts.push(scene.add.text(cx, top + 5, name, { fontFamily: 'Galmuri11', fontSize: '12px', color: evening ? '#4a2a6a' : '#ffffff' }).setOrigin(0.5, 0).setDepth(62));
   }
@@ -224,7 +244,7 @@ export function drawFloorDirectory(scene, b, name, tier) {
   const right = (b.x + b.w) * T - 2;
   const w = right - left; const top = (b.y + b.h - 2) * T + 4; const hgt = 26;
   const g = scene.add.graphics().setDepth(70);
-  g.fillStyle(0x1d1b26, 1).fillRect(left - 1, top - 1, w + 2, hgt + 2);
+  g.fillStyle(0x46465e, 1).fillRect(left - 1, top - 1, w + 2, hgt + 2);
   g.fillStyle(0x3a3e4a, 1).fillRect(left, top, w, hgt);
   g.fillStyle(0x5b3a7a, 1).fillRect(left + 1, top + 1 + 6.2, w - 2, 6.2);       // 3층 줄은 보라 바탕
   const parts = [g];

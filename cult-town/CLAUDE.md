@@ -18,7 +18,7 @@
 ## 1. 개요
 - 서울 신림동에서 평범한 사람이 사이비 교주가 되는 블랙코미디 게임.
 - RPG(동네를 걸어 다니며 직접 포교) + 경영(성소 운영) + 심즈(주민 30명이 각자 일과·욕구·관계를 가지고 산다).
-- 시점: 위에서 비스듬히 내려다보는 16px 도트 (RPG Urban Pack 화풍).
+- 시점: 위에서 비스듬히 내려다보는 16px 도트 (LimeZu Modern Exteriors·Interiors 화풍, 26장).
 - 루프: **낮** 동네 RPG(포교) → **밤** 성소 경영(예배, 소품, 신도 돌보기, 잠) → **일요일 밤** 주보(한 주 결산).
 
 ## 2. 기술·배포
@@ -44,7 +44,7 @@ npm run lint:words  # 문장 금지 패턴 개수
 ```
 cult-town/
   index.html · vite.config.js · package.json · CLAUDE.md · CREDITS.md
-  public/assets/   tiles/urban.png(RPG Urban) · tiles/indoor.png(Roguelike Indoors) · audio/*.ogg · LICENSES/
+  public/assets/   lz/(LimeZu 아틀라스: people-cold·warm · town · indoor + json) · audio/*.ogg · LICENSES/
   src/
     config.js            ★ 모든 수치
     main.js              부트: Phaser 게임 + DOM UI 연결
@@ -87,20 +87,20 @@ cult-town/
     map/                 layout.js · layout-bongcheon.js(사람이 쓰는 배치) · town.json · bongcheon.json · sanctuary-*.json(생성물)
     game/                Phaser: BootScene · TitleScene(밤 장면) · TownScene · SanctuaryScene · people.js(주민 스프라이트 합성) · overlays.js(말풍선·아이콘) · signs.js(간판·지붕·소품 도형) · walker.js · tint.js
     ui/                  DOM: styles.css · fonts/ · dom · text · hud · dialog · profile · night · screens(주보·엔딩·크레딧·메뉴) · creation(제목·창시) · shop(가게·부탁 수첩) · event · revelation · dpad · toast · sound · threats(인터뷰·시위·탈퇴자·라이벌 밤 메뉴)
-  tools/                 build-map.mjs · simulate.mjs · check-words.mjs
+  tools/                 build-map.mjs · simulate.mjs · check-words.mjs · build-assets.py(LimeZu 원본 → 아틀라스) · dump-looks.mjs
 ```
 
 ## 4. 에셋 (사용자가 고른 것)
 | 용도 | 에셋 | 라이선스 |
 |---|---|---|
-| 동네 타일·소품·차 | Kenney **RPG Urban Pack** (16px, tilemap_packed) | CC0 |
-| 주민 몸 틀 | RPG Urban Pack 사람 6종 × 4방향 × 3프레임 → 코드로 머리 모양·머리 색·피부·윗옷·바지 색을 바꿔 30명 합성 | CC0 + 코드 |
-| 성소 실내 | Kenney **Roguelike Indoors** (16px) | CC0 |
+| 동네 타일·소품·차 | LimeZu **Modern Exteriors** 완전판 (16x16) → `lz/town.png` | 유료 (배포·재판매 금지, 크레딧 필수) |
+| 사람 78명 | LimeZu **Modern Interiors** 캐릭터 생성기 (몸·눈·옷·머리·소품) + Exteriors 캐릭터 애드온 → `lz/people-*.png` | 유료 (같음) |
+| 성소 실내 | LimeZu **Modern Interiors** 완전판 (16x16) → `lz/indoor.png` | 유료 (같음) |
 | 한글 폰트 | **Galmuri11**(본문) · Galmuri14(제목) · GalmuriMono11(숫자) (npm `galmuri`, `src/ui/fonts/`에 복사해 번들) | OFL-1.1 |
 | 효과음 | Kenney RPG Audio · Interface Sounds · UI Audio · Music Jingles | CC0 |
 - kenney.nl 은 이 환경에서 접속이 막혀 있어, Kenney 원본 zip 을 그대로 풀어 둔 공개 GitHub 미러(ETdoFresh/kenney.nl)에서 받았다. 팩마다 License.txt 를 같이 넣어 둔다.
 - 맞는 에셋이 없는 것(한국식 간판, 원룸 건물, 편의점, 현수막, 장판, 전기포트 등)은 도형+색으로 그리되 **스프라이트 키**(`sprite: 'sign.cvs'`)로 참조한다. 나중에 같은 키로 이미지만 넣으면 바뀐다.
-- CC0·OFL·CC-BY 만 쓴다. CC-BY 는 크레딧 표기. 재배포가 애매한 것은 쓰지 않는다. 쓴 것은 전부 `CREDITS.md`.
+- CC0·OFL·CC-BY 와 사용자가 산 LimeZu 유료 팩만 쓴다 (26장의 라이선스 지키는 방식). 재배포가 애매한 것은 쓰지 않는다. 쓴 것은 전부 `CREDITS.md`. Kenney 는 효과음만 남았다.
 
 ## 5. 동네 (신림동 한 구역)
 - 실제 큰길 이름: **남부순환로**(가로, 맵 위쪽), **신림로**(세로, 맵 가운데), **도림천**(맵 위쪽 가장자리 물길), **신림역**(두 길이 만나는 곳, 출구 2개).
@@ -189,7 +189,7 @@ cult-town/
 - 4단계: **완료 (23장)**. 봉천동 지부.
 - 재미 보강 (24장): **완료**. 실제 달력 · 간판 · 대사 전면 수정 · 퀘스트 · 열혈 신자 · 교주 성장 · 동네 드라마.
 - 첫 1시간·완성도 (25장): **완료**. 새 단계 없이 첫날 흐름 · 예배 · 매주 큰 날 · 완성도.
-- LimeZu 그림체 (26장): **만드는 중**. 캐릭터 생성기 조합 · 실내 · 동네 타일.
+- LimeZu 그림체 (26장): **완료**. 캐릭터 생성기 조합 · 실내 · 동네 타일.
 - 5단계: 서울·전국, 압수수색, 후계 / 6단계: 멀티 엔딩 (믿음 축·그림자 장부·평판 조합)
 
 ## 16. 저장 형식
@@ -553,6 +553,17 @@ cult-town/
 - 성소: 간판 단계 · 공간 단계가 오를수록 초라한 상가 방(시멘트 바닥·형광등·접이식 의자) → 꾸민 예배실(장판·카펫·방석·현수막·화분). 기존 스프라이트 키(소품 id)는 그대로, 그림만 바뀐다.
 - 동네: 바닥·길·인도·건물 벽·지붕·창·문·전봇대·차·화분·분리수거함·지하철역을 Exteriors 로. 한국식 간판·원룸 빌라 물탱크·편의점 간판처럼 맞는 그림이 없는 것은 도형 그대로 두고 색·외곽선(진한 남색 1px)만 새 그림체에 맞춘다.
 - Kenney 에셋은 대체된 것만 뺀다 (효과음은 그대로).
+
+### 구현 메모 (지금 값)
+- 아틀라스 다시 만들기: `LIMEZU_DIR=<푼 폴더> python3 tools/build-assets.py [people|town|indoor|all]` → `npm run map`. 원본 없이도 커밋된 아틀라스로 빌드된다.
+- 사람 (`game/people.js`): `registerPerson(scene, 'p:<id>')` 가 계절 시트(추운 달 겨울·3월·가을 / 더운 달 봄·장마·여름)에서 그 사람 줄을 잘라 텍스처를 만든다. 프레임 `idleFrame(dir, f)` · `walkFrame` · `sitFrame(side)` · `phoneFrame`. 원점 (0, 0.5), 머리 위 표시 `HEAD_LIFT` 8px. 서 있으면 대기 6장이 돌고, 도착 행동 '폰'은 폰 애니메이션, '앉기'는 앉기, 운동은 걷기. 예배 참석자는 뒷모습(위쪽 대기). 얼굴 그림(`portrait`)은 앞모습 머리·어깨 16x16 을 4배.
+- 외형 검사: build-assets 가 추운 달·더운 달 조합이 같은 사람이 있으면 멈춘다 (78명 모두 다름).
+- 실내 (`SanctuaryScene`): 지도는 꾸밈 0단계 타일로 뽑고 `applyDeco()` 가 `decoLevel(s)` = 소품 수 + 간판 단계 + 공간 단계×2 → 3+ 장판 · 6+ 마루 · 9+ 쪽마루·나무 벽 + 천 현수막. 2단계부터 단상에 문양, 방석 대신 좌식 의자. 빈 칸엔 고장 난 가구. 소품 id 와 `SHOP_ITEMS.sprite` (아틀라스 이름) 는 그대로 키.
+- 동네 (`build-map`): 한 층 = 한 칸이라 LimeZu 건물(한 층 2~3칸)을 통째로 못 쓴다 → Condo_1·2 조각에서 지붕 9칸(+한 줄 지붕)·벽·작은 창·문을 16x16 으로 자르고, 1층 가게는 Shop_Tent 천막 + Ground_Floor_Shop 진열창. 벽 색 넷 (노랑·회색 + 색만 바꾼 분홍·크림).
+- 소품은 타일이 아니라 지도 오브젝트 `lz` (`drawLzProps`): 칸 아래 가운데에 바닥을 맞추고 사람과 같은 depth 규칙(100 + y)으로 앞뒤가 정해진다. 실외기는 벽 장식. 골목 '주차 차량' 자리는 LimeZu 차가 두 칸 폭이라 상자·화분·쓰레기통으로 바꾸고(난수 순서 유지 → 지도 배치 그대로), 차는 남부순환로 차선에 4대 (가로 4×2 칸을 막는다, 일과 검사 통과). 신림로는 횡단보도 사이가 좁아 차를 두지 않는다.
+- 역 출구: 1칸 그대로, LimeZu 지하철 계단 조각 위에 초록 번호판. 시장 좌판·큰 날 좌판은 LimeZu 상자(물건 담긴 상자).
+- 도형 유지: 한국식 간판·층별 안내판·역 번호판·현수막·지붕 물탱크·빨래줄·자전거 (외곽선만 LimeZu 색 #46465e).
+- 쓰지 않는 것: limezu16.zip 의 `interiors16/` (예전 무료판). Kenney RPG Urban · Roguelike Indoors 는 지웠다.
 
 ### 검증
 - `npm run map`: 통로 검사 · 글자 겹침 0.

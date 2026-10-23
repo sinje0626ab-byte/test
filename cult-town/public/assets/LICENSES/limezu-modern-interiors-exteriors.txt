@@ -1,0 +1,18 @@
+Modern Exteriors · Modern Interiors by LimeZu (https://limezu.itch.io/)
+
+이 폴더의 public/assets/lz/*.png 는 위 두 팩(유료 완전판)에서 게임에 실제로 쓰는 조각만 잘라 묶고,
+캐릭터 생성기 부위를 미리 합성한 결과다. 원본 팩·시트는 이 레포에 없다.
+
+MODERN INTERIORS FULL VERSION LICENSE (Modern Exteriors 도 itch.io 페이지 기준 같은 조건)
+-
+YOU CAN:
+-Edit and use the asset in any commercial  or non commercial project
+-Use the asset in any commercial  or non commercial project
+-
+YOU CAN'T:
+- Resell or distribute the asset to others
+- Edit and resell the asset to others
+-
+- Credits required (limezu.itch.io)
+
+이 레포의 아틀라스를 떼어 내 다른 곳에 쓰거나 다시 나눠 주면 안 된다 (위 'YOU CAN'T').

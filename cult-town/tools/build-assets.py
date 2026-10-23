@@ -180,6 +180,97 @@ def build_indoor():
     pack(tiles, objects, 'indoor')
 
 
+# ── 동네 (Modern Exteriors) ──
+# 우리 지도는 한 층이 한 칸이라, LimeZu 건물(한 층 2~3칸)을 통째로 쓰지 않고 지붕·벽·창·문·차양을 16x16 으로 잘라 이어 붙인다.
+ETS = os.path.join(EX, 'ME_Theme_Sorter_16x16')
+EXDIR = {'terr': ('2_City_Terrains_Singles_16x16', 'ME_Singles_City_Terrains_16x16'), 'tf': ('1_Terrains_and_Fences_Singles_16x16', 'ME_Singles_Terrains_and_Fences_16x16'),
+         'gb': ('4_Generic_Building_Singles_16x16', 'ME_Singles_Generic_Building_16x16'), 'fm': ('5_Floor_Modular_Building_Singles_16x16', 'ME_Singles_Floor_Modular_Building_16x16'),
+         'props': ('3_City_Props_Singles_16x16', 'ME_Singles_City_Props_16x16'), 'veh': ('10_Vehicles_Singles_16x16', 'ME_Singles_Vehicles_16x16'),
+         'gs': ('6_Garage_Sales_Singles_16x16', 'ME_Singles_Garage_Sales_16x16'),
+         'sub': ('20_Subway_and_Train_Station_Singles_16x16', 'ME_Singles_Subway_and_Train_Station_16x16'), 'mk': ('9_Shopping_Center_and_Markets_Singles_16x16', 'ME_Singles_Shopping_Center_and_Markets_16x16')}
+
+
+def ex(group, name):
+    d, prefix = EXDIR[group]
+    return sheet(os.path.join(ETS, d, f'{prefix}_{name}.png'))
+
+
+def crop(im, x, y, w=16, h=16):
+    return im.crop((x, y, x + w, y + h))
+
+
+def hue(im, rgb_mul):
+    """색 바꾸기 (고쳐 쓰기): 채널마다 곱해 벽 색을 늘린다. 외곽선(어두운 색)은 거의 그대로."""
+    px = im.copy(); d = px.load()
+    for yy in range(px.height):
+        for xx in range(px.width):
+            r, g, b, a = d[xx, yy]
+            if a and (r + g + b) > 200:
+                d[xx, yy] = (min(255, int(r * rgb_mul[0])), min(255, int(g * rgb_mul[1])), min(255, int(b * rgb_mul[2])), a)
+    return px
+
+
+def town_tiles():
+    T = {}
+    # 바닥
+    T['road'] = ex('terr', 'Asphalt_1_Variation_16'); T['alley'] = ex('terr', 'Asphalt_1_Variation_17')
+    T['laneH'] = ex('terr', 'Asphalt_1_Variation_2'); T['laneV'] = ex('terr', 'Asphalt_1_Variation_15')
+    T['crossH'] = crop(ex('terr', 'Sidewalk_1_34'), 0, 0); T['crossV'] = crop(ex('terr', 'Sidewalk_1_30'), 0, 0)
+    T['sidewalk'] = crop(ex('terr', 'Sidewalk_1_25'), 0, 0); T['plaza'] = crop(ex('terr', 'Sidewalk_4_25'), 0, 0)
+    T['market'] = crop(ex('terr', 'Sidewalk_1_27'), 0, 0)
+    T['grass'] = ex('tf', 'Grass_1_22'); T['water'] = ex('tf', 'Deep_Water_1_9'); T['waterBottom'] = ex('tf', 'Deep_Water_1_2')
+    T['fence'] = crop(ex('props', 'Pedestrian_Barrier_Post_Modular_1_Middle'), 0, 0)
+    # 건물: Condo_1(노랑)·Condo_2(회색) 조각 → 지붕 9칸 · 벽(위·가운데·아래 × 왼·가운데·오른) · 창
+    for key, condo, mul in (('yellow', 'Condo_1', None), ('grey', 'Condo_2', None), ('rose', 'Condo_1', (1.05, 0.78, 0.78)), ('cream', 'Condo_2', (1.12, 1.06, 0.92))):
+        p1, p2, p4 = ex('gb', f'{condo}_2'), ex('gb', f'{condo}_3'), ex('gb', f'{condo}_5')
+        f = (lambda im: hue(im, mul)) if mul else (lambda im: im)
+        mid = crop(p2, 16, 72)
+        left = mid.copy(); left.paste(crop(p1, 0, 72, 6, 16), (0, 0))
+        right = mid.copy(); right.paste(crop(p4, 10, 72, 6, 16), (10, 0))
+        def base(im):
+            o = im.copy(); o.paste(crop(p2, 16, 186, 16, 6), (0, 10)); return o
+        for row, fn in (('top', lambda x: x), ('mid', lambda x: x), ('bottom', base)):
+            for col, im in (('L', left), ('M', mid), ('R', right)):
+                b = fn(im)
+                if col == 'L' and row == 'bottom': b.paste(crop(p1, 0, 186, 6, 6), (0, 10))
+                if col == 'R' and row == 'bottom': b.paste(crop(p4, 10, 186, 6, 6), (10, 10))
+                T[f'wall_{key}_{row}_{col}'] = f(b)
+        T[f'window_{key}_0'] = f(crop(p2, 0, 157)); T[f'window_{key}_1'] = f(crop(ex('gb', f'{condo}_4'), 0, 156))
+        T[f'door_{key}'] = f(crop(p1, 16, 170))
+    for key, condo in (('A', 'Condo_1'), ('B', 'Condo_2')):
+        p1, p2, p4 = ex('gb', f'{condo}_2'), ex('gb', f'{condo}_3'), ex('gb', f'{condo}_5')
+        for i, (im, x) in enumerate(((p1, 0), (p2, 16), (p4, 0))):
+            T[f'roof{key}_{i}'] = crop(im, x, 0); T[f'roof{key}_{3 + i}'] = crop(im, x, 26); T[f'roof{key}_{6 + i}'] = crop(im, x, 52)
+            thin = crop(im, x, 0).copy(); thin.paste(crop(im, x, 60, 16, 8), (0, 8)); T[f'roof{key}_thin_{i}'] = thin
+    # 1층 가게: 줄무늬 천막(Shop_Tent)과 가게 진열창(Ground_Floor_Shop) · 빵집 유리문
+    tent, shop = ex('gb', 'Shop_Tent_1'), ex('fm', 'Ground_Floor_Shop_10')
+    T['awning_L'] = crop(tent, 0, 8); T['awning_M'] = crop(tent, 16, 8); T['awning_R'] = crop(tent, 48, 8)
+    T['store_L'] = crop(shop, 0, 30); T['store_M'] = crop(shop, 32, 30); T['store_R'] = crop(shop, 96, 30)
+    T['door_shop'] = crop(ex('fm', 'Ground_Floor_Bakery_Modular_2'), 0, 30)
+    T['door_mall'] = crop(ex('fm', 'Ground_Floor_Butchery_Modular_2'), 0, 30)
+    T['stairsDown'] = crop(ex('sub', 'Stairs_Small_2'), 0, 28)     # 지하철 출구 계단 (출구 표지 아래)
+    return list(T.items())
+
+
+# 물건 (지도 오브젝트 'lz' 로 놓고 TownScene 이 사람과 같이 y 정렬해 그린다): 이름 → (묶음, 파일 이름)
+TOWN_OBJECTS = {
+    'tree': ('props', 'Tree_1'), 'tree2': ('props', 'Tree_2'), 'lamp': ('props', 'Street_Lamp_5'), 'pole': ('props', 'Electric_Pole_1'),
+    'vending': ('sub', 'Drink_Machine_Right'), 'bench': ('props', 'Bench_3'), 'trash': ('props', 'Trashbin_1'), 'trash2': ('props', 'Trashbin_5'),
+    'mailbox': ('props', 'Mailbox_1'), 'plant': ('props', 'Pot_1'), 'plant2': ('props', 'Pot_3'), 'bags': ('props', 'Cardboard_Trash_1'), 'bags2': ('props', 'Box_Trash_1'),
+    'bin': ('props', 'Trashbin_10'), 'recycle': ('props', 'Trashbin_12'), 'recycle2': ('props', 'Trashbin_13'), 'hydrant': ('props', 'Hydrant_1'),
+    'stall': ('gs', 'Box_6'), 'stall2': ('gs', 'Box_5'), 'stall3': ('gs', 'Box_8'), 'table': ('gs', 'Table_2'), 'cart': ('veh', 'Fruit_Flowers_Cart_2'),
+    'carU1': ('veh', 'Car_Up_1'), 'carU2': ('veh', 'Car_Up_3'), 'carD1': ('veh', 'Car_Down_2'), 'carD2': ('veh', 'Car_Down_5'),
+    'carL1': ('veh', 'Car_Left_1'), 'carR1': ('veh', 'Car_Right_3'),
+    'ac': ('mk', 'Air_Conditioner_Unit_5'), 'shrub': ('props', 'Shrub_9'),
+}
+
+
+def build_town():
+    tiles = town_tiles()
+    objects = [(k, ex(g, n)) for k, (g, n) in TOWN_OBJECTS.items()]
+    pack(tiles, objects, 'town')
+
+
 if __name__ == '__main__':
     what = sys.argv[1] if len(sys.argv) > 1 else 'all'
     os.makedirs(OUT, exist_ok=True)
@@ -187,3 +278,5 @@ if __name__ == '__main__':
         build_people()
     if what in ('indoor', 'all'):
         build_indoor()
+    if what in ('town', 'all'):
+        build_town()

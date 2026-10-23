@@ -8,8 +8,7 @@ import { app } from '../app.js';
 export class BootScene extends Phaser.Scene {
   constructor() { super('boot'); }
   preload() {
-    this.load.image('urban', 'assets/tiles/urban.png');
-    this.load.spritesheet('urbanSheet', 'assets/tiles/urban.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.atlas('lzTown', 'assets/lz/town.png', 'assets/lz/town.json');
     this.load.atlas('lzIn', 'assets/lz/indoor.png', 'assets/lz/indoor.json');
     this.load.json('lzInMeta', 'assets/lz/indoor.json');
     // LimeZu 사람 아틀라스 (26장, tools/build-assets.py)
