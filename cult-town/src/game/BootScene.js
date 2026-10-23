@@ -12,6 +12,10 @@ export class BootScene extends Phaser.Scene {
     this.load.spritesheet('urbanSheet', 'assets/tiles/urban.png', { frameWidth: 16, frameHeight: 16 });
     this.load.image('indoor', 'assets/tiles/indoor.png');
     this.load.spritesheet('indoorSheet', 'assets/tiles/indoor.png', { frameWidth: 16, frameHeight: 16, spacing: 1 });
+    // LimeZu 사람 아틀라스 (26장, tools/build-assets.py)
+    this.load.image('people-cold', 'assets/lz/people-cold.png');
+    this.load.image('people-warm', 'assets/lz/people-warm.png');
+    this.load.json('peopleMeta', 'assets/lz/people.json');
     this.load.tilemapTiledJSON('town', townMap);
     this.load.tilemapTiledJSON('bongcheon', bongcheonMap);
     for (const [path, json] of Object.entries(interiors)) this.load.tilemapTiledJSON(`sanct-${path.match(/sanctuary-(\w+)\.json/)[1]}`, json);

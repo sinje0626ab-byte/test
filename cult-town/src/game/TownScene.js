@@ -9,12 +9,11 @@ import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { CAST } from '../data/cast.js';
 import { peopleOf, speedOf } from '../sim/residents.js';
 import { activityOf, emotionOf, gossipLine, lastGossip, JOB_ICON } from '../sim/mood.js';
-import { registerPerson, LEADER_LOOK } from './people.js';
+import { registerPerson, idleFrame, walkFrame, sitFrame, phoneFrame, HEAD_LIFT, PERSON_ORIGIN_Y } from './people.js';
 import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel, drawSanctuarySign, drawFloorDirectory } from './signs.js';
 import { makeIconTextures, emotionBubble, speechBubble, nameTag, picket, wallNotice, questMark } from './overlays.js';
 import { REPORTER } from '../config.js';
 import { REPORTER_INFO, NOTICE_TEXT, PROTEST_TEXT } from '../data/threats.js';
-import { RIVAL_LOOKS } from '../data/rival.js';
 import { isDefector, protestToday, reporterTarget } from '../sim/threats.js';
 import { rivalInfo } from '../sim/rival.js';
 import { nameForNpc } from '../ui/threats.js';
@@ -32,8 +31,6 @@ import { walkable } from '../sim/grid.js';
 const T = 16;
 const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
 const CAST_BY = Object.fromEntries(CAST.map((c) => [c.id, c]));
-export const lookOf = (id) => (id.startsWith('c:') ? CLERGY_BY_ID[id.slice(2)].look : id.startsWith('o:') || id.startsWith('cast:') ? CAST_BY[id.split(':')[1]].look
-  : id === 'x:reporter' ? REPORTER_INFO.look : id.startsWith('v:') ? RIVAL_LOOKS[id.slice(2)] : RESIDENT_BY_ID[id].look);
 export const nameOf = (id) => (id.startsWith('c:') ? `${CLERGY_BY_ID[id.slice(2)].name} ${CLERGY_BY_ID[id.slice(2)].title}` : id.startsWith('o:') ? `${CAST_BY[id.slice(2)].name} (간부)`
   : id.startsWith('x:') || id.startsWith('v:') ? nameForNpc(app.s, id) : RESIDENT_BY_ID[id].name);
 const FWD = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] };
@@ -44,7 +41,7 @@ export function inSight(pos, tx, ty) {
   const fwd = dx * fx + dy * fy; const lat = Math.abs(dx * fy - dy * fx);
   return fwd >= 1 && fwd <= REPORTER.sight.tiles - sightCut(app.s) && lat <= (REPORTER.sight.width - 1) / 2;
 }
-const DIR_FRAME = { down: 0, left: 3, right: 6, up: 9 };
+const DIR_FRAME = { down: idleFrame('down'), left: idleFrame('left'), right: idleFrame('right'), up: idleFrame('up') };
 const text2 = (t) => (t.length > 26 ? t.slice(0, 25) + '…' : t);
 
 export class TownScene extends Phaser.Scene {
@@ -112,9 +109,8 @@ export class TownScene extends Phaser.Scene {
           const x = t[0] + dx; const y = t[1] + dy;
           if (!walkable(here, x, y)) return;
           const key = `p:extra:${k % 6}`;
-          const base = RESIDENTS[(k * 11 + 3) % RESIDENTS.length].look;
-          registerPerson(this, key, { ...base, hairColor: ['#3a3030', '#5a4a3a', '#2a2a2a'][k % 3], top: ['#8a6a5a', '#5a7a9a', '#9a8a5a', '#6a8a6a', '#a07a8a', '#7a7a8a'][k % 6] });
-          const sp = this.add.sprite(x * T, y * T - 4, key, (dx < 0 ? 2 : dx > 0 ? 1 : 3) * 3).setOrigin(0, 0).setDepth(100 + y * T).setVisible(false);
+          registerPerson(this, key);
+          const sp = this.add.sprite(x * T, y * T - 4, key, idleFrame(dx < 0 ? 'right' : dx > 0 ? 'left' : 'up')).setOrigin(0, PERSON_ORIGIN_Y).setDepth(100 + y * T).setVisible(false);
           this.bigDayExtras.push(sp);
         });
       }
@@ -125,10 +121,10 @@ export class TownScene extends Phaser.Scene {
     this.tags = {};
     this.emos = {};
     for (const p of this.people()) this.addPerson(p.id);
-    registerPerson(this, 'p:leader', LEADER_LOOK);
+    registerPerson(this, 'p:leader');
     const start = this.entry === 'station' ? here.places[bong ? 'b_station' : 'station'].door
       : this.entry === 'sanctuary' || this.entry === 'start' ? (bong ? here.places.b_station.door : here.places.sanctuary.door) : this.entry;
-    this.player = this.add.sprite(start[0] * T, start[1] * T - 4, 'p:leader', 0).setOrigin(0, 0);
+    this.player = this.add.sprite(start[0] * T, start[1] * T - 4, 'p:leader', idleFrame('down')).setOrigin(0, PERSON_ORIGIN_Y);
     this.walker = new Walker(this, this.player, here, 'p:leader', () => app.dpad);
     this.fx = this.add.graphics().setDepth(5050);
     this.tintRect = this.add.rectangle(0, 0, this.mapW, this.mapH, 0x000000, 0).setOrigin(0).setDepth(9000);
@@ -164,8 +160,8 @@ export class TownScene extends Phaser.Scene {
   addPerson(id) {
     if (this.sprites[id]) return;
     const key = id.startsWith('o:') ? `p:cast:${id.slice(2)}` : `p:${id}`;
-    registerPerson(this, key, lookOf(id));
-    this.sprites[id] = this.add.sprite(0, 0, key, 0).setOrigin(0, 0);
+    registerPerson(this, key);
+    this.sprites[id] = this.add.sprite(0, 0, key, idleFrame('down')).setOrigin(0, PERSON_ORIGIN_Y);
     this.sprites[id].animKey = key;
   }
 
@@ -207,8 +203,7 @@ export class TownScene extends Phaser.Scene {
           sp.anims.stop();
           // 가다 멈춤: 폰 확인 · 가게 쳐다보기 · 신호 기다리기 · 비켜 서기
           const pf = pos.pause === 'look' ? DIR_FRAME.up : DIR_FRAME[dirNow];
-          sp.setFrame(pos.pause === 'phone' ? DIR_FRAME.down : pf);
-          if (pos.pause === 'phone' && sp.visible) this.fx.fillStyle(0x9ad8ff, 1).fillRect(sp.dispX + 10, sp.dispY + 9, 2, 3);
+          sp.setFrame(pos.pause === 'phone' ? phoneFrame(Math.floor(time / 160)) : pf);
         }
         if (moving) movers.push({ id, sp, dir: dirNow });
       } else if (!pos.inside) {
@@ -226,14 +221,17 @@ export class TownScene extends Phaser.Scene {
           if (act === 'shop') frame = DIR_FRAME.up;
           if (act === 'walk') frame = Math.floor(time / 1800 + id.length) % 2 ? DIR_FRAME.left : DIR_FRAME.right;
           if (act === 'serve' && Math.floor(time / 2600 + id.length) % 3 === 0) frame = DIR_FRAME.left;
-          if (act === 'exercise') { ty -= beat % 2; frame = DIR_FRAME.down + (beat % 2 ? 1 : 2); }
-          if (act === 'sit') ty += 3;
+          // 서 있으면 숨 쉬는 대기 6장, 폰·앉기·운동은 에셋 애니메이션
+          const idleF = Math.floor(time / 170 + id.length * 2);
+          frame = idleFrame(Object.keys(DIR_FRAME).find((d) => DIR_FRAME[d] === frame) ?? 'down', idleF);
+          if (act === 'phone') frame = phoneFrame(Math.floor(time / 160 + id.length));
+          if (act === 'exercise') frame = walkFrame('down', Math.floor(time / 110));
+          if (act === 'sit') frame = sitFrame(id.length % 2 ? 'left' : 'right', idleF);
         }
         sp.setFrame(frame);
-        if (!justArrived && act === 'phone' && sp.visible) this.fx.fillStyle(0x9ad8ff, 1).fillRect(sp.dispX + 10, sp.dispY + 9, 2, 3);
         if (!justArrived && act === 'smoke' && sp.visible) {
           const t = (time / 900 + id.length) % 1;
-          this.fx.fillStyle(0xd8d8d8, 0.8 - t * 0.7).fillCircle(sp.dispX + 12 + t * 3, sp.dispY + 6 - t * 10, 1.5 + t * 2);
+          this.fx.fillStyle(0xd8d8d8, 0.8 - t * 0.7).fillCircle(sp.dispX + 12 + t * 3, sp.dispY + 6 - HEAD_LIFT - t * 10, 1.5 + t * 2);
         }
       }
       sp.tx = tx; sp.ty = ty; sp.tps = tps;
@@ -263,15 +261,15 @@ export class TownScene extends Phaser.Scene {
       sp.setPosition(px, py);
       sp.setDepth(100 + py + 4);
       const tag = this.tags[id];
-      if (tag) tag.setPosition(px + 8, py - 1).setVisible(sp.visible).setDepth(5060);
+      if (tag) tag.setPosition(px + 8, py - 1 - HEAD_LIFT).setVisible(sp.visible).setDepth(5060);
       const emo = this.emos[id];
-      if (emo) emo.c.setPosition(px + 14, py - 6).setVisible(sp.visible).setDepth(5070);
+      if (emo) emo.c.setPosition(px + 14, py - 6 - HEAD_LIFT).setVisible(sp.visible).setDepth(5070);
       const qm = this.qmarks?.[id];
-      if (qm) qm.setPosition(px + 8, py - 11).setVisible(sp.visible).setDepth(5065);
+      if (qm) qm.setPosition(px + 8, py - 11 - HEAD_LIFT).setVisible(sp.visible).setDepth(5065);
     }
     if (this.gossip) {
       const sp = this.sprites[this.gossip.id];
-      this.gossip.c.setPosition(sp.x + 8, sp.y - 10).setDepth(5080).setVisible(sp.visible);
+      this.gossip.c.setPosition(sp.x + 8, sp.y - 10 - HEAD_LIFT).setDepth(5080).setVisible(sp.visible);
     }
     this.player.setDepth(100 + this.player.y + 4);
   }
@@ -419,7 +417,7 @@ export class TownScene extends Phaser.Scene {
     for (const b of this.bubbles) {
       const sp = this.sprites[b.id];
       if (!b.c && time >= b.at) { b.c = speechBubble(this, text2(speak(app.s, b.text))); b.until = time + MOOD.bubbleSeconds * 1000 + 600; }
-      if (b.c && sp) b.c.setPosition(sp.x + 8, sp.y - 10).setDepth(5085).setVisible(sp.visible);
+      if (b.c && sp) b.c.setPosition(sp.x + 8, sp.y - 10 - HEAD_LIFT).setDepth(5085).setVisible(sp.visible);
     }
     this.bubbles = this.bubbles.filter((b) => { if (b.c && time > b.until) { b.c.destroy(); return false; } return true; });
     if (this.picketC) {

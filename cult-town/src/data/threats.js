@@ -6,7 +6,7 @@ export const REPORTER_INFO = {
   outlet: '관악생활신문',
   name: '한지수', title: '기자',
   bio: '관악생활신문 사회부 기자. 동네 소식만 몇 년째 쓴다. 녹음기는 늘 켜 두고, 수첩은 두 권을 번갈아 쓴다.',
-  look: { base: 1, hair: 'pony', hairColor: '#2a2420', skin: 1, top: '#c8b48a', bottom: '#3a3a48' },
+  look: { body: 2, eyes: 1, hair: '04_07', outfit: ['18_04', '12_02'], acc: '15_04' },
   // 주민에게 묻는 말 (말풍선)
   questions: [
     '"동림상가 302호, 혹시 다니는 분 아세요?"',

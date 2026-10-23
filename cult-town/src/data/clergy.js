@@ -8,7 +8,7 @@ export const CLERGY = [
     id: 'pastor', family: 'christian', religions: ['protestant', 'catholic'],
     name: '서경환', title: '목사', place: 'church', day: 'church:yard',
     bio: '도림천변교회 담임목사. 한 자리에서 오래 목회했다. 쌀 나눔 상자는 지금도 직접 채운다.',
-    look: { base: 2, hair: 'short', hairColor: '#7a7a7a', skin: 1, top: '#2a2a3a', bottom: '#2a2a3a' },
+    look: { body: 2, eyes: 1, hair: '18_05', outfit: ['27_01', '27_01'], acc: '15_04' },
     greet: [
       '"302호 일 하시는 분이죠. 교인 몇 분이 걱정을 하셔서요. 차 한잔하고 가세요. 얘기는 천천히 듣겠습니다."',
       '"사람들이 외로워서 찾아가는 걸 압니다. 우리가 다 못 채운 탓도 있겠지요. 그래도 그분들 지갑과 시간은 지켜 드려야 합니다."',
@@ -26,7 +26,7 @@ export const CLERGY = [
     id: 'monk', family: 'buddhist', religions: ['buddhist'],
     name: '혜송', title: '스님', place: 'temple', day: 'temple:yard',
     bio: '솔바람 선원 주지. 해 뜨기 전에 마당을 쓴다. 동네 어르신들 병원 가는 길에 자주 동행한다.',
-    look: { base: 4, hair: 'bald', hairColor: '#c8a890', skin: 1, top: '#8a8070', bottom: '#8a8070' },
+    look: { body: 3, eyes: 1, hair: null, outfit: ['33_03', '33_03'], acc: null },
     greet: [
       '"302호에서 오셨군요. 마당이 좁지만 앉으십시오. 보이차 한 잔 드리겠습니다."',
       '"복을 판다는 말이 제일 무섭습니다. 사는 사람은 절박하고, 파는 사람은 잃을 것이 없으니까요."',
@@ -44,7 +44,7 @@ export const CLERGY = [
     id: 'mansin', family: 'folk', religions: ['folk'],
     name: '문옥례', title: '만신', place: 'fortune', day: 'fortune:front',
     bio: '은방울 철학원 만신. 이 동네에서 평생 일했다. 굿값보다 밥은 먹었느냐는 얘기를 더 많이 한다.',
-    look: { base: 1, hair: 'bun', hairColor: '#5a5a5a', skin: 1, top: '#e8e0d0', bottom: '#5a6a8a' },
+    look: { body: 3, eyes: 1, hair: '11_06', outfit: ['33_01', '33_01'], acc: null },
     greet: [
       '"302호 양반이구나. 앉아요. 내가 이 일을 오래 했어요. 무서운 건 신이 아니라, 사람 약한 데를 아는 사람이야."',
       '"우리 단골들 불안한 거 알아요. 그러니까 내가 돈 얘기는 제일 마지막에 하는 거고."',
@@ -66,7 +66,7 @@ export const CLERGY_B = [
     id: 'b_pastor', family: 'christian', religions: ['protestant', 'catholic'],
     name: '하정민', title: '목사', place: 'b_church', day: 'b_church:yard',
     bio: '봉우리교회 목사. 고시촌 청년부를 혼자 맡는다. 주일 오후엔 교회 식당을 수험생 공부방으로 연다.',
-    look: { base: 4, hair: 'short', hairColor: '#4a4a4a', skin: 1, top: '#3a3a4a', bottom: '#2a2a3a' },
+    look: { body: 3, eyes: 1, hair: '22_07', outfit: ['27_02', '27_02'], acc: null },
     greet: [
       '"신림동 302호 분이시죠. 여기까지 오셨네요. 청년들 사정은 제가 좀 압니다. 앉으세요."',
       '"시험 떨어진 친구들한테 필요한 건 확신이 아니라 밥이랑 잠이에요. 그걸 먼저 챙겨 주세요."',
@@ -84,7 +84,7 @@ export const CLERGY_B = [
     id: 'b_monk', family: 'buddhist', religions: ['buddhist'],
     name: '도안', title: '스님', place: 'b_temple', day: 'b_temple:yard',
     bio: '구름다리선원 스님. 고시텔 어르신들 병원 동행을 다닌다. 공양간 빵 나눔을 맡는다.',
-    look: { base: 2, hair: 'bald', hairColor: '#c8a890', skin: 1, top: '#9a8a70', bottom: '#9a8a70' },
+    look: { body: 2, eyes: 1, hair: null, outfit: ['33_02', '33_02'], acc: null },
     greet: [
       '"신림동에서 오셨군요. 언덕 올라오느라 숨차셨지요. 물 한 잔 드리겠습니다."',
       '"마음이 급한 사람에게 답을 파는 일은 쉽습니다. 그래서 더 조심해야 합니다."',
@@ -102,7 +102,7 @@ export const CLERGY_B = [
     id: 'b_mansin', family: 'folk', religions: ['folk'],
     name: '봉순덕', title: '만신', place: 'b_fortune', day: 'b_fortune:front',
     bio: '달무리 철학관 만신. 평상에 앉아 아침 커피를 마신다. 상담비는 한 번만 받는다.',
-    look: { base: 1, hair: 'perm', hairColor: '#4a4a4a', skin: 2, top: '#d8c8e0', bottom: '#4a4a6a' },
+    look: { body: 7, eyes: 1, hair: '24_06', outfit: ['33_01', '33_01'], acc: null },
     greet: [
       '"신림동 양반이구나. 평상에 앉아요. 커피는 믹스밖에 없어."',
       '"불안한 사람한테 날짜를 팔면 안 돼요. 그 사람은 그 날짜만 보고 살아."',

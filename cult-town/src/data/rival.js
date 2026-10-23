@@ -1,6 +1,6 @@
 // 라이벌 교단 (3단계). 이름·교주·전도자는 전부 지어낸 것이다. 우리와 다른 유형 하나가 나온다.
 // 블랙코미디: 두 교단이 서로를 사이비라고 부른다. 포교는 실제 문장 없이 행동(전단지·명함)으로만 보인다.
-//   look: 주민과 같은 합성 규칙 (game/people.js)
+//   look: 주민과 같은 생성기 부위 조합 (data/looks.js 설명)
 
 export const RIVALS = {
   doomsday: { name: '새벽준비회', leader: '조태민', title: '회장', pitch: '날짜를 적은 달력을 나눠 준다.' },
@@ -12,9 +12,9 @@ export const RIVALS = {
 };
 
 export const RIVAL_LOOKS = {
-  leader: { base: 2, hair: 'short', hairColor: '#1a1a1a', skin: 0, top: '#5a2a6a', bottom: '#1a1a24' },
-  p1: { base: 5, hair: 'pony', hairColor: '#4a3020', skin: 1, top: '#7a3a8a', bottom: '#2a2a34' },
-  p2: { base: 0, hair: 'cap', hairColor: '#2a2a2a', skin: 2, top: '#7a3a8a', bottom: '#3a3a44' },
+  leader: { body: 2, eyes: 1, hair: '26_04', outfit: ['27_03', '27_03'], acc: null },
+  p1: { body: 3, eyes: 1, hair: '15_04', outfit: ['29_02', '29_02'], acc: null },
+  p2: { body: 7, eyes: 1, hair: '01_04', outfit: ['26_02', '26_02'], acc: '04_05' },
 };
 export const RIVAL_PREACHERS = { p1: '나은비', p2: '도경수' };
 
