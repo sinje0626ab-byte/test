@@ -1,0 +1,68 @@
+.addButton {
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  color: var(--accent);
+}
+
+.swipe {
+  position: relative;
+  overflow: hidden;
+}
+
+.delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bad);
+  color: #fff;
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+
+.front {
+  position: relative;
+  background: var(--cell-bg, var(--bg-elevated));
+  touch-action: pan-y;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 10px var(--space);
+  text-align: left;
+  background: var(--cell-bg, var(--bg-elevated));
+}
+.row:active {
+  background: var(--fill-strong);
+}
+
+.left,
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.right {
+  align-items: flex-end;
+}
+
+.date {
+  font-size: var(--fs-headline);
+  font-weight: 600;
+}
+.range {
+  font-size: var(--fs-subhead);
+  color: var(--label-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.duration {
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+}

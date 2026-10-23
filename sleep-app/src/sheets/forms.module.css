@@ -1,0 +1,97 @@
+.lead {
+  font-size: var(--fs-subhead);
+  color: var(--label-secondary);
+  line-height: 1.45;
+  margin: 0 4px 20px;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0 4px 18px;
+  font-size: var(--fs-subhead);
+  color: var(--label-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.summary b {
+  color: var(--label);
+  font-weight: 600;
+}
+
+.field {
+  margin-bottom: 26px;
+}
+.fieldLabel {
+  font-size: var(--fs-footnote);
+  font-weight: 400;
+  color: var(--label-secondary);
+  margin: 0 var(--space) 8px;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-caption);
+  color: var(--label-secondary);
+  margin: 6px 4px 0;
+}
+
+.groupTight {
+  margin-top: 10px;
+}
+.groupTight > section {
+  margin-bottom: 0;
+}
+
+.preview {
+  margin: -24px var(--space) 26px;
+  font-size: var(--fs-footnote);
+  color: var(--label-secondary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+}
+.warn {
+  color: var(--warn);
+}
+
+.note {
+  display: block;
+  width: 100%;
+  min-height: 88px;
+  padding: 12px var(--space);
+  border: 0;
+  border-radius: var(--r-cell);
+  background: var(--cell-bg, var(--bg-elevated));
+  resize: none;
+  line-height: 1.4;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.note::placeholder {
+  color: var(--label-tertiary);
+}
+
+.bottom {
+  margin-top: 8px;
+}
+
+.pages {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-sheet);
+}
+.back {
+  display: inline-flex;
+  align-items: center;
+  margin-left: -8px;
+}

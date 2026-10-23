@@ -1,0 +1,81 @@
+.page {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-grouped);
+  overflow: hidden;
+}
+
+.bar {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--safe-top) + var(--nav-h));
+  padding: var(--safe-top) calc(var(--safe-right) + 8px) 0 calc(var(--safe-left) + 8px);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  pointer-events: none;
+}
+
+.barBg {
+  position: absolute;
+  inset: 0;
+  background: var(--bar-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: var(--hairline) solid var(--separator);
+}
+
+.side {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  pointer-events: auto;
+}
+.right {
+  justify-content: flex-end;
+}
+
+.smallTitle {
+  position: relative;
+  font-size: var(--fs-headline);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60vw;
+}
+
+.scroll {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--safe-top) + var(--nav-h)) calc(var(--safe-right) + var(--space)) calc(var(--safe-bottom) + 32px)
+    calc(var(--safe-left) + var(--space));
+}
+.withTabBar {
+  padding-bottom: calc(var(--safe-bottom) + var(--tab-h) + 32px);
+}
+
+.largeTitle {
+  font-size: var(--fs-large-title);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 41px;
+  padding: 2px 0 10px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 내용 폭이 넓은 기기에서도 아이폰처럼 가운데 모은다 */
+.scroll > * {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
