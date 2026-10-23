@@ -397,6 +397,7 @@ export const OPENING = {
   visitor: 'yoonseo', visitorLike: 45, afterLike: 8, nextWorshipDay: 2,   // 3월 4일 수요일 예배
   firstConvertLike: 30,          // 이름 있는 신도가 아직 없을 때 새신자 → 신도 호감 문턱
   firstWeekRate: 1.4, firstWeekDays: 7,   // 첫 주는 시계가 1.4배 (하루 ≈ 4분)
+  minhoAt: 9 * 60, visitorAt: 18 * 60,     // 첫날 짜인 장면 시각 (27장: 민호를 아침 9시로 당겨 통장님 뒤 빈 시간을 메운다)
 };
 
 // 예배 (25장 C): 위험 카드 · 돌발

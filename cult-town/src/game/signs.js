@@ -1,8 +1,7 @@
 // 맞는 에셋이 없는 것들을 도형으로 그린다. 모두 스프라이트 키로 부른다:
 // 나중에 같은 키의 이미지를 로드하면 (scene.textures.exists(key)) 도형 대신 그 이미지를 쓴다.
 import Phaser from 'phaser';
-import { PLACES } from '../data/places.js';
-import { SHOPS } from '../data/shops.js';
+import { signSpots } from '../map/signspots.js';
 
 const T = 16;
 const FONT = { fontFamily: 'Galmuri11', fontSize: '12px', color: '#ffffff' };
@@ -11,7 +10,6 @@ const PLACE_COLORS = {
   shop: 0x2f5d8a, work: 0x555a66, religion: 0x7a2e2a, ours: 0x5b3a7a, home: 0x6a5a3a, leisure: 0x3e7a4e, transit: 0x3cb44a,
 };
 const hex = (n) => '#' + n.toString(16).padStart(6, '0');
-const hash = (n) => { let h = Math.imul(n + 1, 2654435761) >>> 0; h = (h ^ (h >>> 13)) >>> 0; return h; };
 
 // 간판 판 하나 (가운데 x, 위 y)
 export function board(scene, cx, top, text, color, { depth = 60, fg = 0xffffff, small = false } = {}) {
@@ -25,76 +23,14 @@ export function board(scene, cx, top, text, color, { depth = 60, fg = 0xffffff, 
   return scene.add.container(cx, top + 1, [g, t]).setDepth(depth);
 }
 
-// 건물 하나의 간판들 (layout 의 kind·place·shop·signs 를 보고)
+// 건물 하나의 간판들 (자리는 src/map/signspots.js: build-map 의 겹침 검사와 같은 계산)
 export function drawBuildingSigns(scene, b) {
   const key = `sign.${b.place ?? b.shop ?? b.i}`;
-  if (scene.textures.exists(key)) { scene.add.image((b.door + 0.5) * T, (b.y + b.roofH) * T, key).setOrigin(0.5, 0).setDepth(60); return; }
-  const facadeTop = b.y + b.roofH;
-  const bottom = b.y + b.h - 1;
-  const cx = (b.x + b.w / 2) * T;
-  if (b.kind === 'mall' && b.signs) {
-    // 층마다 작은 간판 (왼쪽), 건물 이름은 지붕 끝에
-    b.signs.forEach((id, k) => {
-      if (!id) return;
-      const s = SHOPS[id];
-      board(scene, (b.x + 1.6) * T, (facadeTop + k) * T + 1, s.sign, s.color, { small: true });
-    });
-    if (b.place) {
-      const p = PLACES[b.place];
-      board(scene, cx, (facadeTop - 1) * T + 2, b.place === 'sanctuary' ? '동림상가' : p.short === 'PC방' ? p.name : p.name, PLACE_COLORS[p.type] ?? 0x555555);
-    }
-    return;
+  if (scene.textures.exists(key)) { scene.add.image((b.door + 0.5) * T, (b.y + b.h - 3) * T, key).setOrigin(0.5, 0).setDepth(60); return; }
+  for (const sp of signSpots(b)) {
+    const color = typeof sp.color === 'number' ? sp.color : PLACE_COLORS[sp.color] ?? 0x555555;
+    board(scene, sp.cx, sp.top, sp.text, color, { small: sp.small });
   }
-  if (b.shop) {
-    const s = SHOPS[b.shop];
-    board(scene, cx, (b.floors >= 2 ? bottom - 1 : bottom) * T + 1, s.sign, s.color);
-    return;
-  }
-  if (b.place) {
-    const p = PLACES[b.place];
-    const label = p.name.replace(' 신림역점', '');
-    if (p.type === 'home') board(scene, (b.door + 0.5) * T, (bottom - 1) * T + 2, label, PLACE_COLORS.home, { small: true });
-    else board(scene, cx, (b.floors >= 2 ? bottom - 1 : bottom) * T + 1, label, PLACE_COLORS[p.type] ?? 0x555555);
-  }
-}
-
-// 지붕 위: 물탱크 · 실외기 · 빨래줄 (건물마다 정해진 무늬)
-export function drawRoof(scene, b) {
-  const g = scene.add.graphics().setDepth(5);
-  const h = hash(b.i * 7 + 3);
-  const top = b.y * T; const left = b.x * T;
-  const roofPx = b.roofH * T; const wPx = b.w * T;
-  if (b.roofH >= 2 && b.w >= 4) {
-    // 물탱크 (초록·파랑 원통)
-    const tx = left + (h % 2 ? 4 : wPx - 18); const ty = top + 3;
-    const c = h % 3 === 0 ? 0x3a7aa8 : 0x3a9a5a;
-    g.fillStyle(0x46465e, 1).fillRect(tx - 1, ty - 1, 16, 14);
-    g.fillStyle(c, 1).fillRect(tx, ty + 2, 14, 10);
-    g.fillStyle(0xffffff, 0.25).fillRect(tx + 2, ty + 3, 3, 8);
-    g.fillStyle(c, 1).fillEllipse(tx + 7, ty + 2, 14, 5);
-    g.fillStyle(0x46465e, 0.4).fillRect(tx + 5, ty, 4, 2);
-  }
-  // 실외기 1~2개
-  const n = 1 + (h >>> 3) % 2;
-  for (let k = 0; k < n; k++) {
-    const ax = left + 6 + ((h >>> (5 + k * 3)) % Math.max(1, b.w - 1)) * T * 0.8;
-    const ay = top + roofPx - 12 - (k % 2) * 4;
-    if (ax > left + wPx - 14) continue;
-    g.fillStyle(0x46465e, 1).fillRect(ax - 1, ay - 1, 13, 10);
-    g.fillStyle(0xd8d8d0, 1).fillRect(ax, ay, 11, 8);
-    g.lineStyle(1, 0x7a7a72, 1).strokeCircle(ax + 4, ay + 4, 2.5);
-    g.fillStyle(0x9a9a92, 1).fillRect(ax + 8, ay + 2, 2, 4);
-  }
-  // 빨래줄
-  if (b.roofH >= 3 && (h >>> 9) % 2 === 0 && b.w >= 5) {
-    const ly = top + roofPx / 2 + 2; const lx0 = left + 6; const lx1 = left + wPx - 8;
-    g.lineStyle(1, 0x4a4a4a, 1).lineBetween(lx0, ly, lx1, ly);
-    const colors = [0xe85a5a, 0xf0f0f0, 0x5a8ae8, 0xf0d040, 0x6ac86a];
-    for (let x = lx0 + 4, k = 0; x < lx1 - 4; x += 9, k++) {
-      g.fillStyle(colors[(h + k) % colors.length], 1).fillRect(x, ly + 1, 6, 6 + (k % 2) * 2);
-    }
-  }
-  return g;
 }
 
 // 골목 도형 소품 (분리수거함·자전거·실외기)
@@ -176,9 +112,26 @@ export function drawStationExit(scene, key, x, y, label) {
 }
 
 // 길 이름 (바닥 글씨, 빈 칸에만)
-export function drawGroundLabel(scene, text, x, y, opts = {}) {
-  return scene.add.text(x, y, text, { ...FONT, color: opts.color ?? '#e8e4f0', align: 'center', lineSpacing: -2 })
-    .setOrigin(0.5).setAlpha(opts.alpha ?? 0.5).setDepth(opts.depth ?? 4);
+// 도로명 표지판 (27장): 기둥 하나에 파란 판 (흰 글씨·흰 테두리). 판은 위에서 아래로, 기둥 칸 (x, y) 바닥에 선다
+export function drawRoadSign(scene, x, y, plates) {
+  const g = scene.add.graphics();
+  const cx = x * T + 8; const foot = (y + 1) * T - 2;
+  const parts = [g];
+  const ts = plates.map((p) => scene.add.text(0, 0, p, { ...SIGN_FONT, color: '#ffffff' }).setOrigin(0.5, 0));
+  const top = foot - 18 - plates.length * 12;
+  g.fillStyle(0x46465e, 1).fillRect(cx - 2, top + 4, 4, foot - top - 4);
+  g.fillStyle(0x9a9aa8, 1).fillRect(cx - 1, top + 4, 2, foot - top - 4);
+  ts.forEach((t, i) => {
+    const w = Math.ceil(t.width) + 8; const py = top + i * 12;
+    g.fillStyle(0x1d2a4a, 1).fillRect(cx - w / 2 - 1, py - 1, w + 2, 13);
+    g.fillStyle(0x1f5aa8, 1).fillRect(cx - w / 2, py, w, 11);
+    g.lineStyle(1, 0xffffff, 1).strokeRect(cx - w / 2 + 1.5, py + 1.5, w - 3, 8);
+    t.setPosition(cx, py + 1);
+    parts.push(t);
+  });
+  const depth = 100 + y * T + 8;
+  for (const p of parts) p.setDepth(depth);
+  return parts;
 }
 
 // 성소 소품 도형 (현수막: 교단 이름 글자가 들어가서 도형으로 그린다. 나머지 소품은 LimeZu 실내 아틀라스)
@@ -200,20 +153,21 @@ export function drawShape(scene, key, x, y, extra = {}) {
 // b: 동림상가 건물 · name: 교단 이름 · tier: 간판 단계 · evening: 저녁이면 조명
 export function drawSanctuarySign(scene, b, name, tier, evening = false) {
   const key = `sign.sanctuary.${tier}`;
-  const facadeTop = b.y + b.roofH;
-  const x3 = (b.x + b.w - 3) * T;          // 3층 창문 줄 오른쪽
-  const y3 = (facadeTop + 1) * T;
+  // 위층 창 띠의 오른쪽 (왼쪽 끝은 탁구장 간판)
+  const right = (b.x + b.w) * T - 4;
+  const x3 = right - 30;
+  const y3 = (b.y + 1) * T;
   if (scene.textures.exists(key)) return scene.add.image(x3, y3, key).setOrigin(0.5, 0).setDepth(62);
   const g = scene.add.graphics().setDepth(61);
   const parts = [g];
   if (tier === 0) {
     // 창문에 붙인 A4 용지: 매직으로 쓴 교단 이름 (조금 삐뚤게) + 테이프 두 줄 + 아래에 작게 302
     const t = scene.add.text(0, 0, name, { fontFamily: 'Galmuri11', fontSize: '10px', color: '#1d1b26' }).setDepth(63);
-    const maxW = (b.w - 2) * T - 8;
+    const maxW = b.w * T - 64;
     if (t.width > maxW) t.setScale(maxW / t.width);
     const pw = Math.ceil(t.displayWidth) + 22; const ph = 15;
-    const cx = (b.x + b.w / 2) * T + 8;
-    const px = Math.round(cx - pw / 2); const py = y3 + 1;
+    const px = Math.round(right - pw); const py = y3;
+    const cx = px + pw / 2;
     g.fillStyle(0x46465e, 0.35).fillRect(px + 1, py + 1, pw, ph);
     g.fillStyle(0xfbfaf4, 1).fillRect(px, py, pw, ph);
     g.fillStyle(0xd8c890, 0.95).fillRect(px - 2, py - 1, 7, 3).fillRect(px + pw - 5, py - 1, 7, 3);
@@ -221,14 +175,15 @@ export function drawSanctuarySign(scene, b, name, tier, evening = false) {
     parts.push(t, scene.add.text(px + 3, py + 5, '302', { ...SIGN_FONT, fontSize: '7px', color: '#6a6a7a' }).setDepth(63));
   } else if (tier === 1) {
     // 창문 시트지 글씨 (흰 글씨, 바탕 없음)
-    parts.push(scene.add.text(x3 - 4, y3 + 3, `302 ${name}`, { ...SIGN_FONT, color: '#ffffff', stroke: '#1d1b26', strokeThickness: 2 }).setOrigin(0.5, 0).setDepth(62));
+    parts.push(scene.add.text(right, y3 + 3, `302 ${name}`, { ...SIGN_FONT, color: '#ffffff', stroke: '#1d1b26', strokeThickness: 2 }).setOrigin(1, 0).setDepth(62));
   } else if (tier === 2) {
     // 아크릴 간판 (보라 바탕, 테두리)
-    parts.push(board(scene, x3 - 4, y3 + 2, name, 0x5b3a7a, { depth: 62 }));
+    const t = scene.add.text(0, 0, name, SIGN_FONT); const bw = Math.ceil(t.width) + 4; t.destroy();
+    parts.push(board(scene, right - bw / 2 - 1, y3 + 2, name, 0x5b3a7a, { depth: 62 }));
   } else {
-    // 외벽 대형 간판: 3·4층에 걸친 큰 판, 저녁엔 조명
+    // 외벽 대형 간판: 지붕 끝과 위층에 걸친 큰 판 (오른쪽 절반), 저녁엔 조명
     const w = Math.max(48, name.length * 9 + 10);
-    const cx = (b.x + b.w / 2) * T + 8; const top = facadeTop * T + 2;
+    const cx = right - w / 2 - 2; const top = b.y * T + 6;
     if (evening) g.fillStyle(0xfff0a0, 0.28).fillCircle(cx, top + 12, w * 0.7);
     g.fillStyle(0x46465e, 1).fillRect(cx - w / 2 - 2, top - 2, w + 4, 26);
     g.fillStyle(evening ? 0xf0e0ff : 0x5b3a7a, 1).fillRect(cx - w / 2, top, w, 22);
@@ -237,21 +192,21 @@ export function drawSanctuarySign(scene, b, name, tier, evening = false) {
   return parts;
 }
 
-// 동림상가 입구 층별 안내판: 문 오른쪽 벽에 붙은 큰 판 (첫날부터 3층에 교단 이름). 탭하면 층별 안내 (TownScene)
+// 동림상가 입구 층별 안내판 (27장): 문 왼쪽 1층 벽에 붙은 작은 판. 사람보다 뒤에 그린다 (깊이 3.5).
+// 글씨는 작아서 지도에선 줄만 보이고, 탭하면 층별 안내 (TownScene)
 export function drawFloorDirectory(scene, b, name, tier) {
   const lines = ['4층 쿵탁탁구장', `3층 302호 ${name}`, '2층 보습교실', '1층 꼬마김밥'];
-  const left = (b.door + 1) * T + 2;                    // 문 바로 오른쪽부터 건물 끝까지
-  const right = (b.x + b.w) * T - 2;
-  const w = right - left; const top = (b.y + b.h - 2) * T + 4; const hgt = 26;
-  const g = scene.add.graphics().setDepth(70);
+  const left = b.x * T + 5; const right = b.door * T - 3;
+  const w = right - left; const top = (b.y + b.h - 2) * T + 1; const hgt = 22;
+  const g = scene.add.graphics().setDepth(3.5);
   g.fillStyle(0x46465e, 1).fillRect(left - 1, top - 1, w + 2, hgt + 2);
   g.fillStyle(0x3a3e4a, 1).fillRect(left, top, w, hgt);
-  g.fillStyle(0x5b3a7a, 1).fillRect(left + 1, top + 1 + 6.2, w - 2, 6.2);       // 3층 줄은 보라 바탕
+  g.fillStyle(0x5b3a7a, 1).fillRect(left + 1, top + 1 + 5, w - 2, 5);       // 3층 줄은 보라 바탕
   const parts = [g];
   lines.forEach((l, i) => {
-    const t = scene.add.text(left + 3, top + 1 + i * 6.2, l, { fontFamily: 'Galmuri7', fontSize: '8px', color: i === 1 ? '#fff6c8' : '#e8e4d8' }).setDepth(71);
-    t.setScale(Math.min(0.78, (w - 6) / t.width));
+    const t = scene.add.text(left + 2, top + 1 + i * 5, l, { fontFamily: 'Galmuri7', fontSize: '8px', color: i === 1 ? '#fff6c8' : '#e8e4d8' }).setDepth(3.6);
+    t.setScale(Math.min(0.6, (w - 4) / t.width), 0.6);
     parts.push(t);
   });
-  return { g, parts, lines, area: { x0: b.door + 1, x1: b.x + b.w - 1, y0: b.y + b.h - 2, y1: b.y + b.h - 1 } };
+  return { g, parts, lines, area: { x0: b.x, x1: b.door - 1, y0: b.y + b.h - 2, y1: b.y + b.h - 1 } };
 }

@@ -5,15 +5,23 @@
 
 const room = (slot, x, w) => ({ slot, x, y: 2, w, h: 10, rug: slot === '302' });
 const pulpitOf = (r) => ({ pulpit: [r.x + 8, 3], desk: [r.x + 14, 3], counsel: [r.x + 1, 4] });
+// 302 에 처음부터 있는 것 (27장): 전 세입자가 두고 간 살림. [이름, x, y(물건 아래 칸), 막힘 칸 목록]
+// 벽: 낡은 형광등 둘 · 벽 달력 · 코르크 게시판 / 바닥: 정수기 · 신발장(문 옆) · 벽에 기대 둔 접이식 의자 셋
+const base302Of = (r) => [
+  ['tube', r.x + 1, 0, []], ['tube', r.x + 12, 0, []], ['calendar', r.x + 3, 1, []], ['cork', r.x + 12, 1, []],
+  ['water', r.x + 15, 6, [[r.x + 15, 6]]], ['shoes', r.x + 3, 11, [[r.x + 3, 11]]], ['slippers', r.x + 4, 11, []],
+  ['chair2', r.x, 6, [[r.x, 6]]], ['chair2', r.x, 7, [[r.x, 7]]], ['chair2', r.x, 8, [[r.x, 8]]],
+];
 
 function floor3(id, rooms, walls, w) {
   const r302 = rooms.find((r) => r.slot === '302');
   const f = pulpitOf(r302);
+  const base = base302Of(r302);
   const door = [r302.x + 8, 12];
   return {
     id, floor: 3, w, h: 13, rooms, walls, doors: [door],
     stairs: w > 40 ? [{ x: w - 4, y: 12, to: 2 }, { x: w - 2, y: 12, to: 4 }] : [],
-    furniture302: f, blocked: [f.pulpit, f.desk, f.counsel],
+    furniture302: f, base302: base, blocked: [f.pulpit, f.desk, f.counsel, ...base.flatMap((b) => b[3])],
   };
 }
 

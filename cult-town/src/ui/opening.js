@@ -4,13 +4,15 @@ import { h, mount, unmount } from './dom.js';
 import { fill } from './text.js';
 import { play } from './sound.js';
 
-// opts: { title, face, name, scene, lines[], next, choices: [{ id, label, hint }], onChoice(id) → 대답 문장, onDone }
+// opts: { title, face, name, scene, lines[], next, choices: [{ id, label, hint }], onChoice(id) → 대답 문장, onDone,
+//         speaker: 지도에 세울 사람 (portrait 와 같은 id: 'o:mom' · 'tong' …, 27장) }
 export function openingPanel(app, opts) {
   const s = app.s;
   app.modalOpened();
+  if (opts.speaker) app.showSpeaker(opts.speaker);
   let i = 0;
   const lines = opts.lines ?? [];
-  const close = () => { unmount('opening'); app.modalClosed(); opts.onDone?.(); };
+  const close = () => { unmount('opening'); if (opts.speaker) app.hideSpeaker(); app.modalClosed(); opts.onDone?.(); };
   const render = (reply = null) => {
     const shown = lines.slice(0, i + 1);
     const more = i < lines.length - 1;

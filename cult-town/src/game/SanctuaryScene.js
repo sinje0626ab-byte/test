@@ -64,12 +64,14 @@ export class SanctuaryScene extends Phaser.Scene {
       g.fillStyle(0x3a3346, 1).fillRect(dx * T, dy * T, T, T);
       g.fillStyle(0x6a6276, 1).fillRect(dx * T + 2, dy * T + 4, 12, 2).fillRect(dx * T + 2, dy * T + 9, 12, 2);
     }
-    // 302호 문 앞 안내문 (간판 단계에 따라 A4 종이 → 인쇄 안내판)
+    // 302호 문 안내문 (간판 단계에 따라 A4 종이 → 인쇄 안내판)
     const d0 = this.def.doors[0];
     if (d0 && this.def.floor === 3) {
       const tier = app.s.sanctuary.sign ?? 0;
-      const text = tier >= 2 ? `${app.s.leader.cultName} · 수·일 저녁 ${'{예배}'}` : `302 ${app.s.leader.cultName} · 신발 벗고 들어오세요`;
-      board(this, (d0[0] + 2.5) * T, (d0[1] - 1) * T + 2, fill(text, app.s), tier >= 2 ? 0x5b3a7a : 0xe8e4d8, { small: true, depth: 30, fg: tier >= 2 ? 0xffffff : 0x1d1b26 });
+      const text = tier >= 2 ? `수·일 저녁 ${'{예배}'}` : '신발 벗고 들어오세요';
+      // 27장: 문 옆 벽(아래 벽 줄)에 붙인다. 바닥 칸에 걸치지 않아서 사람과 겹치지 않는다
+      const t = fill(text, app.s); const tw = this.add.text(0, 0, t, { fontFamily: 'Galmuri7', fontSize: '8px' }); const half = tw.width / 2 + 3; tw.destroy();
+      board(this, (d0[0] + 1) * T + 3 + half, d0[1] * T + 3, t, tier >= 2 ? 0x5b3a7a : 0xe8e4d8, { small: true, depth: 3, fg: tier >= 2 ? 0xffffff : 0x1d1b26 });
     }
     for (const st of this.def.stairs) {
       const ok = !!floors[st.to];
@@ -168,6 +170,12 @@ export class SanctuaryScene extends Phaser.Scene {
       const f = this.def.furniture302;
       const look = { pulpit: this.deco >= 2 ? 'pulpit' : 'pulpit0', desk: 'deskpc', counsel: this.deco >= 1 ? 'counsel' : 'counsel0' };
       for (const k of ['pulpit', 'desk', 'counsel']) this.furniture.add(this.put(look[k], f[k][0], f[k][1]));
+      // 처음부터 있던 살림 (27장): 형광등은 LED 로 바꾸기 전까지 깜빡인다
+      for (const [name, x, y] of this.def.base302 ?? []) {
+        const im = this.put(name, x, y);
+        this.furniture.add(im);
+        if (name === 'tube' && !props.light) this.tweens.add({ targets: im, alpha: { from: 1, to: 0.35 }, duration: 90, yoyo: true, repeat: -1, repeatDelay: 1800 + x * 137 });
+      }
       // 3단계: 벽에 걸린 천 현수막
       if (this.deco >= 3) for (const dx of [2, 13]) this.furniture.add(this.put(dx < 8 ? 'bannerRed' : 'bannerBlue', r.x + dx, 1));
       if (props.banner) this.furniture.add(drawShape(this, 'shape.banner', (r.x + 4) * T, 1 * T, { width: 8 * T, text: s.leader.cultName }));

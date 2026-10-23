@@ -159,6 +159,7 @@ export function showMenu(app) {
         .map(([k, v]) => h('tr', {}, h('td', {}, h('kbd', {}, k)), h('td', {}, v))))),
     h('p', { class: 'muted' }, '모바일: 왼쪽 아래 방향키 (길게 누르면 달리기) 또는 가고 싶은 곳을 누른다. 사람을 누르면 프로필. 한글 입력 상태에서도 단축키가 된다.'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); app.modalClosed(); app.openNotebook(); } }, '부탁 수첩'),
+    h('button', { class: 'btn', onclick: () => { unmount('menu'); app.setBack('menu', null); app.modalClosed(); app.hud?.tour(); } }, '도움말 · 상태창 보는 법'),
     h('button', { class: 'btn primary', onclick: close }, '계속하기'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); showCredits(() => app.modalClosed()); } }, '만든 사람들 · 에셋'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); app.toTitle(); } }, '처음 화면으로 (저장은 남는다)'))));

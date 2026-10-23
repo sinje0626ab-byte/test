@@ -90,14 +90,72 @@ export function wallNotice(scene, x, y, text, { bg = 0xf6f2e6, color = '#1d1b26'
   return scene.add.container(x, y, [g, t]);
 }
 
-// 퀘스트 표시 (메인 · 부탁 · 오늘): 노란 느낌표 깃발
-const QMARK = { main: 0xf0c020, favor: 0x9ad06a, today: 0x7ab8e8, fork: 0xe88aa0 };
-export function questMark(scene, why) {
-  const t = scene.add.text(0, 0, '!', { ...SMALL, fontSize: '9px', color: '#1d1b26' }).setOrigin(0.5, 1);
-  const g = scene.add.graphics();
-  g.fillStyle(0x1d1b26, 1).fillRect(-5, -13, 10, 12);
-  g.fillStyle(QMARK[why] ?? QMARK.main, 1).fillRect(-4, -12, 8, 10);
-  g.fillStyle(0x1d1b26, 1).fillTriangle(-3, -1, 3, -1, 0, 3);
-  t.setY(-2);
-  return scene.add.container(0, 0, [g, t]);
+// ── 머리 위 표시 (27장 B): 한 사람에 하나. 도트 말풍선 12×14 (글리프 8×7) ──
+// 수첩 '기호 설명' 탭이 같은 표(HEAD_ICONS)를 보여 준다
+const G = {
+  bang: ['...##...', '...##...', '...##...', '...##...', '........', '...##...', '........'],
+  ask: ['..####..', '.##..##.', '.....##.', '....##..', '...##...', '........', '...##...'],
+  check: ['........', '......##', '.....##.', '##..##..', '.####...', '..##....', '........'],
+  drop: ['...##...', '..####..', '.######.', '.######.', '########', '.######.', '..####..'],
+  anger: ['.#....#.', '##....##', '........', '........', '........', '##....##', '.#....#.'],
+  flame: ['...#....', '...##...', '..###.#.', '.######.', '.##.###.', '.#...##.', '..###...'],
+  out: ['........', '...#....', '...##...', '#######.', '...##...', '...#....', '........'],
+  camera: ['..###...', '########', '#..##..#', '#.#..#.#', '#..##..#', '########', '........'],
+  dot: ['........', '..####..', '.######.', '.######.', '.######.', '..####..', '........'],
+};
+// kind → [바탕, 글리프 색, 글리프, 수첩 설명]
+export const HEAD_ICONS = {
+  q_main: [0xf0c020, 0x1d1b26, 'bang', '노란 느낌표: 지금 할 큰일(메인 퀘스트)이 걸린 사람·장소'],
+  q_favor: [0x9ad06a, 0x1d1b26, 'bang', '초록 느낌표: 부탁을 들어줄 사람·장소'],
+  q_fork: [0xe88aa0, 0x1d1b26, 'bang', '분홍 느낌표: 사연이 갈림길에 선 사람'],
+  q_today: [0x7ab8e8, 0x1d1b26, 'bang', '파란 느낌표: 오늘 할 일에 적힌 장소'],
+  today: [0x3a78c8, 0xffffff, 'check', '파란 체크: 오늘 할 일을 같이 끝낼 수 있는 사람'],
+  zealot: [0xffe8d8, 0xd8501a, 'flame', '불꽃: 열혈 신자 (길에서 남에게 말을 건다)'],
+  defector: [0xd8d4c8, 0x4a4a5a, 'out', '나가는 화살표: 교단을 떠난 사람'],
+  press: [0xfff0d8, 0x8a4a1a, 'camera', '카메라: 기자가 다음에 찾아갈 사람'],
+  rival: [0xf0e8f8, 0x7a3a8a, 'dot', '보라 점: 라이벌 교단 쪽에 기운 사람'],
+  worry: [0xffffff, 0x3a7ad8, 'drop', '파란 물방울: 고민이 큰 사람 (들어 주면 마음이 열린다)'],
+  angry: [0xffffff, 0xd8302a, 'anger', '빨간 핏대: 우리를 수상하게 보는 사람'],
+  new: [0xffffff, 0x1d1b26, 'ask', '물음표: 아직 인사 안 한 사람'],
+};
+export function makeHeadIcons(scene) {
+  for (const [kind, [bg, fg, glyph]] of Object.entries(HEAD_ICONS)) {
+    const key = `head.${kind}`;
+    if (scene.textures.exists(key)) continue;
+    const g = scene.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0x1d1b26, 1).fillRect(1, 0, 10, 11).fillRect(0, 1, 12, 9).fillRect(5, 11, 2, 2).fillRect(4, 11, 4, 1);
+    g.fillStyle(bg, 1).fillRect(1, 1, 10, 9).fillRect(5, 10, 2, 1);
+    g.fillStyle(fg, 1);
+    G[glyph].forEach((row, y) => [...row].forEach((c, x) => { if (c === '#') g.fillRect(2 + x, 2 + y, 1, 1); }));
+    g.generateTexture(key, 12, 14);
+    g.destroy();
+  }
+}
+// 머리 위 표시 하나 (이미지, 아래 가운데 기준)
+export function headIcon(scene, kind) {
+  makeHeadIcons(scene);
+  return scene.add.image(0, 0, `head.${kind}`).setOrigin(0.5, 1);
+}
+// 장소 입구 퀘스트 표시도 같은 그림
+export function questMark(scene, why) { return headIcon(scene, `q_${why}`); }
+
+// 이름표 + (가까이 오면) 그 아래 작은 직업 글씨. name 이 null 이면 직업 글씨만
+export function personTag(scene, name, job) {
+  const parts = [];
+  const n = name ? scene.add.text(0, 0, name, { ...NAME, backgroundColor: 'rgba(29,27,38,0.72)' }).setPadding(2, 1, 2, 0).setOrigin(0.5, 1) : null;
+  const j = job ? scene.add.text(0, 0, job, { ...NAME, fontSize: '8px', color: '#fff6c8', backgroundColor: 'rgba(29,27,38,0.6)' }).setPadding(2, 0, 2, 0).setOrigin(0.5, 1).setScale(0.75) : null;
+  if (n) parts.push(n);
+  if (j) parts.push(j);
+  const c = scene.add.container(0, 0, parts);
+  c.nameText = n; c.jobText = j;
+  c.setNear = (near) => {
+    if (c.near === near) return;
+    c.near = near;
+    if (j) j.setVisible(near);
+    if (n) n.setY(j && near ? -Math.ceil(j.displayHeight) : 0);
+  };
+  // 이름표 윗변 (머리 위 표시를 그 위에 올린다)
+  c.topY = () => (n ? n.y - n.height : j && c.near ? -j.displayHeight : 0);
+  c.setNear(false);
+  return c;
 }

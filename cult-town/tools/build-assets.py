@@ -148,7 +148,7 @@ SINGLE_DIR = {'conf': ('13_Conference_Hall_Singles', 'Conference_Hall_Singles'),
               'music': ('6_Music_and_Sport', 'Music_and_Sport_Singles')}
 # 꾸밈 단계 0 초라한 상가 방 → 3 꾸민 예배실: (바닥 칸) · (벽 위·아래 칸) — Room_Builder 타일 좌표
 INDOOR_TILES = {
-    'floor0': (46, 25), 'floor1': (34, 17), 'floor2': (39, 21), 'floor3': (34, 37),
+    'floor0': (34, 17), 'floor1': (34, 17), 'floor2': (39, 21), 'floor3': (34, 37),
     'wall0a': (1, 41), 'wall0b': (1, 42), 'wall1a': (1, 17), 'wall1b': (1, 18),
     'wall2a': (1, 33), 'wall2b': (1, 34), 'wall3a': (1, 37), 'wall3b': (1, 38),
     'border': (12, 0), 'stairs': (51, 23),
@@ -165,6 +165,8 @@ INDOOR_OBJECTS = {
     'futon': ('jp', 77), 'futon2': ('jp', 81),
     'camera': ('tv', 1), 'softbox': ('tv', 8), 'monitor': ('tv', 41), 'mic': ('music', 61),
     'junk': ('living', 99), 'junk2': ('living', 102),
+    # 302 기본 살림 (27장)
+    'tube': ('conf', 47), 'calendar': ('class', 32), 'cork': ('class', 33), 'water': ('conf', 43), 'shoes': ('jp', 68), 'slippers': ('jp', 113),
 }
 
 
@@ -176,6 +178,8 @@ def single(group, n):
 def build_indoor():
     rb = sheet(os.path.join(IN16, 'Room_Builder_16x16.png'))
     tiles = [(k, rb.crop((x * 16, y * 16, x * 16 + 16, y * 16 + 16))) for k, (x, y) in INDOOR_TILES.items()]
+    # 0단계 바닥 = 누렇게 바랜 낡은 장판 (1단계 장판을 탁하게 물들인 것, 고쳐 쓰기)
+    tiles = [(k, hue(im, (0.86, 0.8, 0.66)) if k == 'floor0' else im) for k, im in tiles]
     objects = [(k, single(g, n)) for k, (g, n) in INDOOR_OBJECTS.items()]
     pack(tiles, objects, 'indoor')
 
@@ -188,6 +192,10 @@ EXDIR = {'terr': ('2_City_Terrains_Singles_16x16', 'ME_Singles_City_Terrains_16x
          'props': ('3_City_Props_Singles_16x16', 'ME_Singles_City_Props_16x16'), 'veh': ('10_Vehicles_Singles_16x16', 'ME_Singles_Vehicles_16x16'),
          'gs': ('6_Garage_Sales_Singles_16x16', 'ME_Singles_Garage_Sales_16x16'),
          'sub': ('20_Subway_and_Train_Station_Singles_16x16', 'ME_Singles_Subway_and_Train_Station_16x16'), 'mk': ('9_Shopping_Center_and_Markets_Singles_16x16', 'ME_Singles_Shopping_Center_and_Markets_16x16')}
+
+
+def fm(name):
+    return ex('fm', name)
 
 
 def ex(group, name):
@@ -220,34 +228,23 @@ def town_tiles():
     T['market'] = crop(ex('terr', 'Sidewalk_1_27'), 0, 0)
     T['grass'] = ex('tf', 'Grass_1_22'); T['water'] = ex('tf', 'Deep_Water_1_9'); T['waterBottom'] = ex('tf', 'Deep_Water_1_2')
     T['fence'] = crop(ex('props', 'Pedestrian_Barrier_Post_Modular_1_Middle'), 0, 0)
-    # 건물: Condo_1(노랑)·Condo_2(회색) 조각 → 지붕 9칸 · 벽(위·가운데·아래 × 왼·가운데·오른) · 창
-    for key, condo, mul in (('yellow', 'Condo_1', None), ('grey', 'Condo_2', None), ('rose', 'Condo_1', (1.05, 0.78, 0.78)), ('cream', 'Condo_2', (1.12, 1.06, 0.92))):
-        p1, p2, p4 = ex('gb', f'{condo}_2'), ex('gb', f'{condo}_3'), ex('gb', f'{condo}_5')
+    # 건물 (27장): LimeZu 모듈 건물(5_Floor_Modular) 조각. 1층 = 세 칸(48px, LimeZu 원래 높이), 위층 = 작은 창 띠 한 칸, 지붕 = 한 칸.
+    # 벽돌·파랑·회색 세 벌 + 회색을 따뜻하게 물들인 베이지 (고쳐 쓰기). 이름: g_<벽>_<조각>_<줄 0~2> · up_<벽>_<A|B|P>
+    for key, fam, mul in (('brick', 0, None), ('blue', 1, None), ('grey', 2, None), ('beige', 2, (1.16, 1.07, 0.88))):
         f = (lambda im: hue(im, mul)) if mul else (lambda im: im)
-        mid = crop(p2, 16, 72)
-        left = mid.copy(); left.paste(crop(p1, 0, 72, 6, 16), (0, 0))
-        right = mid.copy(); right.paste(crop(p4, 10, 72, 6, 16), (10, 0))
-        def base(im):
-            o = im.copy(); o.paste(crop(p2, 16, 186, 16, 6), (0, 10)); return o
-        for row, fn in (('top', lambda x: x), ('mid', lambda x: x), ('bottom', base)):
-            for col, im in (('L', left), ('M', mid), ('R', right)):
-                b = fn(im)
-                if col == 'L' and row == 'bottom': b.paste(crop(p1, 0, 186, 6, 6), (0, 10))
-                if col == 'R' and row == 'bottom': b.paste(crop(p4, 10, 186, 6, 6), (10, 10))
-                T[f'wall_{key}_{row}_{col}'] = f(b)
-        T[f'window_{key}_0'] = f(crop(p2, 0, 157)); T[f'window_{key}_1'] = f(crop(ex('gb', f'{condo}_4'), 0, 156))
-        T[f'door_{key}'] = f(crop(p1, 16, 170))
+        pieces = {f'shop{i}': fm(f'Ground_Floor_Shop_Modular_{fam * 12 + i}') for i in range(1, 13)}
+        pieces.update({f'condo{i}': fm(f'Ground_Floor_Condo_Modular_{fam * 8 + i}') for i in (1, 2, 7, 8)})   # 지도에서 쓰는 것만
+        pieces['mdoor'] = fm(f'Ground_Floor_Bakery_Modular_{fam * 2 + 2}')
+        for name, im in pieces.items():
+            for r in range(3): T[f'g_{key}_{name}_{r}'] = f(crop(im, 0, r * 16))
+        T[f'up_{key}_A'] = f(crop(fm(f'Middle_Floor_Modular_{fam * 10 + 7}'), 0, 14))
+        T[f'up_{key}_B'] = f(crop(fm(f'Middle_Floor_Modular_{fam * 10 + 8}'), 0, 14))
+        T[f'up_{key}_P'] = f(crop(fm(f'Ground_Floor_Condo_Modular_{fam * 8 + 2}'), 0, 16))
+    # 지붕 한 칸: Condo 지붕의 위 끝 + 아래 끝 (왼·가운데·오른) 두 가지
     for key, condo in (('A', 'Condo_1'), ('B', 'Condo_2')):
         p1, p2, p4 = ex('gb', f'{condo}_2'), ex('gb', f'{condo}_3'), ex('gb', f'{condo}_5')
         for i, (im, x) in enumerate(((p1, 0), (p2, 16), (p4, 0))):
-            T[f'roof{key}_{i}'] = crop(im, x, 0); T[f'roof{key}_{3 + i}'] = crop(im, x, 26); T[f'roof{key}_{6 + i}'] = crop(im, x, 52)
             thin = crop(im, x, 0).copy(); thin.paste(crop(im, x, 60, 16, 8), (0, 8)); T[f'roof{key}_thin_{i}'] = thin
-    # 1층 가게: 줄무늬 천막(Shop_Tent)과 가게 진열창(Ground_Floor_Shop) · 빵집 유리문
-    tent, shop = ex('gb', 'Shop_Tent_1'), ex('fm', 'Ground_Floor_Shop_10')
-    T['awning_L'] = crop(tent, 0, 8); T['awning_M'] = crop(tent, 16, 8); T['awning_R'] = crop(tent, 48, 8)
-    T['store_L'] = crop(shop, 0, 30); T['store_M'] = crop(shop, 32, 30); T['store_R'] = crop(shop, 96, 30)
-    T['door_shop'] = crop(ex('fm', 'Ground_Floor_Bakery_Modular_2'), 0, 30)
-    T['door_mall'] = crop(ex('fm', 'Ground_Floor_Butchery_Modular_2'), 0, 30)
     T['stairsDown'] = crop(ex('sub', 'Stairs_Small_2'), 0, 28)     # 지하철 출구 계단 (출구 표지 아래)
     return list(T.items())
 

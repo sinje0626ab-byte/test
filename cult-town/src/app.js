@@ -36,6 +36,7 @@ import { openNotebook, showQuestNews, dailyName } from './ui/notebook.js';
 import { visitSpot, questMarkers, checkQuests } from './sim/quests.js';
 import { cutin } from './ui/cutin.js';
 import { openingPanel } from './ui/opening.js';
+import { showSpeaker, hideSpeaker } from './game/speaker.js';
 import { bigDayOf, bigDayAct } from './sim/bigdays.js';
 import { BIGDAY_TEXT, BIGDAY_UI } from './data/bigdays.js';
 import { OPENING as OPENING_TEXT } from './data/opening.js';
@@ -129,6 +130,7 @@ export const app = {
     this.floor = 3;
     saveGame(s);
     this.hud = createHud(this);
+    s.flags.hudSnap = this.hud.snapshot();
     // 개업 첫날 (25장 B): 302호에서 시작 → 엄마 → 간판 달기 장면 → 통장님
     this.goSanctuary('door');
     setTimeout(() => this.openingMorning(), 500);
@@ -138,7 +140,7 @@ export const app = {
   openingMorning() {
     const s = this.s;
     const O = OPENING_TEXT;
-    openingPanel(this, { title: O.mom.title, name: CAST_BY.mom.name, face: this.portrait('o:mom'), scene: O.mom.scene, lines: O.mom.lines, next: O.mom.next,
+    openingPanel(this, { speaker: 'o:mom', title: O.mom.title, name: CAST_BY.mom.name, face: this.portrait('o:mom'), scene: O.mom.scene, lines: O.mom.lines, next: O.mom.next,
       onDone: () => {
         this.goTown('sanctuary');
         setTimeout(() => {
@@ -157,7 +159,7 @@ export const app = {
   openingTong() {
     const s = this.s;
     const T = OPENING_TEXT.tong;
-    openingPanel(this, { title: T.title, name: RESIDENT_BY_ID.tong.name, face: this.portrait('tong'), scene: T.scene, lines: [T.ask],
+    openingPanel(this, { speaker: 'tong', title: T.title, name: RESIDENT_BY_ID.tong.name, face: this.portrait('tong'), scene: T.scene, lines: [T.ask],
       choices: Object.entries(T.choices).map(([id, c]) => ({ id, label: c.label, hint: c.hint })),
       onChoice: (id) => { openingTong(s, id); return T.choices[id].reply; },
       onDone: () => {
@@ -172,13 +174,13 @@ export const app = {
     const s = this.s;
     if (!isOpeningDay(s) || this.modal > 0) return;
     const O = OPENING_TEXT;
-    if (s.minute >= 12 * 60 && !openingDone(s, 'minho')) {
+    if (s.minute >= OPENING.minhoAt && !openingDone(s, 'minho')) {
       openingMinho(s);
       const inside = this.scene()?.scene.key === 'sanctuary';
-      openingPanel(this, { title: O.minho.title, name: CAST_BY.stranger.name, face: this.portrait('o:stranger'), scene: inside ? O.minho.inside : O.minho.outside, lines: inside ? O.minho.lines : [O.minho.lines[2]], onDone: () => saveGame(s) });
-    } else if (s.minute >= 18 * 60 && !openingDone(s, 'visitor')) {
+      openingPanel(this, { speaker: inside ? 'o:stranger' : null, title: O.minho.title, name: CAST_BY.stranger.name, face: this.portrait('o:stranger'), scene: inside ? O.minho.inside : O.minho.outside, lines: inside ? O.minho.lines : [O.minho.lines[2]], onDone: () => saveGame(s) });
+    } else if (s.minute >= OPENING.visitorAt && !openingDone(s, 'visitor')) {
       openingVisitor(s);
-      openingPanel(this, { title: O.visitor.title, name: RESIDENT_BY_ID.yoonseo.name, face: this.portrait('yoonseo'), scene: O.visitor.scene, lines: [O.visitor.line],
+      openingPanel(this, { speaker: 'yoonseo', title: O.visitor.title, name: RESIDENT_BY_ID.yoonseo.name, face: this.portrait('yoonseo'), scene: O.visitor.scene, lines: [O.visitor.line],
         onDone: () => { saveGame(s); toast('오늘 저녁 첫 모임에 넷이 앉는다. 밤이 되면 성소로 돌아가 밤 메뉴에서 연다.', 'tip', 6000); } });
     }
   },
@@ -188,6 +190,7 @@ export const app = {
     this.s = s;
     this.floor = 3;
     this.hud = createHud(this);
+    s.flags.hudSnap ??= this.hud.snapshot();
     if (s.mode === 'night') { this.goSanctuary(); this.openNightMenu(); }
     else { snapAll(s, this.g); this.goTown('start'); this.maybeEvent(); }
   },
@@ -239,7 +242,7 @@ export const app = {
       if (s.phase >= 3 && Math.floor(before / 60) !== hour) threatHour(s, this.g, hour);
       if (before < CLOCK.dayEnd && s.minute >= CLOCK.dayEnd) { toast(s.district === 'bongcheon' ? BRANCH_TEXT.nightB : '21시. 동네가 문을 닫는다. 302호로 돌아가자.', 'warn'); play('error'); }
       if (s.minute >= CLOCK.forceHome) { this.forceNight(); return; }
-      if (isOpeningDay(s) && (before < 12 * 60 && s.minute >= 12 * 60 || before < 18 * 60 && s.minute >= 18 * 60)) { this.openingTimed(); left -= step; break; }
+      if (isOpeningDay(s) && [OPENING.minhoAt, OPENING.visitorAt].some((t) => before < t && s.minute >= t)) { this.openingTimed(); left -= step; break; }
       left -= step;
     }
     this.saveTimer += dMin;
@@ -282,6 +285,9 @@ export const app = {
       const r = endDay(s, this.g, { rentChoice });
       this.modal = 0;
       const lines = eventLines(s, r.events);
+      // 27장 A: 어제 아침과 비교한 한 줄
+      const diff = this.hud?.morningLine(s.flags.hudSnap);
+      if (diff) lines.unshift(diff);
       if (r.over) {
         clearSave();
         const after = () => showEnding(s, r.over, { onTitle: () => { this.s = null; this.toTitle(); } });
@@ -296,6 +302,7 @@ export const app = {
         s.district = 'sillim';
         this.goTown('sanctuary');
         play('door');
+        s.flags.hudSnap = this.hud?.snapshot();
         toast(`${s.leader.name}: ${pick(s, LEADER_TONE[tone(s)].morning)}`);
         const hol = holidayOf(s.day);
         if (hol && dayOfMonth(s.day) === hol.from) toast(hol.text, '', 6000);
@@ -524,7 +531,7 @@ export const app = {
     for (const id of near) this.scene()?.say?.(id, ['"…"', '"뭐야."', '"오."', '"바빠요."'][Math.floor(Math.random() * 4)], this.scene().time.now + Math.random() * 1500);
     saveGame(s); this.updateExtra(); this.hud.update();
   },
-  openNotebook() { openNotebook(this); },
+  openNotebook(tab) { openNotebook(this, tab); },
 
   modalOpened() { this.modal++; this.dpadShow(false); },
   modalClosed() { this.modal = Math.max(0, this.modal - 1); if (!this.modal) this.dpadShow(true); },
@@ -535,6 +542,14 @@ export const app = {
   },
   openMenu() { showMenu(this); },
 
+  // 대화창이 떠 있는 동안 말하는 사람을 지도에 세운다 (27장 D5). id 는 portrait 와 같은 꼴
+  showSpeaker(id) {
+    const sc = this.scene();
+    if (!sc?.player) return;
+    const key = id.startsWith('o:') ? `cast:${id.slice(2)}` : id;
+    showSpeaker(sc, `p:${key}`, sc.sprites?.[key] ?? null);
+  },
+  hideSpeaker() { const sc = this.scene(); if (sc) hideSpeaker(sc); },
   portrait(id) {
     // 아틀라스 줄 이름: 주민 id · leader · c:성직자 · cast:첫 신도 · x:reporter · v:라이벌
     const key = id.startsWith('o:') ? `cast:${id.slice(2)}` : id;

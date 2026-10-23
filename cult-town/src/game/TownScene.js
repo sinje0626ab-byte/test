@@ -8,16 +8,16 @@ import { RESIDENT_BY_ID, RESIDENTS } from '../data/residents.js';
 import { ALL_CLERGY as CLERGY } from '../data/clergy.js';
 import { CAST } from '../data/cast.js';
 import { peopleOf, speedOf } from '../sim/residents.js';
-import { activityOf, emotionOf, gossipLine, lastGossip, JOB_ICON } from '../sim/mood.js';
+import { activityOf, gossipLine, lastGossip, headKind } from '../sim/mood.js';
 import { registerPerson, idleFrame, walkFrame, sitFrame, phoneFrame, HEAD_LIFT, PERSON_ORIGIN_Y } from './people.js';
-import { drawBuildingSigns, drawRoof, drawShapeProp, drawWires, drawStationExit, drawGroundLabel, drawSanctuarySign, drawFloorDirectory, drawLzProps } from './signs.js';
-import { makeIconTextures, emotionBubble, speechBubble, nameTag, picket, wallNotice, questMark } from './overlays.js';
+import { board, drawBuildingSigns, drawShapeProp, drawWires, drawStationExit, drawRoadSign, drawSanctuarySign, drawFloorDirectory, drawLzProps } from './signs.js';
+import { makeIconTextures, speechBubble, personTag, headIcon, picket, wallNotice, questMark } from './overlays.js';
 import { REPORTER } from '../config.js';
 import { REPORTER_INFO, NOTICE_TEXT, PROTEST_TEXT } from '../data/threats.js';
 import { isDefector, protestToday, reporterTarget } from '../sim/threats.js';
 import { rivalInfo } from '../sim/rival.js';
 import { nameForNpc } from '../ui/threats.js';
-import { toast } from '../ui/toast.js';
+import { toast, areaBanner } from '../ui/toast.js';
 import { tintAt } from './tint.js';
 import { Walker } from './walker.js';
 import { app } from '../app.js';
@@ -64,7 +64,7 @@ export class TownScene extends Phaser.Scene {
 
     // 건물: 지붕 위 물건과 간판
     this.buildings = prop('buildings');
-    for (const b of this.buildings) { drawRoof(this, b); drawBuildingSigns(this, b); }
+    for (const b of this.buildings) drawBuildingSigns(this, b);
     // 동림상가: 교단 간판(단계별) · 입구 층별 안내판
     this.noticeAreas = [];
     const mall = !bong && this.buildings.find((b) => b.place === 'sanctuary');
@@ -84,11 +84,12 @@ export class TownScene extends Phaser.Scene {
     }
     drawLzProps(this, map.getObjectLayer('places').objects);
     drawWires(this, poles);
-    for (const l of prop('labels')) drawGroundLabel(this, l.text, l.x * T, l.y * T, { color: l.text === '도림천' ? '#ffffff' : '#e8e4f0' });
+    for (const r of prop('roadSigns') ?? []) drawRoadSign(this, r.x, r.y, r.plates);
+    this.areas = prop('areas') ?? [];
     // 장날: 시장 위쪽에 좌판이 더 나온다
     if (s.weather?.market && !bong) {
       [18, 21, 24, 27, 30].forEach((x, k) => this.add.image(x * T + 8, 25 * T, 'lzTown', ['stall', 'stall2', 'stall3'][k % 3]).setOrigin(0.5, 1).setDepth(3));
-      drawGroundLabel(this, '오늘 장날', 24 * T, 30.5 * T, { color: '#7a3a1a', alpha: 0.85 });
+      board(this, 24 * T, 30 * T + 3, '오늘 장날', 0xc8601a, { small: true, depth: 100 + 24 * T });
     }
     // 큰 날 (25장 D): 행사 자리에 현수막과 좌판
     this.bigDay = !bong ? bigDayOf(s) : null;
@@ -120,7 +121,7 @@ export class TownScene extends Phaser.Scene {
     // 사람들
     this.sprites = {};
     this.tags = {};
-    this.emos = {};
+    this.heads = {};
     for (const p of this.people()) this.addPerson(p.id);
     registerPerson(this, 'p:leader');
     const start = this.entry === 'station' ? here.places[bong ? 'b_station' : 'station'].door
@@ -180,7 +181,17 @@ export class TownScene extends Phaser.Scene {
     for (const id of ids) this.addPerson(id);
     for (const id of Object.keys(this.sprites)) if (!ids.includes(id)) { this.sprites[id].setVisible(false); continue; }
     const standing = new Map();
-    for (const id of ids) { const p = s.pos[id]; if (p && !p.inside && !p.path.length) standing.set(`${p.x},${p.y}`, id); }
+    // 같은 칸에 선 사람들 (27장 B): 두 번째부터 옆으로 비켜 세운다 (화면만, 위치 기록은 그대로)
+    const crowd = new Map(); const slot = {};
+    for (const id of ids) {
+      const p = s.pos[id];
+      if (!p || p.inside || p.path.length) continue;
+      const k = `${p.x},${p.y}`;
+      standing.set(k, id);
+      slot[id] = crowd.get(k) ?? 0;
+      crowd.set(k, slot[id] + 1);
+    }
+    const SPREAD = [[0, 0], [9, 2], [-9, 2], [4, 7], [-4, 7], [12, 6], [-12, 6]];
     this.fx.clear();
     const movers = [];
     for (const id of ids) {
@@ -189,6 +200,7 @@ export class TownScene extends Phaser.Scene {
       let x = pos.x; let y = pos.y;
       if (pos.path.length && pos.prog > 0) { x += (pos.path[0][0] - pos.x) * pos.prog; y += (pos.path[0][1] - pos.y) * pos.prog; }
       let tx = x * T; let ty = y * T - 4;
+      if (slot[id]) { const [ox, oy] = SPREAD[slot[id] % SPREAD.length]; tx += ox; ty += oy; }
       const wasHidden = !sp.visible;
       sp.setVisible(!pos.inside);
       if (sp.dispX == null || wasHidden || !dt) { sp.dispX = tx; sp.dispY = ty; }
@@ -262,11 +274,15 @@ export class TownScene extends Phaser.Scene {
       sp.setPosition(px, py);
       sp.setDepth(100 + py + 4);
       const tag = this.tags[id];
-      if (tag) tag.setPosition(px + 8, py - 1 - HEAD_LIFT).setVisible(sp.visible).setDepth(5060);
-      const emo = this.emos[id];
-      if (emo) emo.c.setPosition(px + 14, py - 6 - HEAD_LIFT).setVisible(sp.visible).setDepth(5070);
-      const qm = this.qmarks?.[id];
-      if (qm) qm.setPosition(px + 8, py - 11 - HEAD_LIFT).setVisible(sp.visible).setDepth(5065);
+      let top = py - 1 - HEAD_LIFT;
+      if (tag) {
+        // 가까이(3칸 안) 오면 이름 아래에 직업 글씨
+        tag.setNear(Math.abs(px - this.player.x) <= 3 * T && Math.abs(py - this.player.y) <= 3 * T);
+        tag.setPosition(px + 8, top).setVisible(sp.visible).setDepth(5060);
+        top += tag.topY() - 1;
+      }
+      const head = this.heads[id];
+      if (head) head.img.setPosition(px + 8, top).setVisible(sp.visible).setDepth(5065);
     }
     if (this.gossip) {
       const sp = this.sprites[this.gossip.id];
@@ -279,29 +295,35 @@ export class TownScene extends Phaser.Scene {
   refreshOverlays() {
     const s = app.s;
     this.refreshQuestMarks();
+    const why = {};
+    for (const m of this.questList ?? []) if (m.kind === 'res' && !why[m.id]) why[m.id] = m.why;
     for (const id of Object.keys(this.sprites)) {
-      const known = id.includes(':') || s.res[id]?.met;
-      const want = known ? `n:${id.includes(':') ? nameOf(id) : RESIDENT_BY_ID[id].name}` : `i:${JOB_ICON[id] ?? 'star'}`;
+      const res = !id.includes(':');
+      const known = !res || s.res[id]?.met;
+      const name = known ? nameOf(id) : null;
+      const job = res ? RESIDENT_BY_ID[id]?.job ?? null : null;
+      const want = `${name}|${job}`;
       const cur = this.tags[id];
       if (!cur || cur.want !== want) {
         cur?.destroy();
-        const t = want.startsWith('n:') ? nameTag(this, want.slice(2)) : this.add.image(0, 0, `icon.${want.slice(2)}`).setOrigin(0.5, 1);
+        const t = personTag(this, name, job);
         t.want = want;
         this.tags[id] = t;
       }
-      let kind = null;
-      if (!id.includes(':')) {
-        if (isZealot(s, id)) kind = 'zealot';
-        else if (isDefector(s, id)) kind = 'defector';
-        else if (s.reporter?.active && reporterTarget(s) === id) kind = 'press';
-        else if (s.rival && s.res[id].rival && s.res[id].rival !== 'none' && s.res[id].met) kind = 'rival';
-        else kind = emotionOf(s, id);
+      // 머리 위 표시 하나 (27장 B: 퀘스트 > 오늘 할 일 > 상태 > 고민 > 짜증 > 처음 보는 사람)
+      let status = null;
+      if (res) {
+        if (isZealot(s, id)) status = 'zealot';
+        else if (isDefector(s, id)) status = 'defector';
+        else if (s.reporter?.active && reporterTarget(s) === id) status = 'press';
+        else if (s.rival && s.res[id].rival && s.res[id].rival !== 'none' && s.res[id].met) status = 'rival';
       }
-      const e = this.emos[id];
+      const kind = headKind(s, id, why[id] ?? null, status);
+      const e = this.heads[id];
       if ((e?.kind ?? null) !== kind) {
-        e?.c.destroy();
-        if (kind) this.emos[id] = { kind, c: emotionBubble(this, kind) };
-        else delete this.emos[id];
+        e?.img.destroy();
+        if (kind) this.heads[id] = { kind, img: headIcon(this, kind) };
+        else delete this.heads[id];
       }
     }
   }
@@ -322,7 +344,9 @@ export class TownScene extends Phaser.Scene {
     if (!b) { onDone?.(); return; }
     const cam = this.cameras.main;
     const s = app.s;
-    const cx = (b.x + b.w / 2) * T + 8; const cy = (b.y + b.roofH + 1) * T + 8;
+    // 27장: 성소 간판은 위층 창 띠 오른쪽 (signs.js drawSanctuarySign 과 같은 자리)
+    const name0 = tier >= 1 ? `302 ${s.leader.cultName}` : s.leader.cultName;
+    const cx = (b.x + b.w) * T - 4 - (name0.length * 7) / 2; const cy = (b.y + 1) * T + 8;
     cam.stopFollow();
     cam.pan(cx, cy + 24, 900, 'Sine.easeInOut');
     const prevZoom = cam.zoom;
@@ -358,10 +382,10 @@ export class TownScene extends Phaser.Scene {
     const key = JSON.stringify(marks);
     if (key === this.qkey) return;
     this.qkey = key;
+    this.questList = marks;
     for (const c of Object.values(this.qmarks ?? {})) c.destroy();
     this.qmarks = {};
     for (const m of marks) {
-      if (m.kind === 'res' && this.sprites[m.id] && !this.qmarks[m.id]) this.qmarks[m.id] = questMark(this, m.why);
       if (m.kind === 'place') {
         const d = app.here().places[m.place]?.door;
         if (!d || this.qmarks[`p:${m.place}`]) continue;
@@ -541,6 +565,20 @@ export class TownScene extends Phaser.Scene {
     return null;
   }
 
+  // 지역 이름 (27장 C): 큰길·시장·쉼터에 처음 들어가면 화면 위에 이름이 잠깐 뜬다 (동네마다 한 번)
+  checkArea() {
+    const t = this.walker.tile; const s = app.s;
+    if (!t || !this.areas?.length || (this.lastAreaTile && this.lastAreaTile[0] === t[0] && this.lastAreaTile[1] === t[1])) return;
+    this.lastAreaTile = [t[0], t[1]];
+    const a = this.areas.find((r) => t[0] >= r.x && t[0] < r.x + r.w && t[1] >= r.y && t[1] < r.y + r.h);
+    if (!a || app.modal > 0) return;
+    s.flags.areas ??= {};
+    const key = `${this.district}:${a.name}`;
+    if (s.flags.areas[key]) return;
+    s.flags.areas[key] = true;
+    areaBanner(a.name, this.district === 'bongcheon' ? '관악구 봉천동' : '관악구 신림동');
+  }
+
   update(time, delta) {
     const s = app.s;
     if (!s) return;
@@ -554,6 +592,7 @@ export class TownScene extends Phaser.Scene {
     this.watchReporter(dt, free);
     this.updateBubbles(time);
     app.checkPlaceVisit(this.walker.tile);
+    this.checkArea();
 
     const near = free ? this.findNear() : null;
     const key = near ? near.id ?? near.place ?? `shop:${near.b?.i}` : null;

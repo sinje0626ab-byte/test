@@ -1,7 +1,7 @@
 // 제목 화면 배경: 밤의 신림역 3번 출구 앞. 동림상가 3층 302호 창문에만 형광등이 켜져 있다.
 // 실제 동네 지도를 밤 색조로 그리고, 카메라는 천천히 옆으로 흐른다.
 import Phaser from 'phaser';
-import { drawBuildingSigns, drawRoof, drawStationExit, drawLzProps } from './signs.js';
+import { drawBuildingSigns, drawStationExit, drawLzProps } from './signs.js';
 
 const T = 16;
 
@@ -14,7 +14,7 @@ export class TitleScene extends Phaser.Scene {
     ['ground', 'detail', 'buildings', 'deco'].forEach((n, i) => map.createLayer(n, ts, 0, 0).setDepth(i));
     map.createLayer('above', ts, 0, 0).setDepth(5000);
     const buildings = JSON.parse(map.properties.find((p) => p.name === 'buildings').value);
-    for (const b of buildings) { drawRoof(this, b); drawBuildingSigns(this, b); }
+    for (const b of buildings) drawBuildingSigns(this, b);
     for (const o of map.getObjectLayer('places').objects) {
       if (o.type === 'exit') drawStationExit(this, 'station.exit', o.x, o.y, o.properties.find((p) => p.name === 'label').value);
     }
