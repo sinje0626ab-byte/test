@@ -19,8 +19,8 @@ export function parseLog(v: unknown): SleepLog | null {
   if (typeof id !== 'string' || !id) return null;
   if (typeof date !== 'string' || !DATE_RE.test(date)) return null;
   if (!isIso(bedTime) || !isIso(sleepTime) || !isIso(wakeTime)) return null;
-  if (typeof awakenings !== 'number' || awakenings < 0) return null;
-  if (typeof quality !== 'number' || ![1, 2, 3, 4, 5].includes(quality)) return null;
+  if (awakenings !== undefined && (typeof awakenings !== 'number' || awakenings < 0)) return null;
+  if (quality !== undefined && (typeof quality !== 'number' || ![1, 2, 3, 4, 5].includes(quality))) return null;
   const now = new Date().toISOString();
   return {
     id,
@@ -28,8 +28,8 @@ export function parseLog(v: unknown): SleepLog | null {
     bedTime,
     sleepTime,
     wakeTime,
-    awakenings: Math.min(5, Math.round(awakenings)),
-    quality: quality as SleepLog['quality'],
+    ...(typeof awakenings === 'number' ? { awakenings: Math.min(5, Math.round(awakenings)) } : {}),
+    ...(typeof quality === 'number' ? { quality: quality as SleepLog['quality'] } : {}),
     ...(typeof note === 'string' && note ? { note } : {}),
     createdAt: isIso(createdAt) ? createdAt : now,
     updatedAt: isIso(updatedAt) ? updatedAt : now,

@@ -22,8 +22,6 @@ const log = (date: string, id = `id-${date}`): SleepLog => ({
   bedTime: `${date}T00:00:00.000Z`,
   sleepTime: `${date}T00:15:00.000Z`,
   wakeTime: `${date}T07:00:00.000Z`,
-  awakenings: 1,
-  quality: 4,
   note: '메모',
   createdAt: '2026-10-01T00:00:00.000Z',
   updatedAt: '2026-10-01T00:00:00.000Z',
