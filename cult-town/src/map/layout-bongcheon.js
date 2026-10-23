@@ -158,7 +158,14 @@ export const STATION_EXITS = [
   { label: '서울대입구역 5', x: 33, y: 6, sprite: 'station.exit' },
 ];
 
-export const LABELS = [
-  { text: '남부순환로', x: 10, y: 3.5 }, { text: '남부순환로', x: 52, y: 3.5 },
-  { text: '관\n악\n로', x: 30, y: 31, tiles: [[29, 30], [30, 30], [29, 31], [30, 31], [29, 32], [30, 32]] },
+// 27장: 도로명 표지판 · 지역 이름 (layout.js 와 같은 꼴)
+export const ROAD_SIGNS = [
+  { x: 32, y: 10, plates: ['남부순환로', '관악로'] },
+];
+export const AREAS = [
+  { name: '서울대입구역 앞', x: 18, y: 6, w: 9, h: 2 },
+  { name: '남부순환로', x: 0, y: 0, w: W, h: 8 },
+  { name: '관악로', x: WALK_V[0], y: 8, w: WALK_V[1] - WALK_V[0] + 1, h: H - 8 },
+  { name: '언덕길 먹자골목', ...FOOD },
+  { name: '느티나무 쉼터', ...PARK },
 ];

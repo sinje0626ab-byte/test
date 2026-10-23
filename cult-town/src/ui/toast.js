@@ -42,3 +42,13 @@ function pump() {
     setTimeout(() => { el.remove(); showing = null; setTimeout(pump, GAP); }, 200);
   }
 }
+
+// 지역 이름 띠 (27장 C): 화면 위 가운데에 큰 글씨로 2.4초. 알림 줄과 따로 뜬다
+let areaTimer = null;
+export function areaBanner(name, sub) {
+  $ui().querySelector('.areabanner')?.remove();
+  clearTimeout(areaTimer);
+  const el = h('div', { class: 'areabanner' }, h('div', { class: 'name' }, name), h('div', { class: 'sub' }, sub));
+  $ui().append(el);
+  areaTimer = setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 400); }, 2400);
+}

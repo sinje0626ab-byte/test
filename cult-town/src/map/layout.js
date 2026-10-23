@@ -203,10 +203,18 @@ export const STATION_EXITS = [
 ];
 
 // 바닥 글자 (빈 칸에만. build-map 이 소품·자리와 겹치는지 검사)
-export const LABELS = [
-  { text: '남부순환로', x: 10, y: 5.5 }, { text: '남부순환로', x: 58, y: 5.5 },
-  { text: '신\n림\n로', x: 35, y: 26, tiles: [[34, 25], [35, 25], [34, 26], [35, 26], [34, 27], [35, 27]] },
-  { text: '도림천', x: 12, y: 1 }, { text: '도림천', x: 60, y: 1 },
+// 27장: 바닥 글씨 대신 큰길 교차로 모퉁이에 파란 도로명 표지판 (기둥 칸 · 판 글자 위에서 아래로)
+export const ROAD_SIGNS = [
+  { x: 32, y: 11, plates: ['남부순환로', '신림로'] },
+];
+// 처음 들어가면 화면 위에 잠깐 뜨는 지역 이름 (위에서부터 먼저 맞는 것)
+export const AREAS = [
+  { name: '도림천 산책로', x: 0, y: 0, w: W, h: 4 },
+  { name: '신림역 앞', x: 22, y: 8, w: 10, h: 2 },
+  { name: '남부순환로', x: 0, y: 4, w: W, h: 6 },
+  { name: '신림로', x: WALK_V[0], y: 10, w: WALK_V[1] - WALK_V[0] + 1, h: H - 10 },
+  { name: '도림골목시장', ...MARKET },
+  { name: '솔밭 쉼터', ...PARK },
 ];
 
 // ── 성소 실내: build-map 이 공간 단계마다 한 장씩 만든다 (sim/space.js 의 SPACE_STEPS 와 같은 id)

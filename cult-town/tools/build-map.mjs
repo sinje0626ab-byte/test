@@ -8,7 +8,7 @@ import { SPACE_MAPS } from '../src/map/interiors.js';
 // 어느 동네를 뽑나: 인자 없으면 신림동(layout.js) + 성소 실내, 'bongcheon' 이면 layout-bongcheon.js
 const which = process.argv[2] ?? 'town';
 const L = await import(which === 'town' ? '../src/map/layout.js' : `../src/map/layout-${which}.js`);
-const { W, H, GROUND, CROSSWALKS, BUILDINGS, PROPS, SPOTS, STATION_EXITS, LABELS, DEAD_ENDS, ROWS, ROW_H, WALK_V, EXTRA_PLACES, START, MAP_ID, MAP_CREDIT } = L;
+const { W, H, GROUND, CROSSWALKS, BUILDINGS, PROPS, SPOTS, STATION_EXITS, ROAD_SIGNS, AREAS, DEAD_ENDS, ROWS, ROW_H, WALK_V, EXTRA_PLACES, START, MAP_ID, MAP_CREDIT } = L;
 
 const out = (name) => new URL(`../src/map/${name}`, import.meta.url);
 
@@ -19,20 +19,19 @@ const U = {
   lot: TI('sidewalk'), sidewalk: TI('sidewalk'), plaza: TI('plaza'), alley: TI('alley'), road: TI('road'), market: TI('market'), grass: TI('grass'), path: TI('sidewalk'),
   water: TI('water'), waterBottom: TI('waterBottom'), laneH: TI('laneH'), laneV: TI('laneV'), crossV: TI('crossV'), crossH: TI('crossH'),
 };
-// 지붕 9칸 [왼위·위·오른위 / 왼·가운데·오른 / 왼아래·아래·오른아래] 두 가지 + 한 줄짜리 지붕
-const roof9 = (k) => [[0, 1, 2], [3, 4, 5], [6, 7, 8]].map((r) => r.map((i) => TI(`roof${k}_${i}`)));
-const ROOF = [roof9('A'), roof9('B')];
+// 건물 (27장): 지붕 한 칸 + (5칸 건물만) 위층 작은 창 띠 한 칸 + 1층 세 칸 (LimeZu 모듈 건물, 1층 48px = 사람 키의 1.5배)
 const ROOF_THIN = { A: [0, 1, 2].map((i) => TI(`roofA_thin_${i}`)), B: [0, 1, 2].map((i) => TI(`roofB_thin_${i}`)) };
-// 벽 색 넷 (예전 이름 그대로: red·red2·orange·orange2 → 분홍·노랑·크림·회색)
-const WALL_COLOR = { red: 'rose', red2: 'yellow', orange: 'cream', orange2: 'grey' };
+// 벽 넷 (예전 이름 그대로: red·red2·orange·orange2 → 벽돌·베이지·파랑·회색)
+const WALL_COLOR = { red: 'brick', red2: 'beige', orange: 'blue', orange2: 'grey' };
+const G = (c, piece) => [0, 1, 2].map((r) => TI(`g_${c}_${piece}_${r}`));
 const WALL = Object.fromEntries(Object.entries(WALL_COLOR).map(([k, c]) => [k, {
-  top: ['L', 'M', 'R'].map((x) => TI(`wall_${c}_top_${x}`)), mid: ['L', 'M', 'R'].map((x) => TI(`wall_${c}_mid_${x}`)), bottom: ['L', 'M', 'R'].map((x) => TI(`wall_${c}_bottom_${x}`)),
-  window: [TI(`window_${c}_0`), TI(`window_${c}_1`)], door: TI(`door_${c}`),
+  up: { A: TI(`up_${c}_A`), B: TI(`up_${c}_B`), P: TI(`up_${c}_P`) },
+  piece: (name) => G(c, name),
 }]));
 const WALLS = Object.keys(WALL);
-const DOOR = { shop: TI('door_shop'), mall: TI('door_mall') };
-const AWNING = ['L', 'M', 'R'].map((x) => TI(`awning_${x}`));
-const STOREFRONT = ['L', 'M', 'R'].map((x) => TI(`store_${x}`));
+// 1층 무늬: 가게는 진열창 두 칸씩 (5·7·9·11 + 짝), 집은 긴 창 + 민벽, 문은 유리문(shop3) · 상가 문은 흰 문틀(mdoor)
+const SHOP_PAIRS = [['shop1', 'shop2'], ['shop5', 'shop6'], ['shop7', 'shop8'], ['shop9', 'shop10'], ['shop11', 'shop12']];
+const HOME_PATTERNS = [['condo7', 'condo2'], ['condo1', 'condo2'], ['condo7', 'condo8']];
 // 소품: 지도 오브젝트 'lz' (TownScene 이 사람과 같이 y 정렬해 그린다). 담만 타일
 const PROP = {
   tree: { lz: 'tree' }, lamp: { lz: 'lamp' }, vending: { lz: 'vending' }, bench: { lz: 'bench' }, trash: { lz: 'trash' }, mailbox: { lz: 'mailbox' },
@@ -82,35 +81,32 @@ let oid = 1;
 const places = {};
 const buildingsOut = [];
 BUILDINGS.forEach((b, i) => {
-  const floors = b.floors ?? (b.kind === 'villa' ? Math.min(3, b.h - 2) : b.kind === 'house' ? 2 : 2);
-  const roofH = Math.max(1, b.h - floors);
-  const facade = b.h - roofH;
-  const RK = hash(i) % 2;
-  const R = ROOF[RK];
+  const roofH = 1;
+  const upper = b.h - 4;                 // 5칸 건물: 위층 띠 한 줄 · 4칸: 없음
+  const RK = hash(i) % 2 ? 'B' : 'A';
   const base = b.place?.replace(/^b_/, '');   // 봉천동 장소는 b_ 를 떼고 같은 모양
-  const wallName = b.wall ?? (base === 'church' ? 'red' : base === 'temple' ? 'orange' : WALLS[hash(i + 7) % WALLS.length]);
+  const wallName = b.wall ?? (base === 'church' ? 'red' : base === 'temple' ? 'orange2' : WALLS[hash(i + 7) % WALLS.length]);
   const Wl = WALL[wallName];
   const doorX = b.door ?? b.x + Math.floor(b.w / 2);
   const col = (x, arr) => (x === b.x ? arr[0] : x === b.x + b.w - 1 ? arr[2] : arr[1]);
   const isShop = b.kind === 'mixed' || b.shopfront || (b.kind === 'mall' && b.signs?.at(-1));
+  const pat = isShop ? SHOP_PAIRS[hash(i + 3) % SHOP_PAIRS.length] : HOME_PATTERNS[hash(i + 3) % HOME_PATTERNS.length];
+  const shutterAt = isShop && b.w >= 5 && hash(i + 11) % 3 === 0 ? (doorX > b.x + b.w / 2 ? b.x : b.x + b.w - 1) : -1;
+  const doorPiece = b.kind === 'mall' ? 'mdoor' : 'shop3';
   for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) {
     blocked[y][x] = true; kind[y][x] = 'block';
-    const ry = y - b.y;
-    if (ry < roofH) {
-      const r = roofH === 1 ? ROOF_THIN[RK ? 'B' : 'A'] : ry === 0 ? R[0] : ry === roofH - 1 ? R[2] : R[1];
-      build[y][x] = col(x, r);
+    const ry = y - b.y; const cx = x - b.x;
+    if (ry < roofH) build[y][x] = col(x, ROOF_THIN[RK]);
+    else if (ry < roofH + upper) {
+      const k = cx % 3;
+      build[y][x] = k === 0 || (k === 1 && cx === b.w - 1) ? Wl.up.P : k === 1 ? Wl.up.A : Wl.up.B;
     } else {
-      const fy = ry - roofH;
-      const r = fy === 0 ? Wl.top : fy === facade - 1 ? Wl.bottom : Wl.mid;
-      build[y][x] = col(x, r);
-      const last = fy === facade - 1;
-      if (last && isShop) deco[y][x] = col(x, STOREFRONT);
-      else if (!last && isShop && fy === facade - 2) deco[y][x] = col(x, AWNING);
-      else if ((x - b.x) % 2 === 1 && x < b.x + b.w - 1 && Math.abs(x - doorX) > 0) build[y][x] = Wl.window[(fy + x) % 2];
+      const gr = ry - roofH - upper;
+      const piece = x === doorX ? doorPiece : x === shutterAt ? 'shop4' : pat[cx % 2];
+      build[y][x] = Wl.piece(piece)[gr];
     }
   }
   const doorY = b.y + b.h - 1;
-  deco[doorY][doorX] = isShop && b.kind !== 'mall' ? DOOR.shop : b.kind === 'mall' ? DOOR.mall : Wl.door;
   const entrance = [doorX, doorY + 1];
   reserved[entrance[1]][entrance[0]] = true;
   if (b.place) {
@@ -118,7 +114,7 @@ BUILDINGS.forEach((b, i) => {
     objects.push({ id: oid++, name: b.place, type: 'door', x: entrance[0] * 16, y: entrance[1] * 16, width: 16, height: 16,
       properties: [{ name: 'enter', type: 'string', value: b.place === 'sanctuary' || b.place === 'b_branch' ? b.place : '' }] });
   }
-  buildingsOut.push({ i, x: b.x, y: b.y, w: b.w, h: b.h, roofH, floors: facade, kind: b.kind, place: b.place ?? null, shop: b.shop ?? null, signs: b.signs ?? null, door: doorX, isShop: !!isShop });
+  buildingsOut.push({ i, x: b.x, y: b.y, w: b.w, h: b.h, roofH, upper, floors: upper + 1, kind: b.kind, place: b.place ?? null, shop: b.shop ?? null, signs: b.signs ?? null, door: doorX, isShop: !!isShop });
 });
 for (const [k, door] of Object.entries(EXTRA_PLACES)) places[k] = { door };
 
@@ -143,12 +139,8 @@ for (const [place, p] of Object.entries(places)) {
   if (p.door && blocked[p.door[1]][p.door[0]]) throw new Error(`입구 ${place} (${p.door}) 가 막힌 칸이다`);
   if (p.door) { reserved[p.door[1]][p.door[0]] = true; exact[p.door[1]][p.door[0]] = true; }
 }
-// 바닥 글자 자리
-for (const l of LABELS) {
-  const tiles = l.tiles ?? [[Math.floor(l.x) - 1, Math.floor(l.y)], [Math.floor(l.x), Math.floor(l.y)], [Math.floor(l.x) + 1, Math.floor(l.y)]];
-  for (const [x, y] of tiles) { reserved[y][x] = true; exact[y][x] = true; }
-  l.tiles = tiles;
-}
+// 도로명 표지판 기둥 칸 (27장: 바닥 글씨는 없앴다)
+for (const r of ROAD_SIGNS) { reserved[r.y][r.x] = true; exact[r.y][r.x] = true; }
 
 // ── 손으로 놓은 소품 ──
 const shapeProps = [];
@@ -253,7 +245,7 @@ console.log(`통로 검사: 골목 기둥 막힘 ${blockedCols}${blockedAt.lengt
 if (blockedCols || propDead) process.exitCode = 1;
 
 // ── 글자 겹침 검사 (24장 A-3) ──
-// 1) 글자-사람 자리: 역 출구 표지(출구 칸과 그 위 칸)·바닥 글자 둘레 2칸 안에 사람이 서는 자리(입구·바깥 자리)가 있으면 이름표와 겹친다
+// 1) 글자-사람 자리: 역 출구 표지(출구 칸과 그 위 칸)·도로명 표지판 둘레 2칸 안에 사람이 서는 자리(입구·바깥 자리)가 있으면 이름표와 겹친다
 // 2) 간판끼리 간격: 같은 줄 높이의 간판 판이 2px 보다 가까우면 붙어 보인다 (signs.js 와 같은 자리 계산)
 const { PLACES } = await import('../src/data/places.js');
 const { SHOPS } = await import('../src/data/shops.js');
@@ -263,24 +255,15 @@ for (const [place, p] of Object.entries(places)) {
 }
 const textBoxes = [];
 for (const e of STATION_EXITS) textBoxes.push({ what: e.label, x0: e.x - 1, x1: e.x + 1, y0: e.y - 1, y1: e.y + 1 });
+for (const r of ROAD_SIGNS) textBoxes.push({ what: r.plates.join('/'), x0: r.x - 1, x1: r.x + 1, y0: r.y - 2, y1: r.y });
 let textHits = 0; const textHitAt = [];
 for (const b of textBoxes) for (const s of standTiles) {
   if (s.t[0] >= b.x0 - 1 && s.t[0] <= b.x1 + 1 && s.t[1] >= b.y0 && s.t[1] <= b.y1 + 1) { textHits++; textHitAt.push(`${b.what}~${s.who}`); }
 }
-const SIGN_W = (text) => text.length * 7 + 6;    // Galmuri7 8px: 글자 하나 ≈ 7px + 여백
+const { signSpots, SIGN_W } = await import('../src/map/signspots.js');
 const boards = [];
 for (const b of buildingsOut) {
-  const facadeTop = b.y + b.roofH; const bottom = b.y + b.h - 1; const cx = (b.x + b.w / 2) * 16;
-  const add = (x, top, text) => boards.push({ who: b.place ?? b.shop ?? b.i, x0: x - SIGN_W(text) / 2, x1: x + SIGN_W(text) / 2, top });
-  if (b.kind === 'mall' && b.signs) {
-    b.signs.forEach((id, k) => { if (id && SHOPS[id]) add((b.x + 1.6) * 16, (facadeTop + k) * 16 + 1, SHOPS[id].sign); });
-    if (b.place && PLACES[b.place]) add(cx, (facadeTop - 1) * 16 + 2, b.place === 'sanctuary' ? '동림상가' : PLACES[b.place].name);
-  } else if (b.shop && SHOPS[b.shop]) add(cx, (b.floors >= 2 ? bottom - 1 : bottom) * 16 + 1, SHOPS[b.shop].sign);
-  else if (b.place && PLACES[b.place]) {
-    const label = PLACES[b.place].name.replace(' 신림역점', '');
-    if (PLACES[b.place].type === 'home') add((b.door + 0.5) * 16, (bottom - 1) * 16 + 2, label);
-    else add(cx, (b.floors >= 2 ? bottom - 1 : bottom) * 16 + 1, label);
-  }
+  for (const sp of signSpots(b)) boards.push({ who: b.place ?? b.shop ?? b.i, x0: sp.cx - SIGN_W(sp.text) / 2, x1: sp.cx + SIGN_W(sp.text) / 2, top: sp.top });
 }
 let signHits = 0; const signHitAt = [];
 for (let i = 0; i < boards.length; i++) for (let j = i + 1; j < boards.length; j++) {
@@ -322,7 +305,8 @@ const town = tiledMap(W, H, [
   { name: 'cost', type: 'string', value: cost },
   { name: 'places', type: 'string', value: JSON.stringify(places) },
   { name: 'buildings', type: 'string', value: JSON.stringify(buildingsOut) },
-  { name: 'labels', type: 'string', value: JSON.stringify(LABELS) },
+  { name: 'roadSigns', type: 'string', value: JSON.stringify(ROAD_SIGNS) },
+  { name: 'areas', type: 'string', value: JSON.stringify(AREAS) },
   { name: 'cross', type: 'string', value: JSON.stringify(CROSSWALKS.flatMap((c) => { const out = []; for (let y = c.y; y < c.y + c.h; y++) for (let x = c.x; x < c.x + c.w; x++) out.push(y * W + x); return out; })) },
   { name: 'credit', type: 'string', value: MAP_CREDIT },
 ]);

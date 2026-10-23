@@ -3,7 +3,7 @@
 import { RESIDENT_BY_ID, RELATIONS } from '../data/residents.js';
 import { GOSSIP } from '../data/gossip.js';
 import { JOB_ICON_B } from '../data/residents-bongcheon.js';
-import { MOOD } from '../config.js';
+import { MOOD, TALK } from '../config.js';
 import { topNeeds } from './residents.js';
 
 // 그 자리의 주인 (손님 응대)
@@ -44,6 +44,27 @@ export function emotionOf(s, id, minute = s.minute) {
   if (v >= MOOD.sighAt && roll < (v - MOOD.sighAt + 20) / 60) return 'sigh';
   const night = ['night_worker', 'cabbie'].includes(r.voice);
   if ((night && minute < 12 * 60) || (OLD(r) && minute >= 19 * 60)) return roll < 0.35 ? 'sleepy' : null;
+  return null;
+}
+
+// 머리 위 표시 하나 (27장 B): 우선순위 퀘스트 > 오늘 할 일 대상 > 상태(열혈·떠남·취재·라이벌) > 고민 큼 > 짜증 > 처음 보는 사람.
+// questWhy: 그 사람에게 걸린 퀘스트 표시 종류 (main · favor · fork · today) 또는 null. 표시 없으면 null.
+// status: 화면이 아는 3단계 상태 ('zealot' · 'defector' · 'press' · 'rival') 또는 null
+export function headKind(s, id, questWhy = null, status = null) {
+  const st = s.res[id];
+  if (!st) return questWhy ? `q_${questWhy}` : null;
+  if (questWhy) return `q_${questWhy}`;
+  const open = (s.today?.day === s.day ? s.today.tasks : []).filter((t) => !t.done).map((t) => t.id);
+  const worry = st.met && st.needs[topNeeds(st)[0]] >= MOOD.sighAt;
+  if (st.talked !== s.day) {
+    if (open.includes('invite') && st.stage === 'curious' && st.like >= TALK.invite.likeGate) return 'today';
+    if (open.includes('hit') && worry) return 'today';
+    // '처음 보는 사람에게 인사'는 물음표가 이미 그 사람들이라 따로 체크하지 않는다
+  }
+  if (status) return status;
+  if (worry) return 'worry';
+  if (st.sus >= MOOD.angrySus) return 'angry';
+  if (!st.met) return 'new';
   return null;
 }
 

@@ -8,11 +8,12 @@ import { mainOf } from '../sim/quests.js';
 import { fmtDateShort } from '../sim/clock.js';
 import { upcomingBigDays } from '../sim/bigdays.js';
 import { BIGDAY_UI } from '../data/bigdays.js';
+import { HEAD_ICONS, makeHeadIcons } from '../game/overlays.js';
 import { h, mount, unmount, won } from './dom.js';
 import { play } from './sound.js';
 import { fill, speak } from './text.js';
 
-const TABS = [['main', '메인'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문'], ['cal', BIGDAY_UI.calendar]];
+const TABS = [['main', '메인'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문'], ['cal', BIGDAY_UI.calendar], ['legend', '기호 설명']];
 let lastTab = 'main';
 
 export const dailyName = (t) => DAILY[t.id].name.replace('{장소}', PLACES[t.arg]?.short ?? PLACES[t.arg]?.name ?? '');
@@ -27,8 +28,8 @@ export function openNotebook(app, tab = lastTab) {
     mount('notebook', h('div', { class: 'screen' }, h('div', { class: 'panel box notebook' },
       h('h2', {}, '수첩'),
       h('div', { class: 'tabs' }, TABS.map(([k, name]) => h('button', { class: `btn small ${tab === k ? 'on' : ''}`, onclick: () => { play('click'); tab = k; render(); } }, name))),
-      h('div', { class: 'tabbody' }, BODY[tab](s)),
-      h('p', { class: 'muted small' }, '지도의 느낌표: 노랑 메인 · 초록 부탁 · 파랑 오늘 · 분홍 사연의 끝'),
+      h('div', { class: 'tabbody' }, BODY[tab](s, app)),
+      tab === 'legend' ? null : h('p', { class: 'muted small' }, '머리 위 표시가 뭔지 모르겠으면 \'기호 설명\' 탭.'),
       h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: close }, '닫기')))));
   };
   render();
@@ -72,6 +73,24 @@ const BODY = {
     return h('ul', { class: 'quests' }, list.map((b) => h('li', { class: b.day === s.day ? 'on' : '' },
       h('b', {}, `${fmtDateShort(b.day)} · ${b.name}`),
       h('small', {}, `${PLACES[b.place]?.short ?? ''} ${Math.floor(b.from / 60)}시~${Math.floor(b.to / 60)}시 · ${Object.values(b.actions).map((a) => a.label).join(' / ')}`))));
+  },
+  // 지도 기호 설명 (27장 B): 머리 위 표시는 한 사람에 하나, 위에 있는 것이 먼저 보인다
+  legend(s, app) {
+    const sc = app.scene();
+    if (sc) makeHeadIcons(sc);
+    const img = (key) => {
+      let src = '';
+      try { src = app.game.textures.getBase64(key); } catch { /* 텍스처가 아직 없으면 글씨만 */ }
+      return src ? h('img', { class: 'legend-ico', src, alt: '' }) : null;
+    };
+    return h('div', {},
+      h('p', { class: 'small' }, '머리 위 표시는 한 사람에 하나만 뜬다. 여러 개에 해당하면 위쪽 것이 먼저.'),
+      h('ul', { class: 'legend' }, Object.entries(HEAD_ICONS).map(([k, v]) => h('li', {}, img(`head.${k}`), h('span', {}, v[3])))),
+      h('h3', {}, '그 밖에'),
+      h('ul', { class: 'legend' },
+        h('li', {}, h('span', { class: 'legend-tag' }, '이름'), h('span', {}, '인사한 사람의 이름표. 3칸 안으로 다가가면 아래에 직업이 작게 뜬다.')),
+        h('li', {}, h('span', { class: 'legend-tag road' }, '신림로'), h('span', {}, '파란 도로명 표지판. 큰길 교차로 모퉁이에 있다.')),
+        h('li', {}, h('span', { class: 'legend-tag exit' }, '3'), h('span', {}, '초록 숫자: 지하철역 출구 번호.'))));
   },
   heard(s) {
     const list = s.heard ?? [];
