@@ -2,7 +2,7 @@
 // 타일 번호는 RPG Urban tilemap_packed.png (27열, 간격 0) / Roguelike Indoors (27열, 간격 1) 의 0부터 센 번호.
 // Tiled gid = 번호 + 1. 길찾기 비용은 map.properties 'cost' (행마다 숫자, 0 = 못 감).
 // 골목 소품(전봇대·주차 차량·분리수거함·화분·자전거)은 시드 고정 난수로 골목마다 흩뿌린다.
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readFileSync } from 'node:fs';
 import { SPACE_MAPS } from '../src/map/interiors.js';
 
 // 어느 동네를 뽑나: 인자 없으면 신림동(layout.js) + 성소 실내, 'bongcheon' 이면 layout-bongcheon.js
@@ -290,7 +290,10 @@ const tiledMap = (w, h, layers, tileset, properties) => ({
   layers, tilesets: [tileset], properties,
 });
 const URBAN = { firstgid: 1, name: 'urban', image: '../../public/assets/tiles/urban.png', imagewidth: 432, imageheight: 288, columns: 27, tilecount: 486, tilewidth: 16, tileheight: 16, margin: 0, spacing: 0 };
-const INDOOR = { firstgid: 1, name: 'indoor', image: '../../public/assets/tiles/indoor.png', imagewidth: 458, imageheight: 305, columns: 27, tilecount: 486, tilewidth: 16, tileheight: 16, margin: 0, spacing: 1 };
+// 실내: LimeZu Modern Interiors 아틀라스 (tools/build-assets.py → public/assets/lz/indoor.png · indoor.json 의 tiles)
+const LZ_IN = JSON.parse(readFileSync(new URL('../public/assets/lz/indoor.json', import.meta.url)));
+const INDOOR = { firstgid: 1, name: 'indoor', image: '../../public/assets/lz/indoor.png', imagewidth: LZ_IN.meta.size.w, imageheight: LZ_IN.meta.size.h, columns: LZ_IN.columns,
+  tilecount: LZ_IN.columns * (LZ_IN.meta.size.h / 16), tilewidth: 16, tileheight: 16, margin: 0, spacing: 0 };
 
 for (const s of shapeProps) objects.push({ id: oid++, name: s.kind, type: 'shape', x: s.x * 16, y: s.y * 16, width: 16, height: 16, properties: [{ name: 'sprite', type: 'string', value: s.sprite }] });
 for (const [x, y] of poles) objects.push({ id: oid++, name: 'pole', type: 'pole', x: x * 16, y: y * 16, width: 16, height: 16 });
@@ -309,7 +312,8 @@ const town = tiledMap(W, H, [
 writeFileSync(out(`${MAP_ID}.json`), JSON.stringify(town));
 
 // ── 성소 실내 (공간 단계마다, 신림동을 뽑을 때만) ──
-const I = { floor: 105, wall: 294, wallTop: 293, rug: 132, stairs: 237 };
+// 꾸밈 0 단계 타일로 뽑는다. SanctuaryScene 이 꾸밈 단계에 따라 바닥·벽 타일을 바꿔 끼운다
+const I = { floor: LZ_IN.tiles.floor0, wallA: LZ_IN.tiles.wall0a, wallB: LZ_IN.tiles.wall0b, border: LZ_IN.tiles.border, stairs: LZ_IN.tiles.stairs };
 for (const m of which === 'town' ? SPACE_MAPS : []) {
   const sg = grid(m.w, m.h, I.floor);
   const sw = grid(m.w, m.h, -1);
@@ -318,9 +322,12 @@ for (const m of which === 'town' ? SPACE_MAPS : []) {
   for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
     const edge = y < 2 || x === 0 || x === m.w - 1 || y === m.h - 1;
     const inner = m.walls.some((w) => x === w.x && y >= w.y && y < w.y + w.h && !(w.gap && y >= w.gap[0] && y < w.gap[1]));
-    if ((edge || inner) && !isOpen(x, y)) { sw[y][x] = y === 0 ? I.wallTop : I.wall; sb[y][x] = true; }
+    if ((edge || inner) && !isOpen(x, y)) {
+      // 위 두 줄은 벽면(위·아래), 양옆·아래·칸막이는 천장 테두리
+      const face = y < 2 && !inner && x !== 0 && x !== m.w - 1;
+      sw[y][x] = face ? (y === 0 ? I.wallA : I.wallB) : I.border; sb[y][x] = true;
+    }
   }
-  for (const r of m.rooms) for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) if (!sb[y][x] && r.rug) sg[y][x] = I.rug;
   for (const s of m.stairs) sw[s.y][s.x] = I.stairs;
   for (const f of m.blocked ?? []) sb[f[1]][f[0]] = true;
   const scost = sb.map((row) => row.map((b) => (b ? 0 : 1)).join('')).join('\n');

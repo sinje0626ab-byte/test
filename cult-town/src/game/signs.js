@@ -161,20 +161,11 @@ export function drawGroundLabel(scene, text, x, y, opts = {}) {
     .setOrigin(0.5).setAlpha(opts.alpha ?? 0.5).setDepth(opts.depth ?? 4);
 }
 
-// 성소 소품 도형 (방석·현수막·전기포트)
+// 성소 소품 도형 (현수막: 교단 이름 글자가 들어가서 도형으로 그린다. 나머지 소품은 LimeZu 실내 아틀라스)
 export function drawShape(scene, key, x, y, extra = {}) {
   if (scene.textures.exists(key)) return scene.add.image(x, y, key).setOrigin(0, 0);
   const g = scene.add.graphics({ x, y });
-  if (key === 'shape.cushion') {
-    g.fillStyle(0x1d1b26, 1).fillRect(2, 5, 12, 9);
-    g.fillStyle(0xd96a8a, 1).fillRect(3, 6, 10, 7);
-    g.fillStyle(0xf5d76e, 1).fillRect(5, 8, 2, 2).fillRect(9, 10, 2, 2);
-  } else if (key === 'shape.kettle') {
-    g.fillStyle(0x1d1b26, 1).fillRect(4, 4, 9, 11);
-    g.fillStyle(0xe8e8f0, 1).fillRect(5, 5, 7, 9);
-    g.fillStyle(0x3f6f8f, 1).fillRect(5, 12, 7, 2);
-    g.fillStyle(0x1d1b26, 1).fillRect(12, 7, 2, 4);
-  } else if (key === 'shape.banner') {
+  if (key === 'shape.banner') {
     const w = extra.width ?? 96;
     g.fillStyle(0x1d1b26, 1).fillRect(-1, -1, w + 2, 16);
     g.fillStyle(0xfff6e0, 1).fillRect(0, 0, w, 14);

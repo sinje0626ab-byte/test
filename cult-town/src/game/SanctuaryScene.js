@@ -16,15 +16,22 @@ import { speechBubble, emotionBubble } from './overlays.js';
 import { play } from '../ui/sound.js';
 
 const T = 16;
-const FURN = {   // 방 종류마다 놓는 가구 (실내 타일 번호, 방 왼쪽 위 기준 [dx, dy, 타일])
-  worship: [[2, 1, 113], [6, 1, 392]],
-  counsel: [[1, 1, 55], [2, 1, 97], [3, 1, 55], [6, 1, 16], [1, 6, 166], [2, 6, 167], [3, 6, 169]],
-  study: [[1, 1, 344], [2, 1, 345], [1, 4, 0], [2, 4, 1], [3, 4, 2], [1, 7, 0], [2, 7, 1], [3, 7, 2], [6, 4, 0], [7, 4, 1], [8, 4, 2]],
-  kitchen: [[1, 1, 324], [2, 1, 329], [3, 1, 331], [4, 1, 332], [5, 1, 330], [2, 5, 3], [3, 5, 4], [4, 5, 5], [2, 7, 3], [3, 7, 4], [4, 7, 5]],
-  dorm: [[1, 1, 8], [2, 1, 9], [1, 3, 8], [2, 3, 9], [1, 5, 62], [2, 5, 63], [1, 7, 62], [2, 7, 63], [5, 1, 8], [6, 1, 9], [5, 3, 62], [6, 3, 63]],
-  broadcast: [[1, 1, 392], [2, 1, 419], [4, 1, 112], [5, 1, 113], [3, 3, 371], [7, 1, 392]],
-  office: [[1, 1, 112], [2, 1, 113], [4, 1, 324], [5, 1, 325], [6, 1, 129], [1, 4, 55]],
+// 방 종류마다 놓는 가구 (LimeZu 실내 아틀라스 'lzIn' 프레임 이름, 방 왼쪽 위 기준 [dx, dy(물건 아래 칸), 이름])
+const FURN = {
+  worship: [[2, 2, 'pulpit'], [6, 3, 'speaker']],
+  counsel: [[1, 2, 'counsel'], [4, 2, 'table'], [7, 2, 'counsel'], [9, 3, 'plant'], [1, 7, 'counsel0'], [3, 7, 'counsel0']],
+  study: [[1, 3, 'shelf'], [4, 3, 'shelf'], [8, 2, 'board'], [2, 6, 'studydesk'], [5, 6, 'studydesk'], [8, 6, 'studydesk'], [2, 9, 'studydesk'], [5, 9, 'studydesk']],
+  kitchen: [[1, 3, 'fridge'], [2, 2, 'stove'], [3, 1, 'sink'], [6, 2, 'kettle'], [2, 5, 'dtable'], [3, 5, 'dtable'], [2, 4, 'dchair'], [3, 4, 'dchair'], [2, 8, 'dtable'], [3, 8, 'dtable']],
+  dorm: [[1, 2, 'futon'], [4, 2, 'futon2'], [7, 2, 'futon'], [1, 6, 'futon2'], [4, 6, 'futon'], [7, 6, 'futon2']],
+  broadcast: [[1, 2, 'camera'], [4, 3, 'softbox'], [6, 2, 'monitor'], [3, 5, 'mic'], [8, 2, 'speaker']],
+  office: [[1, 2, 'deskpc'], [2, 2, 'desk'], [4, 3, 'counter'], [7, 2, 'locker'], [1, 5, 'counsel0']],
 };
+// 꾸밈 단계 (화면만): 소품 수 + 간판 단계 + 공간 단계×2 → 0 초라한 상가 방(시멘트·회색 벽) · 1 장판 · 2 마루 · 3 꾸민 예배실
+export function decoLevel(s) {
+  const owned = Object.values(s.sanctuary.props ?? {}).filter(Boolean).length;
+  const score = owned + (s.sanctuary.sign ?? 0) + (s.space?.step ?? 0) * 2;
+  return score >= 9 ? 3 : score >= 6 ? 2 : score >= 3 ? 1 : 0;
+}
 const SEAT_ROWS = { worship: 4, counsel: 2, study: 6, kitchen: 6, dorm: 4, broadcast: 3, office: 2 };
 
 export class SanctuaryScene extends Phaser.Scene {
@@ -38,9 +45,10 @@ export class SanctuaryScene extends Phaser.Scene {
     if (!floors[app.floor]) app.floor = 3;
     this.def = SPACE_MAP_BY_ID[floors[app.floor]];
     const map = this.make.tilemap({ key: `sanct-${this.def.id}` });
-    const ts = map.addTilesetImage('indoor', 'indoor', 16, 16, 0, 1);
-    map.createLayer('ground', ts, 0, 0).setDepth(0);
-    map.createLayer('walls', ts, 0, 0).setDepth(1).setTint(0xc8b8a0);
+    const ts = map.addTilesetImage('indoor', 'lzIn', 16, 16, 0, 0);
+    this.groundLayer = map.createLayer('ground', ts, 0, 0).setDepth(0);
+    this.wallLayer = map.createLayer('walls', ts, 0, 0).setDepth(1);
+    this.deco = 0;    // 지도는 0단계 타일로 뽑혀 있다. refreshFurniture 가 꾸밈 단계에 맞춰 바꿔 끼운다
     this.grid = app.gridFor(this.def.id);
     const w = map.widthInPixels; const h = map.heightInPixels;
     this.wPx = w; this.hPx = h;
@@ -110,10 +118,25 @@ export class SanctuaryScene extends Phaser.Scene {
   }
 
   roomRect(slot) { return this.def.rooms.find((r) => r.slot === slot); }
+  // 실내 아틀라스 물건 하나: (tx, ty) 칸 아래에 바닥을 맞춘다 (키 큰 물건은 위 칸으로 올라간다)
+  put(name, tx, ty) { return this.add.image(tx * T, (ty + 1) * T, 'lzIn', name).setOrigin(0, 1); }
+
+  // 꾸밈 단계에 맞춰 바닥·벽 타일 바꾸기
+  applyDeco() {
+    const next = decoLevel(app.s);
+    const tiles = this.cache.json.get('lzInMeta')?.tiles;
+    if (!tiles || next === this.deco) return;
+    const swap = (layer, from, to) => layer.replaceByIndex(tiles[from] + 1, tiles[to] + 1);
+    swap(this.groundLayer, `floor${this.deco}`, `floor${next}`);
+    swap(this.wallLayer, `wall${this.deco}a`, `wall${next}a`);
+    swap(this.wallLayer, `wall${this.deco}b`, `wall${next}b`);
+    this.deco = next;
+  }
 
   // 산 소품·방 가구·(사람들) 다시 놓기
   refreshFurniture() {
     const s = app.s;
+    this.applyDeco();
     this.furniture.removeAll(true);
     this.peopleLayer.removeAll(true);
     this.wanderers = [];
@@ -125,10 +148,11 @@ export class SanctuaryScene extends Phaser.Scene {
       seatSpots[r.slot] = [];
       if (r.slot === '302' || (room?.type === 'worship')) this.placeWorship(r, seatSpots[r.slot], r.slot === '302');
       else if (room) {
-        for (const [dx, dy, tile] of FURN[room.type]) if (dx < r.w - 1 && dy < r.h) this.furniture.add(this.add.image((r.x + dx) * T, (r.y + dy) * T, 'indoorSheet', tile).setOrigin(0));
+        for (const [dx, dy, name] of FURN[room.type]) if (dx < r.w - 1 && dy < r.h) this.furniture.add(this.put(name, r.x + dx, r.y + dy));
         for (let y = r.y + 3; y < r.y + r.h - 1 && seatSpots[r.slot].length < SEAT_ROWS[room.type] * 2; y += 2) for (let x = r.x + 2; x < r.x + r.w - 1; x += 3) seatSpots[r.slot].push([x, y]);
       } else {
-        for (const [dx, dy] of [[2, 3], [5, 6], [8, 4]]) if (dx < r.w - 1) this.furniture.add(this.add.image((r.x + dx) * T, (r.y + dy) * T, 'indoorSheet', 237).setOrigin(0).setAlpha(0.6));
+        // 빈 칸: 전 세입자가 두고 간 고장 난 가구
+        for (const [dx, dy, name] of [[2, 4, 'junk'], [6, 7, 'junk2'], [8, 4, 'junk2']]) if (dx < r.w - 1) this.furniture.add(this.put(name, r.x + dx, r.y + dy).setAlpha(0.8));
       }
     }
     if (!s.sanctuary.props.light) { this.dim?.destroy(); this.dim = this.add.rectangle(0, 0, this.wPx, this.hPx, 0x000020, 0.12).setOrigin(0).setDepth(80); }
@@ -142,21 +166,24 @@ export class SanctuaryScene extends Phaser.Scene {
     const props = s.sanctuary.props;
     if (main) {
       const f = this.def.furniture302;
-      for (const [k, tile] of [['pulpit', 113], ['desk', 112], ['counsel', 55]]) this.furniture.add(this.add.image(f[k][0] * T, f[k][1] * T, 'indoorSheet', tile).setOrigin(0));
+      const look = { pulpit: this.deco >= 2 ? 'pulpit' : 'pulpit0', desk: 'deskpc', counsel: this.deco >= 1 ? 'counsel' : 'counsel0' };
+      for (const k of ['pulpit', 'desk', 'counsel']) this.furniture.add(this.put(look[k], f[k][0], f[k][1]));
+      // 3단계: 벽에 걸린 천 현수막
+      if (this.deco >= 3) for (const dx of [2, 13]) this.furniture.add(this.put(dx < 8 ? 'bannerRed' : 'bannerBlue', r.x + dx, 1));
       if (props.banner) this.furniture.add(drawShape(this, 'shape.banner', (r.x + 4) * T, 1 * T, { width: 8 * T, text: s.leader.cultName }));
-      if (props.kettle) this.furniture.add(drawShape(this, 'shape.kettle', f.desk[0] * T, (f.desk[1] - 1) * T + 6));
-      if (props.board) this.furniture.add(this.add.image((r.x + 12) * T, 1 * T, 'indoorSheet', SHOP_ITEMS.board.sprite).setOrigin(0));
-      if (props.speaker) this.furniture.add(this.add.image((r.x + 6) * T, 3 * T, 'indoorSheet', SHOP_ITEMS.speaker.sprite).setOrigin(0));
-      if (props.light) { this.furniture.add(this.add.image((r.x + 15) * T, 4 * T, 'indoorSheet', 127).setOrigin(0)); this.furniture.add(this.add.image((r.x + 15) * T, 5 * T, 'indoorSheet', 154).setOrigin(0)); }
+      if (props.kettle) this.furniture.add(this.put(SHOP_ITEMS.kettle.sprite, f.desk[0] + 1, f.desk[1]));
+      if (props.board) this.furniture.add(this.put(SHOP_ITEMS.board.sprite, r.x + 11, 3));
+      if (props.speaker) this.furniture.add(this.put(SHOP_ITEMS.speaker.sprite, r.x + 6, 3));
+      if (props.light) this.furniture.add(this.put(SHOP_ITEMS.light.sprite, r.x + 15, 5));
       const plants = [[r.x, 2], [r.x + 15, 10], [r.x, 10]];
-      for (let p = 0; p < (props.plant ?? 0); p++) this.furniture.add(this.add.image(plants[p][0] * T, plants[p][1] * T, 'indoorSheet', SHOP_ITEMS.plant.sprite).setOrigin(0));
+      for (let p = 0; p < (props.plant ?? 0); p++) this.furniture.add(this.put(SHOP_ITEMS.plant.sprite, plants[p][0], plants[p][1]));
     }
     const tiles = [];
     for (let y = 6; y < 11; y++) for (let x = r.x + 2; x < r.x + r.w - 2; x++) if (x !== r.x + 8) tiles.push([x, y]);
     let i = 0;
     const chairs = main ? (props.chair ?? 0) * 2 : Math.round(ROOMS.worship.seats * (app.s.rooms[r.slot]?.level ?? 1));
-    for (let c = 0; c < chairs && i < tiles.length; c++, i++) { this.furniture.add(this.add.image(tiles[i][0] * T, tiles[i][1] * T, 'indoorSheet', SHOP_ITEMS.chair.sprite).setOrigin(0)); seats.push(tiles[i]); }
-    if (main) for (let c = 0; c < (props.cushion ?? 0) && i < tiles.length; c++, i++) { this.furniture.add(drawShape(this, SHOP_ITEMS.cushion.sprite, tiles[i][0] * T, tiles[i][1] * T)); seats.push(tiles[i]); }
+    for (let c = 0; c < chairs && i < tiles.length; c++, i++) { this.furniture.add(this.put(SHOP_ITEMS.chair.sprite, tiles[i][0], tiles[i][1])); seats.push(tiles[i]); }
+    if (main) for (let c = 0; c < (props.cushion ?? 0) && i < tiles.length; c++, i++) { this.furniture.add(this.put(this.deco >= 2 ? 'zaisu' : SHOP_ITEMS.cushion.sprite, tiles[i][0], tiles[i][1])); seats.push(tiles[i]); }
     if (main) for (let c = 0; c < SANCTUARY.baseSeats && i < tiles.length; c++, i++) seats.push(tiles[i]);
   }
 

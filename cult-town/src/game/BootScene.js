@@ -10,8 +10,8 @@ export class BootScene extends Phaser.Scene {
   preload() {
     this.load.image('urban', 'assets/tiles/urban.png');
     this.load.spritesheet('urbanSheet', 'assets/tiles/urban.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.image('indoor', 'assets/tiles/indoor.png');
-    this.load.spritesheet('indoorSheet', 'assets/tiles/indoor.png', { frameWidth: 16, frameHeight: 16, spacing: 1 });
+    this.load.atlas('lzIn', 'assets/lz/indoor.png', 'assets/lz/indoor.json');
+    this.load.json('lzInMeta', 'assets/lz/indoor.json');
     // LimeZu 사람 아틀라스 (26장, tools/build-assets.py)
     this.load.image('people-cold', 'assets/lz/people-cold.png');
     this.load.image('people-warm', 'assets/lz/people-warm.png');
