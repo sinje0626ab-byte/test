@@ -1,0 +1,59 @@
+.card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space);
+  border-radius: var(--r-card);
+  background: var(--bg-elevated);
+  margin-bottom: 12px;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.title {
+  font-size: var(--fs-subhead);
+  font-weight: 600;
+  color: var(--label-secondary);
+}
+.aside {
+  font-size: var(--fs-footnote);
+  color: var(--label-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 24px;
+}
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-bottom: 14px;
+  color: var(--accent);
+  background: var(--accent-faint);
+}
+.emptyTitle {
+  font-size: var(--fs-title3);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.emptyMessage {
+  font-size: var(--fs-subhead);
+  color: var(--label-secondary);
+  line-height: 1.45;
+  max-width: 280px;
+}
+.emptyAction {
+  margin-top: 18px;
+}

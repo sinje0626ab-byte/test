@@ -1,0 +1,122 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 0 24px;
+}
+
+.big {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  color: var(--on-accent);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.night {
+  background: var(--accent);
+  box-shadow: 0 0 0 12px var(--accent-faint);
+}
+.day {
+  background: var(--sun);
+  box-shadow: 0 0 0 12px var(--sun-faint);
+}
+
+.face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+}
+.icon {
+  display: grid;
+  place-items: center;
+}
+.icon svg {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.label {
+  font-size: var(--fs-title3);
+  font-weight: 600;
+}
+
+.below {
+  min-height: var(--touch);
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+}
+.elapsed {
+  font-size: var(--fs-subhead);
+  color: var(--label-secondary);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: var(--hairline) solid var(--separator);
+}
+.statLabel {
+  font-size: var(--fs-footnote);
+  color: var(--label-secondary);
+  margin-bottom: 2px;
+}
+.quality {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.noDebt {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--good);
+}
+.muted {
+  font-size: var(--fs-body);
+  color: var(--label-secondary);
+  padding: 6px 0;
+}
+.caption {
+  margin-top: 6px;
+  font-size: var(--fs-footnote);
+  color: var(--label-secondary);
+}
+.footnote {
+  margin: 4px var(--space) 0;
+  font-size: var(--fs-caption);
+  color: var(--label-tertiary);
+}
+
+.notice {
+  background: var(--bg-elevated);
+}
+.noticeTitle {
+  font-size: var(--fs-headline);
+  font-weight: 600;
+}
+.noticeText {
+  margin-top: 4px;
+  font-size: var(--fs-subhead);
+  color: var(--label-secondary);
+  line-height: 1.4;
+}
+.noticeActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}

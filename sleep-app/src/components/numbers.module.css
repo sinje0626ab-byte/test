@@ -1,0 +1,31 @@
+.value {
+  display: inline-flex;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.n {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.unit {
+  color: var(--label-secondary);
+  font-weight: 600;
+  margin: 0 4px 0 2px;
+}
+.unit:last-child {
+  margin-right: 0;
+}
+.large .n {
+  font-size: 40px;
+  line-height: 1.1;
+}
+.large .unit {
+  font-size: var(--fs-headline);
+}
+.medium .n {
+  font-size: 24px;
+}
+.medium .unit {
+  font-size: var(--fs-subhead);
+}

@@ -1,0 +1,74 @@
+.group {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 2px;
+  padding: 0 8px;
+}
+
+.band {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  border-radius: 8px;
+  background: var(--fill);
+  pointer-events: none;
+}
+
+.wheel {
+  position: relative;
+  min-width: 56px;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.wheel:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+.scroller {
+  box-sizing: border-box;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  /* 위아래 흐려짐 */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 32%, #000 68%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 32%, #000 68%, transparent 100%);
+}
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  scroll-snap-align: center;
+  padding: 0 10px;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  will-change: opacity, transform;
+}
+.left {
+  text-align: left;
+}
+.center {
+  text-align: center;
+}
+.right {
+  text-align: right;
+}
+
+.fixed {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 500;
+  pointer-events: none;
+}

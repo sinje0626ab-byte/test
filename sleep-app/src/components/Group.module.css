@@ -1,0 +1,105 @@
+.section {
+  margin-bottom: var(--section-gap);
+}
+
+.header {
+  padding: 0 var(--space) 7px;
+  font-size: var(--fs-footnote);
+  font-weight: 400;
+  color: var(--label-secondary);
+}
+
+.footer {
+  padding: 7px var(--space) 0;
+  font-size: var(--fs-footnote);
+  color: var(--label-secondary);
+  line-height: 1.4;
+}
+
+.list {
+  background: var(--cell-bg, var(--bg-elevated));
+  border-radius: var(--r-cell);
+  overflow: hidden;
+}
+
+.list > * {
+  position: relative;
+}
+.withIcon {
+  --sep-inset: 58px;
+}
+/* 셀 사이 헤어라인 — 왼쪽은 들여서 */
+.list > * + *::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: var(--sep-inset, var(--space));
+  right: 0;
+  height: var(--hairline);
+  background: var(--separator);
+  pointer-events: none;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--touch);
+  padding: 11px var(--space);
+  text-align: left;
+  background: var(--cell-bg, var(--bg-elevated));
+}
+.pressable:active {
+  background: var(--fill-strong);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  flex: none;
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.iconDestructive {
+  background: var(--bad);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.title {
+  font-size: var(--fs-body);
+}
+.subtitle {
+  font-size: var(--fs-subhead);
+  color: var(--label-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.destructive {
+  color: var(--bad);
+}
+.accent {
+  color: var(--accent);
+}
+
+.value {
+  flex: none;
+  color: var(--label-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.chevron {
+  flex: none;
+  color: var(--label-tertiary);
+  margin-right: -4px;
+}

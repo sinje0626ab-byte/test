@@ -1,0 +1,13 @@
+.dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fill-strong);
+}
+.on {
+  background: var(--accent);
+}

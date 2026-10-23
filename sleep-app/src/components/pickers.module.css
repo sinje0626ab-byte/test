@@ -1,0 +1,35 @@
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 7px 12px 7px var(--space);
+  text-align: left;
+  background: var(--cell-bg, var(--bg-elevated));
+}
+
+.label {
+  font-size: var(--fs-body);
+}
+
+.pill {
+  padding: 6px 11px;
+  border-radius: 7px;
+  background: var(--fill);
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--label);
+  white-space: nowrap;
+}
+.pillOpen {
+  color: var(--accent);
+}
+
+.expand {
+  overflow: hidden;
+}
+.wheelPad {
+  padding: 2px 0 10px;
+}

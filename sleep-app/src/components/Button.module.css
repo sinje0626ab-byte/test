@@ -1,0 +1,36 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: var(--r-button);
+  font-size: var(--fs-headline);
+  font-weight: 600;
+}
+.block {
+  display: flex;
+  width: 100%;
+}
+.filled {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.tinted {
+  background: var(--accent-faint);
+  color: var(--accent);
+}
+.gray {
+  background: var(--fill);
+  color: var(--label);
+}
+.plain {
+  min-height: var(--touch);
+  padding: 0 12px;
+  color: var(--accent);
+  font-weight: 400;
+}
+.button:disabled {
+  opacity: 0.4;
+}
