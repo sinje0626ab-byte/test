@@ -10,11 +10,11 @@ export type Quality = 1 | 2 | 3 | 4 | 5;
 export interface SleepLog {
   id: string; // UUID — 숫자 ID 쓰지 않는다
   date: DateKey; // 기상한 날
-  bedTime: string; // ISO — 누운 시각
-  sleepTime: string; // ISO — 잠든 것 같은 시각
+  bedTime: string; // ISO — 잔 시각
+  sleepTime: string; // ISO — 지금은 bedTime 과 같다 (잠든 시각을 따로 받지 않는다)
   wakeTime: string; // ISO — 깬 시각
-  awakenings: number; // 0~5 (5 = 5번 이상)
-  quality: Quality; // 아침 개운함
+  awakenings?: number; // 0~5 (5 = 5번 이상) — 지금 화면에서는 받지 않는다
+  quality?: Quality; // 아침 개운함 — 지금 화면에서는 받지 않는다
   note?: string;
   createdAt: string;
   updatedAt: string;
@@ -39,7 +39,7 @@ export interface Settings {
   targetSleepHours: number;
 }
 
-/** "잘게요"를 누른 뒤 "일어났어요"를 누르기 전까지의 임시 상태 */
+/** 예전 "잘게요" 버튼의 임시 상태. 버튼은 없앴지만 저장 데이터 호환을 위해 남겨 둔다 */
 export interface PendingSleep {
   bedTime: string; // ISO
 }

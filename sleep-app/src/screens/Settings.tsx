@@ -63,7 +63,7 @@ export function Settings() {
   };
 
   const clearAll = async () => {
-    const first = await ui.confirm({ title: '모든 기록을 삭제할까요?', message: `수면 기록 ${store.logs.length}개와 생활 요인, 설정이 모두 지워져요.`, confirmLabel: '전체 삭제', destructive: true });
+    const first = await ui.confirm({ title: '모든 기록을 삭제할까요?', message: `수면 기록 ${store.logs.length}개와 설정이 모두 지워져요.`, confirmLabel: '전체 삭제', destructive: true });
     if (!first) return;
     const second = await ui.confirm({ title: '정말 삭제할까요?', message: '되돌릴 수 없어요. 필요하면 먼저 내보내기를 해 두세요.', confirmLabel: '삭제하기', destructive: true });
     if (!second) return;
@@ -118,15 +118,13 @@ export function Settings() {
             >
               <Group footer="버전 0.1 · 1단계">
                 <div className={s.about}>
-                  <p>매일 수면을 10초 안에 기록하고, 쌓인 기록으로 내 수면 패턴을 살펴보는 앱이에요.</p>
+                  <p>언제 자고 언제 깼는지만 적고, 쌓인 기록으로 내 수면 패턴을 살펴보는 앱이에요.</p>
                   <p>보여 드리는 수치는 모두 본인 기록 기반 참고 지표예요. 건강 상태를 판단하는 용도가 아니에요.</p>
                   <p>기록은 서버로 보내지 않고 이 브라우저에만 저장돼요.</p>
                 </div>
               </Group>
               <Group header="계산 방법">
-                <Cell title="수면시간" subtitle="깬 시각 − 잠든 시각" />
-                <Cell title="수면효율" subtitle="수면시간 ÷ 누워 있던 시간" />
-                <Cell title="잠드는 데 걸린 시간" subtitle="잠든 시각 − 누운 시각" />
+                <Cell title="수면시간" subtitle="깬 시각 − 잔 시각" />
                 <Cell title="수면 부채" subtitle="최근 7일 (목표 − 실제) 합계, 기록 없는 날 제외" />
               </Group>
             </Page>

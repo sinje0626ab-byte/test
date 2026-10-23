@@ -43,14 +43,10 @@
   background: var(--fill-strong);
 }
 
-.left,
-.right {
+.left {
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-.right {
-  align-items: flex-end;
 }
 
 .date {

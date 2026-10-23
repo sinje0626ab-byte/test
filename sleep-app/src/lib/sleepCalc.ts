@@ -1,5 +1,5 @@
 import { addDays, format, parseISO, subDays } from 'date-fns';
-import type { ClockTime, DateKey, PendingSleep, SleepLog } from '../types';
+import type { ClockTime, DateKey, SleepLog } from '../types';
 
 // 수면 계산 규칙. 화면·저장소를 모르는 순수 함수만 둔다 (sleepCalc.test.ts 참고).
 // 시각은 모두 사용자 기기의 로컬 시간 기준이다.
@@ -9,7 +9,7 @@ const DAY_MIN = 24 * 60;
 
 /** 취침·기상 시각 평균/편차를 낼 때 쓰는 기준 시각(18:00). 자정을 넘는 시각을 이어 붙이기 위함 */
 export const ANCHOR_MIN = 18 * 60;
-/** 이보다 길면 저장 전에 경고, "잘게요" 뒤로 이만큼 지나면 마무리 안내 */
+/** 이보다 길면 저장 전에 경고 */
 export const MAX_SLEEP_MIN = 16 * 60;
 
 type TimeLike = string | Date;
@@ -107,9 +107,6 @@ export function buildTimes(wakeDate: DateKey, bed: ClockTime, sleep: ClockTime, 
 
 export const clockOf = (t: TimeLike): ClockTime => format(toDate(t), 'HH:mm');
 
-/** 잠든 시각 기본값: 누운 시각 + 15분 */
-export const defaultSleepTime = (bedTime: TimeLike): Date => new Date(toDate(bedTime).getTime() + 15 * MIN);
-
 // ── 검사 ─────────────────────────────────────────
 
 /** 저장 전에 보여 줄 경고 문구. 빈 배열이면 문제없음 */
@@ -119,11 +116,6 @@ export function validateTimes(t: Times): string[] {
   else if (minutesBetween(t.sleepTime, t.wakeTime) < 0) w.push('잠든 시각이 깬 시각보다 늦어요.');
   if (minutesBetween(t.sleepTime, t.wakeTime) > MAX_SLEEP_MIN) w.push('수면시간이 16시간을 넘어요.');
   return w;
-}
-
-/** "잘게요" 뒤로 16시간 넘게 지났는가 */
-export function isPendingOverdue(p: PendingSleep | null, now: TimeLike = new Date()): boolean {
-  return !!p && minutesBetween(p.bedTime, now) > MAX_SLEEP_MIN;
 }
 
 // ── 모아 보기 ─────────────────────────────────────────
