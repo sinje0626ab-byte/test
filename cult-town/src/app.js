@@ -340,7 +340,7 @@ export const app = {
           if (e.type === 'zealotAuto' && e.first) cutin(this, { kicker: '첫 열혈 신자', title: RESIDENT_BY_ID[e.id].name, line: e.text, face: this.portrait(e.id) });
           if (e.type === 'rivalStole') cutin(this, { kicker: '저쪽 전단을 들고 상가 앞을 지나갔다', title: RESIDENT_BY_ID[e.id].name, line: e.text, face: this.portrait(e.id) });
         }
-        showQuestNews(this, () => setTimeout(() => playZoneNews(this, () => this.maybeEvent()), 500));
+        showQuestNews(this, () => this.whenFree(() => playZoneNews(this, () => this.maybeEvent()), 500));
       };
       const reveal = () => (r.revelation ? showRevelation(s, r.revelation, () => { saveGame(s); morning(); }) : morning());
       const phase = () => (r.phaseUp ? showPhaseUp(s, r.phaseUp, () => { saveGame(s); reveal(); }) : reveal());
@@ -518,10 +518,14 @@ export const app = {
     for (const t of res?.todayDone ?? []) toast(t.id === 'all' ? '오늘 할 일 셋을 다 했다. 보리차값 1만 원이 굳었다.' : `오늘 할 일: ${dailyName(t)} ✓`, 'good');
     const zq = progressZoneQuests(this.s, { talk: id });   // 30장 구역 일
     saveGame(this.s); this.celebrate(); this.hud?.update();
-    setTimeout(() => {
-      const after = () => showZoneQuestDone(this, zq, () => this.zoneCheck());
+    this.whenFree(() => {
+      const after = () => this.whenFree(() => showZoneQuestDone(this, zq, () => this.whenFree(() => this.zoneCheck())));
       if (this.s.quest?.news?.length) showQuestNews(this, after); else after();
     }, 300);
+  },
+  // 다른 창(레벨 업 · 대화)이 닫힌 뒤에 (30장: 구역 창이 겹쳐 뜨지 않게)
+  whenFree(fn, delay = 0, tries = 900) {
+    setTimeout(() => { if (this.modal > 0 && tries > 0) this.whenFree(fn, 400, tries - 1); else fn(); }, delay);
   },
   // 30장 B: 낮에 열린 구역 (예: 통장님께 인사 → 시장 안쪽). 아침엔 sleep() 이 부른다
   zoneCheck() {
@@ -533,7 +537,7 @@ export const app = {
   zoneQuestDone(list) {
     if (!list.length) return;
     saveGame(this.s); this.scene()?.refreshQuestMarks?.();
-    showZoneQuestDone(this, list);
+    this.whenFree(() => showZoneQuestDone(this, list));
   },
   // 큰 날 행사 (25장 D): 그날만 할 수 있는 일 1~2개
   openBigDay() {

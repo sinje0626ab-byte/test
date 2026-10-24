@@ -142,7 +142,7 @@ export class TownScene extends Phaser.Scene {
     for (const b of bong ? [] : here.minibus ?? []) {
       const [x, y] = b.tile;
       this.add.image(x * T + 15, (y + 1) * T - 1, 'lzCars', 'busSign').setOrigin(0.5, 1).setDepth(100 + y * T + 9);
-      wallNotice(this, x * T + 8, (y - 1) * T + 2, '마을버스', { bg: 0xffd84a, color: '#2a2030', w: 34 }).setDepth(4785);
+      wallNotice(this, x * T + 15, (y - 1) * T - 2, '마을버스', { bg: 0xffd84a, color: '#2a2030', w: 40 }).setDepth(100 + y * T - 1);   // 정류장에 선 사람보다 뒤
     }
     this.fx = this.add.graphics().setDepth(5050);
     this.tintRect = this.add.rectangle(0, 0, this.mapW, this.mapH, 0x000000, 0).setOrigin(0).setDepth(9000);
