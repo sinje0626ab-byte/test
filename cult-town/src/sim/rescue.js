@@ -26,7 +26,7 @@ export function rescueRent(s) {
   s.rescue ??= {};
   // 신도가 조금 모자라면 친구가 동기들을 데려온다 (한 번)
   const gap = goalOf(s, 1).members - memberCount(s);
-  if (gap > 0 && gap <= difficultyOf(s).rescueGap && !s.rescue.friends) {
+  if (gap > 0 && gap <= difficultyOf(s).rescueGap && s.rescue.friends == null) {
     s.rescue.friends = s.day;
     s.followers += gap;
     const cost = gap * RESCUE.friendCost;

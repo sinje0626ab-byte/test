@@ -90,7 +90,7 @@ export function pollRewards(s) {
 export function noteVisit(s, place, label) {
   const c = C(s);
   c.visited ??= {};
-  if (c.visited[place]) return null;
+  if (c.visited[place] != null) return null;      // 첫날은 날짜가 0 이라 참거짓으로 보면 안 된다
   c.visited[place] = s.day;
   addXp(s, REWARD.visitXp);
   return { kind: 'visit', text: fillR(REWARD_TEXT.visit, { 장소: label }), xp: REWARD.visitXp };
