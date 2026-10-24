@@ -1,4 +1,4 @@
-# CREDITS
+# CREDITS — 동네 교주 키우기
 
 이 게임에 쓴 외부 에셋과 라이선스. 라이선스 원문은 `public/assets/LICENSES/`.
 
@@ -14,6 +14,7 @@
 | UI Audio (click) | 효과음 | Kenney | CC0 1.0 | https://kenney.nl/assets/ui-audio |
 | Music Jingles (jingle_good, jingle_bad, jingle_week) | 주보·엔딩 | Kenney | CC0 1.0 | https://kenney.nl/assets/music-jingles |
 | 갈무리 Galmuri11 · Galmuri11 Bold · Galmuri14 · GalmuriMono11 · Galmuri7 (npm `galmuri` 2.40.3) | 모든 한글 글자 (Galmuri7: 간판·이름표·말풍선) | Lee Minseo (quiple) | SIL OFL 1.1 | https://github.com/quiple/galmuri |
+| 타이틀 그림 (`title/title-wide.png` · `title-tall.png`) | 처음 화면 | 제작자 제공 | 제작자 소유 (이 게임에 사용) | - |
 | Phaser 3.90 | 맵·캐릭터 그리기 | Phaser Studio | MIT | https://phaser.io |
 | Vite | 개발 서버·빌드 | Vite 팀 | MIT | https://vitejs.dev |
 

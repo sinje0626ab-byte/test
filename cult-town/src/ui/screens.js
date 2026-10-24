@@ -1,6 +1,7 @@
 // 주보 · 밤사이 소식 · 엔딩 · 크레딧 · 게임 메뉴
 import { sanctuaryName } from '../sim/voice.js';
-import { GOAL, PHASE2, PHASE3, PHASE4 } from '../config.js';
+import { GAME, GOAL, PHASE2, PHASE3, PHASE4 } from '../config.js';
+import { goalOf } from '../sim/goals.js';
 import { PHASE4_INTRO } from '../data/branch.js';
 import { PHASE3_INTRO } from '../data/threats.js';
 import { rentNow } from '../sim/space.js';
@@ -20,7 +21,7 @@ export function eventLines(s, events) {
   const spread = events.filter((e) => e.type === 'zealotSpread');
   if (spread.length) out.push(`열혈 신자 ${spread.length}명이 오늘 ${spread.reduce((n, e) => n + e.targets.length, 0)}명에게 {성소} 얘기를 했다.`.replace('{성소}', sanctuaryName(s)));
   for (const e of events) {
-    if (e.type === 'zealotSpread') continue;
+    if (e.type === 'zealotSpread' || e.type === 'reward' || e.type === 'achievement') continue;   // 보상·업적은 아침 띠로 (28장)
     if (e.type === 'clergy') {
       const c = ALL_CLERGY.find((x) => x.id === e.id);
       out.push(fill(CLERGY_EVENT, s, { 직함: c.title, 이름: c.name }) + ' ' + e.line);
@@ -63,7 +64,7 @@ export function showBulletin(s, b, onClose) {
     h('div', { class: 'mast' },
       h('div', { class: 'name' }, fill(BULLETIN.head, s)),
       h('div', { class: 'meta' }, `${fill(BULLETIN.issue, s, { n: b.no })} · ${b.date} · 신림동 동림상가 302호`)),
-    h('span', { class: 'stamp' }, b.opening ? '개업' : b.stats.members >= GOAL.members ? '만석' : '배포용'),
+    h('span', { class: 'stamp' }, b.opening ? '개업' : b.stats.members >= goalOf(s).members ? '만석' : '배포용'),
     b.opening ? h('h3', { class: 'opening-head' }, OPENING_TEXT.bulletin.title) : null,
     h('h4', {}, fill(S.worship, s)), h('ul', {}, worshipText.map((t) => h('li', {}, t))),
     h('h4', {}, S.newcomers), newNames.length ? h('ul', {}, newNames.map((t) => h('li', {}, t))) : h('p', {}, BULLETIN.noNewcomers),
@@ -74,14 +75,43 @@ export function showBulletin(s, b, onClose) {
     h('h4', {}, S.leader), h('p', {}, fill(b.leaderWord, s)),
     h('h4', {}, S.notice), h('p', {}, fill(b.notice, s)),
     h('div', { class: 'tally' },
-      h('div', {}, h('b', {}, `${b.stats.members}/${GOAL.members}`), '신도'),
+      h('div', {}, h('b', {}, `${b.stats.members}/${goalOf(s).members}`), '신도'),
       h('div', {}, h('b', {}, `${b.stats.rentStreak}/${GOAL.rentStreak}`), '월세 연속'),
       h('div', {}, h('b', {}, `${b.stats.rep}`), `평판 (${b.stats.repDelta >= 0 ? '+' : ''}${b.stats.repDelta})`)),
     h('div', { class: 'row end', style: 'margin-top:12px' }, h('button', { class: 'btn primary', onclick: () => { play('page'); unmount('bulletin'); onClose(); } }, '주보 접기')))));
 }
 
 // 1단계 끝 → 2단계 시작 장면
+// 단계 결산 (28장 B-6): 주보 특별호 → 다음 단계 소개
+const NEXT_PREVIEW = {
+  2: '다음 호 예고: 303호 벽을 튼다. 첫 신도 셋이 간부 명함을 판다.',
+  3: '다음 호 예고: 동네 신문 기자가 상가 앞을 서성인다. 옆 동네엔 비슷한 간판이 하나 더 올라왔다.',
+  4: '다음 호 예고: 2호선 타고 두 정거장. 고개 넘어 봉천동.',
+};
 export function showPhaseUp(s, phase, onClose) {
+  const log = s.phaseLog?.[phase - 1];
+  if (log && !document.querySelector('[data-id="recap"]')) { showRecap(s, phase - 1, log, () => showPhaseIntro(s, phase, onClose)); return; }
+  showPhaseIntro(s, phase, onClose);
+}
+function showRecap(s, done, log, onClose) {
+  play('jingle_week', 0.5);
+  const prevDay = done > 1 ? s.phaseLog?.[done - 1]?.day ?? 0 : 0;
+  mount('recap', h('div', { class: 'screen bulletin' }, h('div', { class: 'panel recap' },
+    h('div', { class: 'mast' },
+      h('div', { class: 'name' }, fill(BULLETIN.head, s)),
+      h('div', { class: 'meta' }, `특별호 · ${done}단계 결산 · ${fmtDate(log.day)} · ${GAME.title}`)),
+    h('span', { class: 'stamp' }, `${done}단계`),
+    h('div', { class: 'tally' },
+      h('div', {}, h('b', {}, `${log.members}`), '신도'),
+      h('div', {}, h('b', {}, won(log.offering)), '이 단계 헌금'),
+      h('div', {}, h('b', {}, `${log.day - prevDay}일`), '걸린 날')),
+    h('h4', {}, '첫 신도'), h('p', {}, log.first ? `${log.first}. 그 이름이 장부 첫 줄에 있다.` : '첫 신도 셋(엄마·친구·민호)으로 버텼다.'),
+    h('h4', {}, '가장 길었던 사연'), h('p', {}, log.story ? `${log.story.name} · ${log.story.n}장까지` : '아직 사연을 끝까지 들어 준 사람이 없다.'),
+    h('h4', {}, '명장면'), log.moments.length ? h('ol', {}, log.moments.map((m) => h('li', {}, m))) : h('p', {}, '조용한 한 달이었다.'),
+    h('p', { class: 'preview' }, NEXT_PREVIEW[done + 1] ?? ''),
+    h('div', { class: 'row end', style: 'margin-top:12px' }, h('button', { class: 'btn primary', onclick: () => { play('page'); unmount('recap'); onClose(); } }, '다음 단계로')))));
+}
+function showPhaseIntro(s, phase, onClose) {
   play('jingle_good', 0.5);
   if (phase === 4) {
     const e = PHASE4_INTRO;
@@ -89,7 +119,7 @@ export function showPhaseUp(s, phase, onClose) {
       h('h2', {}, e.title),
       ...e.text.map((t) => h('p', {}, fill(t, s))),
       h('p', {}, e.next),
-      h('p', { class: 'muted' }, `목표: 6월 25일 월세 날까지 신도 ${PHASE4.members}명 + 봉천 지부 ${PHASE4.branch}명 + 신림동·봉천동 평판 모두 ${PHASE4.rep} 이상. 신림역 입구에서 '2호선 타기'. 밤 메뉴에 '봉천 지부'가 생긴다.`),
+      h('p', { class: 'muted' }, `목표: 6월 25일 월세 날까지 신도 ${goalOf(s, 4).members}명 + 봉천 지부 ${goalOf(s, 4).branch}명 + 신림동·봉천동 평판 모두 ${PHASE4.rep} 이상. 신림역 입구에서 '2호선 타기'. 밤 메뉴에 '봉천 지부'가 생긴다.`),
       h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '4단계 시작')))));
     return;
   }
@@ -99,7 +129,7 @@ export function showPhaseUp(s, phase, onClose) {
       h('h2', {}, e.title),
       ...e.text.map((t) => h('p', {}, fill(t, s))),
       h('p', {}, e.next),
-      h('p', { class: 'muted' }, `목표: 5월 25일 월세 날까지 신도 ${PHASE3.members}명 + 동네 평판 유지 (최근 7일 내내 무너지지 않게) + 라이벌 교단 정리 (흡수·몰락·휴전). 밤 메뉴에 '라이벌'이 생긴다.`),
+      h('p', { class: 'muted' }, `목표: 5월 25일 월세 날까지 신도 ${goalOf(s, 3).members}명 + 동네 평판 유지 (최근 7일 내내 무너지지 않게) + 라이벌 교단 정리 (흡수·몰락·휴전). 밤 메뉴에 '라이벌'이 생긴다.`),
       h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '3단계 시작')))));
     return;
   }
@@ -108,7 +138,7 @@ export function showPhaseUp(s, phase, onClose) {
     h('h2', {}, e.title),
     ...e.text.map((t) => h('p', {}, fill(t, s))),
     h('p', {}, '2단계: 옆 칸을 터서 넓히고, 칸마다 방을 만들고, 간부를 세운다. 첫 간부는 엄마·오랜 친구·우연히 온 사람.'),
-    h('p', { class: 'muted' }, `목표: 4월 25일 월세 날까지 신도 ${PHASE2.members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상 (월세는 제날짜에). 밤 메뉴에 '공간·방', '간부', '간부 회의'가 생겼다.`),
+    h('p', { class: 'muted' }, `목표: 4월 25일 월세 날까지 신도 ${goalOf(s, 2).members}명 + 3층 전체 임대 + 간부 ${PHASE2.minOfficers}명 이상 (월세는 제날짜에). 밤 메뉴에 '공간·방', '간부', '간부 회의'가 생겼다.`),
     h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { unmount('phaseup'); onClose(); } }, '2단계 시작')))));
 }
 
@@ -126,12 +156,13 @@ export function showEnding(s, kind, { onTitle }) {
 export function showCredits(onClose) {
   const link = (url, text) => h('a', { href: url, target: '_blank', rel: 'noopener' }, text ?? url);
   mount('credits', h('div', { class: 'screen credits' }, h('div', { class: 'panel box' },
-    h('h2', {}, '만든 사람들 · 에셋'),
+    h('h2', {}, `${GAME.title} · 만든 사람들`),
     h('ul', {},
       h('li', {}, 'Modern Exteriors · Modern Interiors by LimeZu (', link('https://limezu.itch.io/'), '): 동네·성소·사람 그림'),
       h('li', {}, '효과음: Kenney "RPG Audio", "Interface Sounds", "UI Audio", "Music Jingles" (CC0)'),
       h('li', {}, '글꼴: 갈무리 Galmuri (Lee Minseo, SIL OFL 1.1) ', link('https://github.com/quiple/galmuri')),
       h('li', {}, '엔진: Phaser 3 (MIT) · Vite (MIT)'),
+      h('li', {}, '타이틀 그림: 제작자 제공'),
       h('li', {}, '한국식 간판·층별 안내판·역 출구 번호판·현수막은 코드로 그렸다.'),
     ),
     h('p', { class: 'muted' }, '신림동·신림역·남부순환로·신림로·도림천은 실제 이름이다. 길 배치는 손으로 단순화했다. 가게·교회·절·점집·건물·인물·교단 이름은 전부 지어낸 것이다.'),
@@ -141,10 +172,10 @@ export function showCredits(onClose) {
 
 // 지금 단계 목표 한 줄 (메뉴)
 function goalLine(s) {
-  if (s.phase >= 4) return `4단계 목표: 신도 ${PHASE4.members}명 + 봉천 지부 ${PHASE4.branch}명 + 두 동네 평판 + 6월 25일 월세까지 넉 달 연속.`;
-  if (s.phase >= 3) return `3단계 목표: 신도 ${PHASE3.members}명 + 평판 유지 + 라이벌 정리 + 5월 25일 월세까지 석 달 연속.`;
-  if (s.phase >= 2) return `2단계 목표: 신도 ${PHASE2.members}명 + 3층 전체 + 간부 ${PHASE2.minOfficers}명 + 4월 25일 월세까지 두 달 연속.`;
-  return `목표: 신도 ${GOAL.members}명 + 첫 월세(3월 25일) 납부.`;
+  if (s.phase >= 4) return `4단계 목표: 신도 ${goalOf(s, 4).members}명 + 봉천 지부 ${goalOf(s, 4).branch}명 + 두 동네 평판 + 6월 25일 월세까지 넉 달 연속.`;
+  if (s.phase >= 3) return `3단계 목표: 신도 ${goalOf(s, 3).members}명 + 평판 유지 + 라이벌 정리 + 5월 25일 월세까지 석 달 연속.`;
+  if (s.phase >= 2) return `2단계 목표: 신도 ${goalOf(s, 2).members}명 + 3층 전체 + 간부 ${PHASE2.minOfficers}명 + 4월 25일 월세까지 두 달 연속.`;
+  return `목표: 신도 ${goalOf(s, 1).members}명 + 첫 월세(3월 25일) 납부.`;
 }
 
 export function showMenu(app) {
@@ -155,7 +186,7 @@ export function showMenu(app) {
     h('h2', {}, '메뉴'),
     h('p', { class: 'muted' }, `${goalLine(app.s)} 월세 ${won(rentNow(app.s))}는 매달 25일, 주간 지출은 일요일 밤. 자동 저장된다.`),
     h('table', { class: 'keys' }, h('tbody', {},
-      [['방향키 · WASD', '걷기'], ['Shift + 방향키', '달리기 (피로 조금 더)'], ['Space · Enter', '말 걸기 · 들어가기'], ['`', '멈춤'], ['1', '재생'], ['2', '빠르게'], ['N', '부탁 수첩'], ['Esc · 오른쪽 클릭', '한 단계 뒤로 · 메뉴']]
+      [['방향키 · WASD', '걷기'], ['Shift + 방향키', '달리기 (피로 조금 더)'], ['Space · Enter', '말 걸기 · 들어가기'], ['1', '재생'], ['2', '빠르게'], ['N', '부탁 수첩'], ['Esc · 오른쪽 클릭', '한 단계 뒤로 · 메뉴']]
         .map(([k, v]) => h('tr', {}, h('td', {}, h('kbd', {}, k)), h('td', {}, v))))),
     h('p', { class: 'muted' }, '모바일: 왼쪽 아래 방향키 (길게 누르면 달리기) 또는 가고 싶은 곳을 누른다. 사람을 누르면 프로필. 한글 입력 상태에서도 단축키가 된다.'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); app.modalClosed(); app.openNotebook(); } }, '부탁 수첩'),

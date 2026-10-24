@@ -1,6 +1,6 @@
 // localStorage 저장. saveVersion 이 오르면 MIGRATIONS 에 한 단계씩 고치는 함수를 넣는다.
 import { GAME } from '../config.js';
-import { v2Fields, v3Fields, v4Fields, v5Fields, newResident } from './state.js';
+import { v2Fields, v3Fields, v4Fields, v5Fields, v6Fields, newResident } from './state.js';
 import { RESIDENTS_B } from '../data/residents.js';
 import { CLERGY_B } from '../data/clergy.js';
 
@@ -28,6 +28,10 @@ const MIGRATIONS = {
     s.leader.xp ??= 0;
     s.leader.stats ??= { talk: 1, stamina: 1, charisma: 1, sense: 1, disguise: 1 };
     s.quest.phase = s.phase;
+    return s;
+  },
+  5: (s) => {
+    Object.assign(s, { ...v6Fields(), ...s });
     return s;
   },
 };

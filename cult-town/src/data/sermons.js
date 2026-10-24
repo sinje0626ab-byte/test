@@ -51,6 +51,16 @@ export const SERMON_CARDS = {
   ],
 };
 
+// 레벨 3 해금 카드 (28장 B-5): 유형마다 한 장. 레벨 3이 되면 덱에 들어간다
+export const SERMON_BONUS = {
+  doomsday: { id: 'dx', name: '비상 연락망 돌리기', need: 'lonely', tag: 'us' },
+  messiah: { id: 'mx', name: '교주 생일 케이크', need: 'lonely', tag: 'leader' },
+  meditation: { id: 'nx', name: '퇴근길 지하철 호흡', need: 'health', tag: 'work' },
+  fortune: { id: 'fx', name: '개업 떡 돌리는 날', need: 'money', tag: 'shop' },
+  shaman: { id: 'sx', name: '이삿날 받아 주기', need: 'future', tag: 'year' },
+  qigong: { id: 'qx', name: '공원 체조 반장', need: 'health', tag: 'hand' },
+};
+
 // 참석자 얼굴 상태
 export const FACES = {
   sleepy: { name: '졸음', icon: 'zz' },

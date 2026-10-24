@@ -1,5 +1,5 @@
 // 성소: 자리·분위기·소품·예배·헌금·월세·신도 돌보기
-import { worshipMul } from './growth.js';
+import { worshipMul, levelOf } from './growth.js';
 import { noteWorship, addXp } from './quests.js';
 import { SANCTUARY, SHOP, SECT_FX, STAGES, RUMOR, SIGN, GROWTH, SERMON, OPENING } from '../config.js';
 import { openingWorshipOpen, afterOpeningWorship, isOpeningDay } from './opening.js';
@@ -17,6 +17,7 @@ export const mood = (s) => Object.entries(s.sanctuary.props).reduce((n, [k, c]) 
 export function canBuy(s, item) {
   const have = s.sanctuary.props[item] ?? 0;
   if (have >= SHOP[item].max) return { ok: false, reason: 'max' };
+  if (SHOP[item].level && levelOf(s).level < SHOP[item].level) return { ok: false, reason: 'level' };
   if (s.leader.money < SHOP[item].price) return { ok: false, reason: 'money' };
   return { ok: true };
 }
@@ -83,6 +84,9 @@ export function holdWorship(s, opts = {}) {
   offering = Math.round(offering / 1000) * 1000;
   addMoney(s, offering);
   s.week.offering += offering;
+  s.counters ??= {};
+  s.counters.offering = (s.counters.offering ?? 0) + offering;   // 28장 업적·결산
+  if (isWorshipDay(s.day)) s.counters.worshipStreak = (s.counters.worshipStreak ?? 0) + 1;
   s.week.worships.push({ day: s.day, heads, named: named.length, standing });
   s.sanctuary.worshipDay = s.day;
   s.sanctuary.lastAttend = named;

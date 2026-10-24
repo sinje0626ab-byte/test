@@ -9,6 +9,8 @@ import { branchCount, memberCount } from '../sim/faith.js';
 import { exhausted } from '../sim/leader.js';
 import { rentNow } from '../sim/space.js';
 import { currentStep } from '../sim/quests.js';
+import { goalOf, difficultyOf } from '../sim/goals.js';
+import { titleOf } from '../sim/achievements.js';
 import { isOpeningDay, openingDone } from '../sim/opening.js';
 import { CAST_BY_ID as CAST_BY } from '../data/cast.js';
 import { HUD_HELP, HUD_WORDS, HUD_MORNING, HUD_TOUR } from '../data/hud.js';
@@ -72,11 +74,11 @@ export function nowTask(s) {
 }
 
 export function createHud(app) {
+  const who = h('div', { class: 'who' });
   const date = h('div', { class: 'date' });
   const time = h('div', { class: 'time' });
   const phase = h('div', { class: 'phase' });
   const speedBtns = [
-    h('button', { class: 'btn', title: '멈춤 (` 키)', onclick: () => app.setSpeed(0) }, h('kbd', {}, '`'), ' 멈춤'),
     h('button', { class: 'btn', title: '재생 (1 키)', onclick: () => app.setSpeed(1) }, h('kbd', {}, '1'), ' 재생'),
     h('button', { class: 'btn', title: '빠르게 (2 키)', onclick: () => app.setSpeed(2) }, h('kbd', {}, '2'), ' 빠르게'),
   ];
@@ -109,9 +111,15 @@ export function createHud(app) {
   const body = h('div', { class: 'srows' }, order.map((k) => makeRow(k, { bar: ['rep', 'repB', 'fatigue', 'landlord'].includes(k), axis: k === 'belief' })));
   const mini = h('button', { class: 'mini', onclick: (e) => { e.stopPropagation(); stats.classList.toggle('open'); play('click'); } });
   const stats = h('div', { class: 'stats' }, mini, body);
+  let left = null;
+  // 좁은 화면: 펼친 상태창은 시계·'지금 할 일' 아래로 내려 겹치지 않게 (모바일 피드백)
+  new MutationObserver(() => {
+    const open = stats.classList.contains('open') && window.matchMedia?.('(max-width: 560px)').matches;
+    stats.style.top = open && left ? `${Math.round(left.getBoundingClientRect().bottom + 6)}px` : '';
+  }).observe(stats, { attributes: true, attributeFilter: ['class'] });
 
   const el = h('div', { class: 'hud' },
-    h('div', { class: 'left' }, h('div', { class: 'clock' }, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, book, menu)), task),
+    left = h('div', { class: 'left' }, h('div', { class: 'clock' }, who, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, book, menu)), task),
     stats,
   );
   mount('hud', el);
@@ -137,7 +145,8 @@ export function createHud(app) {
     ].filter(Boolean));
     tip.classList.remove('hidden');
     for (const r of Object.values(rows)) r.el.classList.toggle('lit', r === rows[k]);
-    const box = rows[k].el.getBoundingClientRect();
+    // 모바일에서 접혀 있으면 줄이 안 보이니 접힌 요약 아래에 띄운다 (28장: 창끼리 겹치지 않게)
+    const box = (rows[k].el.getClientRects().length ? rows[k].el : stats).getBoundingClientRect();
     const w = Math.min(300, window.innerWidth - 24);
     tip.style.width = `${w}px`;
     tip.style.left = `${Math.max(12, Math.min(window.innerWidth - w - 12, box.right - w))}px`;
@@ -150,7 +159,14 @@ export function createHud(app) {
     tip.classList.add('hidden');
     for (const r of Object.values(rows)) r.el.classList.remove('lit');
   }
-  document.addEventListener('click', () => { if (tipKey && !tour) hideTip(); });
+  const narrow = () => window.matchMedia?.('(max-width: 560px)').matches;
+  document.addEventListener('click', (e) => {
+    if (tipKey && !tour) hideTip();
+  });
+  // 좁은 화면: 바깥(지도 포함)을 누르면 펼친 상태창을 접는다. 캔버스는 click이 안 올 때가 있어 pointerdown으로
+  document.addEventListener('pointerdown', (e) => {
+    if (narrow() && !tour && !stats.contains(e.target) && !mini.contains(e.target)) stats.classList.remove('open');
+  });
 
   // 첫 변화 설명: 대화창 등이 떠 있으면 기다렸다가 하나씩
   const firstQueue = [];
@@ -159,7 +175,7 @@ export function createHud(app) {
     if (app.modal > 0) { setTimeout(pumpFirst, 600); return; }
     const k = firstQueue.shift();
     if (!rows[k] || rows[k].el.classList.contains('off')) { pumpFirst(); return; }
-    stats.classList.add('open');
+    if (!narrow()) stats.classList.add('open');
     showTip(k, { first: true, auto: 7000 });
     setTimeout(pumpFirst, 7300);
   }
@@ -183,6 +199,7 @@ export function createHud(app) {
   }
 
   let prev = null;
+  let lastMini = '';
   const actionBtn = h('button', { class: 'btn primary hidden' });
   const extraBtn = h('button', { class: 'btn hidden' });
   mount('actionbar', h('div', { class: 'actionbar' }, extraBtn, actionBtn));
@@ -197,17 +214,19 @@ export function createHud(app) {
       const s = app.s;
       if (!s) return;
       // 휴대폰 잠금화면처럼: 날짜 / 시각 / 날씨·기온 · 동네
+      const ttl = titleOf(s);
+      who.textContent = `${ttl ? `〈${ttl}〉 ` : ''}${s.leader.name} · ${difficultyOf(s).name}`;
       date.textContent = fmtDate(s.day);
       time.textContent = s.mode === 'night' ? '밤' : fmtClock(s.minute);
       const hol = holidayOf(s.day);
       const where = s.phase >= 4 ? ` · ${s.district === 'bongcheon' ? '봉천동' : '신림동'}` : '';
       phase.textContent = s.mode === 'night' ? `성소 운영 · ${skyName(s.weather)} ${tempAt(s, 21 * 60)}°` : `${skyName(s.weather)} ${tempAt(s)}°${where}${hol ? ` · ${HOLIDAY_SHORT[hol.id] ?? ''}` : ''}`;
-      speedBtns.forEach((b, i) => b.classList.toggle('on', app.speed === i));
+      speedBtns.forEach((b, i) => b.classList.toggle('on', app.speed === i + 1));
       taskText.textContent = nowTask(s);
 
       const v = snapshot(s);
       const rent = rentNow(s);
-      const goal = s.phase >= 4 ? PHASE4.members : s.phase >= 3 ? PHASE3.members : s.phase >= 2 ? PHASE2.members : GOAL.members;
+      const goal = goalOf(s).members;
       // 돈
       let r = rows.money;
       r.lbl.textContent = '돈'; r.val.textContent = won(v.money);
@@ -238,7 +257,7 @@ export function createHud(app) {
       rows.repB.el.classList.toggle('off', s.phase < 4);
       if (s.phase >= 4) {
         r = rows.branch;
-        r.lbl.textContent = '봉천 지부'; r.val.textContent = s.branch.open ? `${v.branch} / ${PHASE4.branch}명` : '없음';
+        r.lbl.textContent = '봉천 지부'; r.val.textContent = s.branch.open ? `${v.branch} / ${goalOf(s, 4).branch}명` : '없음';
         setWord(r, ...(s.branch.open ? (s.branch.split ? ['갈라질 듯', 'bad'] : ['운영 중', 'good']) : ['아직', 'warn']));
         r = rows.repB;
         r.lbl.textContent = '봉천 평판'; r.val.textContent = `${v.repB}`;
@@ -266,10 +285,13 @@ export function createHud(app) {
         rows[k].fill.className = w;
       }
       // 접힌 한 줄 요약 (모바일)
-      mini.replaceChildren(
-        ...[['money', `${man(v.money)}`], ['members', `${v.members}/${goal}`], ['rep', `${v.rep}`], ['fatigue', `${v.fatigue}%`]]
-          .flatMap(([k, t]) => [pix(k), h('span', { class: `m ${rows[k].word.className.split(' ')[1] ?? ''}` }, t)]),
-        h('span', { class: 'more' }, '▾'));
+      const miniItems = [['money', `${man(v.money)}`], ['members', `${v.members}/${goal}`], ['rep', `${v.rep}`], ['fatigue', `${v.fatigue}%`]]
+        .map(([k, t]) => [k, t, rows[k].word.className.split(' ')[1] ?? '']);
+      const miniKey = JSON.stringify(miniItems);
+      if (miniKey !== lastMini) {   // 바뀔 때만 다시 그린다
+        lastMini = miniKey;
+        mini.replaceChildren(...miniItems.flatMap(([k, t, c]) => [pix(k), h('span', { class: `m ${c}` }, t)]), h('span', { class: 'more' }, '▾'));
+      }
 
       // 바뀐 값: +/− 표시 · 처음 바뀐 줄은 엄마가 짚어 준다
       if (prev) {
@@ -291,7 +313,7 @@ export function createHud(app) {
       stats.classList.add('open');
       app.modalOpened();
       const step = () => {
-        if (i >= keys.length) { tour = null; hideTip(); app.modalClosed(); return; }
+        if (i >= keys.length) { tour = null; hideTip(); if (narrow()) stats.classList.remove('open'); app.modalClosed(); return; }
         tour = keys[i];
         const last = i === keys.length - 1;
         showTip(keys[i], { extra: h('div', { class: 'row end' }, h('small', { class: 'muted' }, `${i + 1}/${keys.length}`),

@@ -3,7 +3,7 @@
 //  2) 균형 검사: '정석' 봇이 여섯 유형으로 여러 판 해 보고, 1단계 목표(성공률 60~80%) · 2단계 목표 · 3단계 목표(성공률 60~80%, 2~3시간)까지 잰다. 라이벌이 혼자 크는지도 본다
 // 사용: node tools/simulate.mjs [--games 20] [--verbose] [--no-balance]
 import { readFileSync } from 'node:fs';
-import { CLOCK, MOVE, SHOP, SANCTUARY, TALK, SPACE_STEPS, OFFICERS } from '../src/config.js';
+import { CLOCK, MOVE, SHOP, SANCTUARY, TALK, SPACE_STEPS, OFFICERS, PHASE2 } from '../src/config.js';
 import { ITEMS } from '../src/data/items.js';
 import { PREFS } from '../src/data/prefs.js';
 import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS } from '../src/data/residents.js';
@@ -36,10 +36,14 @@ import { rivalOn, rivalAct, mergeChance, truceChance, rivalSize, rivalOptions } 
 import { RIVAL, PHASE4 } from '../src/config.js';
 import { canOpenBranch, openBranch, branchHead, branchAct } from '../src/sim/branch.js';
 import { branchCount } from '../src/sim/faith.js';
+import { goalOf } from '../src/sim/goals.js';
+// 28장 난이도 곡선: 단계마다 목표 성공률 (보통) · 편하게 +10 · 빡세게 −10, 허용 ±5 (1단계는 그 이상이면 된다)
+const CURVE = { normal: [90, 80, 70, 65], easy: [100, 90, 80, 75], hard: [80, 70, 60, 55] };
 
 const args = process.argv.slice(2);
 const GAMES = args.includes('--games') ? Number(args[args.indexOf('--games') + 1]) : 20;
 const VERBOSE = args.includes('--verbose');
+const DIFF = args.includes('--diff') ? args[args.indexOf('--diff') + 1] : (process.env.DIFF ?? 'normal');   // 28장: easy · normal · hard
 const g = gridFromMap(JSON.parse(readFileSync(new URL('../src/map/town.json', import.meta.url))));
 const gB = gridFromMap(JSON.parse(readFileSync(new URL('../src/map/bongcheon.json', import.meta.url))));
 registerGrid('sillim', g); registerGrid('bongcheon', gB);
@@ -48,6 +52,7 @@ setThreatGrid(g);
 let problems = 0;
 const fail = (msg) => { problems++; console.log('  ✗ ' + msg); };
 
+if (!process.env.ONLYBAL) {   // 28장 balance.mjs 는 균형만 돌린다
 // ── 1) 일과 검사 ──
 console.log('■ 주민 일과 검사');
 // 시각은 도착 시각. 걸리는 만큼 먼저 출발하므로, 앞 장소에서 머무는 시간이 10분 이상이어야 한다.
@@ -132,6 +137,8 @@ for (const day of [0, 2, 5, 6, 10, 19, 22, 33]) {   // 5·10·19·22·33 = 큰 �
   console.log(`  대사 반복 검사: 주민 ${ALL_RESIDENTS.length}명 사흘 연속 대화 · 같은 말 나온 주민 ${rep}`);
 }
 
+}
+
 // ── 2) 균형 검사 ──
 // '정석' 봇: 단서를 보고 고민 카드를 고르고, 사연 부탁을 들어주고, 좋아하는 선물을 주고, 어두운 선택은 하지 않는다.
 // 밤: 예배·의자·소품·돌보기. 2단계: 돈이 되면 확장, 상담실·주방·공부방·사무실 순으로 방, 간부 승진·배치, 회의는 불만 적은 쪽.
@@ -190,7 +197,7 @@ function playDay(s, policy) {
   // 4단계: 어느 동네에서 하루를 보낼까 (지부 전엔 이틀에 하루, 지부 뒤엔 지부가 목표에 못 미치면 사흘에 이틀)
   s.district = 'sillim';
   if (s.phase >= 4) {
-    const goB = !s.branch.open ? s.day % 2 === 0 : branchCount(s) < PHASE4.branch ? s.day % 3 !== 0 : s.day % 3 === 0;
+    const goB = !s.branch.open ? s.day % 2 === 0 : branchCount(s) < goalOf(s, 4).branch ? s.day % 3 !== 0 : s.day % 3 === 0;
     if (goB) { s.district = 'bongcheon'; s.leader.money -= PHASE4.subway.fare * 2; s.leader.fatigue += 12; }
   }
   if (s.events.pending) {
@@ -279,7 +286,9 @@ function phase2Night(s) {
   const reserve = rentNow(s) * 1.1;
   const st = nextStep(s);
   // 월세는 25일에 한 번: 월세날이 가까울 때만 한 달 치를 남겨 둔다
-  if (st && s.leader.money > st.deposit + (rentNow(s) + st.rent) * (daysToRent(s.day) <= 7 ? 1.1 : 0.5)) expand(s, haggleChance(s) >= 0.5 ? 'haggle' : 'pay');
+  // 28장: 목표(3층 전체)를 넘는 확장은 다음 월세를 넉넉히 남길 때만 (2층 월세에 막혀 체납하던 판을 막는다)
+  const beyond = s.phase === 2 && s.space.step >= PHASE2.minSpaceStep;
+  if (st && s.leader.money > st.deposit + (rentNow(s) + st.rent) * (beyond ? 1.6 : daysToRent(s.day) <= 7 ? 1.1 : 0.5)) expand(s, haggleChance(s) >= 0.5 ? 'haggle' : 'pay');
   for (const slot of openSlots(s)) {
     if (!s.rooms[slot]) {
       const built = Object.values(s.rooms).map((r) => r.type);
@@ -316,7 +325,7 @@ function phase2Night(s) {
 const REV_PICKS = { sign: ['banner'], fence: ['meal', 'open'], camera: ['open'], neighbor: ['respect'], branch: ['trust'] };
 function playGame(sect, seed, policy = 'normal', maxDays = 190) {
   const family = SECTS[sect].family[0];
-  const s = newGame({ leaderName: '봇', age: 40, family, sect, cultName: '봇', seed });
+  const s = newGame({ leaderName: '봇', age: 40, family, sect, cultName: '봇', seed, difficulty: DIFF });
   s.botPolicy = policy;
   startDay(s, g);
   const timeline = [];
@@ -336,6 +345,7 @@ function playGame(sect, seed, policy = 'normal', maxDays = 190) {
     if (r.revelation) applyRevelation(s, r.revelation, REV_PICKS[r.revelation]);
     if (s.rival) rivalLog.push(rivalSize(s));
     if (process.env.P3DBG && seed === Number(process.env.P3DBG) && s.phase >= 3 && s.day % 3 === 0) console.log(`      d${s.day} m${memberCount(s)} f${s.followers} rep${Math.round(s.rep)} exp${Math.round(s.exposure)} rep:${s.reporter.active ? 'on' : '-'}${s.reporter.due ? 'due' : ''} heat${Math.round(s.reporter.heat)} reports${s.reporter.reports} rival:${s.rival ? s.rival.status + rivalSize(s) + ' dirt' + s.rival.dirt + ' taken' + s.rival.taken : '-'} def${soreDefectors(s).length} prot${s.protest && !s.protest.done ? 'y' : '-'} notices${Object.keys(s.notices).length}${s.phase >= 4 ? ` | P4 repB${Math.round(s.repB)} br${s.branch.open ? branchCount(s) : '-'} bf${s.branch.followers} head${branchHead(s) ? Math.round(branchHead(s).discontent) : '-'}${s.branch.split ? 'SPLIT' : ''}` : ''}`);
+    if (process.env.P2WHY && s.phase === 2 && s.day === 55) console.log(`      P2WHY ${sect} m${memberCount(s)}/${goalOf(s, 2).members} step${s.space.step} off${activeOfficers(s).length} streak${s.sanctuary.rentStreak} arr${s.sanctuary.arrears} money${s.leader.money} anger${Math.round(s.landlordAnger)}`);
     timeline.push(memberCount(s));
     if (firstMember == null && namedMembers(s).length) firstMember = s.day - 1;   // 첫 신도 전환 (이름 있는 주민, endDay 가 날짜를 넘기기 전 날)
     if (process.env.RDBG && seed === 1000 && s.phase === 1) console.log(`      d${s.day} m${memberCount(s)} streak${s.sanctuary.rentStreak} arr${s.sanctuary.arrears} money${s.leader.money}`);
@@ -376,12 +386,15 @@ if (!args.includes('--no-balance')) {
     console.log(`  ${''.padEnd(10)} 3단계 ${ok3.length}/${ok2.length} (${md(d3)}) ${why(ok2, ok3)} · 4단계 ${ok4.length}/${ok3.length} (${md(d4)}) ${why(ok3, ok4)}`);
     const chk = (k, a, b, d) => {
       const rate = b.length ? a.length / b.length : 0;
-      if (rate < 0.6 || rate > 0.8) fail(`${SECTS[sect].name}: ${k}단계 성공률 ${Math.round(rate * 100)}% (목표 60~80%)`);
+      const want = CURVE[DIFF][k - 1];
+      const pct = Math.round(rate * 100);
+      if (pct < want - 5 || (k > 1 && pct > want + 5)) fail(`${SECTS[sect].name}: ${k}단계 성공률 ${pct}% (목표 ${want}% ±5)`);
       if (d && d.length) { const m = min(median(d)); if (m < 120 || m > 180) fail(`${SECTS[sect].name}: ${k}단계 ${m}분 (목표 2~3시간)`); }
     };
     chk(1, ok1, res, ok1.map((r) => r.phase1Day)); chk(2, ok2, ok1, d2); chk(3, ok3, ok2, d3); chk(4, ok4, ok3, d4);
     if (VERBOSE) console.log("    ", res[0].timeline.join(" "));
     if (process.env.TL) for (const r of res) console.log("     tl", r.phase1Day, r.phase2Day, r.phase3Day, r.days, r.over, "|", [40, 48, 55, 70, 78, 85, 100, 108, 116].map((d) => r.timeline[d] ?? "-").join(" "));
+    if (process.env.JSON) console.log('JSON ' + JSON.stringify({ sect, diff: DIFF, n: res.length, p1: ok1.length, p2: ok2.length, p3: ok3.length, p4: ok4.length, why2: why(ok1, ok2), why3: why(ok2, ok3), why4: why(ok3, ok4), d1: ok1.length ? median(ok1.map((r) => r.phase1Day)) : null, d2: d2.length ? median(d2) : null, d3: d3.length ? median(d3) : null, d4: d4.length ? median(d4) : null }));
     if (process.env.P1D) console.log("     p1:", res.map((r) => r.phase1Day ?? "-").join(" "), "|", res.map((r, i) => `${1000 + i * 17}:${r.over}`).join(" "));
   }
   const pc = (a, b) => (b ? Math.round((a / b) * 100) : 0);
@@ -390,7 +403,7 @@ if (!args.includes('--no-balance')) {
   if (in3 < firsts.length) fail(`첫 신도 전환이 3일째 안에 안 일어난 판이 있다 (${firsts.length - in3}판)`);
   console.log(`  전체 성공률 1단계 ${pc(p1Total, n)}% · 2단계 ${pc(p2Total, p2N)}% · 3단계 ${pc(p3Total, p3N)}% · 4단계 ${pc(p4Total, p4N)}%`);
   // 열혈 신자를 많이 쓰는 봇: 더 빨리 모으지만 사고로 더 자주 실패한다
-  if (!process.env.SECT) {   // 한 유형만 돌릴 땐 건너뛴다
+  if (!process.env.SECT && !process.env.ONLYBAL) {   // 한 유형만 돌릴 땐 건너뛴다
     const N = Math.max(4, Math.round(GAMES / 2));
     const runs = (policy) => SECT_ORDER.flatMap((sect) => Array.from({ length: N }, (_, i) => playGame(sect, 5000 + i * 31, policy)));
     const score = (rs) => {
@@ -408,6 +421,7 @@ if (!args.includes('--no-balance')) {
     if (!(z.fails > a.fails)) fail('열혈 봇이 정석보다 더 자주 실패하지 않는다');
   }
   // 라이벌 혼자 크는가: 플레이어가 라이벌에 아무 대응도 안 하는 봇
+  if (!process.env.ONLYBAL) {
   const alone = ['doomsday', 'meditation', 'shaman'].map((sect) => playGame(sect, 777, 'ignoreRival'));
   console.log(`\n■ 라이벌에 대응 안 하는 봇 (라이벌 규모, 등장부터 하루마다): `);
   for (const r of alone) console.log(`    ${r.rivalSect ?? '-'}: ${r.rivalLog.join(' ')}`);
@@ -415,6 +429,7 @@ if (!args.includes('--no-balance')) {
   const reckless = SECT_ORDER.map((sect) => playGame(sect, 4242, 'reckless', 45));
   console.log(`\n■ 교단 얘기만 하는 봇: ${reckless.map((r) => `${r.over}@${r.days}일`).join(' · ')}`);
   if (reckless.filter((r) => r.phase1Day).length > 1) fail('교단 얘기만 해도 1단계를 넘긴다 (의심 장치가 약하다)');
+  }
 }
 
 console.log(problems ? `\n✗ 문제 ${problems}개` : '\n✓ 문제 없음');

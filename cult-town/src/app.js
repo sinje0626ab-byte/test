@@ -1,4 +1,7 @@
 // 앱 제어: 상태(app.s) · 씬 전환 · 시간 흐름 · DOM UI 연결. 게임 규칙은 전부 sim/ 에 있다.
+import { levelOf } from './sim/growth.js';
+import { pollRewards, checkAchievements, noteVisit } from './sim/achievements.js';
+import { showReward, showAchievement, showLevelUp } from './ui/celebrate.js';
 import townMap from './map/town.json';
 import bongcheonMap from './map/bongcheon.json';
 import { CLOCK, OFFICERS, PHASE4, GROWTH, OPENING } from './config.js';
@@ -24,9 +27,12 @@ import { streetTick } from './sim/officers.js';
 import { threatHour, setThreatGrid, isProtester, isDefector } from './sim/threats.js';
 import { openInterview, openProtest, openDefector, rivalHello, nameForNpc } from './ui/threats.js';
 import { mapsForStep } from './map/interiors.js';
-import { portrait as makePortrait, setSeason } from './game/people.js';
+import { portrait as makePortrait, setSeason, setLeaderStage } from './game/people.js';
 import { createHud } from './ui/hud.js';
-import { showTitle, hideTitle, showCreation } from './ui/creation.js';
+import { showCreation } from './ui/creation.js';
+import { memberCount } from './sim/faith.js';
+import { showTitle, hideTitle } from './ui/title.js';
+import { installArcade } from './ui/arcade.js';
 import { openTalk, openClergyTalk } from './ui/dialog.js';
 import { openProfile, closeProfile } from './ui/profile.js';
 import { openNight, openLandlord } from './ui/night.js';
@@ -100,8 +106,9 @@ export const app = {
     window.addEventListener('keyup', (e) => { if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.running = false; });
     window.addEventListener('contextmenu', (e) => { if (!this.s) return; e.preventDefault(); this.back(); });
     createDpad(this);
+    installArcade(this);
     // 알림은 창(대화·밤 메뉴·사건·장면)이 하나도 없을 때만 차례로 뜬다
-    setToastGate(() => this.modal === 0 && !document.querySelector('[data-id=cutin],[data-id=event],[data-id=morning],[data-id=bulletin],[data-id=opening]'));
+    setToastGate(() => this.modal === 0 && !document.querySelector('[data-id=cutin],[data-id=event],[data-id=morning],[data-id=bulletin],[data-id=opening],[data-id=recap],[data-id=phaseup],[data-id=levelup]'));
     this.toTitle();
   },
 
@@ -116,21 +123,24 @@ export const app = {
     this.game.scene.start('title');
     const saved = loadGame();
     showTitle({
-      hasSave: !!saved,
+      save: saved ? { leader: saved.leader.name, cult: saved.leader.cultName, date: fmtDate(saved.day), members: memberCount(saved), difficulty: saved.difficulty } : null,
       onNew: () => { clearSave(); hideTitle(); showCreation((p) => this.startNew(p), () => this.toTitle()); },
       onContinue: () => { hideTitle(); this.resume(loadGame()); },
       onCredits: () => showCredits(() => {}),
+      onWipe: () => clearSave(),
+      demo: (end) => this.game.scene.getScene('title')?.startDemo(end),
     });
   },
 
   startNew(p) {
-    const s = newGame({ leaderName: p.name, age: p.age, family: p.family, sect: p.sect, cultName: p.cultName, seed: (Date.now() % 1e9) | 0 });
+    const s = newGame({ leaderName: p.name, age: p.age, family: p.family, sect: p.sect, cultName: p.cultName, difficulty: p.difficulty, seed: (Date.now() % 1e9) | 0 });
     startDay(s, this.g);
     this.s = s;
     this.floor = 3;
     saveGame(s);
     this.hud = createHud(this);
     s.flags.hudSnap = this.hud.snapshot();
+    s.flags.levelSeen = 1;               // 28장: 레벨 업 화면 기준
     // 개업 첫날 (25장 B): 302호에서 시작 → 엄마 → 간판 달기 장면 → 통장님
     this.goSanctuary('door');
     setTimeout(() => this.openingMorning(), 500);
@@ -142,10 +152,12 @@ export const app = {
     const O = OPENING_TEXT;
     openingPanel(this, { speaker: 'o:mom', title: O.mom.title, name: CAST_BY.mom.name, face: this.portrait('o:mom'), scene: O.mom.scene, lines: O.mom.lines, next: O.mom.next,
       onDone: () => {
+        this.modalOpened();     // 간판 장면까지 이어지는 틈에 엔터가 문으로 들어가지 않게 (28장)
         this.goTown('sanctuary');
         setTimeout(() => {
-          this.modalOpened();
-          this.scene()?.signScene?.(1, () => {
+          const sc = this.scene();
+          if (!sc?.signScene) { this.modalClosed(); return; }
+          sc.signScene(1, () => {
             this.modalClosed();
             openingSign(s);
             checkQuests(s);
@@ -199,7 +211,7 @@ export const app = {
     return this.game.scene.getScenes(true).find((sc) => !['boot', 'title'].includes(sc.scene.key)) ?? null;
   },
   goTown(entry) {
-    setSeason(season(this.s.day));
+    setSeason(season(this.s.day)); setLeaderStage(this.s.phase);
     this.game.scene.stop('title');
     this.game.scene.stop('sanctuary');
     this.game.scene.start('town', { entry });
@@ -208,7 +220,7 @@ export const app = {
     this.dpadShow(true);
   },
   goSanctuary(entry = 'door') {
-    setSeason(season(this.s.day));
+    setSeason(season(this.s.day)); setLeaderStage(this.s.phase);
     this.game.scene.stop('title');
     this.game.scene.stop('town');
     this.game.scene.stop('sanctuary');
@@ -248,7 +260,7 @@ export const app = {
     this.saveTimer += dMin;
     if (this.saveTimer > 60) { this.saveTimer = 0; saveGame(s); }
   },
-  setSpeed(n) { this.speed = n; play('click'); this.hud?.update(); },
+  setSpeed(n) { this.speed = Math.max(1, n); play('click'); this.hud?.update(); },   // 멈춤은 없다: 시간은 늘 흐른다 (창이 떠 있을 때만 선다)
   // 첫 주는 시계가 조금 빠르다 (하루 ≈ 4분, 25장 B-4)
   clockRate() { return this.s && this.s.day < OPENING.firstWeekDays ? OPENING.firstWeekRate : 1; },
 
@@ -303,6 +315,7 @@ export const app = {
         this.goTown('sanctuary');
         play('door');
         s.flags.hudSnap = this.hud?.snapshot();
+        this.celebrate(r.events);
         toast(`${s.leader.name}: ${pick(s, LEADER_TONE[tone(s)].morning)}`);
         const hol = holidayOf(s.day);
         if (hol && dayOfMonth(s.day) === hol.from) toast(hol.text, '', 6000);
@@ -439,6 +452,13 @@ export const app = {
   },
   checkPlaceVisit([tx, ty]) {
     const s = this.s;
+    // 28장 B-1: 처음 가 본 장소 (입구 한 칸 안)
+    for (const [place, p] of Object.entries(this.here().places)) {
+      const d = p.door;
+      if (!d || !PLACES[place] || Math.abs(d[0] - tx) + Math.abs(d[1] - ty) > 1) continue;
+      const r = noteVisit(s, place, PLACES[place].short ?? PLACES[place].name);
+      if (r) showReward(r);
+    }
     // 퀘스트 장소 (전단 · 오늘의 할 일 '둘러보기')
     for (const m of questMarkers(s)) {
       if (m.kind !== 'place' || m.why === 'favor') continue;
@@ -465,7 +485,7 @@ export const app = {
   },
   afterTalk(id, res) {
     for (const t of res?.todayDone ?? []) toast(t.id === 'all' ? '오늘 할 일 셋을 다 했다. 보리차값 1만 원이 굳었다.' : `오늘 할 일: ${dailyName(t)} ✓`, 'good');
-    saveGame(this.s); this.hud?.update();
+    saveGame(this.s); this.celebrate(); this.hud?.update();
     if (this.s.quest?.news?.length) setTimeout(() => showQuestNews(this), 300);
   },
   // 큰 날 행사 (25장 D): 그날만 할 수 있는 일 1~2개
@@ -501,7 +521,23 @@ export const app = {
     const t = this.s.today;
     if (t) toast(`오늘 할 일 (수첩 N): ${t.tasks.map(dailyName).join(' · ')}`, '', 6000);
   },
-  refresh() { this.hud?.update(); },
+  refresh() { this.celebrate(); this.hud?.update(); },
+  // 28장 B: 작은 보상 · 업적 · 레벨 업 (events 를 주면 밤사이 sim 이 이미 정한 것만 보여 준다)
+  celebrate(events = null) {
+    const s = this.s;
+    if (!s) return;
+    const rewards = events ? events.filter((e) => e.type === 'reward') : pollRewards(s);
+    const ach = events ? events.filter((e) => e.type === 'achievement') : checkAchievements(s);
+    for (const r of rewards) showReward(r);
+    for (const a of ach) showAchievement(a);
+    const lv = levelOf(s).level;
+    s.flags.levelSeen ??= lv;
+    if (lv > s.flags.levelSeen && this.modal === 0 && s.mode === 'day') {
+      const from = s.flags.levelSeen;
+      s.flags.levelSeen = lv;
+      showLevelUp(this, from, lv);
+    }
+  },
 
   // 성소 안에서만 보이는 작은 버튼: 낮엔 '하루 마치기', 밤엔 '밤 메뉴'
   updateExtra() {
@@ -566,7 +602,6 @@ export const app = {
       return;
     }
     if (this.modal > 0) return;
-    if (e.code === 'Backquote') { e.preventDefault(); this.setSpeed(0); }
     if (e.code === 'Digit1') this.setSpeed(1);
     if (e.code === 'Digit2') this.setSpeed(2);
     if (e.code === 'KeyN') this.openNotebook();

@@ -21,17 +21,23 @@ export const setSeason = (s) => { SEASON = s; };
 const sheetFor = (season = SEASON) => (['winter', 'early', 'autumn'].includes(season) ? 'people-cold' : 'people-warm');
 
 const meta = (scene) => scene.cache.json.get('peopleMeta');
+// 교주 옷차림 단계 (28장 B-2): 1 평상복 · 2 양복 · 3 흰 셔츠 · 4 흰 두루마기
+let LEADER_STAGE = 1;
+export const setLeaderStage = (n) => { LEADER_STAGE = Math.max(1, Math.min(4, n)); };
 const rowOf = (scene, key) => {
   const rows = meta(scene).rows;
-  const k = key.replace(/^p:/, '');
+  let k = key.replace(/^p:/, '');
+  if (k === 'leader' && LEADER_STAGE > 1 && rows[`leader${LEADER_STAGE}`] != null) k = `leader${LEADER_STAGE}`;
   return rows[k] ?? rows.leader;
 };
 
 // Phaser 텍스처와 걷기 애니메이션 등록 (계절이 바뀌면 다시 만든다). look 은 예전 호출 모양을 위해 받기만 한다.
 export function registerPerson(scene, key) {
   const sheet = sheetFor();
+  const stage = key === 'p:leader' ? LEADER_STAGE : 0;
   if (scene.textures.exists(key)) {
-    if (scene.textures.get(key).customData?.sheet === sheet) return;
+    const cd = scene.textures.get(key).customData;
+    if (cd?.sheet === sheet && (cd.stage ?? 0) === stage) return;
     for (const dir of DIRS) scene.anims.remove(`${key}-walk-${dir}`);
     scene.textures.remove(key);
   }
@@ -41,7 +47,7 @@ export function registerPerson(scene, key) {
   canvas.width = m.cols * m.frameWidth; canvas.height = m.frameHeight;
   canvas.getContext('2d').drawImage(src, 0, rowOf(scene, key) * m.frameHeight, canvas.width, m.frameHeight, 0, 0, canvas.width, m.frameHeight);
   scene.textures.addSpriteSheet(key, canvas, { frameWidth: m.frameWidth, frameHeight: m.frameHeight });
-  scene.textures.get(key).customData = { sheet };
+  scene.textures.get(key).customData = { sheet, stage };
   for (const dir of DIRS) {
     scene.anims.create({
       key: `${key}-walk-${dir}`,
@@ -55,7 +61,7 @@ export function registerPerson(scene, key) {
 const portraitCache = new Map();
 export function portrait(scene, key, scale = 4) {
   const sheet = sheetFor();
-  const ck = `${sheet}:${key}`;
+  const ck = `${sheet}:${key}:${key.endsWith('leader') ? LEADER_STAGE : 0}`;
   if (portraitCache.has(ck)) return portraitCache.get(ck);
   const m = meta(scene);
   const src = scene.textures.get(sheet).getSourceImage();

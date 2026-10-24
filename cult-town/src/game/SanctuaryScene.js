@@ -30,7 +30,8 @@ const FURN = {
 export function decoLevel(s) {
   const owned = Object.values(s.sanctuary.props ?? {}).filter(Boolean).length;
   const score = owned + (s.sanctuary.sign ?? 0) + (s.space?.step ?? 0) * 2;
-  return score >= 9 ? 3 : score >= 6 ? 2 : score >= 3 ? 1 : 0;
+  const byScore = score >= 9 ? 3 : score >= 6 ? 2 : score >= 3 ? 1 : 0;
+  return Math.max(byScore, (s.phase ?? 1) - 1);   // 28장 B-2: 단계가 오르면 꾸밈도 최소 그만큼 (2 장판 · 3 마루 · 4 꾸민 예배실)
 }
 const SEAT_ROWS = { worship: 4, counsel: 2, study: 6, kitchen: 6, dorm: 4, broadcast: 3, office: 2 };
 
@@ -178,18 +179,22 @@ export class SanctuaryScene extends Phaser.Scene {
       }
       // 3단계: 벽에 걸린 천 현수막
       if (this.deco >= 3) for (const dx of [2, 13]) this.furniture.add(this.put(dx < 8 ? 'bannerRed' : 'bannerBlue', r.x + dx, 1));
-      if (props.banner) this.furniture.add(drawShape(this, 'shape.banner', (r.x + 4) * T, 1 * T, { width: 8 * T, text: s.leader.cultName }));
+      // 28장 B-2: 3단계부터는 현수막, 4단계부터는 제단이 늘 있다 (산 것과 같은 자리)
+      if (props.banner || s.phase >= 3) this.furniture.add(drawShape(this, 'shape.banner', (r.x + 4) * T, 1 * T, { width: 8 * T, text: s.leader.cultName }));
       if (props.kettle) this.furniture.add(this.put(SHOP_ITEMS.kettle.sprite, f.desk[0] + 1, f.desk[1]));
       if (props.board) this.furniture.add(this.put(SHOP_ITEMS.board.sprite, r.x + 11, 3));
       if (props.speaker) this.furniture.add(this.put(SHOP_ITEMS.speaker.sprite, r.x + 6, 3));
       if (props.light) this.furniture.add(this.put(SHOP_ITEMS.light.sprite, r.x + 15, 5));
+      if (props.guitar) this.furniture.add(this.put(SHOP_ITEMS.guitar.sprite, r.x + 4, 3));
+      if (props.keyboard) this.furniture.add(this.put(SHOP_ITEMS.keyboard.sprite, r.x + 11, 5));
+      if (props.altar || s.phase >= 4) this.furniture.add(this.put(SHOP_ITEMS.altar.sprite, r.x + 6, 3));
       const plants = [[r.x, 2], [r.x + 15, 10], [r.x, 10]];
       for (let p = 0; p < (props.plant ?? 0); p++) this.furniture.add(this.put(SHOP_ITEMS.plant.sprite, plants[p][0], plants[p][1]));
     }
     const tiles = [];
     for (let y = 6; y < 11; y++) for (let x = r.x + 2; x < r.x + r.w - 2; x++) if (x !== r.x + 8) tiles.push([x, y]);
     let i = 0;
-    const chairs = main ? (props.chair ?? 0) * 2 : Math.round(ROOMS.worship.seats * (app.s.rooms[r.slot]?.level ?? 1));
+    const chairs = main ? Math.max((props.chair ?? 0) * 2, s.phase >= 2 ? 8 : 0) : Math.round(ROOMS.worship.seats * (app.s.rooms[r.slot]?.level ?? 1));
     for (let c = 0; c < chairs && i < tiles.length; c++, i++) { this.furniture.add(this.put(SHOP_ITEMS.chair.sprite, tiles[i][0], tiles[i][1])); seats.push(tiles[i]); }
     if (main) for (let c = 0; c < (props.cushion ?? 0) && i < tiles.length; c++, i++) { this.furniture.add(this.put(this.deco >= 2 ? 'zaisu' : SHOP_ITEMS.cushion.sprite, tiles[i][0], tiles[i][1])); seats.push(tiles[i]); }
     if (main) for (let c = 0; c < SANCTUARY.baseSeats && i < tiles.length; c++, i++) seats.push(tiles[i]);

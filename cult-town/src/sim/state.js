@@ -62,6 +62,11 @@ export function v5Fields() {
   return { ...v5QuestFields() };
 }
 
+// 28장: 난이도 · 빚 · 구제 · 업적 · 칭호 · 명장면 · 단계 기록
+export function v6Fields() {
+  return { difficulty: 'normal', debt: 0, rescue: {}, achievements: {}, moments: [], phaseLog: {}, counters: {} };
+}
+
 export function newResident(r) {
   return {
     like: 0, sus: r.leader ? 8 : 4, stage: 'none', worships: 0,
@@ -71,7 +76,7 @@ export function newResident(r) {
   };
 }
 
-export function newGame({ leaderName, age, family, sect, cultName, seed = Date.now() % 1e9 }) {
+export function newGame({ leaderName, age, family, sect, cultName, difficulty = 'normal', seed = Date.now() % 1e9 }) {
   const s = {
     v: GAME.saveVersion,
     seed, rng: seed | 0,
@@ -96,10 +101,12 @@ export function newGame({ leaderName, age, family, sect, cultName, seed = Date.n
     ...v3Fields(),
     ...v4Fields(),
     ...v5Fields(),
+    ...v6Fields(),
   };
   for (const r of ALL_RESIDENTS) s.res[r.id] = newResident(r);
   for (const c of CAST) s.cast[c.id] = { sus: 0, talkIdx: 0, active: true };
   for (const c of [...CLERGY, ...CLERGY_B]) s.clergy[c.id] = { last: -99, greetIdx: 0 };
+  s.difficulty = difficulty;
   s.week.repStart = s.rep;
   return s;
 }

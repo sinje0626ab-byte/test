@@ -4,9 +4,9 @@ import { CAST } from '../src/data/cast.js';
 import { ALL_CLERGY } from '../src/data/clergy.js';
 import { REPORTER_INFO } from '../src/data/threats.js';
 import { RIVAL_LOOKS } from '../src/data/rival.js';
-import { LEADER_LOOK, FOLLOWER_LOOKS, EXTRA_LOOKS } from '../src/data/looks.js';
+import { LEADER_LOOK, LEADER_STAGE_LOOKS, FOLLOWER_LOOKS, EXTRA_LOOKS } from '../src/data/looks.js';
 
-const out = { leader: LEADER_LOOK };
+const out = { leader: LEADER_LOOK, ...LEADER_STAGE_LOOKS };
 for (const r of ALL_RESIDENTS) out[r.id] = r.look;
 for (const c of CAST) out[`cast:${c.id}`] = c.look;
 for (const c of ALL_CLERGY) out[`c:${c.id}`] = c.look;

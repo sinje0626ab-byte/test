@@ -1,26 +1,10 @@
-// 제목 화면과 교단 창시 화면 (교주 이름 → 나이 → 계열 → 유형 → 교단 이름 → 확인). 모든 단계에 '이전' 버튼.
-import { GAME } from '../config.js';
+// 교단 창시 화면 (교주 이름 → 나이 → 계열 → 유형 → 교단 이름 → 난이도 → 확인). 모든 단계에 '이전' 버튼. 조작은 arcade.js 방향키도 된다.
+import { GAME, DIFFICULTY, DIFFICULTY_ORDER } from '../config.js';
+import { goalOf } from '../sim/goals.js';
 import { FAMILIES, SECTS, sectsOf } from '../data/sects.js';
 import { h, mount, unmount } from './dom.js';
 import { josa } from './text.js';
 import { play } from './sound.js';
-
-export function showTitle({ hasSave, onNew, onContinue, onCredits }) {
-  const panel = h('div', { class: 'panel box stack' },
-    hasSave ? h('button', { class: 'btn primary', onclick: () => { play('confirm'); onContinue(); } }, '이어 하기') : null,
-    h('button', { class: `btn ${hasSave ? '' : 'primary'}`, onclick: () => { play('click'); onNew(); } }, hasSave ? '처음부터 (저장 지움)' : '새로 시작'),
-    h('button', { class: 'btn', onclick: () => { play('click'); onCredits(); } }, '만든 사람들 · 에셋'),
-    h('p', { class: 'muted', style: 'font-size:12px;margin:6px 0 0' }, '이 게임의 교단·인물·가게 이름은 전부 지어낸 것이다. 실존 단체와 관계없다.'),
-  );
-  mount('title', h('div', { class: 'screen title title-screen' },
-    h('div', {},
-      h('div', { class: 'logo' }, GAME.title || '신림동 교주'),
-      h('div', { class: 'sub' }, '신림역 3번 출구, 상가 302호에서 시작하는 블랙코미디'),
-      panel,
-    ),
-  ));
-}
-export const hideTitle = () => unmount('title');
 
 const FAMILY_DESC = {
   christian: '교회 같은 말투와 모임. 교회 다니는 주민과 말이 잘 통하지만, 목사님이 지켜본다.',
@@ -29,8 +13,8 @@ const FAMILY_DESC = {
 };
 
 export function showCreation(onDone, onBack) {
-  const pick = { name: '', age: GAME.startAge.default, family: null, sect: null, cultName: '' };
-  const steps = ['name', 'age', 'family', 'sect', 'cult', 'confirm'];
+  const pick = { name: '', age: GAME.startAge.default, family: null, sect: null, cultName: '', difficulty: 'normal' };
+  const steps = ['name', 'age', 'family', 'sect', 'cult', 'difficulty', 'confirm'];
   let i = 0;
 
   const render = () => {
@@ -79,12 +63,18 @@ export function showCreation(onDone, onBack) {
         h('p', { class: 'muted' }, `비워 두면 "${sample}". 현수막과 주보에 이 이름이 들어간다.`),
         h('div', { class: 'field' }, input), h('div', { class: 'row between' }, prev, go));
       setTimeout(() => input.focus(), 30);
+    } else if (step === 'difficulty') {
+      body.push(h('h2', {}, '얼마나 빡빡하게'),
+        h('p', { class: 'muted' }, '나중에 바꿀 수 없다. 처음이면 보통.'),
+        h('div', { class: 'choice' }, DIFFICULTY_ORDER.map((id) => h('button', { class: `btn ${pick.difficulty === id ? 'on' : ''}`, ...(pick.difficulty === id ? { 'data-arcade-default': '' } : {}), onclick: () => { play('select'); pick.difficulty = id; i++; render(); } },
+          DIFFICULTY[id].name, h('small', {}, DIFFICULTY[id].desc)))),
+        h('div', { class: 'row between', style: 'margin-top:10px' }, prev, next(true)));
     } else if (step === 'confirm') {
       const s = SECTS[pick.sect];
       body.push(h('h2', {}, pick.cultName),
         h('p', {}, `교주 ${pick.name} (${pick.age}살) · ${FAMILIES[pick.family].name} ${s.name}`),
         h('p', { class: 'muted' }, `모임은 "${s.terms.worship}", 모이는 사람은 "${s.terms.member}", 302호는 "${s.terms.place}"라고 부른다.`),
-        h('p', {}, '2026년 3월 2일 월요일, 새 학기 첫날. 목표: 3월 25일 첫 월세 날까지 신도 30명, 월세 제날짜 납부. 전단 인쇄·보리차 같은 주간 지출은 일요일 밤에 나간다.'),
+        h('p', {}, `2026년 3월 2일 월요일, 새 학기 첫날. 난이도 ${DIFFICULTY[pick.difficulty].name}. 목표: 3월 25일 첫 월세 날까지 신도 ${goalOf({ difficulty: pick.difficulty, leader: { sect: pick.sect } }, 1).members}명, 월세 제날짜 납부. 전단 인쇄·보리차 같은 주간 지출은 일요일 밤에 나간다.`),
         h('p', { class: 'muted' }, '첫 신도는 세 명이다. 엄마, 오랜 친구, 그리고 화장실을 찾다 들어온 사람.'),
         h('div', { class: 'row between' }, prev, h('button', { class: 'btn primary', onclick: () => { play('confirm'); unmount('creation'); onDone({ ...pick }); } }, '302호 문 열기')));
     }
