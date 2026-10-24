@@ -186,7 +186,7 @@ export function showMenu(app) {
     h('h2', {}, '메뉴'),
     h('p', { class: 'muted' }, `${goalLine(app.s)} 월세 ${won(rentNow(app.s))}는 매달 25일, 주간 지출은 일요일 밤. 자동 저장된다.`),
     h('table', { class: 'keys' }, h('tbody', {},
-      [['방향키 · WASD', '걷기'], ['Shift + 방향키', '달리기 (피로 조금 더)'], ['Space · Enter', '말 걸기 · 들어가기'], ['`', '멈춤'], ['1', '재생'], ['2', '빠르게'], ['N', '부탁 수첩'], ['Esc · 오른쪽 클릭', '한 단계 뒤로 · 메뉴']]
+      [['방향키 · WASD', '걷기'], ['Shift + 방향키', '달리기 (피로 조금 더)'], ['Space · Enter', '말 걸기 · 들어가기'], ['1', '재생'], ['2', '빠르게'], ['N', '부탁 수첩'], ['Esc · 오른쪽 클릭', '한 단계 뒤로 · 메뉴']]
         .map(([k, v]) => h('tr', {}, h('td', {}, h('kbd', {}, k)), h('td', {}, v))))),
     h('p', { class: 'muted' }, '모바일: 왼쪽 아래 방향키 (길게 누르면 달리기) 또는 가고 싶은 곳을 누른다. 사람을 누르면 프로필. 한글 입력 상태에서도 단축키가 된다.'),
     h('button', { class: 'btn', onclick: () => { unmount('menu'); app.modalClosed(); app.openNotebook(); } }, '부탁 수첩'),

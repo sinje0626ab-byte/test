@@ -93,6 +93,26 @@ BUILDINGS.forEach((b, i) => {
   const pat = isShop ? SHOP_PAIRS[hash(i + 3) % SHOP_PAIRS.length] : HOME_PATTERNS[hash(i + 3) % HOME_PATTERNS.length];
   const shutterAt = isShop && b.w >= 5 && hash(i + 11) % 3 === 0 ? (doorX > b.x + b.w / 2 ? b.x : b.x + b.w - 1) : -1;
   const doorPiece = b.kind === 'mall' ? 'mdoor' : 'shop3';
+  // 1층 조각: 문·셔터로 나뉜 구간마다 짝(왼쪽·오른쪽)을 온전히 깐다. 구간이 홀수 칸이면 건물 끝 쪽 한 칸은 민벽 (반쪽 창이 남지 않게)
+  const groundPiece = {};
+  {
+    const cuts = [doorX, shutterAt].filter((x) => x >= b.x);
+    let start = b.x;
+    for (let x = b.x; x <= b.x + b.w; x++) {
+      if (x < b.x + b.w && !cuts.includes(x)) continue;
+      const n = x - start;
+      const outerLeft = start === b.x;           // 이 구간이 건물 왼쪽 끝에 붙어 있나
+      const pad = n % 2 ? (outerLeft ? start : x - 1) : -1;
+      let k = 0;
+      for (let xx = start; xx < x; xx++) {
+        if (xx === pad) { groundPiece[xx] = 'condo8'; continue; }
+        groundPiece[xx] = pat[k % 2];
+        k++;
+      }
+      if (x < b.x + b.w) groundPiece[x] = x === doorX ? doorPiece : 'shop4';
+      start = x + 1;
+    }
+  }
   for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) {
     blocked[y][x] = true; kind[y][x] = 'block';
     const ry = y - b.y; const cx = x - b.x;
@@ -102,7 +122,7 @@ BUILDINGS.forEach((b, i) => {
       build[y][x] = k === 0 || (k === 1 && cx === b.w - 1) ? Wl.up.P : k === 1 ? Wl.up.A : Wl.up.B;
     } else {
       const gr = ry - roofH - upper;
-      const piece = x === doorX ? doorPiece : x === shutterAt ? 'shop4' : pat[cx % 2];
+      const piece = groundPiece[x];
       build[y][x] = Wl.piece(piece)[gr];
     }
   }

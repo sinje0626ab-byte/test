@@ -260,7 +260,7 @@ export const app = {
     this.saveTimer += dMin;
     if (this.saveTimer > 60) { this.saveTimer = 0; saveGame(s); }
   },
-  setSpeed(n) { this.speed = n; play('click'); this.hud?.update(); },
+  setSpeed(n) { this.speed = Math.max(1, n); play('click'); this.hud?.update(); },   // 멈춤은 없다: 시간은 늘 흐른다 (창이 떠 있을 때만 선다)
   // 첫 주는 시계가 조금 빠르다 (하루 ≈ 4분, 25장 B-4)
   clockRate() { return this.s && this.s.day < OPENING.firstWeekDays ? OPENING.firstWeekRate : 1; },
 
@@ -602,7 +602,6 @@ export const app = {
       return;
     }
     if (this.modal > 0) return;
-    if (e.code === 'Backquote') { e.preventDefault(); this.setSpeed(0); }
     if (e.code === 'Digit1') this.setSpeed(1);
     if (e.code === 'Digit2') this.setSpeed(2);
     if (e.code === 'KeyN') this.openNotebook();

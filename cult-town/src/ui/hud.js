@@ -79,7 +79,6 @@ export function createHud(app) {
   const time = h('div', { class: 'time' });
   const phase = h('div', { class: 'phase' });
   const speedBtns = [
-    h('button', { class: 'btn', title: '멈춤 (` 키)', onclick: () => app.setSpeed(0) }, h('kbd', {}, '`'), ' 멈춤'),
     h('button', { class: 'btn', title: '재생 (1 키)', onclick: () => app.setSpeed(1) }, h('kbd', {}, '1'), ' 재생'),
     h('button', { class: 'btn', title: '빠르게 (2 키)', onclick: () => app.setSpeed(2) }, h('kbd', {}, '2'), ' 빠르게'),
   ];
@@ -216,7 +215,7 @@ export function createHud(app) {
       const hol = holidayOf(s.day);
       const where = s.phase >= 4 ? ` · ${s.district === 'bongcheon' ? '봉천동' : '신림동'}` : '';
       phase.textContent = s.mode === 'night' ? `성소 운영 · ${skyName(s.weather)} ${tempAt(s, 21 * 60)}°` : `${skyName(s.weather)} ${tempAt(s)}°${where}${hol ? ` · ${HOLIDAY_SHORT[hol.id] ?? ''}` : ''}`;
-      speedBtns.forEach((b, i) => b.classList.toggle('on', app.speed === i));
+      speedBtns.forEach((b, i) => b.classList.toggle('on', app.speed === i + 1));
       taskText.textContent = nowTask(s);
 
       const v = snapshot(s);
