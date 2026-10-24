@@ -455,12 +455,12 @@ export const DIFFICULTY_ORDER = ['easy', 'normal', 'hard'];
 // 30장: 신림동이 넓어져 주민이 25명 늘었다 (신도 한 명마다 따라오는 사람도 늘어난다) → 단계마다 신도 목표 배율 [1, 2, 3, 4단계]
 export const ZONE_GOAL = [1, 1.25, 1.16, 1.09];
 export const SECT_TUNE = {
-  doomsday: { goal: [1, 1.042, 1.03, 1.102] },
-  messiah: { goal: [1, 1.075, 1, 1.172] },
-  meditation: { goal: [1, 1.095, 1.113, 1.092] },
-  fortune: { goal: [1, 1.151, 1.094, 1.093] },
-  shaman: { goal: [1, 1.19, 1.103, 1.152] },
-  qigong: { goal: [1, 1.014, 1.202, 1.087] },
+  doomsday: { goal: [1, 1.042, 1.04, 1.102] },
+  messiah: { goal: [1, 1.091, 0.98, 1.172] },
+  meditation: { goal: [1, 1.111, 1.113, 1.092] },
+  fortune: { goal: [1, 1.151, 1.116, 1.093] },
+  shaman: { goal: [1, 1.19, 1.07, 1.152] },
+  qigong: { goal: [1, 1.044, 1.172, 1.087] },
 };
 // 1단계 구제 (28장 A-3): 게임 오버 대신 한 번씩 손을 내민다. 대가는 다음 달.
 export const RESCUE = {
