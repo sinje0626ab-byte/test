@@ -1,8 +1,8 @@
 // 예배 미니게임 (24장 D-1): 손패 4장 중 3장을 순서대로 → 분위기 게이지 → 점수 0~1 → holdWorship(s, { sermon })
 // 게임 난수를 쓰지 않는다 (손패·얼굴은 날짜로 정해진다).
-import { SERMON, WORSHIP_LIVE } from '../config.js';
-import { SERMON_CARDS, RISK_CARDS } from '../data/sermons.js';
-import { stat } from './growth.js';
+import { SERMON, WORSHIP_LIVE, GROWTH } from '../config.js';
+import { SERMON_CARDS, RISK_CARDS, SERMON_BONUS } from '../data/sermons.js';
+import { stat, levelOf } from './growth.js';
 import { topNeeds } from './residents.js';
 import { districtOf } from '../data/residents.js';
 
@@ -16,7 +16,7 @@ const hash = (str) => {
 export const sermonAudience = (s) => s.attend.filter((id) => ['visitor', 'newcomer', 'member'].includes(s.res[id].stage) && districtOf(id) === 'sillim');
 
 export function dealHand(s) {
-  const deck = [...SERMON_CARDS[s.leader.sect]];
+  const deck = [...SERMON_CARDS[s.leader.sect], ...(levelOf(s).level >= GROWTH.bonusCardLevel ? [SERMON_BONUS[s.leader.sect]] : [])];   // 28장 레벨 해금 카드
   deck.sort((a, b) => hash(`${s.seed}:${s.day}:${a.id}`) - hash(`${s.seed}:${s.day}:${b.id}`));
   return deck.slice(0, SERMON.hand);
 }

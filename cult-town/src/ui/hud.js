@@ -9,6 +9,8 @@ import { branchCount, memberCount } from '../sim/faith.js';
 import { exhausted } from '../sim/leader.js';
 import { rentNow } from '../sim/space.js';
 import { currentStep } from '../sim/quests.js';
+import { goalOf, difficultyOf } from '../sim/goals.js';
+import { titleOf } from '../sim/achievements.js';
 import { isOpeningDay, openingDone } from '../sim/opening.js';
 import { CAST_BY_ID as CAST_BY } from '../data/cast.js';
 import { HUD_HELP, HUD_WORDS, HUD_MORNING, HUD_TOUR } from '../data/hud.js';
@@ -72,6 +74,7 @@ export function nowTask(s) {
 }
 
 export function createHud(app) {
+  const who = h('div', { class: 'who' });
   const date = h('div', { class: 'date' });
   const time = h('div', { class: 'time' });
   const phase = h('div', { class: 'phase' });
@@ -111,7 +114,7 @@ export function createHud(app) {
   const stats = h('div', { class: 'stats' }, mini, body);
 
   const el = h('div', { class: 'hud' },
-    h('div', { class: 'left' }, h('div', { class: 'clock' }, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, book, menu)), task),
+    h('div', { class: 'left' }, h('div', { class: 'clock' }, who, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, book, menu)), task),
     stats,
   );
   mount('hud', el);
@@ -183,6 +186,7 @@ export function createHud(app) {
   }
 
   let prev = null;
+  let lastMini = '';
   const actionBtn = h('button', { class: 'btn primary hidden' });
   const extraBtn = h('button', { class: 'btn hidden' });
   mount('actionbar', h('div', { class: 'actionbar' }, extraBtn, actionBtn));
@@ -197,6 +201,8 @@ export function createHud(app) {
       const s = app.s;
       if (!s) return;
       // 휴대폰 잠금화면처럼: 날짜 / 시각 / 날씨·기온 · 동네
+      const ttl = titleOf(s);
+      who.textContent = `${ttl ? `〈${ttl}〉 ` : ''}${s.leader.name} · ${difficultyOf(s).name}`;
       date.textContent = fmtDate(s.day);
       time.textContent = s.mode === 'night' ? '밤' : fmtClock(s.minute);
       const hol = holidayOf(s.day);
@@ -207,7 +213,7 @@ export function createHud(app) {
 
       const v = snapshot(s);
       const rent = rentNow(s);
-      const goal = s.phase >= 4 ? PHASE4.members : s.phase >= 3 ? PHASE3.members : s.phase >= 2 ? PHASE2.members : GOAL.members;
+      const goal = goalOf(s).members;
       // 돈
       let r = rows.money;
       r.lbl.textContent = '돈'; r.val.textContent = won(v.money);
@@ -238,7 +244,7 @@ export function createHud(app) {
       rows.repB.el.classList.toggle('off', s.phase < 4);
       if (s.phase >= 4) {
         r = rows.branch;
-        r.lbl.textContent = '봉천 지부'; r.val.textContent = s.branch.open ? `${v.branch} / ${PHASE4.branch}명` : '없음';
+        r.lbl.textContent = '봉천 지부'; r.val.textContent = s.branch.open ? `${v.branch} / ${goalOf(s, 4).branch}명` : '없음';
         setWord(r, ...(s.branch.open ? (s.branch.split ? ['갈라질 듯', 'bad'] : ['운영 중', 'good']) : ['아직', 'warn']));
         r = rows.repB;
         r.lbl.textContent = '봉천 평판'; r.val.textContent = `${v.repB}`;
@@ -266,10 +272,13 @@ export function createHud(app) {
         rows[k].fill.className = w;
       }
       // 접힌 한 줄 요약 (모바일)
-      mini.replaceChildren(
-        ...[['money', `${man(v.money)}`], ['members', `${v.members}/${goal}`], ['rep', `${v.rep}`], ['fatigue', `${v.fatigue}%`]]
-          .flatMap(([k, t]) => [pix(k), h('span', { class: `m ${rows[k].word.className.split(' ')[1] ?? ''}` }, t)]),
-        h('span', { class: 'more' }, '▾'));
+      const miniItems = [['money', `${man(v.money)}`], ['members', `${v.members}/${goal}`], ['rep', `${v.rep}`], ['fatigue', `${v.fatigue}%`]]
+        .map(([k, t]) => [k, t, rows[k].word.className.split(' ')[1] ?? '']);
+      const miniKey = JSON.stringify(miniItems);
+      if (miniKey !== lastMini) {   // 바뀔 때만 다시 그린다
+        lastMini = miniKey;
+        mini.replaceChildren(...miniItems.flatMap(([k, t, c]) => [pix(k), h('span', { class: `m ${c}` }, t)]), h('span', { class: 'more' }, '▾'));
+      }
 
       // 바뀐 값: +/− 표시 · 처음 바뀐 줄은 엄마가 짚어 준다
       if (prev) {

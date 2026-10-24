@@ -1,9 +1,9 @@
 // ★ 모든 수치는 여기 한 곳. 문장은 src/data/ 아래.
 
 export const GAME = {
-  title: '',                     // 게임 이름(미정). 정해지면 여기만.
+  title: '동네 교주 키우기',       // 게임 이름 (28장). 폴더·배포 경로·저장 키는 예전 그대로
   saveKey: 'cult-town-save',
-  saveVersion: 5,
+  saveVersion: 6,                // v6: 28장 (difficulty · debt · rescue · 업적 · 도감 · 명장면)
   startMoney: 400_000,           // 교주 지갑 = 교단 돈 (원)
   startAge: { min: 25, max: 60, default: 38 },
 };
@@ -180,6 +180,9 @@ export const SHOP = {
   board: { price: 30_000, seats: 0, mood: 3, max: 1 },
   plant: { price: 18_000, seats: 0, mood: 2, max: 3 },
   speaker: { price: 90_000, seats: 0, mood: 7, max: 1 },
+  guitar: { price: 45_000, seats: 0, mood: 4, max: 1, level: 2 },     // 28장 레벨 해금 소품
+  keyboard: { price: 120_000, seats: 0, mood: 8, max: 1, level: 4 },
+  altar: { price: 150_000, seats: 0, mood: 10, max: 1, level: 5 },
 };
 
 // ════════ 1단계 보강 (A) ════════
@@ -209,6 +212,8 @@ export const REPEAT = { factor: 0.5 };   // 같은 사람에게 바로 전과 �
 export const CONTEXT = {
   lunch: { like: 10, money: -9_000, fatigue: 6 },     // 점심 같이 (11~14시, 순댓국집·편의점 앞)
   umbrella: { like: 12 },                              // 우산 씌워 주기 (비, 우산 있으면 우산이 하나 줄어든다)
+  compliment: { like: 4, level: 2 },                   // 28장 레벨 해금: 칭찬 한마디 (레벨 2)
+  snack: { like: 8, money: -3_000, level: 4 },         // 28장 레벨 해금: 간식 나눠 먹기 (레벨 4)
   market: { like: 9 },                                 // 장 같이 보기 (장날 시장)
   walk: { like: 8, health: -6 },                       // 같이 걷기 (공원·산책로)
   coffee: { like: 7 },                                 // 커피 건네기 (캔커피 있으면, 아침)
@@ -354,6 +359,7 @@ export const QUEST = {
 // ── 24장 D ──
 // 교주 성장: 경험치 → 레벨 (레벨마다 능력 1점). 능력 5개는 1에서 시작, 최대 6
 export const GROWTH = {
+  bonusCardLevel: 3,             // 28장: 레벨 3에 유형 카드 한 장이 덱에 들어간다
   xpBase: 50, xpStep: 40,                  // 다음 레벨까지 = 50 + 40 × (레벨 - 1)
   maxStat: 6,
   talkXp: 1, memberXp: 5, worshipXp: 3,
@@ -426,3 +432,32 @@ export const BIGDAY = {
     rival_open: { peek: { rivalDirt: 1 }, wreath: { money: -70_000, rep: 1, rivalCalm: true } },
   },
 };
+
+// ── 난이도 곡선 (28장) ── 목표 성공률 '보통': 1단계 90%+ · 2단계 80% · 3단계 70% · 4단계 65%. 편하게 +10%p · 빡세게 −10%p.
+// 손잡이는 단계마다 [1, 2, 3, 4]: goal 신도 목표 배율 · fol 주마다 따라오는 사람 확률 배율 · heat 보도 열기 배율
+// 실제 값 = DIFFICULTY[난이도] × SECT_TUNE[유형] (없으면 1). 목표 숫자는 sim/goals.js goalOf 한 곳에서.
+export const DIFFICULTY = {
+  easy: { name: '편하게', desc: '목표가 조금 낮고 사람이 잘 따라온다. 이야기를 보고 싶을 때.', goal: [0.9, 0.9, 0.9, 0.9], fol: [1.15, 1.15, 1.15, 1.15], heat: [1, 1, 0.85, 0.85], rescueGap: 10 },
+  normal: { name: '보통', desc: '처음 하는 사람 기준. 뒤 단계로 갈수록 빠듯해진다.', goal: [1, 1, 1, 1], fol: [1, 1, 1, 1], heat: [1, 1, 1, 1], rescueGap: 6 },
+  hard: { name: '빡세게', desc: '목표가 높고 기자가 일찍 온다. 동네를 다 외운 사람에게.', goal: [1.08, 1.08, 1.08, 1.08], fol: [0.9, 0.9, 0.9, 0.9], heat: [1, 1, 1.12, 1.12], rescueGap: 3 },
+};
+export const DIFFICULTY_ORDER = ['easy', 'normal', 'hard'];
+export const SECT_TUNE = {
+  doomsday: { goal: [1, 0.99, 1.01, 1.06] },
+  messiah: { goal: [1, 1.02, 0.97, 1.08] },
+  meditation: { goal: [1, 1.08, 1.04, 1.065] },
+  fortune: { goal: [1, 1.16, 1.06, 1.07] },
+  shaman: { goal: [1, 1.26, 1.07, 1.045] },
+  qigong: { goal: [1, 1.035, 1.19, 1.026] },
+};
+// 1단계 구제 (28장 A-3): 게임 오버 대신 한 번씩 손을 내민다. 대가는 다음 달.
+export const RESCUE = {
+  friendCost: 15_000,            // 친구 데려온 사람 한 명당 밥값 (빚에 얹힌다)
+  tongRep: 30,                   // 평판 바닥 → 통장님이 덮어 주면 이만큼까지
+  tongSus: 15,
+  emptyFollowers: 2,             // 신도 0 → 첫 신도가 데려오는 사람
+  castSus: 5,                    // 친구를 데려온 날 첫 신도들 서운함
+};
+
+// 작은 보상·업적 (28장 B): 경험치 · 친해짐 문턱 (호감)
+export const REWARD = { bond: [30, 60, 85], bondXp: 3, visitXp: 2, offeringXp: 10, storyXp: 8, achievementXp: 6 };

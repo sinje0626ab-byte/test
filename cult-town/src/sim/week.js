@@ -1,4 +1,8 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
+import { checkAchievements, pollRewards, addMoment } from './achievements.js';
+import { recordPhase } from './recap.js';
+import { goalOf, tune } from './goals.js';
+import { rescueRent, rescueBeforeOver } from './rescue.js';
 import { dueLater, endToday, checkQuests, newToday } from './quests.js';
 import { isOpeningDay } from './opening.js';
 import { bigDayOf } from './bigdays.js';
@@ -120,7 +124,7 @@ function weeklyFollowers(s) {
     const have = s.followerOf[id] ?? 0;
     const F = s.phase >= 4 ? PHASE4.followers : s.phase >= 3 ? PHASE3.followers : STAGES.phase2Followers;
     const cap = s.phase >= 2 ? F.cap + (s.phase === 2 ? SECT_FX[s.leader.sect].p2Cap ?? 0 : 0) : STAGES.followerCapPerMember;   // p2Cap: 2단계 유형 보정
-    const chance = (s.phase >= 2 ? F.chance * (s.phase >= 3 ? PHASE3.sectFx[s.leader.sect]?.followers ?? 1 : 1) : STAGES.followersPerMemberWeek * (SECT_FX[s.leader.sect].p1Followers ?? 1)) + followerBonus(s);
+    const chance = (s.phase >= 2 ? F.chance * (s.phase >= 3 ? PHASE3.sectFx[s.leader.sect]?.followers ?? 1 : 1) : STAGES.followersPerMemberWeek * (SECT_FX[s.leader.sect].p1Followers ?? 1)) * tune(s, 'fol') + followerBonus(s);
     if (have < cap && rand(s) < chance) {
       s.followerOf[id] = have + 1; gained++;
       if (districtOf(id) === 'bongcheon') s.branch.followers++; else s.followers++;
@@ -172,6 +176,7 @@ export function endDay(s, g, opts = {}) {
 
   let bulletin = null;
   if (isRentDay(s.day)) {
+    events.push(...rescueRent(s));        // 빚 갚기 · 1단계 엄마 대출 · 친구 데려오기 (28장)
     const r = payRent(s, opts.rentChoice);
     events.push({ type: 'rent', ...r });
   }
@@ -196,12 +201,21 @@ export function endDay(s, g, opts = {}) {
     s.week = newWeek();
     s.week.repStart = s.rep;
   }
+  // 28장 B: 예배 개근 · 손수건 설교 셈 → 작은 보상 · 업적
+  s.counters ??= {};
+  if (isWorshipDay(s.day) && s.sanctuary.worshipDay !== s.day) s.counters.worshipStreak = 0;
+  if (s.week.bigSermon && s.week.bigCounted !== s.day) { s.week.bigCounted = s.day; s.counters.bigSermons = (s.counters.bigSermons ?? 0) + 1; addMoment(s, '예배 때 앞줄에서 손수건이 나왔다.'); }
+  for (const r of pollRewards(s)) events.push({ type: 'reward', ...r });
+  for (const a of checkAchievements(s)) events.push({ type: 'achievement', id: a.id, name: a.name, desc: a.desc });
   checkQuests(s);                       // 끝낸 퀘스트는 s.quest.news 로 (화면이 아침에 꺼내 보여 준다)
+  events.push(...rescueBeforeOver(s));   // 1단계 구제 (28장): 게임 오버 대신 한 번씩
   s.over = checkOver(s);
   let phaseUp = false;
+  const was = s.phase;
   if (s.over === 'phase1') { s.over = null; s.phase = 2; initOfficers(s); phaseUp = 2; }
   if (s.over === 'phase2') { s.over = null; s.phase = 3; s.phase3Day = s.day; phaseUp = 3; }
   if (s.over === 'phase3') { s.over = null; s.phase = 4; s.phase4Day = s.day; s.repB = RUMOR.start; s.reporter.reports = 0; phaseUp = 4; }   // 보도 누적은 4단계에서 새로 센다
+  if (phaseUp) recordPhase(s, was);   // 28장 B-6: 단계 결산 기록
   const revelation = s.over ? null : dueRevelation(s);
   let event = null;
   if (!s.over) {
@@ -219,26 +233,26 @@ export function checkOver(s) {
   if (s.rep <= RUMOR.silentAt) return 'silent';
   if (memberCount(s) === 0) return 'empty';
   if (s.phase === 1) {
-    if (memberCount(s) >= GOAL.members && s.sanctuary.rentStreak >= GOAL.rentStreak) return 'phase1';
+    if (memberCount(s) >= goalOf(s, 1).members && s.sanctuary.rentStreak >= GOAL.rentStreak) return 'phase1';
     return null;
   }
   if (s.landlordAnger >= PHASE2.landlordAngerMax) return 'notice';
   if (s.officersAppointed >= 3 && s.officersLeft * 2 > s.officersAppointed) return 'officers';
   if (s.phase === 2) {
-    if (memberCount(s) >= PHASE2.members && s.space.step >= PHASE2.minSpaceStep && activeOfficers(s).length >= PHASE2.minOfficers && s.sanctuary.rentStreak >= PHASE2.rentStreak) return 'phase2';
+    if (memberCount(s) >= goalOf(s, 2).members && s.space.step >= PHASE2.minSpaceStep && activeOfficers(s).length >= PHASE2.minOfficers && s.sanctuary.rentStreak >= PHASE2.rentStreak) return 'phase2';
     return null;
   }
   if (rivalMajority(s, PHASE3.rivalMajority)) return 'rival';
   if (s.rep <= REPORTER.pressFail.rep && s.reporter.reports >= REPORTER.pressFail.reports + (s.phase >= 4 ? 1 : 0)) return 'press';   // 4단계는 보도 세 번부터
   if (s.phase === 3) {
     const floor7 = s.repLog.length >= 7 ? Math.min(...s.repLog) : 0;
-    if (memberCount(s) >= PHASE3.members && s.rep >= PHASE3.rep && floor7 >= PHASE3.repFloor7 && rivalResolved(s) && s.sanctuary.rentStreak >= PHASE3.rentStreak) return 'phase3';
+    if (memberCount(s) >= goalOf(s, 3).members && s.rep >= PHASE3.rep && floor7 >= PHASE3.repFloor7 && rivalResolved(s) && s.sanctuary.rentStreak >= PHASE3.rentStreak) return 'phase3';
     return null;
   }
   // 4단계
   if (s.flags.branchSplit) return 'split';
   if (s.repB <= RUMOR.silentAt) return 'silentB';
-  if (memberCount(s) >= PHASE4.members && branchCount(s) >= PHASE4.branch && s.rep >= PHASE4.rep && s.repB >= PHASE4.rep && s.sanctuary.rentStreak >= PHASE4.rentStreak) return 'win';
+  if (memberCount(s) >= goalOf(s, 4).members && branchCount(s) >= goalOf(s, 4).branch && s.rep >= PHASE4.rep && s.repB >= PHASE4.rep && s.sanctuary.rentStreak >= PHASE4.rentStreak) return 'win';
   return null;
 }
 

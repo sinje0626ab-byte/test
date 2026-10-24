@@ -167,6 +167,8 @@ INDOOR_OBJECTS = {
     'junk': ('living', 99), 'junk2': ('living', 102),
     # 302 기본 살림 (27장)
     'tube': ('conf', 47), 'calendar': ('class', 32), 'cork': ('class', 33), 'water': ('conf', 43), 'shoes': ('jp', 68), 'slippers': ('jp', 113),
+    # 28장 레벨 해금 소품
+    'guitar': ('music', 48), 'keyboard': ('music', 66), 'altar': ('jp', 38),
 }
 
 

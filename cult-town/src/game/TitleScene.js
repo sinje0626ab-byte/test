@@ -20,14 +20,14 @@ export class TitleScene extends Phaser.Scene {
     }
     drawLzProps(this, map.getObjectLayer('places').objects);
     // 밤
-    this.add.rectangle(0, 0, map.widthInPixels, map.heightInPixels, 0x0c0c2a, 0.62).setOrigin(0).setDepth(9000);
+    this.night = this.add.rectangle(0, 0, map.widthInPixels, map.heightInPixels, 0x0c0c2a, 0.62).setOrigin(0).setDepth(9000);
     // 가로등 불빛 몇 개
     const glow = this.add.graphics().setDepth(9001).setBlendMode(Phaser.BlendModes.ADD);
     for (const [x, y] of [[18, 9], [44, 9]]) { glow.fillStyle(0xffd890, 0.07).fillCircle(x * T + 8, y * T - 8, 18); glow.fillStyle(0xffe8b0, 0.08).fillCircle(x * T + 8, y * T - 8, 7); }
     // 302호 창문 (동림상가 3층 = 정면 위에서 둘째 줄)
     const sanct = buildings.find((b) => b.place === 'sanctuary');
-    const row3 = sanct.y + sanct.roofH + 1;
-    const wx = (sanct.x + 3) * T;
+    const row3 = sanct.y + 1;                        // 27장 건물: 위층 창 띠 (성소 간판 자리 옆)
+    const wx = (sanct.x + sanct.w - 4) * T;
     const lit = this.add.graphics().setDepth(9002);
     lit.fillStyle(0xfff6c0, 0.95).fillRect(wx + 3, row3 * T + 3, 10, 10);
     lit.fillStyle(0xfff6c0, 0.95).fillRect(wx + 3 + 2 * T, row3 * T + 3, 10, 10);
@@ -39,6 +39,30 @@ export class TitleScene extends Phaser.Scene {
     cam.setZoom(z);
     cam.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     cam.centerOn((sanct.x + 4) * T, (sanct.y + 2) * T);
-    this.tweens.add({ targets: cam, scrollX: cam.scrollX + 6 * T, duration: 26000, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
+    this.drift = this.tweens.add({ targets: cam, scrollX: cam.scrollX + 6 * T, duration: 26000, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
+    this.home = [(sanct.x + 4) * T, (sanct.y + 2) * T];
+  }
+
+  // 오락실 대기 화면 데모 (28장 D-2): 저녁 빛으로 동네를 천천히 한 바퀴 훑고 onEnd. 반환: 멈추기
+  startDemo(onEnd) {
+    const cam = this.cameras.main;
+    this.drift?.pause();
+    this.tweens.add({ targets: this.night, alpha: 0.28, duration: 1200 });
+    const route = [[35, 7], [24, 27], [10, 3], [52, 20], [62, 40], [36, 46], this.home.map((v) => v / T)];
+    let i = 0; let stopped = false;
+    const next = () => {
+      if (stopped) return;
+      if (i >= route.length) { onEnd?.(); return; }
+      const [x, y] = route[i++];
+      cam.pan(x * T, y * T, 4200, 'Sine.easeInOut', true, (c, p) => { if (p === 1) this.time.delayedCall(700, next); });
+    };
+    next();
+    return () => {
+      stopped = true;
+      cam.panEffect.reset();
+      this.tweens.add({ targets: this.night, alpha: 0.62, duration: 600 });
+      cam.centerOn(...this.home);
+      this.drift?.resume();
+    };
   }
 }

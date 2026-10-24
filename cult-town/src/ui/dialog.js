@@ -56,7 +56,7 @@ export function openTalk(app, id) {
   const t = startTalk(s, id, ctx);
   let showFx = true;                          // 정확한 효과(빨간 글씨)는 기본으로 보인다. ⓘ 로 숨길 수 있다
   try { showFx = localStorage.getItem('cult-town:fx') !== '0'; } catch { /* 없으면 보인다 */ }
-  const CONTEXT_IDS = ['heard', 'comfort', 'exploit', 'fork', 'story', 'favorDone', 'relay', 'gift', 'lunch', 'umbrella', 'market', 'walk', 'coffee'];
+  const CONTEXT_IDS = ['heard', 'comfort', 'exploit', 'fork', 'story', 'favorDone', 'relay', 'gift', 'lunch', 'umbrella', 'market', 'walk', 'coffee', 'compliment', 'snack'];
   const optionBtn = (o) => {
     const meta = OPTIONS[o.id];
     let label = o.id === 'special' ? o.special : meta.label;

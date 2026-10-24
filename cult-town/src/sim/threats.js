@@ -1,6 +1,7 @@
 // 3단계 '바깥의 위협': 노출 · 기자 · 신도 가족 시위 · 탈퇴자 · 기성 종교 공개 대응 · 행정.
 // 위협은 동네 맵의 사람(x:reporter, 시위하는 가족, 탈퇴자)과 물건(현수막·안내문)으로 보인다. 화면과 노드 봇이 같은 함수를 쓴다.
 // 위치는 일과(targetKey)로 본다 → 화면에서 실제로 걷는 자리와 같다.
+import { tune } from './goals.js';
 import { exposureCut } from './growth.js';
 import { EXPOSURE, REPORTER, PROTEST, DEFECTOR, NOTICE, ADMIN, PHASE3, PHASE4, SIGN } from '../config.js';
 import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
@@ -149,7 +150,7 @@ function reporterDaily(s, events) {
 
 function publishReport(s, heatIn) {
   const C = REPORTER.report;
-  let heat = heatIn * ((s.phase >= 4 ? PHASE4.sectFx : PHASE3.sectFx)[s.leader.sect]?.heat ?? 1);   // 유형별 보정은 단계마다 따로
+  let heat = heatIn * ((s.phase >= 4 ? PHASE4.sectFx : PHASE3.sectFx)[s.leader.sect]?.heat ?? 1) * tune(s, 'heat');   // 유형별 보정은 단계마다 따로 · 난이도 (28장)
   if (s.revelations.camera?.includes('open')) heat *= 0.8;
   if (s.revelations.camera?.includes('spin')) heat *= 0.6;
   const level = heat >= C.high ? 'high' : heat >= C.low ? 'mid' : 'low';

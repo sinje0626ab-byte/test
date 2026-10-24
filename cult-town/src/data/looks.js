@@ -6,6 +6,12 @@
 // tools/build-assets.py 가 이 조합대로 미리 합성해 public/assets/lz/people.png 에 한 줄씩 넣는다 (부위 시트는 공개 레포에 넣지 않는다).
 // 주민·첫 신도·성직자·기자·라이벌의 look 은 각 데이터 파일에 있고, 여기는 이름 없는 사람과 교주.
 export const LEADER_LOOK = { body: 3, eyes: 1, hair: '02_07', outfit: ['26_01', '12_01'], acc: null };
+// 28장 B-2: 단계가 오르면 교주 옷차림이 바뀐다 (2 양복 · 3 흰 셔츠 · 4 흰 두루마기). 아틀라스 줄 이름 leader2 · leader3 · leader4
+export const LEADER_STAGE_LOOKS = {
+  leader2: { ...LEADER_LOOK, outfit: ['05_02', '05_03'] },
+  leader3: { ...LEADER_LOOK, outfit: ['14_01', '14_02'] },
+  leader4: { ...LEADER_LOOK, outfit: ['33_01', '33_02'] },
+};
 // 따라온 사람 (예배·방에 앉는 이름 없는 신도) 8명
 export const FOLLOWER_LOOKS = [
   { body: 3, eyes: 1, hair: '05_04', outfit: ['21_02', '01_03'], acc: null },

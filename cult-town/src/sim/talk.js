@@ -1,7 +1,7 @@
 // 포교 대화 판정. 선택지 → 호감·의심·피로 변화와 반응 대사 키.
 // 원칙: 교주의 실제 설득 문장은 만들지 않는다. 결과는 숫자와 주민 반응으로만 보인다.
 import { dramaOpen, dramaAct } from './drama.js';
-import { hintAccuracy, talkMul } from './growth.js';
+import { hintAccuracy, talkMul, levelOf } from './growth.js';
 import { TIP, GROWTH, TALK, RUMOR, SECT_FX, GIFT, REPEAT, CONTEXT, WEATHER } from '../config.js';
 import { RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { FAMILIES, SECTS } from '../data/sects.js';
@@ -125,6 +125,10 @@ export function optionsFor(s, id, ctx = {}) {
   else if (st.stage === 'none' || st.stage === 'curious') opts.push({ id: 'preach' });
   opts.push({ id: 'special', special: sect.terms.special });
   if (canAskRival(s, id)) opts.push({ id: 'askRival' });
+  // 28장 레벨 해금 선택지 (가벼운 것, 봇은 쓰지 않는다)
+  const lv = levelOf(s).level;
+  if (lv >= CONTEXT.compliment.level) opts.push({ id: 'compliment' });
+  if (lv >= CONTEXT.snack.level && s.leader.money >= -CONTEXT.snack.money) opts.push({ id: 'snack' });
   return [...quick, ...contextOptions(s, id, ctx), ...opts];
 }
 
@@ -194,6 +198,7 @@ export function act(s, id, opt, card, ctx = {}) {
     narr = '같이 점심을 먹었다. 계산은 교주가 했다.'; line = voice.smalltalk;
   } else if (opt === 'umbrella') {
     dl += CONTEXT.umbrella.like * mL; s.inventory.umbrella--;
+    s.counters ??= {}; s.counters.umbrella = (s.counters.umbrella ?? 0) + 1;   // 28장 업적 '비 오는 날 우산 셋'
     narr = '비닐우산을 씌워 주고 그냥 가지라고 했다.'; line = voice.hit;
   } else if (opt === 'market') {
     dl += CONTEXT.market.like * mL;
@@ -210,6 +215,12 @@ export function act(s, id, opt, card, ctx = {}) {
   } else if (opt === 'comfort' || opt === 'exploit') {   // 동네 드라마
     narr = dramaAct(s, id, opt);
     line = opt === 'comfort' ? voice.hit : voice.smalltalk;
+  } else if (opt === 'compliment') {
+    dl += CONTEXT.compliment.like * mL;
+    narr = '머리 바꾼 걸 알아봤다. 아니면 가방이 새것이었나.'; line = voice.smalltalk;
+  } else if (opt === 'snack') {
+    dl += CONTEXT.snack.like * mL; addMoney(s, CONTEXT.snack.money);
+    narr = '붕어빵 봉지를 반으로 갈랐다. 팥 쪽을 양보했다.'; line = voice.smalltalk;
   } else if (opt === 'coffee') {
     dl += CONTEXT.coffee.like * mL; s.inventory.coffee--;
     narr = '캔커피를 건넸다.'; line = voice.smalltalk;

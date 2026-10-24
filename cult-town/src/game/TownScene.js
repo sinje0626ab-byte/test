@@ -603,7 +603,7 @@ export class TownScene extends Phaser.Scene {
       const on = !!bigDayActive(s);
       for (const sp of this.bigDayExtras ?? []) sp.setVisible(on);
     }
-    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); this.zealotTalk(time); }
+    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); this.zealotTalk(time); app.celebrate(); }
     this.gossipTimer += delta;
     if (this.gossip && time > this.gossip.until) { this.gossip.c.destroy(); this.gossip = null; }
     if (this.gossipTimer > MOOD.gossipEverySeconds * 1000 && free) { this.gossipTimer = 0; this.tryGossip(); }

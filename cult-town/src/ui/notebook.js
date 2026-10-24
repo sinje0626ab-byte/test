@@ -1,7 +1,10 @@
 // 수첩 (24장 C-4): 메인 / 사연 / 오늘 / 엿들은 소문 탭 · 퀘스트 장면 (끝낸 단계를 짧게 보여 준다)
 import { ITEMS } from '../data/items.js';
 import { PLACES } from '../data/places.js';
-import { RESIDENT_BY_ID } from '../data/residents.js';
+import { RESIDENT_BY_ID, RESIDENTS, RESIDENTS_B } from '../data/residents.js';
+import { STORIES } from '../data/stories.js';
+import { ACHIEVEMENTS } from '../data/achievements.js';
+import { titleOf } from '../sim/achievements.js';
 import { DAILY, FLYER_SPOTS } from '../data/quests.js';
 import { questList } from '../sim/stories.js';
 import { mainOf } from '../sim/quests.js';
@@ -13,7 +16,7 @@ import { h, mount, unmount, won } from './dom.js';
 import { play } from './sound.js';
 import { fill, speak } from './text.js';
 
-const TABS = [['main', '메인'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문'], ['cal', BIGDAY_UI.calendar], ['legend', '기호 설명']];
+const TABS = [['main', '메인'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문'], ['cal', BIGDAY_UI.calendar], ['dex', '도감'], ['ach', '업적'], ['legend', '기호 설명']];
 let lastTab = 'main';
 
 export const dailyName = (t) => DAILY[t.id].name.replace('{장소}', PLACES[t.arg]?.short ?? PLACES[t.arg]?.name ?? '');
@@ -28,7 +31,7 @@ export function openNotebook(app, tab = lastTab) {
     mount('notebook', h('div', { class: 'screen' }, h('div', { class: 'panel box notebook' },
       h('h2', {}, '수첩'),
       h('div', { class: 'tabs' }, TABS.map(([k, name]) => h('button', { class: `btn small ${tab === k ? 'on' : ''}`, onclick: () => { play('click'); tab = k; render(); } }, name))),
-      h('div', { class: 'tabbody' }, BODY[tab](s, app)),
+      h('div', { class: 'tabbody' }, BODY[tab](s, app, render)),
       tab === 'legend' ? null : h('p', { class: 'muted small' }, '머리 위 표시가 뭔지 모르겠으면 \'기호 설명\' 탭.'),
       h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: close }, '닫기')))));
   };
@@ -73,6 +76,40 @@ const BODY = {
     return h('ul', { class: 'quests' }, list.map((b) => h('li', { class: b.day === s.day ? 'on' : '' },
       h('b', {}, `${fmtDateShort(b.day)} · ${b.name}`),
       h('small', {}, `${PLACES[b.place]?.short ?? ''} ${Math.floor(b.from / 60)}시~${Math.floor(b.to / 60)}시 · ${Object.values(b.actions).map((a) => a.label).join(' / ')}`))));
+  },
+  // 주민 도감 (28장 B-3): 모르는 사람 실루엣 · 만난 사람 얼굴 · 사연 끝까지 별 · 신도 리본
+  dex(s, app) {
+    const groups = [['신림동', RESIDENTS]];
+    if (s.phase >= 4) groups.push(['봉천동', RESIDENTS_B]);
+    const all = groups.flatMap(([, list]) => list);
+    const full = (id) => STORIES[id] && (s.res[id]?.story?.done ?? 0) >= STORIES[id].length;
+    const met = all.filter((r) => s.res[r.id]?.met).length;
+    const done = all.filter((r) => full(r.id)).length;
+    const mem = all.filter((r) => s.res[r.id]?.stage === 'member').length;
+    return h('div', {},
+      h('div', { class: 'dex-count' }, h('span', {}, `만난 사람 ${met}/${all.length}`), h('span', {}, `★ 사연 다 본 사람 ${done}`), h('span', {}, `신도 ${mem}`)),
+      ...groups.map(([name, list]) => h('div', {}, h('h3', {}, name), h('div', { class: 'dex' }, list.map((r) => {
+        const st = s.res[r.id];
+        const known = st?.met;
+        return h('div', { class: `cell ${known ? '' : 'unknown'} ${st?.stage === 'member' ? 'member' : ''}`, title: known ? `${r.name} · ${r.job}` : '아직 인사 안 한 사람' },
+          h('img', { src: app.portrait(r.id), alt: '' }),
+          h('span', { class: 'nm' }, known ? r.name : '???'),
+          full(r.id) ? h('b', { class: 'star' }, '★') : null,
+          st?.stage === 'member' ? h('i', { class: 'ribbon' }, '신도') : null);
+      })))));
+  },
+  // 업적·칭호 (28장 B-4): 딴 업적을 누르면 그 칭호를 이름 앞에 단다
+  ach(s, app, rerender) {
+    const got = ACHIEVEMENTS.filter((a) => s.achievements?.[a.id] != null).length;
+    return h('div', {},
+      h('p', { class: 'small' }, `${got}/${ACHIEVEMENTS.length} · 지금 칭호 〈${titleOf(s) ?? '없음'}〉 · 딴 칭호를 누르면 바꿔 단다.`),
+      h('div', { class: 'ach' }, ACHIEVEMENTS.map((a) => {
+        const day = s.achievements?.[a.id];
+        const on = day != null;
+        return h('button', { class: `btn ach-i ${on ? 'on' : 'locked'} ${s.leader.title === a.id ? 'worn' : ''}`, disabled: !on,
+          onclick: () => { s.leader.title = a.id; app.refresh(); rerender(); } },
+          h('b', {}, on ? `〈${a.name}〉` : '〈? ? ?〉'), h('small', {}, on ? `${a.desc} · ${fmtDateShort(day)}` : a.desc));
+      })));
   },
   // 지도 기호 설명 (27장 B): 머리 위 표시는 한 사람에 하나, 위에 있는 것이 먼저 보인다
   legend(s, app) {

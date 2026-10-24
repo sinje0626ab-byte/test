@@ -10,6 +10,9 @@ export const SHOP_ITEMS = {
   board: { name: '화이트보드', desc: '중고. 전 주인이 쓴 "3분기 목표"가 안 지워진다.', sprite: 'board' },
   plant: { name: '화분', desc: '고무나무. 물을 일주일에 한 번.', sprite: 'plant' },
   speaker: { name: '블루투스 스피커', desc: '찬양이든 명상 음악이든 다 튼다. 볼륨 조절 버튼이 하나 없다.', sprite: 'speaker' },
+  guitar: { name: '통기타', desc: '중고 장터에서 줄 하나 없는 걸 샀다. 친구가 줄을 갈아 왔다.', sprite: 'guitar' },
+  keyboard: { name: '전자 키보드', desc: '반주 버튼이 있다. 누르면 트로트 박자가 먼저 나온다.', sprite: 'keyboard' },
+  altar: { name: '제단', desc: '나무 장식장에 흰 천을 덮었다. 엄마가 다리미로 천을 폈다.', sprite: 'altar' },
 };
 
-export const SHOP_ORDER = ['chair', 'cushion', 'kettle', 'banner', 'light', 'board', 'plant', 'speaker'];
+export const SHOP_ORDER = ['chair', 'cushion', 'kettle', 'banner', 'light', 'board', 'plant', 'speaker', 'guitar', 'keyboard', 'altar'];

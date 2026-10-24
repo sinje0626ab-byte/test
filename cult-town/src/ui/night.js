@@ -34,6 +34,7 @@ import { PHASE4, SIGN, SERMON, ZEALOT, GROWTH } from '../config.js';
 import { BRANCH_TEXT } from '../data/branch.js';
 import { canOpenBranch, openBranch, branchHead, branchOptions, branchAct } from '../sim/branch.js';
 import { branchCount } from '../sim/faith.js';
+import { goalOf } from '../sim/goals.js';
 
 const SIGN_HINT = ['', '창문에 흰 글씨로 교단 이름. 3층을 올려다보면 보인다.', '아크릴 판. 상가 앞을 지나는 사람이 다 본다.', '외벽 대형 간판, 저녁엔 불이 들어온다. 역 앞에서도 보인다.'];
 const SIGN_TEXT = ['', '시트지 업자가 창문에 "{교단}" 글씨를 붙이고 갔다. 거꾸로 붙은 글자는 없다.', '아크릴 간판을 달았다. 1층 김밥집 사장님이 올려다보고 "어, 이름이 그거였어요?" 했다.', '외벽에 큰 간판이 올라갔다. 저녁 여섯 시에 조명이 켜지자 역 3번 출구 쪽에서 사람들이 고개를 들었다.'];
@@ -133,7 +134,7 @@ export function openNight(app) {
     const mood = !o ? '지부장이 없다.' : o.discontent >= PHASE4.splitAt ? '지부를 들고 나가려 한다.' : o.discontent >= 45 ? '요즘 302호 얘기를 잘 안 한다.' : '지부 일에 신이 나 있다.';
     const opts = branchOptions(s);
     return h('div', { class: 'stack' },
-      h('p', { class: 'muted' }, `봉천 지부 ${branchCount(s)}명 (목표 ${PHASE4.branch}) · 지부장 ${o?.name ?? '없음'}: ${mood}${B.split ? ` 독립 예고 (${Math.max(0, B.split.due - s.day)}일 남음).` : ''} 헌금 중 본부 몫 ${Math.round((B.share ?? 1) * 100)}%.`),
+      h('p', { class: 'muted' }, `봉천 지부 ${branchCount(s)}명 (목표 ${goalOf(s, 4).branch}) · 지부장 ${o?.name ?? '없음'}: ${mood}${B.split ? ` 독립 예고 (${Math.max(0, B.split.due - s.day)}일 남음).` : ''} 헌금 중 본부 몫 ${Math.round((B.share ?? 1) * 100)}%.`),
       ...opts.filter((x) => x !== 'replace').map((x) => h('button', { class: 'btn', disabled: x === 'meet' && s.flags.branchMeet === s.day, onclick: () => done(branchAct(s, x)) },
         BRANCH_TEXT.options[x][0], h('small', {}, BRANCH_TEXT.options[x][1]))),
       opts.includes('replace') ? h('div', { class: 'muted', style: 'margin-top:6px' }, `${BRANCH_TEXT.options.replace[0]}: ${BRANCH_TEXT.options.replace[1]}`) : null,
@@ -222,7 +223,7 @@ export function openNight(app) {
         const have = s.sanctuary.props[id] ?? 0;
         const c = canBuy(s, id);
         return h('button', { class: 'btn', disabled: !c.ok, onclick: () => { buy(s, id); play('coins'); note = [`${it.name}. ${it.desc}`]; app.refresh(); app.scene()?.refreshFurniture?.(); render(); } },
-          h('span', {}, it.name, h('small', {}, `${cfg.seats ? `자리 +${cfg.seats} ` : ''}${cfg.mood ? `분위기 +${cfg.mood} ` : ''}· ${have}/${cfg.max}`)),
+          h('span', {}, it.name, h('small', {}, c.reason === 'level' ? `교주 레벨 ${cfg.level}에 열린다` : `${cfg.seats ? `자리 +${cfg.seats} ` : ''}${cfg.mood ? `분위기 +${cfg.mood} ` : ''}· ${have}/${cfg.max}`)),
           h('span', { class: 'price' }, won(cfg.price)));
       }));
     }
