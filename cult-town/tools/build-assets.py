@@ -248,6 +248,9 @@ def town_tiles():
         for i, (im, x) in enumerate(((p1, 0), (p2, 16), (p4, 0))):
             thin = crop(im, x, 0).copy(); thin.paste(crop(im, x, 60, 16, 8), (0, 8)); T[f'roof{key}_thin_{i}'] = thin
     T['stairsDown'] = crop(ex('sub', 'Stairs_Small_2'), 0, 28)     # 지하철 출구 계단 (출구 표지 아래)
+    # 30장: 원룸 언덕 계단 골목 (지하철 계단 가운데 줄을 두 칸 폭으로 이어 붙인다)
+    st = ex('sub', 'Stairs_1')
+    T['stairsL'] = crop(st, 0, 16); T['stairsR'] = crop(st, 16, 16)
     return list(T.items())
 
 
@@ -261,12 +264,27 @@ TOWN_OBJECTS = {
     'carU1': ('veh', 'Car_Up_1'), 'carU2': ('veh', 'Car_Up_3'), 'carD1': ('veh', 'Car_Down_2'), 'carD2': ('veh', 'Car_Down_5'),
     'carL1': ('veh', 'Car_Left_1'), 'carR1': ('veh', 'Car_Right_3'),
     'ac': ('mk', 'Air_Conditioner_Unit_5'), 'shrub': ('props', 'Shrub_9'),
+    # 30장: 닫힌 구역 공사 펜스 · 고깔 · 산책로 꽃덤불 · 음수대
+    'barrier': ('props', 'Traffic_Barrier_2'), 'cone': ('props', 'Cone_3'), 'flowers': ('props', 'Flower_Bush_1'), 'fountain': ('props', 'Drinking_Fountain_1'),
 }
+
+
+def cherry_tree():
+    # 도림천 벚나무: 나무 1의 잎 초록을 분홍으로 바꾼다 (줄기·그림자는 그대로)
+    im = ex('props', 'Tree_1').copy()
+    px = im.load()
+    for y in range(im.height):
+        for x in range(im.width):
+            r, g, b, a = px[x, y]
+            if a and g > r + 8 and g >= b:
+                l = (r + g + b) / 3
+                px[x, y] = (min(255, int(l * 1.35 + 70)), min(255, int(l * 0.85 + 40)), min(255, int(l * 1.0 + 60)), a)
+    return im
 
 
 def build_town():
     tiles = town_tiles()
-    objects = [(k, ex(g, n)) for k, (g, n) in TOWN_OBJECTS.items()]
+    objects = [(k, ex(g, n)) for k, (g, n) in TOWN_OBJECTS.items()] + [('cherry', cherry_tree())]
     pack(tiles, objects, 'town')
 
 

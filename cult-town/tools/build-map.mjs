@@ -9,6 +9,7 @@ import { SPACE_MAPS } from '../src/map/interiors.js';
 const which = process.argv[2] ?? 'town';
 const L = await import(which === 'town' ? '../src/map/layout.js' : `../src/map/layout-${which}.js`);
 const { W, H, GROUND, CROSSWALKS, BUILDINGS, PROPS, SPOTS, STATION_EXITS, ROAD_SIGNS, AREAS, DEAD_ENDS, ROWS, ROW_H, WALK_V, EXTRA_PLACES, START, MAP_ID, MAP_CREDIT } = L;
+const ZONES = L.ZONES ?? []; const MINIBUS_STOPS = L.MINIBUS_STOPS ?? [];   // 30장 (신림동만)
 
 const out = (name) => new URL(`../src/map/${name}`, import.meta.url);
 
@@ -17,6 +18,7 @@ const LZ_TOWN = JSON.parse(readFileSync(new URL('../public/assets/lz/town.json',
 const TI = (name) => { const i = LZ_TOWN.tiles[name]; if (i == null) throw new Error(`동네 타일 없음: ${name}`); return i; };
 const U = {
   lot: TI('sidewalk'), sidewalk: TI('sidewalk'), plaza: TI('plaza'), alley: TI('alley'), road: TI('road'), market: TI('market'), grass: TI('grass'), path: TI('sidewalk'),
+  stairs: TI('stairsL'), stairsR: TI('stairsR'),
   water: TI('water'), waterBottom: TI('waterBottom'), laneH: TI('laneH'), laneV: TI('laneV'), crossV: TI('crossV'), crossH: TI('crossH'),
 };
 // 건물 (27장): 지붕 한 칸 + (5칸 건물만) 위층 작은 창 띠 한 칸 + 1층 세 칸 (LimeZu 모듈 건물, 1층 48px = 사람 키의 1.5배)
@@ -42,7 +44,8 @@ const PROP = {
 // 도형으로 그리는 소품 (TownScene 이 스프라이트 키로 그린다)
 const SHAPE_PROPS = { bike: 'prop.bike' };
 PROP.recycle = { lz: 'recycle' };
-const COST = { water: 0, lot: 2, grass: 2, sidewalk: 1, path: 1, road: 6, alley: 1, plaza: 1, market: 1, cross: 1 };
+Object.assign(PROP, { cherry: { lz: 'cherry' }, fountain: { lz: 'fountain' }, flowers: { lz: 'flowers' }, stall3: { lz: 'stall3' } });   // 30장
+const COST = { water: 0, lot: 2, grass: 2, sidewalk: 1, path: 1, road: 6, alley: 1, plaza: 1, market: 1, cross: 1, stairs: 1 };
 
 // 시드 고정 난수 (지도가 매번 같게)
 let seed = 20261020;
@@ -67,6 +70,7 @@ for (const g of GROUND) {
     kind[y][x] = g.kind;
     ground[y][x] = U[g.kind];
     if (g.kind === 'water') ground[y][x] = y === g.y + g.h - 1 ? U.waterBottom : U.water;
+    if (g.kind === 'stairs') ground[y][x] = (x - g.x) % 2 ? U.stairsR : U.stairs;
     if (g.kind === 'road' && g.line === 'h' && (y === g.y + 1 || y === g.y + 2) && x % 2 === 0) detail[y][x] = U.laneH;
     if (g.kind === 'road' && g.line === 'v' && (x === g.x + 1 || x === g.x + 2) && y % 2 === 0 && y > 9) detail[y][x] = U.laneV;
   }
@@ -312,6 +316,19 @@ for (const [x, y] of poles) objects.push({ id: oid++, name: 'pole', type: 'pole'
 for (const p of lzProps) objects.push({ id: oid++, name: p.sprite, type: 'lz', x: p.x * 16, y: p.y * 16, width: 16, height: 16,
   properties: [{ name: 'sprite', type: 'string', value: p.sprite }, { name: 'wall', type: 'bool', value: !!p.wall }, { name: 'w', type: 'int', value: p.w ?? 1 }] });
 
+// ── 30장: 구역 둘레 (닫힌 동안 공사 펜스를 세울 칸) · 마을버스 정류장 검사 ──
+const inZone = (z, x, y) => x >= z.x && x < z.x + z.w && y >= z.y && y < z.y + z.h;
+const zonesOut = ZONES.map((z) => {
+  const gates = [];
+  for (let y = z.y; y < z.y + z.h; y++) for (let x = z.x; x < z.x + z.w; x++) {
+    if (!walkable(x, y)) continue;
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => walkable(x + dx, y + dy) && !inZone(z, x + dx, y + dy))) gates.push([x, y]);
+  }
+  return { id: z.id, name: z.name, x: z.x, y: z.y, w: z.w, h: z.h, open: !!z.open, gates };
+});
+for (const z of zonesOut) if (!z.open) console.log(`구역 ${z.name}: 둘레 펜스 ${z.gates.length}칸`);
+for (const st of MINIBUS_STOPS) if (!walkable(st.tile[0], st.tile[1])) throw new Error(`마을버스 정류장 ${st.name} (${st.tile}) 가 걸을 수 없는 칸이다`);
+
 const town = tiledMap(W, H, [
   layer(1, 'ground', ground), layer(2, 'detail', detail), layer(3, 'buildings', build), layer(4, 'deco', deco), layer(5, 'above', above),
   { id: 6, name: 'places', type: 'objectgroup', draworder: 'topdown', opacity: 1, visible: true, x: 0, y: 0, objects },
@@ -323,6 +340,8 @@ const town = tiledMap(W, H, [
   { name: 'areas', type: 'string', value: JSON.stringify(AREAS) },
   { name: 'cross', type: 'string', value: JSON.stringify(CROSSWALKS.flatMap((c) => { const out = []; for (let y = c.y; y < c.y + c.h; y++) for (let x = c.x; x < c.x + c.w; x++) out.push(y * W + x); return out; })) },
   { name: 'credit', type: 'string', value: MAP_CREDIT },
+  { name: 'zones', type: 'string', value: JSON.stringify(zonesOut) },
+  { name: 'minibus', type: 'string', value: JSON.stringify(MINIBUS_STOPS) },
 ]);
 writeFileSync(out(`${MAP_ID}.json`), JSON.stringify(town));
 

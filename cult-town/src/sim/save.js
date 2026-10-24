@@ -1,7 +1,8 @@
 // localStorage 저장. saveVersion 이 오르면 MIGRATIONS 에 한 단계씩 고치는 함수를 넣는다.
 import { GAME } from '../config.js';
 import { v2Fields, v3Fields, v4Fields, v5Fields, v6Fields, newResident } from './state.js';
-import { RESIDENTS_B } from '../data/residents.js';
+import { RESIDENTS_B, RESIDENTS_Z } from '../data/residents.js';
+import { checkZones } from './zones.js';
 import { CLERGY_B } from '../data/clergy.js';
 
 // MIGRATIONS[n]: 버전 n 저장을 n+1 로 바꾼다
@@ -32,6 +33,14 @@ const MIGRATIONS = {
   },
   5: (s) => {
     Object.assign(s, { ...v6Fields(), ...s });
+    return s;
+  },
+  // 30장: 지도가 넓어졌다 (사람 위치는 불러온 뒤 snapAll 로 다시 놓는다). 진행에 맞는 구역은 조용히 연다
+  6: (s) => {
+    s.zones ??= { stream: 0 }; s.zoneQuests ??= {}; s.zoneNews ??= [];
+    for (const r of RESIDENTS_Z) if (r.zone === 'stream') s.res[r.id] ??= newResident(r);
+    checkZones(s, true);
+    s.leaderTile = null;
     return s;
   },
 };

@@ -3,7 +3,7 @@
 export const GAME = {
   title: '동네 교주 키우기',       // 게임 이름 (28장). 폴더·배포 경로·저장 키는 예전 그대로
   saveKey: 'cult-town-save',
-  saveVersion: 6,                // v6: 28장 (difficulty · debt · rescue · 업적 · 도감 · 명장면)
+  saveVersion: 7,                // v7: 30장 (넓어진 신림동 · 새 구역 s.zones · 구역 퀘스트). v6: 28장 (difficulty · debt · rescue · 업적 · 도감 · 명장면)
   startMoney: 400_000,           // 교주 지갑 = 교단 돈 (원)
   startAge: { min: 25, max: 60, default: 38 },
 };

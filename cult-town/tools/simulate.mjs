@@ -2,6 +2,7 @@
 //  1) 주민 일과 검사: 모든 일과 장소에 길이 있는가, 다음 일과 전에 도착하는가, 같은 칸에 너무 몰리지 않는가
 //  2) 균형 검사: '정석' 봇이 여섯 유형으로 여러 판 해 보고, 1단계 목표(성공률 60~80%) · 2단계 목표 · 3단계 목표(성공률 60~80%, 2~3시간)까지 잰다. 라이벌이 혼자 크는지도 본다
 // 사용: node tools/simulate.mjs [--games 20] [--verbose] [--no-balance]
+import { checkZones } from '../src/sim/zones.js';
 import { readFileSync } from 'node:fs';
 import { CLOCK, MOVE, SHOP, SANCTUARY, TALK, SPACE_STEPS, OFFICERS, PHASE2 } from '../src/config.js';
 import { ITEMS } from '../src/data/items.js';
@@ -83,6 +84,7 @@ for (const day of [0, 2, 5, 6, 10, 19, 22, 33]) {   // 5·10·19·22·33 = 큰 �
   const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 7 });
   s.day = day;
   s.phase = 4;      // 봉천동 주민까지 같이 걷게
+  checkZones(s, true);   // 30장 새 구역 주민도 같이 걷게
   startDay(s, g);
   const PEOPLE = peopleOf(s);
   // 예배 날 성소(봉천동은 지부) 가는 길도 보려고 일곱 명을 참석자로 둔다

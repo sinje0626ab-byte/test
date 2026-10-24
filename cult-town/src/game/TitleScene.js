@@ -23,7 +23,7 @@ export class TitleScene extends Phaser.Scene {
     this.night = this.add.rectangle(0, 0, map.widthInPixels, map.heightInPixels, 0x0c0c2a, 0.62).setOrigin(0).setDepth(9000);
     // 가로등 불빛 몇 개
     const glow = this.add.graphics().setDepth(9001).setBlendMode(Phaser.BlendModes.ADD);
-    for (const [x, y] of [[18, 9], [44, 9]]) { glow.fillStyle(0xffd890, 0.07).fillCircle(x * T + 8, y * T - 8, 18); glow.fillStyle(0xffe8b0, 0.08).fillCircle(x * T + 8, y * T - 8, 7); }
+    for (const [x, y] of [[18, 19], [44, 19]]) { glow.fillStyle(0xffd890, 0.07).fillCircle(x * T + 8, y * T - 8, 18); glow.fillStyle(0xffe8b0, 0.08).fillCircle(x * T + 8, y * T - 8, 7); }
     // 302호 창문 (동림상가 3층 = 정면 위에서 둘째 줄)
     const sanct = buildings.find((b) => b.place === 'sanctuary');
     const row3 = sanct.y + 1;                        // 27장 건물: 위층 창 띠 (성소 간판 자리 옆)
@@ -48,7 +48,7 @@ export class TitleScene extends Phaser.Scene {
     const cam = this.cameras.main;
     this.drift?.pause();
     this.tweens.add({ targets: this.night, alpha: 0.28, duration: 1200 });
-    const route = [[35, 7], [24, 27], [10, 3], [52, 20], [62, 40], [36, 46], this.home.map((v) => v / T)];
+    const route = [[35, 17], [24, 37], [26, 7], [52, 30], [86, 30], [60, 70], this.home.map((v) => v / T)];
     let i = 0; let stopped = false;
     const next = () => {
       if (stopped) return;
