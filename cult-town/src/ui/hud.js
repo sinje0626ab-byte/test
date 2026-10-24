@@ -140,7 +140,8 @@ export function createHud(app) {
     ].filter(Boolean));
     tip.classList.remove('hidden');
     for (const r of Object.values(rows)) r.el.classList.toggle('lit', r === rows[k]);
-    const box = rows[k].el.getBoundingClientRect();
+    // 모바일에서 접혀 있으면 줄이 안 보이니 접힌 요약 아래에 띄운다 (28장: 창끼리 겹치지 않게)
+    const box = (rows[k].el.getClientRects().length ? rows[k].el : stats).getBoundingClientRect();
     const w = Math.min(300, window.innerWidth - 24);
     tip.style.width = `${w}px`;
     tip.style.left = `${Math.max(12, Math.min(window.innerWidth - w - 12, box.right - w))}px`;
@@ -153,7 +154,14 @@ export function createHud(app) {
     tip.classList.add('hidden');
     for (const r of Object.values(rows)) r.el.classList.remove('lit');
   }
-  document.addEventListener('click', () => { if (tipKey && !tour) hideTip(); });
+  const narrow = () => window.matchMedia?.('(max-width: 560px)').matches;
+  document.addEventListener('click', (e) => {
+    if (tipKey && !tour) hideTip();
+  });
+  // 좁은 화면: 바깥(지도 포함)을 누르면 펼친 상태창을 접는다. 캔버스는 click이 안 올 때가 있어 pointerdown으로
+  document.addEventListener('pointerdown', (e) => {
+    if (narrow() && !tour && !stats.contains(e.target) && !mini.contains(e.target)) stats.classList.remove('open');
+  });
 
   // 첫 변화 설명: 대화창 등이 떠 있으면 기다렸다가 하나씩
   const firstQueue = [];
@@ -162,7 +170,7 @@ export function createHud(app) {
     if (app.modal > 0) { setTimeout(pumpFirst, 600); return; }
     const k = firstQueue.shift();
     if (!rows[k] || rows[k].el.classList.contains('off')) { pumpFirst(); return; }
-    stats.classList.add('open');
+    if (!narrow()) stats.classList.add('open');
     showTip(k, { first: true, auto: 7000 });
     setTimeout(pumpFirst, 7300);
   }
@@ -300,7 +308,7 @@ export function createHud(app) {
       stats.classList.add('open');
       app.modalOpened();
       const step = () => {
-        if (i >= keys.length) { tour = null; hideTip(); app.modalClosed(); return; }
+        if (i >= keys.length) { tour = null; hideTip(); if (narrow()) stats.classList.remove('open'); app.modalClosed(); return; }
         tour = keys[i];
         const last = i === keys.length - 1;
         showTip(keys[i], { extra: h('div', { class: 'row end' }, h('small', { class: 'muted' }, `${i + 1}/${keys.length}`),
