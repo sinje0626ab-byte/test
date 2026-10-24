@@ -284,3 +284,32 @@ export const RELATIONS_Z = [
   ['dongsu', 'gwangho', 'friend'],
   ['okja', 'tong', 'friend'],
 ];
+
+// 선물 취향 (items.js id) · 같은 얘기를 또 꺼냈을 때
+export const PREFS_Z = {
+  sejin: { likes: ['energy', 'coffee'], dislikes: ['tteok'], again: '"그 얘기는 아까 하셨어요. 기록해 둘 걸 그랬네."' },
+  okja: { likes: ['flower', 'tteok'], dislikes: ['battery'], again: '"아까 한 얘기야. 나 아직 정신 멀쩡해요."' },
+  dongsu: { likes: ['coffee', 'onigiri'], dislikes: ['flower'], again: '"…들었어요. 아까."' },
+  haneul: { likes: ['coffee', 'umbrella', 'socks'], dislikes: ['patch'], again: '"앗 그거 아까 하신 말 같은데요?"' },
+  gwangho: { likes: ['patch', 'fruit'], dislikes: ['ramen'], again: '"어이, 그건 아까 했잖아! 다음 얘기!"' },
+  jaemin: { likes: ['onigiri', 'energy', 'ramen'], dislikes: ['flower'], again: '"그 얘기 또요? 저 단어 외워야 하는데."' },
+  subin: { likes: ['coffee', 'tteok'], dislikes: ['ramen'], again: '"아 네, 그거 아까 하신 거요."' },
+  boksun: { likes: ['patch', 'fruit'], dislikes: ['onigiri'], again: '"그 얘기는 아까 했지. 밥 더 줄까?"' },
+  isun: { likes: ['fruit', 'socks'], dislikes: ['energy'], again: '"그건 아까 들었어요. 우리 학생들도 그렇게 두 번 말해."' },
+  hyeongseok: { likes: ['coffee', 'battery'], dislikes: ['flower'], again: '"그건 아까 들은 소식이고. 새 거 없어요?"' },
+  malsun: { likes: ['fruit', 'patch'], dislikes: ['coffee'], again: '"아까 한 소리를 또 해. 국물 식어요."' },
+  yeongcheol: { likes: ['coffee', 'banchan'], dislikes: ['tteok'], again: '"그건 아까 했고요. 수육 드실래요?"' },
+  misuk: { likes: ['energy', 'patch'], dislikes: ['ramen'], again: '"그 얘기 아까 했잖아요. 나 밤새 그런 얘기 백 번 들어요."' },
+  daesik: { likes: ['fruit', 'socks'], dislikes: ['energy'], again: '"하하, 그거 아까 했어! 한 잔 했나?"' },
+  taeung: { likes: ['coffee', 'onigiri', 'energy'], dislikes: ['flower'], again: '"그거 아까 했어요. 나 기억력은 좋아요, 길 외우는 일이라."' },
+  bokrye: { likes: ['fruit', 'flower'], dislikes: ['tteok'], again: '"아까 한 얘기잖아. 떡이나 하나 더 먹어."' },
+  seongtae: { likes: ['coffee', 'patch'], dislikes: ['battery'], again: '"…아까 들었어요."' },
+  sunduk: { likes: ['coffee', 'umbrella'], dislikes: ['banchan'], again: '"그건 아까 했어! 생선 안 살 거면 얼른 가요!"' },
+  malnyeo: { likes: ['socks', 'tteok'], dislikes: ['coffee'], again: '"아까 그 얘기. 내가 귀는 밝아."' },
+  yeongsu: { likes: ['coffee', 'battery'], dislikes: ['tteok'], again: '"아 그거 아까 말씀하셨어요. 메모해 둘게요."' },
+  minji: { likes: ['coffee', 'ramen'], dislikes: ['fruit'], again: '"…네, 아까 들었어요."' },
+  hyeonu: { likes: ['energy', 'battery', 'onigiri'], dislikes: ['flower'], again: '"앗 그거 아까 들음ㅋㅋ 저 콜 떴어요!"' },
+  jeongran: { likes: ['flower', 'fruit'], dislikes: ['onigiri'], again: '"그건 아까 하셨죠. 택배 찾으러 오신 거 아니면 줄 좀."' },
+  jiyul: { likes: ['tteok', 'flower', 'coffee'], dislikes: ['energy'], again: '"어 그거 아까도 하셨는데요!"' },
+  gilsu: { likes: ['fruit', 'patch'], dislikes: ['ramen'], again: '"그 얘기는 아까 했어요. 수첩에 적어 놨어."' },
+};

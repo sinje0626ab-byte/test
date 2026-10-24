@@ -3,7 +3,7 @@
 //   s.res[id].rlike (라이벌 호감) · s.res[id].rival ('none'|'lean'|'member')
 // 플레이어가 아무것도 안 해도 라이벌은 혼자 신도를 모은다.
 import { RIVAL, SECT_FX, STAGES } from '../config.js';
-import { RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
+import { RESIDENTS, RESIDENT_BY_ID, sillimOf } from '../data/residents.js';
 import { SECT_ORDER } from '../data/sects.js';
 import { RIVALS, RIVAL_TEXT } from '../data/rival.js';
 import { rand, pick } from './rng.js';
@@ -17,7 +17,7 @@ const fill = (t, o) => josaFix(Object.entries(o).reduce((a, [k, v]) => a.replace
 export const rivalInfo = (s) => (s.rival ? RIVALS[s.rival.sect] : null);
 export const rivalOn = (s) => !!s.rival && ['active', 'enemy'].includes(s.rival.status);
 export const rivalResolved = (s) => !!s.rival && ['truce', 'absorbed', 'collapsed'].includes(s.rival.status);
-export const rivalNamed = (s) => RESIDENTS.filter((r) => s.res[r.id].rival === 'member').map((r) => r.id);
+export const rivalNamed = (s) => sillimOf(s).filter((r) => s.res[r.id].rival === 'member').map((r) => r.id);
 export const rivalSize = (s) => (s.rival ? rivalNamed(s).length + s.rival.followers : 0);
 export const textVars = (s) => { const r = rivalInfo(s); return { 라이벌: r?.name ?? '', 교주: r ? `${r.leader} ${r.title}` : '' }; };
 
@@ -26,7 +26,7 @@ export function maybeStartRival(s) {
   if (s.phase < 3 || s.rival || s.phase3Day == null || s.day - s.phase3Day < RIVAL.startDelay) return null;
   const sect = pick(s, SECT_ORDER.filter((x) => x !== s.leader.sect));
   s.rival = { sect, status: 'active', followers: RIVAL.startFollowers, dirt: 0, dirtFrom: {}, competeUntil: -1, taken: 0, since: s.day + 1, enemy: false };
-  for (const r of RESIDENTS) { s.res[r.id].rlike ??= 0; s.res[r.id].rival ??= 'none'; }
+  for (const r of sillimOf(s)) { s.res[r.id].rlike ??= 0; s.res[r.id].rival ??= 'none'; }
   return { type: 'rival', text: fill(RIVAL_TEXT.appear, textVars(s)) };
 }
 
@@ -70,7 +70,7 @@ export function rivalHour(s, g, hour) {
   for (const w of RIVAL_WALKERS) {
     if (rand(s) >= RIVAL.talksPerPreacher / 9) continue;
     const at = targetKey(s, g, w, hour * 60).split(':')[0];
-    const pool = RESIDENTS.filter((r) => {
+    const pool = sillimOf(s).filter((r) => {
       const k = targetKey(s, g, r.id, hour * 60);
       return k.split(':')[0] === at && !resolveKey(g, k).inside && s.res[r.id].rival !== 'member';
     });
@@ -94,7 +94,7 @@ export function rivalDaily(s) {
   const start = maybeStartRival(s);
   if (start) events.push(start);
   if (!rivalOn(s)) return events;
-  for (const r of RESIDENTS) {
+  for (const r of sillimOf(s)) {
     const st = s.res[r.id];
     if (st.rival !== 'member' && st.rlike) st.rlike = clamp(st.rlike - RIVAL.like.decay);
   }

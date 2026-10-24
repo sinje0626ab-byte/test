@@ -351,5 +351,7 @@ for (const r of RESIDENTS_B) r.district = 'bongcheon';
 for (const r of RESIDENTS_Z) r.district = 'sillim';     // 30장 새 구역 (r.zone 이 열려야 s.res 에 생긴다)
 export { RESIDENTS_B, RESIDENTS_Z };
 export const ALL_RESIDENTS = [...RESIDENTS, ...RESIDENTS_B, ...RESIDENTS_Z];
+// 신림동 주민 = 옛 30명 + 열린 구역 주민 (s.res 에 생긴 사람). 1~3단계 규칙은 이 목록으로 돈다
+export const sillimOf = (s) => [...RESIDENTS, ...RESIDENTS_Z.filter((r) => s.res[r.id])];
 export const RESIDENT_BY_ID = Object.fromEntries(ALL_RESIDENTS.map((r) => [r.id, r]));
 export const districtOf = (id) => RESIDENT_BY_ID[id]?.district ?? (id.startsWith('c:b_') ? 'bongcheon' : 'sillim');

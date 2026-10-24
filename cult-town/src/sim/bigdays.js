@@ -2,7 +2,7 @@
 // 게임 난수를 쓰지 않는다 (누가 오는지는 날짜·주민으로 정해진다). 효과 숫자는 config.js BIGDAY.
 import { BIGDAY } from '../config.js';
 import { BIGDAY_TEXT } from '../data/bigdays.js';
-import { RESIDENTS } from '../data/residents.js';
+import { RESIDENTS, sillimOf } from '../data/residents.js';
 import { clamp, addMoney, addFatigue, shiftBelief } from './leader.js';
 import { stat } from './growth.js';
 import { checkCurious } from './faith.js';

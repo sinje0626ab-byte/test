@@ -1,7 +1,7 @@
 // 30장 신림동 새 구역: 열리는 조건 · 구역 주민 생기기 · 구역 퀘스트.
 // 상태: s.zones = { 구역 id: 열린 날 } · s.zoneQuests = { 퀘스트 id: { step, done } }
 // 닫힌 구역은 교주 걷기 지도에서만 막힌다 (game 쪽). 주민 길찾기 지도는 그대로다.
-import { RESIDENTS, RESIDENTS_Z } from '../data/residents.js';
+import { RESIDENTS_Z, sillimOf } from '../data/residents.js';
 import { ZONE_TEXT, ZONE_REWARD, ZONE_QUESTS } from '../data/zones.js';
 import { newResident } from './state.js';
 import { activeOfficers } from './officers.js';
@@ -21,8 +21,7 @@ export const ZONE_ORDER = ['stream', 'market_in', 'hill', 'gosi', 'sundae'];
 
 export const zonesOf = (s) => (s.zones ??= { stream: 0 });
 export const zoneOpen = (s, id) => !id || zonesOf(s)[id] != null;
-// 신림동 주민 = 옛 30명 + 열린 구역 주민 (1~3단계 규칙이 도는 목록)
-export const sillimOf = (s) => [...RESIDENTS, ...RESIDENTS_Z.filter((r) => s.res[r.id])];
+export { sillimOf };
 
 function openZone(s, id) {
   zonesOf(s)[id] = s.day;

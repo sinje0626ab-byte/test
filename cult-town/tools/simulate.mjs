@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { CLOCK, MOVE, SHOP, SANCTUARY, TALK, SPACE_STEPS, OFFICERS, PHASE2 } from '../src/config.js';
 import { ITEMS } from '../src/data/items.js';
 import { PREFS } from '../src/data/prefs.js';
-import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS } from '../src/data/residents.js';
+import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, sillimOf } from '../src/data/residents.js';
 import { SECTS, SECT_ORDER } from '../src/data/sects.js';
 import { gridFromMap, findPath, resolveKey, registerGrid } from '../src/sim/grid.js';
 import { newGame } from '../src/sim/state.js';
@@ -126,6 +126,7 @@ for (const day of [0, 2, 5, 6, 10, 19, 22, 33]) {   // 5·10·19·22·33 = 큰 �
   let rep = 0;
   for (const r of ALL_RESIDENTS) {
     const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 3 });
+    s.phase = 4; checkZones(s, true);   // 30장 새 구역 주민도
     s.weather = {};
     const said = [];
     for (let d = 0; d < 3; d++) {
@@ -158,7 +159,7 @@ function seenToday(s) {
   for (let m = CLOCK.dayStart; m < CLOCK.dayEnd; m += 5) {
     s2.minute = m;
     tickPeople(s2, g, 5);
-    if (m % 30 === 0) for (const r of s.district === 'bongcheon' ? RESIDENTS_B : RESIDENTS) if (!s2.pos[r.id].inside && !seen.has(r.id)) seen.set(r.id, s2.pos[r.id].key);
+    if (m % 30 === 0) for (const r of s.district === 'bongcheon' ? RESIDENTS_B : sillimOf(s)) if (s2.pos[r.id] && !s2.pos[r.id].inside && !seen.has(r.id)) seen.set(r.id, s2.pos[r.id].key);
   }
   return seen;
 }

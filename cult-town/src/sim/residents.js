@@ -197,9 +197,9 @@ export function departures(s, g, id) {
   let prev = p.home;
   const out = [];
   for (const e of scheduleOf(s, id)) {
-    // 비·큰 날로 바뀐 일과가 앞 장소와 너무 붙으면 앞 장소에 10분은 있다가 나선다 (그만큼 늦게 도착)
+    // 비·큰 날로 바뀐 일과가 앞 장소와 너무 붙으면 앞 장소에 15분은 있다가 나선다 (그만큼 늦게 도착)
     const t = travelMinutes(s, g, id, prev, e.key, e.min);
-    const dep = out.length ? Math.max(e.min - t, out.at(-1).arrive + 10) : e.min - t;
+    const dep = out.length ? Math.max(e.min - t, out.at(-1).arrive + 15) : e.min - t;
     out.push({ dep, arrive: dep + t, key: e.key });
     prev = e.key;
   }
