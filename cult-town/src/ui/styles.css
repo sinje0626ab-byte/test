@@ -333,6 +333,7 @@ kbd { font-family: var(--font); font-size: 11px; border: 1.5px solid currentColo
 .areabanner .name { font-family: var(--font-title); font-size: 26px; letter-spacing: 2px; }
 .areabanner .sub { font-size: 13px; opacity: .85; margin-top: 2px; }
 .areabanner.out { opacity: 0; }
+@media (max-width: 640px) { .areabanner { top: calc(env(safe-area-inset-top) + 196px); } .areabanner .name { font-size: 22px; } }   /* 좁은 화면: 상태창 아래로 */
 @keyframes area-in { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 /* 27장 B: 수첩 기호 설명 */

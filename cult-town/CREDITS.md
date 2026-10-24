@@ -6,10 +6,10 @@
 
 | 무엇 | 어디에 | 만든 사람 | 라이선스 | 원본 |
 |---|---|---|---|---|
-| Modern Exteriors 16x16 (`lz/town.png`) | 동네 바닥·길·인도·횡단보도·건물 지붕·벽·창·문·천막·진열창·나무·가로등·전봇대·자판기·벤치·쓰레기통·화분·좌판·차·지하철 계단 | LimeZu | 유료 라이선스 (배포·재판매 금지, 크레딧 필수) | https://limezu.itch.io/modernexteriors |
-| Modern Exteriors 움직이는 차 (`lz/vehicles.png`, `tools/build-vehicles.py`) | 큰길 승용차 8색 네 방향 바퀴 애니메이션 · 버스와 문 여닫이 · 신호등 · 버스 정류장 표지판 | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/modernexteriors |
+| Modern Exteriors 16x16 (`lz/town.png`) | 동네 바닥·길·인도·횡단보도·건물 지붕·벽·창·문·천막·진열창·나무·가로등·전봇대·자판기·벤치·쓰레기통·화분·좌판·차·지하철 계단 · (30장) 공사 펜스·라바콘·분수·꽃밭·언덕 계단 · 벚나무(나무를 분홍으로 물들인 것) | LimeZu | 유료 라이선스 (배포·재판매 금지, 크레딧 필수) | https://limezu.itch.io/modernexteriors |
+| Modern Exteriors 움직이는 차 (`lz/vehicles.png`, `tools/build-vehicles.py`) | 큰길 승용차 8색 네 방향 바퀴 애니메이션 · 버스와 문 여닫이 · 신호등 · 버스 정류장 표지판 (마을버스는 같은 버스를 노랗게 물들인 것) | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/modernexteriors |
 | Modern Interiors 16x16 (`lz/indoor.png`) | 성소 실내 바닥·벽·가구 (꾸밈 단계 4가지) | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/moderninteriors |
-| Modern Interiors 캐릭터 생성기 + Modern Exteriors 캐릭터 애드온 (`lz/people-cold.png` · `lz/people-warm.png`) | 사람 78명 (몸·눈·옷·머리·소품 조합, 걷기·대기·앉기·폰 애니메이션) | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/moderninteriors |
+| Modern Interiors 캐릭터 생성기 + Modern Exteriors 캐릭터 애드온 (`lz/people-cold.png` · `lz/people-warm.png`) | 사람 106명 (몸·눈·옷·머리·소품 조합, 걷기·대기·앉기·폰 애니메이션) | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/moderninteriors |
 | RPG Audio (door, coins, page, step) | 효과음 | Kenney | CC0 1.0 | https://kenney.nl/assets/rpg-audio |
 | Interface Sounds (select, confirm, error, talk) | 효과음 | Kenney | CC0 1.0 | https://kenney.nl/assets/interface-sounds |
 | UI Audio (click) | 효과음 | Kenney | CC0 1.0 | https://kenney.nl/assets/ui-audio |

@@ -24,7 +24,7 @@ export function openingPanel(app, opts) {
     let buttons;
     if (more) buttons = h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { play('talk'); i++; render(); } }, '▶'));
     else if (opts.choices && !reply) {
-      buttons = h('div', { class: 'opts' }, opts.choices.map((c) => h('button', { class: 'btn', onclick: () => { play('select'); render(opts.onChoice?.(c.id) ?? null); } },
+      buttons = h('div', { class: 'opts' }, opts.choices.map((c) => h('button', { class: 'btn', disabled: !!c.disabled, onclick: () => { play('select'); render(opts.onChoice?.(c.id) ?? null); } },
         fill(c.label, s), c.hint ? h('small', {}, c.hint) : null)));
     } else buttons = h('div', { class: 'row end' }, h('button', { class: 'btn primary', onclick: () => { play('click'); close(); } }, opts.next ?? '계속'));
     mount('opening', h('div', { class: 'dialog box opening' },

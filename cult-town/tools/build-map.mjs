@@ -9,6 +9,7 @@ import { SPACE_MAPS } from '../src/map/interiors.js';
 const which = process.argv[2] ?? 'town';
 const L = await import(which === 'town' ? '../src/map/layout.js' : `../src/map/layout-${which}.js`);
 const { W, H, GROUND, CROSSWALKS, BUILDINGS, PROPS, SPOTS, STATION_EXITS, ROAD_SIGNS, AREAS, DEAD_ENDS, ROWS, ROW_H, WALK_V, EXTRA_PLACES, START, MAP_ID, MAP_CREDIT } = L;
+const ZONES = L.ZONES ?? []; const MINIBUS_STOPS = L.MINIBUS_STOPS ?? [];   // 30장 (신림동만)
 
 const out = (name) => new URL(`../src/map/${name}`, import.meta.url);
 
@@ -17,6 +18,7 @@ const LZ_TOWN = JSON.parse(readFileSync(new URL('../public/assets/lz/town.json',
 const TI = (name) => { const i = LZ_TOWN.tiles[name]; if (i == null) throw new Error(`동네 타일 없음: ${name}`); return i; };
 const U = {
   lot: TI('sidewalk'), sidewalk: TI('sidewalk'), plaza: TI('plaza'), alley: TI('alley'), road: TI('road'), market: TI('market'), grass: TI('grass'), path: TI('sidewalk'),
+  stairs: TI('stairsL'), stairsR: TI('stairsR'),
   water: TI('water'), waterBottom: TI('waterBottom'), laneH: TI('laneH'), laneV: TI('laneV'), crossV: TI('crossV'), crossH: TI('crossH'),
 };
 // 건물 (27장): 지붕 한 칸 + (5칸 건물만) 위층 작은 창 띠 한 칸 + 1층 세 칸 (LimeZu 모듈 건물, 1층 48px = 사람 키의 1.5배)
@@ -31,7 +33,7 @@ const WALL = Object.fromEntries(Object.entries(WALL_COLOR).map(([k, c]) => [k, {
 const WALLS = Object.keys(WALL);
 // 1층 무늬: 가게는 진열창 두 칸씩 (5·7·9·11 + 짝), 집은 긴 창 + 민벽, 문은 유리문(shop3) · 상가 문은 흰 문틀(mdoor)
 const SHOP_PAIRS = [['shop1', 'shop2'], ['shop5', 'shop6'], ['shop7', 'shop8'], ['shop9', 'shop10'], ['shop11', 'shop12']];
-const HOME_PATTERNS = [['condo7', 'condo2'], ['condo1', 'condo2'], ['condo7', 'condo8']];
+const HOME_PATTERNS = [['condo1', 'condo2'], ['condo7', 'condo8'], ['condo1', 'condo2']];   // 짝 = 창 하나 (condo1+2 긴 창 · condo7+8 나무틀 창)
 // 소품: 지도 오브젝트 'lz' (TownScene 이 사람과 같이 y 정렬해 그린다). 담만 타일
 const PROP = {
   tree: { lz: 'tree' }, lamp: { lz: 'lamp' }, vending: { lz: 'vending' }, bench: { lz: 'bench' }, trash: { lz: 'trash' }, mailbox: { lz: 'mailbox' },
@@ -42,7 +44,8 @@ const PROP = {
 // 도형으로 그리는 소품 (TownScene 이 스프라이트 키로 그린다)
 const SHAPE_PROPS = { bike: 'prop.bike' };
 PROP.recycle = { lz: 'recycle' };
-const COST = { water: 0, lot: 2, grass: 2, sidewalk: 1, path: 1, road: 6, alley: 1, plaza: 1, market: 1, cross: 1 };
+Object.assign(PROP, { cherry: { lz: 'cherry' }, fountain: { lz: 'fountain' }, flowers: { lz: 'flowers' }, stall3: { lz: 'stall3' } });   // 30장
+const COST = { water: 0, lot: 2, grass: 2, sidewalk: 1, path: 1, road: 6, alley: 1, plaza: 1, market: 1, cross: 1, stairs: 1 };
 
 // 시드 고정 난수 (지도가 매번 같게)
 let seed = 20261020;
@@ -67,6 +70,7 @@ for (const g of GROUND) {
     kind[y][x] = g.kind;
     ground[y][x] = U[g.kind];
     if (g.kind === 'water') ground[y][x] = y === g.y + g.h - 1 ? U.waterBottom : U.water;
+    if (g.kind === 'stairs') ground[y][x] = (x - g.x) % 2 ? U.stairsR : U.stairs;
     if (g.kind === 'road' && g.line === 'h' && (y === g.y + 1 || y === g.y + 2) && x % 2 === 0) detail[y][x] = U.laneH;
     if (g.kind === 'road' && g.line === 'v' && (x === g.x + 1 || x === g.x + 2) && y % 2 === 0 && y > 9) detail[y][x] = U.laneV;
   }
@@ -76,6 +80,7 @@ for (const c of CROSSWALKS) {
 }
 
 // ── 건물 ──
+const FACADES = []; let facMissing = 0;
 const objects = [];
 let oid = 1;
 const places = {};
@@ -105,7 +110,7 @@ BUILDINGS.forEach((b, i) => {
       const pad = n % 2 ? (outerLeft ? start : x - 1) : -1;
       let k = 0;
       for (let xx = start; xx < x; xx++) {
-        if (xx === pad) { groundPiece[xx] = 'condo8'; continue; }
+        if (xx === pad) { groundPiece[xx] = 'plain'; continue; }
         groundPiece[xx] = pat[k % 2];
         k++;
       }
@@ -113,6 +118,12 @@ BUILDINGS.forEach((b, i) => {
       start = x + 1;
     }
   }
+  // 1층 앞면 (30장 피드백): 건물마다 합성한 앞면 타일 (build-assets 가 facades-*.json 을 보고 만든다). 없으면 예전 조각
+  const spec = [WALL_COLOR[wallName], b.kind === 'mall' ? 'mall' : isShop ? 'shop' : 'home', b.w, doorX - b.x, shutterAt >= 0 ? shutterAt - b.x : -1, hash(i + 3) % 6];
+  const facKey = spec.join('-');
+  if (!FACADES.some((f) => f.join('-') === facKey)) FACADES.push(spec);
+  const facTile = (cx, gr) => LZ_TOWN.tiles[`fac_${facKey}_${cx}_${gr}`];
+  if (facTile(0, 0) == null) facMissing++;
   for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) {
     blocked[y][x] = true; kind[y][x] = 'block';
     const ry = y - b.y; const cx = x - b.x;
@@ -122,8 +133,7 @@ BUILDINGS.forEach((b, i) => {
       build[y][x] = k === 0 || (k === 1 && cx === b.w - 1) ? Wl.up.P : k === 1 ? Wl.up.A : Wl.up.B;
     } else {
       const gr = ry - roofH - upper;
-      const piece = groundPiece[x];
-      build[y][x] = Wl.piece(piece)[gr];
+      build[y][x] = facTile(cx, gr) ?? Wl.piece(groundPiece[x])[gr];
     }
   }
   const doorY = b.y + b.h - 1;
@@ -312,6 +322,19 @@ for (const [x, y] of poles) objects.push({ id: oid++, name: 'pole', type: 'pole'
 for (const p of lzProps) objects.push({ id: oid++, name: p.sprite, type: 'lz', x: p.x * 16, y: p.y * 16, width: 16, height: 16,
   properties: [{ name: 'sprite', type: 'string', value: p.sprite }, { name: 'wall', type: 'bool', value: !!p.wall }, { name: 'w', type: 'int', value: p.w ?? 1 }] });
 
+// ── 30장: 구역 둘레 (닫힌 동안 공사 펜스를 세울 칸) · 마을버스 정류장 검사 ──
+const inZone = (z, x, y) => x >= z.x && x < z.x + z.w && y >= z.y && y < z.y + z.h;
+const zonesOut = ZONES.map((z) => {
+  const gates = [];
+  for (let y = z.y; y < z.y + z.h; y++) for (let x = z.x; x < z.x + z.w; x++) {
+    if (!walkable(x, y)) continue;
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => walkable(x + dx, y + dy) && !inZone(z, x + dx, y + dy))) gates.push([x, y]);
+  }
+  return { id: z.id, name: z.name, x: z.x, y: z.y, w: z.w, h: z.h, open: !!z.open, gates };
+});
+for (const z of zonesOut) if (!z.open) console.log(`구역 ${z.name}: 둘레 펜스 ${z.gates.length}칸`);
+for (const st of MINIBUS_STOPS) if (!walkable(st.tile[0], st.tile[1])) throw new Error(`마을버스 정류장 ${st.name} (${st.tile}) 가 걸을 수 없는 칸이다`);
+
 const town = tiledMap(W, H, [
   layer(1, 'ground', ground), layer(2, 'detail', detail), layer(3, 'buildings', build), layer(4, 'deco', deco), layer(5, 'above', above),
   { id: 6, name: 'places', type: 'objectgroup', draworder: 'topdown', opacity: 1, visible: true, x: 0, y: 0, objects },
@@ -323,8 +346,13 @@ const town = tiledMap(W, H, [
   { name: 'areas', type: 'string', value: JSON.stringify(AREAS) },
   { name: 'cross', type: 'string', value: JSON.stringify(CROSSWALKS.flatMap((c) => { const out = []; for (let y = c.y; y < c.y + c.h; y++) for (let x = c.x; x < c.x + c.w; x++) out.push(y * W + x); return out; })) },
   { name: 'credit', type: 'string', value: MAP_CREDIT },
+  { name: 'zones', type: 'string', value: JSON.stringify(zonesOut) },
+  { name: 'minibus', type: 'string', value: JSON.stringify(MINIBUS_STOPS) },
+  { name: 'stairs', type: 'string', value: JSON.stringify((L.STAIRS ?? []).map(({ x, y, w, h }) => ({ x, y, w, h }))) },
 ]);
 writeFileSync(out(`${MAP_ID}.json`), JSON.stringify(town));
+writeFileSync(out(`facades-${MAP_ID}.json`), JSON.stringify(FACADES));
+if (facMissing) console.log(`건물 앞면 타일 없음 ${facMissing}채 → LIMEZU_DIR=… python3 tools/build-assets.py town 뒤 다시 npm run map`);
 
 // ── 성소 실내 (공간 단계마다, 신림동을 뽑을 때만) ──
 // 꾸밈 0 단계 타일로 뽑는다. SanctuaryScene 이 꾸밈 단계에 따라 바닥·벽 타일을 바꿔 끼운다

@@ -1,6 +1,6 @@
 // 동네 평판 · 여론 주도 주민 · 기성 종교 개입 (세 계열 같은 규칙) · 종말 날짜
 import { RUMOR, SECT_FX } from '../config.js';
-import { RESIDENTS, RESIDENTS_B } from '../data/residents.js';
+import { RESIDENTS, RESIDENTS_B, sillimOf } from '../data/residents.js';
 import { CLERGY, CLERGY_B } from '../data/clergy.js';
 import { pick } from './rng.js';
 import { clamp } from './leader.js';
@@ -36,13 +36,13 @@ function districtRumor(s, residents, clergy, repKey, events) {
 
 export function dailyRumor(s) {
   const events = [];
-  districtRumor(s, RESIDENTS, CLERGY, 'rep', events);
+  districtRumor(s, sillimOf(s), CLERGY, 'rep', events);
   if (s.phase >= 4) districtRumor(s, RESIDENTS_B, CLERGY_B, 'repB', events);
 
   const date = SECT_FX[s.leader.sect]?.date;
   if (date && s.day === date.day && !s.flags.datePassed) {
     s.flags.datePassed = true;
-    for (const r of RESIDENTS) {
+    for (const r of sillimOf(s)) {
       const rs = s.res[r.id];
       if (rs.stage === 'member') rs.like = clamp(rs.like - 10);
       else rs.sus = clamp(rs.sus + date.sus);

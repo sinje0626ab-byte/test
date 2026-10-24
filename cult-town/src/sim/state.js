@@ -103,7 +103,9 @@ export function newGame({ leaderName, age, family, sect, cultName, difficulty = 
     ...v5Fields(),
     ...v6Fields(),
   };
-  for (const r of ALL_RESIDENTS) s.res[r.id] = newResident(r);
+  // 30장: 새 구역 주민은 구역이 열려야 생긴다 (도림천 산책로는 처음부터 열려 있다, sim/zones.js)
+  for (const r of ALL_RESIDENTS) if (!r.zone || r.zone === 'stream') s.res[r.id] = newResident(r);
+  s.zones = { stream: 0 }; s.zoneQuests = {}; s.zoneNews = [];
   for (const c of CAST) s.cast[c.id] = { sus: 0, talkIdx: 0, active: true };
   for (const c of [...CLERGY, ...CLERGY_B]) s.clergy[c.id] = { last: -99, greetIdx: 0 };
   s.difficulty = difficulty;

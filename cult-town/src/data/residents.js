@@ -8,6 +8,7 @@
 //   greet: 처음 말 걸 때 그 사람만의 한마디 (2개 중 하나)
 
 import { RESIDENTS_B, RELATIONS_B } from './residents-bongcheon.js';
+import { RESIDENTS_Z, RELATIONS_Z } from './residents-zones.js';
 
 export const RESIDENTS = [
   {
@@ -94,7 +95,7 @@ export const RESIDENTS = [
     id: 'haeun', name: '한하은', age: 17, gender: 'f', job: '고등학생',
     traits: ['polite', 'curious'], voice: 'teen_polite', religion: 'catholic', home: 'villa_b',
     bio: '약사 한도윤의 딸. 방과 후엔 수학학원. 성당 청소년부 반주자.',
-    weekday: ['8:25 station:exit4', '16:30 academy', '18:40 pharmacy:counter', '20:40 villa_b'],
+    weekday: ['8:25 station:exit4', '16:30 academy', '18:55 pharmacy:counter', '20:40 villa_b'],
     weekend: ['10:00 villa_b', '13:00 cvs:table', '15:00 park:bench2', '17:20 villa_b'],
     needs: { lonely: 35, money: 15, health: 15, future: 60, meaning: 45 },
     look: { body: 2, eyes: 1, hair: '09_04', outfit: ['28_01', '28_02'], acc: null },
@@ -316,6 +317,7 @@ export const RESIDENTS = [
 //   family: 가족 (한쪽이 신도가 되면 다른 쪽 의심이 오른다) · friend: 친구 · coworker: 동료
 export const RELATIONS = [
   ...RELATIONS_B,
+  ...RELATIONS_Z,
   ['tong', 'seokgu', 'family'],
   ['pharmacist', 'haeun', 'family'],
   ['mikyung', 'taeyang', 'family'],
@@ -346,7 +348,10 @@ export const RELATIONS = [
 // 4단계 봉천동 주민까지 (RESIDENTS 는 신림동만. 1~3단계 규칙은 RESIDENTS 로 돈다)
 for (const r of RESIDENTS) r.district = 'sillim';
 for (const r of RESIDENTS_B) r.district = 'bongcheon';
-export { RESIDENTS_B };
-export const ALL_RESIDENTS = [...RESIDENTS, ...RESIDENTS_B];
+for (const r of RESIDENTS_Z) r.district = 'sillim';     // 30장 새 구역 (r.zone 이 열려야 s.res 에 생긴다)
+export { RESIDENTS_B, RESIDENTS_Z };
+export const ALL_RESIDENTS = [...RESIDENTS, ...RESIDENTS_B, ...RESIDENTS_Z];
+// 신림동 주민 = 옛 30명 + 열린 구역 주민 (s.res 에 생긴 사람). 1~3단계 규칙은 이 목록으로 돈다
+export const sillimOf = (s) => [...RESIDENTS, ...RESIDENTS_Z.filter((r) => s.res[r.id])];
 export const RESIDENT_BY_ID = Object.fromEntries(ALL_RESIDENTS.map((r) => [r.id, r]));
 export const districtOf = (id) => RESIDENT_BY_ID[id]?.district ?? (id.startsWith('c:b_') ? 'bongcheon' : 'sillim');

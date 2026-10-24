@@ -2,7 +2,7 @@
 // 위치는 state.pos[id] = { x, y, path, prog, key, inside }. path[0] 이 다음 칸, prog(0~1)가 그 칸까지 간 정도.
 import { bigDayOf, bigDayCrowd } from './bigdays.js';
 import { CLOCK, MOVE, NEEDS, WEATHER } from '../config.js';
-import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, RESIDENT_BY_ID, districtOf } from '../data/residents.js';
+import { RESIDENTS, RESIDENTS_B, RESIDENTS_Z, ALL_RESIDENTS, RESIDENT_BY_ID, districtOf } from '../data/residents.js';
 import { CLERGY, CLERGY_B } from '../data/clergy.js';
 import { isWeekend, parseTime } from './clock.js';
 import { findPath, resolveKey, walkable, gridOf } from './grid.js';
@@ -22,7 +22,9 @@ export const PEOPLE_B = [
   ...RESIDENTS_B.map((r) => ({ id: r.id, home: r.home, kind: 'resident', district: 'bongcheon' })),
   ...CLERGY_B.map((c) => ({ id: `c:${c.id}`, home: c.place, kind: 'clergy', clergy: c.id, district: 'bongcheon' })),
 ];
-const PERSON = Object.fromEntries([...PEOPLE, ...PEOPLE_B].map((p) => [p.id, p]));
+// 30장: 새 구역 주민 (구역이 열려 s.res 에 생기면 신림동 격자에서 걷는다)
+export const PEOPLE_Z = RESIDENTS_Z.map((r) => ({ id: r.id, home: r.home, kind: 'resident', zone: r.zone }));
+const PERSON = Object.fromEntries([...PEOPLE, ...PEOPLE_B, ...PEOPLE_Z].map((p) => [p.id, p]));
 // 그 사람이 걷는 동네의 격자
 export const gridFor = (id, g) => (districtOf(id) === 'bongcheon' ? gridOf('bongcheon') ?? g : g);
 export const sanctuaryKey = (id) => (districtOf(id) === 'bongcheon' ? 'b_branch' : 'sanctuary');
@@ -34,7 +36,7 @@ const STREET_SPOTS = ['station:plaza', 'market:entrance', 'cvs:front', 'park:pla
 export const reporterOut = (s) => !!s.reporter?.active && s.day >= s.reporter.since && s.day <= s.reporter.leaveDay;
 export const rivalOut = (s) => !!s.rival && ['active', 'enemy'].includes(s.rival.status) && s.day >= s.rival.since;
 export function peopleOf(s) {
-  const out = [...PEOPLE];
+  const out = [...PEOPLE, ...PEOPLE_Z.filter((p) => s.res[p.id])];
   for (const o of s.officers ?? []) if (!o.left && o.assign === 'street' && o.kind === 'cast') out.push({ id: `o:${o.id}`, home: 'sanctuary', kind: 'officer', oid: o.id });
   if (reporterOut(s)) out.push({ id: 'x:reporter', home: 'station', kind: 'reporter' });
   if (rivalOut(s)) for (const w of ['leader', 'p1', 'p2']) out.push({ id: `v:${w}`, home: 'office', kind: 'rival' });
@@ -195,9 +197,9 @@ export function departures(s, g, id) {
   let prev = p.home;
   const out = [];
   for (const e of scheduleOf(s, id)) {
-    // 비·큰 날로 바뀐 일과가 앞 장소와 너무 붙으면 앞 장소에 10분은 있다가 나선다 (그만큼 늦게 도착)
+    // 비·큰 날로 바뀐 일과가 앞 장소와 너무 붙으면 앞 장소에 15분은 있다가 나선다 (그만큼 늦게 도착)
     const t = travelMinutes(s, g, id, prev, e.key, e.min);
-    const dep = out.length ? Math.max(e.min - t, out.at(-1).arrive + 10) : e.min - t;
+    const dep = out.length ? Math.max(e.min - t, out.at(-1).arrive + 15) : e.min - t;
     out.push({ dep, arrive: dep + t, key: e.key });
     prev = e.key;
   }

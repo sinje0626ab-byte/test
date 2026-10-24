@@ -1,9 +1,11 @@
 // 주민 선물 취향 (items.js id). likes 2~3개 · dislikes 1개.
 // again: 같은 사람에게 바로 전과 같은 화제를 또 꺼냈을 때 그 사람 말투 반응.
 import { PREFS_B } from './residents-bongcheon.js';
+import { PREFS_Z } from './residents-zones.js';
 
 export const PREFS = {
   ...PREFS_B,
+  ...PREFS_Z,
   tong: { likes: ['tteok', 'fruit'], dislikes: ['battery'], again: '"아까 그 얘기 또 해요? 나 통장이라 바빠요."' },
   banchan: { likes: ['coffee', 'patch'], dislikes: ['banchan'], again: '"그 얘기는 아까 했잖아. 깻잎이나 사 가."' },
   pharmacist: { likes: ['coffee', 'flower'], dislikes: ['energy'], again: '"그 말씀은 지난번에도 하셨어요."' },

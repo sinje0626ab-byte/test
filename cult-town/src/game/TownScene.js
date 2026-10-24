@@ -27,6 +27,9 @@ import { sightCut } from '../sim/growth.js';
 import { questMarkers, hear } from '../sim/quests.js';
 import { bigDayOf, bigDayActive, bigDayDone } from '../sim/bigdays.js';
 import { walkable, findPath } from '../sim/grid.js';
+import { leaderGridOf, closedZones } from '../sim/zones.js';
+import { ZONE_TEXT } from '../data/zones.js';
+import { sfx } from '../ui/sfx.js';
 import { Traffic } from './traffic.js';
 import { startGesture, applyGesture } from './gesture.js';
 import { EMOTE_ICON } from '../ui/emote.js';
@@ -132,7 +135,15 @@ export class TownScene extends Phaser.Scene {
     const start = this.entry === 'station' ? here.places[bong ? 'b_station' : 'station'].door
       : this.entry === 'sanctuary' || this.entry === 'start' ? (bong ? here.places.b_station.door : here.places.sanctuary.door) : this.entry;
     this.player = this.add.sprite(start[0] * T, start[1] * T - 4, 'p:leader', idleFrame('down')).setOrigin(0, PERSON_ORIGIN_Y);
-    this.walker = new Walker(this, this.player, here, 'p:leader', () => app.dpad);
+    this.walker = new Walker(this, this.player, bong ? here : leaderGridOf(s, here), 'p:leader', () => app.dpad);
+    this.fences = {};
+    if (!bong) this.drawFences();
+    // 30장 C 마을버스 정류장: 표지판 + 작은 노란 판
+    for (const b of bong ? [] : here.minibus ?? []) {
+      const [x, y] = b.tile;
+      this.add.image(x * T + 15, (y + 1) * T - 1, 'lzCars', 'busSign').setOrigin(0.5, 1).setDepth(100 + y * T + 9);
+      wallNotice(this, x * T + 15, (y - 1) * T - 2, '마을버스', { bg: 0xffd84a, color: '#2a2030', w: 40 }).setDepth(100 + y * T - 1);   // 정류장에 선 사람보다 뒤
+    }
     this.fx = this.add.graphics().setDepth(5050);
     this.tintRect = this.add.rectangle(0, 0, this.mapW, this.mapH, 0x000000, 0).setOrigin(0).setDepth(9000);
 
@@ -164,6 +175,59 @@ export class TownScene extends Phaser.Scene {
     this.events.once('shutdown', () => this.traffic?.destroy());
     this.trail = [];
     this.streetTimer = 0;
+  }
+
+  // 30장 C: 마을버스에서 내린 자리로 (따라오던 열혈 신자도 같이)
+  teleportLeader([x, y]) {
+    this.walker.stop();
+    this.player.setPosition(x * T, y * T - 4);
+    this.trail = [];
+    for (const id of followers(app.s)) { const sp = this.sprites[id]; if (sp) sp.setPosition(x * T, y * T - 4); }
+    this.cameras.main.centerOn(this.player.x + 8, this.player.y);
+  }
+
+  // 30장 B: 닫힌 구역 둘레 공사 펜스 + "통행 제한" 표지 (교주 걷기 지도에서만 막힌다)
+  drawFences() {
+    const here = app.here();
+    for (const z of closedZones(app.s, here)) {
+      const parts = [];
+      z.gates.forEach(([x, y], k) => {
+        parts.push(this.add.image(x * T + 8, (y + 1) * T, 'lzTown', k % 3 === 2 ? 'cone' : 'barrier').setOrigin(0.5, 1).setDepth(100 + y * T + 8));
+      });
+      // 표지는 바깥에서 가장 잘 보이는 문 하나 (가운데 쯤)
+      const g = z.gates[Math.floor(z.gates.length / 2)];
+      const text = ZONE_TEXT[z.id]?.closed;
+      if (g && text) parts.push(wallNotice(this, g[0] * T + 8, (g[1] - 1) * T, text, { bg: 0xe8a23a, color: '#2a2030', w: 96 }).setDepth(4790));
+      this.fences[z.id] = parts;
+    }
+  }
+  // 구역이 열리는 장면: 펜스가 걷히고 → 카메라가 구역을 훑고 → 지역명 띠 → 교주에게 돌아온다
+  zoneOpenScene(id, done) {
+    const here = app.here();
+    const z = (here.zones ?? []).find((q) => q.id === id);
+    this.walker.g = leaderGridOf(app.s, here);
+    if (!z) { done?.(); return; }
+    const cam = this.cameras.main;
+    const parts = this.fences[id] ?? [];
+    delete this.fences[id];
+    this.walker.stop?.();
+    cam.stopFollow();
+    const cx = (z.x + z.w / 2) * T; const cy = (z.y + z.h / 2) * T;
+    const g0 = z.gates[0] ?? [z.x, z.y];
+    cam.pan(g0[0] * T + 8, g0[1] * T, 700, 'Sine.easeInOut', false, (c, p) => {
+      if (p < 1) return;
+      sfx.fence();
+      this.tweens.add({ targets: parts, alpha: 0, y: '-=6', duration: 500, onComplete: () => parts.forEach((o) => o.destroy()) });
+      this.time.delayedCall(650, () => cam.pan(cx, cy, 1600, 'Sine.easeInOut', false, (c2, p2) => {
+        if (p2 < 1) return;
+        areaBanner(ZONE_TEXT[id]?.name ?? z.name, '새 구역');
+        this.time.delayedCall(1900, () => cam.pan(this.player.x + 8, this.player.y, 900, 'Sine.easeInOut', false, (c3, p3) => {
+          if (p3 < 1) return;
+          cam.startFollow(this.player, true, 0.2, 0.2);
+          done?.();
+        }));
+      }));
+    });
   }
 
   // 이 지도(동네)에 사는 사람만
@@ -404,6 +468,10 @@ export class TownScene extends Phaser.Scene {
         const d = app.here().places[m.place]?.door;
         if (!d || this.qmarks[`p:${m.place}`]) continue;
         this.qmarks[`p:${m.place}`] = questMark(this, m.why).setPosition(d[0] * T + 8, d[1] * T - 2).setDepth(5065);
+      } else if (m.kind === 'spot' && this.district === 'sillim') {
+        const [place, spot] = m.key.split(':');
+        const t = app.here().places[place]?.spots?.[spot];
+        if (t && !this.qmarks[`s:${m.key}`]) this.qmarks[`s:${m.key}`] = questMark(this, m.why).setPosition(t[0] * T + 8, t[1] * T - 2).setDepth(5065);
       }
     }
   }
@@ -573,6 +641,9 @@ export class TownScene extends Phaser.Scene {
     if (this.bigDayTile && bigDayActive(app.s) && !bigDayDone(app.s)) {
       const [bx, by] = this.bigDayTile;
       if (Math.abs(bx - tx) + Math.abs(by - ty) <= 3) return { kind: 'bigday', id: `big:${this.bigDay.id}` };
+    }
+    for (const b of this.district === 'sillim' ? app.here().minibus ?? [] : []) {
+      if (Math.abs(b.tile[0] - tx) + Math.abs(b.tile[1] - ty) <= 1) return { kind: 'bus', id: b.id };
     }
     for (const place of ['market', 'park', 'station', 'stream', 'b_station', 'b_food', 'b_park']) {
       const d = app.here().places[place]?.door;

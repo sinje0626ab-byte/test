@@ -4,7 +4,7 @@
 import { tune } from './goals.js';
 import { exposureCut } from './growth.js';
 import { EXPOSURE, REPORTER, PROTEST, DEFECTOR, NOTICE, ADMIN, PHASE3, PHASE4, SIGN } from '../config.js';
-import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
+import { RESIDENTS, RESIDENTS_B, ALL_RESIDENTS, RESIDENT_BY_ID, sillimOf } from '../data/residents.js';
 import { CLERGY, CLERGY_B } from '../data/clergy.js';
 import { districtOfPlace } from '../data/places.js';
 import { REPORTER_INFO, INTERVIEW, REPORT, PROTEST_TEXT, DEFECTOR_TEXT, NOTICE_TEXT, ADMIN_TEXT } from '../data/threats.js';
@@ -26,7 +26,7 @@ const outside = (g, key) => !resolveKey(g, key).inside;
 // 그 시각 바깥에 있는 주민들의 자리
 function outdoorAt(s, g, minute) {
   const out = [];
-  for (const r of s.phase >= 4 ? ALL_RESIDENTS : RESIDENTS) {
+  for (const r of s.phase >= 4 ? [...sillimOf(s), ...RESIDENTS_B] : sillimOf(s)) {
     const key = targetKey(s, g, r.id, minute);
     if (outside(gridFor(r.id, g), key)) out.push({ id: r.id, key });
   }
@@ -157,7 +157,7 @@ function publishReport(s, heatIn) {
   const r = REPORT[level];
   s.rep = clamp(s.rep - (heat / C.rep + C.repBase));
   for (const id of namedMembers(s)) s.res[id].sus = clamp(s.res[id].sus + heat / C.sus);
-  for (const rr of RESIDENTS) if (s.res[rr.id].stage === 'none') s.res[rr.id].sus = clamp(s.res[rr.id].sus + heat / (C.sus * 2));
+  for (const rr of sillimOf(s)) if (s.res[rr.id].stage === 'none') s.res[rr.id].sus = clamp(s.res[rr.id].sus + heat / (C.sus * 2));
   const lost = Math.round(s.followers * (heat / C.followers) / 100 * (s.phase >= 4 ? 0.5 : 1));   // 4단계는 기사가 두 동네로 나뉘어 덜 퍼진다
   s.followers = Math.max(0, s.followers - lost);
   s.reporter.reports++;
@@ -181,7 +181,7 @@ function protestDaily(s, g, events) {
       s.admin.complaints += 5;
       const pg = gridFor(P.id, g);
       const door = resolveKey(pg, bong ? 'b_branch:door' : 'sanctuary:door').tile;
-      for (const r of bong ? RESIDENTS_B : RESIDENTS) {
+      for (const r of bong ? RESIDENTS_B : sillimOf(s)) {
         if (r.id === P.id || s.res[r.id].stage === 'member') continue;
         const seen = [10, 13, 16].some((h) => { const t = resolveKey(pg, targetKey(s, g, r.id, h * 60)).tile; return Math.abs(t[0] - door[0]) + Math.abs(t[1] - door[1]) <= 8; });
         if (seen) s.res[r.id].sus = clamp(s.res[r.id].sus + PROTEST.passSus);
@@ -328,7 +328,7 @@ export function answerDefector(s, id, choice) {
 // ── 기성 종교의 공개 대응 (세 계열 같은 규칙) ──
 // 동네마다 그 동네 성직자가 그 동네 신도 수를 보고 붙인다 (세 계열 같은 규칙)
 function noticeDaily(s, events) {
-  const sets = [[CLERGY, RESIDENTS, 'sillim'], ...(s.phase >= 4 ? [[CLERGY_B, RESIDENTS_B, 'bongcheon']] : [])];
+  const sets = [[CLERGY, sillimOf(s), 'sillim'], ...(s.phase >= 4 ? [[CLERGY_B, RESIDENTS_B, 'bongcheon']] : [])];
   for (const [clergy, residents, district] of sets) for (const c of clergy) {
     if (s.notices[c.id] != null) continue;
     const n = namedMembers(s).filter((id) => RESIDENT_BY_ID[id].district === district && c.religions.includes(RESIDENT_BY_ID[id].religion)).length;

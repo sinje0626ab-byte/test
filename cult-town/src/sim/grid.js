@@ -8,7 +8,9 @@ export function gridFromMap(map) {
   rows.forEach((r, y) => { for (let x = 0; x < w; x++) cost[y * w + x] = r.charCodeAt(x) - 48; });
   const placesRaw = prop('places');
   const crossRaw = prop('cross');
-  return { w, h, cost, places: placesRaw ? JSON.parse(placesRaw) : {}, cross: new Set(crossRaw ? JSON.parse(crossRaw) : []) };
+  const json = (n) => { const v = prop(n); return v ? JSON.parse(v) : []; };
+  return { w, h, cost, places: placesRaw ? JSON.parse(placesRaw) : {}, cross: new Set(crossRaw ? JSON.parse(crossRaw) : []),
+    zones: json('zones'), minibus: json('minibus'), stairs: json('stairs') };
 }
 
 export const walkable = (g, x, y) => x >= 0 && y >= 0 && x < g.w && y < g.h && g.cost[y * g.w + x] > 0;

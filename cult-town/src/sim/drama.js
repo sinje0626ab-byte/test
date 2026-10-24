@@ -23,7 +23,7 @@ const pick = (s, arr) => arr[Math.floor(rand(s) * arr.length)];
 
 export const dramaOf = (s) => (s.drama ??= { log: [], couples: [], fights: [] });
 // 지금 움직이는 동네 (봉천동은 4단계부터)
-const active = (s, id) => districtOf(id) === 'sillim' || s.phase >= 4;
+const active = (s, id) => !!s.res[id] && (districtOf(id) === 'sillim' || s.phase >= 4);   // 30장: 닫힌 구역 주민은 s.res 에 없다
 
 function candidates(s) {
   const D = dramaOf(s);

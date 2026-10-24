@@ -1,4 +1,5 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
+import { checkZones, progressZoneQuests } from './zones.js';
 import { endStreetDay } from './street.js';
 import { checkAchievements, pollRewards, addMoment } from './achievements.js';
 import { recordPhase } from './recap.js';
@@ -218,6 +219,9 @@ export function endDay(s, g, opts = {}) {
   if (s.over === 'phase2') { s.over = null; s.phase = 3; s.phase3Day = s.day; phaseUp = 3; }
   if (s.over === 'phase3') { s.over = null; s.phase = 4; s.phase4Day = s.day; s.repB = RUMOR.start; s.reporter.reports = 0; phaseUp = 4; }   // 보도 누적은 4단계에서 새로 센다
   if (phaseUp) recordPhase(s, was);   // 28장 B-6: 단계 결산 기록
+  // 30장: 새 구역 열기 (아침에 화면이 연출을 띄운다) · 구역 퀘스트 (신도 수)
+  for (const z of checkZones(s)) { (s.zoneNews ??= []).push(z.id); events.push({ type: 'zone', ...z }); }
+  for (const q of progressZoneQuests(s)) events.push(q);
   const revelation = s.over ? null : dueRevelation(s);
   let event = null;
   if (!s.over) {

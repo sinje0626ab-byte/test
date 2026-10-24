@@ -21,6 +21,10 @@ import { emotionOf } from './sim/mood.js';
 import { tone } from './sim/leader.js';
 import { pick } from './sim/rng.js';
 import { saveGame, loadGame, clearSave } from './sim/save.js';
+import { checkZones, progressZoneQuests, zoneQuestTargets } from './sim/zones.js';
+import { playZoneNews, showZoneQuestDone } from './ui/zones.js';
+import { openMinibus } from './ui/minibus.js';
+import { resolveKey } from './sim/grid.js';
 import { rentNow } from './sim/space.js';
 import { visitPlace } from './sim/stories.js';
 import { streetTick } from './sim/officers.js';
@@ -326,7 +330,7 @@ export const app = {
         if (s.weather.market) this.tipOnce('market', '토요일은 장날. 시장에 사람이 많고, 장바구니를 들어 주는 선택지가 생긴다.');
         const bd = bigDayOf(s);
         if (bd && s.district === 'sillim') {
-          toast(BIGDAY_UI.today.replace('{이름}', bd.name).replace('{장소}', PLACES[bd.place]?.short ?? '').replace('{시간}', `${Math.floor(bd.from / 60)}시~${Math.floor(bd.to / 60)}시`), 'good', 6000);
+          toast(BIGDAY_UI.today.replace('{이름}', bd.name).replace('{장소}', bd.where ?? PLACES[bd.place]?.short ?? '').replace('{시간}', `${Math.floor(bd.from / 60)}시~${Math.floor(bd.to / 60)}시`), 'good', 6000);
           this.tipOnce('bigday', '큰 날엔 행사 자리에 현수막이 걸린다. 가까이 가면 그날만 할 수 있는 일이 있다. 수첩(N) 달력에 다음 행사가 보인다.');
         }
         if (isWorshipDay(s.day)) this.tipOnce('worshipDay', '수요일·일요일 밤은 예배. 저녁에 성소로 돌아와 밤 메뉴에서 연다.');
@@ -336,7 +340,7 @@ export const app = {
           if (e.type === 'zealotAuto' && e.first) cutin(this, { kicker: '첫 열혈 신자', title: RESIDENT_BY_ID[e.id].name, line: e.text, face: this.portrait(e.id) });
           if (e.type === 'rivalStole') cutin(this, { kicker: '저쪽 전단을 들고 상가 앞을 지나갔다', title: RESIDENT_BY_ID[e.id].name, line: e.text, face: this.portrait(e.id) });
         }
-        showQuestNews(this, () => this.maybeEvent());
+        showQuestNews(this, () => this.whenFree(() => playZoneNews(this, () => this.maybeEvent()), 500));
       };
       const reveal = () => (r.revelation ? showRevelation(s, r.revelation, () => { saveGame(s); morning(); }) : morning());
       const phase = () => (r.phaseUp ? showPhaseUp(s, r.phaseUp, () => { saveGame(s); reveal(); }) : reveal());
@@ -376,6 +380,8 @@ export const app = {
       this.hud.setAction(label, () => this.useDoor(near.place));
     } else if (near.kind === 'shop') {
       this.hud.setAction(`살펴보기 · ${SHOPS[near.b.shop].name}`, () => this.lookShop(near.b));
+    } else if (near.kind === 'bus') {
+      this.hud.setAction('마을버스 타기', () => openMinibus(this, near.id));
     } else if (near.kind === 'bigday') {
       this.hud.setAction(BIGDAY_UI.near.replace('{이름}', bigDayOf(this.s).name), () => this.openBigDay());
     } else if (near.kind === 'exit') {
@@ -392,6 +398,7 @@ export const app = {
     else if (n.kind === 'door') this.useDoor(n.place);
     else if (n.kind === 'shop') this.lookShop(n.b);
     else if (n.kind === 'bigday') this.openBigDay();
+    else if (n.kind === 'bus') openMinibus(this, n.id);
     else if (n.kind === 'exit') this.leaveSanctuary();
     else if (n.kind === 'stairs') this.useStairs(n.to);
   },
@@ -459,6 +466,7 @@ export const app = {
   lookShop(b) {
     const sh = SHOPS[b.shop];
     if (sh) toast(`${sh.name}. ${sh.desc}`);
+    this.zoneQuestDone(progressZoneQuests(this.s, { shop: b.shop }));
   },
   // 장소 부탁: 그 장소 입구 근처에 가면 다녀온 것으로 친다
   visitAt(place) {
@@ -475,6 +483,12 @@ export const app = {
       if (!d || !PLACES[place] || Math.abs(d[0] - tx) + Math.abs(d[1] - ty) > 1) continue;
       const r = noteVisit(s, place, PLACES[place].short ?? PLACES[place].name);
       if (r) showReward(r);
+    }
+    // 30장 구역 일: 그 자리 한 칸 안
+    for (const t of zoneQuestTargets(s)) {
+      if (t.type !== 'visit' || !t.spot || this.modal > 0 || s.district !== 'sillim') continue;
+      const tile = resolveKey(this.here(), t.spot)?.tile;
+      if (tile && Math.abs(tile[0] - tx) + Math.abs(tile[1] - ty) <= 1) this.zoneQuestDone(progressZoneQuests(s, { visit: t.spot }));
     }
     // 퀘스트 장소 (전단 · 오늘의 할 일 '둘러보기')
     for (const m of questMarkers(s)) {
@@ -502,8 +516,28 @@ export const app = {
   },
   afterTalk(id, res) {
     for (const t of res?.todayDone ?? []) toast(t.id === 'all' ? '오늘 할 일 셋을 다 했다. 보리차값 1만 원이 굳었다.' : `오늘 할 일: ${dailyName(t)} ✓`, 'good');
+    const zq = progressZoneQuests(this.s, { talk: id });   // 30장 구역 일
     saveGame(this.s); this.celebrate(); this.hud?.update();
-    if (this.s.quest?.news?.length) setTimeout(() => showQuestNews(this), 300);
+    this.whenFree(() => {
+      const after = () => this.whenFree(() => showZoneQuestDone(this, zq, () => this.whenFree(() => this.zoneCheck())));
+      if (this.s.quest?.news?.length) showQuestNews(this, after); else after();
+    }, 300);
+  },
+  // 다른 창(레벨 업 · 대화)이 닫힌 뒤에 (30장: 구역 창이 겹쳐 뜨지 않게)
+  whenFree(fn, delay = 0, tries = 900) {
+    setTimeout(() => { if (this.modal > 0 && tries > 0) this.whenFree(fn, 400, tries - 1); else fn(); }, delay);
+  },
+  // 30장 B: 낮에 열린 구역 (예: 통장님께 인사 → 시장 안쪽). 아침엔 sleep() 이 부른다
+  zoneCheck() {
+    const s = this.s;
+    if (!s || s.mode !== 'day') return;
+    for (const z of checkZones(s)) (s.zoneNews ??= []).push(z.id);
+    if (s.zoneNews?.length) playZoneNews(this);
+  },
+  zoneQuestDone(list) {
+    if (!list.length) return;
+    saveGame(this.s); this.scene()?.refreshQuestMarks?.();
+    this.whenFree(() => showZoneQuestDone(this, list));
   },
   // 큰 날 행사 (25장 D): 그날만 할 수 있는 일 1~2개
   openBigDay() {
@@ -512,7 +546,7 @@ export const app = {
     if (!bd || this.modal > 0 || s.mode !== 'day') return;
     this.scene()?.walker?.stop();
     openingPanel(this, {
-      title: PLACES[bd.place]?.name, name: bd.name, scene: bd.intro,
+      title: bd.where ?? PLACES[bd.place]?.name, name: bd.name, scene: bd.intro,
       choices: [...Object.entries(bd.actions).map(([id, a]) => ({ id, label: a.label, hint: a.hint })), { id: 'skip', label: '구경만 한다', hint: '' }],
       onChoice: (id) => {
         if (id === 'skip') return '한 바퀴 둘러봤다. 오늘은 그냥 지나간다.';
