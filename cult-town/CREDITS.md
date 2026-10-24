@@ -7,6 +7,7 @@
 | 무엇 | 어디에 | 만든 사람 | 라이선스 | 원본 |
 |---|---|---|---|---|
 | Modern Exteriors 16x16 (`lz/town.png`) | 동네 바닥·길·인도·횡단보도·건물 지붕·벽·창·문·천막·진열창·나무·가로등·전봇대·자판기·벤치·쓰레기통·화분·좌판·차·지하철 계단 | LimeZu | 유료 라이선스 (배포·재판매 금지, 크레딧 필수) | https://limezu.itch.io/modernexteriors |
+| Modern Exteriors 움직이는 차 (`lz/vehicles.png`, `tools/build-vehicles.py`) | 큰길 승용차 8색 네 방향 바퀴 애니메이션 · 버스와 문 여닫이 · 신호등 · 버스 정류장 표지판 | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/modernexteriors |
 | Modern Interiors 16x16 (`lz/indoor.png`) | 성소 실내 바닥·벽·가구 (꾸밈 단계 4가지) | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/moderninteriors |
 | Modern Interiors 캐릭터 생성기 + Modern Exteriors 캐릭터 애드온 (`lz/people-cold.png` · `lz/people-warm.png`) | 사람 78명 (몸·눈·옷·머리·소품 조합, 걷기·대기·앉기·폰 애니메이션) | LimeZu | 유료 라이선스 (같음) | https://limezu.itch.io/moderninteriors |
 | RPG Audio (door, coins, page, step) | 효과음 | Kenney | CC0 1.0 | https://kenney.nl/assets/rpg-audio |
@@ -26,6 +27,7 @@
 ## 코드로 그린 것 (에셋 아님)
 - 사람 외형 조합 (어느 부위를 고를지) 은 `src/data/*.js` 의 look. 그림은 LimeZu 캐릭터 생성기 부위를 합성한 것.
 - 한국식 간판, 층별 안내판, 신림역 출구 번호판, 교단 현수막 (`src/game/signs.js`). LimeZu 에 맞는 그림이 없어 도형으로 그리고, 외곽선은 LimeZu 외곽선 색(#46465e)에 맞췄다. 스프라이트 키로 부르므로 같은 키의 이미지를 넣으면 바뀐다.
+- 배달 오토바이 (`lz/vehicles.png` 의 bike, 20×16 도트): LimeZu 팩에 없어 직접 그렸다. 경적·감정 표현 말풍선 아이콘은 글자.
 - 지붕 물탱크·빨래줄, 골목 자전거, 전선, 감정 말풍선, 직업 아이콘, 비, 계시 연출의 빛줄기·먼지 (코드). 벽 색 넷 중 분홍·크림은 LimeZu 노랑·회색 벽을 색만 바꾼 것.
 - 계시 연출은 같은 레포 `faith-game/` 의 코드를 옮겨 다듬었다.
 

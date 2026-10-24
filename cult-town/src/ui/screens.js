@@ -158,7 +158,7 @@ export function showCredits(onClose) {
   mount('credits', h('div', { class: 'screen credits' }, h('div', { class: 'panel box' },
     h('h2', {}, `${GAME.title} · 만든 사람들`),
     h('ul', {},
-      h('li', {}, 'Modern Exteriors · Modern Interiors by LimeZu (', link('https://limezu.itch.io/'), '): 동네·성소·사람 그림'),
+      h('li', {}, 'Modern Exteriors · Modern Interiors by LimeZu (', link('https://limezu.itch.io/'), '): 동네·성소·사람·차 그림'),
       h('li', {}, '효과음: Kenney "RPG Audio", "Interface Sounds", "UI Audio", "Music Jingles" (CC0)'),
       h('li', {}, '글꼴: 갈무리 Galmuri (Lee Minseo, SIL OFL 1.1) ', link('https://github.com/quiple/galmuri')),
       h('li', {}, '엔진: Phaser 3 (MIT) · Vite (MIT)'),

@@ -61,7 +61,6 @@ export const MOVE = {
   lateFrom: 20 * 60,
   // 가는 길에 멈춤 (현실 초 → 게임분으로 바꿔 씀)
   pauseChance: 0.022,            // 한 칸 갈 때마다
-  signalChance: 0.5,             // 횡단보도 앞에서 신호 기다릴 확률
   pauseSeconds: [2, 4],
   yieldSeconds: 0.6,             // 좁은 길에서 마주치면 한쪽이 기다리는 시간
 };
@@ -461,3 +460,29 @@ export const RESCUE = {
 
 // 작은 보상·업적 (28장 B): 경험치 · 친해짐 문턱 (호감)
 export const REWARD = { bond: [30, 60, 85], bondXp: 3, visitXp: 2, offeringXp: 10, storyXp: 8, achievementXp: 6 };
+
+// ── 29장: 움직이는 차 · 길에서 ──
+// 신호 (현실 초, 게임 분 = × CLOCK.minutesPerSecond). 사람은 건너는 길 차가 빨강이고 다른 길 차가 초록인 동안만 새로 건넌다
+export const TRAFFIC = {
+  greenSeconds: 4.5, yellowSeconds: 1, clearSeconds: 0.5,
+  maxCars: 7,                       // 화면에 동시에 다니는 승용차 (버스·오토바이·주차 차는 따로)
+  quietBefore: 8, quietFrom: 19,    // 이 시각 전·후는 절반
+  lightsFrom: 18,                   // 이때부터 전조등 (비 오면 하루 종일)
+  spawnEvery: [1.2, 3.2],           // 새 차 (현실 초, 배속 곱)
+  carTilesPerSecond: 5.5,
+  bus: { every: [22, 34], waitSeconds: 2.6, signX: 14, doorAhead: 2 },   // 정류장 표지판 칸 x (남부순환로 아래 인도)
+  bays: [4, 10, 46, 52],            // 노상 주차칸 왼쪽 x (남부순환로 북쪽 인도, 4칸 × 2칸)
+  parkEvery: [10, 22],
+  maxBikes: 2, bikeEvery: [7, 15], bikeTilesPerSecond: 4.5,
+};
+// 길에서 (감정 표현 · 밖에서 만난 신도)
+export const STREET = {
+  reactTiles: 4, maxReact: 5,       // 표현에 반응하는 거리 · 사람 수
+  greetLike: 1, blessLike: 2, praySus: 1, angerSus: 2, coldSus: 60,
+  greetTiles: 3,                    // 신도가 먼저 인사하는 거리
+  ignoreWith: 0.7, ignoreRep: 0.35, ignorePress: 0.85, lowRep: 40,
+  maxFollow: 3, chimeLike: 3, chimeSus: 3, dismissLike: 2,
+  exposurePerHour: [0, 0, 1, 2],    // 따라오는 사람 수 → 노출 (게임 시간당)
+  pressSeen: 5,                     // 기자 시야에 줄 선 신도 둘 이상 (그날 한 번)
+  meetTiles: 2, newFriend: 0.15,
+};

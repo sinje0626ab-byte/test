@@ -26,7 +26,12 @@ import { play } from '../ui/sound.js';
 import { sightCut } from '../sim/growth.js';
 import { questMarkers, hear } from '../sim/quests.js';
 import { bigDayOf, bigDayActive, bigDayDone } from '../sim/bigdays.js';
-import { walkable } from '../sim/grid.js';
+import { walkable, findPath } from '../sim/grid.js';
+import { Traffic } from './traffic.js';
+import { startGesture, applyGesture } from './gesture.js';
+import { EMOTE_ICON } from '../ui/emote.js';
+import { STREET } from '../config.js';
+import { applyEmote, emoteSay, meetLeader, followers, followExposure, memberMeet } from '../sim/street.js';
 
 const T = 16;
 const CLERGY_BY_ID = Object.fromEntries(CLERGY.map((c) => [c.id, c]));
@@ -154,6 +159,11 @@ export class TownScene extends Phaser.Scene {
     this.placePeople(0);
     this.refreshOverlays();
     app.setWeatherFx(s.weather);
+    // 29장: 움직이는 차 · 따라오는 열혈 신자 (교주가 지나온 칸)
+    this.traffic = new Traffic(this, this.district, here);
+    this.events.once('shutdown', () => this.traffic?.destroy());
+    this.trail = [];
+    this.streetTimer = 0;
   }
 
   // 이 지도(동네)에 사는 사람만
@@ -289,6 +299,10 @@ export class TownScene extends Phaser.Scene {
       this.gossip.c.setPosition(sp.x + 8, sp.y - 10 - HEAD_LIFT).setDepth(5080).setVisible(sp.visible);
     }
     this.player.setDepth(100 + this.player.y + 4);
+    if (this.leaderSay) {
+      if (this.time.now > this.leaderSayUntil) { this.leaderSay.destroy(); this.leaderSay = null; }
+      else this.leaderSay.setPosition(this.player.x + 8, this.player.y - 10 - HEAD_LIFT);
+    }
   }
 
   // 이름표 (만난 사람은 이름, 처음 보는 사람은 직업 아이콘) · 감정 말풍선
@@ -517,6 +531,8 @@ export class TownScene extends Phaser.Scene {
     if (ptr.event?.target?.closest?.('#ui > *')) return;
     const wx = ptr.worldX; const wy = ptr.worldY;
     const tx = Math.floor(wx / T); const ty = Math.floor(wy / T);
+    // 교주를 누르면 감정 표현 메뉴
+    if (Math.abs(wx - (this.player.x + 8)) <= 9 && wy >= this.player.y - 6 && wy <= this.player.y + 18) { app.openEmote(); return; }
     const who = this.personAt(wx, wy);
     if (who) { app.showProfile(who, () => this.walker.chase(() => this.tileOf(who), () => app.talkTo(who), () => { const sp = this.sprites[who]; return sp ? [sp.x + 8, sp.y + 14] : null; })); return; }
     const D = this.directory;
@@ -579,6 +595,130 @@ export class TownScene extends Phaser.Scene {
     areaBanner(a.name, this.district === 'bongcheon' ? '관악구 봉천동' : '관악구 신림동');
   }
 
+  // ── 29장 ──
+  // 차가 서야 하는 사람들 (교주 · 보이는 주민 · 골목 오토바이)
+  obstaclePeople() {
+    const out = [{ x: this.player.x + 8, y: this.player.y + 12, leader: true }];
+    for (const sp of Object.values(this.sprites)) if (sp.visible) out.push({ x: sp.x + 8, y: sp.y + 12 });
+    return out;
+  }
+
+  // 감정 표현: 교주 몸짓·말풍선 → 주변 주민 반응 (조금씩 늦게)
+  doEmote(id) {
+    const s = app.s; const now = this.time.now;
+    startGesture(this.player, id, now);
+    this.leaderBubble(`${EMOTE_ICON[id] ?? ''} ${emoteSay(id)}`, now);
+    play('click', 0.3);
+    const [px, py] = this.walker.tile;
+    const near = Object.keys(this.sprites).filter((rid) => {
+      const p = s.pos[rid]; const sp = this.sprites[rid];
+      return !rid.includes(':') && sp.visible && p && !p.inside && Math.abs(p.x - px) + Math.abs(p.y - py) <= STREET.reactTiles;
+    }).sort((a, b) => (Math.abs(s.pos[a].x - px) + Math.abs(s.pos[a].y - py)) - (Math.abs(s.pos[b].x - px) + Math.abs(s.pos[b].y - py)));
+    const { same, reactions } = applyEmote(s, id, near);
+    if (same) return;
+    reactions.forEach((r, k) => {
+      const sp = this.sprites[r.id];
+      if (!sp) return;
+      this.time.delayedCall(350 + k * 260, () => {
+        const pos = s.pos[r.id];
+        if (r.react === 'back') { this.sendBack(r.id); }
+        else if (pos && !pos.path.length) pos.dir = this.faceLeader(r.id);
+        startGesture(sp, r.react === 'back' ? 'back' : r.react, this.time.now);
+        this.say(r.id, r.line, this.time.now);
+      });
+    });
+  }
+  faceLeader(id) {
+    const p = app.s.pos[id]; const [px, py] = this.walker.tile;
+    const dx = px - p.x; const dy = py - p.y;
+    return Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up';
+  }
+  leaderBubble(text, now) {
+    this.leaderSay?.destroy();
+    this.leaderSay = speechBubble(this, text).setDepth(5086);
+    this.leaderSayUntil = now + 1800;
+  }
+
+  // 밖에서 만난 신도: 3칸 안에 오면 인사 · 모른 척 · (열혈) 줄 서기. 신도끼리 마주치면 인사
+  streetMeet(time) {
+    const s = app.s; const [px, py] = this.walker.tile;
+    const rep = s.pos['x:reporter']; const repSp = this.sprites['x:reporter'];
+    const reporterNear = !!(s.reporter?.active && rep && repSp?.visible && Math.abs(rep.x - px) + Math.abs(rep.y - py) <= 6);
+    for (const id of Object.keys(this.sprites)) {
+      if (id.includes(':')) continue;
+      const p = s.pos[id]; const sp = this.sprites[id];
+      if (!p || p.inside || !sp.visible || p.key === 'follow') continue;
+      if (Math.abs(p.x - px) + Math.abs(p.y - py) > STREET.greetTiles) continue;
+      const r = meetLeader(s, id, { neighbor: sp.neighbor ?? null, reporterNear });
+      if (!r) continue;
+      if (r.kind === 'ignore') {
+        const d = this.faceLeader(id);
+        sp.awayDir = { left: 'right', right: 'left', up: 'down', down: 'up' }[d];
+        startGesture(sp, 'turn', time);
+        this.say(id, r.line, time);
+      } else {
+        this.say(id, r.line, time);
+        // 다가와서 꾸벅: 교주 옆 칸까지 걸어와 잠깐 선다
+        const g = app.here();
+        const path = findPath(g, [p.x, p.y], [px, py]);
+        if (path && path.length > 1 && path.length <= 5) { p.path = path.slice(0, -1); p.prog = 0; p.key = r.kind === 'follow' ? 'follow' : 'greet'; p.hold = s.minute + 8; p.wait = 0; p.pause = null; }
+        else if (r.kind === 'follow') p.key = 'follow';
+        this.time.delayedCall(700, () => { if (!p.path.length) p.dir = this.faceLeader(id); startGesture(sp, 'greet', this.time.now); });
+      }
+      return;          // 한 번에 한 사람
+    }
+    // 신도끼리 (교주 근처 12칸 안에서만 들린다)
+    const ids = Object.keys(this.sprites).filter((id) => !id.includes(':') && this.sprites[id].visible && s.pos[id] && !s.pos[id].inside && s.pos[id].key !== 'follow'
+      && Math.abs(s.pos[id].x - px) + Math.abs(s.pos[id].y - py) <= 12);
+    for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+      const a = s.pos[ids[i]]; const b = s.pos[ids[j]];
+      if (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) > STREET.meetTiles) continue;
+      const m = memberMeet(s, ids[i], ids[j]);
+      if (!m) continue;
+      this.say(ids[i], m.hello, time);
+      this.say(ids[j], m.reply, time + 1600);
+      startGesture(this.sprites[ids[j]], 'bow', time + 1600);
+      if (m.newRel) toast(m.newRel, 'good');
+      return;
+    }
+  }
+
+  // 따라오는 열혈 신자: 교주가 지나온 칸을 두 칸 간격으로 밟는다. 교주가 문에 들어가 창이 뜨면 같이 안에 있다
+  moveFollowers(dt, free) {
+    const s = app.s; const t = this.walker.tile;
+    const last = this.trail.at(-1);
+    if (!last || last[0] !== t[0] || last[1] !== t[1]) { this.trail.push([t[0], t[1]]); if (this.trail.length > 24) this.trail.shift(); }
+    const ids = followers(s).filter((id) => s.pos[id]);
+    const inside = app.modal > 0 && !!this.near && this.near.kind !== 'person';
+    ids.forEach((id, k) => {
+      const p = s.pos[id];
+      p.key = 'follow'; p.hold = Infinity;
+      p.inside = inside;
+      const want = this.trail[Math.max(0, this.trail.length - 1 - 2 * (k + 1))] ?? t;
+      if (!free) return;
+      if (p.x === want[0] && p.y === want[1]) { p.path = []; p.prog = 0; return; }
+      if (!p.path.length || p.path[0][0] !== want[0] || p.path[0][1] !== want[1]) {
+        const path = Math.abs(p.x - want[0]) + Math.abs(p.y - want[1]) <= 2 ? [want] : findPath(app.here(), [p.x, p.y], want);
+        p.path = path?.length ? [path[0]] : [];
+      }
+      if (!p.path.length) return;
+      p.prog += dt * 4.2;
+      if (p.prog >= 1) { const [nx, ny] = p.path.shift(); p.dir = nx > p.x ? 'right' : nx < p.x ? 'left' : ny > p.y ? 'down' : 'up'; p.x = nx; p.y = ny; p.prog = 0; }
+    });
+  }
+  // '돌아가 있어': 자기 일과로 (다음 틱에 길을 다시 잡는다)
+  sendBack(id) {
+    const p = app.s.pos[id];
+    if (!p) return;
+    p.key = 'back'; p.hold = 0; p.path = []; p.prog = 0;
+  }
+  // 기자 시야에 따라오는 신도가 있나
+  pressSeesFollowers() {
+    const s = app.s; const R = s.pos['x:reporter'];
+    if (!s.reporter?.active || !R || !this.sprites['x:reporter']?.visible) return false;
+    return followers(s).some((id) => s.pos[id] && inSight(R, s.pos[id].x, s.pos[id].y));
+  }
+
   update(time, delta) {
     const s = app.s;
     if (!s) return;
@@ -588,7 +728,11 @@ export class TownScene extends Phaser.Scene {
     this.walker.update(dt, free);
     this.walker.takeFatigue(s);
     s.leaderTile = this.walker.tile;
+    this.moveFollowers(dt, free);
     this.placePeople(time, dt);
+    this.traffic?.update(dt, time, { minute: s.minute, rain: !!s.weather?.rain, paused: !free || app.speed === 0, speedMul: Math.max(1, app.speed), people: this.obstaclePeople() });
+    applyGesture(this.player, time);
+    for (const sp of Object.values(this.sprites)) if (sp.gesture) applyGesture(sp, time);
     this.watchReporter(dt, free);
     this.updateBubbles(time);
     app.checkPlaceVisit(this.walker.tile);
@@ -603,7 +747,11 @@ export class TownScene extends Phaser.Scene {
       const on = !!bigDayActive(s);
       for (const sp of this.bigDayExtras ?? []) sp.setVisible(on);
     }
-    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); this.zealotTalk(time); app.celebrate(); }
+    if (this.moodTimer > 500) { this.moodTimer = 0; this.refreshOverlays(); this.refreshThreats(time); this.zealotTalk(time); if (free) this.streetMeet(time); app.celebrate(); }
+    if (free && app.speed > 0) {
+      const msg = followExposure(s, dt * CLOCK.minutesPerSecond * app.speed * app.clockRate(), this.pressSeesFollowers());
+      if (msg) toast(msg, 'warn');
+    }
     this.gossipTimer += delta;
     if (this.gossip && time > this.gossip.until) { this.gossip.c.destroy(); this.gossip = null; }
     if (this.gossipTimer > MOOD.gossipEverySeconds * 1000 && free) { this.gossipTimer = 0; this.tryGossip(); }

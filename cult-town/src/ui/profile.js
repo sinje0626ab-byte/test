@@ -1,4 +1,5 @@
 // 주민 프로필 카드 (주민을 누르면): 지금 고민 · 종교 · 관계 · 우리 교단에 대한 인상 · 상태
+import { streetRelations } from '../sim/street.js';
 import { seesSuspicion } from '../sim/growth.js';
 import { isZealot } from '../sim/zealots.js';
 import { RESIDENT_BY_ID } from '../data/residents.js';
@@ -52,7 +53,7 @@ export function openProfile(app, id, { onTalk } = {}) {
   const st = app.s.res[id];
   const lean = leanOf(app.s, id);
   const top = topNeeds(st)[0];
-  const rel = relationsOf(id).map((x) => h('li', {}, `${RESIDENT_BY_ID[x.id].name} (${RELATION_NAMES[x.kind]}) · ${STAGE_NAMES[app.s.res[x.id].stage]}`));
+  const rel = [...relationsOf(id), ...streetRelations(app.s, id)].map((x) => h('li', {}, `${RESIDENT_BY_ID[x.id].name} (${RELATION_NAMES[x.kind]}) · ${STAGE_NAMES[app.s.res[x.id].stage]}`));
   mount('profile', h('div', { class: 'profile box' },
     h('div', { class: 'row' }, h('img', { class: 'face', src: app.portrait(id), alt: '' }),
       h('div', {}, h('h3', {}, r.name), h('div', { class: 'muted' }, `${r.age}살 · ${r.job}`), r.leader ? h('div', { class: 'pill', style: 'display:inline-block;margin-top:3px' }, '여론 주도') : null)),

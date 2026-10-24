@@ -1,6 +1,7 @@
 // 성소 실내. 공간 단계마다 지도가 넓어지고(302 → 303 → 3층 전체 → 2층·4층), 칸마다 방이 있다.
 // 방 안에는 신도들이 앉아 있거나 돌아다닌다. 계단 칸으로 층을 오간다.
 import Phaser from 'phaser';
+import { followers } from '../sim/street.js';
 import { SANCTUARY, CLOCK, ROOMS } from '../config.js';
 import { SHOP_ITEMS } from '../data/shop.js';
 import { ROOM_NAMES } from '../data/rooms.js';
@@ -234,6 +235,16 @@ export class SanctuaryScene extends Phaser.Scene {
         if (k < named.length) add(`p:${named[k]}`, spot[0], spot[1], null).setFrame(idleFrame('up'));
         else add(`p:follower:${k % 8}`, spot[0], spot[1], null).setFrame(idleFrame('up'));
       }
+    }
+    // 낮에 따라 들어온 열혈 신자 (29장 C-3): 자기 예배 자리에 앉는다 (지난 예배 자리 · 없으면 앞줄부터)
+    if (main && !night) {
+      const seats = seatSpots['302'] ?? [];
+      const last = s.sanctuary.lastAttend ?? [];
+      followers(s).forEach((id, k) => {
+        const i = last.indexOf(id);
+        const spot = seats[i >= 0 ? i : k] ?? [main.x + 2 + k, 11];
+        add(`p:${id}`, spot[0], spot[1], null).setFrame(idleFrame('up'));
+      });
     }
     // 다른 방: 신도들이 방에 따라 앉아 있거나 걷는다
     if (s.phase >= 2) {

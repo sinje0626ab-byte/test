@@ -221,13 +221,7 @@ for (const b of buildingsOut) {
   if (x !== b.door) lzProps.push({ sprite: 'ac', x, y, wall: true });
 }
 
-// 큰길에 선 차: 차가 덮는 칸(가로 4×2 · 세로 2×4)은 막는다. 횡단보도·입구·자리 둘레는 비운다
-for (const g of GROUND.filter((r) => r.kind === 'road' && r.line)) {
-  const free = (x0, y0, w, h) => { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) if (!inMap(x, y) || kind[y][x] !== 'road' || reserved[y][x] || blocked[y][x] || CROSSWALKS.some((c) => x >= c.x - 1 && x <= c.x + c.w && y >= c.y - 1 && y <= c.y + c.h)) return false; return true; };
-  const park = (sprite, x, y, w, h) => { lzProps.push({ sprite, x, y: y + h - 1, road: true, w }); for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) blocked[yy][xx] = true; };
-  if (g.line === 'h') for (let x = 5; x < g.x + g.w - 4; x += 13) { const y = g.y + 1 + (x % 2); if (free(x, y, 4, 2)) park(x % 3 ? 'carL1' : 'carR1', x, y, 4, 2); }
-  if (g.line === 'v') for (let y = g.y + 6, n = -99; y < g.y + g.h - 4; y++) { const x = g.x + (y % 2 ? 0 : 2); if (y - n >= 9 && free(x, y, 2, 4)) { park(['carU1', 'carD1', 'carU2', 'carD2'][y % 4], x, y, 2, 4); n = y; } }
-}
+// 큰길의 차는 지도에 그리지 않는다: 움직이는 차·노상 주차는 game/traffic.js (29장 A)
 // ── 연결 검사: 걸을 수 있는 칸이 모두 한 덩어리인가 ──
 {
   const seen = grid(W, H, false);
