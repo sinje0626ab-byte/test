@@ -43,6 +43,9 @@ import { visitSpot, questMarkers, checkQuests } from './sim/quests.js';
 import { cutin } from './ui/cutin.js';
 import { openingPanel } from './ui/opening.js';
 import { showSpeaker, hideSpeaker } from './game/speaker.js';
+import { showEmoteMenu } from './ui/emote.js';
+import { emotesFor, chimeIn } from './sim/street.js';
+import { josaFix } from './sim/leader.js';
 import { bigDayOf, bigDayAct } from './sim/bigdays.js';
 import { BIGDAY_TEXT, BIGDAY_UI } from './data/bigdays.js';
 import { OPENING as OPENING_TEXT } from './data/opening.js';
@@ -406,7 +409,21 @@ export const app = {
     if (id.startsWith('c:')) openClergyTalk(this, id.slice(2));
     else if (isProtester(this.s, id)) openProtest(this, id);
     else if (isDefector(this.s, id)) openDefector(this, id);
-    else openTalk(this, id);
+    else {
+      openTalk(this, id);
+      // 따라오던 열혈 신자가 끼어든다 (대화마다 한 명)
+      const c = chimeIn(this.s, id);
+      if (c) { this.scene()?.say?.(c.id, c.line, this.scene().time.now + 400); toast(josaFix(`${RESIDENT_BY_ID[c.id].name}이(가) 끼어들었다: ${c.line}`), c.good ? 'good' : 'warn'); }
+    }
+  },
+  // 감정 표현 (29장 B): 교주를 누르거나 E
+  openEmote() {
+    const sc = this.scene();
+    if (this.modal > 0 || this.s?.mode !== 'day' || !sc?.player || !sc.doEmote) return;
+    sc.walker?.stop();
+    const cam = sc.cameras.main;
+    const at = { x: (sc.player.x + 8 - cam.worldView.x) * cam.zoom, y: (sc.player.y + 4 - cam.worldView.y) * cam.zoom };
+    showEmoteMenu(this, emotesFor(this.s), (id) => sc.doEmote(id), at);
   },
   showProfile(id, onTalk) { openProfile(this, id, { onTalk }); this.tipOnce('profile', '프로필의 "지금 고민"은 얘기를 나눠 봐야 알게 된다. 수첩(N)에 사연·부탁이 쌓인다.'); },
   useDoor(place) {
@@ -605,5 +622,6 @@ export const app = {
     if (e.code === 'Digit1') this.setSpeed(1);
     if (e.code === 'Digit2') this.setSpeed(2);
     if (e.code === 'KeyN') this.openNotebook();
+    if (e.code === 'KeyE') { e.preventDefault(); this.openEmote(); }
   },
 };

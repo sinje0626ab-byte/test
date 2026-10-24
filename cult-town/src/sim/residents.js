@@ -7,6 +7,7 @@ import { CLERGY, CLERGY_B } from '../data/clergy.js';
 import { isWeekend, parseTime } from './clock.js';
 import { findPath, resolveKey, walkable, gridOf } from './grid.js';
 import { rand } from './rng.js';
+import { walkWait, crossingAxis, MAX_WALK_WAIT } from './traffic.js';
 
 const WORSHIP_ARRIVE = 19 * 60 + 20;
 
@@ -175,16 +176,19 @@ function legInfo(g, fromKey, toKey) {
   const k = fromKey + '>' + toKey;
   if (!legCache.has(k)) {
     const path = findPath(g, resolveKey(g, fromKey).tile, resolveKey(g, toKey).tile);
-    const crosses = path ? path.filter(([x, y]) => g.cross?.has(y * g.w + x)).length : 0;
-    legCache.set(k, { tiles: path ? path.length : 0, crossings: Math.ceil(crosses / 3) });
+    // 횡단보도에 들어서는 횟수 (29장 A: 한 번 들어서면 끝까지 건넌다)
+    let crossings = 0;
+    if (path) for (let i = 0; i < path.length; i++) { const [x, y] = path[i]; const prev = path[i - 1]; if (g.cross?.has(y * g.w + x) && !(prev && g.cross.has(prev[1] * g.w + prev[0]))) crossings++; }
+    legCache.set(k, { tiles: path ? path.length : 0, crossings });
   }
   return legCache.get(k);
 }
 export function travelMinutes(s, g, id, fromKey, toKey, minute = s.minute) {
   const { tiles, crossings } = legInfo(gridFor(id, g), fromKey, toKey);
   if (!tiles) return 0;
-  const pauses = tiles * MOVE.pauseChance + crossings * MOVE.signalChance;
-  return (tiles + 2) / speedOf(s, id, minute) + pauses * PAUSE_MIN * 1.6 + 6;   // 멈춤이 몰리는 날도 있어 넉넉히
+  const pauses = tiles * MOVE.pauseChance;
+  // 횡단보도마다 신호 대기 (가장 긴 대기의 0.6: 평균보다 넉넉히, 29장 A)
+  return (tiles + 2) / speedOf(s, id, minute) + pauses * PAUSE_MIN * 1.6 + crossings * MAX_WALK_WAIT * 0.6 + 6;   // 멈춤이 몰리는 날도 있어 넉넉히
 }
 export function departures(s, g, id) {
   const p = personAny(id);
@@ -243,6 +247,8 @@ export function snapAll(s, g) {
 
 // dtMin 게임 분만큼 움직인다. 가끔 멈추고(폰·가게 구경·신호), 좁은 길에서 마주치면 한쪽이 기다린다
 const PAUSE_KINDS = ['phone', 'look'];
+// 장소가 아닌 자리 키: 기자 추격 · 교주에게 인사하러 옴 · 따라다님 · 일과로 돌아가는 중 (29장 C)
+const STREET_KEYS = new Set(['chase', 'greet', 'follow', 'back']);
 export function tickPeople(s, g, dtMin) {
   const people = peopleOf(s);
   // 지금 걷는 사람들의 칸 → 다음 칸 (마주침 판정)
@@ -253,6 +259,7 @@ export function tickPeople(s, g, dtMin) {
     g = gridFor(p.id, g0);
     if (!s.pos[p.id]) { const { tile } = resolveKey(g, p.home); s.pos[p.id] = { x: tile[0], y: tile[1], path: [], prog: 0, key: p.home, inside: true }; }
     const pos = s.pos[p.id];
+    if (pos.key === 'follow') continue;                 // 교주를 따라다니는 열혈 신자 (화면이 움직인다, 29장 C)
     // 기자가 교주를 따라온다: 교주 칸 옆까지 길을 다시 잡는다
     if (p.id === 'x:reporter' && s.reporter?.chase && s.leaderTile) {
       const [lx, ly] = s.leaderTile;
@@ -263,7 +270,8 @@ export function tickPeople(s, g, dtMin) {
       }
     }
     const key = pos.key === 'chase' && s.reporter?.chase ? 'chase' : targetKey(s, g, p.id);
-    if (key !== pos.key) {
+    if (key !== pos.key && !(pos.hold > s.minute)) {     // hold: 교주에게 인사하러 와서 잠깐 서 있는 중
+      pos.hold = 0;
       const { tile } = spotFor(g, key, p.id);
       pos.key = key;
       pos.path = findPath(g, [pos.x, pos.y], tile) ?? [];
@@ -288,15 +296,21 @@ export function tickPeople(s, g, dtMin) {
         pos.dir = nx > pos.x ? 'right' : nx < pos.x ? 'left' : ny > pos.y ? 'down' : 'up';
         pos.x = nx; pos.y = ny; pos.prog -= 1;
         if (!pos.path.length) break;
-        // 가다 멈춤: 횡단보도 앞 신호 · 폰 확인 · 가게 쳐다보기 (현실 2~4초)
+        // 횡단보도 앞: 건너는 길의 신호가 초록이 될 때까지 기다린다 (29장 A)
         const [ax, ay] = pos.path[0];
+        const atCross = g.cross?.has(ay * g.w + ax) && !g.cross.has(ny * g.w + nx);
+        if (atCross) {
+          const w = walkWait(s.minute, crossingAxis(ax - nx, ay - ny));
+          if (w > 0) { pos.wait = w; pos.pause = 'signal'; pos.prog = Math.min(pos.prog, 0); break; }
+          continue;
+        }
+        // 가다 멈춤: 폰 확인 · 가게 쳐다보기 (현실 2~4초)
         if (pos.calm > 0) { pos.calm--; continue; }      // 한 번 멈추면 한동안은 안 멈춘다
         const roll = hash01(`${p.id}:${s.day}:${nx},${ny}`);
-        const atCross = g.cross?.has(ay * g.w + ax) && !g.cross.has(ny * g.w + nx);
-        if ((atCross && roll < MOVE.signalChance) || (!atCross && roll < MOVE.pauseChance)) {
+        if (roll < MOVE.pauseChance) {
           const secs = MOVE.pauseSeconds[0] + hash01(`${p.id}${nx}${ny}`) * (MOVE.pauseSeconds[1] - MOVE.pauseSeconds[0]);
           pos.wait = secs * CLOCK.minutesPerSecond;
-          pos.pause = atCross ? 'signal' : PAUSE_KINDS[Math.floor(roll * 1000) % 2];
+          pos.pause = PAUSE_KINDS[Math.floor(roll * 1000) % 2];
           pos.prog = Math.min(pos.prog, 0);
           pos.calm = 10;
           break;
@@ -304,7 +318,7 @@ export function tickPeople(s, g, dtMin) {
       }
       if (!pos.path.length) { pos.prog = 0; pos.wait = 0; pos.pause = null; pos.arrived = s.minute; }
     }
-    if (!pos.path.length) pos.inside = pos.key === 'chase' ? false : resolveKey(g, pos.key).inside;
+    if (!pos.path.length) pos.inside = STREET_KEYS.has(pos.key) ? false : resolveKey(g, pos.key).inside;
   }
 }
 // 옆으로 비킬 칸이 없는 칸 (1칸 샛길: 좌우나 위아래가 둘 다 막힘)

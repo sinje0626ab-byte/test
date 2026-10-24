@@ -1,4 +1,5 @@
 // 하루의 시작과 끝, 주보(한 주 결산), 목표·실패 판정
+import { endStreetDay } from './street.js';
 import { checkAchievements, pollRewards, addMoment } from './achievements.js';
 import { recordPhase } from './recap.js';
 import { goalOf, tune } from './goals.js';
@@ -136,6 +137,7 @@ function weeklyFollowers(s) {
 
 // 밤 '잠자기'. opts.rentChoice: 돈이 모자란 월말에 'promise' | 'borrow'
 export function endDay(s, g, opts = {}) {
+  endStreetDay(s);                                     // 따라오던 신도는 집으로 (29장 C)
   const events = [];
   // 예배 날인데 예배를 안 열었으면 온 사람들이 실망한다
   if (isWorshipDay(s.day) && s.sanctuary.worshipDay !== s.day) {
