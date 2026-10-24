@@ -111,9 +111,15 @@ export function createHud(app) {
   const body = h('div', { class: 'srows' }, order.map((k) => makeRow(k, { bar: ['rep', 'repB', 'fatigue', 'landlord'].includes(k), axis: k === 'belief' })));
   const mini = h('button', { class: 'mini', onclick: (e) => { e.stopPropagation(); stats.classList.toggle('open'); play('click'); } });
   const stats = h('div', { class: 'stats' }, mini, body);
+  let left = null;
+  // 좁은 화면: 펼친 상태창은 시계·'지금 할 일' 아래로 내려 겹치지 않게 (모바일 피드백)
+  new MutationObserver(() => {
+    const open = stats.classList.contains('open') && window.matchMedia?.('(max-width: 560px)').matches;
+    stats.style.top = open && left ? `${Math.round(left.getBoundingClientRect().bottom + 6)}px` : '';
+  }).observe(stats, { attributes: true, attributeFilter: ['class'] });
 
   const el = h('div', { class: 'hud' },
-    h('div', { class: 'left' }, h('div', { class: 'clock' }, who, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, book, menu)), task),
+    left = h('div', { class: 'left' }, h('div', { class: 'clock' }, who, date, time, phase, h('div', { class: 'ctrl' }, ...speedBtns, sound, book, menu)), task),
     stats,
   );
   mount('hud', el);
