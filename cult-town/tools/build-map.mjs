@@ -33,7 +33,7 @@ const WALL = Object.fromEntries(Object.entries(WALL_COLOR).map(([k, c]) => [k, {
 const WALLS = Object.keys(WALL);
 // 1층 무늬: 가게는 진열창 두 칸씩 (5·7·9·11 + 짝), 집은 긴 창 + 민벽, 문은 유리문(shop3) · 상가 문은 흰 문틀(mdoor)
 const SHOP_PAIRS = [['shop1', 'shop2'], ['shop5', 'shop6'], ['shop7', 'shop8'], ['shop9', 'shop10'], ['shop11', 'shop12']];
-const HOME_PATTERNS = [['condo7', 'condo2'], ['condo1', 'condo2'], ['condo7', 'condo8']];
+const HOME_PATTERNS = [['condo1', 'condo2'], ['condo7', 'condo8'], ['condo1', 'condo2']];   // 짝 = 창 하나 (condo1+2 긴 창 · condo7+8 나무틀 창)
 // 소품: 지도 오브젝트 'lz' (TownScene 이 사람과 같이 y 정렬해 그린다). 담만 타일
 const PROP = {
   tree: { lz: 'tree' }, lamp: { lz: 'lamp' }, vending: { lz: 'vending' }, bench: { lz: 'bench' }, trash: { lz: 'trash' }, mailbox: { lz: 'mailbox' },
@@ -109,7 +109,7 @@ BUILDINGS.forEach((b, i) => {
       const pad = n % 2 ? (outerLeft ? start : x - 1) : -1;
       let k = 0;
       for (let xx = start; xx < x; xx++) {
-        if (xx === pad) { groundPiece[xx] = 'condo8'; continue; }
+        if (xx === pad) { groundPiece[xx] = 'plain'; continue; }
         groundPiece[xx] = pat[k % 2];
         k++;
       }

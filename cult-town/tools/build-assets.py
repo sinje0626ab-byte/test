@@ -209,6 +209,15 @@ def crop(im, x, y, w=16, h=16):
     return im.crop((x, y, x + w, y + h))
 
 
+def stripe(im, x):
+    """세로줄 하나(x)를 16칸 폭으로 이어 붙인 민벽 (창·문 조각이 반쪽 남지 않게)"""
+    im = im.convert('RGBA')
+    col = im.crop((x, 0, x + 1, im.height))
+    out = Image.new('RGBA', (16, im.height))
+    for i in range(16): out.paste(col, (i, 0))
+    return out
+
+
 def hue(im, rgb_mul):
     """색 바꾸기 (고쳐 쓰기): 채널마다 곱해 벽 색을 늘린다. 외곽선(어두운 색)은 거의 그대로."""
     px = im.copy(); d = px.load()
@@ -236,12 +245,21 @@ def town_tiles():
         f = (lambda im: hue(im, mul)) if mul else (lambda im: im)
         pieces = {f'shop{i}': fm(f'Ground_Floor_Shop_Modular_{fam * 12 + i}') for i in range(1, 13)}
         pieces.update({f'condo{i}': fm(f'Ground_Floor_Condo_Modular_{fam * 8 + i}') for i in (1, 2, 7, 8)})   # 지도에서 쓰는 것만
-        pieces['mdoor'] = fm(f'Ground_Floor_Bakery_Modular_{fam * 2 + 2}')
+        # 조각은 16px 기둥이라 창 하나가 두 조각(짝)에 걸친다. 민벽은 창이 없는 세로줄 하나를 16번 이어 붙여 만든다 (반쪽 창이 남지 않게)
+        plain = stripe(fm(f'Ground_Floor_Condo_Modular_{fam * 8 + 8}'), 12)
+        pieces['plain'] = plain
+        door = fm(f'Ground_Floor_Bakery_Modular_{fam * 2 + 2}').convert('RGBA').copy()
+        dd, pd = door.load(), plain.load()
+        for yy in range(38, door.height):          # 옆 조각(빵집 천막)에서 넘어온 노란 발판을 민벽 바닥으로
+            for xx in range(16):
+                r_, g_, b_, a_ = dd[xx, yy]
+                if a_ and r_ > 170 and g_ > 120 and b_ < 110: dd[xx, yy] = pd[xx, yy]
+        pieces['mdoor'] = door
         for name, im in pieces.items():
             for r in range(3): T[f'g_{key}_{name}_{r}'] = f(crop(im, 0, r * 16))
         T[f'up_{key}_A'] = f(crop(fm(f'Middle_Floor_Modular_{fam * 10 + 7}'), 0, 14))
         T[f'up_{key}_B'] = f(crop(fm(f'Middle_Floor_Modular_{fam * 10 + 8}'), 0, 14))
-        T[f'up_{key}_P'] = f(crop(fm(f'Ground_Floor_Condo_Modular_{fam * 8 + 2}'), 0, 16))
+        T[f'up_{key}_P'] = f(crop(stripe(fm(f'Middle_Floor_Modular_{fam * 10 + 7}'), 2), 0, 14))
     # 지붕 한 칸: Condo 지붕의 위 끝 + 아래 끝 (왼·가운데·오른) 두 가지
     for key, condo in (('A', 'Condo_1'), ('B', 'Condo_2')):
         p1, p2, p4 = ex('gb', f'{condo}_2'), ex('gb', f'{condo}_3'), ex('gb', f'{condo}_5')
