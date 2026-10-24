@@ -444,11 +444,11 @@ export const DIFFICULTY = {
 export const DIFFICULTY_ORDER = ['easy', 'normal', 'hard'];
 export const SECT_TUNE = {
   doomsday: { goal: [1, 0.99, 1.01, 1.06] },
-  messiah: { goal: [1, 1.02, 0.97, 1.08] },
+  messiah: { goal: [1, 1.05, 0.97, 1.094] },
   meditation: { goal: [1, 1.08, 1.04, 1.065] },
-  fortune: { goal: [1, 1.16, 1.06, 1.07] },
-  shaman: { goal: [1, 1.26, 1.07, 1.045] },
-  qigong: { goal: [1, 1.035, 1.19, 1.026] },
+  fortune: { goal: [1, 1.176, 1.094, 1.038] },
+  shaman: { goal: [1, 1.276, 1.095, 1.045] },
+  qigong: { goal: [1, 1.035, 1.134, 1.035] },
 };
 // 1단계 구제 (28장 A-3): 게임 오버 대신 한 번씩 손을 내민다. 대가는 다음 달.
 export const RESCUE = {

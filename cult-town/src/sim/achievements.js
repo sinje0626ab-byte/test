@@ -2,6 +2,7 @@
 //   checkAchievements: 새로 딴 업적 목록 (s.achievements[id] = 날짜, 칭호는 가장 최근 것이 자동으로)
 //   pollRewards: 지난번 이후 새로 생긴 작은 보상 (친해짐 단계 · 첫 헌금 · 사연 끝) → 경험치
 //   addMoment: 단계 결산 '명장면'에 쓸 한 줄
+import { josaFix } from './leader.js';
 import { ACHIEVEMENTS, REWARD_TEXT } from '../data/achievements.js';
 import { RESIDENTS, RESIDENT_BY_ID } from '../data/residents.js';
 import { STORIES } from '../data/stories.js';
@@ -59,7 +60,7 @@ export function checkAchievements(s) {
 }
 export const titleOf = (s) => ACHIEVEMENTS.find((a) => a.id === s.leader.title)?.name ?? null;
 
-const fillR = (t, o) => t.replace('{이름}', o.이름 ?? '').replace('{장소}', o.장소 ?? '');
+const fillR = (t, o) => josaFix(t.replace('{이름}', o.이름 ?? '').replace('{장소}', o.장소 ?? ''));
 // 친해짐 단계: 호감 문턱 (REWARD.bond) 을 처음 넘을 때마다
 export function pollRewards(s) {
   const out = [];
