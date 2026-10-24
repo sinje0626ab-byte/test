@@ -2,7 +2,8 @@
 // 게임 난수를 쓰지 않는다 (누가 오는지는 날짜·주민으로 정해진다). 효과 숫자는 config.js BIGDAY.
 import { BIGDAY } from '../config.js';
 import { BIGDAY_TEXT } from '../data/bigdays.js';
-import { RESIDENTS, sillimOf } from '../data/residents.js';
+import { RESIDENTS, RESIDENTS_Z } from '../data/residents.js';
+import { weekday, dayOfMonth } from './clock.js';
 import { clamp, addMoney, addFatigue, shiftBelief } from './leader.js';
 import { stat } from './growth.js';
 import { checkCurious } from './faith.js';
@@ -20,6 +21,15 @@ export function bigDayIdOn(s, day) {
   if (s.rival?.since === day) return 'rival_open';
   if (FIXED[day]) return FIXED[day];
   if (day > 40 && day % 7 === 5) return CYCLE[Math.floor((day - 47) / 7) % CYCLE.length];
+  return zoneDayOn(s, day);
+}
+// 30장 구역 큰 날: 그 구역이 그날보다 사흘 이상 먼저 열려 있어야 한다
+function zoneDayOn(s, day) {
+  for (const [id, z] of Object.entries(BIGDAY.zoneDays)) {
+    const open = s.zones?.[z.zone];
+    if (open == null || day < open + 3) continue;
+    if (z.monthEnd ? dayOfMonth(day + 1) === 1 && weekday(day) !== 5 : weekday(day) === z.wd && Math.floor((day - open) / 7) % 2 === 1) return id;
+  }
   return null;
 }
 export function bigDayOf(s, day = s.day) {
@@ -36,6 +46,7 @@ export function upcomingBigDays(s, n = 4, span = 35) {
 // 그날 몰리는 주민 (신림동, 봉천동은 4단계). 집에서 나올 수 있는 사람 중 날짜·주민으로 고른다
 export function bigDayCrowd(s, bd = bigDayOf(s)) {
   if (!bd) return [];
+  if (BIGDAY.zoneDays[bd.id]) return RESIDENTS_Z.filter((r) => r.zone === bd.zone && s.res[r.id]).map((r) => r.id);
   return RESIDENTS.filter((r) => hash(`${s.seed}:${bd.day}:${r.id}:big`) < BIGDAY.crowdShare).map((r) => r.id).slice(0, bd.spots.length * 3);
 }
 export const bigDayActive = (s, minute = s.minute) => { const b = bigDayOf(s); return b && minute >= b.from - 30 && minute <= b.to ? b : null; };

@@ -1,6 +1,7 @@
 // 퀘스트 (24장 C): 메인 퀘스트 · 사연 갈림길 · 오늘의 할 일 · 엿들은 소문 · 지도 표시.
 // 상태 s.quest = { phase, step, flyers[], tong, maxAttend, visitedB, news[] } · s.today · s.later[] · s.heard[]
 // 오늘의 할 일은 게임 난수(s.rng)를 쓰지 않는다: 퀘스트가 생겨도 시뮬레이션 순서가 그대로다.
+import { zoneQuestTargets } from './zones.js';
 import { QUEST, ZEALOT, DRAMA } from '../config.js';
 import { ZEALOT_TEXT } from '../data/zealots.js';
 import { DRAMA_TEXT } from '../data/drama.js';
@@ -225,6 +226,11 @@ export function questMarkers(s) {
     else out.push({ kind: 'res', id, why: 'favor' });
   }
   for (const t of s.today?.tasks ?? []) if (t.id === 'visit' && !t.done) out.push({ kind: 'place', place: t.arg, why: 'today' });
+  // 30장 구역 일 (노란 느낌표): 얘기할 사람 · 가 볼 자리
+  for (const t of zoneQuestTargets(s)) {
+    if (t.type === 'talk' && s.res[t.id]) out.push({ kind: 'res', id: t.id, why: 'main' });
+    else if (t.type === 'visit' && t.spot) out.push({ kind: 'spot', key: t.spot, why: 'main' });
+  }
   return out;
 }
 

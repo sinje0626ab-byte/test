@@ -1,7 +1,7 @@
 // 수첩 (24장 C-4): 메인 / 사연 / 오늘 / 엿들은 소문 탭 · 퀘스트 장면 (끝낸 단계를 짧게 보여 준다)
 import { ITEMS } from '../data/items.js';
 import { PLACES } from '../data/places.js';
-import { RESIDENT_BY_ID, RESIDENTS, RESIDENTS_B } from '../data/residents.js';
+import { RESIDENT_BY_ID, RESIDENTS, RESIDENTS_B, RESIDENTS_Z } from '../data/residents.js';
 import { STORIES } from '../data/stories.js';
 import { ACHIEVEMENTS } from '../data/achievements.js';
 import { titleOf } from '../sim/achievements.js';
@@ -11,12 +11,14 @@ import { mainOf } from '../sim/quests.js';
 import { fmtDateShort } from '../sim/clock.js';
 import { upcomingBigDays } from '../sim/bigdays.js';
 import { BIGDAY_UI } from '../data/bigdays.js';
+import { ZONE_TEXT, ZONE_QUESTS } from '../data/zones.js';
+import { activeZoneQuests, zoneQuestHint, zoneQuestsOf, zoneOpen, ZONE_ORDER } from '../sim/zones.js';
 import { HEAD_ICONS, makeHeadIcons } from '../game/overlays.js';
 import { h, mount, unmount, won } from './dom.js';
 import { play } from './sound.js';
 import { fill, speak } from './text.js';
 
-const TABS = [['main', '메인'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문'], ['cal', BIGDAY_UI.calendar], ['dex', '도감'], ['ach', '업적'], ['legend', '기호 설명']];
+const TABS = [['main', '메인'], ['zone', '구역 일'], ['story', '사연'], ['today', '오늘'], ['heard', '엿들은 소문'], ['cal', BIGDAY_UI.calendar], ['dex', '도감'], ['ach', '업적'], ['legend', '기호 설명']];
 let lastTab = 'main';
 
 export const dailyName = (t) => DAILY[t.id].name.replace('{장소}', PLACES[t.arg]?.short ?? PLACES[t.arg]?.name ?? '');
@@ -48,6 +50,19 @@ const BODY = {
         h('b', {}, `${i < s.quest.step ? '✓ ' : i === s.quest.step ? '▶ ' : ''}${st.name}`),
         i === s.quest.step ? h('small', {}, fill(st.hint, s) + (st.id === 'flyers' ? ` (붙인 곳 ${s.quest.flyers.map((p) => PLACES[p].short ?? PLACES[p].name).join(', ') || '없음'})` : '')) : null))));
   },
+  // 30장 B: 구역 퀘스트 · 아직 닫힌 구역
+  zone(s) {
+    const act = activeZoneQuests(s);
+    const done = ZONE_ORDER.flatMap((id) => (ZONE_QUESTS[id] ?? []).filter((q) => zoneQuestsOf(s)[q.id]?.done));
+    const shut = ZONE_ORDER.filter((id) => !zoneOpen(s, id));
+    const prog = (q, st) => (q.then ? ` (${st.step}/2)` : '');
+    return h('div', {},
+      act.length ? h('ul', { class: 'quests' }, act.map(({ q, st, zone }) => h('li', { class: 'ready' },
+        h('b', {}, `▶ ${ZONE_TEXT[zone].name} · ${q.name}${prog(q, st)}`), h('small', {}, zoneQuestHint(s, q))))) : h('p', { class: 'muted' }, '지금 열린 구역의 일은 다 했다.'),
+      done.length ? h('ul', { class: 'quests' }, done.map((q) => h('li', { class: 'done' }, h('b', {}, `✓ ${q.name}`)))) : null,
+      shut.length ? h('h3', {}, '공사 중인 곳') : null,
+      shut.length ? h('ul', { class: 'quests' }, shut.map((id) => h('li', { class: 'later' }, h('b', {}, ZONE_TEXT[id].name), h('small', {}, ZONE_TEXT[id].hint)))) : null);
+  },
   story(s) {
     const qs = questList(s);
     const forks = Object.keys(s.res).filter((id) => s.res[id].fork === 'pending');
@@ -75,11 +90,12 @@ const BODY = {
     if (!list.length) return h('p', { class: 'muted' }, BIGDAY_UI.none);
     return h('ul', { class: 'quests' }, list.map((b) => h('li', { class: b.day === s.day ? 'on' : '' },
       h('b', {}, `${fmtDateShort(b.day)} · ${b.name}`),
-      h('small', {}, `${PLACES[b.place]?.short ?? ''} ${Math.floor(b.from / 60)}시~${Math.floor(b.to / 60)}시 · ${Object.values(b.actions).map((a) => a.label).join(' / ')}`))));
+      h('small', {}, `${b.where ?? PLACES[b.place]?.short ?? ''} ${Math.floor(b.from / 60)}시~${Math.floor(b.to / 60)}시 · ${Object.values(b.actions).map((a) => a.label).join(' / ')}`))));
   },
   // 주민 도감 (28장 B-3): 모르는 사람 실루엣 · 만난 사람 얼굴 · 사연 끝까지 별 · 신도 리본
   dex(s, app) {
     const groups = [['신림동', RESIDENTS]];
+    for (const id of ZONE_ORDER) if (zoneOpen(s, id)) groups.push([`신림동 · ${ZONE_TEXT[id].name}`, RESIDENTS_Z.filter((r) => r.zone === id)]);   // 30장 새 구역
     if (s.phase >= 4) groups.push(['봉천동', RESIDENTS_B]);
     const all = groups.flatMap(([, list]) => list);
     const full = (id) => STORIES[id] && (s.res[id]?.story?.done ?? 0) >= STORIES[id].length;

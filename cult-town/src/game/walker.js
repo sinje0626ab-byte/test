@@ -148,7 +148,9 @@ export class Walker {
     const app = this.scene.registry.get('app');
     const run = app?.running || app?.dpadRun;
     this.isRunning = !!run;
-    return (run ? MOVE.playerRunTilesPerSecond : MOVE.playerTilesPerSecond) * T * Math.max(1, app?.speed ?? 1);
+    const [tx, ty] = this.tile;
+    const slow = this.g.stairs?.some((r) => tx >= r.x && ty >= r.y && tx < r.x + r.w && ty < r.y + r.h) ? MOVE.stairsFactor : 1;   // 30장 계단 골목
+    return (run ? MOVE.playerRunTilesPerSecond : MOVE.playerTilesPerSecond) * T * Math.max(1, app?.speed ?? 1) * slow;
   }
 
   // 걸은 칸 수만큼 피로 (달리면 더)

@@ -24,7 +24,7 @@ import { FLYER_SPOTS } from '../src/data/quests.js';
 import { upgradeSign, nextSignCost } from '../src/sim/sanctuary.js';
 import { bestSermon } from '../src/sim/sermon.js';
 import { isOpeningDay, applyOpeningDay } from '../src/sim/opening.js';
-import { botBigDay } from '../src/sim/bigdays.js';
+import { botBigDay, bigDayIdOn, bigDayOf } from '../src/sim/bigdays.js';
 import { autoRaise, canStreetSermon, streetSermon } from '../src/sim/growth.js';
 import { zealotsOf, zealotCandidates, makeZealot, calmZealot } from '../src/sim/zealots.js';
 import { sameFamily } from '../src/sim/talk.js';
@@ -34,7 +34,7 @@ import { applyRevelation } from '../src/sim/revelation.js';
 import { AGENDAS } from '../src/data/officers.js';
 import { threatHour, setThreatGrid, protestToday, answerProtest, soreDefectors, answerDefector, reporterHere, interview } from '../src/sim/threats.js';
 import { rivalOn, rivalAct, mergeChance, truceChance, rivalSize, rivalOptions } from '../src/sim/rival.js';
-import { RIVAL, PHASE4 } from '../src/config.js';
+import { RIVAL, PHASE4, BIGDAY } from '../src/config.js';
 import { canOpenBranch, openBranch, branchHead, branchAct } from '../src/sim/branch.js';
 import { branchCount } from '../src/sim/faith.js';
 import { goalOf } from '../src/sim/goals.js';
@@ -80,11 +80,19 @@ for (const r of ALL_RESIDENTS) {
 console.log(`  이동 ${legs}구간 검사, 가장 빠듯한 곳: ${tightest.who} (머무는 시간 ${Math.round(tightest.stay)}분)`);
 
 // 실제로 하루를 돌려 본다: 모두 목적지에 닿는가, 막히는 사람은 없는가, 한 칸에 몇 명까지 몰리나
-for (const day of [0, 2, 5, 6, 10, 19, 22, 33]) {   // 5·10·19·22·33 = 큰 날
+// 30장 구역 큰 날: 구역이 첫날 열렸다고 치고 구역마다 첫 큰 날
+const zoneDayList = (() => {
+  const t = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 7 });
+  t.phase = 4; checkZones(t, true);
+  const seen = new Map();
+  for (let d = 1; d < 60; d++) { const id = bigDayIdOn(t, d); if (BIGDAY.zoneDays[id] && !seen.has(id)) seen.set(id, d); }
+  return [...seen.values()];
+})();
+for (const day of [0, 2, 5, 6, 10, 19, 22, 33, ...zoneDayList]) {   // 5·10·19·22·33 = 큰 날 · 그 뒤 구역 큰 날
   const s = newGame({ leaderName: '검사', age: 38, family: 'christian', sect: 'doomsday', cultName: '검사', seed: 7 });
-  s.day = day;
   s.phase = 4;      // 봉천동 주민까지 같이 걷게
-  checkZones(s, true);   // 30장 새 구역 주민도 같이 걷게
+  checkZones(s, true);   // 30장 새 구역 주민도 같이 걷게 (첫날 열림)
+  s.day = day;
   startDay(s, g);
   const PEOPLE = peopleOf(s);
   // 예배 날 성소(봉천동은 지부) 가는 길도 보려고 일곱 명을 참석자로 둔다
@@ -113,7 +121,7 @@ for (const day of [0, 2, 5, 6, 10, 19, 22, 33]) {   // 5·10·19·22·33 = 큰 �
   }
   const home = PEOPLE.filter((p) => !s.attend.includes(p.id)).every((p) => s.pos[p.id].inside && s.pos[p.id].key === p.home);
   const atSanct = s.attend.every((id) => s.pos[id].key === sanctuaryKey(id) && s.pos[id].inside);
-  console.log(`  ${CLOCK.weekdays[day % 7]}요일: 도착 전 다음 일과로 넘어간 경우 ${notArrived} · 한 칸 최대 ${maxCrowd}명 (${crowdAt}) · 밤에 모두 귀가 ${home ? '예' : '아니오'}${s.attend.length ? ` · 예배 참석자 성소 도착 ${atSanct ? '예' : '아니오'}` : ''}`);
+  console.log(`  ${CLOCK.weekdays[day % 7]}요일${bigDayOf(s) ? ` (${bigDayOf(s).name})` : ''}: 도착 전 다음 일과로 넘어간 경우 ${notArrived} · 한 칸 최대 ${maxCrowd}명 (${crowdAt}) · 밤에 모두 귀가 ${home ? '예' : '아니오'}${s.attend.length ? ` · 예배 참석자 성소 도착 ${atSanct ? '예' : '아니오'}` : ''}`);
   if (lateLog.length) console.log('    ' + lateLog.join('\n    '));
   if (notArrived > 0) fail(`${CLOCK.weekdays[day % 7]}요일: 도착 전에 일과가 바뀐 경우 ${notArrived}`);
   if (!home) fail('밤까지 집에 못 들어간 사람이 있다');

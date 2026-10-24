@@ -54,6 +54,7 @@ export const MOVE = {
   // 걷는 속도는 현실 1초당 칸 수 (1배속). 2배속이면 2배. 시뮬레이터는 ÷ minutesPerSecond 로 칸/게임분을 쓴다
   playerTilesPerSecond: 3,
   playerRunTilesPerSecond: 4.5,  // Shift · 모바일 방향키 길게
+  stairsFactor: 0.8,             // 30장 원룸 언덕 계단 골목에선 교주 걸음 0.8배
   runFatiguePerTile: 0.05,       // 달리면 걸음마다 피로 더
   resident: { base: [1.8, 2.2], old: [1.4, 1.7], young: [2.2, 2.6], npc: 2.0 },   // 칸/초 [최소, 최대] (사람마다 정해짐)
   rainMul: 1.15,                 // 비 오는 날 빨리 걷는다
@@ -429,12 +430,22 @@ export const BIGDAY = {
     cherry: { photo: { crowdLike: 4, crowdMax: 8, fatigue: 8 }, flyers: { crowdLike: 2, crowdSus: 3, rep: -1 } },
     festival: { booth: { money: -20_000, rep: 3, crowdLike: 3 }, stage: { fatigue: 25 } },
     rival_open: { peek: { rivalDirt: 1 }, wreath: { money: -70_000, rep: 1, rivalCalm: true } },
+    // 30장 구역 큰 날 (몰리는 사람 = 그 구역 주민)
+    mill_day: { sacks: { fatigue: 18, who: ['seongtae', 'yeongsu', 'bokrye'], whoLike: 7 }, tea: { money: -10_000, rep: 1, crowdLike: 4 } },
+    exam_day: { cupbap: { money: -20_000, crowdLike: 5, rep: 1 }, flyers: { crowdLike: 1, crowdSus: 5, rep: -1, dark: true, belief: -2 } },
+    sundae_night: { treat: { money: -30_000, crowdLike: 5, rep: 1 }, listen: { fatigue: 14, who: ['malsun', 'yeongcheol', 'daesik'], whoLike: 6 } },
+    moving_day: { carry: { fatigue: 22, crowdLike: 6 }, boxes: { money: -5_000, rep: 1, crowdLike: 3 } },
   },
+  // 구역 큰 날 요일 (0 = 월). 구역이 열리고 사흘 뒤부터 2주마다. 이삿날은 그달 마지막 날
+  zoneDays: { mill_day: { zone: 'market_in', wd: 1 }, exam_day: { zone: 'gosi', wd: 3 }, sundae_night: { zone: 'sundae', wd: 4 }, moving_day: { zone: 'hill', monthEnd: true } },
 };
 
 // ── 난이도 곡선 (28장) ── 목표 성공률 '보통': 1단계 90%+ · 2단계 80% · 3단계 70% · 4단계 65%. 편하게 +10%p · 빡세게 −10%p.
 // 손잡이는 단계마다 [1, 2, 3, 4]: goal 신도 목표 배율 · fol 주마다 따라오는 사람 확률 배율 · heat 보도 열기 배율
 // 실제 값 = DIFFICULTY[난이도] × SECT_TUNE[유형] (없으면 1). 목표 숫자는 sim/goals.js goalOf 한 곳에서.
+// 30장 C 마을버스: 정류장에서 말 걸기 → 갈 곳 고르기
+export const MINIBUS = { fare: 1_200, minutes: 10, fatigue: 1 };
+
 export const DIFFICULTY = {
   easy: { name: '편하게', desc: '목표가 조금 낮고 사람이 잘 따라온다. 이야기를 보고 싶을 때.', goal: [0.9, 0.9, 0.9, 0.9], fol: [1.15, 1.15, 1.15, 1.15], heat: [1, 1, 0.85, 0.85], rescueGap: 10 },
   normal: { name: '보통', desc: '처음 하는 사람 기준. 뒤 단계로 갈수록 빠듯해진다.', goal: [1, 1, 1, 1], fol: [1, 1, 1, 1], heat: [1, 1, 1, 1], rescueGap: 6 },

@@ -4,17 +4,19 @@
 import { RESIDENTS_Z, sillimOf } from '../data/residents.js';
 import { ZONE_TEXT, ZONE_REWARD, ZONE_QUESTS } from '../data/zones.js';
 import { newResident } from './state.js';
-import { activeOfficers } from './officers.js';
+import { MAIN } from '../data/quests.js';
 import { clamp, addMoney, josaFix } from './leader.js';
 import { addXp } from './quests.js';
 import { sanctuaryName } from './voice.js';
 
-// 열리는 조건 (메인 퀘스트·단계)
+// 열리는 조건 (메인 퀘스트·단계): 그 단계의 메인 퀘스트가 그 칸을 지나갔는가
+const passed = (s, phase, stepId) => s.phase > phase
+  || (s.phase === phase && s.quest?.phase === phase && s.quest.step > MAIN[phase].steps.findIndex((x) => x.id === stepId));
 export const ZONE_RULES = {
   stream: () => true,
-  market_in: (s) => s.phase >= 2 || !!s.quest?.tong,
+  market_in: (s) => passed(s, 1, 'tong'),
   hill: (s) => s.phase >= 2,
-  gosi: (s) => s.phase >= 3 || (s.phase >= 2 && (s.officersAppointed ?? 0) >= 1 && activeOfficers(s).length >= 1),
+  gosi: (s) => passed(s, 2, 'officer1'),
   sundae: (s) => s.phase >= 3,
 };
 export const ZONE_ORDER = ['stream', 'market_in', 'hill', 'gosi', 'sundae'];
@@ -91,3 +93,16 @@ export function progressZoneQuests(s, ev = {}) {
 export function zoneQuestTargets(s) {
   return activeZoneQuests(s).map(({ q, cur }) => ({ ...cur, name: q.name })).filter((c) => c.type !== 'members');
 }
+
+// ── 교주 걷기 지도 (30장 B): 닫힌 구역 칸을 막은 사본. 주민 길찾기 지도(g)는 그대로 ──
+export const closedZones = (s, g) => (g.zones ?? []).filter((z) => !zoneOpen(s, z.id));
+export const inZoneRect = (z, x, y) => x >= z.x && y >= z.y && x < z.x + z.w && y < z.y + z.h;
+export function leaderGridOf(s, g) {
+  const shut = closedZones(s, g);
+  if (!shut.length) return g;
+  const cost = g.cost.slice();
+  for (const z of shut) for (let y = z.y; y < z.y + z.h; y++) for (let x = z.x; x < z.x + z.w; x++) cost[y * g.w + x] = 0;
+  return { ...g, cost };
+}
+// 칸이 들어 있는 구역 id (없으면 null)
+export const zoneAt = (g, x, y) => (g.zones ?? []).find((z) => inZoneRect(z, x, y))?.id ?? null;

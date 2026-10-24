@@ -257,6 +257,7 @@ export class Traffic {
     if (this.cars.some((o) => o.line === 'E' && o.x < 140)) return;
     const v = this.makeVehicle('bus', 'E', -70);
     v.legs = [];
+    if (this.sillim && (this.busN = (this.busN ?? 0) + 1) % 2 === 0) v.sp.setTint(0xffe066);   // 30장: 두 번에 한 번은 노란 마을버스
     const B = TRAFFIC.bus;
     v.target = B.signX * T + 8 + B.doorAhead + this.len(v) / 2;    // 앞머리가 이 자리에 오면 선다
     this.cars.push(v);

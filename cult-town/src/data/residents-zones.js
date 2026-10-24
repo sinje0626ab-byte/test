@@ -83,7 +83,7 @@ export const RESIDENTS_Z = [
     weekday: ['8:30 g_cupbap', '14:30 g_cupbap:front', '15:30 g_cupbap', '20:00 g_studio'],
     weekend: ['9:30 g_cupbap', '14:00 g_lane:corner', '15:20 g_cupbap', '19:30 g_studio'],
     needs: { lonely: 45, money: 60, health: 50, future: 40, meaning: 30 },
-    look: { body: 7, eyes: 1, hair: '23_03', outfit: ['18_03', '14_05'], acc: null },
+    look: { body: 7, eyes: 1, hair: '23_05', outfit: ['18_03', '14_05'], acc: null },
     greet: ['"제육? 참치? 아 손님은 처음이구나."', '"밥 더 줄까? 고시생 아니어도 더 줘요."'],
   },
   {
@@ -167,7 +167,7 @@ export const RESIDENTS_Z = [
     weekday: ['8:20 m_ricecake', '12:00 m_ricecake:front', '13:00 m_ricecake', '19:00 m_house'],
     weekend: ['8:20 m_ricecake', '13:00 temple:yard', '17:40 m_ricecake', '19:10 m_house'],
     needs: { lonely: 30, money: 50, health: 60, future: 40, meaning: 30 },
-    look: { body: 7, eyes: 1, hair: '10_04', outfit: ['18_01', '14_03'], acc: null },
+    look: { body: 7, eyes: 1, hair: '10_06', outfit: ['18_03', '14_05'], acc: null },
     greet: ['"꿀떡 하나 먹어 봐요. 방금 쪘어."', '"오늘 백설기는 다 나갔어요. 내일 일찍 와요."'],
   },
   {
@@ -177,7 +177,7 @@ export const RESIDENTS_Z = [
     weekday: ['8:10 m_mill', '12:30 m_alley:end', '14:10 m_mill', '19:30 m_house'],
     weekend: ['8:30 m_mill', '13:00 m_alley:stalls', '14:00 m_mill', '19:00 m_house'],
     needs: { lonely: 35, money: 55, health: 55, future: 60, meaning: 40 },
-    look: { body: 3, eyes: 1, hair: '03_02', outfit: ['02_01', '07_01'], acc: null },
+    look: { body: 3, eyes: 1, hair: '03_05', outfit: ['02_01', '07_01'], acc: null },
     greet: ['"…고춧가루? 들기름?"', '"기계 돌아가니까 비켜 서요. 튀어요."'],
   },
   {
@@ -187,7 +187,7 @@ export const RESIDENTS_Z = [
     weekday: ['8:40 m_fish', '13:00 m_fish:front', '14:00 m_fish', '19:30 market_house'],
     weekend: ['8:40 m_fish', '13:00 m_alley:stalls', '14:00 m_fish', '19:00 market_house'],
     needs: { lonely: 25, money: 65, health: 50, future: 45, meaning: 30 },
-    look: { body: 2, eyes: 1, hair: '06_04', outfit: ['05_05', '17_03'], acc: null },
+    look: { body: 2, eyes: 1, hair: '06_02', outfit: ['05_05', '17_03'], acc: null },
     greet: ['"갈치 좋아! 오늘 거야, 오늘 거!"', '"구경만 하면 생선이 안 팔리지요. 하나 사 가요."'],
   },
   {
@@ -197,7 +197,7 @@ export const RESIDENTS_Z = [
     weekday: ['9:00 m_alley:stalls', '16:00 m_alley:end', '18:00 villa_tong'],
     weekend: ['9:00 m_alley:stalls', '13:00 church', '15:00 m_alley:stalls', '17:30 villa_tong'],
     needs: { lonely: 65, money: 55, health: 60, future: 35, meaning: 30 },
-    look: { body: 7, eyes: 1, hair: '20_07', outfit: ['19_01', '25_01'], acc: null },
+    look: { body: 7, eyes: 1, hair: '20_05', outfit: ['19_01', '25_01'], acc: null },
     greet: ['"냉이 한 바구니 삼천 원. 이천오백에 줄게."', '"앉아요 앉아. 다리 아프지?"'],
   },
   {
@@ -207,7 +207,7 @@ export const RESIDENTS_Z = [
     weekday: ['9:00 m_mill', '14:00 m_alley:stalls', '15:00 m_mill', '20:00 m_house'],
     weekend: ['10:00 m_alley:end', '13:00 m_alley:end', '15:00 m_mill', '20:00 m_house'],
     needs: { lonely: 40, money: 70, health: 30, future: 80, meaning: 60 },
-    look: { body: 2, eyes: 1, hair: '07_04', outfit: ['21_01', '13_04'], acc: null },
+    look: { body: 2, eyes: 1, hair: '07_02', outfit: ['21_01', '13_04'], acc: null },
     greet: ['"아 안녕하세요. 이 병 사진 좀 찍어도 돼요? 아 그쪽 말고 병이요."', '"들기름 좋아하세요? 아니 그냥 궁금해서요."'],
   },
 
@@ -249,7 +249,7 @@ export const RESIDENTS_Z = [
     weekday: ['10:20 station:exit3', '16:00 h_lane:top', '17:20 h_cvs:table', '19:30 h_villa_d'],
     weekend: ['11:00 h_lane:view', '14:50 stream:cherry', '18:00 h_cvs:table', '19:30 h_villa_d'],
     needs: { lonely: 70, money: 55, health: 30, future: 60, meaning: 55 },
-    look: { body: 2, eyes: 1, hair: '15_03', outfit: ['02_02', '13_02'], acc: null },
+    look: { body: 2, eyes: 1, hair: '15_06', outfit: ['02_02', '13_02'], acc: null },
     greet: ['"저기 혹시 남산 보여요? 저기 저 뾰족한 거."', '"안녕하세요! 저 이 동네 온 지 두 주 됐어요."'],
   },
   {

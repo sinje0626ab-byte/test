@@ -342,6 +342,7 @@ const town = tiledMap(W, H, [
   { name: 'credit', type: 'string', value: MAP_CREDIT },
   { name: 'zones', type: 'string', value: JSON.stringify(zonesOut) },
   { name: 'minibus', type: 'string', value: JSON.stringify(MINIBUS_STOPS) },
+  { name: 'stairs', type: 'string', value: JSON.stringify((L.STAIRS ?? []).map(({ x, y, w, h }) => ({ x, y, w, h }))) },
 ]);
 writeFileSync(out(`${MAP_ID}.json`), JSON.stringify(town));
 
