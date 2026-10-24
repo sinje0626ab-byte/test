@@ -112,6 +112,12 @@ ATLAS_W = 256
 
 def pack(tiles, objects, name):
     cols = ATLAS_W // 16
+    uniq, alias, seen = [], {}, {}
+    for tname, im in tiles:
+        key = im.convert('RGBA').tobytes()
+        if key in seen: alias[tname] = seen[key]; continue
+        seen[key] = len(uniq); uniq.append((tname, im))
+    tiles = uniq
     rows_t = (len(tiles) + cols - 1) // cols
     placed = []
     x, y, shelf = 0, rows_t * 16, 0
@@ -129,6 +135,9 @@ def pack(tiles, objects, name):
         img.alpha_composite(im, (tx, ty))
         tile_idx[tname] = i
         frames[tname] = {'frame': {'x': tx, 'y': ty, 'w': 16, 'h': 16}}
+    for tname, i in alias.items():               # 그림이 똑같은 타일은 한 칸을 같이 쓴다
+        tile_idx[tname] = i
+        frames[tname] = {'frame': {'x': (i % cols) * 16, 'y': (i // cols) * 16, 'w': 16, 'h': 16}}
     for oname, im, ox, oy in placed:
         img.alpha_composite(im, (ox, oy))
         frames[oname] = {'frame': {'x': ox, 'y': oy, 'w': im.width, 'h': im.height}}
@@ -300,8 +309,103 @@ def cherry_tree():
     return im
 
 
+# ── 건물 1층 앞면 (30장 피드백): LimeZu 완성 앞면(7칸)에서 문·창을 통째로 오려 건물 폭에 맞게 다시 붙인다 ──
+# 16px 조각을 섞어 붙이면 창·문이 반쪽씩 잘려서, 건물마다 앞면을 픽셀 단위로 합성한다.
+# 사양은 build-map 이 건물마다 적는 src/map/facades-*.json: [벽, 종류(home|shop|mall), 폭, 문 칸, 셔터 칸(-1), 변형]
+FAC_EL = {   # (원본, 번호, (x0, y0, x1, y1)) · 번호는 벽돌 기준 (파랑 +4/+12, 회색 +8/+24)
+    'w_small': ('Condo', 4, (11, 10, 37, 36)), 'w_side': ('Condo', 2, (79, 10, 106, 44)),
+    'w_long': ('Condo', 3, (7, 10, 55, 38)), 'w_grid': ('Condo', 1, (8, 8, 58, 40)),
+    'd_wood': ('Condo', 4, (41, 11, 71, 48)), 'd_arch': ('Condo', 3, (60, 9, 102, 48)),
+    'd_double': ('Condo', 1, (62, 9, 98, 48)), 'd_awning': ('Condo', 2, (36, 11, 77, 48)),
+    'd_glass': ('Shop', 1, (72, 14, 104, 48)), 'd_shutter': ('Shop', 2, (72, 14, 104, 48)),
+    'w_display': ('Shop', 1, (5, 14, 70, 46)),
+}
+FAC_DOORS = {'home': ['d_wood', 'd_arch'], 'mall': ['d_double', 'd_awning'], 'shop': ['d_glass', 'd_glass']}
+FAC_WINS = {'home': ['w_long', 'w_small', 'w_side', 'mini'], 'mall': ['w_grid', 'w_small', 'mini'], 'shop': ['w_display', 'w_long', 'w_small', 'mini']}
+FAC_FAM = {'brick': 0, 'blue': 1, 'grey': 2, 'beige': 2}
+
+
+def fac_src(kind, n, fam):
+    return fm(f'Ground_Floor_Condo_{fam * 4 + n}' if kind == 'Condo' else f'Ground_Floor_Shop_{fam * 12 + n}').convert('RGBA')
+
+
+def fac_el(name, fam, var=0, width=None):
+    kind, n, box = FAC_EL[name]
+    if name == 'w_display': n = 1 + 2 * (var % 6)        # 불 켠 진열창 여섯 가지 (영어 간판 줄은 빼고 자른다)
+    im = fac_src(kind, n, fam).crop(box)
+    if width and width < im.width:                     # 진열창 폭 줄이기: 가운데를 빼고 양 끝을 붙인다
+        r = 12; out = Image.new('RGBA', (width, im.height))
+        out.paste(im.crop((0, 0, width - r, im.height)), (0, 0)); out.paste(im.crop((im.width - r, 0, im.width, im.height)), (width - r, 0)); im = out
+    return im, box[1]
+
+
+def fac_mini(fam):                                     # 위층 작은 창 (가운뎃줄 모듈 두 조각을 이은 것)
+    out = Image.new('RGBA', (32, 22))
+    out.paste(fm(f'Middle_Floor_Modular_{fam * 10 + 7}').convert('RGBA').crop((0, 12, 16, 34)), (0, 0))
+    out.paste(fm(f'Middle_Floor_Modular_{fam * 10 + 8}').convert('RGBA').crop((0, 12, 16, 34)), (16, 0))
+    return out.crop((5, 0, 27, 22)), 12
+
+
+def fac_bg(fam, W):
+    col = stripe(fm(f'Ground_Floor_Condo_Modular_{fam * 8 + 8}'), 12).crop((0, 0, 1, 48))
+    out = Image.new('RGBA', (W, 48))
+    for x in range(W): out.paste(col, (x, 0))
+    e = fac_src('Condo', 3, fam)
+    out.paste(e.crop((0, 0, 4, 48)), (0, 0)); out.paste(e.crop((108, 0, 112, 48)), (W - 4, 0))
+    return out
+
+
+def fac_fill(img, fam, kind, a, b, var):
+    room = b - a
+    for wn in FAC_WINS[kind]:
+        if wn == 'mini': e, y = fac_mini(fam)
+        else:
+            e, y = fac_el(wn, fam, var)
+            if wn == 'w_display' and room >= 40 and e.width > room: e, y = fac_el(wn, fam, var, width=room)
+        n = (room + 6) // (e.width + 6)
+        if n >= 1:
+            gap = (room - n * e.width) / (n + 1)
+            for i in range(n): img.alpha_composite(e, (int(a + gap + i * (e.width + gap)), y))
+            return n
+    return 0
+
+
+def facade(color, kind, w, door, shutter, var):
+    """문은 입구 칸을 덮는 자리 중 창이 가장 많이 들어가는 곳 (같으면 가운데에 가까운 곳)"""
+    fam = FAC_FAM[color]; W = w * 16
+    dn = FAC_DOORS[kind][var % 2] if (w >= 4 or kind != 'home') else 'd_wood'
+    d, dy = fac_el(dn, fam); cx = door * 16 + 8
+    xs = list(range(max(4, cx - d.width + 5), min(W - 4 - d.width, cx - 5) + 1)) or [max(0, min(W - d.width, cx - d.width // 2))]
+    best = None
+    for x0 in xs:
+        img = fac_bg(fam, W); img.alpha_composite(d, (x0, dy))
+        occ = [(x0, x0 + d.width)]
+        if shutter >= 0:
+            sh, sy = fac_el('d_shutter', fam); sx = max(4, min(W - 4 - sh.width, shutter * 16 + 8 - sh.width // 2))
+            if sx + sh.width <= x0 - 2 or sx >= x0 + d.width + 2: img.alpha_composite(sh, (sx, sy)); occ.append((sx, sx + sh.width))
+        occ.sort(); segs, cur = [], 4
+        for a, b in occ: segs.append((cur, a - 4)); cur = b + 4
+        segs.append((cur, W - 4))
+        n = sum(fac_fill(img, fam, kind, a, b, var) for a, b in segs if b - a > 0)
+        score = (n, -abs(x0 + d.width / 2 - cx))
+        if not best or score > best[0]: best = (score, img)
+    img = best[1]
+    return hue(img, (1.16, 1.07, 0.88)) if color == 'beige' else img
+
+
+def facade_tiles():
+    T = []
+    for path in sorted(glob.glob(os.path.join(ROOT, 'src', 'map', 'facades-*.json'))):
+        for spec in json.load(open(path)):
+            img = facade(*spec)
+            key = '-'.join(str(v) for v in spec)
+            for c in range(spec[2]):
+                for r in range(3): T.append((f'fac_{key}_{c}_{r}', img.crop((c * 16, r * 16, c * 16 + 16, r * 16 + 16))))
+    return T
+
+
 def build_town():
-    tiles = town_tiles()
+    tiles = town_tiles() + facade_tiles()
     objects = [(k, ex(g, n)) for k, (g, n) in TOWN_OBJECTS.items()] + [('cherry', cherry_tree())]
     pack(tiles, objects, 'town')
 

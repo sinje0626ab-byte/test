@@ -452,6 +452,8 @@ export const DIFFICULTY = {
   hard: { name: '빡세게', desc: '목표가 높고 기자가 일찍 온다. 동네를 다 외운 사람에게.', goal: [1.08, 1.08, 1.08, 1.08], fol: [0.9, 0.9, 0.9, 0.9], heat: [1, 1, 1.12, 1.12], rescueGap: 3 },
 };
 export const DIFFICULTY_ORDER = ['easy', 'normal', 'hard'];
+// 30장: 신림동이 넓어져 주민이 25명 늘었다 (신도 한 명마다 따라오는 사람도 늘어난다) → 단계마다 신도 목표 배율 [1, 2, 3, 4단계]
+export const ZONE_GOAL = [1, 1.25, 1.16, 1.09];
 export const SECT_TUNE = {
   doomsday: { goal: [1, 0.99, 1.01, 1.06] },
   messiah: { goal: [1, 1.05, 0.99, 1.094] },

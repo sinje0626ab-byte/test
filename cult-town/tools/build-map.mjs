@@ -80,6 +80,7 @@ for (const c of CROSSWALKS) {
 }
 
 // ── 건물 ──
+const FACADES = []; let facMissing = 0;
 const objects = [];
 let oid = 1;
 const places = {};
@@ -117,6 +118,12 @@ BUILDINGS.forEach((b, i) => {
       start = x + 1;
     }
   }
+  // 1층 앞면 (30장 피드백): 건물마다 합성한 앞면 타일 (build-assets 가 facades-*.json 을 보고 만든다). 없으면 예전 조각
+  const spec = [WALL_COLOR[wallName], b.kind === 'mall' ? 'mall' : isShop ? 'shop' : 'home', b.w, doorX - b.x, shutterAt >= 0 ? shutterAt - b.x : -1, hash(i + 3) % 6];
+  const facKey = spec.join('-');
+  if (!FACADES.some((f) => f.join('-') === facKey)) FACADES.push(spec);
+  const facTile = (cx, gr) => LZ_TOWN.tiles[`fac_${facKey}_${cx}_${gr}`];
+  if (facTile(0, 0) == null) facMissing++;
   for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) {
     blocked[y][x] = true; kind[y][x] = 'block';
     const ry = y - b.y; const cx = x - b.x;
@@ -126,8 +133,7 @@ BUILDINGS.forEach((b, i) => {
       build[y][x] = k === 0 || (k === 1 && cx === b.w - 1) ? Wl.up.P : k === 1 ? Wl.up.A : Wl.up.B;
     } else {
       const gr = ry - roofH - upper;
-      const piece = groundPiece[x];
-      build[y][x] = Wl.piece(piece)[gr];
+      build[y][x] = facTile(cx, gr) ?? Wl.piece(groundPiece[x])[gr];
     }
   }
   const doorY = b.y + b.h - 1;
@@ -345,6 +351,8 @@ const town = tiledMap(W, H, [
   { name: 'stairs', type: 'string', value: JSON.stringify((L.STAIRS ?? []).map(({ x, y, w, h }) => ({ x, y, w, h }))) },
 ]);
 writeFileSync(out(`${MAP_ID}.json`), JSON.stringify(town));
+writeFileSync(out(`facades-${MAP_ID}.json`), JSON.stringify(FACADES));
+if (facMissing) console.log(`건물 앞면 타일 없음 ${facMissing}채 → LIMEZU_DIR=… python3 tools/build-assets.py town 뒤 다시 npm run map`);
 
 // ── 성소 실내 (공간 단계마다, 신림동을 뽑을 때만) ──
 // 꾸밈 0 단계 타일로 뽑는다. SanctuaryScene 이 꾸밈 단계에 따라 바닥·벽 타일을 바꿔 끼운다
