@@ -6,19 +6,18 @@ import { EmptyState } from '../components/Card';
 import { Group } from '../components/Group';
 import { Page } from '../components/Page';
 import { Pressable } from '../components/Pressable';
-import { QualityDots } from '../components/QualityDots';
 import { useUI } from '../components/ui';
 import { fmtDateLong, fmtDayOfMonth, fmtMonth } from '../lib/format';
 import { spring, valueSpring } from '../lib/motion';
 import { clockOf, formatDuration, sleepMin } from '../lib/sleepCalc';
-import type { LogSheetInit } from '../sheets/LogSheet';
+import type { LogSheetTarget } from '../sheets/LogSheet';
 import { useStore } from '../store/store';
 import type { SleepLog } from '../types';
 import s from './Logs.module.css';
 
 const DELETE_W = 88;
 
-export function Logs({ openSheet }: { openSheet: (i: LogSheetInit) => void }) {
+export function Logs({ openSheet }: { openSheet: (t: LogSheetTarget) => void }) {
   const { logs, deleteLog } = useStore();
   const ui = useUI();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -35,7 +34,7 @@ export function Logs({ openSheet }: { openSheet: (i: LogSheetInit) => void }) {
   }, [logs]);
 
   const remove = async (l: SleepLog) => {
-    const ok = await ui.confirm({ title: `${fmtDateLong(l.date)} 기록을 삭제할까요?`, message: '이 날의 생활 요인도 함께 삭제돼요.', confirmLabel: '기록 삭제', destructive: true });
+    const ok = await ui.confirm({ title: `${fmtDateLong(l.date)} 기록을 삭제할까요?`, confirmLabel: '기록 삭제', destructive: true });
     setOpenId(null);
     if (ok) deleteLog(l.id);
   };
@@ -44,7 +43,7 @@ export function Logs({ openSheet }: { openSheet: (i: LogSheetInit) => void }) {
     <Page
       title="기록"
       right={
-        <Pressable className={s.addButton} onClick={() => openSheet({ mode: 'manual' })} aria-label="기록 추가">
+        <Pressable className={s.addButton} onClick={() => openSheet({})} aria-label="기록 추가">
           <Plus size={26} strokeWidth={2} />
         </Pressable>
       }
@@ -53,10 +52,10 @@ export function Logs({ openSheet }: { openSheet: (i: LogSheetInit) => void }) {
         <EmptyState
           icon={<List size={28} strokeWidth={1.75} />}
           title="기록이 비어 있어요"
-          message="홈에서 '잘게요'와 '일어났어요'를 누르면 여기에 쌓여요."
+          message="홈에서 잔 시각과 깬 시각을 적으면 여기에 쌓여요."
           action={
-            <Button variant="tinted" onClick={() => openSheet({ mode: 'manual' })}>
-              직접 입력
+            <Button variant="tinted" onClick={() => openSheet({})}>
+              기록 추가
             </Button>
           }
         />
@@ -69,7 +68,7 @@ export function Logs({ openSheet }: { openSheet: (i: LogSheetInit) => void }) {
                   <SwipeRow
                     open={openId === l.id}
                     onOpenChange={(o) => setOpenId(o ? l.id : null)}
-                    onPress={() => (openId ? setOpenId(null) : openSheet({ mode: 'edit', log: l }))}
+                    onPress={() => (openId ? setOpenId(null) : openSheet({ log: l }))}
                     onDelete={() => remove(l)}
                     label={fmtDateLong(l.date)}
                   >
@@ -79,10 +78,7 @@ export function Logs({ openSheet }: { openSheet: (i: LogSheetInit) => void }) {
                         {clockOf(l.bedTime)} – {clockOf(l.wakeTime)}
                       </span>
                     </span>
-                    <span className={s.right}>
-                      <span className={s.duration}>{formatDuration(sleepMin(l))}</span>
-                      <QualityDots value={l.quality} />
-                    </span>
+                    <span className={s.duration}>{formatDuration(sleepMin(l))}</span>
                   </SwipeRow>
                 </motion.div>
               ))}

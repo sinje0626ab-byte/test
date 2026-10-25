@@ -1,15 +1,12 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { repo, type Snapshot } from '../storage';
-import { DEFAULT_SETTINGS, type DailyFactors, type Settings, type SleepLog } from '../types';
+import { DEFAULT_SETTINGS, type Settings, type SleepLog } from '../types';
 
 // 앱 상태. 저장소(repo) 인터페이스만 거친다 — localStorage 를 직접 만지지 않는다.
 
 interface Store extends Snapshot {
-  startSleep(at?: Date): Promise<void>;
-  cancelSleep(): Promise<void>;
   saveLog(log: SleepLog): Promise<void>;
   deleteLog(id: string): Promise<void>;
-  saveFactors(f: DailyFactors): Promise<void>;
   saveSettings(s: Settings): Promise<void>;
   exportAll: typeof repo.exportAll;
   importAll(data: unknown): Promise<void>;
@@ -44,11 +41,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       };
     return {
       ...snap,
-      startSleep: run((at: Date = new Date()) => repo.savePending({ bedTime: at.toISOString() })),
-      cancelSleep: run(() => repo.savePending(null)),
       saveLog: run((l: SleepLog) => repo.saveLog(l)),
       deleteLog: run((id: string) => repo.deleteLog(id)),
-      saveFactors: run((f: DailyFactors) => repo.saveFactors(f)),
       saveSettings: run((s: Settings) => repo.saveSettings(s)),
       exportAll: () => repo.exportAll(),
       importAll: run((d: unknown) => repo.importAll(d)),

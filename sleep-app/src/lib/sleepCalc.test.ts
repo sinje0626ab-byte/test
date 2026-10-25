@@ -6,10 +6,8 @@ import {
   clockOf,
   clockStats,
   dateKeyOf,
-  defaultSleepTime,
   efficiencyPct,
   formatDuration,
-  isPendingOverdue,
   lastDays,
   latencyMin,
   minutesToClock,
@@ -116,9 +114,6 @@ describe('직접 입력 시각 해석', () => {
     expect(sleepMin(t)).toBe(400);
   });
   it('clockOf 는 로컬 HH:mm', () => expect(clockOf(at(2026, 10, 22, 23, 5))).toBe('23:05'));
-  it('잠든 시각 기본값은 누운 시각 + 15분 (자정 넘김)', () => {
-    expect(defaultSleepTime(at(2026, 10, 22, 23, 50)).toISOString()).toBe(at(2026, 10, 23, 0, 5));
-  });
 });
 
 describe('저장 전 경고', () => {
@@ -134,13 +129,6 @@ describe('저장 전 경고', () => {
     const t = { bedTime: at(2026, 10, 22, 15), sleepTime: at(2026, 10, 22, 15), wakeTime: at(2026, 10, 23, 7) };
     expect(validateTimes(t)).toEqual([]);
   });
-});
-
-describe('"잘게요" 뒤 16시간', () => {
-  const p = { bedTime: at(2026, 10, 22, 23) };
-  it('16시간 이하면 그대로', () => expect(isPendingOverdue(p, at(2026, 10, 23, 15))).toBe(false));
-  it('16시간 넘으면 마무리 안내', () => expect(isPendingOverdue(p, at(2026, 10, 23, 15, 1))).toBe(true));
-  it('대기 중이 아니면 false', () => expect(isPendingOverdue(null)).toBe(false));
 });
 
 describe('수면 부채 (최근 7일, 기록 없는 날 제외)', () => {

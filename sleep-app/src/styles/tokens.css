@@ -32,8 +32,6 @@
   --accent-soft: rgba(88, 86, 214, 0.32);
   --accent-faint: rgba(88, 86, 214, 0.12);
   --on-accent: #ffffff;
-  --sun: #ff9500; /* "일어났어요" 버튼 */
-  --sun-faint: rgba(255, 149, 0, 0.14);
 
   /* 보조색 — 수치 강조에만 */
   --good: #248a3d;
@@ -96,8 +94,6 @@
     --accent: #6e6cf0;
     --accent-soft: rgba(110, 108, 240, 0.38);
     --accent-faint: rgba(110, 108, 240, 0.18);
-    --sun: #ff9f0a;
-    --sun-faint: rgba(255, 159, 10, 0.2);
 
     --good: #30d158;
     --warn: #ff9f0a;

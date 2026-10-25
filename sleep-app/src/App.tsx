@@ -6,7 +6,7 @@ import { Home } from './screens/Home';
 import { Logs } from './screens/Logs';
 import { Settings } from './screens/Settings';
 import { Stats } from './screens/Stats';
-import { LogSheet, type LogSheetInit } from './sheets/LogSheet';
+import { LogSheet, type LogSheetTarget } from './sheets/LogSheet';
 import { StoreProvider } from './store/store';
 
 export function App() {
@@ -23,7 +23,7 @@ export function App() {
 
 function Shell() {
   const [tab, setTab] = useState<TabId>('home');
-  const [sheet, setSheet] = useState<LogSheetInit | null>(null);
+  const [sheet, setSheet] = useState<LogSheetTarget | null>(null);
 
   // 탭은 모두 띄워 두고 보이는 것만 바꾼다 — iOS 처럼 즉시 전환되고 스크롤 위치도 남는다
   const screen = (id: TabId, node: React.ReactNode) => (
@@ -39,7 +39,7 @@ function Shell() {
       {screen('stats', <Stats openSheet={setSheet} />)}
       {screen('settings', <Settings />)}
       <TabBar active={tab} onChange={setTab} />
-      <LogSheet init={sheet} onClose={() => setSheet(null)} />
+      <LogSheet target={sheet} onClose={() => setSheet(null)} />
     </>
   );
 }
