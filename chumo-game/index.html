@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>각하, 결재 바랍니다 · 추모공화국</title>
+<meta name="description" content="추모공화국 대통령이 되어 국무위원의 보고를 좌우로 결재하는 카드 게임. 민심·치안·국고·내각결속 중 하나라도 바닥나거나 넘치면 임기가 끝난다.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="각하, 결재 바랍니다 · 추모공화국">
+<meta property="og:description" content="좌우로 밀어 결재하십시오. 몇 일이나 버티실 수 있겠습니까.">
+<meta name="theme-color" content="#2c281f">
+<link rel="icon" type="image/png" href="../assets/brand/favicon-flag.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- 불러오는 중 / 오류 -->
+<section class="screen screen-center" id="screen-loading">
+  <p class="loading-text" id="loadingText">관보를 인쇄하는 중입니다…</p>
+</section>
+
+<section class="screen screen-center" id="screen-error" hidden>
+  <div class="paper error-paper">
+    <p class="paper-kicker">콘텐츠 파일 오류</p>
+    <h1 class="error-title">게임 데이터를 읽지 못했습니다</h1>
+    <dl class="error-info">
+      <dt>문제 파일</dt><dd id="errFile"></dd>
+      <dt>위치</dt><dd id="errWhere"></dd>
+      <dt>내용</dt><dd id="errMsg"></dd>
+    </dl>
+    <pre class="error-snippet" id="errSnippet" hidden></pre>
+    <p class="error-help">파일을 고친 뒤 새로고침하세요. 자세한 방법은 CONTENT_GUIDE.md의 「오류가 났을 때」를 보세요.</p>
+    <button class="btn" type="button" onclick="location.reload()">새로고침</button>
+  </div>
+</section>
+
+<!-- 타이틀 -->
+<section class="screen screen-center" id="screen-title" hidden>
+  <div class="title-wrap">
+    <img class="title-emblem" src="../assets/brand/emblem.png" alt="" onerror="this.remove()">
+    <p class="title-kicker">추모공화국 국정 카드 게임</p>
+    <h1 class="title-main">각하,<br>결재 바랍니다</h1>
+    <p class="title-desc">국무위원의 보고를 좌우로 밀어 결재하십시오.<br>민심·치안·국고·내각결속 가운데 하나라도<br>바닥나거나 넘치면 임기가 끝납니다.</p>
+    <p class="title-best" id="titleBest"></p>
+    <div class="title-buttons">
+      <button class="btn btn-primary" type="button" id="btnStart">임기 시작</button>
+      <button class="btn" type="button" id="btnChangelog">개정 내역</button>
+    </div>
+    <button class="link-btn warn-btn" type="button" id="btnWarnings" hidden></button>
+    <a class="link-btn" href="../">← 추모공화국 정부 홈페이지</a>
+  </div>
+</section>
+
+<!-- 게임 -->
+<section class="screen" id="screen-game" hidden>
+  <header class="stats" id="stats"></header>
+  <p class="days" id="days"></p>
+  <main class="stage">
+    <p class="speech" id="speech"></p>
+    <div class="deck">
+      <div class="card-back" aria-hidden="true"></div>
+      <div class="card" id="card" tabindex="0" aria-describedby="speech">
+        <div class="portrait" id="cardPortrait"></div>
+        <span class="badge-new" id="cardNew" hidden>NEW</span>
+        <div class="choice-label choice-left" id="labelLeft"></div>
+        <div class="choice-label choice-right" id="labelRight"></div>
+      </div>
+    </div>
+    <p class="who"><strong id="whoName"></strong><span id="whoTitle"></span></p>
+  </main>
+  <footer class="actions">
+    <button class="btn btn-choice" type="button" id="btnLeft" data-side="left"></button>
+    <button class="btn btn-choice" type="button" id="btnRight" data-side="right"></button>
+  </footer>
+</section>
+
+<!-- 엔딩 -->
+<section class="screen screen-center" id="screen-ending" hidden>
+  <div class="paper ending-paper">
+    <p class="paper-kicker">추모공화국 관보 · 호외</p>
+    <div class="ending-image" id="endingImage" hidden></div>
+    <h1 class="ending-title" id="endingTitle"></h1>
+    <p class="ending-cause" id="endingCause"></p>
+    <p class="ending-text" id="endingText"></p>
+    <div class="ending-score">
+      <p>재임 <strong id="endingDays"></strong>일</p>
+      <p class="ending-best" id="endingBest"></p>
+    </div>
+    <div class="title-buttons">
+      <button class="btn btn-primary" type="button" id="btnRetry">다시 집권</button>
+      <button class="btn" type="button" id="btnHome">처음으로</button>
+    </div>
+  </div>
+</section>
+
+<!-- 개정 내역 / 콘텐츠 점검 -->
+<dialog class="modal" id="modal">
+  <div class="paper modal-paper">
+    <h2 class="modal-title" id="modalTitle"></h2>
+    <div class="modal-body" id="modalBody"></div>
+    <form method="dialog"><button class="btn" type="submit">닫기</button></form>
+  </div>
+</dialog>
+
+<script>
+  // 내 컴퓨터에서 파일을 바로 열면(file://) 브라우저가 JSON과 모듈을 막는다
+  if (location.protocol === 'file:') {
+    document.getElementById('loadingText').innerHTML =
+      '이 게임은 파일을 더블클릭해서는 열리지 않습니다.<br>README.md의 「로컬에서 테스트하기」대로<br>로컬 서버를 켜고 http://localhost 주소로 여세요.';
+  }
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

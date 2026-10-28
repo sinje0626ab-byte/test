@@ -1,0 +1,32 @@
+[
+  {
+    "id": "chumoyeolsa",
+    "name": "추모열사",
+    "title": "추모정보원장",
+    "portrait": "img/portraits/chumoyeolsa.webp",
+    "initials": "열"
+  },
+  {
+    "id": "bukanistan",
+    "name": "부카니스탄",
+    "title": "추모안보실장",
+    "portrait": "img/portraits/bukanistan.webp",
+    "initials": "부"
+  },
+  {
+    "id": "temp_officer_gap",
+    "name": "교정관 갑",
+    "title": "추모교정국 교정관 (임시 인물 · 교체 예정)",
+    "portrait": "img/portraits/temp_officer_gap.webp",
+    "initials": "갑",
+    "temporary": true
+  },
+  {
+    "id": "temp_instructor_eul",
+    "name": "교육관 을",
+    "title": "추모하나원 교육관 (임시 인물 · 교체 예정)",
+    "portrait": "img/portraits/temp_instructor_eul.webp",
+    "initials": "을",
+    "temporary": true
+  }
+]

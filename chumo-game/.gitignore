@@ -1,0 +1,4 @@
+# 원본 이미지는 크기가 커서 저장소에 올리지 않는다 (압축본만 img/cards, img/portraits, img/endings에 올림)
+img/raw/**
+!img/raw/**/
+!img/raw/**/.gitkeep
