@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **13장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -53,7 +53,7 @@ Do not draw anything yet. Reply only with "Ready". After that I will send one pa
 
 ### 표지
 
-⬜ 저장 이름: `cover.webp`
+✅ `forever/images/cover.webp`
 
 ```text
 Book cover illustration (no title text). 2D watercolor storybook illustration, vertical 2:3.
@@ -77,7 +77,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그 1쪽 (책 1쪽)
 
-⬜ 저장 이름: `00-01.webp`
+✅ `forever/images/00-01.webp`
 
 ```text
 Page 1. 2D watercolor storybook illustration, vertical 2:3.
@@ -94,7 +94,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그 2쪽 (책 2쪽)
 
-⬜ 저장 이름: `00-02.webp`
+✅ `forever/images/00-02.webp`
 
 ```text
 Page 2. 2D watercolor storybook illustration, vertical 2:3.
@@ -112,7 +112,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그 3쪽 (책 3쪽)
 
-⬜ 저장 이름: `00-03.webp`
+✅ `forever/images/00-03.webp`
 
 ```text
 Page 3. 2D watercolor storybook illustration, vertical 2:3.
@@ -132,7 +132,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 1쪽 (책 4쪽)
 
-⬜ 저장 이름: `01-01.webp`
+✅ `forever/images/01-01.webp`
 
 ```text
 Page 4. 2D watercolor storybook illustration, vertical 2:3.
@@ -150,7 +150,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 2쪽 (책 5쪽)
 
-⬜ 저장 이름: `01-02.webp`
+✅ `forever/images/01-02.webp`
 
 ```text
 Page 5. 2D watercolor storybook illustration, vertical 2:3.
@@ -167,7 +167,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 3쪽 (책 6쪽)
 
-⬜ 저장 이름: `01-03.webp`
+✅ `forever/images/01-03.webp`
 
 ```text
 Page 6. 2D watercolor storybook illustration, vertical 2:3.
@@ -184,7 +184,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 4쪽 (책 7쪽)
 
-⬜ 저장 이름: `01-04.webp`
+✅ `forever/images/01-04.webp`
 
 ```text
 Page 7. 2D watercolor storybook illustration, vertical 2:3.
@@ -203,7 +203,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 5쪽 (책 8쪽)
 
-⬜ 저장 이름: `01-05.webp`
+✅ `forever/images/01-05.webp`
 
 ```text
 Page 8. 2D watercolor storybook illustration, vertical 2:3.
@@ -218,7 +218,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 6쪽 (책 9쪽)
 
-⬜ 저장 이름: `01-06.webp`
+✅ `forever/images/01-06.webp`
 
 ```text
 Page 9. 2D watercolor storybook illustration, vertical 2:3.
@@ -236,7 +236,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 7쪽 (책 10쪽)
 
-⬜ 저장 이름: `01-07.webp`
+✅ `forever/images/01-07.webp`
 
 ```text
 Page 10. 2D watercolor storybook illustration, vertical 2:3.
@@ -253,7 +253,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 8쪽 (책 11쪽)
 
-⬜ 저장 이름: `01-08.webp`
+✅ `forever/images/01-08.webp`
 
 ```text
 Page 11. 2D watercolor storybook illustration, vertical 2:3.
@@ -271,7 +271,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 위기의 보고 9쪽 (책 12쪽)
 
-⬜ 저장 이름: `01-09.webp`
+✅ `forever/images/01-09.webp`
 
 ```text
 Page 12. 2D watercolor storybook illustration, vertical 2:3.
