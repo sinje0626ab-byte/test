@@ -3,8 +3,11 @@
 
 novel/src/ 의 원고(NN.md)와 작품 정보(meta.json)를 읽어
   novel/index.html      — 표지와 목차
-  novel/NN/index.html   — 각 장
+  novel/NN/index.html   — 각 장 (펼친 책: 왼쪽 글, 오른쪽 그림)
+  novel/PROMPTS.md      — 쪽마다 챗GPT에 넣을 그림 프롬프트
 을 만든다. 표준 라이브러리만 쓴다.
+
+그림은 novel/images/ 에 「장-쪽」 이름(예: 03-02.webp)으로 넣으면 자동으로 붙는다.
 
     python3 novel/build.py
 
@@ -19,6 +22,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent          # novel/
 SITE = ROOT.parent                               # 저장소 루트
 SRC = ROOT / "src"
+IMAGES = ROOT / "images"
+IMAGE_EXTS = (".webp", ".png", ".jpg", ".jpeg")
 
 
 # ---------------------------------------------------------------------------
@@ -63,18 +68,42 @@ def parse_chapter(path):
             notes[int(m.group(1))] = (when, what, anchor)
         else:
             lines.append(line)
+    body = "\n".join(lines)
 
-    used = [int(n) for n in re.findall(r"\[\^(\d+)\]", "\n".join(lines))]
+    used = [int(n) for n in re.findall(r"\[\^(\d+)\]", body)]
     for n in used:
         if n not in notes:
             sys.exit(f"{path}: 본문의 [^{n}] 에 해당하는 실록 각주가 없습니다")
 
-    meta["blocks"] = split_blocks("\n".join(lines))
+    # '=== 쪽' 으로 쪽을 나눈다. 쪽 첫 줄의 '그림: ...' 은 그 쪽 그림의 장면 설명이다.
+    chunks = re.split(r"(?m)^=== 쪽[ \t]*\n", body)
+    if chunks[0].strip():
+        if len(chunks) > 1:
+            sys.exit(f"{path}: 첫 '=== 쪽' 앞에 본문이 있습니다")
+    else:
+        chunks = chunks[1:]
+    pages = []
+    for chunk in chunks:
+        scene = ""
+        m = re.match(r"\s*그림:\s*(.+?)\n", chunk + "\n")
+        if m:
+            scene = m.group(1).strip()
+            chunk = chunk[m.end():]
+        pages.append({"scene": scene, "blocks": split_blocks(chunk)})
+
+    meta["pages"] = pages
     meta["notes"] = notes
     meta["note_order"] = list(dict.fromkeys(used))
     meta["afterword"] = split_blocks(afterword)
     meta["slug"] = f"{meta['번호']:02d}"
     return meta
+
+
+def find_image(stem):
+    for ext in IMAGE_EXTS:
+        if (IMAGES / (stem + ext)).exists():
+            return stem + ext
+    return None
 
 
 def split_blocks(text):
@@ -173,7 +202,7 @@ def page(title, desc, prefix, body, extra_head=""):
 def footer():
     return """<footer class="footer">
   대한추모협회 공식 인증 · 추모공화국 문화추모부 연재<br>
-  이 소설은 추모공화국의 실제 기록에 허구를 더한 작품이다. 🕯 표시가 붙은 대목은 실록이다.
+  이 소설은 추모공화국의 실제 기록에 허구를 더한 작품이다. 🕯 표시가 붙은 대목은 실록이다. 그림은 AI로 그렸다.
   <div class="fmotto">오직 추모</div>
 </footer>"""
 
@@ -214,7 +243,32 @@ def build_chapter(ch, prev, nxt, meta):
         '<span class="nv-nav-dir">연재 중</span>'
         '<span class="nv-nav-title">다음 장은 아직 쓰이지 않았다</span></span>')
 
-    body = f"""<main class="paper nv-paper">
+    spreads = []
+    total = len(ch["pages"])
+    for k, pg in enumerate(ch["pages"], 1):
+        stem = f"{ch['slug']}-{k:02d}"
+        img = find_image(stem)
+        alt = html.escape(pg["scene"] or f"제{ch['번호']}장 {k}쪽 그림")
+        if img:
+            pic = f'<img src="../images/{img}" alt="{alt}" loading="{"eager" if k == 1 else "lazy"}">'
+        else:
+            pic = (f'<div class="bk-ph" role="img" aria-label="그림 준비 중">'
+                   f'<span class="bk-ph-candle" aria-hidden="true">🕯</span>'
+                   f'<span class="bk-ph-t">그림 준비 중</span>'
+                   f'<span class="bk-ph-n">제{ch["번호"]}장 · {k}쪽</span></div>')
+        spreads.append(f"""<section class="bk-spread" id="p{k}" aria-label="{k}쪽 / {total}쪽">
+  <div class="bk-page bk-text">
+    <div class="nv-body">
+{render_blocks(pg["blocks"], note_index)}
+    </div>
+    <span class="bk-no">{k}</span>
+  </div>
+  <figure class="bk-page bk-pic">{pic}</figure>
+</section>""")
+    spreads = "\n".join(spreads)
+    next_href = f"../{nxt['slug']}/" if nxt else ""
+
+    body = f"""<main class="paper nv-paper nv-book">
 <div class="watermark" aria-hidden="true"><img class="watermark-img" src="../../assets/brand/flag.webp" alt=""><span class="watermark-fallback">📕</span></div>
 
 <header class="nv-head">
@@ -226,9 +280,15 @@ def build_chapter(ch, prev, nxt, meta):
   <button class="nv-toggle noprint" type="button" aria-pressed="true">🕯 실록 표시 켜짐</button>
 </header>
 
-<article class="nv-body">
-{render_blocks(ch["blocks"], note_index)}
-</article>
+<div class="bk" id="book" data-next="{next_href}">
+{spreads}
+</div>
+<nav class="bk-ctrl noprint" hidden aria-label="쪽 넘기기">
+  <button class="bk-btn bk-prev" type="button" aria-label="이전 쪽">‹</button>
+  <span class="bk-count" aria-live="polite"></span>
+  <button class="bk-btn bk-next" type="button" aria-label="다음 쪽">›</button>
+  <button class="bk-mode" type="button">이어 보기</button>
+</nav>
 
 {notes_html}
 
@@ -260,7 +320,7 @@ def build_index(chs, meta):
             rows.append(f"""<li><a class="toc-ch" href="{c['slug']}/">
   <span class="toc-no">{c['번호']}</span>
   <span class="toc-main"><span class="toc-title">{html.escape(c['제목'])}</span>
-  <span class="toc-when">{html.escape(c['시기'])} · 시점 {html.escape(c['시점'])}</span>
+  <span class="toc-when">{html.escape(c['시기'])} · 시점 {html.escape(c['시점'])} · {len(c['pages'])}쪽</span>
   <span class="toc-sum">{html.escape(c['요약'])}</span></span>
 </a></li>""")
         toc.append(f"""<section class="toc-part" aria-labelledby="part-{no}">
@@ -271,15 +331,20 @@ def build_index(chs, meta):
 </section>""")
 
     intro = "\n".join(f"<p>{inline(x)}</p>" for x in meta["소개"])
+    cover = find_image("cover")
+    if cover:
+        cover_fig = f'<figure class="nv-cover"><img src="images/{cover}" alt="{html.escape(meta["제목"])} 표지 그림"></figure>'
+    else:
+        cover_fig = ('<figure class="natflag">\n    <img class="natflag-img" src="../assets/brand/flag.webp" alt="추모공화국 국기">\n'
+                     '    <span class="natflag-fallback" aria-hidden="true">📕</span>\n  </figure>')
+    pages_total = sum(len(c["pages"]) for c in chs)
+    pics_done = sum(1 for c in chs for k in range(1, len(c["pages"]) + 1) if find_image(f"{c['slug']}-{k:02d}"))
     latest = chs[-1]
     body = f"""<main class="paper nv-paper">
 <div class="watermark" aria-hidden="true"><img class="watermark-img" src="../assets/brand/flag.webp" alt=""><span class="watermark-fallback">📕</span></div>
 
 <header class="cover cover--page">
-  <figure class="natflag">
-    <img class="natflag-img" src="../assets/brand/flag.webp" alt="추모공화국 국기">
-    <span class="natflag-fallback" aria-hidden="true">📕</span>
-  </figure>
+  {cover_fig}
   <div class="org">추 모 공 화 국 연 재 소 설</div>
   <h1>{" ".join(meta["제목"])}</h1>
   <div class="sub">{html.escape(meta["영문"])}</div>
@@ -292,9 +357,10 @@ def build_index(chs, meta):
 
 <section class="nv-howto" aria-labelledby="h-howto">
   <h2 id="h-howto">읽 는 법</h2>
+  <p>펼친 책처럼 <b>왼쪽 면에는 글, 오른쪽 면에는 그림</b>이 있다. 화살표 단추나 키보드 ←→, 휴대폰에서는 옆으로 밀어서 쪽을 넘긴다.</p>
   <p>본문 곳곳에 붙은 <a class="sil-ref sil-ref--demo" aria-hidden="true">1</a> 표시는 <b>실록</b>이다. 누르면 그 대목이 기대고 있는 실제 날짜와 기록이 뜨고, 장 끝의 「이 장의 실록」과 <a href="../history/">국가 역사</a>로 이어진다. 표시가 없는 장면과 대사, 인물의 속마음은 지어낸 것이다.</p>
   <p>실제 참사와 실제 고인의 별세는 이 나라의 원칙대로 <b>지어내지 않는다.</b> 그날 방이 어떻게 그 이름을 걸었는지만 적는다.</p>
-  <p class="nv-status">현재 <b>{len(chs)}장</b>까지 연재 · 최근 장은 <a href="{latest['slug']}/">제{latest['번호']}장 「{html.escape(latest['제목'])}」</a> ({html.escape(latest['시기'])})</p>
+  <p class="nv-status">현재 <b>{len(chs)}장 {pages_total}쪽</b>까지 연재 · 그림 {pics_done}/{pages_total} · 최근 장은 <a href="{latest['slug']}/">제{latest['번호']}장 「{html.escape(latest['제목'])}」</a> ({html.escape(latest['시기'])})</p>
   <p class="nv-start noprint"><a class="nv-start-btn" href="{chs[0]['slug']}/">제1장부터 읽기 →</a></p>
 </section>
 
@@ -303,6 +369,52 @@ def build_index(chs, meta):
 {footer()}
 </main>"""
     return page(f"{meta['제목']} · 추모공화국 연재소설", meta["한줄"], "../", body)
+
+
+def build_prompts(chs, meta):
+    people = meta.get("등장인물", {})
+
+    def full(scene):
+        cast = [f"- {name}: {desc}" for name, desc in people.items() if name in scene]
+        parts = [f"[그림체] {meta['그림체']}"]
+        if cast:
+            parts.append("[등장인물]\n" + "\n".join(cast))
+        parts.append(f"[장면] {scene}")
+        parts.append(f"[조건] {meta['그림조건']}")
+        return "\n\n".join(parts)
+
+    rows, todo = [], 0
+    def item(title, stem, scene):
+        nonlocal todo
+        img = find_image(stem)
+        if not img:
+            todo += 1
+        mark = f"✅ `novel/images/{img}`" if img else f"⬜ 저장할 파일: `novel/images/{stem}.webp` (png·jpg도 됨)"
+        rows.append(f"### {title}\n\n{mark}\n\n```text\n{full(scene)}\n```\n")
+
+    item("표지", "cover", meta["표지그림"])
+    for c in chs:
+        rows.append(f"## 제{c['번호']}장 「{c['제목']}」\n")
+        for k, pg in enumerate(c["pages"], 1):
+            if not pg["scene"]:
+                sys.exit(f"{c['slug']}.md {k}쪽에 '그림:' 줄이 없습니다")
+            item(f"제{c['번호']}장 {k}쪽", f"{c['slug']}-{k:02d}", pg["scene"])
+
+    head = f"""# 「{meta['제목']}」 그림 프롬프트
+
+이 파일은 `novel/build.py` 가 만든다. 직접 고치지 말고, 장면을 바꾸려면 원고(`novel/src/NN.md`)의 `그림:` 줄을,
+그림체나 인물 모습을 바꾸려면 `novel/src/meta.json` 을 고친 뒤 다시 빌드한다.
+
+**쓰는 법**
+1. 아래에서 ⬜ 표시된 쪽의 프롬프트 상자를 통째로 복사해 챗GPT에 붙여넣는다.
+2. 마음에 드는 그림이 나오면 적힌 파일 이름으로 `novel/images/` 에 넣는다. (Claude에게 그림을 주고 "03장 2쪽 그림이야"라고 해도 된다.)
+3. `python3 novel/build.py` 를 다시 돌리면 그 쪽에 그림이 붙는다.
+
+남은 그림: **{todo}장**
+
+"""
+    (ROOT / "PROMPTS.md").write_text(head + "\n".join(rows), encoding="utf-8")
+    return todo
 
 
 def main():
@@ -321,7 +433,9 @@ def main():
         out.parent.mkdir(exist_ok=True)
         out.write_text(build_chapter(c, prev, nxt, meta), encoding="utf-8")
     (ROOT / "index.html").write_text(build_index(chs, meta), encoding="utf-8")
-    print(f"{len(chs)}개 장을 만들었습니다 → novel/")
+    todo = build_prompts(chs, meta)
+    pages = sum(len(c["pages"]) for c in chs)
+    print(f"{len(chs)}개 장 {pages}쪽을 만들었습니다 → novel/ (남은 그림 {todo}장, novel/PROMPTS.md)")
 
 
 if __name__ == "__main__":
