@@ -120,7 +120,7 @@ def build_html(book, chs):
     </div>
     <span class="eb-no">{n}</span>
   </div>
-  <figure class="eb-page eb-pic">{pic_html(stem, pg["scene"], f'{c["title"]} · {k}쪽')}</figure>
+  <figure class="eb-page eb-pic">{pic_html(stem, f'{c["title"]} {k}쪽 그림', f'{c["title"]} · {k}쪽')}</figure>
 </section>""")
 
     total = n
@@ -190,23 +190,33 @@ def build_prompts(book, chs):
     people = book["등장인물"]
     places = book.get("배경", {})
 
-    def cast(scene):
-        return [name for name in people if name in scene]
+    def tag(p):
+        return f'{p["en"]} ({p["role"]}) = {p["look"]}'
 
-    setup_lines = [
-        f"지금부터 그림책 「{book['제목']}」의 삽화를 한 장씩 그려 줘. 아래 설정을 이 대화 내내 똑같이 지켜 줘.",
+    def cast(scene):
+        return [p for p in people.values() if p["en"] in scene]
+
+    # 1단계: 대화 처음에 한 번 (그림체, 인물, 장소를 기억시킨다)
+    setup = "\n".join([
+        f'We are going to illustrate a picture book called "Long Live the Memorial Republic" '
+        f'(Korean title: {book["제목"]}), one page at a time. Keep everything below consistent for the whole conversation.',
         "",
-        f"[그림체] {book['그림체']}",
+        "I attached two reference images: (1) a character sheet of the cabinet members - match each character's "
+        "SPECIES, colors, outfit and props exactly, but redraw them in the 2D storybook style below (the sheet is 3D; "
+        "do NOT copy the 3D look); (2) the national flag of the Memorial Republic - use it whenever a flag appears.",
         "",
-        f"[공통 조건] {book['그림조건']}",
+        f"ART STYLE: {book['그림체']}",
         "",
-        "[등장인물] 매번 같은 얼굴, 같은 옷차림으로 그려 줘.",
-    ]
-    setup_lines += [f"- {k}: {v}" for k, v in people.items()]
-    if places:
-        setup_lines += ["", "[자주 나오는 장소]"] + [f"- {k}: {v}" for k, v in places.items()]
-    setup_lines += ["", "이해했으면 그림은 그리지 말고 '준비됐어요'라고만 답해 줘. 그다음부터 내가 보내는 장면을 한 장씩 그려 줘."]
-    setup = "\n".join(setup_lines)
+        f"RULES: {book['그림조건']}",
+        "",
+        "CHARACTERS (always the same species, colors and outfit):",
+        *[f"- {tag(p)}" for p in people.values()],
+        "",
+        "PLACES:",
+        *[f"- {k}: {v}" for k, v in places.items()],
+        "",
+        "Do not draw anything yet. Reply only with \"Ready\". After that I will send one page at a time.",
+    ])
 
     rows, todo = [], 0
 
@@ -216,20 +226,32 @@ def build_prompts(book, chs):
         if not img:
             todo += 1
         mark = f"✅ `forever/images/{img}`" if img else f"⬜ 저장 이름: `{stem}.webp`"
+        lines = [f"{title}. 2D watercolor storybook illustration, vertical 2:3.", "", f"SCENE: {scene}"]
         who = cast(scene)
-        lines = [f"[{title}] {scene}"]
         if who:
-            lines.append("등장: " + ", ".join(who) + " (설정대로)")
-        lines.append("세로 2:3, 동화책 그림체, 글자 없이.")
-        rows.append(f"### {title}\n\n{mark}\n\n```text\n" + "\n".join(lines) + "\n```\n")
+            lines += ["", "CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):"]
+            lines += [f"- {tag(p)}" for p in who]
+        for k, v in places.items():
+            if k in scene.lower():
+                lines += ["", f"PLACE: {v}"]
+        lines += ["", "No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic."]
+        rows.append(f"### {title_ko(stem)}\n\n{mark}\n\n```text\n" + "\n".join(lines) + "\n```\n")
 
-    item("표지", "cover", book["표지그림"] + " (표지이므로 제목 글자는 넣지 말고 하늘을 비워 둘 것)")
+    titles = {}
+
+    def title_ko(stem):
+        return titles[stem]
+
+    titles["cover"] = "표지"
+    item("Book cover illustration (no title text)", "cover", book["표지그림"])
     n = 0
     for c in chs:
         rows.append(f"## {c['title']}\n")
         for k, pg in enumerate(c["pages"], 1):
             n += 1
-            item(f"{c['title']} {k}쪽 (책 {n}쪽)", f"{c['key']}-{k:02d}", pg["scene"])
+            stem = f"{c['key']}-{k:02d}"
+            titles[stem] = f"{c['title']} {k}쪽 (책 {n}쪽)"
+            item(f"Page {n}", stem, pg["scene"])
 
     doc = f"""# 「{book['제목']}」 그림 프롬프트
 
@@ -238,14 +260,17 @@ def build_prompts(book, chs):
 
 ## 쓰는 법
 
-1. 챗GPT에서 **새 대화**를 열고 아래 「1단계」 상자를 통째로 붙여넣는다. (그림체와 인물을 기억시키는 단계)
-2. 「준비됐어요」라는 답이 오면, 「2단계」의 쪽별 상자를 하나씩 붙여넣는다.
-3. 마음에 드는 그림을 받으면 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
-4. 대화가 길어져 그림체나 얼굴이 흐트러지면 새 대화를 열고 1단계부터 다시 한다.
+1. 챗GPT에서 **새 대화**를 연다.
+2. 참고 그림 두 장을 **첨부**한다: 국무위원 형상 시트 `forever/reference/cabinet-sheet.webp`, 국기 `forever/reference/flag.png`.
+3. 그 메시지에 아래 「1단계」 상자를 붙여넣어 보낸다. 「Ready」라는 답이 오면,
+4. 「2단계」의 쪽별 상자를 하나씩 붙여넣는다. 쪽별 상자에도 그 장면 인물의 생김새가 다시 들어 있어서, 대화가 길어져도 인물이 덜 흐트러진다.
+5. 인물이 틀리게 나오면 그 그림에 대고 이렇게 고쳐 달라고 한다:
+   `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
+6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
 남은 그림: **{todo}장** (⬜ 남음 · ✅ 붙음)
 
-## 1단계 — 처음 한 번 붙여넣기
+## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
 ```text
 {setup}

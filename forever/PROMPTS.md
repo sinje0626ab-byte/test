@@ -5,36 +5,48 @@
 
 ## 쓰는 법
 
-1. 챗GPT에서 **새 대화**를 열고 아래 「1단계」 상자를 통째로 붙여넣는다. (그림체와 인물을 기억시키는 단계)
-2. 「준비됐어요」라는 답이 오면, 「2단계」의 쪽별 상자를 하나씩 붙여넣는다.
-3. 마음에 드는 그림을 받으면 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
-4. 대화가 길어져 그림체나 얼굴이 흐트러지면 새 대화를 열고 1단계부터 다시 한다.
+1. 챗GPT에서 **새 대화**를 연다.
+2. 참고 그림 두 장을 **첨부**한다: 국무위원 형상 시트 `forever/reference/cabinet-sheet.webp`, 국기 `forever/reference/flag.png`.
+3. 그 메시지에 아래 「1단계」 상자를 붙여넣어 보낸다. 「Ready」라는 답이 오면,
+4. 「2단계」의 쪽별 상자를 하나씩 붙여넣는다. 쪽별 상자에도 그 장면 인물의 생김새가 다시 들어 있어서, 대화가 길어져도 인물이 덜 흐트러진다.
+5. 인물이 틀리게 나오면 그 그림에 대고 이렇게 고쳐 달라고 한다:
+   `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
+6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
 남은 그림: **13장** (⬜ 남음 · ✅ 붙음)
 
-## 1단계 — 처음 한 번 붙여넣기
+## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
 ```text
-지금부터 그림책 「영원하라 추모공화국」의 삽화를 한 장씩 그려 줘. 아래 설정을 이 대화 내내 똑같이 지켜 줘.
+We are going to illustrate a picture book called "Long Live the Memorial Republic" (Korean title: 영원하라 추모공화국), one page at a time. Keep everything below consistent for the whole conversation.
 
-[그림체] 2D 손그림 동화책 삽화. 수채화와 색연필 질감, 부드럽고 둥근 선, 종이 결이 살짝 보이는 따뜻한 색감. 인물은 머리가 조금 큰 동화책 캐릭터 비율(3~4등신)로, 표정을 풍부하고 귀엽게 그린다. 분위기는 엄숙한 장면에서도 어딘가 우스꽝스러운 블랙코미디 그림책. 3D 렌더링, CG, 실사 사진, 애니메이션 영화 스타일로 그리지 않는다.
+I attached two reference images: (1) a character sheet of the cabinet members - match each character's SPECIES, colors, outfit and props exactly, but redraw them in the 2D storybook style below (the sheet is 3D; do NOT copy the 3D look); (2) the national flag of the Memorial Republic - use it whenever a flag appears.
 
-[공통 조건] 세로 2:3 비율(1024×1536) 그림 한 장. 그림 안에 글자, 숫자, 말풍선, 로고를 넣지 않는다(화면·문서·그래프의 글씨는 알아볼 수 없는 선으로만). 실존 인물을 닮게 그리지 않는다.
+ART STYLE: 2D hand-drawn children's picture-book illustration. Soft watercolor washes with colored-pencil linework on warm, slightly textured paper; gentle golden light; rounded, friendly shapes. All characters are cute anthropomorphic ANIMALS (or toys) standing upright and wearing clothes, with picture-book proportions (big heads, about 3-4 heads tall) and very expressive faces. Mood: a solemn government drama told as a playful black-comedy storybook. NOT 3D, NOT CGI, NOT Pixar/Disney-movie style, NOT photorealistic.
 
-[등장인물] 매번 같은 얼굴, 같은 옷차림으로 그려 줘.
-- 민주시민: 추모공화국 대통령. 단정한 검은 정장, 왼쪽 가슴에 노란 리본 배지, 둥근 금테 안경, 단정하게 빗어 넘긴 검은 머리, 차분하지만 단호한 눈빛
-- 추모열사: 추모정보원장, 국정원 출신. 곧은 자세와 감정이 없는 무표정, 짙은 회색 정장, 짧게 자른 머리, 귀에 작은 이어피스, 늘 태블릿을 들고 있다
-- 들너구리: 문화추모부 장관. 검은 정장, 둥글둥글한 얼굴, 옷깃에 작은 너구리 모양 브로치, 공손하게 고개를 숙인 자세
-- 부이: 추모원로. 흰머리의 노인, 짙은 남색 두루마기 한복, 팔짱을 끼고 창밖을 바라보는 무심한 표정
-- 추모합니도: 추모언론통제실장. 다혈질이라 금방이라도 벌떡 일어날 것 같은 자세, 남색 정장, 가슴에 작은 마이크 모양 배지, 손에 신문 뭉치
-- 27사 이기자: 추모법무실장. 늘 지각한다. 구겨진 흰 셔츠, 삐뚤어진 넥타이, 헝클어진 머리, 이마에 맺힌 땀, 옆구리에 낀 서류 가방
-- 하이민주동덕: 추모고위직. 의자에 비스듬히 기대 앉은 자세, 느슨하게 풀린 넥타이, 반쯤 감긴 졸린 눈, 귀찮다는 표정
-- 존푹타: 어그로꾼 '미스터 다이토료 존푹타'. 검은 후드티와 동그란 선글라스, 어두운 방에서 모니터 불빛을 받으며 키득거리는 장난꾸러기 악당
+RULES: One vertical 2:3 image (1024x1536). Absolutely no readable text, letters, numbers, speech bubbles, captions, name tags or logos anywhere (screens, papers and charts show only abstract squiggles). No human characters except the one explicitly described as human. Do not resemble any real person.
 
-[자주 나오는 장소]
-- 대회의실: 추모당 행정부 청사 대회의실. 긴 나무 회의 탁자, 한쪽 끝의 연단, 벽에 걸린 검은 리본 달린 공화국 깃발, 탁자 위 흰 국화 화병, 커다란 창으로 들어오는 아침 햇살
+CHARACTERS (always the same species, colors and outfit):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Prime Minister) = a plump orange-and-white hamster with big cheeks, grey suit, blue tie, carrying a ledger. NOT a human
+- Benesu-hoja (Chief of Memorial Corrections) = a dark-grey rabbit with long upright ears in a black tactical police uniform and boots, holding a black baton, with a small green-and-red parrot perched on its left shoulder. NOT a human
+- Bukanistan (Chief of Memorial Security) = a white horse with a long flowing white mane, wearing a black cowboy hat and a navy suit, riding on the back of another white horse (a horse riding a horse). NOT a human
+- Eoheung (Chief of the Memorial Weather Agency) = a chubby little tiger cub in a brown suit with a blue tie, paws clasped in front. NOT a human
+- Ttalgi (a cabinet member) = a white cat with big green eyes, black suit and a bright red tie, sitting or standing very politely. NOT a human
+- Aeguk-jwasu (former Chief of Corrections) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a baton. NOT a human
+- Choi Muhyeon (Chief of the Memorial Audit Office) = the ONLY human character: a simple cartoon office worker with short black hair, light-blue shirt, khaki trousers and a brown messenger bag, drawn in the same storybook style and not resembling any real person
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 
-이해했으면 그림은 그리지 말고 '준비됐어요'라고만 답해 줘. 그다음부터 내가 보내는 장면을 한 장씩 그려 줘.
+PLACES:
+- council hall: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
 
 ## 2단계 — 쪽마다 하나씩
@@ -44,9 +56,21 @@
 ⬜ 저장 이름: `cover.webp`
 
 ```text
-[표지] 아침 햇살이 비치는 추모당 행정부 청사 앞 계단. 검은 리본과 흰 국화로 장식된 청사 정문 앞에 대통령 민주시민이 가운데 서 있고, 양옆에 태블릿을 든 추모열사, 고개 숙인 들너구리, 팔짱 낀 부이, 신문 뭉치를 든 추모합니도가 엄숙하게 서 있다. 계단 구석에는 하이민주동덕이 하품을 하고, 아래쪽에서 27사 이기자가 서류 가방을 들고 헐레벌떡 뛰어오고 있다. 멀리 건물 모퉁이 그림자 속에서 존푹타가 선글라스를 낀 채 몰래 엿본다. 그림책 표지처럼 위쪽에 제목을 넣을 빈 하늘을 남긴다. (표지이므로 제목 글자는 넣지 말고 하늘을 비워 둘 것)
-등장: 민주시민, 추모열사, 들너구리, 부이, 추모합니도, 27사 이기자, 하이민주동덕, 존푹타 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Book cover illustration (no title text). 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Morning light on the grand stone steps of the Memorial Party government building, its entrance decorated with black mourning ribbons, white chrysanthemum wreaths and the national flag. President Minju-simin stands proudly in the center. On both sides stand Chumo-yeolsa holding the tablet, Deul-neoguri saluting, Bui with arms folded, and Chumo-hamnido clutching newspapers, all solemn. In a corner of the steps, Hai is slumped and yawning. At the bottom, Lee Gija is scrambling up the stairs late with a briefcase, sweat flying. Far away, peeking from behind a pillar in the shadows, John Pukta watches with a sly grin. Leave clear open sky at the top for the book title (do not write any title).
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ## 프롤로그
@@ -56,9 +80,16 @@
 ⬜ 저장 이름: `00-01.webp`
 
 ```text
-[프롤로그 1쪽 (책 1쪽)] 대회의실, 벽시계가 오전 9시 정각을 가리킨다. 연단 위에 선 민주시민이 한 손을 들고 국무위원들을 내려다보며 힘주어 연설한다. 탁자에 둘러앉은 국무위원들의 뒷모습이 작게 보인다.
-등장: 민주시민 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Council hall, the wall clock showing exactly 9 o'clock in the morning. President Minju-simin stands at the podium with one wing raised, delivering a passionate speech while looking down at the cabinet. The other ministers are seen small, from behind, seated around the long table.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 프롤로그 2쪽 (책 2쪽)
@@ -66,9 +97,17 @@
 ⬜ 저장 이름: `00-02.webp`
 
 ```text
-[프롤로그 2쪽 (책 2쪽)] 숙연한 대회의실. 검은 정장의 들너구리가 고개를 숙인 채 경청하고, 두루마기 차림의 부이는 팔짱을 낀 채 무심하게 창밖을 바라본다. 창으로 아침 햇살이 비스듬히 들어온다.
-등장: 들너구리, 부이 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: A hushed, solemn council hall. Deul-neoguri sits with head bowed, listening respectfully. Beside the window, the old tortoise Bui sits with arms folded, staring indifferently outside as slanted morning sunlight pours in.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 프롤로그 3쪽 (책 3쪽)
@@ -76,9 +115,17 @@
 ⬜ 저장 이름: `00-03.webp`
 
 ```text
-[프롤로그 3쪽 (책 3쪽)] 연단 옆 큰 화면에 아래로 곤두박질치는 그래프 화살표(글씨 없이). 민주시민이 잠시 말을 멈추고 회의실을 천천히 둘러본 뒤, 탁자 끝에 앉은 추모열사를 손으로 가리킨다. 국무위원들이 긴장한 표정으로 서로 눈치를 본다.
-등장: 민주시민, 추모열사 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. A big screen next to the podium shows a graph arrow nose-diving downward (no numbers). Minju-simin pauses, looks slowly around the room, then points a wing at Chumo-yeolsa sitting at the far end of the table. Everyone exchanges nervous glances.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ## 1장: 위기의 보고
@@ -88,9 +135,17 @@
 ⬜ 저장 이름: `01-01.webp`
 
 ```text
-[1장: 위기의 보고 1쪽 (책 4쪽)] 추모열사가 곧은 자세로 자리에서 일어나 무표정하게 태블릿을 들여다보며 보고한다. 뒤쪽 큰 화면에는 반짝이던 별 모양 아이콘들이 하나둘 빛을 잃고 꺼져 가는 그림(빅 스타 고갈을 상징). 민주시민이 연단에서 귀 기울인다.
-등장: 민주시민, 추모열사 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Chumo-yeolsa rises from the seat with perfectly straight posture and reads from the tablet with a blank face. On the big screen behind, a row of shining star icons is going dark one by one (the 'big star' shortage). Minju-simin listens from the podium.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 2쪽 (책 5쪽)
@@ -98,9 +153,16 @@
 ⬜ 저장 이름: `01-02.webp`
 
 ```text
-[1장: 위기의 보고 2쪽 (책 5쪽)] 화면에 크게 뜬 막대그래프가 계단처럼 뚝뚝 떨어지고(글씨 없이), 동전 주머니가 홀쭉하게 쪼그라드는 그림이 함께 보인다. 탁자에 둘러앉은 국무위원들이 놀라 서로 수군거린다. 추모열사만 혼자 무표정하다.
-등장: 추모열사 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. The screen shows a bar chart dropping like stairs and a coin pouch shriveling up (no numbers). The ministers around the table gasp and whisper to each other in shock. Only Chumo-yeolsa stays completely expressionless.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 3쪽 (책 6쪽)
@@ -108,9 +170,16 @@
 ⬜ 저장 이름: `01-03.webp`
 
 ```text
-[1장: 위기의 보고 3쪽 (책 6쪽)] 회의실 조명이 어둑해지고, 추모열사가 목소리를 낮춰 보고한다. 화면에는 열린 금고에서 기밀 서류들이 종이비행기처럼 창밖으로 날아가는 그림. 탁자 위에 놓인 두 대의 업무용 노트북에 빨간 경고등이 깜빡인다.
-등장: 추모열사 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. The room lights dim. Chumo-yeolsa lowers the voice to report. On the screen, secret documents fly out of an open safe like paper airplanes through a window. Two work laptops on the table blink with red warning lights.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 4쪽 (책 7쪽)
@@ -118,9 +187,18 @@
 ⬜ 저장 이름: `01-04.webp`
 
 ```text
-[1장: 위기의 보고 4쪽 (책 7쪽)] 추모합니도가 신문 뭉치를 쥔 채 의자를 박차고 벌떡 일어나 얼굴이 빨개져 외친다. 연단의 민주시민이 침착하게 한 손을 들어 제지한다. 옆자리 들너구리가 깜짝 놀라 움찔한다.
-등장: 민주시민, 들너구리, 추모합니도 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Chumo-hamnido leaps up, knocking the chair back, face red with fury, newspapers crumpled in one paw, shouting. At the podium Minju-simin calmly raises one wing to stop the outburst. Deul-neoguri, sitting alongside, flinches in surprise.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 5쪽 (책 8쪽)
@@ -128,9 +206,14 @@
 ⬜ 저장 이름: `01-05.webp`
 
 ```text
-[1장: 위기의 보고 5쪽 (책 8쪽)] 컵라면과 과자 봉지가 널린 어두운 방. 존푹타가 모니터 불빛을 받으며 키보드를 두드리고 배를 잡고 키득거린다. 모니터에서는 비웃는 얼굴 모양 아이콘들이 쏟아져 나와 공중을 떠다닌다(글씨 없이). 창밖으로 멀리 추모당 청사가 작게 보인다.
-등장: 존푹타 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: A dark messy room full of cup-noodle cups and snack wrappers. John Pukta hunches at a keyboard in the monitor's glow, clutching its belly and cackling. Mocking laughing-face icons spill out of the monitor and float in the air (no text). Through the window, the government building is tiny in the distance.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 6쪽 (책 9쪽)
@@ -138,9 +221,18 @@
 ⬜ 저장 이름: `01-06.webp`
 
 ```text
-[1장: 위기의 보고 6쪽 (책 9쪽)] 회의실 뒤편 구석. 하이민주동덕이 의자에 비스듬히 기대 입을 크게 벌리고 하품을 한다. 앞쪽 탁자의 국무위원들이 일제히 고개를 돌려 그쪽을 쳐다보고, 추모열사는 무표정하게 태블릿만 본다. 빈 의자 하나(지각한 이기자의 자리)가 눈에 띈다.
-등장: 추모열사, 하이민주동덕 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: The back corner of the council hall. Hai is slumped sideways in a chair, mouth wide open in a giant yawn. At the front, all the ministers have turned their heads to stare at Hai, while Chumo-yeolsa keeps looking at the tablet without expression. One empty chair at the table (Lee Gija's) stands out.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 7쪽 (책 10쪽)
@@ -148,9 +240,16 @@
 ⬜ 저장 이름: `01-07.webp`
 
 ```text
-[1장: 위기의 보고 7쪽 (책 10쪽)] 하이민주동덕이 어깨를 으쓱하며 두 손을 펼쳐 변명한다. 회의실 공기가 차갑게 식은 듯 화면 전체가 푸른빛으로 물들고, 국무위원들 머리 위로 작은 고드름이 맺혀 있다. 그 순간 회의실 문이 벌컥 열리기 시작한다.
-등장: 하이민주동덕 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Hai shrugs with both paws spread, making excuses. The air in the room turns icy: the whole scene is tinted cold blue and tiny icicles hang above the ministers' heads. At that very moment, the door of the hall starts to burst open.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 8쪽 (책 11쪽)
@@ -158,9 +257,17 @@
 ⬜ 저장 이름: `01-08.webp`
 
 ```text
-[1장: 위기의 보고 8쪽 (책 11쪽)] 활짝 열린 문으로 27사 이기자가 서류 가방을 옆구리에 끼고 헐레벌떡 뛰어 들어온다. 구겨진 셔츠, 삐뚤어진 넥타이, 이마에 땀방울이 튄다. 손가락을 하나씩 꼽으며 당황해 숫자를 센다. 연단의 민주시민이 얼음처럼 차가운 눈으로 내려다본다.
-등장: 민주시민, 27사 이기자 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Through the wide-open door, Lee Gija bursts in, briefcase under one arm, shirt wrinkled, tie crooked, sweat drops flying, frantically counting on its claws in panic. From the podium, Minju-simin looks down at Lee Gija with ice-cold eyes.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
 
 ### 1장: 위기의 보고 9쪽 (책 12쪽)
@@ -168,7 +275,15 @@
 ⬜ 저장 이름: `01-09.webp`
 
 ```text
-[1장: 위기의 보고 9쪽 (책 12쪽)] 27사 이기자의 얼굴이 종이처럼 하얗게 질리고 서류 가방이 손에서 미끄러져 떨어진다. 맞은편의 추모열사는 무표정하게 태블릿 화면을 그를 향해 내민다. 모든 국무위원의 시선이 이기자에게 꽂힌 긴장된 순간. 이야기가 이어질 것 같은 극적인 클로즈업.
-등장: 추모열사, 27사 이기자 (설정대로)
-세로 2:3, 동화책 그림체, 글자 없이.
+Page 12. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Dramatic close-up: Lee Gija's face turns as white as paper and the briefcase slips from its grip. Across the table, Chumo-yeolsa holds the tablet out toward Lee Gija with a blank face. Every minister's eyes are fixed on Lee Gija. A tense cliffhanger moment.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+
+PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```

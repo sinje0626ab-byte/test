@@ -3,24 +3,93 @@
   "부제": "🖤 추모공화국 비상대책위원회",
   "소개": "추모가 국가의 정체성이자 정부의 정당성인 나라, 추모공화국. 빅 스타는 고갈되고, 기밀은 새어 나가고, 법무실장은 오늘도 지각한다. 대통령 민주시민과 국무위원들의 비상대책위원회가 열린다.",
 
-  "그림체": "2D 손그림 동화책 삽화. 수채화와 색연필 질감, 부드럽고 둥근 선, 종이 결이 살짝 보이는 따뜻한 색감. 인물은 머리가 조금 큰 동화책 캐릭터 비율(3~4등신)로, 표정을 풍부하고 귀엽게 그린다. 분위기는 엄숙한 장면에서도 어딘가 우스꽝스러운 블랙코미디 그림책. 3D 렌더링, CG, 실사 사진, 애니메이션 영화 스타일로 그리지 않는다.",
+  "그림체": "2D hand-drawn children's picture-book illustration. Soft watercolor washes with colored-pencil linework on warm, slightly textured paper; gentle golden light; rounded, friendly shapes. All characters are cute anthropomorphic ANIMALS (or toys) standing upright and wearing clothes, with picture-book proportions (big heads, about 3-4 heads tall) and very expressive faces. Mood: a solemn government drama told as a playful black-comedy storybook. NOT 3D, NOT CGI, NOT Pixar/Disney-movie style, NOT photorealistic.",
 
-  "그림조건": "세로 2:3 비율(1024×1536) 그림 한 장. 그림 안에 글자, 숫자, 말풍선, 로고를 넣지 않는다(화면·문서·그래프의 글씨는 알아볼 수 없는 선으로만). 실존 인물을 닮게 그리지 않는다.",
+  "그림조건": "One vertical 2:3 image (1024x1536). Absolutely no readable text, letters, numbers, speech bubbles, captions, name tags or logos anywhere (screens, papers and charts show only abstract squiggles). No human characters except the one explicitly described as human. Do not resemble any real person.",
+
+  "참고그림안내": "첫 메시지에 국무위원 형상 시트(forever/reference/cabinet-sheet.webp)와 국기(forever/reference/flag.png)를 함께 첨부한다.",
 
   "배경": {
-    "대회의실": "추모당 행정부 청사 대회의실. 긴 나무 회의 탁자, 한쪽 끝의 연단, 벽에 걸린 검은 리본 달린 공화국 깃발, 탁자 위 흰 국화 화병, 커다란 창으로 들어오는 아침 햇살"
+    "council hall": "the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon"
   },
 
   "등장인물": {
-    "민주시민": "추모공화국 대통령. 단정한 검은 정장, 왼쪽 가슴에 노란 리본 배지, 둥근 금테 안경, 단정하게 빗어 넘긴 검은 머리, 차분하지만 단호한 눈빛",
-    "추모열사": "추모정보원장, 국정원 출신. 곧은 자세와 감정이 없는 무표정, 짙은 회색 정장, 짧게 자른 머리, 귀에 작은 이어피스, 늘 태블릿을 들고 있다",
-    "들너구리": "문화추모부 장관. 검은 정장, 둥글둥글한 얼굴, 옷깃에 작은 너구리 모양 브로치, 공손하게 고개를 숙인 자세",
-    "부이": "추모원로. 흰머리의 노인, 짙은 남색 두루마기 한복, 팔짱을 끼고 창밖을 바라보는 무심한 표정",
-    "추모합니도": "추모언론통제실장. 다혈질이라 금방이라도 벌떡 일어날 것 같은 자세, 남색 정장, 가슴에 작은 마이크 모양 배지, 손에 신문 뭉치",
-    "27사 이기자": "추모법무실장. 늘 지각한다. 구겨진 흰 셔츠, 삐뚤어진 넥타이, 헝클어진 머리, 이마에 맺힌 땀, 옆구리에 낀 서류 가방",
-    "하이민주동덕": "추모고위직. 의자에 비스듬히 기대 앉은 자세, 느슨하게 풀린 넥타이, 반쯤 감긴 졸린 눈, 귀찮다는 표정",
-    "존푹타": "어그로꾼 '미스터 다이토료 존푹타'. 검은 후드티와 동그란 선글라스, 어두운 방에서 모니터 불빛을 받으며 키득거리는 장난꾸러기 악당"
+    "민주시민": {
+      "en": "Minju-simin",
+      "role": "the President",
+      "look": "a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human"
+    },
+    "추모열사": {
+      "en": "Chumo-yeolsa",
+      "role": "Director of the Memorial Intelligence Service",
+      "look": "a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human"
+    },
+    "추모합니도": {
+      "en": "Chumo-hamnido",
+      "role": "Chief of Memorial Press Control",
+      "look": "a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human"
+    },
+    "들너구리": {
+      "en": "Deul-neoguri",
+      "role": "Minister of Memorial Culture",
+      "look": "a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human"
+    },
+    "햄지": {
+      "en": "Hamji",
+      "role": "Prime Minister",
+      "look": "a plump orange-and-white hamster with big cheeks, grey suit, blue tie, carrying a ledger. NOT a human"
+    },
+    "베네수호자": {
+      "en": "Benesu-hoja",
+      "role": "Chief of Memorial Corrections",
+      "look": "a dark-grey rabbit with long upright ears in a black tactical police uniform and boots, holding a black baton, with a small green-and-red parrot perched on its left shoulder. NOT a human"
+    },
+    "부카니스탄": {
+      "en": "Bukanistan",
+      "role": "Chief of Memorial Security",
+      "look": "a white horse with a long flowing white mane, wearing a black cowboy hat and a navy suit, riding on the back of another white horse (a horse riding a horse). NOT a human"
+    },
+    "어흥": {
+      "en": "Eoheung",
+      "role": "Chief of the Memorial Weather Agency",
+      "look": "a chubby little tiger cub in a brown suit with a blue tie, paws clasped in front. NOT a human"
+    },
+    "딸기": {
+      "en": "Ttalgi",
+      "role": "a cabinet member",
+      "look": "a white cat with big green eyes, black suit and a bright red tie, sitting or standing very politely. NOT a human"
+    },
+    "애국좌수": {
+      "en": "Aeguk-jwasu",
+      "role": "former Chief of Corrections",
+      "look": "a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a baton. NOT a human"
+    },
+    "최무현": {
+      "en": "Choi Muhyeon",
+      "role": "Chief of the Memorial Audit Office",
+      "look": "the ONLY human character: a simple cartoon office worker with short black hair, light-blue shirt, khaki trousers and a brown messenger bag, drawn in the same storybook style and not resembling any real person"
+    },
+    "부이": {
+      "en": "Bui",
+      "role": "Elder statesman",
+      "look": "a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human"
+    },
+    "27사 이기자": {
+      "en": "Lee Gija",
+      "role": "Chief of Memorial Legal Affairs, always late",
+      "look": "a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human"
+    },
+    "하이민주동덕": {
+      "en": "Hai",
+      "role": "a lazy senior official",
+      "look": "a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human"
+    },
+    "존푹타": {
+      "en": "John Pukta",
+      "role": "an online troll",
+      "look": "a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human"
+    }
   },
 
-  "표지그림": "아침 햇살이 비치는 추모당 행정부 청사 앞 계단. 검은 리본과 흰 국화로 장식된 청사 정문 앞에 대통령 민주시민이 가운데 서 있고, 양옆에 태블릿을 든 추모열사, 고개 숙인 들너구리, 팔짱 낀 부이, 신문 뭉치를 든 추모합니도가 엄숙하게 서 있다. 계단 구석에는 하이민주동덕이 하품을 하고, 아래쪽에서 27사 이기자가 서류 가방을 들고 헐레벌떡 뛰어오고 있다. 멀리 건물 모퉁이 그림자 속에서 존푹타가 선글라스를 낀 채 몰래 엿본다. 그림책 표지처럼 위쪽에 제목을 넣을 빈 하늘을 남긴다."
+  "표지그림": "Morning light on the grand stone steps of the Memorial Party government building, its entrance decorated with black mourning ribbons, white chrysanthemum wreaths and the national flag. President Minju-simin stands proudly in the center. On both sides stand Chumo-yeolsa holding the tablet, Deul-neoguri saluting, Bui with arms folded, and Chumo-hamnido clutching newspapers, all solemn. In a corner of the steps, Hai is slumped and yawning. At the bottom, Lee Gija is scrambling up the stairs late with a briefcase, sweat flying. Far away, peeking from behind a pillar in the shadows, John Pukta watches with a sly grin. Leave clear open sky at the top for the book title (do not write any title)."
 }
