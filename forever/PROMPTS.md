@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **7장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -404,7 +404,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 3장: 추모대장의 단합대회 1쪽 (책 19쪽)
 
-⬜ 저장 이름: `03-01.webp`
+✅ `forever/images/03-01.webp`
 
 ```text
 Page 19. 2D watercolor storybook illustration, vertical 2:3.
@@ -422,7 +422,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 3장: 추모대장의 단합대회 2쪽 (책 20쪽)
 
-⬜ 저장 이름: `03-02.webp`
+✅ `forever/images/03-02.webp`
 
 ```text
 Page 20. 2D watercolor storybook illustration, vertical 2:3.
@@ -440,7 +440,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 3장: 추모대장의 단합대회 3쪽 (책 21쪽)
 
-⬜ 저장 이름: `03-03.webp`
+✅ `forever/images/03-03.webp`
 
 ```text
 Page 21. 2D watercolor storybook illustration, vertical 2:3.
@@ -459,7 +459,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 3장: 추모대장의 단합대회 4쪽 (책 22쪽)
 
-⬜ 저장 이름: `03-04.webp`
+✅ `forever/images/03-04.webp`
 
 ```text
 Page 22. 2D watercolor storybook illustration, vertical 2:3.
@@ -477,7 +477,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 3장: 추모대장의 단합대회 5쪽 (책 23쪽)
 
-⬜ 저장 이름: `03-05.webp`
+✅ `forever/images/03-05.webp`
 
 ```text
 Page 23. 2D watercolor storybook illustration, vertical 2:3.
@@ -496,7 +496,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 3장: 추모대장의 단합대회 6쪽 (책 24쪽)
 
-⬜ 저장 이름: `03-06.webp`
+✅ `forever/images/03-06.webp`
 
 ```text
 Page 24. 2D watercolor storybook illustration, vertical 2:3.
@@ -517,7 +517,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 3장: 추모대장의 단합대회 7쪽 (책 25쪽)
 
-⬜ 저장 이름: `03-07.webp`
+✅ `forever/images/03-07.webp`
 
 ```text
 Page 25. 2D watercolor storybook illustration, vertical 2:3.
