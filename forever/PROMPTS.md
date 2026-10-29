@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **4장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -854,7 +854,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 에필로그: 공포와 흥행 1쪽 (책 43쪽)
 
-⬜ 저장 이름: `06-01.webp`
+✅ `forever/images/06-01.webp`
 
 ```text
 6-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -872,7 +872,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 에필로그: 공포와 흥행 2쪽 (책 44쪽)
 
-⬜ 저장 이름: `06-02.webp`
+✅ `forever/images/06-02.webp`
 
 ```text
 6-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -890,7 +890,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 에필로그: 공포와 흥행 3쪽 (책 45쪽)
 
-⬜ 저장 이름: `06-03.webp`
+✅ `forever/images/06-03.webp`
 
 ```text
 6-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -909,7 +909,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 에필로그: 공포와 흥행 4쪽 (책 46쪽)
 
-⬜ 저장 이름: `06-04.webp`
+✅ `forever/images/06-04.webp`
 
 ```text
 6-4. 2D watercolor storybook illustration, vertical 2:3.
