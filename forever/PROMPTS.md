@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **6장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **5장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -45,12 +45,14 @@ CHARACTERS (always the same species, colors and outfit):
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 - Doberman bodyguards (the Presidential Security Detail) = two tall Doberman pinschers in black suits, white shirts and black ties, dark sunglasses and coiled earpiece wires, hands clasped in front, standing motionless at attention. NOT humans
+- meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
 (Text exception: the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided) - this is the ONLY text allowed in any picture.)
 
 PLACES:
 - council hall: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 - tv studio: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
 - president office: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+- strategy room: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -1091,7 +1093,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그: 두 개의 충성 1쪽 (책 58쪽)
 
-⬜ 저장 이름: `08-01.webp`
+✅ `forever/images/08-01.webp`
 
 ```text
 P-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -1111,7 +1113,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그: 두 개의 충성 2쪽 (책 59쪽)
 
-⬜ 저장 이름: `08-02.webp`
+✅ `forever/images/08-02.webp`
 
 ```text
 P-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -1130,7 +1132,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그: 두 개의 충성 3쪽 (책 60쪽)
 
-⬜ 저장 이름: `08-03.webp`
+✅ `forever/images/08-03.webp`
 
 ```text
 P-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -1149,7 +1151,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그: 두 개의 충성 4쪽 (책 61쪽)
 
-⬜ 저장 이름: `08-04.webp`
+✅ `forever/images/08-04.webp`
 
 ```text
 P-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -1167,7 +1169,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그: 두 개의 충성 5쪽 (책 62쪽)
 
-⬜ 저장 이름: `08-05.webp`
+✅ `forever/images/08-05.webp`
 
 ```text
 P-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -1187,7 +1189,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 프롤로그: 두 개의 충성 6쪽 (책 63쪽)
 
-⬜ 저장 이름: `08-06.webp`
+✅ `forever/images/08-06.webp`
 
 ```text
 P-6. 2D watercolor storybook illustration, vertical 2:3.
@@ -1201,6 +1203,99 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Doberman bodyguards (the Presidential Security Detail) = two tall Doberman pinschers in black suits, white shirts and black ties, dark sunglasses and coiled earpiece wires, hands clasped in front, standing motionless at attention. NOT humans
 
 PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 1장: 딸기의 추모 계층화 계획
+
+### 1장: 딸기의 추모 계층화 계획 1쪽 (책 64쪽)
+
+⬜ 저장 이름: `09-01.webp`
+
+```text
+1-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the strategy room. SCENE: The Memorial Strategy Office, Ttalgi's own headquarters. Ttalgi stands before a giant wall of monitors full of complex graphs and diagrams and begins a cold briefing to a team of meerkat aides, aiming a laser pointer at the screen. COMPOSITION: Wide shot from behind the seated aides, looking toward the monitor wall. The towering curved monitor wall fills the upper two-thirds of the picture. Ttalgi stands small but sharply lit at the right side of the wall, one arm outstretched with the laser pointer, a thin red dot on the main chart. In the lower foreground, the backs and heads of four or five meerkat aides seated around a long glass table, all looking up at the screen. TTALGI: The chubby round white cat (NOT slim) in a charcoal-grey suit, white shirt and bright red tie, laser pointer in one paw, tablet tucked under the other arm. Calm, confident, slightly bored expression, green eyes glowing in the screen light. MONITORS: Dozens of glowing panels: a huge bar chart where one tiny bar at the top towers over a long row of short bars (inequality), a pyramid diagram, scatter plots, a world-map-like heat map of the capital, and one panel with an icon of a wealthy animal silhouette in a top hat with a money bag turning its back on a small candle. Abstract shapes and icons only - no numbers, no letters. MEERKAT AIDES: Small meerkats in neat grey suits and thin black ties, tablets and notepads in paw, sitting very upright and attentive. SETTING: A sleek, modern, almost cold room - dark navy walls, a black glossy floor reflecting the screens, a long glass table with thin silver laptops, a small national flag (copy flag.png) on a stand in the corner, a single white chrysanthemum in a slim glass vase on the table. LIGHT & COLOR: Cool electric blue and cyan from the screens, deep shadows elsewhere; the only warm accent is Ttalgi's red tie. A clear contrast with the warm golden president office. MOOD: Cold, clinical, efficient - a war room where people are numbers.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 딸기의 추모 계층화 계획 2쪽 (책 65쪽)
+
+⬜ 저장 이름: `09-02.webp`
+
+```text
+1-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the strategy room. SCENE: Ttalgi switches the main screen to the plan for a "memorial tier system". The aides hold their breath in shock, and one aide timidly asks whether it is too harsh. COMPOSITION: Medium shot from the side of the glass table. The main screen dominates the upper half and shows the tier diagram. Ttalgi stands at the left beside the screen, presenting it with an open paw. The meerkat aides line the table in the lower half; one in the front raises a trembling paw. SCREEN: A tall glowing pyramid divided into tiers. The small top tier glows platinum-white and gold with icons of a crown, a graduation cap and a grand government building. The wide bottom tier is dull grey, with icons crossed out by red X marks: a gold coin, a bus, a hospital cross, and a small icon of prison bars. Icons only - no numbers, no letters. TTALGI: The chubby round white cat, standing tall with chin raised, a thin satisfied smile, one paw gesturing at the pyramid as if it is obvious. MEERKAT AIDES: All frozen with wide eyes and ears flattened; some cover their mouths with their paws, one drops a pen. The front meerkat raises a small trembling paw, sweat drop on the forehead, worried eyebrows. LIGHT & COLOR: The platinum tier casts a bright white-gold glow over Ttalgi; the grey tier throws cold grey light onto the aides' faces. MOOD: A collective gasp - shock behind polite silence.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 딸기의 추모 계층화 계획 3쪽 (책 66쪽)
+
+⬜ 저장 이름: `09-03.webp`
+
+```text
+1-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the strategy room. SCENE: Ttalgi turns to look coldly at the aide who called the plan harsh, and explains that it is an inevitable measure: once children's education, social status and public services depend on memorial, even the rich will have no choice but to memorialize. COMPOSITION: Close medium shot at eye level. Ttalgi is in the left foreground in 3/4 view, turning the head toward the aide, the face partly lit from below by the tablet. The small meerkat aide who objected is on the right, shrinking back in the chair. Behind them, a hologram floats above the glass table. TTALGI: The chubby round white cat, half-closed eyes, a cool, patient, slightly pitying look, one paw resting on the tablet; utterly certain. MEERKAT AIDE: Shrinking down, shoulders hunched, holding a notepad up like a shield, a big nervous sweat drop. Another meerkat beside it whispers worriedly behind a paw, glancing toward the door. HOLOGRAM: A glowing blue network: a small candle icon in the center, connected by glowing lines like chains to icons of a school with a little graduation cap, a house, a hospital cross and a briefcase. No text. LIGHT & COLOR: Cold cyan light, with a sharp highlight on Ttalgi's eyes; the red tie the only warm color. MOOD: Quietly menacing logic - the trap closing.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 딸기의 추모 계층화 계획 4쪽 (책 67쪽)
+
+⬜ 저장 이름: `09-04.webp`
+
+```text
+1-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the strategy room. SCENE: When the aides mention that Hamji will strongly object, Ttalgi snorts and mocks Hamji as a mere fanatic - rumored to be so obsessed with memorial that Hamji neglects home and is on the brink of divorce. Ttalgi is sure that the President, a realist, will choose data over emotion. COMPOSITION: Medium shot. Ttalgi in the center-left, leaning back against the glass table with a smug sneer. In the upper right, a hazy, dreamy rumor bubble (like a soft cloud, NOT a speech bubble, no text) shows the gossip. TTALGI: The chubby round white cat, arms folded, chin raised, one eyebrow lifted, a contemptuous smirk with a little puff of a snort from the nose. RUMOR BUBBLE: Inside, a small cozy living room at night: Hamji, the plump orange-and-white hamster in a grey suit, kneels in front of a home shrine with a framed portrait of the yellow duck President surrounded by candles and white chrysanthemums, praying devotedly with eyes shining. Behind Hamji, Hamji's wife - a hamster in a cardigan and apron - stands with arms crossed and a packed suitcase, glaring; a tiny crack runs across a framed wedding photo on the wall. MEERKAT AIDES: Two meerkats in the background exchange awkward glances. LIGHT & COLOR: Cool blue office light around Ttalgi; the rumor bubble is drawn in warm, faded sepia tones like a memory. MOOD: Gossip and arrogance - darkly funny.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 딸기의 추모 계층화 계획 5쪽 (책 68쪽)
+
+⬜ 저장 이름: `09-05.webp`
+
+```text
+1-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the strategy room. SCENE: Ttalgi announces that the tier system will be tested first at the "Memorial: The Live" concert - seats assigned by memorial tier, with special privileges for the Platinum tier - so the people will feel it firsthand. The aides bow: "Understood, Chief." COMPOSITION: Dramatic wide shot. Above the glass table floats a large 3D hologram of a concert hall. Ttalgi stands at the head of the table on the left, one paw raised over the hologram like a conductor. The meerkat aides, now standing in a row along the table, bow deeply in unison. HOLOGRAM: A glowing miniature concert hall with a stage in front decorated with candles and white chrysanthemums. The front rows are plush red-velvet armchairs glowing gold behind a velvet rope, with tiny icons of a crown and a glass of juice; the middle rows are plain; the back rows are cramped grey benches behind a metal fence. No numbers, no letters. TTALGI: The chubby round white cat, a cold, ambitious little smile, green eyes reflecting the golden glow of the front rows, red tie bright. MEERKAT AIDES: Bowing in perfect unison, paws at their sides, faces hidden, completely obedient. LIGHT & COLOR: The hologram throws gold light on the front and cold grey light on the back; the rest of the room is dark navy. Long shadows of the bowing aides on the glossy floor. MOOD: Cold ambition - the first move in the war of loyalty.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
