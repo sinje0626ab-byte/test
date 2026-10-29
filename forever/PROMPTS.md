@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **6장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -292,7 +292,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 2장: 들너구리의 제안 1쪽 (책 13쪽)
 
-⬜ 저장 이름: `02-01.webp`
+✅ `forever/images/02-01.webp`
 
 ```text
 Page 13. 2D watercolor storybook illustration, vertical 2:3.
@@ -309,7 +309,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 2장: 들너구리의 제안 2쪽 (책 14쪽)
 
-⬜ 저장 이름: `02-02.webp`
+✅ `forever/images/02-02.webp`
 
 ```text
 Page 14. 2D watercolor storybook illustration, vertical 2:3.
@@ -327,7 +327,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 2장: 들너구리의 제안 3쪽 (책 15쪽)
 
-⬜ 저장 이름: `02-03.webp`
+✅ `forever/images/02-03.webp`
 
 ```text
 Page 15. 2D watercolor storybook illustration, vertical 2:3.
@@ -345,7 +345,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 2장: 들너구리의 제안 4쪽 (책 16쪽)
 
-⬜ 저장 이름: `02-04.webp`
+✅ `forever/images/02-04.webp`
 
 ```text
 Page 16. 2D watercolor storybook illustration, vertical 2:3.
@@ -363,7 +363,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 2장: 들너구리의 제안 5쪽 (책 17쪽)
 
-⬜ 저장 이름: `02-05.webp`
+✅ `forever/images/02-05.webp`
 
 ```text
 Page 17. 2D watercolor storybook illustration, vertical 2:3.
@@ -381,7 +381,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 2장: 들너구리의 제안 6쪽 (책 18쪽)
 
-⬜ 저장 이름: `02-06.webp`
+✅ `forever/images/02-06.webp`
 
 ```text
 Page 18. 2D watercolor storybook illustration, vertical 2:3.
