@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **8장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -537,7 +537,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 4장: 숙청의 시작 1쪽 (책 26쪽)
 
-⬜ 저장 이름: `04-01.webp`
+✅ `forever/images/04-01.webp`
 
 ```text
 Page 26. 2D watercolor storybook illustration, vertical 2:3.
@@ -557,7 +557,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 4장: 숙청의 시작 2쪽 (책 27쪽)
 
-⬜ 저장 이름: `04-02.webp`
+✅ `forever/images/04-02.webp`
 
 ```text
 Page 27. 2D watercolor storybook illustration, vertical 2:3.
@@ -576,7 +576,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 숙청의 시작 3쪽 (책 28쪽)
 
-⬜ 저장 이름: `04-03.webp`
+✅ `forever/images/04-03.webp`
 
 ```text
 Page 28. 2D watercolor storybook illustration, vertical 2:3.
@@ -594,7 +594,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 숙청의 시작 4쪽 (책 29쪽)
 
-⬜ 저장 이름: `04-04.webp`
+✅ `forever/images/04-04.webp`
 
 ```text
 Page 29. 2D watercolor storybook illustration, vertical 2:3.
@@ -612,7 +612,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 숙청의 시작 5쪽 (책 30쪽)
 
-⬜ 저장 이름: `04-05.webp`
+✅ `forever/images/04-05.webp`
 
 ```text
 Page 30. 2D watercolor storybook illustration, vertical 2:3.
@@ -630,7 +630,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 숙청의 시작 6쪽 (책 31쪽)
 
-⬜ 저장 이름: `04-06.webp`
+✅ `forever/images/04-06.webp`
 
 ```text
 Page 31. 2D watercolor storybook illustration, vertical 2:3.
@@ -648,7 +648,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 숙청의 시작 7쪽 (책 32쪽)
 
-⬜ 저장 이름: `04-07.webp`
+✅ `forever/images/04-07.webp`
 
 ```text
 Page 32. 2D watercolor storybook illustration, vertical 2:3.
@@ -666,7 +666,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 숙청의 시작 8쪽 (책 33쪽)
 
-⬜ 저장 이름: `04-08.webp`
+✅ `forever/images/04-08.webp`
 
 ```text
 Page 33. 2D watercolor storybook illustration, vertical 2:3.
