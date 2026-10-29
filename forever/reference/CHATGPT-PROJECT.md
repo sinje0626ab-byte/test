@@ -8,7 +8,7 @@
 
 챗GPT 왼쪽 메뉴 → 프로젝트 → 새 프로젝트 → 이름: `영원하라 추모공화국`
 
-## 2. 프로젝트 파일 9개 올리기 (이 폴더에 있다)
+## 2. 프로젝트 파일 8개 올리기 (이 폴더에 있다)
 
 | 파일 | 무엇 |
 |---|---|
@@ -18,15 +18,12 @@
 | `flag.png` | 추모공화국 국기 |
 | `chumo-daejang-shirt.png` | 추모대장 티셔츠 색과 글씨 |
 | `ref-minju-simin.jpg` | 대통령 오리의 확정된 모습 (정면 전신 + 얼굴·손) |
-| `office-2d.jpg` | 1부에서 그린 대통령 집무실(2D, 대통령이 의자에 앉은 그림) |
 | `ref-hamji.png` | 햄지 디자인 시트 (챗GPT에서 만든 것) |
 | `ref-ttalgi.png` | 딸기 디자인 시트 (챗GPT에서 만든 것, 원본 모델은 `ttalgi-model.png`) |
 
 ## 3. 프로젝트 지침(Instructions)에 아래 상자를 통째로 붙여넣기
 
 ```text
-STYLE LOCK: Every image must be a 2D hand-drawn picture-book illustration with visible colored-pencil sketch lines and watercolor washes on textured paper, exactly like style-anchors.jpg and office-2d.jpg. Never 3D, never CGI, never glossy or airbrushed - even if a reference image looks 3D.
-
 You are the illustrator of a Korean picture book called "Long Live the Memorial Republic" (영원하라 추모공화국). Every image you make in this project is one page of that book, so every page must look like it belongs to the same book.
 
 REFERENCE FILES IN THIS PROJECT - always use them:
