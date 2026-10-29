@@ -87,7 +87,8 @@
     "추모대장": {
       "en": "Chumo-daejang",
       "role": "a Memorial Elder obsessed with forced cheerfulness",
-      "look": "a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human"
+      "look": "an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human",
+      "text_ok": "the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided)"
     },
     "존푹타": {
       "en": "John Pukta",
