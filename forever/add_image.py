@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""챗GPT 등에서 받은 그림을 소설 쪽에 붙인다.
+"""챗GPT에서 받은 그림을 전자책의 쪽에 붙인다.
 
-    python3 novel/add_image.py 받은그림.png 3 2      # 제3장 2쪽
-    python3 novel/add_image.py 받은그림.png cover    # 표지
+    python3 forever/add_image.py 받은그림.png 1 3     # 1장 3쪽 (프롤로그는 0)
+    python3 forever/add_image.py 받은그림.png cover   # 표지
 
-세로 2:3(1024×1536)에 맞춰 가운데를 잘라 webp 로 바꾼 뒤 novel/images/ 에 넣고,
-같은 쪽의 옛 그림(png·jpg)은 지운다. 끝나면 build.py 를 다시 돌린다.
+세로 2:3(1024×1536)에 맞춰 가운데를 잘라 webp 로 바꾼 뒤 forever/images/ 에 넣고,
+같은 자리의 옛 그림은 지운 다음 다시 빌드한다.
 """
 import subprocess
 import sys
@@ -18,18 +18,17 @@ W, H = 1024, 1536
 
 
 def main():
-    if len(sys.argv) not in (3, 4):
+    if len(sys.argv) not in (3, 4) or (sys.argv[2] != "cover" and len(sys.argv) != 4):
         sys.exit(__doc__)
     src = Path(sys.argv[1])
     stem = "cover" if sys.argv[2] == "cover" else f"{int(sys.argv[2]):02d}-{int(sys.argv[3]):02d}"
 
     im = Image.open(src).convert("RGB")
-    # 2:3 에 맞게 가운데를 자른다
-    if im.width * 3 > im.height * 2:
+    if im.width * 3 > im.height * 2:        # 너무 넓으면 좌우를 자른다
         nw = im.height * 2 // 3
         x = (im.width - nw) // 2
         im = im.crop((x, 0, x + nw, im.height))
-    elif im.width * 3 < im.height * 2:
+    elif im.width * 3 < im.height * 2:      # 너무 길면 위아래를 자른다
         nh = im.width * 3 // 2
         y = (im.height - nh) // 2
         im = im.crop((0, y, im.width, y + nh))
@@ -40,7 +39,7 @@ def main():
     for ext in (".png", ".jpg", ".jpeg", ".webp"):
         (out_dir / (stem + ext)).unlink(missing_ok=True)
     out = out_dir / f"{stem}.webp"
-    im.save(out, "WEBP", quality=84, method=6)
+    im.save(out, "WEBP", quality=86, method=6)
     print(f"{out.relative_to(ROOT.parent)} ({out.stat().st_size // 1024} KB)")
 
     subprocess.run([sys.executable, str(ROOT / "build.py")], check=True)
