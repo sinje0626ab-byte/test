@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **9장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -687,7 +687,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 추모 교정 리얼리티 쇼 1쪽 (책 34쪽)
 
-⬜ 저장 이름: `05-01.webp`
+✅ `forever/images/05-01.webp`
 
 ```text
 Page 34. 2D watercolor storybook illustration, vertical 2:3.
@@ -706,7 +706,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 5장: 추모 교정 리얼리티 쇼 2쪽 (책 35쪽)
 
-⬜ 저장 이름: `05-02.webp`
+✅ `forever/images/05-02.webp`
 
 ```text
 Page 35. 2D watercolor storybook illustration, vertical 2:3.
@@ -724,7 +724,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 추모 교정 리얼리티 쇼 3쪽 (책 36쪽)
 
-⬜ 저장 이름: `05-03.webp`
+✅ `forever/images/05-03.webp`
 
 ```text
 Page 36. 2D watercolor storybook illustration, vertical 2:3.
@@ -742,7 +742,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 추모 교정 리얼리티 쇼 4쪽 (책 37쪽)
 
-⬜ 저장 이름: `05-04.webp`
+✅ `forever/images/05-04.webp`
 
 ```text
 Page 37. 2D watercolor storybook illustration, vertical 2:3.
@@ -760,7 +760,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 추모 교정 리얼리티 쇼 5쪽 (책 38쪽)
 
-⬜ 저장 이름: `05-05.webp`
+✅ `forever/images/05-05.webp`
 
 ```text
 Page 38. 2D watercolor storybook illustration, vertical 2:3.
@@ -778,7 +778,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 추모 교정 리얼리티 쇼 6쪽 (책 39쪽)
 
-⬜ 저장 이름: `05-06.webp`
+✅ `forever/images/05-06.webp`
 
 ```text
 Page 39. 2D watercolor storybook illustration, vertical 2:3.
@@ -796,7 +796,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 추모 교정 리얼리티 쇼 7쪽 (책 40쪽)
 
-⬜ 저장 이름: `05-07.webp`
+✅ `forever/images/05-07.webp`
 
 ```text
 Page 40. 2D watercolor storybook illustration, vertical 2:3.
@@ -815,7 +815,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 5장: 추모 교정 리얼리티 쇼 8쪽 (책 41쪽)
 
-⬜ 저장 이름: `05-08.webp`
+✅ `forever/images/05-08.webp`
 
 ```text
 Page 41. 2D watercolor storybook illustration, vertical 2:3.
@@ -833,7 +833,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 추모 교정 리얼리티 쇼 9쪽 (책 42쪽)
 
-⬜ 저장 이름: `05-09.webp`
+✅ `forever/images/05-09.webp`
 
 ```text
 Page 42. 2D watercolor storybook illustration, vertical 2:3.
