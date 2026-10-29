@@ -276,7 +276,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 Page 12. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: In the council hall. Dramatic close-up: Lee Gija's face turns as white as paper and the briefcase slips from its grip. Across the table, Chumo-yeolsa holds the tablet out toward Lee Gija with a blank face. Every minister's eyes are fixed on Lee Gija. A tense cliffhanger moment.
+SCENE: In the council hall. Dramatic close-up: Lee Gija's face turns as white as paper and the briefcase slips from its grip. Across the table, Chumo-yeolsa holds the tablet out toward Lee Gija with a blank face. Every animal minister's eyes are fixed on Lee Gija. A tense cliffhanger moment.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
