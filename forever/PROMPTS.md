@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **4장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -49,6 +49,7 @@ CHARACTERS (always the same species, colors and outfit):
 PLACES:
 - council hall: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 - tv studio: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+- president office: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -847,4 +848,73 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
 
 No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+## 에필로그: 공포와 흥행
+
+### 에필로그: 공포와 흥행 1쪽 (책 43쪽)
+
+⬜ 저장 이름: `06-01.webp`
+
+```text
+Page 43. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office. A huge wall screen shows a line graph shooting steeply upward like a rocket, glowing gold (no numbers). Minju-simin stands before it with wings clasped behind the back, calm and satisfied. Deul-neoguri, gold chain gleaming, reports excitedly holding a tablet, beaming like a trusted comrade.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 에필로그: 공포와 흥행 2쪽 (책 44쪽)
+
+⬜ 저장 이름: `06-02.webp`
+
+```text
+Page 44. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office. Chumo-yeolsa stands perfectly straight beside the wall screen, which now shows small replay frames of the TV show stage with a tied-up sloth and a tied-up black rat (no text), and speaks with a cold blank face, holding only the tablet. Next to the teddy bear, Chumo-hamnido proudly holds up an official letter stamped with a candle-emblem seal (no readable text).
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 에필로그: 공포와 흥행 3쪽 (책 45쪽)
+
+⬜ 저장 이름: `06-03.webp`
+
+```text
+Page 45. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office, a split mood. On the warm, brightly lit side, Minju-simin nods with satisfaction while Deul-neoguri bows deeply in gratitude. In the far corner, in cool blue shadow by the tall window, the old tortoise Bui stands alone with arms folded, gazing outside with eyes full of deep sorrow, lips pressed shut in silence.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 에필로그: 공포와 흥행 4쪽 (책 46쪽)
+
+⬜ 저장 이름: `06-04.webp`
+
+```text
+Page 46. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: A wide night panorama of the Memorial Republic capital, the final page of Part 1. Countless apartment windows glow with candles and flickering TV screens; inside, tiny animal citizens bow and pray anxiously, some glancing over their shoulders in fear. Above the rooftops, giant glowing billboard screens show a spotlit concert stage with a gorilla silhouette holding a microphone (no text). Deep navy sky, a thin crescent moon, an eerie and melancholy ending.
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
