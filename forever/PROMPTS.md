@@ -82,7 +82,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 Page 1. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: Council hall, the wall clock showing exactly 9 o'clock in the morning. President Minju-simin stands at the podium with one wing raised, delivering a passionate speech while looking down at the cabinet. The other ministers are seen small, from behind, seated around the long table.
+SCENE: Council hall, the wall clock showing exactly 9 o'clock in the morning. President Minju-simin stands at the podium with one wing raised, delivering a passionate speech while looking down at the cabinet. The other animal ministers are seen small, from behind, seated around the long table.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
@@ -117,7 +117,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 Page 3. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: In the council hall. A big screen next to the podium shows a graph arrow nose-diving downward (no numbers). Minju-simin pauses, looks slowly around the room, then points a wing at Chumo-yeolsa sitting at the far end of the table. Everyone exchanges nervous glances.
+SCENE: In the council hall. A big screen next to the podium shows a graph arrow nose-diving downward (no numbers). Minju-simin pauses, looks slowly around the room, then points a wing at Chumo-yeolsa sitting at the far end of the table. The animal ministers exchange nervous glances.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
@@ -155,7 +155,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 Page 5. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: In the council hall. The screen shows a bar chart dropping like stairs and a coin pouch shriveling up (no numbers). The ministers around the table gasp and whisper to each other in shock. Only Chumo-yeolsa stays completely expressionless.
+SCENE: In the council hall. The screen shows a bar chart dropping like stairs and a coin pouch shriveling up (no numbers). The animal ministers around the table gasp and whisper to each other in shock. Only Chumo-yeolsa stays completely expressionless.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
@@ -223,11 +223,10 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 Page 9. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: The back corner of the council hall. Hai is slumped sideways in a chair, mouth wide open in a giant yawn. At the front, all the ministers have turned their heads to stare at Hai, while Chumo-yeolsa keeps looking at the tablet without expression. One empty chair at the table (Lee Gija's) stands out.
+SCENE: The back corner of the council hall. Hai is slumped sideways in a chair, mouth wide open in a giant yawn. At the front, all the animal ministers have turned their heads to stare at Hai, while Chumo-yeolsa keeps looking at the tablet without expression. One empty chair at the table, left by a latecomer, stands out.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
-- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
 
 PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -242,7 +241,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 Page 10. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: In the council hall. Hai shrugs with both paws spread, making excuses. The air in the room turns icy: the whole scene is tinted cold blue and tiny icicles hang above the ministers' heads. At that very moment, the door of the hall starts to burst open.
+SCENE: In the council hall. Hai shrugs with both paws spread, making excuses. The air in the room turns icy: the whole scene is tinted cold blue and tiny icicles hang above the animal ministers' heads. At that very moment, the door of the hall starts to burst open.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
