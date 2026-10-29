@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **5장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -55,6 +55,7 @@ PLACES:
 - president office: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
 - strategy room: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
 - secretariat: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+- culture office: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -1408,6 +1409,103 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
 
 PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 3장: 들너구리의 고뇌
+
+### 3장: 들너구리의 고뇌 1쪽 (책 75쪽)
+
+⬜ 저장 이름: `11-01.webp`
+
+```text
+3-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the culture office. SCENE: The office of the Minister of Memorial Culture. Deul-neoguri, worn out by the feud between Ttalgi and Hamji, has buried the face in the desk between three large draft memorial portraits of Deul-neoguri for the concert stage. Chumo-tusu bursts in with a paw raised high, eager to speak first - then sees the mood, freezes, and slowly lowers the paw, holding out a carton of banana milk as comfort. COMPOSITION (vertical): Top: the office walls lined with framed gold records, framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand in the corner. Middle: the big desk, with three large framed draft portraits of Deul-neoguri propped up on it - one smiling, one serious, one gazing into the distance - each with a small black mourning ribbon on the corner; Deul-neoguri's big head is buried face-down on the desk between them, the heavy gold chain clinking on the desk with a tiny sparkle. Bottom right: Chumo-tusu in the doorway, one paw frozen half-raised, the other paw holding out a small banana-milk carton, awkward smile. DEUL-NEOGURI: The big black gorilla in a black suit and tie, heavy gold chain and gold rings; slumped, exhausted. CHUMO-TUSU: The bright-eyed sea otter in a beige suit with a small baseball-glove pin. LIGHT & COLOR: Late-afternoon light, a little gloomy, with warm glints from the gold records. MOOD: Tired and comic - a star at the end of the rope.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 들너구리의 고뇌 2쪽 (책 76쪽)
+
+⬜ 저장 이름: `11-02.webp`
+
+```text
+3-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the culture office. SCENE: Deul-neoguri leans back, sips the banana milk through a straw and quietly explains the real intention: to look back on life while still alive, to turn a life into art - but now it has become a tool of a political fight. COMPOSITION (vertical): Top: a soft, warm daydream cloud (no text) showing a young Deul-neoguri rapping passionately on a tiny stage in a small club, a handful of fans cheering. Middle: Deul-neoguri sitting back in the big chair, sipping banana milk through a straw, gazing up at the memory with sad, gentle eyes. Bottom: Chumo-tusu sitting across the desk, listening with a notepad, eyes sparkling with sympathy. DEUL-NEOGURI: The big black gorilla in a black suit and tie, gold chain and rings; gentle, wistful face. CHUMO-TUSU: The sea otter in a beige suit with a baseball-glove pin. LIGHT & COLOR: The daydream glows in warm sepia and gold; the office below is a cooler, quieter grey-blue. MOOD: Nostalgic and bittersweet.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 들너구리의 고뇌 3쪽 (책 77쪽)
+
+⬜ 저장 이름: `11-03.webp`
+
+```text
+3-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the culture office. SCENE: Deul-neoguri does an impression of Ttalgi's flat, expressionless voice, repeating Ttalgi's demand to rewrite the second verse because it scores low with the target age group - then holds up Ttalgi's corrected lyric sheet, so covered in red pen marks that there are more red lines than lyrics. COMPOSITION (vertical): Top: behind Deul-neoguri, a faint ghostly image of Ttalgi (the chubby round white cat in a charcoal-grey suit and red tie) in exactly the same stiff pose, as if being imitated. Middle: Deul-neoguri standing stiffly with a completely blank face, one paw holding a folder flat like a tablet, the other holding up a lyric sheet covered in red slashes and red scribbles (squiggles only, no readable letters). Bottom: Chumo-tusu covering the mouth with both paws, trying not to laugh, cheeks puffed. DEUL-NEOGURI: The big black gorilla in a black suit and tie, gold chain; deadpan imitation face, one eye twitching slightly. LIGHT & COLOR: Cool, flat office light with the bright red of the marks popping out. MOOD: Funny and a little bitter.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 들너구리의 고뇌 4쪽 (책 78쪽)
+
+⬜ 저장 이름: `11-04.webp`
+
+```text
+3-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the culture office. SCENE: Deul-neoguri points with the chin at a box beside the desk - Hamji's gift, full of gold badges with the President's face, with a note saying to hand them to every audience member. Hamji wants a "President's quotes recitation time" in the middle of the concert, with the audience bowing and chanting. Deul-neoguri wonders whether this is a concert or a religious ceremony. COMPOSITION (vertical): Top half: a dream bubble (no text) of the concert hall where the whole animal audience bows deeply in unison toward a giant portrait of Minju-simin on stage, while a tiny Deul-neoguri stands on the stage holding a microphone, completely confused. Bottom half: the real office - beside the desk, an open box overflowing with shiny gold duck-face badges and a small folded note card (no readable text); Deul-neoguri slumped in the chair, chin jutting toward the box, eyebrows raised in disbelief; Chumo-tusu peeking into the box, holding one badge up. DEUL-NEOGURI: The big black gorilla in a black suit and tie, gold chain; weary, baffled. CHUMO-TUSU: The sea otter in a beige suit with a baseball-glove pin. LIGHT & COLOR: The dream bubble glows with golden, cult-like light; the office is dim. MOOD: Absurd and uneasy - a concert turning into a ritual.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 들너구리의 고뇌 5쪽 (책 79쪽)
+
+⬜ 저장 이름: `11-05.webp`
+
+```text
+3-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the culture office. SCENE: Deul-neoguri picks up the old microphone in the corner and mumbles a sad little rap - "Data on the left, faith on the right, where does my song go, caught in between." Chumo-tusu starts to clap alone, then sees the face and quietly stops. Chumo-tusu asks why not refuse both; Deul-neoguri answers it is impossible - the President ordered cooperation with both - "I just want to survive." COMPOSITION (vertical): A wide, lonely view of the big office in the evening. Top: tall window with the sunset fading to dusk, long shadows. Middle: Deul-neoguri sitting on the edge of a small stage-like platform in the corner, hunched, holding the vintage microphone low, a few small musical notes drooping sadly in the air. Bottom: Chumo-tusu frozen mid-clap, paws apart, awkward and sympathetic; the half-finished banana-milk carton on the floor between them. DEUL-NEOGURI: The big black gorilla in a black suit and tie, gold chain hanging heavy; tired eyes looking down. CHUMO-TUSU: The sea otter in a beige suit with a baseball-glove pin. LIGHT & COLOR: A single soft spotlight of dusk light through the window on Deul-neoguri, the rest of the room in deep blue shadow. MOOD: Melancholy - a star caught between two masters.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
