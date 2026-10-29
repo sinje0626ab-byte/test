@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **7장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -42,6 +42,7 @@ CHARACTERS (always the same species, colors and outfit):
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
 - Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 
 PLACES:
@@ -392,6 +393,139 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 3장: 추모대장의 단합대회
+
+### 3장: 추모대장의 단합대회 1쪽 (책 19쪽)
+
+⬜ 저장 이름: `03-01.webp`
+
+```text
+Page 19. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Chumo-daejang suddenly leaps up from the seat, arms flung wide open, beaming an enormous toothy grin. Right beside, Chumo-hamnido frowns in irritation. The other animal ministers flinch and turn in surprise, a teacup rattling on the table.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 추모대장의 단합대회 2쪽 (책 20쪽)
+
+⬜ 저장 이름: `03-02.webp`
+
+```text
+Page 20. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Chumo-daejang strides into the open space in the middle of the room and points a paw straight at Lee Gija. Lee Gija freezes and forces a stiff, awkward smile, one sweat drop rolling down. The animal ministers watch nervously from their seats.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 추모대장의 단합대회 3쪽 (책 21쪽)
+
+⬜ 저장 이름: `03-03.webp`
+
+```text
+Page 21. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Chumo-daejang leans in close to Lee Gija: the grin is still huge, but the eyes now glint sharply. Lee Gija, trembling, stretches a forced smile as wide as possible. In the background, Hai slouches with arms crossed and a grumpy pout, clearly next in line.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 추모대장의 단합대회 4쪽 (책 22쪽)
+
+⬜ 저장 이름: `03-04.webp`
+
+```text
+Page 22. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall, an eerie moment. Chumo-daejang looms over the slumped Hai, the grin stretched unnaturally wide, while a much larger, darker shadow of the hyena spreads across the wall behind. Hai shrinks into the chair and squeezes out a tiny, reluctant smile. The warm light turns slightly cold.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 추모대장의 단합대회 5쪽 (책 23쪽)
+
+⬜ 저장 이름: `03-05.webp`
+
+```text
+Page 23. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Chumo-daejang claps both paws loudly, urging everyone to stand up. Chumo-hamnido half-rises with a finger raised to object, but Chumo-daejang's open paw is held up right in front of the wolf's face. At the podium, Minju-simin strokes the chin with one wing, thinking, then gives a small nod.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 추모대장의 단합대회 6쪽 (책 24쪽)
+
+⬜ 저장 이름: `03-06.webp`
+
+```text
+Page 24. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. The animal ministers stand up one by one, raising their paws in an awkward chant led by Chumo-daejang blowing the whistle. Deul-neoguri raises a hand with an amused look; Chumo-tusu pumps a fist with wild enthusiasm. But the old tortoise Bui stays seated with arms folded, and Chumo-yeolsa stands perfectly still with a blank face. The colors feel slightly pale and hollow.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 3장: 추모대장의 단합대회 7쪽 (책 25쪽)
+
+⬜ 저장 이름: `03-07.webp`
+
+```text
+Page 25. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall, a surreal black-comedy chaos. Chumo-daejang dances wildly in the middle of the room with a manic, frozen grin, whistle flying. Around the table the animal ministers raise their fists with forced, stiff smiles. The colors swirl strangely like a fever dream. In the quiet foreground, the old tortoise Bui sits alone with arms folded, letting out a long, heavy sigh, a small puff of breath visible.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = a spotted hyena in a bright mustard-yellow suit with a red bow tie and a silver whistle on a cord, a huge, permanent toothy grin that never fades while the eyes stay sharp. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
