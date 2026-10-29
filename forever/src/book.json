@@ -7,13 +7,14 @@
   "참고그림안내": "첫 메시지에 국무위원 형상 시트(forever/reference/cabinet-sheet.webp)와 국기(forever/reference/flag.png)를 함께 첨부한다.",
   "배경": {
     "council hall": "the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon",
-    "tv studio": "the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits"
+    "tv studio": "the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits",
+    "president office": "the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen"
   },
   "등장인물": {
     "민주시민": {
       "en": "Minju-simin",
       "role": "the President",
-      "look": "a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human"
+      "look": "a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human"
     },
     "추모열사": {
       "en": "Chumo-yeolsa",

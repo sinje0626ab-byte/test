@@ -258,7 +258,7 @@ def build_prompts(book, chs):
             n += 1
             stem = f"{c['key']}-{k:02d}"
             titles[stem] = f"{c['title']} {k}쪽 (책 {n}쪽)"
-            item(f"Page {n}", stem, pg["scene"])
+            item(f"{int(c['key'])}-{k}", stem, pg["scene"])
 
     doc = f"""# 「{book['제목']}」 그림 프롬프트
 
