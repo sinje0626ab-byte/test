@@ -28,7 +28,7 @@ RULES: One vertical 2:3 image (1024x1536). Absolutely no readable text, letters,
 
 CHARACTERS (always the same species, colors and outfit):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
 - Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Hamji (Prime Minister) = a plump orange-and-white hamster with big cheeks, grey suit, blue tie, carrying a ledger. NOT a human
@@ -41,10 +41,11 @@ CHARACTERS (always the same species, colors and outfit):
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 
 PLACES:
-- council hall: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+- council hall: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -58,11 +59,11 @@ Do not draw anything yet. Reply only with "Ready". After that I will send one pa
 ```text
 Book cover illustration (no title text). 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: Morning light on the grand stone steps of the Memorial Party government building, its entrance decorated with black mourning ribbons, white chrysanthemum wreaths and the national flag. President Minju-simin stands proudly in the center. On both sides stand Chumo-yeolsa holding the tablet, Deul-neoguri saluting, Bui with arms folded, and Chumo-hamnido clutching newspapers, all solemn. In a corner of the steps, Hai is slumped and yawning. At the bottom, Lee Gija is scrambling up the stairs late with a briefcase, sweat flying. Far away, peeking from behind a pillar in the shadows, John Pukta watches with a sly grin. Leave clear open sky at the top for the book title (do not write any title).
+SCENE: Morning light on the grand stone steps of the Memorial Republic government building, its entrance decorated with black mourning ribbons, white chrysanthemum wreaths and the national flag. President Minju-simin stands proudly in the center. On both sides stand Chumo-yeolsa holding the tablet, Deul-neoguri saluting, Bui with arms folded, and Chumo-hamnido clutching newspapers, all solemn. In a corner of the steps, Hai is slumped and yawning. At the bottom, Lee Gija is scrambling up the stairs late with a briefcase, sweat flying. Far away, peeking from behind a pillar in the shadows, John Pukta watches with a sly grin. Leave clear open sky at the top for the book title (do not write any title).
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
 - Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
@@ -87,7 +88,7 @@ SCENE: Council hall, the wall clock showing exactly 9 o'clock in the morning. Pr
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -105,7 +106,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -121,9 +122,9 @@ SCENE: In the council hall. A big screen next to the podium shows a graph arrow 
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -141,9 +142,9 @@ SCENE: In the council hall. Chumo-yeolsa rises from the seat with perfectly stra
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -158,9 +159,9 @@ Page 5. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: In the council hall. The screen shows a bar chart dropping like stairs and a coin pouch shriveling up (no numbers). The animal ministers around the table gasp and whisper to each other in shock. Only Chumo-yeolsa stays completely expressionless.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -175,9 +176,9 @@ Page 6. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: In the council hall. The room lights dim. Chumo-yeolsa lowers the voice to report. On the screen, secret documents fly out of an open safe like paper airplanes through a window. Two work laptops on the table blink with red warning lights.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -196,7 +197,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
 - Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -226,10 +227,10 @@ Page 9. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: The back corner of the council hall. Hai is slumped sideways in a chair, mouth wide open in a giant yawn. At the front, all the animal ministers have turned their heads to stare at Hai, while Chumo-yeolsa keeps looking at the tablet without expression. One empty chair at the table, left by a latecomer, stands out.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -246,7 +247,7 @@ SCENE: In the council hall. Hai shrugs with both paws spread, making excuses. Th
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -264,7 +265,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -279,10 +280,120 @@ Page 12. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: In the council hall. Dramatic close-up: Lee Gija's face turns as white as paper and the briefcase slips from its grip. Across the table, Chumo-yeolsa holds the tablet out toward Lee Gija with a blank face. Every animal minister's eyes are fixed on Lee Gija. A tense cliffhanger moment.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
-PLACE: the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 2장: 들너구리의 제안
+
+### 2장: 들너구리의 제안 1쪽 (책 13쪽)
+
+✅ `forever/images/02-01.webp`
+
+```text
+Page 13. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall, the air heavy with tension. Deul-neoguri slowly rises from the seat: a heavy gold chain hangs over the black suit and several rings glitter on the fingers. The face is deeply serious. The animal ministers around the table look up in silence.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 들너구리의 제안 2쪽 (책 14쪽)
+
+✅ `forever/images/02-02.webp`
+
+```text
+Page 14. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Deul-neoguri walks slowly around the long table, one hand moving to a rapper's rhythm, gold chain and rings catching the light. Floating above like a daydream is a glowing new star being born. At the podium, Minju-simin tilts the head and raises one wing, asking a question.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 들너구리의 제안 3쪽 (책 15쪽)
+
+✅ `forever/images/02-03.webp`
+
+```text
+Page 15. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall, a comic freeze-frame. Deul-neoguri proudly points both thumbs at itself under a dramatic spotlight. Behind, like a dream bubble, Deul-neoguri raps on a huge stage surrounded by candles, white chrysanthemums and a giant framed portrait of Deul-neoguri (no text). Every animal minister is frozen with jaws dropped; Minju-simin's bill hangs open.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 들너구리의 제안 4쪽 (책 16쪽)
+
+✅ `forever/images/02-04.webp`
+
+```text
+Page 16. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Chumo-tusu springs up with eyes sparkling like stars, one paw raised high, applauding with excitement. Deul-neoguri nods with satisfaction while fanning out seven blank record sleeves (no text on them) like a hand of cards, a small film clapperboard tucked under one arm.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 들너구리의 제안 5쪽 (책 17쪽)
+
+✅ `forever/images/02-05.webp`
+
+```text
+Page 17. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. Across the long table, the old tortoise Bui slowly lifts the head with a complicated, heavy expression, long white eyebrows drawn together. Facing Bui, Deul-neoguri places one hand over the heart and bows politely while answering. Sunlight falls between them like a dividing line.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 들너구리의 제안 6쪽 (책 18쪽)
+
+✅ `forever/images/02-06.webp`
+
+```text
+Page 18. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the council hall. The old tortoise Bui has turned away and stands alone by the tall window, arms folded, gazing outside in silence, a lonely figure in the slanted light. At the podium, Minju-simin raises one wing firmly to settle the matter. Deul-neoguri, gold chain glinting, wears a small hopeful smile.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
