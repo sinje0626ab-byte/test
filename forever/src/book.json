@@ -33,8 +33,8 @@
     },
     "햄지": {
       "en": "Hamji",
-      "role": "Prime Minister",
-      "look": "a plump orange-and-white hamster with big cheeks, grey suit, blue tie, carrying a ledger. NOT a human"
+      "role": "Chief of Presidential Staff (fanatically devoted to the President)",
+      "look": "a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human"
     },
     "베네수호자": {
       "en": "Benesu-hoja",
@@ -53,8 +53,8 @@
     },
     "딸기": {
       "en": "Ttalgi",
-      "role": "a cabinet member",
-      "look": "a white cat with big green eyes, black suit and a bright red tie, sitting or standing very politely. NOT a human"
+      "role": "Chief of Memorial Strategy (cold, data-driven)",
+      "look": "a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human"
     },
     "애국좌수": {
       "en": "Aeguk-jwasu",

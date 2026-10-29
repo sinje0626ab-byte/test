@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **6장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -31,11 +31,11 @@ CHARACTERS (always the same species, colors and outfit):
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
 - Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
-- Hamji (Prime Minister) = a plump orange-and-white hamster with big cheeks, grey suit, blue tie, carrying a ledger. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 - Benesu-hoja (Chief of Memorial Corrections) = a dark-grey rabbit with long upright ears in a black tactical police uniform and boots, holding a black baton, with a small green-and-red parrot perched on its left shoulder. NOT a human
 - Bukanistan (Chief of Memorial Security) = a white horse with a long flowing white mane, wearing a black cowboy hat and a navy suit, riding on the back of another white horse (a horse riding a horse). NOT a human
 - Eoheung (Chief of the Memorial Weather Agency) = a chubby little tiger cub in a brown suit with a blue tie, paws clasped in front. NOT a human
-- Ttalgi (a cabinet member) = a white cat with big green eyes, black suit and a bright red tie, sitting or standing very politely. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
 - Choi Muhyeon (Chief of the Memorial Audit Office) = the ONLY human character: a simple cartoon office worker with short black hair, light-blue shirt, khaki trousers and a brown messenger bag, drawn in the same storybook style and not resembling any real person
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
@@ -915,6 +915,288 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 6-4. 2D watercolor storybook illustration, vertical 2:3.
 
 SCENE: A wide night panorama of the Memorial Republic capital, the final page of Part 1. Countless apartment windows glow with candles and flickering TV screens; inside, tiny animal citizens bow and pray anxiously, some glancing over their shoulders in fear. Above the rooftops, giant glowing billboard screens show a spotlit concert stage with a gorilla silhouette holding a microphone (no text). Deep navy sky, a thin crescent moon, an eerie and melancholy ending.
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 부록: 주요 인물 소개
+
+### 부록: 주요 인물 소개 1쪽 (책 47쪽)
+
+✅ `forever/images/07-01.webp`
+
+```text
+7-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Minju-simin for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 2쪽 (책 48쪽)
+
+✅ `forever/images/07-02.webp`
+
+```text
+7-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Deul-neoguri for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 3쪽 (책 49쪽)
+
+✅ `forever/images/07-03.webp`
+
+```text
+7-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Chumo-yeolsa for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 4쪽 (책 50쪽)
+
+✅ `forever/images/07-04.webp`
+
+```text
+7-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Chumo-hamnido for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 5쪽 (책 51쪽)
+
+✅ `forever/images/07-05.webp`
+
+```text
+7-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Lee Gija for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 6쪽 (책 52쪽)
+
+✅ `forever/images/07-06.webp`
+
+```text
+7-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Bui for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 7쪽 (책 53쪽)
+
+✅ `forever/images/07-07.webp`
+
+```text
+7-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Chumo-tusu for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 8쪽 (책 54쪽)
+
+✅ `forever/images/07-08.webp`
+
+```text
+7-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Hai for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 9쪽 (책 55쪽)
+
+✅ `forever/images/07-09.webp`
+
+```text
+7-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Chumo-daejang for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 10쪽 (책 56쪽)
+
+✅ `forever/images/07-10.webp`
+
+```text
+7-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of Aeguk-jwasu for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 부록: 주요 인물 소개 11쪽 (책 57쪽)
+
+✅ `forever/images/07-11.webp`
+
+```text
+7-11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: Character portrait of John Pukta for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 프롤로그: 두 개의 충성
+
+### 프롤로그: 두 개의 충성 1쪽 (책 58쪽)
+
+⬜ 저장 이름: `08-01.webp`
+
+```text
+8-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office, a perfectly symmetrical composition. Minju-simin sits front-facing behind the huge mahogany desk. On the left stands Ttalgi, the white cat, sharp and cold, tablet in paw. On the right stands Hamji, the plump hamster, soft-faced but with eyes glowing with fanatical pure devotion. Tension hangs in the air between them.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 프롤로그: 두 개의 충성 2쪽 (책 59쪽)
+
+⬜ 저장 이름: `08-02.webp`
+
+```text
+8-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office. Ttalgi steps forward with a cool, sharp look and swipes the tablet, projecting floating holographic charts in the air: bars, a pie chart and a red downward arrow (no numbers or text). Minju-simin listens from behind the desk. On the other side, Hamji watches the charts with a faintly displeased glance.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 프롤로그: 두 개의 충성 3쪽 (책 60쪽)
+
+⬜ 저장 이름: `08-03.webp`
+
+```text
+8-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office. Hamji takes one step forward with a soft, sweet smile, paws clasped over the heart, eyes sparkling with fanatical devotion, bathed in a warm holy glow. Behind Hamji, a framed portrait of Minju-simin on the wall seems to shine. Ttalgi raises one eyebrow coolly, the holographic charts still floating.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 프롤로그: 두 개의 충성 4쪽 (책 61쪽)
+
+⬜ 저장 이름: `08-04.webp`
+
+```text
+8-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office, a face-off. Ttalgi and Hamji stand nose to nose. The cat's side of the picture is tinted icy blue, the white cat's face frozen cold; the hamster's side is tinted warm red, Hamji's sweet smile gone, cheeks puffed, eyes wide and intense. Tiny sparks crackle between them.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 프롤로그: 두 개의 충성 5쪽 (책 62쪽)
+
+⬜ 저장 이름: `08-05.webp`
+
+```text
+8-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office. Ttalgi folds the arms with a contemptuous smirk, while Hamji clenches both paws, trembling. Between them, Minju-simin - front-facing, exactly as the official duck design - raises one wing calmly but firmly, and both fall silent at once. The room goes still.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 프롤로그: 두 개의 충성 6쪽 (책 63쪽)
+
+⬜ 저장 이름: `08-06.webp`
+
+```text
+8-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the president office, the dramatic opening of Part 2. Minju-simin has risen behind the desk, eyes sharp and calculating. On the desk sits a chessboard with a white cat piece and a hamster piece facing each other. In the foreground, Ttalgi and Hamji glare at each other from opposite sides, a crackling lightning bolt between their eyes. Long dramatic shadows.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a white cat with sharp green eyes and a cool, sharp expression, black suit and a bright red tie, elegant upright posture, often holding a tablet. NOT a human
+
+PLACE: the President's office in the Memorial Republic government building: a wide mahogany desk with the national emblem, tall windows with heavy navy curtains, the national flag on a stand, white chrysanthemums, and a huge wall screen
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
