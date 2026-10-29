@@ -42,7 +42,7 @@ def parse_chapter(path):
     meta = {}
     for line in head.splitlines():
         k, colon, v = line.partition(":")
-        if colon and k.strip() in ("부", "장"):
+        if colon and k.strip() in ("부", "장", "번호"):
             meta[k.strip()] = v.strip()
     if "장" not in meta:
         sys.exit(f"{path.name}: 맨 위에 '장: 제목' 줄이 없습니다")
@@ -55,7 +55,9 @@ def parse_chapter(path):
         body = chunk[m.end():].strip()
         paras = [" ".join(l.strip() for l in p.splitlines()) for p in re.split(r"\n\s*\n", body) if p.strip()]
         pages.append({"scene": m.group(1).strip(), "paras": paras})
-    return {"key": path.stem, "part": meta.get("부", ""), "title": meta["장"], "pages": pages}
+    # 번호: 프롬프트 라벨의 장 번호(부마다 새로 셀 때). 없으면 파일 번호를 쓴다.
+    return {"key": path.stem, "num": meta.get("번호") or str(int(path.stem)), "part": meta.get("부", ""),
+            "title": meta["장"], "pages": pages}
 
 
 def inline(s):
@@ -258,7 +260,7 @@ def build_prompts(book, chs):
             n += 1
             stem = f"{c['key']}-{k:02d}"
             titles[stem] = f"{c['title']} {k}쪽 (책 {n}쪽)"
-            item(f"{int(c['key'])}-{k}", stem, pg["scene"])
+            item(f"{c['num']}-{k}", stem, pg["scene"])
 
     doc = f"""# 「{book['제목']}」 그림 프롬프트
 
