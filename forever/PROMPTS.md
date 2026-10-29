@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **9장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -48,6 +48,7 @@ CHARACTERS (always the same species, colors and outfit):
 
 PLACES:
 - council hall: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
+- tv studio: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -680,4 +681,170 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 5장: 추모 교정 리얼리티 쇼
+
+### 5장: 추모 교정 리얼리티 쇼 1쪽 (책 34쪽)
+
+⬜ 저장 이름: `05-01.webp`
+
+```text
+Page 34. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio, a flashy live broadcast. In the center of the stage, Lee Gija and John Pukta sit tied to two chairs with thick cartoon ropes. In front of them, Chumo-daejang as the show host holds a microphone and beams straight into a big TV camera. Behind them hangs a huge glowing show banner with only abstract shapes (no text). The animal audience applauds.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 2쪽 (책 35쪽)
+
+⬜ 저장 이름: `05-02.webp`
+
+```text
+Page 35. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio. Aeguk-jwasu walks onto the stage under a spotlight, today wearing a neat black suit and black leather gloves instead of the camouflage jacket (same grey wolf face), and bows politely to the audience with one gloved paw over the heart. Nearby, Lee Gija sits tied to the chair with the head hanging low, a few cartoon bandage plasters on the face and a torn shirt (storybook style, not graphic).
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 3쪽 (책 36쪽)
+
+⬜ 저장 이름: `05-03.webp`
+
+```text
+Page 36. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio. John Pukta, tied to the chair, throws the head back cackling mockingly, sunglasses slipping crooked, little laughing-face icons popping in the air (no text). Aeguk-jwasu, in a neat black suit and black leather gloves, strolls closer with gloved paws clasped behind the back and a polite smile.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 4쪽 (책 37쪽)
+
+⬜ 저장 이름: `05-04.webp`
+
+```text
+Page 37. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio, a close-up. Aeguk-jwasu, in a neat black suit and black leather gloves, leans down toward John Pukta with the head tilted, asking a question with an exaggeratedly polite smile. John Pukta, still tied up, smirks and sneers back defiantly. Big TV cameras with red lights surround them.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 5쪽 (책 38쪽)
+
+⬜ 저장 이름: `05-05.webp`
+
+```text
+Page 38. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio, a slapstick gag drawn in an exaggerated cartoon way (not violent). Aeguk-jwasu gives John Pukta a light flick on the cheek with a gloved paw, cartoon motion lines whooshing; John Pukta's sunglasses fly off comically and little stars circle the head. The wolf bows with a fake innocent "oops, my hand slipped" face, one paw over the mouth.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 6쪽 (책 39쪽)
+
+⬜ 저장 이름: `05-06.webp`
+
+```text
+Page 39. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio, a satirical crowd scene. The animal audience leaps to their feet, clapping and cheering wildly, some pumping fists, faces lit by harsh stage lights. On the stage below, Aeguk-jwasu's eyes have turned cold, while John Pukta sits dazed in the chair with cartoon stars circling, sunglasses gone. Exaggerated, slightly unsettling black-comedy mood.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 7쪽 (책 40쪽)
+
+⬜ 저장 이름: `05-07.webp`
+
+```text
+Page 40. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio. Chumo-daejang leans right into the lens of a big TV camera with a red on-air light, microphone in hand, grinning enormously at the viewers. Behind, slightly out of focus, Aeguk-jwasu in the black suit turns gently toward Lee Gija, who trembles in the chair and shakes the head in fear.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 8쪽 (책 41쪽)
+
+⬜ 저장 이름: `05-08.webp`
+
+```text
+Page 41. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio. Aeguk-jwasu, in a neat black suit and black leather gloves, rests one gloved paw on top of Lee Gija's head, pressing it down, still smiling politely, and holds up the other paw with fingers spread as if announcing a big number. Lee Gija, tied up and teary-eyed, nods frantically. Cameras zoom in.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 추모 교정 리얼리티 쇼 9쪽 (책 42쪽)
+
+⬜ 저장 이름: `05-09.webp`
+
+```text
+Page 42. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the TV studio, the bleak finale. Freed from the ropes, Lee Gija bows deeply to the floor again and again, shown as a row of overlapping motion-trail poses, tears flying. Chumo-daejang shouts into the microphone urging "louder", the animal audience roars and cheers, and several TV cameras with glowing red lights capture everything. A satirical, unsettling spectacle.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
 ```
