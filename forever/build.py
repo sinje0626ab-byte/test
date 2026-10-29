@@ -211,6 +211,8 @@ def build_prompts(book, chs):
         "",
         "CHARACTERS (always the same species, colors and outfit):",
         *[f"- {tag(p)}" for p in people.values()],
+        *[f"(Text exception: {p['text_ok']} - this is the ONLY text allowed in any picture.)"
+          for p in people.values() if p.get("text_ok")],
         "",
         "PLACES:",
         *[f"- {k}: {v}" for k, v in places.items()],
@@ -234,7 +236,12 @@ def build_prompts(book, chs):
         for k, v in places.items():
             if k in scene.lower():
                 lines += ["", f"PLACE: {v}"]
-        lines += ["", "No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic."]
+        allowed = [p["text_ok"] for p in who if p.get("text_ok")]
+        if allowed:
+            lines += ["", "No text, letters, numbers or speech bubbles anywhere, EXCEPT " + "; ".join(allowed)
+                      + ". Not 3D, not photorealistic."]
+        else:
+            lines += ["", "No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic."]
         rows.append(f"### {title_ko(stem)}\n\n{mark}\n\n```text\n" + "\n".join(lines) + "\n```\n")
 
     titles = {}
