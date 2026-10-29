@@ -2,17 +2,12 @@
   "제목": "영원하라 추모공화국",
   "부제": "🖤 추모공화국 비상대책위원회",
   "소개": "추모가 국가의 정체성이자 정부의 정당성인 나라, 추모공화국. 빅 스타는 고갈되고, 기밀은 새어 나가고, 법무실장은 오늘도 지각한다. 대통령 민주시민과 국무위원들의 비상대책위원회가 열린다.",
-
   "그림체": "2D hand-drawn children's picture-book illustration. Soft watercolor washes with colored-pencil linework on warm, slightly textured paper; gentle golden light; rounded, friendly shapes. All characters are cute anthropomorphic ANIMALS (or toys) standing upright and wearing clothes, with picture-book proportions (big heads, about 3-4 heads tall) and very expressive faces. Mood: a solemn government drama told as a playful black-comedy storybook. NOT 3D, NOT CGI, NOT Pixar/Disney-movie style, NOT photorealistic.",
-
   "그림조건": "One vertical 2:3 image (1024x1536). Absolutely no readable text, letters, numbers, speech bubbles, captions, name tags or logos anywhere (screens, papers and charts show only abstract squiggles). No human characters except the one explicitly described as human. Do not resemble any real person.",
-
   "참고그림안내": "첫 메시지에 국무위원 형상 시트(forever/reference/cabinet-sheet.webp)와 국기(forever/reference/flag.png)를 함께 첨부한다.",
-
   "배경": {
     "council hall": "the Grand Council Hall of the Memorial Party government building: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon"
   },
-
   "등장인물": {
     "민주시민": {
       "en": "Minju-simin",
@@ -22,7 +17,7 @@
     "추모열사": {
       "en": "Chumo-yeolsa",
       "role": "Director of the Memorial Intelligence Service",
-      "look": "a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet, a beige envelope with a red wax seal tucked under one arm. NOT a human"
+      "look": "a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human"
     },
     "추모합니도": {
       "en": "Chumo-hamnido",
@@ -84,12 +79,16 @@
       "role": "a lazy senior official",
       "look": "a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human"
     },
+    "추모투수": {
+      "en": "Chumo-tusu",
+      "role": "an over-eager senior official",
+      "look": "a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human"
+    },
     "존푹타": {
       "en": "John Pukta",
       "role": "an online troll",
       "look": "a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human"
     }
   },
-
   "표지그림": "Morning light on the grand stone steps of the Memorial Party government building, its entrance decorated with black mourning ribbons, white chrysanthemum wreaths and the national flag. President Minju-simin stands proudly in the center. On both sides stand Chumo-yeolsa holding the tablet, Deul-neoguri saluting, Bui with arms folded, and Chumo-hamnido clutching newspapers, all solemn. In a corner of the steps, Hai is slumped and yawning. At the bottom, Lee Gija is scrambling up the stairs late with a briefcase, sweat flying. Far away, peeking from behind a pillar in the shadows, John Pukta watches with a sly grin. Leave clear open sky at the top for the book title (do not write any title)."
 }
