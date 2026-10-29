@@ -60,12 +60,12 @@ PLACES:
 - council hall = the State Council Room of the Memorial Republic government building: long polished wooden conference table, podium with the national emblem, white chrysanthemums in blue-and-white vases, tall arched windows with golden morning light, navy flags, the national flag banner on the wall draped with a black mourning ribbon.
 - tv studio = the glitzy national TV studio: colorful spotlights and lighting rigs, TV cameras with red on-air lights, a raised stage with the national emblem backdrop, tiered seats packed with an animal audience.
 
-HOW WE WORK: I will send one page at a time as "Page N: <scene>". Draw exactly one image for that page, following everything above. Do not ask questions; if something is unclear, make the choice that best fits the book. If I say "Redo", keep the composition but fix only what I mention.
+HOW WE WORK: I will send one page at a time labeled "<chapter>-<page>: <scene>" (for example "6-1: ..."), and I may call the image by that label. Draw exactly one image for that page, following everything above. Do not ask questions; if something is unclear, make the choice that best fits the book. If I say "Redo", keep the composition but fix only what I mention.
 ```
 
 ## 4. 그다음부터
 
-프로젝트 안에서 **새 대화**를 열고, Claude가 장마다 주는 짧은 쪽별 프롬프트(`Page N: ...`)를 하나씩 보낸다.
+프로젝트 안에서 **새 대화**를 열고, Claude가 장마다 주는 짧은 쪽별 프롬프트(`6-1: ...`처럼 「장-쪽」 번호)를 하나씩 보낸다.
 설정 메시지나 참고 그림 첨부는 다시 할 필요가 없다.
 
 ## 5. 인물 참고 시트 다시 만들기
