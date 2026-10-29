@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **5장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -1211,7 +1211,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 딸기의 추모 계층화 계획 1쪽 (책 64쪽)
 
-⬜ 저장 이름: `09-01.webp`
+✅ `forever/images/09-01.webp`
 
 ```text
 1-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -1231,7 +1231,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 딸기의 추모 계층화 계획 2쪽 (책 65쪽)
 
-⬜ 저장 이름: `09-02.webp`
+✅ `forever/images/09-02.webp`
 
 ```text
 1-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -1249,7 +1249,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 딸기의 추모 계층화 계획 3쪽 (책 66쪽)
 
-⬜ 저장 이름: `09-03.webp`
+✅ `forever/images/09-03.webp`
 
 ```text
 1-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -1266,7 +1266,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 딸기의 추모 계층화 계획 4쪽 (책 67쪽)
 
-⬜ 저장 이름: `09-04.webp`
+✅ `forever/images/09-04.webp`
 
 ```text
 1-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -1284,7 +1284,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 딸기의 추모 계층화 계획 5쪽 (책 68쪽)
 
-⬜ 저장 이름: `09-05.webp`
+✅ `forever/images/09-05.webp`
 
 ```text
 1-5. 2D watercolor storybook illustration, vertical 2:3.
