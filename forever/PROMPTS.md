@@ -30,7 +30,7 @@ CHARACTERS (always the same species, colors and outfit):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Hamji (Prime Minister) = a plump orange-and-white hamster with big cheeks, grey suit, blue tie, carrying a ledger. NOT a human
 - Benesu-hoja (Chief of Memorial Corrections) = a dark-grey rabbit with long upright ears in a black tactical police uniform and boots, holding a black baton, with a small green-and-red parrot perched on its left shoulder. NOT a human
 - Bukanistan (Chief of Memorial Security) = a white horse with a long flowing white mane, wearing a black cowboy hat and a navy suit, riding on the back of another white horse (a horse riding a horse). NOT a human
@@ -67,7 +67,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
@@ -105,7 +105,7 @@ Page 2. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: A hushed, solemn council hall. Deul-neoguri sits with head bowed, listening respectfully. Beside the window, the old tortoise Bui sits with arms folded, staring indifferently outside as slanted morning sunlight pours in.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -197,7 +197,7 @@ SCENE: In the council hall. Chumo-hamnido leaps up, knocking the chair back, fac
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
@@ -302,7 +302,7 @@ Page 13. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: In the council hall, the air heavy with tension. Deul-neoguri slowly rises from the seat: a heavy gold chain hangs over the black suit and several rings glitter on the fingers. The face is deeply serious. The animal ministers around the table look up in silence.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
@@ -320,7 +320,7 @@ SCENE: In the council hall. Deul-neoguri walks slowly around the long table, one
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
@@ -338,7 +338,7 @@ SCENE: In the council hall, a comic freeze-frame. Deul-neoguri proudly points bo
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
 
@@ -355,7 +355,7 @@ Page 16. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: In the council hall. Chumo-tusu springs up with eyes sparkling like stars, one paw raised high, applauding with excitement. Deul-neoguri nods with satisfaction while fanning out seven blank record sleeves (no text on them) like a hand of cards, a small film clapperboard tucked under one arm.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -373,7 +373,7 @@ Page 17. 2D watercolor storybook illustration, vertical 2:3.
 SCENE: In the council hall. Across the long table, the old tortoise Bui slowly lifts the head with a complicated, heavy expression, long white eyebrows drawn together. Facing Bui, Deul-neoguri places one hand over the heart and bows politely while answering. Sunlight falls between them like a dividing line.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -392,7 +392,7 @@ SCENE: In the council hall. The old tortoise Bui has turned away and stands alon
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a round, chubby bright-yellow duck with an orange bill (like a rubber duck), navy-blue suit, white shirt, blue tie, a small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -505,7 +505,7 @@ SCENE: In the council hall. The animal ministers stand up one by one, raising th
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
-- Deul-neoguri (Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 - Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
