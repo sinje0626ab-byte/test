@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **6장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -46,6 +46,7 @@ CHARACTERS (always the same species, colors and outfit):
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 - Doberman bodyguards (the Presidential Security Detail) = two tall Doberman pinschers in black suits, white shirts and black ties, dark sunglasses and coiled earpiece wires, hands clasped in front, standing motionless at attention. NOT humans
 - meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
+- chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
 (Text exception: the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided) - this is the ONLY text allowed in any picture.)
 
 PLACES:
@@ -53,6 +54,7 @@ PLACES:
 - tv studio: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
 - president office: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
 - strategy room: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+- secretariat: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -1296,6 +1298,116 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
 
 PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 2장: 햄지의 순수 추모 광신
+
+### 2장: 햄지의 순수 추모 광신 1쪽 (책 69쪽)
+
+⬜ 저장 이름: `10-01.webp`
+
+```text
+2-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the secretariat. SCENE: Hamji's office in the Presidential Secretariat, which looks less like an office and more like a shrine to the President. Hamji kneels before the biggest portrait and murmurs a prayer of loyalty. COMPOSITION (vertical): Low-angle view so the ceiling is visible. Top: the ceiling, also covered with framed photos of Minju-simin looking down. Middle: the back wall packed from floor to ceiling with framed photos of Minju-simin in every size (waving, saluting, smiling, giving speeches) and framed calligraphy scrolls of the President's sayings (brush squiggles only, no readable letters); in the center, the largest portrait on an altar-like cabinet with candles and white chrysanthemums. Bottom: Hamji kneeling small on a cushion, seen from behind in 3/4 view, paws pressed together in prayer. At the lower edge, Hamji's desk with a yellow rubber-duck plush toy sitting exactly in the center. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie, eyes closed, lips moving, cheeks glowing with devotion. LIGHT & COLOR: Warm candle gold, almost church-like, with a slightly eerie glow - every duck in every photo seems to be looking at Hamji. MOOD: Devout and cozy on the surface, deeply creepy underneath.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 햄지의 순수 추모 광신 2쪽 (책 70쪽)
+
+⬜ 저장 이름: `10-02.webp`
+
+```text
+2-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the secretariat. SCENE: Hamji's phone buzzes with a message from Hamji's wife that their child is sick. Hamji glances at it, turns the phone face down and gently places the thick book of the President's sayings on top of it. Then the aides arrive - and at the door they all stop and bow in silence toward the wall of portraits before entering, an old rule of the Secretariat. COMPOSITION (vertical): Top half: the open office door in the background, where three chipmunk aides stand in a row bowing deeply in unison toward the portrait wall. Bottom half: a close-up of Hamji's desk - Hamji's paw placing a thick leather-bound book with a small duck emblem on its cover onto a face-down phone; small cartoon vibration lines around the phone. Hamji's face above it, calm and resolute, with only the faintest flicker of hesitation in the eyes. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie. CHIPMUNK AIDES: Small chipmunks with striped backs in grey vests and white shirts with blue ties, holding folders, bowing politely and a little nervously. DETAILS: The yellow rubber-duck plush on the desk, a candle, framed duck photos in the background. LIGHT & COLOR: Warm gold light on the desk; the doorway lit from the hallway. MOOD: Darkly comic and a little sad - the phone silenced under the holy book.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 햄지의 순수 추모 광신 3쪽 (책 71쪽)
+
+⬜ 저장 이름: `10-03.webp`
+
+```text
+2-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the secretariat. SCENE: Hearing that Ttalgi is pushing the "memorial tier system", Hamji slowly raises the head with a fanatical glint, calls it blasphemy, then springs up and declares that memorial must be equal for everyone - the true memorial the President spoke of. COMPOSITION (vertical): Low-angle shot. Top: the wall of framed duck portraits, the biggest one directly above Hamji like a halo. Middle and bottom: Hamji standing tall in the center (as tall as a small hamster can be), one paw raised high, cheeks puffed up round, eyes blazing with fanatical fire. The chipmunk aides at the lower edges lean back in surprise, folders clutched to their chests. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie; fur standing up slightly, whiskers trembling with passion. LIGHT & COLOR: Dramatic warm red-gold light from below, candles flaring. MOOD: Passionate, theatrical, a little unhinged.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 햄지의 순수 추모 광신 4쪽 (책 72쪽)
+
+⬜ 저장 이름: `10-04.webp`
+
+```text
+2-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the secretariat. SCENE: Hamji writes the "Pure Memorial Pledge" on a tall whiteboard - but Hamji is too short to reach the top, so Hamji climbs onto a swivel chair while two aides anxiously hold it steady. Then Hamji takes out a box of gold badges, each engraved with the President's face, handmade overnight. COMPOSITION (vertical): Top two-thirds: the tall whiteboard covered with neat handwriting-like squiggles (no readable letters) and a small doodle of a heart and a duck; Hamji standing on tiptoe on a wobbly swivel chair, stretching up with a marker; two chipmunk aides gripping the chair with sweat drops. Bottom third: on the desk, an open wooden box overflowing with shiny round gold badges, each embossed with a tiny duck face, glittering. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie, tongue poking out in concentration. LIGHT & COLOR: Warm office light; the badges sparkle with gold highlights. MOOD: Funny and earnest.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 햄지의 순수 추모 광신 5쪽 (책 73쪽)
+
+⬜ 저장 이름: `10-05.webp`
+
+```text
+2-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the secretariat. SCENE: One aide carefully asks whether people will really memorialize without any reward. Hamji turns and stares at the aide - the room feels several degrees colder - then shouts that memorial does not compromise, and that if people will not memorialize without reward, they must be taught what true memorial is. COMPOSITION (vertical): Top: Hamji's shadow stretched huge across the wall of duck portraits. Middle: Hamji in the center, turned toward the aide, one paw pointing up at the biggest portrait, mouth open mid-shout, eyes wide and intense. Bottom: the small chipmunk aide who asked, shrinking down with ears flat and a big sweat drop, holding a folder like a shield; the other aides huddled together behind. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie, cheeks puffed, sweet face gone fierce. EFFECT: A light icy-blue tint and a few tiny frost marks creep in at the edges of the warm room, showing the sudden chill. MOOD: Frightening fervor - a sweet face shouting.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 햄지의 순수 추모 광신 6쪽 (책 74쪽)
+
+⬜ 저장 이름: `10-06.webp`
+
+```text
+2-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the secretariat. SCENE: Overwhelmed, the aide who questioned Hamji silently pins a gold badge on its own chest with trembling paws. Hamji walks to the window and looks across the courtyard at the Strategy Office, where a cold blue light glows, and vows to pull Ttalgi away from the President. On the desk, under the book of sayings, the phone buzzes once more - and Hamji does not look. COMPOSITION (vertical): Top half: Hamji at the tall window, seen from behind in 3/4 view, small silhouette against the night; across a dark courtyard, a modern building with one window glowing cold blue, a round cat silhouette faintly visible inside. Bottom half: in the foreground, the chipmunk aide pinning a gold duck badge on its chest with trembling paws; beside it on the desk, the leather book on top of the phone, with small vibration lines and a faint glow leaking from under it. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie, paws clasped behind the back, determined. LIGHT & COLOR: Night. Warm candlelight inside the office, cold blue light outside across the courtyard. MOOD: Quiet, ominous and a little heartbreaking.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
