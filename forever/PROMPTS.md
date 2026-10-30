@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **10장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -2157,7 +2157,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 1쪽 (책 116쪽)
 
-⬜ 저장 이름: `15-01.webp`
+✅ `forever/images/15-01.webp`
 
 ```text
 7-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -2176,7 +2176,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 2쪽 (책 117쪽)
 
-⬜ 저장 이름: `15-02.webp`
+✅ `forever/images/15-02.webp`
 
 ```text
 7-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -2193,7 +2193,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 3쪽 (책 118쪽)
 
-⬜ 저장 이름: `15-03.webp`
+✅ `forever/images/15-03.webp`
 
 ```text
 7-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -2210,7 +2210,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 4쪽 (책 119쪽)
 
-⬜ 저장 이름: `15-04.webp`
+✅ `forever/images/15-04.webp`
 
 ```text
 7-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -2228,7 +2228,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 5쪽 (책 120쪽)
 
-⬜ 저장 이름: `15-05.webp`
+✅ `forever/images/15-05.webp`
 
 ```text
 7-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -2248,7 +2248,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 6쪽 (책 121쪽)
 
-⬜ 저장 이름: `15-06.webp`
+✅ `forever/images/15-06.webp`
 
 ```text
 7-6. 2D watercolor storybook illustration, vertical 2:3.
@@ -2266,7 +2266,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 7쪽 (책 122쪽)
 
-⬜ 저장 이름: `15-07.webp`
+✅ `forever/images/15-07.webp`
 
 ```text
 7-7. 2D watercolor storybook illustration, vertical 2:3.
@@ -2284,7 +2284,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 8쪽 (책 123쪽)
 
-⬜ 저장 이름: `15-08.webp`
+✅ `forever/images/15-08.webp`
 
 ```text
 7-8. 2D watercolor storybook illustration, vertical 2:3.
@@ -2301,7 +2301,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 9쪽 (책 124쪽)
 
-⬜ 저장 이름: `15-09.webp`
+✅ `forever/images/15-09.webp`
 
 ```text
 7-9. 2D watercolor storybook illustration, vertical 2:3.
@@ -2320,7 +2320,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 7장: 순수 추모 서약식 - 햄지의 승부수 10쪽 (책 125쪽)
 
-⬜ 저장 이름: `15-10.webp`
+✅ `forever/images/15-10.webp`
 
 ```text
 7-10. 2D watercolor storybook illustration, vertical 2:3.
