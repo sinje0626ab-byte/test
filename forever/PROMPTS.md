@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **6장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -2041,4 +2041,114 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
 No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+## 6장: 2부 공연 - 살아있는 자의 추모
+
+### 6장: 2부 공연 - 살아있는 자의 추모 1쪽 (책 110쪽)
+
+⬜ 저장 이름: `14-01.webp`
+
+```text
+6-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The stage goes dark again before Part 2 of the concert. In the dim side wings, Deul-neoguri looks back once: Chumo-daejang is fanning himself with the "Part 3" envelope and giving a big thumbs-up. Deul-neoguri takes off the heavy gold chain and hands it to Chumo-tusu - it is so heavy that Chumo-tusu staggers a step holding it with both paws. Maybe tonight is the last time Deul-neoguri's songs will be heard. COMPOSITION (vertical): Top: in the background of the dark wings, Chumo-daejang grinning, fanning with a plain envelope (no writing visible), thumb up. Middle: Deul-neoguri, seen from the side, lifting the gold chain over the head, a quiet, resigned face. Bottom: Chumo-tusu catching the huge gold chain with both paws, staggering, eyes wide; beyond the curtain edge, a sliver of the dark stage waiting. CHARACTERS: Deul-neoguri (big black gorilla, black suit and tie, gold rings - the gold chain coming off), Chumo-tusu (bright-eyed sea otter, beige suit, baseball-glove pin), Chumo-daejang (exactly as in ch4-style.jpg: grey elephant, NO hair, NO suspenders, plain sky-blue T-shirt with only the white '추모대장' letters, dark navy trousers, silver whistle). LIGHT & COLOR: Backstage darkness with a thin blue rim light; a sliver of warm stage light on the gold chain. MOOD: Quiet resignation before a sad song.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 6장: 2부 공연 - 살아있는 자의 추모 2쪽 (책 111쪽)
+
+⬜ 저장 이름: `14-02.webp`
+
+```text
+6-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Deul-neoguri walks out - without the gold chain - and says "Part 2 is the memorial of the present. I will memorialize myself, alive at this very moment." The voice is heavier than in Part 1; a low beat rolls in and the song begins: "I'm standing here now, alive, breathing - but I memorialize myself, because I'm already dying." COMPOSITION (vertical): Top: the huge dark stage with cold blue haze and a single narrow white spotlight from above. Middle: Deul-neoguri alone in the spotlight, NO gold chain, bare-necked in the black suit, head slightly bowed, holding the microphone close with both hands. Bottom: the dark audience silhouettes, a few candle lights. CHARACTERS: Deul-neoguri (big black gorilla, black suit and tie, gold rings, NO gold chain). LIGHT & COLOR: Cold, lonely blue and grey, a sharp white spotlight - much darker and colder than Part 1. MOOD: Heavy, introspective.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 6장: 2부 공연 - 살아있는 자의 추모 3쪽 (책 112쪽)
+
+⬜ 저장 이름: `14-03.webp`
+
+```text
+6-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: "I was a rapper. Now I'm a politician. I memorialize that rapper - he's already dead, inside me." The giant screen shows the present Deul-neoguri: sitting in meetings, stamping documents, staring tiredly into a mirror. As the song ends, a huge framed memorial portrait slowly descends from above the stage - the face gazing into the distance, chosen last night. COMPOSITION (vertical): Top: a huge gold-framed memorial portrait of Deul-neoguri (gazing into the distance, black mourning ribbon on the corners) being lowered on cables from the fly loft. Middle: the giant screen split into three panels: Deul-neoguri slumped in a meeting chair, stamping papers with a red seal, and staring into a mirror with tired eyes (no text). Bottom: Deul-neoguri small in the spotlight, singing with eyes closed, NO gold chain. CHARACTERS: Deul-neoguri (big black gorilla, black suit and tie, NO gold chain). LIGHT & COLOR: Cold spotlight; the portrait catching a pale ghostly light as it descends. MOOD: Eerie and sad - a living man's funeral.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 6장: 2부 공연 - 살아있는 자의 추모 4쪽 (책 113쪽)
+
+⬜ 저장 이름: `14-04.webp`
+
+```text
+6-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The audience falls into a strange silence - not moved, but uncomfortable. "Isn't this too depressing?" "Is this what we came for?" "If a big memorial case happens, nobody will even need to memorialize him." Someone says "shh" - but it is a stifled laugh. At the judges' table, Ttalgi checks the tablet: "Audience reaction index 6.2. Self-pity doesn't sell." COMPOSITION (vertical): Top: rows of audience animals with awkward, uncomfortable faces, some whispering behind paws, one smothering a laugh while shushing. Middle: the stage far away with the hanging portrait and the small singer. Bottom: Ttalgi at the judges' table in the dark, tablet glowing with a modest bar meter (no numbers), bored, unimpressed expression; Chumo-yeolsa blank beside. CHARACTERS: Ttalgi (chubby round white boy cat, big round green eyes, NO eyelashes, charcoal-grey suit, red tie), Chumo-yeolsa (fluffy brown teddy bear, blank face, charcoal-grey suit, navy tie, tablet only). MOOD: Cringe and cold judgment.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 6장: 2부 공연 - 살아있는 자의 추모 5쪽 (책 114쪽)
+
+⬜ 저장 이름: `14-05.webp`
+
+```text
+6-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Deul-neoguri sings two more songs while the hall cools down. In the VIP seats the Platinum guests yawn: "When does it end?" "There's a Part 3 too." "No fountain pen, either..." In the front row, someone quietly unpins a gold duck badge and drops it under the seat - one of the badges Hamji scratched the barcode off all night. COMPOSITION (vertical): Top: the stage in the distance with Deul-neoguri still singing under the hanging portrait. Middle: the plush red VIP row - rich animals in furs and jewels (a lion in sunglasses, a peacock, a crocodile in a top hat) yawning hugely, checking watches. Bottom: a close-up at floor level under a red velvet seat - a paw letting a gold duck-face badge fall, the badge glinting as it drops into the dark beside a crumpled program. MOOD: Boredom and disrespect, quietly sad.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 6장: 2부 공연 - 살아있는 자의 추모 6쪽 (책 115쪽)
+
+⬜ 저장 이름: `14-06.webp`
+
+```text
+6-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The last song ends; Deul-neoguri bows. The applause is short. Looking up, Deul-neoguri sees the memorial portrait hanging overhead - neither smiling nor crying, only gazing into the distance. In the wings, Chumo-tusu clutches the gold chain in both paws and keeps clapping alone to the very end. The second intermission begins - next is Hamji's pure memorial pledge ceremony. COMPOSITION (vertical): Top: the huge memorial portrait of Deul-neoguri hanging above the stage, looking into the distance. Middle: Deul-neoguri on the empty stage, head raised, looking up at the portrait, small and alone, NO gold chain. Bottom: in the side wings, Chumo-tusu holding the gold chain pressed to the chest with one arm and clapping alone, eyes shining with tears; the house lights starting to come up for intermission. CHARACTERS: Deul-neoguri (big black gorilla, black suit, NO gold chain), Chumo-tusu (sea otter, beige suit, holding the gold chain). LIGHT & COLOR: The spotlight fading, house lights warming up; the portrait still lit. MOOD: Lonely and bittersweet.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
