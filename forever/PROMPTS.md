@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **17장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -56,6 +56,10 @@ PLACES:
 - strategy room: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
 - secretariat: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
 - culture office: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
+- government corridor: a long, grand corridor of the Memorial Republic government building: tall arched windows, navy carpet runners, framed portraits of the President and white chrysanthemums along the walls
+- conference room: the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner
+- bui's house: the old tortoise Bui's traditional Korean house: a quiet room with paper sliding doors, a low wooden tea table, a low lamp and a scroll painting of mountains
+- grand theater: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -1508,4 +1512,310 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 PLACE: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 4장: 막이 오르기까지
+
+### 4장: 막이 오르기까지 1쪽 (책 80쪽)
+
+⬜ 저장 이름: `12-01.webp`
+
+```text
+4-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the government corridor. SCENE: A long, grand government corridor. Ttalgi strides out of the President's office hugging a clipboard folder stamped with the President's red approval seal. Hamji blocks the way - three gold duck-face badges pinned on the chest - and asks whether Ttalgi truly loves memorial. Ttalgi keeps walking without stopping; Hamji has to trot fast to keep up, three tiny steps for every one of Ttalgi's. COMPOSITION (vertical): Deep one-point perspective down the long corridor with tall windows, navy runners, portraits of the President and white chrysanthemums along the walls. Middle: Ttalgi walking toward the viewer, calm and unbothered, clipboard hugged to the chest. Bottom: Hamji trotting beside Ttalgi with short legs blurring in cartoon speed lines, looking up, paw raised mid-argument. TTALGI: The chubby round white cat in a charcoal-grey suit and red tie, cool half-closed eyes. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie, three shiny gold badges on the chest, earnest and agitated. LIGHT & COLOR: Bright morning light in stripes across the floor. MOOD: Comic tension - one walks, one chases.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: a long, grand corridor of the Memorial Republic government building: tall arched windows, navy carpet runners, framed portraits of the President and white chrysanthemums along the walls
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 2쪽 (책 81쪽)
+
+⬜ 저장 이름: `12-02.webp`
+
+```text
+4-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the government corridor. SCENE: Ttalgi finally stops, coldly mentions Hamji's near-divorce, and walks away. Hamji stands frozen, pale, then takes out a small notebook and draws one more line under the name on the first page - eleven lines are already there. COMPOSITION (vertical): Top: far down the corridor, Ttalgi's small back walking away into the light. Middle and bottom: Hamji alone in the foreground, face drained pale, small paws holding open a little notebook; we see over Hamji's shoulder the first page with a single word-like squiggle (no readable letters) and a neat column of twelve tally lines beneath it, the newest one just drawn. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie with gold badges, face pale and grim, eyes shadowed. LIGHT & COLOR: The corridor turns cold and grey around Hamji; Ttalgi walks into warm light. MOOD: Quiet grudge - a list growing longer.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: a long, grand corridor of the Memorial Republic government building: tall arched windows, navy carpet runners, framed portraits of the President and white chrysanthemums along the walls
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 3쪽 (책 82쪽)
+
+⬜ 저장 이름: `12-03.webp`
+
+```text
+4-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the conference room. SCENE: The final planning meeting for "Memorial: The Live" in the big conference room of the Ministry of Memorial Culture. Before Deul-neoguri can even turn a page of the cue sheet, two paws shoot up at the same time - Ttalgi's and Hamji's. Chumo-tusu raises a paw out of habit too, then realizes there is nothing to say and sheepishly lowers it. COMPOSITION (vertical): Looking down the long conference table. Top: Minju-simin seated in a high-backed chair at the far head of the table (never on the table). Middle: Deul-neoguri at the side holding a cue sheet (squiggles only), mouth open, interrupted. Bottom foreground: Ttalgi on the left and Hamji on the right, both paws thrust straight up in perfect sync, glaring at each other across the table; Chumo-tusu between them, paw half-raised, awkward grin. CHARACTERS: Ttalgi (chubby round white cat, charcoal-grey suit, red tie), Hamji (plump hamster, grey suit, blue tie, gold badges), Deul-neoguri (big black gorilla, black suit, gold chain), Chumo-tusu (sea otter, beige suit), Minju-simin (yellow duck President, navy suit). SETTING: A long polished table with name plaques (no text), water bottles, white chrysanthemums; a big screen with a stage diagram. MOOD: Comic rivalry.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 4쪽 (책 83쪽)
+
+⬜ 저장 이름: `12-04.webp`
+
+```text
+4-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the conference room. SCENE: Ttalgi calls the pledge ceremony inefficient. Hamji answers by quoting the President's own speech - "Memorial is not a number. Memorial is the heart." Ttalgi's mouth opens and closes; there is no way to argue with the President's words using numbers. It is Hamji's first victory over Ttalgi, and Hamji savors it slowly, like a hamster chewing a sunflower seed stored in its cheek. COMPOSITION (vertical): Top: on the big screen behind, a still image of Minju-simin giving a solemn speech at a podium with candles (no text). Middle: Ttalgi, frozen with the mouth half open and the tablet lowered, a small sweat drop. Bottom: Hamji leaning back with eyes closed in bliss, cheeks puffed and chewing contentedly, a sunflower seed in one paw, little sparkles of triumph around. CHARACTERS: Ttalgi (chubby round white cat, charcoal-grey suit, red tie), Hamji (plump hamster, grey suit, blue tie). MOOD: Small, sweet, petty victory.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 5쪽 (책 84쪽)
+
+⬜ 저장 이름: `12-05.webp`
+
+```text
+4-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the conference room. SCENE: Minju-simin rules: do both - the people's participation corner between Part 1 and 2, the pledge ceremony between Part 2 and 3, and the reaction will be judged in numbers. Deul-neoguri looks down at the cue sheet where the minister's own slots keep shrinking. Then the President asks Chumo-daejang to handle the show's mood, and Chumo-daejang shouts "It's an honor!" COMPOSITION (vertical): Top: Minju-simin seated in the high-backed chair at the head of the table, one wing raised in a decisive gesture. Middle: Chumo-daejang springing up with a huge grin and a salute. Bottom: a close-up of Deul-neoguri's big hands holding the cue sheet, drawn as five colored blocks where the two middle blocks (the corner and the pledge) are fat and Deul-neoguri's own three blocks are squeezed thin; Deul-neoguri's sad face peeking over it. CHARACTERS: Minju-simin (yellow duck President, navy suit, seated, never on the table), Chumo-daejang (elephant in the sky-blue T-shirt with white '추모대장' lettering, silver whistle), Deul-neoguri (gorilla, black suit, gold chain). MOOD: Absurd bureaucracy.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 6쪽 (책 85쪽)
+
+⬜ 저장 이름: `12-06.webp`
+
+```text
+4-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the conference room. SCENE: After the meeting, Minju-simin secretly hands Chumo-daejang an envelope marked only "Part 3". Chumo-daejang opens it and smiles even more brightly than usual - which, for someone who always smiles, is rather frightening. Meanwhile, during the week before the show, the rivals fight with paperwork: five elderly applicants slipped onto the list by Hamji all get the same cancellation message from the Strategy Office. COMPOSITION (vertical): Top two-thirds: the empty conference room, chairs pushed back; Minju-simin (seated in the chair) handing a plain envelope to Chumo-daejang, who peeks inside with an enormous, slightly terrifying grin, eyes glinting; a long shadow on the wall. Bottom third: a small inset strip of five elderly animals (a goat, a sheep, an old dog, an old cat, an old rabbit) each looking at their phone in confusion at the same moment. CHARACTERS: Minju-simin (yellow duck, navy suit), Chumo-daejang (elephant, sky-blue T-shirt with white '추모대장' lettering, silver whistle). MOOD: Ominous secret wrapped in comedy.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 7쪽 (책 86쪽)
+
+⬜ 저장 이름: `12-07.webp`
+
+```text
+4-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: SCENE: The paperwork war escalates. Ttalgi places Hamji's pledge booth next to the 2nd-floor men's restroom behind a fire extinguisher. Hamji swaps the luxury fountain pens in the Platinum gift boxes for gold President badges. Ttalgi sticks barcodes on every badge. That night, Hamji scratches the barcodes off five hundred badges one by one - and breaks three claws. COMPOSITION (vertical): Top: a small inset of a sad little booth squeezed beside a restroom door and a red fire extinguisher. Middle: an inset of an elegant gift box with fountain pens being pulled out and gold badges going in, then a barcode sticker slapped on a badge. Bottom (largest): Hamji at a desk late at night under a lamp, surrounded by mountains of gold badges, scratching barcodes off with tiny claws, a pile of peeled barcode stickers, three little broken claw tips on the desk, tired but determined eyes. HAMJI: The plump orange-and-white hamster in a grey suit (jacket off, sleeves rolled up) and blue tie. MOOD: Petty war at its most ridiculous.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 8쪽 (책 87쪽)
+
+⬜ 저장 이름: `12-08.webp`
+
+```text
+4-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the strategy room. SCENE: 11 p.m., the night before the show. In the Strategy Office, Ttalgi scrolls participant profiles, keeping only those with clear motives, and says "These are the real citizens." Closing the drawer, Ttalgi pauses: at the bottom lies Ttalgi's own memorial tier card - Bronze. Ttalgi pushes it deep inside and locks the drawer. COMPOSITION (vertical): Top: the dark strategy room, monitors glowing with rows of profile cards (abstract icons). Middle: Ttalgi seated at the glass desk, face lit blue by the screen. Bottom: close-up of the open drawer and Ttalgi's paw pausing over a small dull bronze-colored card with a candle icon (no text), then reaching for a tiny key. TTALGI: The chubby round white cat in a charcoal-grey suit and red tie; for a split second the cool face shows something like embarrassment. LIGHT & COLOR: Cold blue night light, the bronze card a dull brownish glint. MOOD: A hidden crack in the perfect strategist.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 9쪽 (책 88쪽)
+
+⬜ 저장 이름: `12-09.webp`
+
+```text
+4-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the secretariat. SCENE: At the same hour in the Secretariat, Hamji kneels before the biggest portrait, three bandaged claws. The phone buzzes - it is Hamji's wife - Hamji switches it to silent and closes the eyes. "Your Excellency, tomorrow I will prove it." Neither the President on the wall, nor the President on the ceiling, nor the duck plush on the desk answers. COMPOSITION (vertical): Top: the ceiling and walls of framed duck portraits, all staring down silently. Middle: Hamji kneeling small before the altar of candles, bandaged paws pressed together. Bottom: the desk with the yellow rubber-duck plush and the phone face-down, its screen glow fading as it goes silent. HAMJI: The plump orange-and-white hamster in a grey suit and blue tie, three small bandages on the fingers, eyes closed. LIGHT & COLOR: Dim candlelight, deep shadows. MOOD: Lonely devotion.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 10쪽 (책 89쪽)
+
+⬜ 저장 이름: `12-10.webp`
+
+```text
+4-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In Bui's house. SCENE: At the same hour, the old tortoise Bui's house. Chumo-tusu, visiting late, confesses being afraid, but Bui silently keeps pouring tea. On the low table lies one of Hamji's sample pledge sheets, neatly folded. Bui picks it up and tucks it inside the robe: "Watch tomorrow." COMPOSITION (vertical): Top: a traditional Korean room with paper sliding doors, a low lamp, a scroll painting of mountains. Middle: Bui kneeling at a low wooden tea table, calmly pouring tea, tucking a folded paper into the durumagi. Bottom: Chumo-tusu kneeling opposite, paws gripping the knees, worried eyes. CHARACTERS: Bui (very old tortoise, long white eyebrows and beard, navy durumagi), Chumo-tusu (sea otter, beige suit). LIGHT & COLOR: Warm, quiet lamplight; steam rising from the cups. MOOD: Calm before the storm; a secret plan.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the old tortoise Bui's traditional Korean house: a quiet room with paper sliding doors, a low wooden tea table, a low lamp and a scroll painting of mountains
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 11쪽 (책 90쪽)
+
+⬜ 저장 이름: `12-11.webp`
+
+```text
+4-11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the culture office. SCENE: At the same hour, in the culture office, Deul-neoguri finally chooses one of the three draft portraits - the face gazing into the distance. Checking the cue sheet one last time, Deul-neoguri finds a yellow sticky note slapped over the Part 3 song list ("to be announced"). Deul-neoguri calls Chumo-daejang, who cheerfully insists it's the President's order and that Part 3 will be "really, really fun" - and the call ends with the sound of a whistle. COMPOSITION (vertical): Top: a split panel - Chumo-daejang somewhere dark, phone to the ear, huge grin, silver whistle in the mouth, the "Part 3" envelope under one arm. Middle and bottom: the culture office at night; Deul-neoguri holding the phone away from the ear in shock, staring at the cue sheet in the other hand with a bright yellow sticky note on it (no readable text); on the desk, the chosen portrait (gazing into the distance) propped up, the other two placed face-down. CHARACTERS: Deul-neoguri (gorilla, black suit, gold chain), Chumo-daejang (elephant, sky-blue T-shirt with white '추모대장' lettering). MOOD: Creeping dread.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 12쪽 (책 91쪽)
+
+⬜ 저장 이름: `12-12.webp`
+
+```text
+4-12. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Show day, the Grand Theater of the Ministry of Memorial Culture. Five entrances: a red carpet for Platinum, and for Bronze and General a fire-escape staircase by the parking lot, the line winding halfway around the building. In the Bronze line, a little kit tugs its father's sleeve and asks, "Then who has to die more for us to go in there?" The father hurriedly covers the kit's mouth. COMPOSITION (vertical): Top: the grand theater facade with banners and the national flag; a gleaming red carpet with velvet ropes and well-dressed animals in furs and jewels strolling in. Bottom (largest): the long line on a grey metal fire-escape staircase; a fox father in a cheap jacket and a little fox kit; the father clapping a paw over the kit's mouth in panic; the animals around pretending not to hear, but a few quietly nodding. LIGHT & COLOR: Golden light on the red carpet; flat grey shade on the staircase. MOOD: Funny and painfully sharp.
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 13쪽 (책 92쪽)
+
+⬜ 저장 이름: `12-13.webp`
+
+```text
+4-13. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Beside the line, two prison guards drag away a man in a half-torn shirt toward the underground parking lot; a name-card wallet around the neck clacks against the stair railing. Someone mutters that the man looks familiar, but the line doesn't budge - everyone stares at their own tier card. Inside, a meerkat aide reports to Ttalgi that 67% of Bronze guests want a higher tier next time; Ttalgi nods: "Exactly as designed." COMPOSITION (vertical): Top two-thirds: on the staircase, two burly bulldog prison guards in grey uniforms hauling a thin grey goat in a half-torn white shirt by both arms, a lanyard card wallet swinging (no readable text); the waiting animals in line all looking down at small cards in their paws, ignoring it. Bottom third: an inset of Ttalgi in a backstage control booth with a tablet, a meerkat aide reporting, Ttalgi giving a satisfied nod. MOOD: Chilling indifference.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 14쪽 (책 93쪽)
+
+⬜ 저장 이름: `12-14.webp`
+
+```text
+4-14. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: On the 2nd floor, next to the men's restroom, behind the fire extinguisher, Hamji stands alone at the pledge booth. Everyone passing is going to the restroom. A man coming out with wet hands picks up a pledge sheet - Hamji's eyes light up - then wipes the hands with it, crumples it and drops it in the bin. Bui, leaning on a cane, slowly passes and gives Hamji a single nod. COMPOSITION (vertical): Top: the restroom door sign (simple pictogram only) and a red fire extinguisher. Middle: Hamji at a tiny draped booth with a stack of pledge sheets and a box of gold badges, eyes sparkling with hope - while a raccoon in a suit dries its wet paws on a pledge sheet. Bottom: the crumpled sheet landing in a trash bin; Bui walking past slowly with a cane, nodding once. CHARACTERS: Hamji (plump hamster, grey suit, blue tie, gold badges, bandaged claws), Bui (old tortoise, navy durumagi, cane). MOOD: Tragicomic.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 15쪽 (책 94쪽)
+
+⬜ 저장 이름: `12-15.webp`
+
+```text
+4-15. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The lights go out. Deul-neoguri walks out under a spotlight; on the giant screen behind appears the chosen memorial portrait, the face gazing into the distance. "I am Deul-neoguri. Tonight, I will memorialize myself, while I am still alive." The beat drops and the first song begins: "Memorialize My Youth." COMPOSITION (vertical): Top: the giant LED screen showing Deul-neoguri's memorial portrait (gazing into the distance) with a black mourning ribbon, white chrysanthemums along the stage edge. Middle: Deul-neoguri center stage in a single white spotlight, microphone raised, gold chain gleaming, eyes closed with emotion. Bottom: the dark silhouettes of the audience - glowing candle lights in the general seats, plush red seats in front. CHARACTERS: Deul-neoguri (big black gorilla, black suit, gold chain and rings). LIGHT & COLOR: Pitch-dark hall, one strong spotlight, smoke haze, purple and gold stage lights. MOOD: Grand, sincere, a little absurd.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 16쪽 (책 95쪽)
+
+⬜ 저장 이름: `12-16.webp`
+
+```text
+4-16. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The screen shows young Deul-neoguri rapping, drenched in sweat, in an underground club with only three people in the audience. A few people in the general seats sniffle. The VIP seats complain: "Is this memorial? It's just bragging." "They promised fountain pens - why a badge? No barcode, either." Ttalgi's tablet shows high emotion but low memorial participation; Ttalgi takes a screenshot. COMPOSITION (vertical): Top: the giant screen with young Deul-neoguri rapping in a tiny underground club, three spectators. Middle: the general seats in the back, animals wiping tears with handkerchiefs. Bottom: the front VIP row of rich animals in furs and jewels - a peacock and a poodle - frowning, one holding up a gold badge with disdain; at the edge, Ttalgi in the dark with a tablet showing two bar meters, one high and one low (no numbers). CHARACTERS: Ttalgi (chubby round white cat, charcoal-grey suit, red tie), Deul-neoguri (on screen, young). MOOD: Split reactions.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 4장: 막이 오르기까지 17쪽 (책 96쪽)
+
+⬜ 저장 이름: `12-17.webp`
+
+```text
+4-17. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Finishing the last song, Deul-neoguri walks backstage and runs into Chumo-daejang, who is whistling with the "Part 3" envelope tucked inside the shirt. "Minister, Part 1 was so moving! Now it's my turn!" The stage lights come back on - and it is time for Ttalgi's people's participation corner. COMPOSITION (vertical): Top: backstage, dim, cables and road cases; Chumo-daejang beaming hugely, whistle in the mouth, the corner of an envelope peeking out of the T-shirt collar. Middle: Deul-neoguri, sweaty and exhausted, towel around the neck, looking at Chumo-daejang uneasily. Bottom: through a gap in the side curtain, the bright stage lights snapping back on, five empty chairs and a judges' table waiting. CHARACTERS: Chumo-daejang (elephant, sky-blue T-shirt with white '추모대장' lettering, silver whistle), Deul-neoguri (gorilla, black suit, gold chain). MOOD: Suspense - something is coming.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
 ```
