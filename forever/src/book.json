@@ -71,7 +71,7 @@
     "최무현": {
       "en": "Choi Muhyeon",
       "role": "Chief of Memorial Public Relations (PR Chief)",
-      "look": "the ONLY human character: a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers"
+      "look": "a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers"
     },
     "부이": {
       "en": "Bui",
@@ -118,6 +118,16 @@
       "en": "chipmunk aides",
       "role": "Hamji's secretariat staff",
       "look": "small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans"
+    },
+    "김만우": {
+      "en": "Kim Manwoo",
+      "role": "a lazy memorial-goer who skipped memorials for six months",
+      "look": "a human character drawn as a simple cartoon in the book's style, matching ref-kim-manwoo.png (made from the author's reference photo)"
+    },
+    "심진우": {
+      "en": "Sim Jinwoo",
+      "role": "a fake memorial-goer who joined only for experience points",
+      "look": "a human character drawn as a simple cartoon in the book's style, matching ref-sim-jinwoo.png (made from the author's reference photo)"
     }
   },
   "표지그림": "Morning light on the grand stone steps of the Memorial Republic government building, its entrance decorated with black mourning ribbons, white chrysanthemum wreaths and the national flag. President Minju-simin stands proudly in the center. On both sides stand Chumo-yeolsa holding the tablet, Deul-neoguri saluting, Bui with arms folded, and Chumo-hamnido clutching newspapers, all solemn. In a corner of the steps, Hai is slumped and yawning. At the bottom, Lee Gija is scrambling up the stairs late with a briefcase, sweat flying. Far away, peeking from behind a pillar in the shadows, John Pukta watches with a sly grin. Leave clear open sky at the top for the book title (do not write any title)."
