@@ -11,7 +11,11 @@
     "president office": "the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk",
     "strategy room": "the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light",
     "secretariat": "Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light",
-    "culture office": "the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window"
+    "culture office": "the office of the Minister of Memorial Culture, a rapper's office: walls lined with framed gold records and framed concert photos (no text), a shelf of colorful sneakers, a vintage microphone on a stand and a small stage-like platform in the corner, turntables, a big desk, white chrysanthemums, and a tall window",
+    "government corridor": "a long, grand corridor of the Memorial Republic government building: tall arched windows, navy carpet runners, framed portraits of the President and white chrysanthemums along the walls",
+    "conference room": "the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner",
+    "bui's house": "the old tortoise Bui's traditional Korean house: a quiet room with paper sliding doors, a low wooden tea table, a low lamp and a scroll painting of mountains",
+    "grand theater": "the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind"
   },
   "등장인물": {
     "민주시민": {
@@ -66,8 +70,8 @@
     },
     "최무현": {
       "en": "Choi Muhyeon",
-      "role": "Chief of the Memorial Audit Office",
-      "look": "the ONLY human character: a simple cartoon office worker with short black hair, light-blue shirt, khaki trousers and a brown messenger bag, drawn in the same storybook style and not resembling any real person"
+      "role": "Chief of Memorial Public Relations (PR Chief)",
+      "look": "the ONLY human character: a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers"
     },
     "부이": {
       "en": "Bui",
