@@ -2152,3 +2152,185 @@ PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
+
+## 7장: 순수 추모 서약식 - 햄지의 승부수
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 1쪽 (책 116쪽)
+
+✅ `forever/images/15-01.webp`
+
+```text
+7-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The stage is transformed for the pledge ceremony. A giant portrait of President Minju-simin now covers Deul-neoguri's memorial portrait. Below it stands an altar draped in gold cloth, with a stack of pledge sheets and a box of gold duck-face badges - each badge still scarred where its barcode was scratched off. Hamji walks onstage, three fingers wrapped in bandages. COMPOSITION (vertical): Top: a towering gold-framed portrait of Minju-simin (the yellow rubber-duck President, navy suit, blue tie) hung in front of the old gorilla portrait, whose gold frame edge still peeks out behind it. Middle: the altar draped in shimmering gold cloth with candles, white chrysanthemums, a neat stack of pledge sheets (no readable text) and an open box of gold badges with little scratch marks. Bottom: Hamji walking up the stage steps, small and determined, bandaged fingers clasped. CHARACTERS: Hamji (plump orange-and-white hamster, grey suit, blue tie, gold badges on the chest, three bandaged fingers), Minju-simin in the portrait (exactly as minju-simin-ch4.jpg: rubber-duck, small black dot eyes, no eyelashes). LIGHT & COLOR: A warm, church-like golden glow on the altar; the rest of the hall dark purple. MOOD: Solemn, almost religious.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 2쪽 (책 117쪽)
+
+✅ `forever/images/15-02.webp`
+
+```text
+7-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Hamji addresses the audience with a trembling voice: people memorialized for tiers, benefits and bonuses - is that true memorial? Quoting the President - "Memorial is not a number. Memorial is the heart." - Hamji kneels toward the President's portrait. COMPOSITION (vertical): Top: the huge duck portrait glowing above. Middle: Hamji kneeling on the stage before the altar, paws pressed over the heart, face lifted toward the portrait, eyes glistening. Bottom: the dark audience, faces lit faintly by candles, watching. CHARACTERS: Hamji (plump orange-and-white hamster, grey suit, blue tie, gold badges, bandaged fingers). LIGHT & COLOR: A single golden beam from above onto Hamji, like a saint in a painting. MOOD: Fervent and fragile.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 3쪽 (책 118쪽)
+
+✅ `forever/images/15-03.webp`
+
+```text
+7-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: "I want nothing - no experience points, no tier, no big memorial case. I remember, respect and love with a pure heart alone." Hamji turns to the audience and asks anyone who wants to memorialize purely, without reward, to stand up. The theater goes silent. COMPOSITION (vertical): Top: the altar and the duck portrait behind. Middle: Hamji standing at the front edge of the stage, both arms open toward the audience, hopeful. Bottom: the huge audience seen from the stage - rows and rows of animals sitting perfectly still, no one moving. CHARACTERS: Hamji (plump orange-and-white hamster, grey suit, blue tie, gold badges, bandaged fingers). MOOD: Hope hanging in the air.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 4쪽 (책 119쪽)
+
+✅ `forever/images/15-04.webp`
+
+```text
+7-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Ten seconds. Twenty. Thirty. Nobody stands. A phone buzzes somewhere and someone hurriedly checks if it's a memorial alert. In the wings, Chumo-daejang taps his wristwatch. From the back row: "Pure memorial? Does that feed you?" Hamji's smile slowly freezes. COMPOSITION (vertical): Top: a row of audience faces - one checking a glowing phone, one yawning, one muttering sideways with a smirk. Middle: in the wings, Chumo-daejang tapping a wristwatch with a bored grin. Bottom: a close-up of Hamji's face, the smile stiffening, a single sweat drop, eyes starting to shine with hurt. CHARACTERS: Hamji (plump orange-and-white hamster), Chumo-daejang (exactly as in ch4-style.jpg: grey elephant, NO hair, NO suspenders, plain sky-blue T-shirt with only the white '추모대장' letters, silver whistle). MOOD: Painfully awkward silence.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 5쪽 (책 120쪽)
+
+✅ `forever/images/15-05.webp`
+
+```text
+7-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The tap of a cane from the back of the audience. An old figure slowly rises; the spotlight finds him late. Hamji gasps: "Elder...?" In the wings, a loud clang - Chumo-tusu has dropped Deul-neoguri's gold chain in shock. The audience murmurs: "Isn't that Elder Bui?" COMPOSITION (vertical): Top: far back in the dark audience, the old tortoise Bui standing up with a cane, caught in a spotlight that has just swung over. Middle: heads in the audience turning around in surprise. Bottom: two small panels - Hamji on the stage with mouth open, paws over the mouth; and in the wings Chumo-tusu with both paws up in shock, the gold chain bouncing on the floor with a cartoon "clang" spark. CHARACTERS: Bui (very old tortoise, long white eyebrows and white beard, navy-blue durumagi, wooden cane), Hamji (hamster), Chumo-tusu (sea otter, beige suit). MOOD: A surprising turn.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 6쪽 (책 121쪽)
+
+✅ `forever/images/15-06.webp`
+
+```text
+7-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Bui walks slowly up onto the stage and stands beside Hamji, ignoring the stack of pledge sheets on the altar. From inside the robe Bui takes out one neatly folded pledge sheet, its creases worn soft as if unfolded many times through the night. "People today wait for big memorial cases. They wait for someone to die. I do not call that memorial. I only wish to remember the dead." COMPOSITION (vertical): Top: the altar with the untouched stack of pledge sheets. Middle: Bui and Hamji side by side at center stage; Bui unfolding the worn sheet with old, careful hands; Hamji looking up at Bui in awe. Bottom: the audience leaning forward in the dark, listening. CHARACTERS: Bui (old tortoise, white beard, navy durumagi, cane), Hamji (hamster, grey suit, bandaged fingers). LIGHT & COLOR: A soft, quiet white light on Bui - calmer and plainer than the gold altar glow. MOOD: Quiet dignity.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 7쪽 (책 122쪽)
+
+✅ `forever/images/15-07.webp`
+
+```text
+7-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Bui signs the pledge. Hamji gestures toward the President's portrait - but Bui turns his back on it and bows deeply toward somewhere beyond the audience. No one knows to whom. Hamji looks back and forth between the portrait and Bui in confusion. Applause bursts out, and one, two, three... elderly animals begin to stand: "I'll do it too." COMPOSITION (vertical): Top: the giant duck portrait behind, with Hamji's paw still pointing up at it. Middle: Bui at the front of the stage with his back to the portrait, bowing deeply toward the far darkness; Hamji's head swiveling between the two, confused. Bottom: the audience applauding, and several elderly animals (an old goat, an old sheep, an old dog, an old rabbit) rising from their seats one after another. CHARACTERS: Bui (old tortoise, navy durumagi), Hamji (hamster). MOOD: Moving and quietly subversive.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 8쪽 (책 123쪽)
+
+✅ `forever/images/15-08.webp`
+
+```text
+7-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: About fifty people, mostly over sixty, sign. Hamji pins a gold badge on each chest by hand, bandaged fingers trembling, tears streaming: "Thank you... you are true memorial citizens." One grandmother takes out a handkerchief and carefully polishes the scratch marks on her badge. Young audience members sit with arms crossed: "They won't even raise our tier." "Waste of time." COMPOSITION (vertical): Top: a line of elderly animals on the stage. Middle: Hamji pinning a gold badge onto an old sheep's cardigan, tears running down the cheeks; beside them an old rabbit grandmother lovingly polishing her badge with a lace handkerchief. Bottom: young animals in the audience in hoodies and trendy jackets, arms crossed, bored and dismissive. CHARACTERS: Hamji (plump orange-and-white hamster, grey suit, blue tie, bandaged fingers). MOOD: Tender and lonely at the same time.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 9쪽 (책 124쪽)
+
+✅ `forever/images/15-09.webp`
+
+```text
+7-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: At the judges' table Ttalgi reads the tablet: "Participation 1%. Average age 67. Ages 20-40: 0.2%. As expected." Yet Ttalgi's eyes linger on Bui for a moment - a scene numbers can't explain - and this time Ttalgi does not take a screenshot. In the VIP row, Minju-simin is still writing something. COMPOSITION (vertical): Top: Bui on the stage in the distance, standing quietly among the elders. Middle: Ttalgi at the judges' table, tablet glowing with a tiny bar (no numbers), but eyes lifted from the screen toward the stage, a thoughtful, unsettled look; the paw hovering over the screenshot button, not pressing it. Bottom: Minju-simin in the VIP row, head down, writing in the small black notebook, expressionless. CHARACTERS: Ttalgi (chubby round white boy cat, big round green eyes, NO eyelashes, charcoal-grey suit, red tie), Minju-simin (exactly as minju-simin-ch4.jpg: bright-yellow rubber-duck, small black dot eyes, NO eyelashes, NO jewelry, navy suit, blue tie). MOOD: A crack in certainty.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 7장: 순수 추모 서약식 - 햄지의 승부수 10쪽 (책 125쪽)
+
+✅ `forever/images/15-10.webp`
+
+```text
+7-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: After the ceremony, Hamji staggers backstage, exhausted: "Fifty... only fifty out of five thousand..." In the pocket, the phone lights up - silent, but the light can't be hidden: "Our child is in the hospital. The fever won't go down. Please come." Hamji cries over the screen: "I'm sorry... but right now... for His Excellency..." As the phone goes back into the pocket, a siren begins to wail from the stage. COMPOSITION (vertical): Top: the backstage corridor, and through the curtain gap a sudden flash of red rotating siren light sweeping across the stage. Middle: Hamji slumped against a road case, holding the glowing phone in both bandaged paws, tears dripping onto the screen (the screen shows only a small hospital-cross icon, no readable text). Bottom: Hamji's shadow on the floor, long and small, starting to turn red in the siren light. CHARACTERS: Hamji (plump orange-and-white hamster, grey suit, blue tie, gold badges, bandaged fingers). LIGHT & COLOR: Dark blue backstage, the phone's cold white glow on Hamji's face, then red siren light bleeding in. MOOD: Heartbreak turning into alarm - a cliffhanger.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
