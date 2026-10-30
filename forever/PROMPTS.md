@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **17장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -1518,7 +1518,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 1쪽 (책 80쪽)
 
-⬜ 저장 이름: `12-01.webp`
+✅ `forever/images/12-01.webp`
 
 ```text
 4-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -1536,7 +1536,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 2쪽 (책 81쪽)
 
-⬜ 저장 이름: `12-02.webp`
+✅ `forever/images/12-02.webp`
 
 ```text
 4-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -1554,7 +1554,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 3쪽 (책 82쪽)
 
-⬜ 저장 이름: `12-03.webp`
+✅ `forever/images/12-03.webp`
 
 ```text
 4-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -1575,7 +1575,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 4쪽 (책 83쪽)
 
-⬜ 저장 이름: `12-04.webp`
+✅ `forever/images/12-04.webp`
 
 ```text
 4-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -1594,7 +1594,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 5쪽 (책 84쪽)
 
-⬜ 저장 이름: `12-05.webp`
+✅ `forever/images/12-05.webp`
 
 ```text
 4-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -1613,7 +1613,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 4장: 막이 오르기까지 6쪽 (책 85쪽)
 
-⬜ 저장 이름: `12-06.webp`
+✅ `forever/images/12-06.webp`
 
 ```text
 4-6. 2D watercolor storybook illustration, vertical 2:3.
@@ -1632,7 +1632,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 4장: 막이 오르기까지 7쪽 (책 86쪽)
 
-⬜ 저장 이름: `12-07.webp`
+✅ `forever/images/12-07.webp`
 
 ```text
 4-7. 2D watercolor storybook illustration, vertical 2:3.
@@ -1648,7 +1648,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 8쪽 (책 87쪽)
 
-⬜ 저장 이름: `12-08.webp`
+✅ `forever/images/12-08.webp`
 
 ```text
 4-8. 2D watercolor storybook illustration, vertical 2:3.
@@ -1665,7 +1665,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 9쪽 (책 88쪽)
 
-⬜ 저장 이름: `12-09.webp`
+✅ `forever/images/12-09.webp`
 
 ```text
 4-9. 2D watercolor storybook illustration, vertical 2:3.
@@ -1682,7 +1682,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 10쪽 (책 89쪽)
 
-⬜ 저장 이름: `12-10.webp`
+✅ `forever/images/12-10.webp`
 
 ```text
 4-10. 2D watercolor storybook illustration, vertical 2:3.
@@ -1701,7 +1701,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 11쪽 (책 90쪽)
 
-⬜ 저장 이름: `12-11.webp`
+✅ `forever/images/12-11.webp`
 
 ```text
 4-11. 2D watercolor storybook illustration, vertical 2:3.
@@ -1719,7 +1719,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 4장: 막이 오르기까지 12쪽 (책 91쪽)
 
-⬜ 저장 이름: `12-12.webp`
+✅ `forever/images/12-12.webp`
 
 ```text
 4-12. 2D watercolor storybook illustration, vertical 2:3.
@@ -1733,7 +1733,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 13쪽 (책 92쪽)
 
-⬜ 저장 이름: `12-13.webp`
+✅ `forever/images/12-13.webp`
 
 ```text
 4-13. 2D watercolor storybook illustration, vertical 2:3.
@@ -1751,7 +1751,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 14쪽 (책 93쪽)
 
-⬜ 저장 이름: `12-14.webp`
+✅ `forever/images/12-14.webp`
 
 ```text
 4-14. 2D watercolor storybook illustration, vertical 2:3.
@@ -1769,7 +1769,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 15쪽 (책 94쪽)
 
-⬜ 저장 이름: `12-15.webp`
+✅ `forever/images/12-15.webp`
 
 ```text
 4-15. 2D watercolor storybook illustration, vertical 2:3.
@@ -1786,7 +1786,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 16쪽 (책 95쪽)
 
-⬜ 저장 이름: `12-16.webp`
+✅ `forever/images/12-16.webp`
 
 ```text
 4-16. 2D watercolor storybook illustration, vertical 2:3.
@@ -1804,7 +1804,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 4장: 막이 오르기까지 17쪽 (책 96쪽)
 
-⬜ 저장 이름: `12-17.webp`
+✅ `forever/images/12-17.webp`
 
 ```text
 4-17. 2D watercolor storybook illustration, vertical 2:3.
