@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **13장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -1825,7 +1825,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 1쪽 (책 97쪽)
 
-⬜ 저장 이름: `13-01.webp`
+✅ `forever/images/13-01.webp`
 
 ```text
 5-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -1842,7 +1842,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 2쪽 (책 98쪽)
 
-⬜ 저장 이름: `13-02.webp`
+✅ `forever/images/13-02.webp`
 
 ```text
 5-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -1860,7 +1860,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 3쪽 (책 99쪽)
 
-⬜ 저장 이름: `13-03.webp`
+✅ `forever/images/13-03.webp`
 
 ```text
 5-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -1879,7 +1879,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 4쪽 (책 100쪽)
 
-⬜ 저장 이름: `13-04.webp`
+✅ `forever/images/13-04.webp`
 
 ```text
 5-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -1893,7 +1893,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 5쪽 (책 101쪽)
 
-⬜ 저장 이름: `13-05.webp`
+✅ `forever/images/13-05.webp`
 
 ```text
 5-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -1907,7 +1907,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 6쪽 (책 102쪽)
 
-⬜ 저장 이름: `13-06.webp`
+✅ `forever/images/13-06.webp`
 
 ```text
 5-6. 2D watercolor storybook illustration, vertical 2:3.
@@ -1925,7 +1925,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 7쪽 (책 103쪽)
 
-⬜ 저장 이름: `13-07.webp`
+✅ `forever/images/13-07.webp`
 
 ```text
 5-7. 2D watercolor storybook illustration, vertical 2:3.
@@ -1942,7 +1942,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 8쪽 (책 104쪽)
 
-⬜ 저장 이름: `13-08.webp`
+✅ `forever/images/13-08.webp`
 
 ```text
 5-8. 2D watercolor storybook illustration, vertical 2:3.
@@ -1959,7 +1959,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 9쪽 (책 105쪽)
 
-⬜ 저장 이름: `13-09.webp`
+✅ `forever/images/13-09.webp`
 
 ```text
 5-9. 2D watercolor storybook illustration, vertical 2:3.
@@ -1976,7 +1976,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 10쪽 (책 106쪽)
 
-⬜ 저장 이름: `13-10.webp`
+✅ `forever/images/13-10.webp`
 
 ```text
 5-10. 2D watercolor storybook illustration, vertical 2:3.
@@ -1993,7 +1993,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 11쪽 (책 107쪽)
 
-⬜ 저장 이름: `13-11.webp`
+✅ `forever/images/13-11.webp`
 
 ```text
 5-11. 2D watercolor storybook illustration, vertical 2:3.
@@ -2010,7 +2010,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 12쪽 (책 108쪽)
 
-⬜ 저장 이름: `13-12.webp`
+✅ `forever/images/13-12.webp`
 
 ```text
 5-12. 2D watercolor storybook illustration, vertical 2:3.
@@ -2028,7 +2028,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 5장: 국민 참여 코너 - 딸기의 승부수 13쪽 (책 109쪽)
 
-⬜ 저장 이름: `13-13.webp`
+✅ `forever/images/13-13.webp`
 
 ```text
 5-13. 2D watercolor storybook illustration, vertical 2:3.
