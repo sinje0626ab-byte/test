@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **6장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -2047,7 +2047,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 6장: 2부 공연 - 살아있는 자의 추모 1쪽 (책 110쪽)
 
-⬜ 저장 이름: `14-01.webp`
+✅ `forever/images/14-01.webp`
 
 ```text
 6-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -2066,7 +2066,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 6장: 2부 공연 - 살아있는 자의 추모 2쪽 (책 111쪽)
 
-⬜ 저장 이름: `14-02.webp`
+✅ `forever/images/14-02.webp`
 
 ```text
 6-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -2083,7 +2083,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 6장: 2부 공연 - 살아있는 자의 추모 3쪽 (책 112쪽)
 
-⬜ 저장 이름: `14-03.webp`
+✅ `forever/images/14-03.webp`
 
 ```text
 6-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -2100,7 +2100,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 6장: 2부 공연 - 살아있는 자의 추모 4쪽 (책 113쪽)
 
-⬜ 저장 이름: `14-04.webp`
+✅ `forever/images/14-04.webp`
 
 ```text
 6-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -2118,7 +2118,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 6장: 2부 공연 - 살아있는 자의 추모 5쪽 (책 114쪽)
 
-⬜ 저장 이름: `14-05.webp`
+✅ `forever/images/14-05.webp`
 
 ```text
 6-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -2136,7 +2136,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 6장: 2부 공연 - 살아있는 자의 추모 6쪽 (책 115쪽)
 
-⬜ 저장 이름: `14-06.webp`
+✅ `forever/images/14-06.webp`
 
 ```text
 6-6. 2D watercolor storybook illustration, vertical 2:3.
