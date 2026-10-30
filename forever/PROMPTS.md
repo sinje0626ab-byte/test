@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **13장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -1814,6 +1814,228 @@ SCENE: At the grand theater. SCENE: Finishing the last song, Deul-neoguri walks 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+## 5장: 국민 참여 코너 - 딸기의 승부수
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 1쪽 (책 97쪽)
+
+⬜ 저장 이름: `13-01.webp`
+
+```text
+5-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Part 2 of the concert begins - the people's participation corner. With a shrill blast of the whistle, the MC Chumo-daejang bounds to center stage, arms flung wide: "Part 1 was so moving, right? Applause!" The audience claps - only the VIP seats clap half a beat late. COMPOSITION (vertical): Top: the huge stage with a giant LED backdrop glowing with the national emblem and confetti-colored lights, five empty chairs in a row. Middle: Chumo-daejang mid-leap at center stage, arms wide, silver whistle in the mouth, cheeks puffed from blowing it, big grin. Bottom: the audience clapping - plain seats clapping eagerly in the back, while in the plush red VIP front row rich animals in furs and jewels clap lazily, a beat behind. CHARACTERS: Chumo-daejang (grey elephant, big floppy ears, sky-blue T-shirt with white '추모대장' lettering, dark navy trousers, silver whistle). LIGHT & COLOR: Bright, colorful game-show lighting, spotlights crisscrossing. MOOD: Loud, festive, slightly manic.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 2쪽 (책 98쪽)
+
+⬜ 저장 이름: `13-02.webp`
+
+```text
+5-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Chumo-daejang announces the "People's Memorial Contest": five contestants will present their memorials and can win an instant tier upgrade. The crowd buzzes. The first judge is introduced - President Minju-simin, who rises from the VIP seats and waves, and the hall erupts in cheers. COMPOSITION (vertical): Top: the LED screen showing a big glowing tier ladder (bronze, silver, gold, platinum - colored steps with icons, no text). Middle: Chumo-daejang on stage pointing dramatically toward the audience with one arm. Bottom: in the VIP front row, Minju-simin standing up and waving one wing graciously, caught in a spotlight; the animals around cheering, some standing. CHARACTERS: Minju-simin (bright-yellow rubber-duck President with a huge round head, navy suit, blue tie, yellow ribbon pin), Chumo-daejang (elephant, sky-blue '추모대장' T-shirt, silver whistle). MOOD: Celebrity reveal.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 3쪽 (책 99쪽)
+
+⬜ 저장 이름: `13-03.webp`
+
+```text
+5-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The other two judges take their seats at the judges' table on stage: Ttalgi, with a short smile, and Chumo-yeolsa, the Director of Intelligence, completely expressionless. Chumo-yeolsa's tablet already shows profiles of all five contestants - including information nobody ever submitted. COMPOSITION (vertical): Top: Chumo-daejang at the edge of the stage gesturing toward the judges' table. Middle: a long judges' table with a glowing red buzzer button in front of each seat; Ttalgi sitting with a small confident smile, tablet in paw. Bottom: close on Chumo-yeolsa sitting stiffly beside Ttalgi, blank face, and the tablet screen glowing with five small profile cards with silhouettes, a magnifying-glass icon and a little eye icon (no readable text). CHARACTERS: Ttalgi (chubby round white cat, charcoal-grey suit, red tie), Chumo-yeolsa (fluffy brown teddy bear, button eyes, permanently blank face, charcoal-grey suit, navy tie, holding ONLY a tablet - no envelope, no folder, no papers). MOOD: Cold and quietly creepy under the bright lights.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 4쪽 (책 100쪽)
+
+⬜ 저장 이름: `13-04.webp`
+
+```text
+5-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The first contestant, Kim Minsu, a 32-year-old office worker with a wife and two kids, stands at the microphone, script trembling in the paws. Asked for the tier, Kim admits quietly: "Bronze... there haven't been any big memorial cases since the big-star shortage." All the Bronze audience members nod together: "Right, if only one big star would go..." COMPOSITION (vertical): Top: Kim Minsu small and nervous at the center mic in a cone of spotlight, script paper trembling. Middle: a close view of Kim's worried face. Bottom: rows of Bronze audience animals in plain clothes nodding in perfect unison, some whispering to each other. KIM MINSU: a tired young brown deer with tiny antler nubs, round glasses, cheap navy suit slightly too big, a family photo peeking from the jacket pocket. MOOD: Sympathetic and darkly funny.
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 5쪽 (책 101쪽)
+
+⬜ 저장 이름: `13-05.webp`
+
+```text
+5-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Kim Minsu explains wanting Platinum today because the eldest child starts elementary school next year and Platinum gives an admission bonus for top schools. Then Kim unfolds the script and begins: "I memorialize my grandfather, who passed away ten years ago, and who taught me diligence, honesty and the value of family..." COMPOSITION (vertical): Top: a soft, warm memory bubble (no text) of a kind old deer grandfather teaching a little fawn to ride a bicycle in a sunny park. Middle: Kim Minsu at the mic, reading the unfolded script, voice rising. Bottom: an inset of a small child deer with a big school backpack, and a shiny school gate with a golden star - the dream of the admission bonus. KIM MINSU: the young brown deer with round glasses and a navy suit. MOOD: Sincere feelings tangled with a practical goal.
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 6쪽 (책 102쪽)
+
+⬜ 저장 이름: `13-06.webp`
+
+```text
+5-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Kim Minsu bursts into tears, cries "Grandfather, I truly memorialize you!", kneels and bows deeply. Applause pours down. Ttalgi taps the tablet and announces the scores: emotional expression 8, sincerity 7, memorial-experience potential 9 - and praises Kim for honestly admitting needing the bonus: "Memorial must be practical to last." COMPOSITION (vertical): Top: Kim Minsu kneeling in a full traditional bow on the stage, tears streaming, glasses fogged. Middle: the audience applauding, some dabbing their eyes. Bottom: at the judges' table, Ttalgi calmly tapping the tablet, three glowing score bars floating above it (no numbers), a small approving smile; Chumo-yeolsa blank beside. CHARACTERS: Kim Minsu (young brown deer, glasses, navy suit), Ttalgi (chubby round white cat, charcoal-grey suit, red tie), Chumo-yeolsa (teddy bear, tablet only). MOOD: Tearful sincerity meets cold scoring.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 7쪽 (책 103쪽)
+
+⬜ 저장 이름: `13-07.webp`
+
+```text
+5-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Ttalgi presses the buzzer: "Instant upgrade to Platinum!" Kim Minsu bows again - this time toward the judges' table, and a little deeper than the bow to the grandfather. The audience murmurs: "So you just say it's for your kid's school." In the back row someone takes notes: grandfather, bonus, tears. COMPOSITION (vertical): Top: platinum-white confetti and a glowing platinum card icon on the LED screen; Ttalgi's paw pressing a big glowing button. Middle: Kim Minsu bowing very deeply toward the judges' table, nose almost touching the floor. Bottom: the audience murmuring behind their paws; in the back row, a weasel in a cheap coat scribbling notes in a little notebook (three tiny doodles: an old face, a star, a teardrop - no text). CHARACTERS: Kim Minsu (young brown deer, glasses, navy suit), Ttalgi (chubby round white cat). MOOD: Satire - the audience learning the trick.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 8쪽 (책 104쪽)
+
+⬜ 저장 이름: `13-08.webp`
+
+```text
+5-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Backstage, Hamji clenches a bandaged fist: "This isn't memorial. It's a transaction." On stage, the second contestant, Lee Jieun, a 28-year-old job seeker, memorializes a maternal grandmother for the public-company bonus; the third, Park Cheolsu, a small-business owner, memorializes a father for the business subsidy. COMPOSITION (vertical): Top half: in the dark wings, Hamji peeking out from behind the heavy curtain, bandaged paw clenched into a fist, cheeks puffed in anger. Bottom half: two small panels side by side on the bright stage: Lee Jieun at the mic holding a resume-like folder, and Park Cheolsu at the mic in a shopkeeper's vest holding a receipt-like paper (no readable text). LEE JIEUN: a young white rabbit in a black job-interview suit, ears neatly tied back. PARK CHEOLSU: a stout wild boar in a shirt and a shopkeeper's vest. HAMJI: the plump orange-and-white hamster, grey suit, blue tie, gold badges, bandaged fingers. MOOD: Growing outrage behind the curtain.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 9쪽 (책 105쪽)
+
+⬜ 저장 이름: `13-09.webp`
+
+```text
+5-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The fourth contestant, Choi Eunyoung, says straight away she came for her husband's promotion - and then peeks at writing on her palm to remember whom she is memorializing: "...my father-in-law." With each contestant the motive moves forward and the deceased falls back. Ttalgi gives all four generous scores: "Honest. Realistic. This is a true memorial citizen." COMPOSITION (vertical): Top: Choi Eunyoung at the mic, glancing down at an open palm with ink scribbles (no readable text), a sheepish smile. Middle: a visual metaphor on the LED screen behind: four big shiny icons (a graduation cap, a briefcase, a coin bag, a promotion arrow) in front, and four small faded framed photos of elderly animals pushed far into the background. Bottom: Ttalgi nodding with approval at the judges' table. CHOI EUNYOUNG: a woolly sheep in a pastel cardigan and pearl necklace. CHARACTERS: Ttalgi (chubby round white cat, charcoal-grey suit, red tie). MOOD: Absurd and biting.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 10쪽 (책 106쪽)
+
+⬜ 저장 이름: `13-10.webp`
+
+```text
+5-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: The fifth contestant, Jeong Woojin, is already Gold and wants Platinum to be promoted to a senior civil-service post; attended 47 memorial events in a year but lacks experience points because there were no big memorial cases. COMPOSITION (vertical): Top: Jeong Woojin standing perfectly straight at the mic, a thick binder of attendance certificates under one wing. Middle: a holographic stack of many tiny candle icons rising beside Jeong like a tower (no numbers), showing all the events attended. Bottom: Chumo-daejang leaning in with the microphone, eyebrows raised, and the judges watching. JEONG WOOJIN: a stiff grey heron in a perfectly pressed grey civil-servant suit, thin tie, expressionless face, every feather in place. CHARACTERS: Chumo-daejang (elephant, sky-blue '추모대장' T-shirt, silver whistle). MOOD: Bureaucratic deadpan.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 11쪽 (책 107쪽)
+
+⬜ 저장 이름: `13-11.webp`
+
+```text
+5-11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Jeong Woojin gives a flat, five-sentence memorial for parents lost in a car accident five years ago - "Thank you. That is all." - then bows exactly 90 degrees and straightens exactly one second later. The hall goes silent. Ttalgi scores emotion 3, sincerity 2 - but calls 47 events "dedication" and presses the button: "Platinum, upgraded." COMPOSITION (vertical): Top: Jeong Woojin bowing at a perfect 90-degree angle, with a faint cartoon protractor-arc showing the exact angle. Middle: the silent audience, blank stares, someone mid-sneeze frozen. Bottom: Ttalgi calmly pressing the glowing buzzer with one paw, platinum light flashing. CHARACTERS: Jeong Woojin (stiff grey heron, grey suit), Ttalgi (chubby round white cat, charcoal-grey suit, red tie). MOOD: Deadpan comedy turning uncomfortable.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 12쪽 (책 108쪽)
+
+⬜ 저장 이름: `13-12.webp`
+
+```text
+5-12. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Boos erupt: "There's no feeling at all!" "Is that memorial?" But the other side answers: "So what, we're all just waiting for a big memorial case anyway." "Forget feelings, the tier is what matters." Unbothered, Ttalgi glances at Minju-simin, who is writing something with no expression - from Ttalgi's seat, it is impossible to see what. COMPOSITION (vertical): Top: the audience split down the middle - on one side animals booing and shaking fists, on the other side animals shrugging and waving tier cards. Middle: Ttalgi at the judges' table turning the head to look toward the VIP row. Bottom: Minju-simin seated in the VIP row, writing in a small black notebook with a fountain pen, face completely unreadable; the notebook page angled away so nothing can be seen. CHARACTERS: Ttalgi (chubby round white cat), Minju-simin (yellow rubber-duck President, navy suit, seated). MOOD: Tension and mystery.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 5장: 국민 참여 코너 - 딸기의 승부수 13쪽 (책 109쪽)
+
+⬜ 저장 이름: `13-13.webp`
+
+```text
+5-13. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: At the grand theater. SCENE: Chumo-daejang closes the corner, arm thrust high: "See? Work hard and anyone can be upgraded!" Murmurs spread: "Still, one big memorial case is the fastest..." "When will the next one happen?" Hearing that, Chumo-daejang's smile grows just a little bigger. COMPOSITION (vertical): Top: Chumo-daejang center stage, one arm thrust high, confetti falling. Middle: whispering audience members leaning toward each other. Bottom: a close-up of Chumo-daejang's face from a low angle - the grin stretching even wider, eyes glinting, the edge of a plain envelope (no writing visible) peeking from the T-shirt collar. CHARACTERS: Chumo-daejang (grey elephant, sky-blue T-shirt with white '추모대장' lettering, silver whistle). LIGHT & COLOR: Bright stage lights above, but the close-up face lit eerily from below. MOOD: Festive surface, ominous underneath.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
