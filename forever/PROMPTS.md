@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **18장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -2341,7 +2341,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 1쪽 (책 126쪽)
 
-⬜ 저장 이름: `16-01.webp`
+✅ `forever/images/16-01.webp`
 
 ```text
 8-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -2359,7 +2359,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 8장: 추모 교정 특별무대 2쪽 (책 127쪽)
 
-⬜ 저장 이름: `16-02.webp`
+✅ `forever/images/16-02.webp`
 
 ```text
 8-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -2377,7 +2377,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 3쪽 (책 128쪽)
 
-⬜ 저장 이름: `16-03.webp`
+✅ `forever/images/16-03.webp`
 
 ```text
 8-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -2398,7 +2398,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 8장: 추모 교정 특별무대 4쪽 (책 129쪽)
 
-⬜ 저장 이름: `16-04.webp`
+✅ `forever/images/16-04.webp`
 
 ```text
 8-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -2416,7 +2416,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 5쪽 (책 130쪽)
 
-⬜ 저장 이름: `16-05.webp`
+✅ `forever/images/16-05.webp`
 
 ```text
 8-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -2434,7 +2434,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 6쪽 (책 131쪽)
 
-⬜ 저장 이름: `16-06.webp`
+✅ `forever/images/16-06.webp`
 
 ```text
 8-6. 2D watercolor storybook illustration, vertical 2:3.
@@ -2452,7 +2452,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 7쪽 (책 132쪽)
 
-⬜ 저장 이름: `16-07.webp`
+✅ `forever/images/16-07.webp`
 
 ```text
 8-7. 2D watercolor storybook illustration, vertical 2:3.
@@ -2470,7 +2470,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 8쪽 (책 133쪽)
 
-⬜ 저장 이름: `16-08.webp`
+✅ `forever/images/16-08.webp`
 
 ```text
 8-8. 2D watercolor storybook illustration, vertical 2:3.
@@ -2490,7 +2490,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 9쪽 (책 134쪽)
 
-⬜ 저장 이름: `16-09.webp`
+✅ `forever/images/16-09.webp`
 
 ```text
 8-9. 2D watercolor storybook illustration, vertical 2:3.
@@ -2508,7 +2508,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 10쪽 (책 135쪽)
 
-⬜ 저장 이름: `16-10.webp`
+✅ `forever/images/16-10.webp`
 
 ```text
 8-10. 2D watercolor storybook illustration, vertical 2:3.
@@ -2526,7 +2526,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 11쪽 (책 136쪽)
 
-⬜ 저장 이름: `16-11.webp`
+✅ `forever/images/16-11.webp`
 
 ```text
 8-11. 2D watercolor storybook illustration, vertical 2:3.
@@ -2544,7 +2544,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 12쪽 (책 137쪽)
 
-⬜ 저장 이름: `16-12.webp`
+✅ `forever/images/16-12.webp`
 
 ```text
 8-12. 2D watercolor storybook illustration, vertical 2:3.
@@ -2562,7 +2562,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 13쪽 (책 138쪽)
 
-⬜ 저장 이름: `16-13.webp`
+✅ `forever/images/16-13.webp`
 
 ```text
 8-13. 2D watercolor storybook illustration, vertical 2:3.
@@ -2580,7 +2580,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 14쪽 (책 139쪽)
 
-⬜ 저장 이름: `16-14.webp`
+✅ `forever/images/16-14.webp`
 
 ```text
 8-14. 2D watercolor storybook illustration, vertical 2:3.
@@ -2599,7 +2599,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 8장: 추모 교정 특별무대 15쪽 (책 140쪽)
 
-⬜ 저장 이름: `16-15.webp`
+✅ `forever/images/16-15.webp`
 
 ```text
 8-15. 2D watercolor storybook illustration, vertical 2:3.
@@ -2617,7 +2617,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 16쪽 (책 141쪽)
 
-⬜ 저장 이름: `16-16.webp`
+✅ `forever/images/16-16.webp`
 
 ```text
 8-16. 2D watercolor storybook illustration, vertical 2:3.
@@ -2635,7 +2635,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 8장: 추모 교정 특별무대 17쪽 (책 142쪽)
 
-⬜ 저장 이름: `16-17.webp`
+✅ `forever/images/16-17.webp`
 
 ```text
 8-17. 2D watercolor storybook illustration, vertical 2:3.
@@ -2656,7 +2656,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 8장: 추모 교정 특별무대 18쪽 (책 143쪽)
 
-⬜ 저장 이름: `16-18.webp`
+✅ `forever/images/16-18.webp`
 
 ```text
 8-18. 2D watercolor storybook illustration, vertical 2:3.
