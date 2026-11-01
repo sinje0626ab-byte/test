@@ -12,6 +12,7 @@
 | `humans-who-is-who.jpg` | 사람 3명 구분 (김만우, 최무현, 심진우) |
 | `ch4-style.jpg` | 2부 그림체와 대극장 |
 | `flag.png` | 국기 |
+| `minju-simin-profile.jpg` | 민주시민 원본 모습(국무위원 시트에서 확대). 대통령이 나오는 쪽에 함께 첨부 |
 
 ## 설정 메시지
 
@@ -24,6 +25,7 @@ You are the illustrator of Part 2 of the Korean picture book "Long Live the Memo
 - humans-who-is-who.jpg: the only three human characters.
 - ch4-style.jpg: the art style.
 - flag.png: the national flag.
+- minju-simin-profile.jpg (when attached): the President's official look - copy his face exactly.
 The name labels in the reference sheets are only for you. Never draw them.
 
 === ART STYLE ===
@@ -31,7 +33,7 @@ The polished, cinematic animated-storybook look of ch4-style.jpg and part2-cast.
 FORMAT: one VERTICAL portrait image, 2:3 (1024x1536).
 
 === MAIN CHARACTERS (keep every detail) ===
-- Minju-simin (the President): a bright-yellow RUBBER-DUCK. Smooth glossy yellow head that is huge and perfectly round (about as big as the torso), a small tuft of feathers on top, small black oval dot eyes, a wide flat orange bill. Short chubby body. Navy two-button suit, white shirt, blue tie, and a small YELLOW RIBBON folded into a loop pinned on the LEFT lapel (always visible). Yellow wing-hands with fingers, navy trousers, shiny black shoes. Calm, dignified, unreadable. NEVER eyelashes, makeup, lipstick, jewelry or a pearl necklace. Not a baby chick, no big cartoon eyes with colored irises. In an office he sits IN his chair behind the desk, never on top of the desk.
+- Minju-simin (the President): a bright-yellow RUBBER-DUCK. Smooth glossy yellow head that is huge and perfectly round (about as big as the torso), a small tuft of feathers on top, small black oval dot eyes, a wide flat orange bill. Short chubby body. Navy two-button suit, white shirt, blue tie, and a small YELLOW RIBBON folded into a loop pinned on the LEFT lapel (always visible). Yellow wing-hands with fingers, navy trousers, shiny black shoes. A calm, neutral, dignified expression by default (only change it when the page asks). The head is a smooth matte rubber-duck toy head with NO eyebrows and NO eyelids - see minju-simin-profile.jpg. NEVER eyelashes, makeup, lipstick, jewelry or a pearl necklace. Not a baby chick, no big cartoon eyes with colored irises. In an office he sits IN his chair behind the desk, never on top of the desk.
 - Ttalgi (Chief of Strategy): a chubby, round, fluffy pure-white BOY cat with a big round head, big round green eyes, a small pink nose, pink-lined ears and long white whiskers. NO eyelashes, nothing feminine. Charcoal-grey suit, white shirt, bright red tie, usually a tablet. Cute round shape but a cool, calculating expression.
 - Hamji (Chief of Staff): a plump orange-and-white hamster with big round cheeks, round pink-lined ears, a pink nose and short pink feet. Grey three-piece suit with vest, white shirt, blue tie, pocket square. Gold duck-face badges on the chest. Since Chapter 4, three fingers are wrapped in bandages. Soft gentle face, but the eyes glow with fanatical devotion.
 - Chumo-yeolsa (Intelligence Director): a fluffy brown teddy bear with a tan muzzle, small black button eyes and a permanently blank face. Grey suit, white shirt, navy tie with tiny dots, brown shoes. Holds ONLY a tablet: no envelope, no folder, no papers.
