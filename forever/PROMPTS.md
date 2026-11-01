@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **22장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -49,6 +49,7 @@ CHARACTERS (always the same species, colors and outfit):
 - chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
 - Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
 - Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
 (Text exception: the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided) - this is the ONLY text allowed in any picture.)
 
 PLACES:
@@ -63,6 +64,8 @@ PLACES:
 - bui's house: the old tortoise Bui's traditional Korean house: a quiet room with paper sliding doors, a low wooden tea table, a low lamp and a scroll painting of mountains
 - grand theater: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 - dressing room: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+- bunker room: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+- interrogation room: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -2921,6 +2924,416 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 
 PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 1장: 첩보전의 서막 – 추모정보원장의 중대발표
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 1쪽 (책 157쪽)
+
+⬜ 저장 이름: `18-01.webp`
+
+```text
+1-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: 4 a.m. An emergency meeting in a secret underground room three floors below the government building - soundproofed walls, CCTV jammers, signal-blocking equipment. Cold fluorescent light. President Minju-simin sits at the head of the table, face heavy but perfectly controlled. COMPOSITION (vertical): Top: low concrete ceiling with harsh fluorescent tube lights, blinking signal-jammer panels and padded soundproof walls. Middle: a long dark metal table; at the far head, Minju-simin seated in a high-backed chair, wings folded on the table. Bottom: empty chairs in the foreground, a wall clock showing 4 o'clock. LIGHT & COLOR: Cold blue-white fluorescent light, deep shadows - very different from the warm golden rooms of Part 2. MOOD: Secret, tense, the start of a spy thriller.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 2쪽 (책 158쪽)
+
+⬜ 저장 이름: `18-02.webp`
+
+```text
+1-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Ttalgi and Hamji sit on either side of the President, not even looking at each other - with the Memorial Olympics two weeks away, they are already enemies. Two chairs stand empty. Ttalgi notes the empty seats of Deul-neoguri and Lee Gija; Chumo-hamnido replies that one has left the country and one is locked up in the Corrections Bureau. COMPOSITION (vertical): Top: Minju-simin at the head of the table. Middle: Ttalgi on the left and Hamji on the right, both turned sharply away from each other, arms folded. Bottom: two conspicuously empty chairs in the foreground, one with a faint dusty outline; Chumo-hamnido gesturing at them with a rolled newspaper. MOOD: Cold rivalry and absence.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 3쪽 (책 159쪽)
+
+⬜ 저장 이름: `18-03.webp`
+
+```text
+1-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: The door opens and the Intelligence Director, Chumo-yeolsa, walks in wearing a black suit and dark sunglasses - at 4 a.m., three floors underground, and nobody asks why. "Sorry I'm late, Your Excellency." "Sit down." COMPOSITION (vertical): Top: the heavy steel door swinging open, light spilling in. Middle: Chumo-yeolsa striding in like a movie spy - black suit, black tie, round dark sunglasses on the teddy-bear face, a tablet tucked under one arm. Bottom: the others turning to look; Hamji blinking at the sunglasses in confusion. CHARACTERS: Chumo-yeolsa wears a BLACK suit and dark sunglasses in this chapter; he carries only a tablet (no folder). MOOD: Comic spy-movie entrance.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 4쪽 (책 160쪽)
+
+⬜ 저장 이름: `18-04.webp`
+
+```text
+1-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: The Olympics status report. Ttalgi: the Strategy Team has 237 Platinum and Gold members and an algorithm to maximize memorial power when a big memorial case hits. Hamji: the Pure Team has 83 members who signed the pledge and refused rewards - "Few in number, but their sincerity..." COMPOSITION (vertical): Top: a wall screen with two bars - a tall cool-blue bar of many tiny figures and a short warm-gold bar of a few figures (no numbers). Middle: Ttalgi presenting confidently with the tablet. Bottom: Hamji leaning forward earnestly, bandaged paws clasped over the heart. MOOD: David against Goliath.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 5쪽 (책 161쪽)
+
+⬜ 저장 이름: `18-05.webp`
+
+```text
+1-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Chumo-hamnido scoffs that 83 can't beat 237; Hamji cries that sincerity can't be measured in numbers. Minju-simin silences them and asks Director Aeguk-jwasu about refereeing. Aeguk-jwasu bows politely: twelve kinds of correction equipment, a 50-member instant correction squad, and three mobile "memorial chairs" - ready to correct anyone insincere. COMPOSITION (vertical): Top: Chumo-hamnido and Hamji leaning toward each other across the table, arguing. Middle: Minju-simin raising one wing for silence. Bottom: Aeguk-jwasu standing with a polite bow, holding up a glossy brochure showing three cartoonish ornate armchairs on wheels and a row of comic gadgets (no text). MOOD: Absurd bureaucracy with menace underneath.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 6쪽 (책 162쪽)
+
+⬜ 저장 이름: `18-06.webp`
+
+```text
+1-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Just as the President moves on, Chumo-yeolsa interrupts: there is a grave matter to report, far more serious than the Olympics. The air in the room freezes. Chumo-yeolsa lays the tablet on the table. COMPOSITION (vertical): Top: a frozen moment - everyone around the table turning toward Chumo-yeolsa, frost-like stillness lines in the air. Middle: Chumo-yeolsa standing, placing the tablet on the table; its screen glows red with a large padlock-and-stamp "top secret" icon (no text). Bottom: Minju-simin's calm face, eyes narrowing slightly. MOOD: Sudden chill.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 7쪽 (책 163쪽)
+
+⬜ 저장 이름: `18-07.webp`
+
+```text
+1-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Chumo-yeolsa takes off the sunglasses - the blank button eyes look even colder. "72 hours ago, our surveillance network 'Quantum Eye' caught a man." A photo appears: Park Wootae - whose real name is Pu Youtai, an agent from the hostile Memorial People's Republic. The room stirs. COMPOSITION (vertical): Top: a big wall screen showing a giant glowing eye-shaped radar logo scanning a city map, then a mugshot-style photo of Park Wootae (exactly as ref-park-wootae.png) with a red target circle. Middle: Chumo-yeolsa holding the sunglasses in one paw, expressionless. Bottom: the others leaning in, shocked. MOOD: Spy-thriller reveal.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 8쪽 (책 164쪽)
+
+⬜ 저장 이름: `18-08.webp`
+
+```text
+1-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: "The Memorial People's Republic?" asks Ttalgi. It is the hostile state to the north - same memorial system, but "people's memorial" against the Republic's "free memorial." Park Wootae infiltrated for seven years, systematically collecting the Republic's core secrets. COMPOSITION (vertical): Top: a wall-screen map - the Memorial Republic in navy and gold, and to the north a rival country in dark red with a grey stylized candle emblem (an invented symbol, NOT a real country's flag), a jagged border between them. Middle: Chumo-yeolsa pointing at the map. Bottom: Ttalgi frowning, Hamji clutching the table. MOOD: A new enemy appears.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 9쪽 (책 165쪽)
+
+⬜ 저장 이름: `18-09.webp`
+
+```text
+1-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: The screen lists the leaked state secrets: the memorial-power algorithm, the experience-point source code, a database of how 28.47 million citizens memorialize, the big-memorial-case prediction model, the tier-system blueprint, the Memorial Association's financial records, and the Corrections Bureau manual. COMPOSITION (vertical): The wall screen fills most of the page: seven glowing red file icons in a column (a gear, a code bracket, a crowd, a crystal ball, a pyramid, a coin stack, a rulebook), each with a red "leaked" warning arrow flying off toward the north (no readable text). At the bottom, the silhouettes of the cabinet watching in horror. MOOD: Disaster.
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 10쪽 (책 166쪽)
+
+⬜ 저장 이름: `18-10.webp`
+
+```text
+1-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Ttalgi goes pale: "This is... this is..." "Everything the Memorial Republic is," says Chumo-yeolsa. Hamji springs up: "Blasphemy! Betrayal! He is a devil!" "Be quiet, Chief Hamji." Hamji sits back down, trembling. COMPOSITION (vertical): Top: Ttalgi frozen, white fur looking even paler, tablet slipping. Middle: Hamji leaping up on the chair, fists raised, cheeks puffed in fury. Bottom: Minju-simin's raised wing, calm and cold. MOOD: Panic and fury.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 11쪽 (책 167쪽)
+
+⬜ 저장 이름: `18-11.webp`
+
+```text
+1-11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: The damage: in the worst case, the enemy could copy the whole system - or build a better one. Ttalgi asks which version leaked. "The latest, Chief - including your own complete Tier System." Ttalgi's composure cracks. COMPOSITION (vertical): Top: a screen showing a pyramid diagram (Ttalgi's tier system) being copied into a second, darker red pyramid on the other side (no text). Middle: Chumo-yeolsa turning to Ttalgi. Bottom: Ttalgi's eyes going wide, one paw pressed to the chest. MOOD: A personal blow.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 12쪽 (책 168쪽)
+
+⬜ 저장 이름: `18-12.webp`
+
+```text
+1-12. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: "Impossible - only six people had access..." "Six: His Excellency, Chief Ttalgi, myself, Chief Chumo-hamnido... and Lee Gija and Hai." "Already purged." Park hacked the devices of the two lazy officials. Hamji clenches a fist: the spy must pay before the memorial, publicly, slowly, painfully. "Be quiet." COMPOSITION (vertical): Top: six small portrait icons on the screen; two of them - a sloth and a sleepy koala - flash red with a cartoon crack. Middle: an inset of an old laptop with a cartoon worm/bug crawling out (hacked). Bottom: Hamji gripping the table edge, eyes burning; Chumo-hamnido nodding grimly. MOOD: The guilty are already gone.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 13쪽 (책 169쪽)
+
+⬜ 저장 이름: `18-13.webp`
+
+```text
+1-13. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Park Wootae is locked in the underground interrogation room of the Intelligence Service, caught 72 hours ago; he hasn't confessed, but the evidence is enough. There are likely three to five more agents. COMPOSITION (vertical): Top: Minju-simin asking, wing resting on the table. Middle: Chumo-yeolsa answering, tablet showing a small locked-room icon and five question-mark silhouettes (no text). Bottom: the others exchanging suspicious glances at each other - who else could be a spy? MOOD: Paranoia spreads.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 14쪽 (책 170쪽)
+
+⬜ 저장 이름: `18-14.webp`
+
+```text
+1-14. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: The President falls silent. Every eye turns to him. Then Minju-simin smiles - a cold, cruel smile. "Excellent." "Pardon...?" "I said excellent. This is not a crisis. It is an opportunity." COMPOSITION (vertical): A dramatic close-up from a low angle: Minju-simin's round yellow face lit from below by the table lamp, the bill curving into a small, cold smile, black dot eyes unreadable. Behind him, the faces of the cabinet in the shadows, stunned. MOOD: Chilling.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 15쪽 (책 171쪽)
+
+⬜ 저장 이름: `18-15.webp`
+
+```text
+1-15. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: "An outside enemy has appeared. A spy was among us. Secrets have leaked. What does it all mean? National unity. Until now memorial-goers only competed with each other. Now we can give them a common enemy." Ttalgi's eyes light up. COMPOSITION (vertical): Top: Minju-simin standing at the head of the table, one wing raised like a statesman. Middle: a vision above the table of crowds of animal citizens who had been arguing, now turning together toward a dark shadowy figure on the horizon. Bottom: Ttalgi's green eyes glinting with understanding. MOOD: Political genius, dark and cold.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 16쪽 (책 172쪽)
+
+⬜ 저장 이름: `18-16.webp`
+
+```text
+1-16. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: The plan: unveil Park Wootae at the Olympics opening ceremony - "This is our enemy." Repackage the Olympics as a patriotic event against the Memorial People's Republic: the Strategy Team becomes the "Memorial Security Team" and the Pure Team the "Memorial Purity Guard." COMPOSITION (vertical): Top: a vision of a huge stadium opening ceremony with fireworks, and two team banners - a cool-blue shield banner and a white-and-gold lily banner (no text). Middle: Minju-simin outlining it with a wing. Bottom: Ttalgi and Hamji both looking up at the vision, for once in the same direction. MOOD: Grand propaganda.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 17쪽 (책 173쪽)
+
+⬜ 저장 이름: `18-17.webp`
+
+```text
+1-17. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Hope rises on Hamji's face - the President says this is the chance for Hamji's pure memorial to shine. Hamji kneels, overwhelmed, bandaged fingers touching the floor: "Thank you... I will defeat the enemy with pure memorial..." COMPOSITION (vertical): Top: Minju-simin looking down at Hamji with a calm nod. Middle: Hamji kneeling on the cold floor, eyes shining with tears of joy, bandaged paws on the floor. Bottom: Ttalgi in the corner, watching with an unreadable side-glance. MOOD: Devotion rekindled.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 18쪽 (책 174쪽)
+
+⬜ 저장 이름: `18-18.webp`
+
+```text
+1-18. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Ttalgi praises the plan and promises a "Memorial Security Response Manual." The President orders Director Aeguk-jwasu to prepare a special "Spy Memorial Correction Show" for the opening ceremony. "An honor, Your Excellency." COMPOSITION (vertical): Top: Ttalgi bowing slightly, tablet already full of glowing plans. Middle: Aeguk-jwasu bowing deeply, gloved hand on the chest, a gleeful glint in the eyes. Bottom: a faint vision of a stadium stage with a spotlight on an empty ornate chair. MOOD: The plot is set.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 19쪽 (책 175쪽)
+
+⬜ 저장 이름: `18-19.webp`
+
+```text
+1-19. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: The spy case must stay absolutely secret until the opening ceremony, so the shock is maximized. "Yes, Your Excellency," everyone answers at once. "Meeting adjourned. In two weeks, the whole nation will know our enemy." COMPOSITION (vertical): Top: Minju-simin standing, a finger-like wing tip raised to the bill in a "secret" gesture. Middle: everyone around the table saluting or nodding in unison. Bottom: the heavy soundproof door with a big padlock icon glowing. MOOD: A sealed conspiracy.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 20쪽 (책 176쪽)
+
+⬜ 저장 이름: `18-20.webp`
+
+```text
+1-20. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the bunker room. SCENE: Leaving the room, Ttalgi needles Hamji: "Can pure memorial really defeat a spy?" Hamji answers: "Purity beats everything - spies, betrayal, and your cold strategy." Ttalgi sneers and walks out. COMPOSITION (vertical): Top: the concrete corridor outside the room. Middle: Ttalgi walking away, glancing back with a smirk. Bottom: Hamji standing firm, small but determined, fists clenched. MOOD: Rivalry renewed.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the secret emergency committee room three floors underground: a low concrete ceiling, harsh fluorescent tube lights, padded soundproof walls, blinking signal-jammer panels, a long dark metal table with high-backed chairs, a big wall screen; cold blue-white light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 21쪽 (책 177쪽)
+
+⬜ 저장 이름: `18-21.webp`
+
+```text
+1-21. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the interrogation room. SCENE: Meanwhile, in the underground interrogation room of the Intelligence Service: cold concrete walls, a fluorescent light, and one man - Park Wootae, tied to a chair, face bruised. An agent stands before him: "Last time: how many more agents?" Park says nothing - and laughs. COMPOSITION (vertical): Top: a bare concrete room with a single humming fluorescent light. Middle: Park Wootae (exactly as ref-park-wootae.png) tied to a metal chair with rope, messy hair, a cartoon bandage on the cheek, a defiant crooked grin. Bottom: the back of a stern black-panther agent in a black suit with an earpiece, leaning over the table. TONE: No blood or realistic injury - only a small cartoon bandage and messy hair. MOOD: Tense interrogation.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 22쪽 (책 178쪽)
+
+⬜ 저장 이름: `18-22.webp`
+
+```text
+1-22. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the interrogation room. SCENE: "You've already lost... the People's Republic knows everything about you... your memorial is fake... ours is real..." The agent slaps him - "Shut up!" - but Park keeps laughing. A fluorescent tube flickers, just like the bulb in the dressing room two weeks before. COMPOSITION (vertical): Top: the fluorescent tube flickering, half the room going dark. Middle: Park Wootae laughing defiantly, head tilted back, a cartoon motion line on his cheek from the slap (no blood). Bottom: the panther agent's raised paw, frozen; long shadows on the concrete. LIGHT & COLOR: Cold green-white flicker, deep shadows. MOOD: Ominous cliffhanger.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
