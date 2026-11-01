@@ -36,7 +36,7 @@ CHARACTERS (always the same species, colors and outfit):
 - Bukanistan (Chief of Memorial Security) = a white horse with a long flowing white mane, wearing a black cowboy hat and a navy suit, riding on the back of another white horse (a horse riding a horse). NOT a human
 - Eoheung (Chief of the Memorial Weather Agency) = a chubby little tiger cub in a brown suit with a blue tie, paws clasped in front. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
@@ -49,6 +49,7 @@ CHARACTERS (always the same species, colors and outfit):
 - chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
 - Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
 - Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
 (Text exception: the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided) - this is the ONLY text allowed in any picture.)
 
 PLACES:
@@ -63,6 +64,8 @@ PLACES:
 - bui's house: the old tortoise Bui's traditional Korean house: a quiet room with paper sliding doors, a low wooden tea table, a low lamp and a scroll painting of mountains
 - grand theater: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 - dressing room: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+- interrogation room: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+- state meeting room: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -562,7 +565,7 @@ SCENE: In the council hall, a cold silence after the forced rally. The exhausted
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -581,7 +584,7 @@ SCENE: In the council hall. From the podium, Minju-simin looks down with ice-col
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -599,7 +602,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: In the council hall. Aeguk-jwasu approaches Lee Gija and bows deeply and courteously, one paw on the chest, smiling politely, but a cold shadow falls across the wolf's eyes. Lee Gija backs away in fear, clutching the briefcase to the chest, sweat flying. The other animal ministers hold their breath.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -617,7 +620,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: In the council hall, a black-comedy moment drawn in an exaggerated cartoon way (not violent or graphic). Aeguk-jwasu calmly holds Lee Gija's arm twisted behind the back in a comical wrestling hold, still wearing a perfectly polite smile. Lee Gija's mouth is wide open in a yell, with cartoon motion lines and little stars around the head (no speech bubbles). The animal ministers at the table wince and cover their eyes.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -635,7 +638,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: The doorway of the council hall seen from inside. Aeguk-jwasu drags Lee Gija out into a long, dim corridor by the shirt collar, Lee Gija's claws scraping the floor, the sloth sobbing. The battered briefcase lies abandoned on the carpet. The heavy door is swinging shut. In the foreground, the animal ministers sit frozen in silence.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
 PLACE: the State Council Room in the government building of the Memorial Republic: a long wooden conference table, a podium at one end, white chrysanthemums in vases on the table, tall windows with morning sunlight, and on the wall the national flag (navy blue with golden crescents cradling a candle flame above a white lotus) draped with a black mourning ribbon
@@ -728,7 +731,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 SCENE: In the TV studio. Aeguk-jwasu walks onto the stage under a spotlight, today wearing a neat black suit and black leather gloves instead of the camouflage jacket (same grey wolf face), and bows politely to the audience with one gloved paw over the heart. Nearby, Lee Gija sits tied to the chair with the head hanging low, a few cartoon bandage plasters on the face and a torn shirt (storybook style, not graphic).
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
 PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
@@ -746,7 +749,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: In the TV studio. John Pukta, tied to the chair, throws the head back cackling mockingly, sunglasses slipping crooked, little laughing-face icons popping in the air (no text). Aeguk-jwasu, in a neat black suit and black leather gloves, strolls closer with gloved paws clasped behind the back and a polite smile.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 
 PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
@@ -764,7 +767,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: In the TV studio, a close-up. Aeguk-jwasu, in a neat black suit and black leather gloves, leans down toward John Pukta with the head tilted, asking a question with an exaggeratedly polite smile. John Pukta, still tied up, smirks and sneers back defiantly. Big TV cameras with red lights surround them.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 
 PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
@@ -782,7 +785,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: In the TV studio, a slapstick gag drawn in an exaggerated cartoon way (not violent). Aeguk-jwasu gives John Pukta a light flick on the cheek with a gloved paw, cartoon motion lines whooshing; John Pukta's sunglasses fly off comically and little stars circle the head. The wolf bows with a fake innocent "oops, my hand slipped" face, one paw over the mouth.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 
 PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
@@ -800,7 +803,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: In the TV studio, a satirical crowd scene. The animal audience leaps to their feet, clapping and cheering wildly, some pumping fists, faces lit by harsh stage lights. On the stage below, Aeguk-jwasu's eyes have turned cold, while John Pukta sits dazed in the chair with cartoon stars circling, sunglasses gone. Exaggerated, slightly unsettling black-comedy mood.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - John Pukta (an online troll) = a sneaky black rat in an oversized black hoodie and round dark sunglasses, with a sly, cackling grin. NOT a human
 
 PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
@@ -818,7 +821,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: In the TV studio. Chumo-daejang leans right into the lens of a big TV camera with a red on-air light, microphone in hand, grinning enormously at the viewers. Behind, slightly out of focus, Aeguk-jwasu in the black suit turns gently toward Lee Gija, who trembles in the chair and shakes the head in fear.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 
@@ -837,7 +840,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 SCENE: In the TV studio. Aeguk-jwasu, in a neat black suit and black leather gloves, rests one gloved paw on top of Lee Gija's head, pressing it down, still smiling politely, and holds up the other paw with fingers spread as if announcing a big number. Lee Gija, tied up and teary-eyed, nods frantically. Cameras zoom in.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 
 PLACE: the glitzy studio of the Memorial Republic national TV station: bright colorful spotlights and lighting rigs, big TV cameras on dollies with red on-air lights, a raised stage, and tiered seats packed with a studio audience of animals in suits
@@ -1079,7 +1082,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 SCENE: Character portrait of Aeguk-jwasu for the book's cast appendix: full figure, centered, in a typical pose, simple softly lit background.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
@@ -2386,7 +2389,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: Chumo-daejang asks the crowd what to do with lazy and fake memorial-goers - "Correct them!" shouts someone from the Platinum seats. "Then let's welcome the master of memorial correction, Corrections Officer Aeguk-jwasu!" Aeguk-jwasu enters in a neat suit and leather gloves, bowing politely, followed by three people with tied hands being led out. COMPOSITION (vertical): Top: Chumo-daejang on one side of the stage with an arm flung out in introduction. Middle: Aeguk-jwasu walking into a white spotlight, bowing courteously, gloved hands folded. Bottom: behind, two bulldog guards leading out three captives with hands tied in front: Kim Manwoo, Sim Jinwoo and Choi Muhyeon, heads down. CHARACTERS: Aeguk-jwasu (grey wolf in a neat black suit, white shirt, black tie and black leather gloves; extremely polite smile with a manic glint in the eyes), Kim Manwoo (human, exactly as ref-kim-manwoo.png), Sim Jinwoo (human, exactly as ref-sim-jinwoo.png), Choi Muhyeon (human, exactly as ref-choi-muhyeon.png, shirt half-torn, lanyard card wallet), Chumo-daejang (elephant, sky-blue '추모대장' T-shirt). MOOD: A show of fear dressed as entertainment.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 - Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
@@ -2407,7 +2410,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 SCENE: At the grand theater. SCENE: "First, Kim Manwoo! Not a single memorial event in six months - even though three big memorial cases happened!" Boos rain down. The big screen shows Kim's phone settings: memorial alerts switched to "Do Not Disturb". The boos double. "I-I was busy..." Aeguk-jwasu lays a gloved hand on Kim's shoulder: "I am truly sorry, but that is no excuse." COMPOSITION (vertical): Top: the giant LED screen showing a huge phone settings screen with a bell icon crossed out and a moon icon (no readable text). Middle: Kim Manwoo standing hunched with tied hands, sweating, stammering. Bottom: Aeguk-jwasu's black-gloved hand resting on Kim's shoulder, the wolf smiling politely; the audience booing with thumbs down. CHARACTERS: Kim Manwoo (human, exactly as ref-kim-manwoo.png), Aeguk-jwasu (grey wolf, black suit, black leather gloves). MOOD: Public shaming, played as dark comedy.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2425,7 +2428,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: Aeguk-jwasu's grip tightens - "Argh!" - "Please don't scream. I don't like hearing it." Kim Manwoo kneels and shouts to the audience: "I'm sorry I missed the big memorial cases! I'm sorry I neglected memorial!" Applause bursts out. COMPOSITION (vertical): Top: a cartoon close-up of the gloved hand squeezing the shoulder with little comic stress lines (no injury). Middle: Kim Manwoo on both knees at center stage, crying out toward the audience with comic tears. Bottom: the audience clapping happily. CHARACTERS: Kim Manwoo (human, exactly as ref-kim-manwoo.png), Aeguk-jwasu (grey wolf, black suit, gloves, polite smile). MOOD: Slapstick cruelty - comic, never graphic.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2443,7 +2446,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: "Second, Sim Jinwoo! Joined every big memorial case, but with no sincerity - only for experience points!" The screen shows Sim's records: every participation lasted exactly 1 minute 1 second, the minimum to earn points. "But I attended every time!" "You did attend," Aeguk-jwasu nods. "But without sincerity. That is fraud disguised as memorial." COMPOSITION (vertical): Top: the LED screen showing a long column of identical stopwatch icons, each stopped at the same tiny slice (no numbers). Middle: Sim Jinwoo protesting with tied hands raised, indignant. Bottom: Aeguk-jwasu nodding slowly with a courteous, chilling smile. CHARACTERS: Sim Jinwoo (human, exactly as ref-sim-jinwoo.png), Aeguk-jwasu (grey wolf, black suit, gloves). MOOD: Absurd accusation.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2461,7 +2464,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: Aeguk-jwasu lightly slaps Sim's cheek - "Ah!" - "Oh, I'm sorry. My hand slipped." The audience laughs: those who watched the reality show know the line. "You can slip once more!" someone shouts. "If you all wish..." COMPOSITION (vertical): Top: a cartoon slap - Aeguk-jwasu's gloved hand mid-swing with motion lines, Sim Jinwoo's face turned with a comic star, cheek a little pink (no injury). Middle: Aeguk-jwasu bowing apologetically with a hand on the chest. Bottom: the audience laughing, one animal standing up and shouting with a paw cupped to its mouth. CHARACTERS: Sim Jinwoo (human, exactly as ref-sim-jinwoo.png), Aeguk-jwasu (grey wolf, black suit, gloves). MOOD: Slapstick, uncomfortable laughter.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2481,7 +2484,7 @@ SCENE: At the grand theater. SCENE: Smiling, Aeguk-jwasu swings again, harder - 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2535,7 +2538,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: Aeguk-jwasu, still polite, charges Choi Muhyeon with "deceiving the nation": carrying the card of "the face of the Memorial Republic" while neglecting a memorial-goer's duty. Choi protests weakly that his job was only to promote. "Promotion without sincerity is propaganda. If you didn't understand, we must teach you." Aeguk-jwasu claps once. COMPOSITION (vertical): Top: Aeguk-jwasu holding up Choi's name card between two gloved fingers like evidence. Middle: Choi Muhyeon pleading weakly, sweat on the brow. Bottom: Aeguk-jwasu's gloved hands meeting in a single sharp clap, a little burst of motion lines. CHARACTERS: Aeguk-jwasu (grey wolf, black suit, gloves), Choi Muhyeon (human, ref-choi-muhyeon.png). MOOD: Polite menace.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2553,7 +2556,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: A silly game-show "hot seat" is rolled out from the wings for the final round of the memorial quiz: a big ornate armchair surrounded by white chrysanthemums, a golden candle emblem (copy flag.png) on its backrest, and a giant red quiz buzzer button on a stand beside it. The audience gasps with delight: "Awesome!" "Is that real?" Aeguk-jwasu politely invites Choi Muhyeon to sit, and rests a gloved hand on the big buzzer button. COMPOSITION (vertical): Top: two bulldog stagehands rolling in the ornate chair on a little platform, chrysanthemums piled around it, little light bulbs blinking around the frame like a TV quiz show. Middle: Choi Muhyeon sitting in the chair, gulping nervously, hands gripping the armrests. Bottom: Aeguk-jwasu standing beside a big red quiz buzzer, one gloved hand hovering over it, smiling courteously; the audience leaning forward excitedly. CHARACTERS: Aeguk-jwasu (grey wolf, neat black suit, black leather gloves, polite smile with a manic glint), Choi Muhyeon (human, MIDDLE person in humans-who-is-who.jpg: side-parted black hair, thin glasses, light-blue shirt half-torn, lanyard name-card wallet). MOOD: An absurd, over-the-top TV quiz show.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2571,7 +2574,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: "What is your position?" "...I won't answer." "Wrong answer!" BUZZ! The penalty buzzer goes off: the chair shakes like a funny vibrating massage chair and a puff of static fluff pops up - Choi's hair instantly frizzes out in every direction like a big chrysanthemum. The audience bursts into laughter. "Again - your position?" "...Memorial PR Chief." COMPOSITION (vertical): Top: Aeguk-jwasu pressing the big red buzzer, a cartoon "wrong answer" X lighting up on the screen behind. Middle: Choi Muhyeon bouncing slightly in the vibrating chair with wobble lines, eyes wide in surprise, his hair puffed out comically like a huge round chrysanthemum, a few cartoon static sparkles. Bottom: the audience roaring with laughter, pointing. CHARACTERS: Choi Muhyeon (human, MIDDLE person in humans-who-is-who.jpg), Aeguk-jwasu (grey wolf, black suit, gloves). MOOD: Pure slapstick game-show gag - silly, not painful.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2589,7 +2592,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: "Correct! Then the PR Chief's most important duty?" BUZZ! "To pile up memorial experience points! To memorialize hard!" "Wonderful!" cheers Chumo-daejang. "What does your business card exist for?" "...For the responsibility to memorialize hard." COMPOSITION (vertical): Top: Chumo-daejang bouncing at the side of the stage, clapping, whistle in the mouth. Middle: Choi Muhyeon in the quiz chair with puffy frizzed hair, shouting the answer as fast as he can, a little "ding!" sparkle above for a correct answer. Bottom: Aeguk-jwasu nodding approvingly like a strict quiz-show host, gloved finger raised. CHARACTERS: Choi Muhyeon (human, MIDDLE person in humans-who-is-who.jpg), Aeguk-jwasu (grey wolf, black suit, gloves), Chumo-daejang (grey elephant, NO hair, plain sky-blue T-shirt with only the white '추모대장' letters, silver whistle). MOOD: An absurd quiz show.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 
@@ -2608,7 +2611,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 SCENE: At the grand theater. SCENE: "Last question. What becomes of an official who neglected memorial?" A long silence. "...The Memorial Republic... is great..." "Wrong answer!" BUZZ! "The Memorial Republic is great! I was a bad official! I will memorialize hard!" COMPOSITION (vertical): Top: Aeguk-jwasu leaning politely toward Choi with a microphone, patient smile. Middle: Choi Muhyeon in the quiz chair, hair now a giant frizzy puffball, shouting the answer with his eyes squeezed shut and comic sweat drops flying. Bottom: the big red buzzer flashing, a cartoon "X" and confetti popping. CHARACTERS: Choi Muhyeon (human, MIDDLE person in humans-who-is-who.jpg), Aeguk-jwasu (grey wolf, black suit, gloves). MOOD: Comic exaggeration with a bitter satirical edge.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2627,7 +2630,7 @@ SCENE: At the grand theater. SCENE: The audience rises in a standing ovation: "B
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2644,7 +2647,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 SCENE: At the grand theater. SCENE: Aeguk-jwasu lines up the three contestants. "Now, greet everyone." "We were bad memorial-goers! But we have learned our lesson! We will pile up experience points! Long live the Memorial Republic!" The hall answers: "Long live!" Chumo-daejang blows the whistle to keep the beat: beep, hurray! beep, hurray! COMPOSITION (vertical): Top: the three humans standing in a row, bowing deeply in unison, left to right exactly as in humans-who-is-who.jpg - Kim Manwoo (navy puffer jacket, jeans), Choi Muhyeon (light-blue shirt half-torn, lanyard, hair still frizzy), Sim Jinwoo (white shirt, round glasses). Middle: Chumo-daejang beside them, whistle in the mouth, one arm pumping the rhythm. Bottom: the audience raising fists and chanting. CHARACTERS: the three humans above, Chumo-daejang (grey elephant, plain sky-blue '추모대장' T-shirt, silver whistle). MOOD: Forced, over-the-top cheering.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 - Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 - Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
@@ -2692,7 +2695,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
 - Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 
 PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 
@@ -2713,7 +2716,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
 - Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 
 PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 
@@ -2732,7 +2735,7 @@ SCENE: In the dressing room. SCENE: The room stirs. "Director?" asks Chumo-hamni
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 
 PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 
@@ -2826,7 +2829,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 
 PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 
@@ -2883,7 +2886,7 @@ SCENE: In the dressing room. SCENE: After the President leaves, Aeguk-jwasu bows
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
 
 PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 
@@ -2921,6 +2924,420 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 
 PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 1장: 첩보전의 서막 – 추모정보원장의 중대발표
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 1쪽 (책 157쪽)
+
+✅ `forever/images/18-01.webp`
+
+```text
+1-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: 4 a.m. President Minju-simin sits alone at the head of the table, waiting for the others - calm, composed, completely unreadable. Only the President is in this picture. COMPOSITION (vertical): A centered medium shot of the President ONLY - no other chairs, no long table stretching away. Top: the softly lit marble wall behind him with the two national flags on gold poles on either side and an elegant wall clock showing 4 o'clock between them. Middle: Minju-simin seated in a tall navy leather chair, upper body above the near end of the walnut table, yellow wing-hands calmly folded on the table. Bottom: the near edge of the table with a closed leather folder, a fountain pen and one small crystal vase of white chrysanthemums. EXPRESSION: calm and neutral, exactly like minju-simin-profile.jpg. LIGHT & COLOR: Warm, refined golden light with navy accents, a quiet undercurrent of tension. MOOD: The calm center of power before the storm.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 2쪽 (책 158쪽)
+
+✅ `forever/images/18-02.webp`
+
+```text
+1-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The others have taken their seats. Ttalgi and Hamji sit on either side of the President, arms folded, not looking at each other - with the Memorial Olympics two weeks away, they are already enemies. Two chairs stand empty: Deul-neoguri's (he has left the country) and Lee Gija's (locked up in the Corrections Bureau). Chumo-hamnido gestures toward the empty seats. COMPOSITION (vertical): A wide establishing shot from the far end of the long table, showing the whole room. Top: the marble wall with the two national flags and the clock. Middle: Minju-simin at the head of the table; Ttalgi at his right and Hamji at his left, each turned sharply away from the other. Further down: Chumo-hamnido pointing at the empty seats with a rolled newspaper, and Aeguk-jwasu sitting upright in his corrections uniform, baton across his lap, polite smile. Bottom (foreground): two EMPTY leather chairs facing each other across the table. WHO IS IN THE ROOM: ONLY Minju-simin, Ttalgi, Hamji, Chumo-hamnido and Aeguk-jwasu. No gorilla, no sloth, no humans, nobody else. MOOD: Cold rivalry and absence in a beautiful room.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 3쪽 (책 159쪽)
+
+✅ `forever/images/18-03.webp`
+
+```text
+1-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The tall double door opens and Chumo-yeolsa walks in - today in a BLACK suit and round dark sunglasses, at 4 a.m. three floors underground, and nobody asks why. "Sorry I'm late, Your Excellency." "Sit down." COMPOSITION (vertical): Top: the polished double door swinging open, light spilling in. Middle: Chumo-yeolsa striding in like a movie spy - black suit, black tie, sunglasses on the teddy-bear face, a tablet tucked under one arm. Bottom: the others turning to look; Hamji blinking at the sunglasses in confusion. MOOD: Comic spy-movie entrance.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 4쪽 (책 160쪽)
+
+✅ `forever/images/18-04.webp`
+
+```text
+1-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The Olympics status report. Ttalgi: the Strategy Team has 237 Platinum and Gold members and an algorithm to maximize memorial power when a big memorial case hits. Hamji: the Pure Team has 83 members who refused all rewards - "Few in number, but their sincerity..." COMPOSITION (vertical): Top: the wall screen with two bars - a tall cool-blue bar of many tiny figures and a short warm-gold bar of a few figures (no numbers). Middle: Ttalgi presenting confidently with the tablet. Bottom: Hamji leaning forward earnestly, bandaged paws clasped over the heart. MOOD: David against Goliath.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 5쪽 (책 161쪽)
+
+✅ `forever/images/18-05.webp`
+
+```text
+1-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: Chumo-hamnido scoffs that 83 can't beat 237; Hamji cries that sincerity can't be measured in numbers. Minju-simin silences them and asks Director Aeguk-jwasu about refereeing. Aeguk-jwasu bows politely: twelve kinds of correction equipment, a 50-member instant correction squad, and three mobile "memorial chairs." COMPOSITION (vertical): Top: Chumo-hamnido and Hamji leaning toward each other across the table, arguing. Middle: Minju-simin raising one wing for silence, calm. Bottom: Aeguk-jwasu in his corrections uniform, baton under one arm, bowing politely while holding up a glossy brochure of three cartoonish ornate armchairs on wheels and a row of comic gadgets (no text). MOOD: Absurd bureaucracy with menace underneath.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 6쪽 (책 162쪽)
+
+✅ `forever/images/18-06.webp`
+
+```text
+1-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: Just as the President moves on, Chumo-yeolsa interrupts: there is a grave matter far more serious than the Olympics. The air in the room freezes. Chumo-yeolsa lays the tablet on the table. COMPOSITION (vertical): Top: everyone around the table turning toward Chumo-yeolsa, frozen, frost-like stillness lines in the air. Middle: Chumo-yeolsa standing, placing the tablet on the table; its screen glows red with a big padlock-and-stamp "top secret" icon (no text). Bottom: Minju-simin's calm face, eyes fixed on the tablet. MOOD: Sudden chill.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 7쪽 (책 163쪽)
+
+✅ `forever/images/18-07.webp`
+
+```text
+1-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: Chumo-yeolsa takes off the sunglasses - the blank button eyes look even colder. "72 hours ago, our surveillance network 'Quantum Eye' caught a man." A photo appears: Park Wootae, real name Pu Youtai, an agent of the hostile Memorial People's Republic. The room stirs. COMPOSITION (vertical): Top: the wall screen showing a glowing eye-shaped radar logo over a city map, and a mugshot-style photo of Park Wootae (exactly as ref-park-wootae.png) inside a red target circle. Middle: Chumo-yeolsa holding the sunglasses in one paw, expressionless. Bottom: the others leaning in, shocked. MOOD: Spy-thriller reveal.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 8쪽 (책 164쪽)
+
+✅ `forever/images/18-08.webp`
+
+```text
+1-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: "The Memorial People's Republic?" asks Ttalgi. The hostile state to the north - the same memorial system, but "people's memorial" against the Republic's "free memorial." Park Wootae infiltrated for seven years, collecting the Republic's core secrets. COMPOSITION (vertical): Top: a wall-screen map - the Memorial Republic in navy and gold, and to the north a rival country in dark red with an invented grey candle emblem (NOT a real country's flag), a jagged border between them. Middle: Chumo-yeolsa pointing at the map. Bottom: Ttalgi frowning, Hamji clutching the table edge. MOOD: A new enemy appears.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 9쪽 (책 165쪽)
+
+✅ `forever/images/18-09.webp`
+
+```text
+1-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The screen lists the leaked state secrets: the memorial-power algorithm, the experience-point source code, a database of how 28.47 million citizens memorialize, the big-memorial-case prediction model, the tier-system blueprint, the Memorial Association's finances, and the Corrections Bureau manual. COMPOSITION (vertical): The wall screen fills most of the page: seven glowing red file icons in a column (a gear, a code bracket, a crowd, a crystal ball, a pyramid, a coin stack, a rulebook), each with a red warning arrow flying off toward the north (no readable text). At the bottom, the cabinet seen from behind, watching in horror. MOOD: Disaster.
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 10쪽 (책 166쪽)
+
+✅ `forever/images/18-10.webp`
+
+```text
+1-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: Ttalgi goes pale: "This is... this is..." "Everything the Memorial Republic is," says Chumo-yeolsa. Hamji springs up: "Blasphemy! Betrayal! He is a devil!" "Be quiet, Chief Hamji." Hamji sits back down, trembling. COMPOSITION (vertical): Top: Ttalgi frozen, eyes wide, tablet slipping. Middle: Hamji jumping up on the chair, fists raised, cheeks puffed in fury. Bottom: Minju-simin raising one wing, calm and cold. MOOD: Panic and fury.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 11쪽 (책 167쪽)
+
+✅ `forever/images/18-11.webp`
+
+```text
+1-11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: In the worst case, the enemy could copy the whole system - or build a better one. Ttalgi asks which version leaked. "The latest, Chief - including your own complete Tier System." Ttalgi's composure cracks. COMPOSITION (vertical): Top: the wall screen showing a pyramid diagram being copied into a second, darker red pyramid on the other side (no text). Middle: Chumo-yeolsa turning toward Ttalgi. Bottom: Ttalgi's eyes going wide, one paw pressed to the chest. MOOD: A personal blow.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 12쪽 (책 168쪽)
+
+✅ `forever/images/18-12.webp`
+
+```text
+1-12. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: "Only six people had access..." "His Excellency, Chief Ttalgi, myself, Chief Chumo-hamnido... and Lee Gija and Hai." "Already purged." Park hacked the two lazy officials' devices. Hamji clenches a fist: the spy must pay publicly, slowly, painfully. "Be quiet." COMPOSITION (vertical): Top: six small portrait icons on the screen; two of them - a shaggy sloth and a sleepy koala - flash red with a cartoon crack. Middle: an inset of an old laptop with a cartoon bug crawling out (hacked). Bottom: Hamji gripping the table edge, eyes burning; Chumo-hamnido nodding grimly. MOOD: The guilty are already gone.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
+- Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 13쪽 (책 169쪽)
+
+✅ `forever/images/18-13.webp`
+
+```text
+1-13. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: Park Wootae is locked in the underground interrogation room, caught 72 hours ago; he hasn't confessed, but the evidence is enough. There are likely three to five more agents. COMPOSITION (vertical): Top: Minju-simin asking, wings resting on the table, calm. Middle: Chumo-yeolsa answering, the tablet showing a small locked-room icon and five question-mark silhouettes (no text). Bottom: the others glancing suspiciously at each other - who else could be a spy? MOOD: Paranoia spreads.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 14쪽 (책 170쪽)
+
+✅ `forever/images/18-14.webp`
+
+```text
+1-14. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The President falls silent. Every eye turns to him. Then Minju-simin smiles - a small, cold smile. "Excellent." "Pardon...?" "This is not a crisis. It is an opportunity." COMPOSITION (vertical): A dramatic low-angle close-up of Minju-simin's round yellow rubber-duck face, the wide bill curving into a small, cold smile, black dot eyes unreadable, NO eyebrows. Behind him, the edge of a national flag and the cabinet's stunned faces in soft shadow. EXPRESSION: a small cold smile only - still the same rubber-duck face as minju-simin-profile.jpg. MOOD: Chilling.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 15쪽 (책 171쪽)
+
+✅ `forever/images/18-15.webp`
+
+```text
+1-15. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: "An outside enemy has appeared. A spy was among us. What does it mean? National unity. Now we can give the memorial-goers a common enemy." Ttalgi's eyes light up. COMPOSITION (vertical): Top: Minju-simin standing at the head of the table, one wing raised like a statesman. Middle: a vision above the table of crowds of animal citizens who had been arguing, now turning together toward a dark shadowy figure on the horizon. Bottom: Ttalgi's green eyes glinting with understanding. MOOD: Political genius, dark and cold.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 16쪽 (책 172쪽)
+
+✅ `forever/images/18-16.webp`
+
+```text
+1-16. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The plan: unveil Park Wootae at the Olympics opening ceremony and repackage the Olympics as a patriotic event against the Memorial People's Republic - the Strategy Team becomes the "Memorial Security Team," the Pure Team the "Memorial Purity Guard." COMPOSITION (vertical): Top: a vision of a huge stadium opening ceremony with fireworks and two team banners - a cool-blue shield banner and a white-and-gold lily banner (no text). Middle: Minju-simin outlining it with a wing. Bottom: Ttalgi and Hamji both looking up at the vision, for once in the same direction. MOOD: Grand propaganda.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 17쪽 (책 173쪽)
+
+✅ `forever/images/18-17.webp`
+
+```text
+1-17. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The President tells Hamji this is the chance for pure memorial to shine. Hamji kneels, overwhelmed, bandaged fingers touching the floor: "Thank you... I will defeat the enemy with pure memorial..." COMPOSITION (vertical): Top: Minju-simin looking down at Hamji with a calm nod. Middle: Hamji kneeling on the polished marble floor, eyes shining with tears of joy. Bottom: Ttalgi at the side, watching with an unreadable side-glance. MOOD: Devotion rekindled.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 18쪽 (책 174쪽)
+
+✅ `forever/images/18-18.webp`
+
+```text
+1-18. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: Ttalgi praises the plan and promises a "Memorial Security Response Manual." The President orders Director Aeguk-jwasu to prepare a "Spy Memorial Correction Show" for the opening ceremony. "An honor, Your Excellency." COMPOSITION (vertical): Top: Ttalgi bowing slightly, tablet glowing with plans. Middle: Aeguk-jwasu in his corrections uniform bowing deeply, one paw on the chest and the baton in the other, a gleeful glint in the eyes. Bottom: a faint vision of a stadium stage with a spotlight on an empty ornate chair. MOOD: The plot is set.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 19쪽 (책 175쪽)
+
+✅ `forever/images/18-19.webp`
+
+```text
+1-19. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: state meeting room. SCENE: The spy case must stay absolutely secret until the opening ceremony. "Yes, Your Excellency," everyone answers at once. "Meeting adjourned. In two weeks, the whole nation will know our enemy." COMPOSITION (vertical): Top: Minju-simin standing between the two national flags, a wing tip raised to the bill in a "secret" gesture. Middle: everyone around the table - Ttalgi, Hamji, Chumo-yeolsa, Chumo-hamnido, Aeguk-jwasu - nodding in unison. Bottom: the tall double door closing, a small padlock icon glowing on a security panel beside it. MOOD: A sealed conspiracy.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 20쪽 (책 176쪽)
+
+✅ `forever/images/18-20.webp`
+
+```text
+1-20. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: the marble corridor outside the state meeting room. SCENE: Leaving the room, Ttalgi needles Hamji: "Can pure memorial really defeat a spy?" Hamji: "Purity beats everything - spies, betrayal, and your cold strategy." Ttalgi sneers and walks out. COMPOSITION (vertical): Top: the marble corridor lit by warm wall sconces. Middle: Ttalgi walking away, glancing back with a smirk. Bottom: Hamji standing firm, small but determined, fists clenched. MOOD: Rivalry renewed.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 21쪽 (책 177쪽)
+
+✅ `forever/images/18-21.webp`
+
+```text
+1-21. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: interrogation room. SCENE: Meanwhile, in the underground interrogation room: Park Wootae, tied to a chair. A black-panther agent stands before him: "Last time: how many more agents?" Park says nothing - and laughs. COMPOSITION (vertical): Top: bare concrete walls and a single humming fluorescent light. Middle: Park Wootae (exactly as ref-park-wootae.png) tied to a metal chair with rope, messy hair, a small cartoon bandage on the cheek, a defiant crooked grin. Bottom: the back of the black-panther agent in a black suit with an earpiece, leaning over the table. MOOD: Tense interrogation - no blood, no realistic injury.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 22쪽 (책 178쪽)
+
+✅ `forever/images/18-22.webp`
+
+```text
+1-22. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: interrogation room. SCENE: "You've already lost... your memorial is fake... ours is real..." The agent slaps him - "Shut up!" - but Park keeps laughing. The fluorescent tube flickers. COMPOSITION (vertical): Top: the fluorescent tube flickering, half the room going dark. Middle: Park Wootae laughing defiantly, head tilted back, a cartoon motion line on his cheek from the slap (no blood). Bottom: the panther agent's raised paw, frozen; long shadows on the concrete. LIGHT & COLOR: Cold green-white flicker, deep shadows. MOOD: Ominous cliffhanger.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```

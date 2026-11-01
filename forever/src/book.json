@@ -16,7 +16,9 @@
     "conference room": "the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner",
     "bui's house": "the old tortoise Bui's traditional Korean house: a quiet room with paper sliding doors, a low wooden tea table, a low lamp and a scroll painting of mountains",
     "grand theater": "the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind",
-    "dressing room": "the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light"
+    "dressing room": "the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light",
+    "interrogation room": "a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair",
+    "state meeting room": "the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy"
   },
   "등장인물": {
     "민주시민": {
@@ -66,8 +68,8 @@
     },
     "애국좌수": {
       "en": "Aeguk-jwasu",
-      "role": "Memorial Corrections Officer (prison warden)",
-      "look": "a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human"
+      "role": "Director of the Memorial Corrections Bureau (from Part 3)",
+      "look": "a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human"
     },
     "최무현": {
       "en": "Choi Muhyeon",
@@ -129,6 +131,11 @@
       "en": "Sim Jinwoo",
       "role": "a fake memorial-goer who joined only for experience points",
       "look": "a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)"
+    },
+    "박우태": {
+      "en": "Park Wootae",
+      "role": "a spy from the Memorial People's Republic (real name Pu Youtai)",
+      "look": "a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)"
     }
   },
   "표지그림": "Morning light on the grand stone steps of the Memorial Republic government building, its entrance decorated with black mourning ribbons, white chrysanthemum wreaths and the national flag. President Minju-simin stands proudly in the center. On both sides stand Chumo-yeolsa holding the tablet, Deul-neoguri saluting, Bui with arms folded, and Chumo-hamnido clutching newspapers, all solemn. In a corner of the steps, Hai is slumped and yawning. At the bottom, Lee Gija is scrambling up the stairs late with a briefcase, sweat flying. Far away, peeking from behind a pillar in the shadows, John Pukta watches with a sly grin. Leave clear open sky at the top for the book title (do not write any title)."
