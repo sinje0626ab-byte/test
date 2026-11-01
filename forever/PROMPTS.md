@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **13장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -2678,7 +2678,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 1쪽 (책 144쪽)
 
-⬜ 저장 이름: `17-01.webp`
+✅ `forever/images/17-01.webp`
 
 ```text
 9-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -2701,7 +2701,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 2쪽 (책 145쪽)
 
-⬜ 저장 이름: `17-02.webp`
+✅ `forever/images/17-02.webp`
 
 ```text
 9-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -2722,7 +2722,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 3쪽 (책 146쪽)
 
-⬜ 저장 이름: `17-03.webp`
+✅ `forever/images/17-03.webp`
 
 ```text
 9-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -2741,7 +2741,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 4쪽 (책 147쪽)
 
-⬜ 저장 이름: `17-04.webp`
+✅ `forever/images/17-04.webp`
 
 ```text
 9-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -2760,7 +2760,7 @@ No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean le
 
 ### 9장: 공연 후 - 새로운 권력 5쪽 (책 148쪽)
 
-⬜ 저장 이름: `17-05.webp`
+✅ `forever/images/17-05.webp`
 
 ```text
 9-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -2779,7 +2779,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 6쪽 (책 149쪽)
 
-⬜ 저장 이름: `17-06.webp`
+✅ `forever/images/17-06.webp`
 
 ```text
 9-6. 2D watercolor storybook illustration, vertical 2:3.
@@ -2797,7 +2797,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 7쪽 (책 150쪽)
 
-⬜ 저장 이름: `17-07.webp`
+✅ `forever/images/17-07.webp`
 
 ```text
 9-7. 2D watercolor storybook illustration, vertical 2:3.
@@ -2815,7 +2815,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 8쪽 (책 151쪽)
 
-⬜ 저장 이름: `17-08.webp`
+✅ `forever/images/17-08.webp`
 
 ```text
 9-8. 2D watercolor storybook illustration, vertical 2:3.
@@ -2835,7 +2835,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 9쪽 (책 152쪽)
 
-⬜ 저장 이름: `17-09.webp`
+✅ `forever/images/17-09.webp`
 
 ```text
 9-9. 2D watercolor storybook illustration, vertical 2:3.
@@ -2854,7 +2854,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 10쪽 (책 153쪽)
 
-⬜ 저장 이름: `17-10.webp`
+✅ `forever/images/17-10.webp`
 
 ```text
 9-10. 2D watercolor storybook illustration, vertical 2:3.
@@ -2873,7 +2873,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 11쪽 (책 154쪽)
 
-⬜ 저장 이름: `17-11.webp`
+✅ `forever/images/17-11.webp`
 
 ```text
 9-11. 2D watercolor storybook illustration, vertical 2:3.
@@ -2892,7 +2892,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 12쪽 (책 155쪽)
 
-⬜ 저장 이름: `17-12.webp`
+✅ `forever/images/17-12.webp`
 
 ```text
 9-12. 2D watercolor storybook illustration, vertical 2:3.
@@ -2910,7 +2910,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 9장: 공연 후 - 새로운 권력 13쪽 (책 156쪽)
 
-⬜ 저장 이름: `17-13.webp`
+✅ `forever/images/17-13.webp`
 
 ```text
 9-13. 2D watercolor storybook illustration, vertical 2:3.
