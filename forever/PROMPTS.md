@@ -37,7 +37,7 @@ CHARACTERS (always the same species, colors and outfit):
 - Eoheung (Chief of the Memorial Weather Agency) = a chubby little tiger cub in a brown suit with a blue tie, paws clasped in front. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Bui (Elder statesman) = a very old, wise tortoise with long white eyebrows and a white beard, wearing a navy-blue Korean durumagi (hanbok overcoat), usually standing with arms folded and an indifferent face. NOT a human
 - Lee Gija (Chief of Memorial Legal Affairs, always late) = a shaggy brown sloth in a wrinkled white shirt with a crooked tie, messy fur, beads of sweat, a battered briefcase under one arm. NOT a human
 - Hai (a lazy senior official) = a sleepy grey koala in a rumpled suit with a loosened tie, half-closed droopy eyes, always slouching and yawning. NOT a human
@@ -47,8 +47,8 @@ CHARACTERS (always the same species, colors and outfit):
 - Doberman bodyguards (the Presidential Security Detail) = two tall Doberman pinschers in black suits, white shirts and black ties, dark sunglasses and coiled earpiece wires, hands clasped in front, standing motionless at attention. NOT humans
 - meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
 - chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
-- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human character drawn as a simple cartoon in the book's style, matching ref-kim-manwoo.png (made from the author's reference photo)
-- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human character drawn as a simple cartoon in the book's style, matching ref-sim-jinwoo.png (made from the author's reference photo)
+- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
+- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 (Text exception: the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided) - this is the ONLY text allowed in any picture.)
 
 PLACES:
@@ -1744,7 +1744,7 @@ SCENE: At the grand theater. SCENE: Beside the line, two prison guards drag away
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2386,10 +2386,10 @@ SCENE: At the grand theater. SCENE: Chumo-daejang asks the crowd what to do with
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
-- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human character drawn as a simple cartoon in the book's style, matching ref-kim-manwoo.png (made from the author's reference photo)
-- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human character drawn as a simple cartoon in the book's style, matching ref-sim-jinwoo.png (made from the author's reference photo)
+- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
+- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2407,7 +2407,7 @@ SCENE: At the grand theater. SCENE: "First, Kim Manwoo! Not a single memorial ev
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human character drawn as a simple cartoon in the book's style, matching ref-kim-manwoo.png (made from the author's reference photo)
+- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2425,7 +2425,7 @@ SCENE: At the grand theater. SCENE: Aeguk-jwasu's grip tightens - "Argh!" - "Ple
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human character drawn as a simple cartoon in the book's style, matching ref-kim-manwoo.png (made from the author's reference photo)
+- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2443,7 +2443,7 @@ SCENE: At the grand theater. SCENE: "Second, Sim Jinwoo! Joined every big memori
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human character drawn as a simple cartoon in the book's style, matching ref-sim-jinwoo.png (made from the author's reference photo)
+- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2461,7 +2461,7 @@ SCENE: At the grand theater. SCENE: Aeguk-jwasu lightly slaps Sim's cheek - "Ah!
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human character drawn as a simple cartoon in the book's style, matching ref-sim-jinwoo.png (made from the author's reference photo)
+- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2481,7 +2481,7 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human character drawn as a simple cartoon in the book's style, matching ref-sim-jinwoo.png (made from the author's reference photo)
+- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2499,7 +2499,7 @@ SCENE: At the grand theater. SCENE: "Third - today's highlight!" The last man dr
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2517,7 +2517,7 @@ SCENE: At the grand theater. SCENE: "Former PR Chief Choi Muhyeon! Carried a cab
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2535,7 +2535,7 @@ SCENE: At the grand theater. SCENE: Aeguk-jwasu, still polite, charges Choi Muhy
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2553,7 +2553,7 @@ SCENE: At the grand theater. SCENE: A chair is rolled out from the wings: surrou
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2571,7 +2571,7 @@ SCENE: At the grand theater. SCENE: "What is your position?" "...I won't answer.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2589,7 +2589,7 @@ SCENE: At the grand theater. SCENE: "Correct! Then the PR Chief's most important
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
@@ -2608,7 +2608,7 @@ SCENE: At the grand theater. SCENE: "Last question. What is the fate of an offic
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
@@ -2644,10 +2644,10 @@ SCENE: At the grand theater. SCENE: Aeguk-jwasu lines up the three. "Now, greet 
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
-- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human character (one of the few humans in the book): a cartoon office worker drawn in the same picture-book style as everyone else, matching ref-choi-muhyeon.png (made from the author's reference photo) - short black hair, light-blue shirt, khaki trousers
+- Choi Muhyeon (Chief of Memorial Public Relations (PR Chief)) = a human cartoon character: neat side-parted black hair, thin glasses, light-blue button shirt, dark trousers, a brown shoulder-bag strap across the chest; in Part 2 Chapters 4 and 8 the shirt is half-torn and a lanyard name-card wallet hangs from the neck. See humans-who-is-who.jpg (middle)
 - Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
-- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human character drawn as a simple cartoon in the book's style, matching ref-kim-manwoo.png (made from the author's reference photo)
-- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human character drawn as a simple cartoon in the book's style, matching ref-sim-jinwoo.png (made from the author's reference photo)
+- Kim Manwoo (a lazy memorial-goer who skipped memorials for six months) = a human cartoon character: messy spiky black hair, a big goofy grin, a navy quilted puffer jacket, loose blue jeans and sneakers; NO glasses. See humans-who-is-who.jpg (left)
+- Sim Jinwoo (a fake memorial-goer who joined only for experience points) = a human cartoon character: messy brown hair, round glasses, a white button shirt, dark trousers; NO lanyard, NO bag. See humans-who-is-who.jpg (right)
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
 
