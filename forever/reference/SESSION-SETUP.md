@@ -12,6 +12,7 @@
 | `humans-who-is-who.jpg` | 사람 3명 구분 (김만우, 최무현, 심진우) |
 | `ch4-style.jpg` | 2부 그림체와 대극장 |
 | `flag.png` | 국기 |
+| `aeguk-jwasu-uniform.png` | 애국좌수 교정 유니폼(3부부터). 애국좌수가 나오는 쪽에 첨부 |
 | `minju-simin-profile.jpg` | 민주시민 원본 모습(국무위원 시트에서 확대). 대통령이 나오는 쪽에 함께 첨부 |
 
 ## 설정 메시지
@@ -25,6 +26,7 @@ You are the illustrator of Part 2 of the Korean picture book "Long Live the Memo
 - humans-who-is-who.jpg: the only three human characters.
 - ch4-style.jpg: the art style.
 - flag.png: the national flag.
+- aeguk-jwasu-uniform.png (when attached): Aeguk-jwasu's corrections uniform.
 - minju-simin-profile.jpg (when attached): the President's official look - copy his face exactly.
 The name labels in the reference sheets are only for you. Never draw them.
 
@@ -39,7 +41,7 @@ FORMAT: one VERTICAL portrait image, 2:3 (1024x1536).
 - Chumo-yeolsa (Intelligence Director): a fluffy brown teddy bear with a tan muzzle, small black button eyes and a permanently blank face. Grey suit, white shirt, navy tie with tiny dots, brown shoes. Holds ONLY a tablet: no envelope, no folder, no papers.
 - Chumo-hamnido: a tall dark-grey wolf with amber eyes and a dark muzzle. Navy three-piece suit, black tie, white pocket square, often clutching newspapers. Hot-tempered.
 - Deul-neoguri (Rapper and Minister of Memorial Culture): a big black gorilla with a gentle face, black suit and tie, gold rings. His heavy gold chain is now kept by Chumo-tusu, so do NOT draw a chain on him.
-- Aeguk-jwasu (Corrections Officer): a grey wolf. In Part 2 he wears a neat black suit, white shirt, black tie and black leather gloves (in Part 1 it was a grey camouflage winter jacket with fur cuffs, a thick scarf and a baton). Extremely polite smile, manic glint in the eyes.
+- Aeguk-jwasu (Director of the Corrections Bureau): a grey wolf. From Part 3 he ALWAYS wears his corrections uniform exactly as aeguk-jwasu-uniform.png: grey camouflage quilted winter jacket with thick fur collar and cuffs, a thick grey knitted scarf, sleeve patch, utility belt with pouches, dark grey cargo trousers, fur-trimmed brown combat boots and a black baton. NO suit, NO gloves (ignore the suit version in part2-cast.jpg). Extremely polite smile, manic glint in the eyes.
 - Benesu-hoja: a dark-grey rabbit with long upright ears in a black tactical police uniform and boots, holding a black baton, with a green-and-red parrot on the LEFT shoulder.
 - Bukanistan: a white horse with a long flowing white mane, a black cowboy hat and a navy suit with tie, RIDING another white horse with a leather bridle.
 - Eoheung: a chubby tiger in a dark brown suit, white shirt and blue tie, paws clasped in front, striped tail showing.
