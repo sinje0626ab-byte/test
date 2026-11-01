@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **13장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -62,6 +62,7 @@ PLACES:
 - conference room: the big conference room of the Ministry of Memorial Culture: a long polished table, high-backed chairs, water bottles and white chrysanthemums, a big screen with a stage diagram, the national flag in the corner
 - bui's house: the old tortoise Bui's traditional Korean house: a quiet room with paper sliding doors, a low wooden tea table, a low lamp and a scroll painting of mountains
 - grand theater: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+- dressing room: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -2669,6 +2670,257 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
 
 PLACE: the Grand Theater of the Ministry of Memorial Culture, venue of 'Memorial: The Live': a grand facade with banners and the national flag, a red-carpet entrance with velvet ropes, a grey fire-escape staircase by the parking lot, and inside a huge stage with a giant LED screen, white chrysanthemums and candle lights, plush red VIP seats in front and plain seats behind
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 9장: 공연 후 - 새로운 권력
+
+### 9장: 공연 후 - 새로운 권력 1쪽 (책 144쪽)
+
+⬜ 저장 이름: `17-01.webp`
+
+```text
+9-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: After the show, an emergency meeting in the big backstage dressing room. Rows of congratulation flower wreaths for the concert stand under the light-bulb-framed mirrors; one wreath, oddly, carries a funeral-style ribbon - and nobody has bothered to fix it. The President and the inner circle gather among the wreaths. COMPOSITION (vertical): Top: a long wall of make-up mirrors framed with glowing round bulbs, and tall standing flower wreaths of white chrysanthemums and colorful flowers with long ribbons (ribbons show only squiggles, no readable text); one wreath at the edge has a black funeral ribbon. Middle and bottom: the group arriving and standing in a loose circle - Minju-simin in the center, Ttalgi, Hamji, Deul-neoguri, Chumo-yeolsa, Chumo-hamnido and Aeguk-jwasu - make-up chairs pushed aside, costumes on racks. LIGHT & COLOR: Warm bulb light from the mirrors, the rest of the room in soft shadow. MOOD: Tense calm after the storm.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 2쪽 (책 145쪽)
+
+⬜ 저장 이름: `17-02.webp`
+
+```text
+9-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: Minju-simin announces the record numbers - ratings 58.2%, satisfaction 97.3% - then turns to Aeguk-jwasu: "You showed what memorial-goers truly want: fear and entertainment. I appoint you Director of the Memorial Corrections Bureau." COMPOSITION (vertical): Top: Minju-simin standing in the center, one wing extended toward Aeguk-jwasu in a formal gesture of appointment, calm and dignified. Middle: Aeguk-jwasu receiving it with a hand on the chest, a polite smile that can't hide a gleam of triumph. Bottom: the others watching - Ttalgi with narrowed eyes, Hamji uneasy, Chumo-hamnido startled. MOOD: A new power rises.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 3쪽 (책 146쪽)
+
+⬜ 저장 이름: `17-03.webp`
+
+```text
+9-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: The room stirs. "Director?" asks Chumo-hamnido. The Corrections Bureau becomes an independent ministry with power over every insincere memorial-goer in the nation. Aeguk-jwasu bows deeply: "Your Excellency, I am truly sorry... am I really worthy?" "Enough. Tonight's audience proved it." COMPOSITION (vertical): Top: Chumo-hamnido leaning forward in disbelief, newspapers crumpled in one paw. Middle: Aeguk-jwasu bowing at a perfect deep angle, black gloves folded, eyes glinting upward. Bottom: Minju-simin nodding once, firm. MOOD: Polite menace taking power.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-hamnido (Chief of Memorial Press Control) = a tall dark-grey wolf with sharp amber eyes and slicked-back fur, navy three-piece suit, hot-tempered, always about to jump out of the chair, clutching a bundle of newspapers. NOT a human
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 4쪽 (책 147쪽)
+
+⬜ 저장 이름: `17-04.webp`
+
+```text
+9-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: Minju-simin turns to Deul-neoguri: "Your Part 1 and Part 2 were failures." "Your Excellency... Part 3 was supposed to be my stage." "No. Part 3 was always the people's stage." Deul-neoguri goes pale as everything connects: the yellow sticky note on the cue sheet, Chumo-daejang's envelope. COMPOSITION (vertical): Top: a soft, dreamlike memory overlay above Deul-neoguri - a cue sheet with a yellow sticky note, and a plain envelope - drifting like puzzle pieces clicking together (no text). Middle: Deul-neoguri, face drained of color, eyes wide. Bottom: Minju-simin, small but commanding, looking up at the big gorilla with no expression. MOOD: A cold realization.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-daejang (a Memorial Elder obsessed with forced cheerfulness) = an anthropomorphic ELEPHANT (elephant head with big floppy ears and a long trunk, no tusks, grey skin) wearing a plain sky-blue T-shirt (exact color #439ED5) with the white Korean letters '추모대장' printed large across the chest, dark navy trousers, and a silver whistle on a cord around the neck; a huge, permanent grin that never fades while the eyes stay sharp. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere, EXCEPT the white Korean letters '추모대장' on Chumo-daejang's sky-blue T-shirt (copy the lettering exactly from the attached T-shirt reference image if provided). Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 5쪽 (책 148쪽)
+
+⬜ 저장 이름: `17-05.webp`
+
+```text
+9-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: Minju-simin dismisses Deul-neoguri as Minister: either check into the Corrections Bureau for re-education, or leave the Memorial Republic. Deul-neoguri says nothing, walks out hugging his own memorial portrait taken down from the stage - and no one finds it strange. Outside the door, Chumo-tusu holds out the gold chain with both paws; Deul-neoguri looks at it, then shakes his head. COMPOSITION (vertical): Top: inside the bright dressing room, the others' silhouettes turned away. Middle: Deul-neoguri in the doorway, hugging the big gold-framed portrait of himself (gazing into the distance, black ribbon), shoulders slumped. Bottom: in the dim corridor, Chumo-tusu holding up the heavy gold chain with both paws, eyes teary; Deul-neoguri gently shaking his head. LIGHT & COLOR: Warm room light behind, cold blue corridor ahead. MOOD: A quiet, sad exit.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Deul-neoguri (Rapper and Minister of Memorial Culture) = a big black gorilla in a black suit and tie, gentle face, often giving a crisp military salute or politely bowing the head. NOT a human
+- Chumo-tusu (an over-eager senior official) = a bright-eyed, overly enthusiastic sea otter in a beige suit with a small baseball-glove pin on the lapel, sparkling eyes, always eager to raise a paw first. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 6쪽 (책 149쪽)
+
+⬜ 저장 이름: `17-06.webp`
+
+```text
+9-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: "Now, you two." Minju-simin opens the notebook he wrote in all through the show. To Ttalgi: the people's corner worked - but Jeong Woojin, emotion 3, sincerity 2, and still promoted. "Your system turned memorial into a pure transaction. Memorial without feeling is corruption." Ttalgi remembers the President's pen moving at that very moment. COMPOSITION (vertical): Top: a close view of Minju-simin's yellow wing holding the small black notebook open (pages show only squiggles and a tiny heron doodle). Middle: Minju-simin reading from it, then looking up coolly. Bottom: Ttalgi standing stiff, tablet clutched, a faint memory overlay of the President writing in the VIP seat. MOOD: The judgment begins.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 7쪽 (책 150쪽)
+
+⬜ 저장 이름: `17-07.webp`
+
+```text
+9-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: To Hamji: the pledge ceremony was moving - but 1% participation, not one young person. "I only followed your words..." "Those words are an ideological direction. You failed to tell the difference." Hamji turns to look at Ttalgi - those were Ttalgi's own words in the President's office. Ttalgi's face doesn't change, but the corner of the mouth lifts ever so slightly. Hamji falls to the knees. COMPOSITION (vertical): Top: Ttalgi in profile, expressionless, with the tiniest smirk at the corner of the mouth. Middle: Hamji's head turning toward Ttalgi in shock, eyes wide. Bottom: Hamji collapsing to the knees on the dressing-room floor, bandaged paws limp, among scattered flower petals. MOOD: Betrayal and humiliation.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 8쪽 (책 151쪽)
+
+⬜ 저장 이름: `17-08.webp`
+
+```text
+9-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: "Still, I'll give you both a chance. In two weeks, we hold the Memorial Olympics." Ttalgi will lead a Strategy Team maximizing points and rewards; Hamji a Pure Team, proving sincerity alone can win; Director Aeguk-jwasu will referee both teams and correct anyone insincere on the spot. COMPOSITION (vertical): Top: Minju-simin standing in front of the bulb-lit mirror like a commander, one wing raised. Middle: above his head, a dreamlike vision of a grand stadium with two banners facing each other - a cool blue banner with a chart icon and a warm gold banner with a heart icon (no text), and a referee's whistle between them. Bottom: Ttalgi and Hamji on either side, Aeguk-jwasu behind them with gloved hands folded. MOOD: The stakes rise.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 9쪽 (책 152쪽)
+
+⬜ 저장 이름: `17-09.webp`
+
+```text
+9-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: "The winner becomes my only right hand - the real number two of the Memorial Republic. The loser... goes to the Corrections Bureau." Ttalgi and Hamji look at each other. Then: "Director, tell them the number you reported." Chumo-yeolsa raises the tablet: "The probability that at least one big-star figure dies within two weeks: 73.2%." COMPOSITION (vertical): Top: Ttalgi and Hamji face to face, a cold spark between them. Middle: Chumo-yeolsa stepping forward, holding up the tablet; the screen shows a glowing star icon with a small dark cross and a progress ring (no numbers). Bottom: the others turning toward the tablet, uneasy. MOOD: Chilling prophecy.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 10쪽 (책 153쪽)
+
+⬜ 저장 이름: `17-10.webp`
+
+```text
+9-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: "How... do you know that?" Hamji's voice trembles. Chumo-yeolsa answers without expression: "Intelligence." Minju-simin adds that how they use a big memorial case during the Olympics will decide the winner. "Even a big memorial case... as strategy..." Hamji goes even paler. "This is reality, Chief. Meeting adjourned." COMPOSITION (vertical): Top: a close-up of Chumo-yeolsa's blank teddy-bear face, button eyes reflecting the tablet's glow. Middle: Hamji, trembling, face drained white. Bottom: Minju-simin turning to leave, his back to us, the door light spilling in. MOOD: Cold, dark and quiet.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 11쪽 (책 154쪽)
+
+⬜ 저장 이름: `17-11.webp`
+
+```text
+9-11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: After the President leaves, Aeguk-jwasu bows politely before the two rivals: "I'm truly sorry, but I'll judge strictly. Any insincere memorial-goer, on either team, will be corrected at once - regardless of rank." When he is gone, Ttalgi remembers the locked drawer: Bronze, twice in three years - then pushes the thought away and turns to Hamji. COMPOSITION (vertical): Top: Aeguk-jwasu bowing, gloved hand on chest, eyes sliding meaningfully toward Ttalgi. Middle: Ttalgi's face, with a faint ghostly memory of a dull bronze card in a locked drawer floating behind. Bottom: Hamji standing a little apart, small and shaken. MOOD: Hidden fear behind a cool face.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Memorial Corrections Officer (prison warden)) = a grey wolf in a grey camouflage winter jacket with a fur collar and a thick grey scarf, combat boots, holding a black baton; always speaks with an extremely polite smile while the eyes gleam with a manic glint. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 12쪽 (책 155쪽)
+
+⬜ 저장 이름: `17-12.webp`
+
+```text
+9-12. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: "See you in two weeks. As winner and loser." "I believe in His Excellency's sincerity. Pure memorial will win." "Then I'll see you at the Corrections Bureau. You, I mean." Ttalgi walks out coldly. COMPOSITION (vertical): Top: Ttalgi at the doorway, turning the head halfway back with a cold look, the corridor light behind. Middle: the long shadow of Ttalgi stretching across the floor toward Hamji. Bottom: Hamji standing alone among the flower wreaths, fists clenched, trying to look brave. MOOD: A cold declaration of war.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 9장: 공연 후 - 새로운 권력 13쪽 (책 156쪽)
+
+⬜ 저장 이름: `17-13.webp`
+
+```text
+9-13. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: In the dressing room. SCENE: Hamji is left alone, staring at the empty chair where the President sat. "Your Excellency... what should I do..." The phone lights up again - this time the hospital: the child is in critical condition, come right now. Hamji's paws shake. Child. His Excellency. Memorial. One bulb around the mirror flickers. Hamji holds the phone and cannot lift the head for a long time. The end of Part 2. COMPOSITION (vertical): Top: the big make-up mirror with one bulb flickering, reflecting the empty chair. Middle: the empty chair in the center of the room, a single white chrysanthemum petal on the seat. Bottom: Hamji sitting on the floor beside it, head bowed, both bandaged paws gripping the glowing phone (the screen shows only a small red hospital-cross icon, no text), tears falling. LIGHT & COLOR: Dim, the wreaths in shadow, the phone's cold glow on Hamji's face. MOOD: Heartbreaking, quiet ending of Part 2.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
