@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **22장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -2932,7 +2932,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 1쪽 (책 157쪽)
 
-⬜ 저장 이름: `18-01.webp`
+✅ `forever/images/18-01.webp`
 
 ```text
 1-1. 2D watercolor storybook illustration, vertical 2:3.
@@ -2949,7 +2949,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 2쪽 (책 158쪽)
 
-⬜ 저장 이름: `18-02.webp`
+✅ `forever/images/18-02.webp`
 
 ```text
 1-2. 2D watercolor storybook illustration, vertical 2:3.
@@ -2972,7 +2972,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 3쪽 (책 159쪽)
 
-⬜ 저장 이름: `18-03.webp`
+✅ `forever/images/18-03.webp`
 
 ```text
 1-3. 2D watercolor storybook illustration, vertical 2:3.
@@ -2990,7 +2990,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 4쪽 (책 160쪽)
 
-⬜ 저장 이름: `18-04.webp`
+✅ `forever/images/18-04.webp`
 
 ```text
 1-4. 2D watercolor storybook illustration, vertical 2:3.
@@ -3008,7 +3008,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 5쪽 (책 161쪽)
 
-⬜ 저장 이름: `18-05.webp`
+✅ `forever/images/18-05.webp`
 
 ```text
 1-5. 2D watercolor storybook illustration, vertical 2:3.
@@ -3028,7 +3028,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 6쪽 (책 162쪽)
 
-⬜ 저장 이름: `18-06.webp`
+✅ `forever/images/18-06.webp`
 
 ```text
 1-6. 2D watercolor storybook illustration, vertical 2:3.
@@ -3046,7 +3046,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 7쪽 (책 163쪽)
 
-⬜ 저장 이름: `18-07.webp`
+✅ `forever/images/18-07.webp`
 
 ```text
 1-7. 2D watercolor storybook illustration, vertical 2:3.
@@ -3064,7 +3064,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 8쪽 (책 164쪽)
 
-⬜ 저장 이름: `18-08.webp`
+✅ `forever/images/18-08.webp`
 
 ```text
 1-8. 2D watercolor storybook illustration, vertical 2:3.
@@ -3084,7 +3084,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 9쪽 (책 165쪽)
 
-⬜ 저장 이름: `18-09.webp`
+✅ `forever/images/18-09.webp`
 
 ```text
 1-9. 2D watercolor storybook illustration, vertical 2:3.
@@ -3098,7 +3098,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 10쪽 (책 166쪽)
 
-⬜ 저장 이름: `18-10.webp`
+✅ `forever/images/18-10.webp`
 
 ```text
 1-10. 2D watercolor storybook illustration, vertical 2:3.
@@ -3118,7 +3118,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 11쪽 (책 167쪽)
 
-⬜ 저장 이름: `18-11.webp`
+✅ `forever/images/18-11.webp`
 
 ```text
 1-11. 2D watercolor storybook illustration, vertical 2:3.
@@ -3136,7 +3136,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 12쪽 (책 168쪽)
 
-⬜ 저장 이름: `18-12.webp`
+✅ `forever/images/18-12.webp`
 
 ```text
 1-12. 2D watercolor storybook illustration, vertical 2:3.
@@ -3157,7 +3157,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 13쪽 (책 169쪽)
 
-⬜ 저장 이름: `18-13.webp`
+✅ `forever/images/18-13.webp`
 
 ```text
 1-13. 2D watercolor storybook illustration, vertical 2:3.
@@ -3178,7 +3178,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 14쪽 (책 170쪽)
 
-⬜ 저장 이름: `18-14.webp`
+✅ `forever/images/18-14.webp`
 
 ```text
 1-14. 2D watercolor storybook illustration, vertical 2:3.
@@ -3195,7 +3195,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 15쪽 (책 171쪽)
 
-⬜ 저장 이름: `18-15.webp`
+✅ `forever/images/18-15.webp`
 
 ```text
 1-15. 2D watercolor storybook illustration, vertical 2:3.
@@ -3213,7 +3213,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 16쪽 (책 172쪽)
 
-⬜ 저장 이름: `18-16.webp`
+✅ `forever/images/18-16.webp`
 
 ```text
 1-16. 2D watercolor storybook illustration, vertical 2:3.
@@ -3233,7 +3233,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 17쪽 (책 173쪽)
 
-⬜ 저장 이름: `18-17.webp`
+✅ `forever/images/18-17.webp`
 
 ```text
 1-17. 2D watercolor storybook illustration, vertical 2:3.
@@ -3252,7 +3252,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 18쪽 (책 174쪽)
 
-⬜ 저장 이름: `18-18.webp`
+✅ `forever/images/18-18.webp`
 
 ```text
 1-18. 2D watercolor storybook illustration, vertical 2:3.
@@ -3270,7 +3270,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 19쪽 (책 175쪽)
 
-⬜ 저장 이름: `18-19.webp`
+✅ `forever/images/18-19.webp`
 
 ```text
 1-19. 2D watercolor storybook illustration, vertical 2:3.
@@ -3292,7 +3292,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 20쪽 (책 176쪽)
 
-⬜ 저장 이름: `18-20.webp`
+✅ `forever/images/18-20.webp`
 
 ```text
 1-20. 2D watercolor storybook illustration, vertical 2:3.
@@ -3310,7 +3310,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 21쪽 (책 177쪽)
 
-⬜ 저장 이름: `18-21.webp`
+✅ `forever/images/18-21.webp`
 
 ```text
 1-21. 2D watercolor storybook illustration, vertical 2:3.
@@ -3327,7 +3327,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 
 ### 1장: 첩보전의 서막 – 추모정보원장의 중대발표 22쪽 (책 178쪽)
 
-⬜ 저장 이름: `18-22.webp`
+✅ `forever/images/18-22.webp`
 
 ```text
 1-22. 2D watercolor storybook illustration, vertical 2:3.
