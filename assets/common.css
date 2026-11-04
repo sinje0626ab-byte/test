@@ -665,6 +665,24 @@ tr:nth-child(even) td { background: var(--paper-alt); }
 }
 .oc-hi { color: var(--accent-red); font-weight: 700; font-style: normal; }
 
+/* 국무위원 카드 — 소관 아래는 접어 둔다 */
+.oc-more { margin-top: 4px; }
+.council-grid:has(.oc-more) { align-items: start; }
+.oc-more-btn {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 8px 12px; border: 1px solid var(--border-soft); border-radius: 2px;
+  background: var(--paper); color: var(--ink-muted);
+  font-size: 13px; font-weight: 700; letter-spacing: 2px;
+}
+.oc-more-btn::-webkit-details-marker { display: none; }
+.oc-more-btn:hover { background: var(--paper-deep); color: var(--ink-sub); }
+.oc-more-close { display: none; }
+.oc-more[open] .oc-more-open { display: none; }
+.oc-more[open] .oc-more-close { display: inline; }
+.oc-more[open] .gv-caret { transform: rotate(180deg); }
+.oc-more-body { padding-top: 14px; }
+@media print { .oc-more-btn { display: none; } .oc-more > .oc-more-body { display: block; } }
+
 /* 형상 쪽지 — 초상 오른쪽의 물음표를 짚거나 눌러 연다 */
 .hs { position: static; }
 .hs-btn {
