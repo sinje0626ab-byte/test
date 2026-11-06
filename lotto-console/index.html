@@ -59,7 +59,6 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; min-height: 0
 .card p.note { font-size: 15px; color: var(--muted); line-height: 1.6; }
 .fill { color: var(--fill); font-weight: 700; background: var(--fill-bg); border-radius: 4px; padding: 0 3px; }
 .blank { color: var(--blank); font-weight: 700; border-bottom: 2px dashed var(--blank); }
-.refund { background: var(--green-weak); border-left: 4px solid var(--green); padding: 6px 12px; border-radius: 0 8px 8px 0; }
 .inl { font: inherit; font-weight: 700; color: var(--fill); background: var(--fill-bg); border: 0; border-bottom: 2px solid var(--accent);
   border-radius: 5px 5px 0 0; padding: 0 6px; margin: 0 2px; min-width: 3ch; max-width: 100%; }
 .inl::placeholder { color: var(--blank); opacity: .75; }
@@ -159,6 +158,7 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
 
 <header class="topbar">
   <h1>로또 상담 콘솔</h1>
+  <button class="btn" id="btnRefund">환불 조건 <kbd>R</kbd></button>
   <button class="btn" id="btnObj">반론 대응 <kbd>/</kbd></button>
   <button class="btn danger" id="btnReset">새 상담</button>
 </header>
@@ -170,7 +170,7 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
     <div class="nav">
       <button class="btn" id="prev">◀ 이전</button>
       <button class="btn primary" id="next">다음 ▶</button>
-      <span class="hint"><kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>/</kbd> 반론 · <kbd>Esc</kbd> 닫기 · <kbd>Alt</kbd>+<kbd>C</kbd> 요약 복사</span>
+      <span class="hint"><kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>R</kbd> 환불 · <kbd>/</kbd> 반론 · <kbd>Esc</kbd> 닫기 · <kbd>Alt</kbd>+<kbd>C</kbd> 요약 복사</span>
     </div>
   </section>
   <aside id="side">
@@ -226,7 +226,8 @@ function CH(f, q, opts) {
   return `<div class="ans"><span class="q">${esc(q)}</span>${opts.map((o) => `<button data-cf="${f}" data-v="${esc(o)}" class="${cust[f] === o ? 'on' : ''}">${esc(o)}</button>`).join('')}</div>`;
 }
 const P = CONFIG.price, R = CONFIG.refund;
-const refundLine = () => `<p class="refund">혹시라도 ${CONFIG.months}개월 동안 ${R.condition}, ${R.how} ${man(P.sale)} ${R.amount} 환불해드려요.</p>`;
+// 환불 조건 안내 멘트 (상단 [환불 조건] 버튼)
+const refundText = () => `혹시라도 ${CONFIG.months}개월 동안 ${R.condition}, ${R.how} ${man(P.sale)} ${R.amount} 환불해드려요.\n\n그래서 제가 드린 번호로 똑같이 구매하시고, 구매하신 로또 영수증은 꼭 보관해주세요.`;
 
 function buildSteps() {
   const ag = F(CONFIG.agent, '○○○');
@@ -247,7 +248,7 @@ function buildSteps() {
     <p>제가 도움 좀 드려볼 건데요. 어떤 방식이냐면 이 보내드릴 번호가 일반적인 자동 번호가 아니라 최대 12차 필터링 걸러낸 인증 완료된 번호만 드릴 거고 최소 3등 이상 나오는 분석 번호 넣어드릴 거고요.</p>
     <p>제가 매주 ${combos}조합씩 회원님 핸드폰 문자 메시지로 넣어드릴 건데 제가 드린 번호 절대 변경하지 말고 볼펜으로 체크만 잘하시면 실제로 3등 이상 금방 따라 나오시고 시기는 빨라지실 거예요.</p>
     <p>저희 회사에서는 지난주에도 로또 2등 ${F(CONFIG.lastWeek.second, '○')}분 3등 ${F(CONFIG.lastWeek.third, '○○')}분 넘게 나왔는데, 제가 회원님에게 막 무조건 로또 1등 시켜드릴게요 이런 약속까지 못 드려도 최소 3등 이상은 보장해드릴 거고요.</p>
-    ${refundLine()}` });
+    <p class="note">환불 조건은 상단 [환불 조건] 버튼으로 안내</p>` });
 
   steps.push({ t: '3등 당첨금', h: `
     <p>우리 회원님께서는 로또 3등 당첨 금액이 얼마인지 아세요?</p>
@@ -260,7 +261,6 @@ function buildSteps() {
     <p>그래서 그 패턴 살려가지고 넣어드릴 거니까 체크만 잘 해 주시고, 저희가 앞으로 1년 2개월 동안 책임지고 진행해 드리면서 매주마다 엄선된 번호를 문자로 넣어드리는 거라 가장 최소한의 문자 비용만 한 번 들어가세요. 큰 금액은 아니시고요.</p>
     <p>일주일에 ${won(CONFIG.weeklyCost)}원인데 이거를 매주 낼 수는 없는 거고 1년 2개월간 딱 한 번만 ${F(man(P.sale), '○○만 원')}이세요. 매달 매달 내는 게 아니라 한 번만 내주시면 이제 1년 2개월 총 ${CONFIG.months}개월 동안 진행해 드릴 건데요.</p>
     <p>원래는 정상가 ${man(P.normal)}인데, 회원님은 오늘 프로모션 이벤트로 ${P.discountPct}% 할인 쿠폰 넣어드려서 ${man(P.sale)}에 진행해 드릴 거예요.</p>
-    ${refundLine()}
     <p>저랑 같은배 타실거니까 회원님도 힘한번 써주시고, 저한테 고맙다고 하실거에요.</p>` });
 
   steps.push({ t: '성함 · 일정', h: `
@@ -272,7 +272,6 @@ function buildSteps() {
   steps.push({ t: '결제', h: `
     <p>저희 회사가 법인 10년차 기업입니다. 그래서 왠만한 카드회사랑 다 제휴해서 신용카드 이용하시는 분들은 3개월 무이자 할부혜택 넣어드릴거구요 최대한 부담없게 해드릴거구요.</p>
     <p>제가 회원님은 가장 빠른 당첨 보여드리고자 초반 3개월간은 골드번호로만 쏟아부어드릴거에요. 3등은 아주 잘 나오고 있구요 제가 직접 1:1 집중관리 해드릴거구요.</p>
-    ${refundLine()}
     <p>저희가 ${CONFIG.cards.join(',')}카드 3개월 무이자할부 가능하신데 회원님은 어디카드로 많이 이용하세요?</p>
     ${CH('card', '고객 답변 · 카드사', [...CONFIG.cards, '기타 카드'])}
     ${cust.card === '기타 카드' ? '<p class="note">무이자 할부 제휴 카드가 아니에요 — 일시불 또는 일반 할부로 안내</p>' : ''}` });
@@ -302,7 +301,7 @@ function renderInfo() {
     ['판매가', `${won(P.sale)}원 (${P.discountPct}% 할인)`], ['할부', `${CONFIG.cards.join('·')} 3개월 무이자`],
     ['환불', `${CONFIG.months}개월간 3등 이상 0회 → ${R.amount} 환불 (영수증 제출)`]]
     .map(([k, x]) => `<span class="k">${k}</span><span>${esc(x)}</span>`).join('');
-  $('#points').innerHTML = `<div class="warn green">보장 멘트는 환불 조건과 같이: "${CONFIG.months}개월 동안 3등 이상 안 나오면 영수증 보내주시면 전액 환불"</div>
+  $('#points').innerHTML = `<div class="warn green">환불 조건은 상단 [환불 조건] 버튼 (R 키)으로 안내</div>
     <div class="warn amber">고객에게 영수증 보관 꼭 안내 (환불 시 필요)</div>
     ${cust.card === '기타 카드' ? '<div class="warn amber">무이자 제휴 카드 아님 — 일시불/일반 할부</div>' : ''}`;
 }
@@ -369,6 +368,12 @@ function openObj() {
   $('#objModal').classList.add('open');
 }
 $('#btnObj').onclick = openObj;
+function openRefund() {
+  $('#ansTitle').textContent = `환불 조건 — ${CONFIG.months}개월 동안 3등 이상 0회 시 ${R.amount} 환불 (영수증 제출)`;
+  $('#ansBody').textContent = refundText();
+  closeModals(); $('#ansModal').classList.add('open');
+}
+$('#btnRefund').onclick = openRefund;
 $('#objList').addEventListener('click', (e) => {
   const b = e.target.closest('[data-obj]'); if (!b) return;
   const o = OBJECTIONS[+b.dataset.obj];
@@ -383,6 +388,7 @@ document.addEventListener('keydown', (e) => {
   if (e.altKey && e.code === 'KeyC') { e.preventDefault(); copySummary(); return; }
   if (typing || modal) return;
   if (e.key === '/') { e.preventDefault(); openObj(); }
+  if (e.key === 'r' || e.key === 'R' || e.key === 'ㄱ') { e.preventDefault(); openRefund(); }
   if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
   if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
 });
