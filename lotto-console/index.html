@@ -20,6 +20,7 @@ const CONFIG = {
   sendDay: '수요일',          // 매주 번호 발송 요일
   buyDeadline: '토요일 저녁 7시', // 구매 마감
   cards: ['롯데', '국민', '농협', '삼성', 'BC'], // 3개월 무이자 할부 카드사
+  banks: ['국민은행', '농협은행'], // 무통장입금 계좌 은행
   // 환불: 진행 기간 동안 3등 이상이 한 번도 안 나오면 전액 환불 (고객이 영수증 제출)
   refund: { condition: '3등 이상이 한 번도 안 나오시면', amount: '전액', how: '구매하신 로또 영수증만 보내주시면' },
 };
@@ -212,7 +213,7 @@ const man = (n) => { const m = Math.floor(n / 10000), r = n % 10000; return !r ?
 try { const s = JSON.parse(localStorage.getItem('lottoCfg') || '{}'); if (s.agent) CONFIG.agent = s.agent; if (s.second != null) CONFIG.lastWeek.second = s.second; if (s.third != null) CONFIG.lastWeek.third = s.third; } catch (_) {}
 const saveCfg = () => { try { localStorage.setItem('lottoCfg', JSON.stringify({ agent: CONFIG.agent, second: CONFIG.lastWeek.second, third: CONFIG.lastWeek.third })); } catch (_) {} };
 
-const blank = () => ({ name: '', buy: '', won: '', thirdKnow: '', combos: String(CONFIG.defaultCombos), card: '', pay: '', installment: '', age: '', sex: '' });
+const blank = () => ({ name: '', buy: '', won: '', thirdKnow: '', combos: String(CONFIG.defaultCombos), card: '', pay: '', installment: '', bank: '', age: '', sex: '' });
 let cust = blank();
 let step = 0;
 let lastSteps = [];
@@ -292,7 +293,9 @@ function buildSteps() {
     <p class="note">카드번호·유효기간·생년월일·비밀번호 앞 2자리는 이 화면에 적지 말고 결제창(PG)에 바로 입력 · 결제 후 메모·통화녹취 외 보관 금지</p>` : ''}
     ${cust.pay === '무통장입금' ? `
     <p>네, 그럼 무통장입금으로 진행해드릴게요.</p>
-    <p>전화 끊고 나서 바로 문자로 입금하실 계좌번호 보내드릴게요. ${F(man(P.sale), '○○만 원')} 보내주시면 되고요.</p>
+    <p>입금 계좌가 ${CONFIG.banks.join(', ')} 두 가지 있는데, 회원님은 어떤 은행이 편하세요?</p>
+    ${CH('bank', '고객 답변 · 입금 은행', CONFIG.banks)}
+    <p>전화 끊고 나서 바로 문자로 입금하실 ${F(cust.bank, '○○은행')} 계좌번호 보내드릴게요. ${F(man(P.sale), '○○만 원')} 보내주시면 되고요.</p>
     <p>입금하시는 회원분들이 많으셔서, 꼭 회원님 성함 ${F(cust.name, '○○○')}으로 입금해주세요. 그래야 저희가 바로 확인하고 번호 넣어드릴 수 있어요.</p>
     <p class="note">통화 종료 후 계좌번호 문자 바로 발송 · 입금자명 = 회원 성함 확인</p>` : ''}` });
 
@@ -322,7 +325,7 @@ function renderInfo() {
   const rows = [['회원명', cust.name, '성함 · 일정'], ['구매 금액', cust.buy, '구매·당첨 확인'], ['그동안 당첨', cust.won, '구매·당첨 확인'],
     ['주당 조합', cust.combos ? cust.combos + '조합' : '', '분석 번호 소개'], ['결제 방법', cust.pay, '결제'],
     // 무통장입금이면 카드 정보 대신 입금자명 표시
-    ...(cust.pay === '무통장입금' ? [['입금자명', cust.name, '성함 · 일정']] : [['카드사', cust.pay === '카드결제' ? cust.card : '', '결제'], ['할부', cust.pay === '카드결제' ? cust.installment : '', '결제']]),
+    ...(cust.pay === '무통장입금' ? [['입금 은행', cust.bank, '결제'], ['입금자명', cust.name, '성함 · 일정']] : [['카드사', cust.pay === '카드결제' ? cust.card : '', '결제'], ['할부', cust.pay === '카드결제' ? cust.installment : '', '결제']]),
     ['상담원', CONFIG.agent, '마무리']];
   $('#info').innerHTML = rows.map(([k, x, t]) => `<span class="k">${k}</span>${v(x)}<button data-jump="${esc(t)}">입력</button>`).join('');
   $('#product').innerHTML = [['상품', `분석 번호 문자 제공 ${CONFIG.months}개월 (매주 ${CONFIG.sendDay})`], ['정상가', `${won(P.normal)}원`],
@@ -337,7 +340,7 @@ const whoText = () => [cust.age, cust.sex].filter(Boolean).join(' ');
 function summaryText() {
   const p = [`[로또] ${cust.name || '회원명 미입력'}`, `${CONFIG.months}개월 ${won(P.sale)}원`, `매주 ${cust.combos || '?'}조합 ${CONFIG.sendDay} 발송`];
   if (cust.pay === '카드결제') p.push(`카드결제 ${cust.card || ''} ${cust.installment || ''}`.trim());
-  else if (cust.pay === '무통장입금') p.push(`무통장입금 (계좌 문자 발송·입금자명 ${cust.name || '회원명'})`);
+  else if (cust.pay === '무통장입금') p.push(`무통장입금 ${cust.bank || ''} (계좌 문자 발송·입금자명 ${cust.name || '회원명'})`);
   if (cust.buy) p.push(`평소 구매 ${cust.buy}`);
   if (cust.won) p.push(`기존 당첨 ${cust.won}`);
   p.push(`환불: 3등↑ 0회 시 전액(영수증)`, `상담 ${CONFIG.agent}`);
