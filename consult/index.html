@@ -54,7 +54,7 @@ h1 { font-size: 22px; margin: 0 0 12px; }
 // 메뉴별 비밀번호(SHA-256 해시)와 이동 주소. 비밀번호를 바꾸려면 해시만 바꾸면 됨.
 const MENUS = {
   internet: { name: '인터넷상담', hash: '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', url: '../internet-console/' },
-  lotto:    { name: '로또상담',   hash: '5542f9c152f58f4788fe5a78247686cd688a5f2a0f71c37271e8d7dcce6fedbf', url: null }, // 준비 중
+  lotto:    { name: '로또상담',   hash: '5542f9c152f58f4788fe5a78247686cd688a5f2a0f71c37271e8d7dcce6fedbf', url: '../lotto-console/' },
 };
 const $ = (s) => document.querySelector(s);
 let current = null;
