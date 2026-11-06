@@ -21,9 +21,6 @@ const CONFIG = {
   buyDeadline: '토요일 저녁 7시', // 구매 마감
   cards: ['롯데', '국민', '농협', '삼성', 'BC'], // 3개월 무이자 할부 카드사
   // 환불: 진행 기간 동안 3등 이상이 한 번도 안 나오면 전액 환불 (고객이 영수증 제출)
-  // VIP(인계) 상품 환불: 당첨이 안 되면 16만5천원 + VIP 상품 모두 환불 — 기간·기준 등수는 확인 후 고치기 // TODO 확인필요
-  vipRefund: '정해진 기간 동안 1·2등이 안 나오시면, 처음 내신 금액이랑 VIP 상품 금액까지 모두 환불해드려요.',
-  operatingYears: 9,          // 인계 멘트 "○년째 운영중"
   refund: { condition: '3등 이상이 한 번도 안 나오시면', amount: '전액', how: '구매하신 로또 영수증만 보내주시면' },
 };
 </script>
@@ -160,8 +157,7 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
 </script>
 
 <header class="topbar">
-  <h1 id="title">로또 상담 콘솔</h1>
-  <button class="btn" id="btnMode">인계콜</button>
+  <h1>로또 상담 콘솔</h1>
   <button class="btn" id="btnRefund">환불 조건 <kbd>R</kbd></button>
   <button class="btn" id="btnObj">반론 대응 <kbd>/</kbd></button>
   <button class="btn danger" id="btnReset">새 상담</button>
@@ -219,7 +215,6 @@ const saveCfg = () => { try { localStorage.setItem('lottoCfg', JSON.stringify({ 
 const blank = () => ({ name: '', buy: '', won: '', thirdKnow: '', combos: String(CONFIG.defaultCombos), card: '', pay: '', installment: '', age: '', sex: '' });
 let cust = blank();
 let step = 0;
-let mode = 'sales'; // 'sales' = 신규상담, 'handoff' = 인계콜 (결제 완료 정회원)
 let lastSteps = [];
 
 const F = (v, ph) => (v !== '' && v != null) ? `<span class="fill">${esc(v)}</span>` : `<span class="blank">${esc(ph)}</span>`;
@@ -235,33 +230,7 @@ const P = CONFIG.price, R = CONFIG.refund;
 // 환불 조건 안내 멘트 (상단 [환불 조건] 버튼)
 const refundText = () => `혹시라도 ${CONFIG.months}개월 동안 ${R.condition}, ${R.how} ${man(P.sale)} ${R.amount} 환불해드려요.\n\n그래서 제가 드린 번호로 똑같이 구매하시고, 구매하신 로또 영수증은 꼭 보관해주세요.`;
 
-function buildHandoffSteps() {
-  return [
-    { t: '가입 축하', h: `
-    <p>${IN('name', '○○○')} 회원님 정회원 가입 축하드립니다^^</p>
-    <p>${F(man(P.sale), '○○○원')}은 정상적으로 결제 되셨구요.</p>
-    <p>혹시라도 ${CONFIG.months}개월 동안 ${R.condition}, ${R.how} ${R.amount} 환불해드리는 거 안내드렸죠~? 이부분 기억해주시구요.</p>
-    <p class="note">원문 "단순변심 환불 불가"는 환불 조건과 맞지 않아 환불 안내로 바꿈</p>` },
-    { t: '영수증 · 감사', h: `
-    <p>3등 나오시게 되면 기분 좋게 지급 영수증 잘 부탁드릴게요~</p>
-    <p>다시한번 저희 회사 믿고 진행 해주셔서 감사 드리고요.</p>` },
-    { t: 'VIP 안내', h: `
-    <p>★ 그리고 마지막으로 요건 집중해서 좀 들어주세요~ ★</p>
-    <p>저희는 로또 분석 업체로 ${CONFIG.operatingYears}년째 운영중인데, 아시다시피 요즘 수동으로 1,2등 당첨자들이 매주 나오고 있잖아요.</p>
-    <p>"모든 사람들이 로또를 하는 이유가 4,5등을 반복하려는 건지, 아니면 1등 한 번으로 인생을 바꾸려는 걸까요?"</p>
-    <p>제가 드릴수 있는 3등 추천번호도 물론 좋은 결과지만 내 인생에 전환 포인트가 되기에는 현실적으로는 금액이 너무 작죠..</p>
-    <p>그래서 저희는 회원분 중에서도 조건이 맞는 분들에 한해서만 1·2등을 목표로 운영되는 VIP 데이터 쪽을 따로 안내드리고 있어요.</p>
-    <p>이게 특별한 게 실제로 1·2등 당첨자들이 나왔던 흐름의 데이터를 기반으로 적용해 보실 수 있는 기회라고 보시면 됩니다.</p>
-    <p>${esc(CONFIG.vipRefund)}</p>` },
-    { t: '본부장 연결', h: `
-    <p>VIP 데이터 번호 받으시면, 1,2등 당첨 시 수수료 구조가 있긴 한데, 이 부분은 VIP라인 부서에서 조건을 보고 진행되는 거고요.</p>
-    <p>회원님 추천서 올려드려서, 유능하신 담당 본부장님 통해서 상품 내용이랑 환불 조건까지 안내 받아보실 수 있게 연결만 도와드릴게요.</p>
-    <p>"내가 진짜 1등을 목표로" 어떻게 하면 1,2등 당첨을 볼 수 있는지 상담 한번 받고 방향 한번 잡아보세요!</p>
-    <p>저희 대표번호나 모르는 핸드폰 번호로 전화오시면 꼭! 받아주세요~</p>` },
-  ];
-}
 function buildSteps() {
-  if (mode === 'handoff') return buildHandoffSteps();
   const ag = F(CONFIG.agent, '○○○');
   const combos = IN('combos', '○', 'number');
   const steps = [];
@@ -336,11 +305,6 @@ function buildSteps() {
 }
 
 // 반론 대응 (PDF "반론" 원문 + 환불 안내)
-const HANDOFF_OBJECTIONS = [
-  { title: '왜 처음부터 말하지 않았어요?', answer: `가입 초기에 바로 안내 못 드리는 이유가 있는데요,\nVIP 라인은 아무나 들어가는 구조가 아니라 실제로 지속 이용 의사, 관리 이력, 기본 조건이 확인된 분들만 본사에서 선별해서 운영하는 구조예요.\n그래서 정회원 등록이 되셔야만 "단순 체험인지, 실제로 1등 목표로 가실 분인지" 판단이 가능해서 그때부터 조건 검토가 들어가는 방식이라서 그래요.` },
-  { title: '그럼 지금 받는 번호에서는 1,2등이 안 나와요?', answer: `회원님도 아시다시피 1,2,3등은 번호 하나 차이로 등수가 갈리는데요.\n제가 드리는 추천번호도 1,2등도 가능할 수 있지만, 최종 3등 포커스에 맞춰져 있고요.\nVIP 라인은 처음부터 1,2등 목표로 데이터를 점목하는 거라 등수 포커스가 다른 거예요.` },
-  { title: 'VIP도 안 되면 환불돼요?', answer: () => `네, ${CONFIG.vipRefund}\n자세한 조건은 담당 본부장님이 연결되시면 정확하게 다시 안내해드릴 거예요.` },
-];
 const OBJECTIONS = [
   { title: '믿을 수 있는 회사예요?', answer: `인터넷 네이버에다가 저희 ${CONFIG.company} 검색해 보시면 우리 회사 바로 나오고 있고요, 어떻게 분석이 이루어져서 나오는지 다 나와 있어요.\n그래서 요즘에는 뭐 혼자서 하는 것보다는 차라리 큰 금액이 아니시니 분석 번호를 받고 빠른 당첨 받아가시는 게 훨씬 나아서 말씀드리는 거고요.` },
   { title: '그냥 혼자 자동으로 할게요', answer: `막말로 지난주에 나왔던 로또 1등 번호가 이번 주에 동일하게 또 나오지 않잖아요.\n지금 벌써 우리나라에 로또가 나온 지가 20년이 넘었습니다. 이 20년 동안 신기하게도 1등 번호가 한 번도 겹친 적이 없어요. 그러니까 이런 번호들은 앞으로도 안 나올 걸 알기에 저희가 하나하나 다 일일이 제외해 드릴 거고요.\n로또의 숫자라는 건 1부터 45번까지가 있잖아요. 홀수가 23개이고 짝수가 22개입니다. 저희가 1회차부터 지난주까지 1등 번호만 쭉 세워봤는데 홀짝 비율이 3대3, 4대2, 2대4 나머지는 나오지도 않았어요. 이런 거를 다 제외해 드릴 거고요.\n그러니까 혼자서 자동으로 하지 마시고, 저랑 통화 된 것도 기회인데 이 기회 살려서 가장 혜택이 좋을 때 들어오셔 가지고 당첨금 받아 가시고요.` },
@@ -371,7 +335,7 @@ function renderInfo() {
 }
 const whoText = () => [cust.age, cust.sex].filter(Boolean).join(' ');
 function summaryText() {
-  const p = [`[${mode === 'handoff' ? '로또 인계콜' : '로또'}] ${cust.name || '회원명 미입력'}`, `${CONFIG.months}개월 ${won(P.sale)}원`, `매주 ${cust.combos || '?'}조합 ${CONFIG.sendDay} 발송`];
+  const p = [`[로또] ${cust.name || '회원명 미입력'}`, `${CONFIG.months}개월 ${won(P.sale)}원`, `매주 ${cust.combos || '?'}조합 ${CONFIG.sendDay} 발송`];
   if (cust.pay === '카드결제') p.push(`카드결제 ${cust.card || ''} ${cust.installment || ''}`.trim());
   else if (cust.pay === '무통장입금') p.push(`무통장입금 (계좌 문자 발송·입금자명 ${cust.name || '회원명'})`);
   if (cust.buy) p.push(`평소 구매 ${cust.buy}`);
@@ -432,19 +396,11 @@ $('#btnReset').onclick = () => { if (!confirm('새 상담을 시작할까요? �
 
 // 반론
 const closeModals = () => document.querySelectorAll('.modal').forEach((m) => m.classList.remove('open'));
-const curObj = () => mode === 'handoff' ? HANDOFF_OBJECTIONS : OBJECTIONS;
 function openObj() {
-  $('#objList').innerHTML = curObj().map((o, i) => `<button data-obj="${i}">${i + 1}. ${esc(o.title)}</button>`).join('');
+  $('#objList').innerHTML = OBJECTIONS.map((o, i) => `<button data-obj="${i}">${i + 1}. ${esc(o.title)}</button>`).join('');
   $('#objModal').classList.add('open');
 }
 $('#btnObj').onclick = openObj;
-$('#btnMode').onclick = () => {
-  mode = mode === 'handoff' ? 'sales' : 'handoff'; step = 0;
-  $('#btnMode').textContent = mode === 'handoff' ? '신규상담으로' : '인계콜';
-  $('#btnMode').classList.toggle('primary', mode === 'handoff');
-  $('#title').textContent = mode === 'handoff' ? '인계콜 (정회원)' : '로또 상담 콘솔';
-  closeModals(); render();
-};
 function openRefund() {
   $('#ansTitle').textContent = `환불 조건 — ${CONFIG.months}개월 동안 3등 이상 0회 시 ${R.amount} 환불 (영수증 제출)`;
   $('#ansBody').textContent = refundText();
@@ -453,7 +409,7 @@ function openRefund() {
 $('#btnRefund').onclick = openRefund;
 $('#objList').addEventListener('click', (e) => {
   const b = e.target.closest('[data-obj]'); if (!b) return;
-  const o = curObj()[+b.dataset.obj];
+  const o = OBJECTIONS[+b.dataset.obj];
   $('#ansTitle').textContent = o.title; $('#ansBody').textContent = typeof o.answer === 'function' ? o.answer() : o.answer;
   $('#objModal').classList.remove('open'); $('#ansModal').classList.add('open');
 });
