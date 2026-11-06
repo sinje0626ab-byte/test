@@ -174,6 +174,7 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
     </div>
   </section>
   <aside id="side">
+    <div class="sec"><h2>고객 구분 <span style="font-weight:400;font-size:12px">전산 기록 맨 앞</span></h2><div id="who"></div></div>
     <div class="sec"><h2>상담 입력값</h2><div class="info" id="info"></div></div>
     <div class="sec"><h2>상품 · 결제</h2><div class="kv" id="product"></div></div>
     <div class="sec"><h2>안내 포인트</h2><div id="points"></div></div>
@@ -211,7 +212,7 @@ const man = (n) => { const m = Math.floor(n / 10000), r = n % 10000; return !r ?
 try { const s = JSON.parse(localStorage.getItem('lottoCfg') || '{}'); if (s.agent) CONFIG.agent = s.agent; if (s.second != null) CONFIG.lastWeek.second = s.second; if (s.third != null) CONFIG.lastWeek.third = s.third; } catch (_) {}
 const saveCfg = () => { try { localStorage.setItem('lottoCfg', JSON.stringify({ agent: CONFIG.agent, second: CONFIG.lastWeek.second, third: CONFIG.lastWeek.third })); } catch (_) {} };
 
-const blank = () => ({ name: '', buy: '', won: '', thirdKnow: '', combos: String(CONFIG.defaultCombos), card: '', pay: '', installment: '' });
+const blank = () => ({ name: '', buy: '', won: '', thirdKnow: '', combos: String(CONFIG.defaultCombos), card: '', pay: '', installment: '', age: '', sex: '' });
 let cust = blank();
 let step = 0;
 let lastSteps = [];
@@ -235,7 +236,9 @@ function buildSteps() {
   const steps = [];
   steps.push({ t: '인사', h: `
     <p>안녕하세요! 로또번호 받기 신청하셔서 당첨 번호 보내드리려고 확인차 연락드렸습니다.</p>
-    <p>저는 ${esc(CONFIG.company)}의 ${ag} 팀장입니다.</p>` });
+    <p>저는 ${esc(CONFIG.company)}의 ${ag} 팀장입니다.</p>
+    ${CH('age', '고객 구분 · 연령대 (목소리로 체크)', ['20대', '30대', '40대', '50대', '60대', '70대', '80대'])}
+    ${CH('sex', '고객 구분 · 성별', ['남자', '여자'])}` });
 
   steps.push({ t: '구매·당첨 확인', h: `
     <p>제가 좋은 번호 드릴건데 로또 구매하실 때 만원정도는 하시나요?</p>
@@ -310,6 +313,10 @@ const OBJECTIONS = [
   { title: '당첨 안 되면요?', answer: () => `걱정 안 하셔도 돼요. ${CONFIG.months}개월 동안 ${R.condition}, ${R.how} ${man(P.sale)} ${R.amount} 환불해드려요.\n그래서 제가 드린 번호로 똑같이 구매하시고 영수증만 잘 보관해주시면 돼요.` },
 ];
 
+function renderWho() {
+  const chips = (f, opts) => `<div class="ans" style="margin:0 0 6px">${opts.map((o) => `<button data-cf="${f}" data-v="${o}" class="${cust[f] === o ? 'on' : ''}">${o}</button>`).join('')}</div>`;
+  $('#who').innerHTML = chips('age', ['20대', '30대', '40대', '50대', '60대', '70대', '80대']) + chips('sex', ['남자', '여자']);
+}
 function renderInfo() {
   const v = (x) => x ? `<span>${esc(x)}</span>` : '<span class="none">미입력</span>';
   const rows = [['회원명', cust.name, '성함 · 일정'], ['구매 금액', cust.buy, '구매·당첨 확인'], ['그동안 당첨', cust.won, '구매·당첨 확인'],
@@ -323,6 +330,7 @@ function renderInfo() {
     <div class="warn amber">고객에게 영수증 보관 꼭 안내 (환불 시 필요)</div>
     ${cust.card === '기타 카드' ? '<div class="warn amber">무이자 제휴 카드 아님 — 일시불/일반 할부</div>' : ''}`;
 }
+const whoText = () => [cust.age, cust.sex].filter(Boolean).join(' ');
 function summaryText() {
   const p = [`[로또] ${cust.name || '회원명 미입력'}`, `${CONFIG.months}개월 ${won(P.sale)}원`, `매주 ${cust.combos || '?'}조합 ${CONFIG.sendDay} 발송`];
   if (cust.pay === '카드결제') p.push(`카드결제 ${cust.card || ''} ${cust.installment || ''}`.trim());
@@ -330,7 +338,7 @@ function summaryText() {
   if (cust.buy) p.push(`평소 구매 ${cust.buy}`);
   if (cust.won) p.push(`기존 당첨 ${cust.won}`);
   p.push(`환불: 3등↑ 0회 시 전액(영수증)`, `상담 ${CONFIG.agent}`);
-  return p.join(' | ');
+  return (whoText() ? whoText() + ' / ' : '') + p.join(' | ');
 }
 function render() {
   const steps = buildSteps(); lastSteps = steps;
@@ -341,6 +349,7 @@ function render() {
   renderSide();
 }
 function renderSide() {
+  renderWho();
   renderInfo();
   $('#summary').textContent = summaryText();
   document.querySelectorAll('[data-cfg]').forEach((el) => { const k = el.dataset.cfg; if (document.activeElement !== el) el.value = k === 'agent' ? CONFIG.agent : CONFIG.lastWeek[k]; });
@@ -360,6 +369,8 @@ $('#card').addEventListener('click', (e) => {
   cust[b.dataset.cf] = cust[b.dataset.cf] === b.dataset.v ? '' : b.dataset.v; render();
 });
 $('#side').addEventListener('click', (e) => {
+  const c = e.target.closest('button[data-cf]');
+  if (c) { cust[c.dataset.cf] = cust[c.dataset.cf] === c.dataset.v ? '' : c.dataset.v; render(); return; }
   const j = e.target.closest('button[data-jump]'); if (!j) return;
   const i = lastSteps.findIndex((x) => x.t === j.dataset.jump); if (i >= 0) { step = i; render(); setTab('script'); }
 });
