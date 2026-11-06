@@ -320,7 +320,10 @@ function renderWho() {
 function renderInfo() {
   const v = (x) => x ? `<span>${esc(x)}</span>` : '<span class="none">미입력</span>';
   const rows = [['회원명', cust.name, '성함 · 일정'], ['구매 금액', cust.buy, '구매·당첨 확인'], ['그동안 당첨', cust.won, '구매·당첨 확인'],
-    ['주당 조합', cust.combos ? cust.combos + '조합' : '', '분석 번호 소개'], ['결제 방법', cust.pay, '결제'], ['카드사', cust.pay === '카드결제' ? cust.card : '', '결제'], ['할부', cust.pay === '카드결제' ? cust.installment : '', '결제'], ['상담원', CONFIG.agent, '마무리']];
+    ['주당 조합', cust.combos ? cust.combos + '조합' : '', '분석 번호 소개'], ['결제 방법', cust.pay, '결제'],
+    // 무통장입금이면 카드 정보 대신 입금자명 표시
+    ...(cust.pay === '무통장입금' ? [['입금자명', cust.name, '성함 · 일정']] : [['카드사', cust.pay === '카드결제' ? cust.card : '', '결제'], ['할부', cust.pay === '카드결제' ? cust.installment : '', '결제']]),
+    ['상담원', CONFIG.agent, '마무리']];
   $('#info').innerHTML = rows.map(([k, x, t]) => `<span class="k">${k}</span>${v(x)}<button data-jump="${esc(t)}">입력</button>`).join('');
   $('#product').innerHTML = [['상품', `분석 번호 문자 제공 ${CONFIG.months}개월 (매주 ${CONFIG.sendDay})`], ['정상가', `${won(P.normal)}원`],
     ['판매가', `${won(P.sale)}원 (${P.discountPct}% 할인)`], ['할부', `${CONFIG.cards.join('·')} 3개월 무이자`],
