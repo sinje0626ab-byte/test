@@ -3720,7 +3720,7 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 2-22. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: PLACE: interrogation room - bare concrete, one flickering fluorescent tube. SCENE: Park Wootae, still tied to the chair. A black-panther agent: "Give us the names of the other agents." Park laughs: "You'll never find them... because they're higher than you." COMPOSITION (vertical): Top: the flickering fluorescent tube. Middle: Park Wootae (exactly as ref-park-wootae.png) tied to the chair with rope, messy hair, small cartoon bandage, a sly knowing grin. Bottom: the panther agent leaning in, glaring. MOOD: Ominous.
+SCENE: PLACE: interrogation room. SCENE: Park Wootae, still tied to the chair, is asked again for the other agents' names. Calm and smug, he lifts his eyes toward the ceiling: "You'll never find them... because they're already higher than you." COMPOSITION (vertical): A WIDE, HIGH-ANGLE shot looking down from a ceiling corner, like a security camera. Bottom half: the small bare concrete room - Park Wootae (exactly as ref-park-wootae.png) sitting tied to the metal chair, relaxed, head tilted back, eyes rolled UP toward the camera with a sly, knowing smile; the black-panther agent standing across the table with arms folded, seen from above. Top half: a dreamlike shadow-vision rising above the ceiling - a grand marble staircase going up into darkness, with faceless silhouettes of high officials in suits standing at the top (no recognizable characters). LIGHT & COLOR: Cold grey-green light below, the vision above in dim gold and black. MOOD: Calm, eerie, mysterious - a hint, not violence.
 
 CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
@@ -3737,7 +3737,10 @@ No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic
 ```text
 2-23. 2D watercolor storybook illustration, vertical 2:3.
 
-SCENE: PLACE: interrogation room. SCENE: "At the top of the Memorial Republic... already... our people..." The agent grabs his collar: "Names!" Park only laughs: "Your memorial is fake." The agent strikes; Park keeps laughing. COMPOSITION (vertical): Top: the panther agent gripping Park's shirt collar, snarling. Middle: Park laughing, head tilted back, a cartoon motion line on the cheek (no blood). Bottom: the light flickering, deep shadows. MOOD: Defiant menace - no blood, nothing graphic.
+SCENE: PLACE: interrogation room. SCENE: "At the top of the Memorial Republic... our people are already there..." The panther agent loses his temper, grabs Park's collar across the table: "Names!" Park only bursts out laughing: "Your memorial is fake!" COMPOSITION (vertical): A tight, LOW-ANGLE side close-up, completely different from a wide shot. Left: the black-panther agent's angry face in profile, teeth bared, one paw gripping Park's shirt collar and pulling him half out of the chair. Right: Park Wootae's face close up, laughing wildly with his mouth wide open and eyes squeezed shut, hair flying. Top: the fluorescent tube sparking and flickering out, half the frame plunging into darkness. Bottom: the metal table edge tilted, a paper cup of water knocked over, water splashing. LIGHT & COLOR: Harsh flickering white light and deep black shadows, high contrast. MOOD: Explosive and defiant - cartoon motion lines only, no blood, no injury.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
 
 PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
 
