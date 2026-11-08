@@ -548,6 +548,33 @@ footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
 </style>
 </head>
 <body data-tab="script">
+<!-- 비밀번호 잠금: 상담 센터(../consult/)에서 들어오거나 1234 입력 시 열림 -->
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:#f3f5f8;display:flex;align-items:center;justify-content:center;padding:16px">
+  <form id="gateForm" autocomplete="off" style="width:min(340px,100%);background:#fff;border:1px solid #dbe1e9;border-radius:16px;padding:22px">
+    <h2 style="font-size:18px;margin:0 0 14px">인터넷상담 비밀번호</h2>
+    <input id="gatePw" type="password" inputmode="numeric" maxlength="8" placeholder="••••" style="width:100%;font:inherit;font-size:22px;letter-spacing:6px;text-align:center;padding:12px;border:1px solid #dbe1e9;border-radius:10px">
+    <div id="gateMsg" style="min-height:22px;font-size:14px;color:#d92d20;margin:8px 0"></div>
+    <button type="submit" style="width:100%;font:inherit;font-size:16px;padding:12px;border-radius:10px;border:0;background:#1f6feb;color:#fff;font-weight:700">확인</button>
+  </form>
+</div>
+<script>
+(() => {
+  const HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'; // 1234
+  const gate = document.getElementById('gate');
+  let ok = false; try { ok = sessionStorage.getItem('auth_internet') === '1'; } catch (_) {}
+  if (ok) { gate.remove(); return; }
+  setTimeout(() => document.getElementById('gatePw').focus(), 0);
+  document.getElementById('gateForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const v = document.getElementById('gatePw').value;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+    const h = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    if (h !== HASH) { document.getElementById('gateMsg').textContent = '비밀번호가 맞지 않아요'; return; }
+    try { sessionStorage.setItem('auth_internet', '1'); } catch (_) {}
+    gate.remove();
+  });
+})();
+</script>
 
 <header class="topbar">
   <h1>로젠이사 인터넷 상담 콘솔</h1>

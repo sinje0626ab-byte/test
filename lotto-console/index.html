@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>로또 상담 콘솔</title>
+<script>
+/* =====================================================================
+   ▣ 설정 — 매주 실적·가격이 바뀌면 이 블록 숫자만 고치세요.
+   ===================================================================== */
+const CONFIG = {
+  company: '로또와우',
+  agent: '오한결',            // 상담원 이름 (화면에서 바꾸면 그 이름으로 기억)
+  lastWeek: { second: 4, third: 60 }, // 지난주 회사 전체 당첨 실적 (2등 ○분, 3등 ○분 넘게)
+  price: { normal: 250000, discountPct: 35, sale: 165000 }, // 정상가 / 할인율 / 판매가
+  months: 14,                 // 진행 기간 (1년 2개월)
+  weeklyCost: 2000,           // 주당 문자 비용 환산
+  defaultCombos: 5,           // 기본 제공 조합 수 (멘트의 ( )조합)
+  sendDay: '수요일',          // 매주 번호 발송 요일
+  buyDeadline: '토요일 저녁 7시', // 구매 마감
+  cards: ['롯데', '국민', '농협', '삼성', 'BC'], // 3개월 무이자 할부 카드사
+  banks: ['국민은행', '농협은행'], // 무통장입금 계좌 은행
+  // 환불: 진행 기간 동안 3등 이상이 한 번도 안 나오면 전액 환불 (고객이 영수증 제출)
+  refund: { condition: '3등 이상이 한 번도 안 나오시면', amount: '전액', how: '구매하신 로또 영수증만 보내주시면' },
+};
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f3f5f8; --panel: #fff; --panel2: #f7f9fc; --line: #dbe1e9; --text: #18212e; --muted: #687384;
+  --accent: #1f6feb; --accent-weak: #e7f0ff; --fill: #0b4fb3; --fill-bg: #e9f1ff; --blank: #d9480f;
+  --red: #d92d20; --red-weak: #fdeceb; --red-line: #f4bcb6; --amber: #a85a00; --amber-weak: #fff4e0; --amber-line: #f0d29e;
+  --green: #0c8456; --green-weak: #e6f6ee; --green-line: #a6dcc2;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+body { display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr); height: 100vh; overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.topbar { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: #fff; border-bottom: 1px solid var(--line); }
+.topbar h1 { font-size: 16px; margin: 0; font-weight: 700; margin-right: auto; }
+.btn { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 14px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+.btn.danger { border-color: var(--red-line); color: var(--red); }
+kbd { font-family: ui-monospace, monospace; font-size: 11px; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; color: var(--muted); }
+
+main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; min-height: 0; }
+#scriptPane { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); }
+.steps { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 20px 0; }
+.steps button { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 13px; color: var(--muted); }
+.steps button.on { background: var(--accent-weak); color: var(--text); border-color: var(--accent); font-weight: 700; }
+.steps button.done { color: var(--text); }
+.card { flex: 1; overflow: auto; margin: 12px 20px; padding: 26px 32px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+.card .stitle { font-size: 15px; color: var(--accent); font-weight: 700; margin-bottom: 14px; }
+.card .stitle span { color: var(--muted); font-weight: 500; margin-left: 6px; }
+.card p { font-size: 26px; line-height: 1.75; margin: 0 0 18px; letter-spacing: -0.3px; word-break: keep-all; }
+.card p.note { font-size: 15px; color: var(--muted); line-height: 1.6; }
+.fill { color: var(--fill); font-weight: 700; background: var(--fill-bg); border-radius: 4px; padding: 0 3px; }
+.blank { color: var(--blank); font-weight: 700; border-bottom: 2px dashed var(--blank); }
+.inl { font: inherit; font-weight: 700; color: var(--fill); background: var(--fill-bg); border: 0; border-bottom: 2px solid var(--accent);
+  border-radius: 5px 5px 0 0; padding: 0 6px; margin: 0 2px; min-width: 3ch; max-width: 100%; }
+.inl::placeholder { color: var(--blank); opacity: .75; }
+.inl:focus { outline: 2px solid var(--accent); outline-offset: 1px; background: #fff; }
+.inl[type="number"] { width: 3.2em; }
+.ans { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: -4px 0 20px; padding: 10px 12px;
+  background: var(--panel2); border: 1px dashed var(--line); border-radius: 10px; }
+.ans .q { width: 100%; font-size: 13px; color: var(--muted); font-weight: 700; }
+.ans button { font-size: 16px; padding: 7px 13px; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+.ans button.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+.nav { display: flex; align-items: center; gap: 12px; padding: 0 20px 14px; }
+.nav .btn { font-size: 18px; padding: 10px 22px; }
+.nav .hint { margin-left: auto; color: var(--muted); font-size: 12px; }
+
+#side { overflow: auto; padding: 12px 16px 24px; min-height: 0; }
+.sec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+.sec h2 { font-size: 14px; margin: 0 0 10px; color: var(--muted); font-weight: 700; }
+.info { display: grid; grid-template-columns: auto 1fr auto; gap: 5px 10px; font-size: 14px; align-items: center; }
+.info .k { color: var(--muted); font-size: 13px; }
+.info .none { color: var(--blank); }
+.info button { font-size: 12px; padding: 2px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel2); color: var(--accent); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 14px; }
+.kv .k { color: var(--muted); font-size: 13px; }
+.warn { font-size: 13px; line-height: 1.5; padding: 7px 10px; border-radius: 8px; margin-bottom: 6px; }
+.warn.green { background: var(--green-weak); border: 1px solid var(--green-line); }
+.warn.amber { background: var(--amber-weak); border: 1px solid var(--amber-line); }
+.cfg label { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 4px 0; }
+.cfg input { width: 80px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; text-align: right; }
+
+footer { display: flex; gap: 10px; align-items: center; padding: 10px 16px; background: #fff; border-top: 1px solid var(--line); }
+footer .lab { font-size: 12px; color: var(--muted); white-space: nowrap; }
+#summary { flex: 1; min-width: 0; font-size: 14px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; white-space: nowrap; overflow-x: auto; }
+
+.modal { position: fixed; inset: 0; background: rgba(20,30,45,.45); display: none; align-items: flex-start; justify-content: center; padding-top: 6vh; z-index: 50; }
+.modal.open { display: flex; }
+.mbox { width: min(900px, 92vw); max-height: 86vh; overflow: auto; background: var(--panel); border-radius: 14px; padding: 18px 22px; }
+.mbox h3 { margin: 0 0 12px; font-size: 18px; }
+.olist button { display: block; width: 100%; text-align: left; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; font-size: 16px; }
+.olist button:hover { border-color: var(--accent); }
+.oanswer { font-size: 26px; line-height: 1.7; word-break: keep-all; white-space: pre-wrap; }
+.toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: var(--green); color: #fff; font-weight: 700; padding: 8px 16px; border-radius: 8px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 60; }
+.toast.show { opacity: 1; }
+.mtabs { display: none; }
+
+@media (max-width: 860px) {
+  body { display: block; height: auto; overflow: visible; padding-bottom: calc(118px + env(safe-area-inset-bottom)); }
+  .topbar .hint, .nav .hint { display: none; }
+  main { display: block; }
+  #scriptPane { border-right: 0; }
+  .steps { flex-wrap: nowrap; overflow-x: auto; padding: 10px 12px 2px; scrollbar-width: none; }
+  .steps button { flex: none; white-space: nowrap; }
+  .card { margin: 8px 12px; padding: 18px 16px; overflow: visible; }
+  .card p { font-size: 20px; }
+  .nav { position: sticky; bottom: calc(108px + env(safe-area-inset-bottom)); background: var(--bg); padding: 8px 12px; }
+  .nav .btn { flex: 1; font-size: 17px; padding: 12px; }
+  #side { overflow: visible; padding: 10px 12px; }
+  .inl { font-size: max(16px, 1em); }
+  footer { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 30; padding: 8px 12px; }
+  footer .lab { display: none; }
+  .mtabs { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; height: calc(56px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom); background: #fff; border-top: 1px solid var(--line); }
+  .mtabs button { flex: 1; background: none; border: 0; color: var(--muted); font-size: 15px; font-weight: 700; }
+  .mtabs button.on { color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+  body[data-tab="script"] #side { display: none; }
+  body[data-tab="info"] #scriptPane { display: none; }
+  .oanswer { font-size: 21px; }
+}
+</style>
+</head>
+<body data-tab="script">
+<!-- 비밀번호 잠금: 상담 센터(../consult/)에서 들어오거나 9825 입력 시 열림 -->
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:#f3f5f8;display:flex;align-items:center;justify-content:center;padding:16px">
+  <form id="gateForm" autocomplete="off" style="width:min(340px,100%);background:#fff;border:1px solid #dbe1e9;border-radius:16px;padding:22px">
+    <h2 style="font-size:18px;margin:0 0 14px">로또상담 비밀번호</h2>
+    <input id="gatePw" type="password" inputmode="numeric" maxlength="8" placeholder="••••" style="width:100%;font:inherit;font-size:22px;letter-spacing:6px;text-align:center;padding:12px;border:1px solid #dbe1e9;border-radius:10px">
+    <div id="gateMsg" style="min-height:22px;font-size:14px;color:#d92d20;margin:8px 0"></div>
+    <button type="submit" style="width:100%;font:inherit;font-size:16px;padding:12px;border-radius:10px;border:0;background:#1f6feb;color:#fff;font-weight:700">확인</button>
+  </form>
+</div>
+<script>
+(() => {
+  const HASH = '5542f9c152f58f4788fe5a78247686cd688a5f2a0f71c37271e8d7dcce6fedbf'; // 9825
+  const gate = document.getElementById('gate');
+  let ok = false; try { ok = sessionStorage.getItem('auth_lotto') === '1'; } catch (_) {}
+  if (ok) { gate.remove(); return; }
+  setTimeout(() => document.getElementById('gatePw').focus(), 0);
+  document.getElementById('gateForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(document.getElementById('gatePw').value));
+    const h = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    if (h !== HASH) { document.getElementById('gateMsg').textContent = '비밀번호가 맞지 않아요'; return; }
+    try { sessionStorage.setItem('auth_lotto', '1'); } catch (_) {}
+    gate.remove();
+  });
+})();
+</script>
+
+<header class="topbar">
+  <h1>로또 상담 콘솔</h1>
+  <button class="btn" id="btnRefund">환불 조건 <kbd>R</kbd></button>
+  <button class="btn" id="btnObj">반론 대응 <kbd>/</kbd></button>
+  <button class="btn danger" id="btnReset">새 상담</button>
+</header>
+
+<main>
+  <section id="scriptPane">
+    <div class="steps" id="steps"></div>
+    <article class="card" id="card"></article>
+    <div class="nav">
+      <button class="btn" id="prev">◀ 이전</button>
+      <button class="btn primary" id="next">다음 ▶</button>
+      <span class="hint"><kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>R</kbd> 환불 · <kbd>/</kbd> 반론 · <kbd>Esc</kbd> 닫기 · <kbd>Alt</kbd>+<kbd>C</kbd> 요약 복사</span>
+    </div>
+  </section>
+  <aside id="side">
+    <div class="sec"><h2>고객 구분 <span style="font-weight:400;font-size:12px">전산 기록 맨 앞</span></h2><div id="who"></div></div>
+    <div class="sec"><h2>상담 입력값</h2><div class="info" id="info"></div></div>
+    <div class="sec"><h2>상품 · 결제</h2><div class="kv" id="product"></div></div>
+    <div class="sec"><h2>안내 포인트</h2><div id="points"></div></div>
+    <div class="sec cfg"><h2>이번 주 실적 (멘트에 들어감)</h2>
+      <label>지난주 2등 (분) <input type="number" min="0" data-cfg="second"></label>
+      <label>지난주 3등 (분 넘게) <input type="number" min="0" data-cfg="third"></label>
+      <label>상담원 이름 <input data-cfg="agent" style="width:110px;text-align:left"></label>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <span class="lab">접수 요약</span>
+  <div id="summary"></div>
+  <button class="btn primary" id="btnCopy">복사</button>
+</footer>
+<nav class="mtabs" id="mtabs">
+  <button data-tab="script" class="on">스크립트</button>
+  <button data-tab="info">상담 정보</button>
+</nav>
+
+<div class="modal" id="objModal"><div class="mbox"><h3>반론 대응 <span style="font-size:13px;color:var(--muted)">Esc 닫기</span></h3><div class="olist" id="objList"></div></div></div>
+<div class="modal" id="ansModal"><div class="mbox"><h3 id="ansTitle"></h3><div class="oanswer" id="ansBody"></div></div></div>
+<div class="toast" id="toast">복사했습니다</div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const won = (n) => Number(n).toLocaleString('ko-KR');
+const man = (n) => { const m = Math.floor(n / 10000), r = n % 10000; return !r ? `${m}만 원` : r % 1000 === 0 ? `${m}만 ${r / 1000}천 원` : `${m}만 ${won(r)}원`; };
+
+// 상담원 이름·실적은 브라우저에 기억 (고객 정보는 저장 안 함)
+try { const s = JSON.parse(localStorage.getItem('lottoCfg') || '{}'); if (s.agent) CONFIG.agent = s.agent; if (s.second != null) CONFIG.lastWeek.second = s.second; if (s.third != null) CONFIG.lastWeek.third = s.third; } catch (_) {}
+const saveCfg = () => { try { localStorage.setItem('lottoCfg', JSON.stringify({ agent: CONFIG.agent, second: CONFIG.lastWeek.second, third: CONFIG.lastWeek.third })); } catch (_) {} };
+
+const blank = () => ({ name: '', buy: '', won: '', thirdKnow: '', combos: String(CONFIG.defaultCombos), card: '', pay: '', installment: '', bank: '', age: '', sex: '' });
+let cust = blank();
+let step = 0;
+let lastSteps = [];
+
+const F = (v, ph) => (v !== '' && v != null) ? `<span class="fill">${esc(v)}</span>` : `<span class="blank">${esc(ph)}</span>`;
+function IN(f, ph, type = 'text') {
+  const v = cust[f] == null ? '' : String(cust[f]);
+  const size = type === 'text' ? ` size="${Math.max(v.length, ph.length, 2) + 1}"` : '';
+  return `<input class="inl" type="${type}" data-f="${f}" value="${esc(v)}" placeholder="${esc(ph)}"${size} autocomplete="off" ${type === 'number' ? 'inputmode="numeric" min="1"' : ''}>`;
+}
+function CH(f, q, opts) {
+  return `<div class="ans"><span class="q">${esc(q)}</span>${opts.map((o) => `<button data-cf="${f}" data-v="${esc(o)}" class="${cust[f] === o ? 'on' : ''}">${esc(o)}</button>`).join('')}</div>`;
+}
+const P = CONFIG.price, R = CONFIG.refund;
+// 환불 조건 안내 멘트 (상단 [환불 조건] 버튼)
+const refundText = () => `혹시라도 ${CONFIG.months}개월 동안 ${R.condition}, ${R.how} ${man(P.sale)} ${R.amount} 환불해드려요.\n\n그래서 제가 드린 번호로 똑같이 구매하시고, 구매하신 로또 영수증은 꼭 보관해주세요.`;
+
+// 사람 수 읽기: 1~10은 우리말(한·두·세·네…), 그 외는 숫자
+const korCount = (n) => ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'][n] || String(n);
+function buildSteps() {
+  const ag = F(CONFIG.agent, '○○○');
+  const combos = IN('combos', '○', 'number');
+  const steps = [];
+  steps.push({ t: '인사', h: `
+    <p>안녕하세요! 로또번호 받기 신청하셔서 당첨 번호 보내드리려고 확인차 연락드렸습니다.</p>
+    <p>저는 ${esc(CONFIG.company)}의 ${ag} 팀장입니다.</p>
+    ${CH('age', '고객 구분 · 연령대 (목소리로 체크)', ['20대', '30대', '40대', '50대', '60대', '70대', '80대'])}
+    ${CH('sex', '고객 구분 · 성별', ['남자', '여자'])}` });
+
+  steps.push({ t: '구매·당첨 확인', h: `
+    <p>제가 좋은 번호 드릴건데 로또 구매하실 때 만원정도는 하시나요?</p>
+    ${CH('buy', '고객 답변 · 구매 금액', ['5천원', '1만원', '2만원 이상', '가끔 구매'])}
+    <p>아 그러면 당첨좀 나왔어요 그동안에?</p>
+    ${CH('won', '고객 답변 · 그동안 당첨', ['안 나왔다', '5등', '4등', '3등 이상'])}` });
+
+  steps.push({ t: '분석 번호 소개', h: `
+    <p>저희는 로또 번호를 분석하는 전문 회사이고요 이제는 뭐 혼자서 하시는 분들 당첨 너무 안 나오니까 분석 번호 받고 있는 건데, 제가 뭐 통화드린 이유도 5등 5천 원 4등 5만 원 이런 거 말고 3등 이상 보여드리고자 연락드려본 거예요.</p>
+    <p>제가 도움 좀 드려볼 건데요. 어떤 방식이냐면 이 보내드릴 번호가 일반적인 자동 번호가 아니라 최대 12차 필터링 걸러낸 인증 완료된 번호만 드릴 거고 최소 3등 이상 나오는 분석 번호 넣어드릴 거고요.</p>
+    <p>제가 매주 ${combos}조합씩 회원님 핸드폰 문자 메시지로 넣어드릴 건데 제가 드린 번호 절대 변경하지 말고 볼펜으로 체크만 잘하시면 실제로 3등 이상 금방 따라 나오시고 시기는 빨라지실 거예요.</p>
+    <p>저희 회사에서는 지난주에도 로또 2등이 ${F(korCount(CONFIG.lastWeek.second), '○')}분, 3등이 ${F(korCount(CONFIG.lastWeek.third), '○○')}분 넘게 나왔는데, 제가 회원님에게 막 무조건 로또 1등 시켜드릴게요 이런 약속까지 못 드려도 최소 3등 이상은 보장해드릴 거고요.</p>
+    <p class="note">환불 조건은 상단 [환불 조건] 버튼으로 안내</p>` });
+
+  steps.push({ t: '3등 당첨금', h: `
+    <p>우리 회원님께서는 로또 3등 당첨 금액이 얼마인지 아세요?</p>
+    ${CH('thirdKnow', '고객 답변', ['100~200만원 사이', '모른다'])}
+    <p>근데 이게 한 번만 나오는 게 아니라 3번 4번 이상으로 나오신 회원분들도 많으셔서, 그런 분들은 금액적으로 500만 원에서 600만 원 이상 수령하신 분들도 계시거든요.</p>
+    <p>이 3등 번호가 더욱더 중요한 이유가 물론 금액도 금액이지만 여기서 번호 하나 잘 맞으면 더 고액 당첨 나오니까 제가 드린 번호로 구매 잘해 주시고요.</p>` });
+
+  steps.push({ t: '가격 안내', h: `
+    <p>오늘 받으시는 번호가 너무 중요하십니다. 왜냐면은 지난주 제 회원분 중에서 등록하자마자 바로 3등 나오신 분이 있는데 그분의 번호가 너무 좋아요.</p>
+    <p>그래서 그 패턴 살려가지고 넣어드릴 거니까 체크만 잘 해 주시고, 저희가 앞으로 1년 2개월 동안 책임지고 진행해 드리면서 매주마다 엄선된 번호를 문자로 넣어드리는 거라 가장 최소한의 문자 비용만 한 번 들어가세요. 큰 금액은 아니시고요.</p>
+    <p>일주일에 ${won(CONFIG.weeklyCost)}원인데 이거를 매주 낼 수는 없는 거고 1년 2개월간 딱 한 번만 ${F(man(P.sale), '○○만 원')}이세요. 매달 매달 내는 게 아니라 한 번만 내주시면 이제 1년 2개월 총 ${CONFIG.months}개월 동안 진행해 드릴 건데요.</p>
+    <p>원래는 정상가 ${man(P.normal)}인데, 회원님은 오늘 프로모션 이벤트로 ${P.discountPct}% 할인 쿠폰 넣어드려서 ${man(P.sale)}에 진행해 드릴 거예요.</p>
+    <p>저랑 같은배 타실거니까 회원님도 힘한번 써주시고, 저한테 고맙다고 하실거에요.</p>` });
+
+  steps.push({ t: '성함 · 일정', h: `
+    <p>제가 책임지고 당첨을 결과치로 보여드릴거고 믿고해주신 만큼 좋은번호 넣어드릴건데 대신에 제가 드린 번호랑 똑같이 해야되는거구요.</p>
+    <p>저는 ${esc(CONFIG.company)} 본사팀장 ${ag}이라고 하구요 당첨금 수령하실 회원님 성함이 어떻게 되세요? ${IN('name', '○○○')}</p>
+    <p>제가 오늘 한시간 내로 문자메세지로 ${F(cust.combos, '○')}조합 넣어드릴거구요 다음주부터 요일세팅해서 매주 ${CONFIG.sendDay}날 넣어드릴거구요.</p>
+    <p>회원님께서는 ${CONFIG.buyDeadline}전까지만 제가드린 번호로 똑같이 하면 되는거고 당첨되시면 제가 문자연락 다 드릴거니깐 걱정하지 마시구요.</p>` });
+
+  steps.push({ t: '결제', h: `
+    <p>저희 회사가 법인 10년차 기업입니다. 그래서 왠만한 카드회사랑 다 제휴해서 신용카드 이용하시는 분들은 3개월 무이자 할부혜택 넣어드릴거구요 최대한 부담없게 해드릴거구요.</p>
+    <p>제가 회원님은 가장 빠른 당첨 보여드리고자 초반 3개월간은 골드번호로만 쏟아부어드릴거에요. 3등은 아주 잘 나오고 있구요 제가 직접 1:1 집중관리 해드릴거구요.</p>
+    <p>결제는 카드결제랑 무통장입금 둘 다 가능하신데, 회원님은 어떤 걸로 해드릴까요?</p>
+    ${CH('pay', '고객 답변 · 결제 방법', ['카드결제', '무통장입금'])}
+    ${cust.pay === '카드결제' ? `
+    <p>저희가 ${CONFIG.cards.join(',')}카드 3개월 무이자할부 가능하신데 회원님은 어디카드로 많이 이용하세요?</p>
+    ${CH('card', '고객 답변 · 카드사', [...CONFIG.cards, '기타 카드'])}
+    ${cust.card === '기타 카드' ? '<p class="note">무이자 할부 제휴 카드가 아니에요 — 일시불 또는 일반 할부로 안내</p>' : ''}
+    <p>네, 그럼 바로 결제 도와드릴게요. 제가 하나씩 여쭤볼게요.</p>
+    <p>카드번호 16자리 불러주시겠어요?</p>
+    <p>카드 앞면에 있는 유효기간 4자리도 불러주세요. 월, 년 순서로 불러주시면 돼요.</p>
+    <p>할부는 몇 개월로 해드릴까요? ${CONFIG.cards.includes(cust.card) ? '3개월까지는 무이자로 해드려요.' : ''}</p>
+    ${CH('installment', '고객 답변 · 할부', ['일시불', '2개월', '3개월', '그 외'])}
+    <p>카드 명의자분 주민번호 앞 6자리, 생년월일 불러주시겠어요?</p>
+    <p>마지막으로 카드 비밀번호 앞 두 자리만 불러주세요.</p>
+    <p>네, 결제 ${F(man(P.sale), '○○만 원')} ${F(cust.installment, '○개월')}로 진행해드렸습니다. 카드사에서 결제 문자 바로 가실 거예요.</p>
+    <p class="note">카드번호·유효기간·생년월일·비밀번호 앞 2자리는 이 화면에 적지 말고 결제창(PG)에 바로 입력 · 결제 후 메모·통화녹취 외 보관 금지</p>` : ''}
+    ${cust.pay === '무통장입금' ? `
+    <p>네, 그럼 무통장입금으로 진행해드릴게요.</p>
+    <p>입금 계좌가 ${CONFIG.banks.join(', ')} 두 가지 있는데, 회원님은 어떤 은행이 편하세요?</p>
+    ${CH('bank', '고객 답변 · 입금 은행', CONFIG.banks)}
+    <p>전화 끊고 나서 바로 문자로 입금하실 ${F(cust.bank, '○○은행')} 계좌번호 보내드릴게요. ${F(man(P.sale), '○○만 원')} 보내주시면 되고요.</p>
+    <p>입금하시는 회원분들이 많으셔서, 꼭 회원님 성함 ${F(cust.name, '○○○')}으로 입금해주세요. 그래야 저희가 바로 확인하고 번호 넣어드릴 수 있어요.</p>
+    <p class="note">통화 종료 후 계좌번호 문자 바로 발송 · 입금자명 = 회원 성함 확인</p>` : ''}` });
+
+  steps.push({ t: '마무리', h: `
+    <p>${F(cust.name, '○○○')} 회원님, 오늘 한시간 내로 첫 번호 ${F(cust.combos, '○')}조합 문자로 넣어드릴게요.</p>
+    <p>${CONFIG.buyDeadline}전까지 제가 드린 번호 그대로 구매해주세요.</p>
+    <p>저는 ${esc(CONFIG.company)} 본사팀장 ${ag}이었습니다. 감사합니다.</p>
+    <p class="note">마무리 멘트는 PDF 원문에 없어 새로 작성</p>` });
+  return steps;
+}
+
+// 반론 대응 (PDF "반론" 원문 + 환불 안내)
+const OBJECTIONS = [
+  { title: '믿을 수 있는 회사예요?', answer: `인터넷 네이버에다가 저희 ${CONFIG.company} 검색해 보시면 우리 회사 바로 나오고 있고요, 어떻게 분석이 이루어져서 나오는지 다 나와 있어요.\n그래서 요즘에는 뭐 혼자서 하는 것보다는 차라리 큰 금액이 아니시니 분석 번호를 받고 빠른 당첨 받아가시는 게 훨씬 나아서 말씀드리는 거고요.` },
+  { title: '그냥 혼자 자동으로 할게요', answer: `막말로 지난주에 나왔던 로또 1등 번호가 이번 주에 동일하게 또 나오지 않잖아요.\n지금 벌써 우리나라에 로또가 나온 지가 20년이 넘었습니다. 이 20년 동안 신기하게도 1등 번호가 한 번도 겹친 적이 없어요. 그러니까 이런 번호들은 앞으로도 안 나올 걸 알기에 저희가 하나하나 다 일일이 제외해 드릴 거고요.\n로또의 숫자라는 건 1부터 45번까지가 있잖아요. 홀수가 23개이고 짝수가 22개입니다. 저희가 1회차부터 지난주까지 1등 번호만 쭉 세워봤는데 홀짝 비율이 3대3, 4대2, 2대4 나머지는 나오지도 않았어요. 이런 거를 다 제외해 드릴 거고요.\n그러니까 혼자서 자동으로 하지 마시고, 저랑 통화 된 것도 기회인데 이 기회 살려서 가장 혜택이 좋을 때 들어오셔 가지고 당첨금 받아 가시고요.` },
+  { title: '가격이 부담돼요', answer: () => `제가 그냥 하는 말이 아니라 저희 ${CONFIG.company} 홈페이지 보시면 아시겠지만 설명드린 상품이 원래는 정상가 ${man(P.normal)}이에요. 다른 분들은 다 이 금액에 진행하고 있는데 회원님은 오늘 프로모션 이벤트 들어왔어요.\n그래서 ${P.discountPct}% 할인 쿠폰 넣어드려서 ${man(P.sale)}에 진행해 드릴 겁니다. 카드로 하시면 3개월 무이자 할부도 되세요.\n그리고 ${CONFIG.months}개월 동안 ${R.condition} ${R.how} ${R.amount} 환불해드리니까 한번 믿고 진행 받아보세요. 저한테 고맙다고 하실 거예요.` },
+  { title: '당첨되면 수수료 드려야 하나요?', answer: `수수료 따로 내실 건 없고요.\n3등 이상 당첨되시면 농협은행 방문하셔서 당첨금 수령하시면서 영수증을 하나 받으실 건데, 그 영수증 사진 하나 찍어서 저한테 꼭 보내주셔야 합니다.\n간혹가다 그거 귀찮다고 안 보내주시는 분들도 많으신데, 그 영수증을 보내주셔야만 제가 매주 건당 성과급을 별도로 받고 실적도 쌓이거든요. 그래서 꼭 영수증 사진 잊지 말고 저에게 보내주시구요.\n우리 회원님이 3등 당첨되셔서 사진 주셔야지 저도 좋은 거라 서로 윈윈하는 거기 때문에, 제가 관리는 확실하게 도와드릴 겁니다.\n이렇게 관리해드린 회원님들 덕분에 제가 최단기에 팀장까지 올라왔거든요^^` },
+  { title: '당첨 안 되면요?', answer: () => `걱정 안 하셔도 돼요. ${CONFIG.months}개월 동안 ${R.condition}, ${R.how} ${man(P.sale)} ${R.amount} 환불해드려요.\n그래서 제가 드린 번호로 똑같이 구매하시고 영수증만 잘 보관해주시면 돼요.` },
+];
+
+function renderWho() {
+  const chips = (f, opts) => `<div class="ans" style="margin:0 0 6px">${opts.map((o) => `<button data-cf="${f}" data-v="${o}" class="${cust[f] === o ? 'on' : ''}">${o}</button>`).join('')}</div>`;
+  $('#who').innerHTML = chips('age', ['20대', '30대', '40대', '50대', '60대', '70대', '80대']) + chips('sex', ['남자', '여자']);
+}
+function renderInfo() {
+  const v = (x) => x ? `<span>${esc(x)}</span>` : '<span class="none">미입력</span>';
+  const rows = [['회원명', cust.name, '성함 · 일정'], ['구매 금액', cust.buy, '구매·당첨 확인'], ['그동안 당첨', cust.won, '구매·당첨 확인'],
+    ['주당 조합', cust.combos ? cust.combos + '조합' : '', '분석 번호 소개'], ['결제 방법', cust.pay, '결제'],
+    // 무통장입금이면 카드 정보 대신 입금자명 표시
+    ...(cust.pay === '무통장입금' ? [['입금 은행', cust.bank, '결제'], ['입금자명', cust.name, '성함 · 일정']] : [['카드사', cust.pay === '카드결제' ? cust.card : '', '결제'], ['할부', cust.pay === '카드결제' ? cust.installment : '', '결제']]),
+    ['상담원', CONFIG.agent, '마무리']];
+  $('#info').innerHTML = rows.map(([k, x, t]) => `<span class="k">${k}</span>${v(x)}<button data-jump="${esc(t)}">입력</button>`).join('');
+  $('#product').innerHTML = [['상품', `분석 번호 문자 제공 ${CONFIG.months}개월 (매주 ${CONFIG.sendDay})`], ['정상가', `${won(P.normal)}원`],
+    ['판매가', `${won(P.sale)}원 (${P.discountPct}% 할인)`], ['할부', `${CONFIG.cards.join('·')} 3개월 무이자`],
+    ['환불', `${CONFIG.months}개월간 3등 이상 0회 → ${R.amount} 환불 (영수증 제출)`]]
+    .map(([k, x]) => `<span class="k">${k}</span><span>${esc(x)}</span>`).join('');
+  $('#points').innerHTML = `<div class="warn green">환불 조건은 상단 [환불 조건] 버튼 (R 키)으로 안내</div>
+    <div class="warn amber">고객에게 영수증 보관 꼭 안내 (환불 시 필요)</div>
+    ${cust.card === '기타 카드' ? '<div class="warn amber">무이자 제휴 카드 아님 — 일시불/일반 할부</div>' : ''}`;
+}
+const whoText = () => [cust.age, cust.sex].filter(Boolean).join(' ');
+function summaryText() {
+  const p = [`[로또] ${cust.name || '회원명 미입력'}`, `${CONFIG.months}개월 ${won(P.sale)}원`, `매주 ${cust.combos || '?'}조합 ${CONFIG.sendDay} 발송`];
+  if (cust.pay === '카드결제') p.push(`카드결제 ${cust.card || ''} ${cust.installment || ''}`.trim());
+  else if (cust.pay === '무통장입금') p.push(`무통장입금 ${cust.bank || ''} (계좌 문자 발송·입금자명 ${cust.name || '회원명'})`);
+  if (cust.buy) p.push(`평소 구매 ${cust.buy}`);
+  if (cust.won) p.push(`기존 당첨 ${cust.won}`);
+  p.push(`환불: 3등↑ 0회 시 전액(영수증)`, `상담 ${CONFIG.agent}`);
+  return (whoText() ? whoText() + ' / ' : '') + p.join(' | ');
+}
+function render() {
+  const steps = buildSteps(); lastSteps = steps;
+  step = Math.max(0, Math.min(step, steps.length - 1));
+  $('#steps').innerHTML = steps.map((s, i) => `<button data-step="${i}" class="${i === step ? 'on' : i < step ? 'done' : ''}">${i + 1}. ${esc(s.t)}</button>`).join('');
+  $('#card').innerHTML = `<div class="stitle">${step + 1}. ${esc(steps[step].t)}<span>${step + 1} / ${steps.length}</span></div>${steps[step].h}`;
+  $('#prev').disabled = step === 0; $('#next').disabled = step === steps.length - 1;
+  renderSide();
+}
+function renderSide() {
+  renderWho();
+  renderInfo();
+  $('#summary').textContent = summaryText();
+  document.querySelectorAll('[data-cfg]').forEach((el) => { const k = el.dataset.cfg; if (document.activeElement !== el) el.value = k === 'agent' ? CONFIG.agent : CONFIG.lastWeek[k]; });
+}
+
+// 이벤트
+$('#card').addEventListener('input', (e) => {
+  const t = e.target; if (!t.matches('.inl')) return;
+  cust[t.dataset.f] = t.value;
+  if (t.type === 'text') t.size = Math.max(t.value.length, t.placeholder.length, 2) + 1;
+  renderSide();
+});
+$('#card').addEventListener('change', (e) => { if (e.target.matches('.inl[data-f=combos]')) render(); });
+$('#card').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('.inl')) { e.preventDefault(); e.target.blur(); } });
+$('#card').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-cf]'); if (!b) return;
+  cust[b.dataset.cf] = cust[b.dataset.cf] === b.dataset.v ? '' : b.dataset.v; render();
+});
+$('#side').addEventListener('click', (e) => {
+  const c = e.target.closest('button[data-cf]');
+  if (c) { cust[c.dataset.cf] = cust[c.dataset.cf] === c.dataset.v ? '' : c.dataset.v; render(); return; }
+  const j = e.target.closest('button[data-jump]'); if (!j) return;
+  const i = lastSteps.findIndex((x) => x.t === j.dataset.jump); if (i >= 0) { step = i; render(); setTab('script'); }
+});
+$('#side').addEventListener('input', (e) => {
+  const k = e.target.dataset.cfg; if (!k) return;
+  if (k === 'agent') CONFIG.agent = e.target.value.trim() || '오한결'; else CONFIG.lastWeek[k] = Number(e.target.value) || 0;
+  saveCfg(); render();
+});
+const go = (d) => { step += d; render(); };
+$('#prev').onclick = () => go(-1); $('#next').onclick = () => go(1);
+$('#steps').addEventListener('click', (e) => { const b = e.target.closest('[data-step]'); if (b) { step = +b.dataset.step; render(); } });
+function copySummary() {
+  const text = $('#summary').textContent;
+  const done = () => { $('#toast').classList.add('show'); setTimeout(() => $('#toast').classList.remove('show'), 1200); };
+  const fb = () => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (_) {} ta.remove(); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fb); else fb();
+}
+$('#btnCopy').onclick = copySummary;
+$('#btnReset').onclick = () => { if (!confirm('새 상담을 시작할까요? 입력한 고객 정보가 지워집니다.')) return; cust = blank(); step = 0; closeModals(); render(); };
+
+// 반론
+const closeModals = () => document.querySelectorAll('.modal').forEach((m) => m.classList.remove('open'));
+function openObj() {
+  $('#objList').innerHTML = OBJECTIONS.map((o, i) => `<button data-obj="${i}">${i + 1}. ${esc(o.title)}</button>`).join('');
+  $('#objModal').classList.add('open');
+}
+$('#btnObj').onclick = openObj;
+function openRefund() {
+  $('#ansTitle').textContent = `환불 조건 — ${CONFIG.months}개월 동안 3등 이상 0회 시 ${R.amount} 환불 (영수증 제출)`;
+  $('#ansBody').textContent = refundText();
+  closeModals(); $('#ansModal').classList.add('open');
+}
+$('#btnRefund').onclick = openRefund;
+$('#objList').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-obj]'); if (!b) return;
+  const o = OBJECTIONS[+b.dataset.obj];
+  $('#ansTitle').textContent = o.title; $('#ansBody').textContent = typeof o.answer === 'function' ? o.answer() : o.answer;
+  $('#objModal').classList.remove('open'); $('#ansModal').classList.add('open');
+});
+document.querySelectorAll('.modal').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m) closeModals(); }));
+document.addEventListener('keydown', (e) => {
+  const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName);
+  const modal = !!document.querySelector('.modal.open');
+  if (e.key === 'Escape') { if (modal) closeModals(); else if (typing) document.activeElement.blur(); return; }
+  if (e.altKey && e.code === 'KeyC') { e.preventDefault(); copySummary(); return; }
+  if (typing || modal) return;
+  if (e.key === '/') { e.preventDefault(); openObj(); }
+  if (e.key === 'r' || e.key === 'R' || e.key === 'ㄱ') { e.preventDefault(); openRefund(); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+});
+// 모바일 탭
+function setTab(t) { document.body.dataset.tab = t; document.querySelectorAll('#mtabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t)); window.scrollTo(0, 0); }
+$('#mtabs').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
+
+render();
+})();
+</script>
+</body>
+</html>
