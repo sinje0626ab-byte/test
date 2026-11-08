@@ -25,6 +25,7 @@ You are the illustrator of the Korean picture book "Long Live the Memorial Repub
 3. part2-cast.jpg = the finished art style of this book, and the look of two characters who are not on the cabinet sheet: Bui (old tortoise) and Chumo-tusu (sea otter). For everyone who IS on the cabinet sheet, the cabinet sheet wins.
 4. humans-who-is-who.jpg = the human characters.
 5. flag.png = the national flag.
+6. (when attached) part2-style.jpg = how the strategy room and Hamji's secretariat looked in Part 2; ref-park-wootae.png = the spy Park Wootae.
 
 === ART STYLE ===
 The same polished, cinematic animated-storybook look as part2-cast.jpg and the cabinet sheet: soft rounded 3D-like rendering, detailed fur and fabric, glossy eyes, rich warm lighting, detailed backgrounds, big expressive heads. NOT a 2D pencil sketch, NOT a bright candy-colored game show, NOT photorealistic.
