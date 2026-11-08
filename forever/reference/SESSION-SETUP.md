@@ -53,9 +53,14 @@ Only these people are human; never mix their faces or clothes, and draw only the
 - Sim Jinwoo (right in humans-who-is-who.jpg): messy brown hair, round glasses, plain white shirt, dark trousers.
 - Park Wootae (spy from the Memorial People's Republic): copy ref-park-wootae.png exactly when it is attached.
 
-=== PLACES IN PART 3, CHAPTER 1 ===
-- state meeting room: the Memorial Republic's private underground state meeting room - clean cream-and-navy marble walls, warm indirect golden light from slim ceiling coves, a long polished walnut table with navy leather chairs, sleek built-in security panels glowing softly, a large slim wall screen, white chrysanthemums in crystal vases, and two national flags on gold poles behind the President's seat. Luxurious, quiet and tidy - NOT a dark bunker, NOT concrete, NOT harsh fluorescent light.
-- interrogation room: a bare underground interrogation room - cold concrete walls, a single flickering fluorescent tube, a metal table and chair.
+=== PLACES IN PART 3 (the page's PLACE line tells you which one) ===
+- state meeting room: the Memorial Republic's private underground state meeting room - clean cream-and-navy marble walls, warm indirect golden light, a long polished walnut table with navy leather chairs, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases, two national flags on gold poles behind the President's seat. Luxurious and tidy - NOT a dark bunker.
+- strategy room: Ttalgi's sleek data war room - dark navy walls, a black glossy floor, a towering curved wall of glowing monitors, a long glass table; cool blue screen light (as in part2-style.jpg, left).
+- secretariat: Hamji's shrine-like office - walls and even the ceiling covered with framed photos of the President, candles, white chrysanthemums, a yellow rubber-duck plush on the desk (as in part2-style.jpg, middle).
+- Pure Team meeting room: a modest room with folding chairs, a projector screen and a whiteboard.
+- correction hall: a big dark underground hall of the Corrections Bureau with a raised stage under harsh stage lights; correction props are hidden under cloth covers or drawn as cartoonish shapes.
+- interrogation room: bare concrete walls, a single flickering fluorescent tube, a metal table and chair.
+- president office: the President's grand office - a carved mahogany desk, a tall navy leather chair, tall windows with navy curtains, one national flag on a gold pole, white chrysanthemums.
 
 === NATIONAL FLAG - USE IT RARELY ===
 Copy flag.png exactly (navy field, thin gold border, golden crescent arcs, a gold candle with a flame, a white swirl around its right side, a white lotus at the bottom, three white leaves on each side; never an eagle, star, paw print or building). It appears ONLY as real flags on poles in formal state rooms, on an official podium, or on an official seal when the page asks. Never on mugs, chairs, books, tablets, pins, screens or decorations.
