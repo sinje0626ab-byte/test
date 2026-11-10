@@ -13,7 +13,7 @@
    `Redo this. <이름> must be a <동물> exactly like the reference sheet, not a human. Keep everything else.`
 6. 마음에 드는 그림을 Claude에게 주며 "1장 3쪽 그림이야"라고 하면 그 쪽에 붙는다.
 
-남은 그림: **0장** (⬜ 남음 · ✅ 붙음)
+남은 그림: **30장** (⬜ 남음 · ✅ 붙음)
 
 ## 1단계 — 처음 한 번 (참고 그림 2장 첨부)
 
@@ -66,6 +66,8 @@ PLACES:
 - dressing room: the big backstage dressing room of the Grand Theater: make-up mirrors framed with glowing round bulbs, rows of standing congratulation flower wreaths with long ribbons, make-up chairs, costume racks, warm bulb light
 - interrogation room: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
 - state meeting room: the Memorial Republic's private underground state meeting room: clean cream-and-navy marble walls, warm indirect golden lighting, a long polished walnut table with navy leather chairs, two national flags on gold poles behind the President's seat, sleek built-in security panels, a large slim wall screen, white chrysanthemums in crystal vases; luxurious and tidy
+- correction hall: a special underground correction hall of the Corrections Bureau: a big dark hall with a raised stage under harsh stage lights and cartoonish correction props under cloth covers
+- pure team meeting room: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
 
 Do not draw anything yet. Reply only with "Ready". After that I will send one page at a time.
 ```
@@ -3338,6 +3340,534 @@ CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
 - Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
 
 PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+## 2장: 추모꾼 사냥 - 딸기의 숙청 작전
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 1쪽 (책 179쪽)
+
+⬜ 저장 이름: `19-01.webp`
+
+```text
+2-1. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room - Ttalgi's sleek data war room: dark navy walls, a black glossy floor, a towering curved wall of glowing monitors, a long glass table; cool blue screen light. SCENE: Three hours after the meeting. Ttalgi stands before the giant monitor wall glaring at the list of leaked data - eyes bloodshot, paws trembling, not from fear but from fury. A meerkat aide timidly offers a cup of coffee; "No need." The aide sets the cup down on the corner of the desk anyway. COMPOSITION (vertical): Top: the monitor wall full of red warning icons. Middle: Ttalgi from behind in 3/4 view, fists clenched, fur bristling slightly. Bottom: a small meerkat aide quietly placing a steaming coffee cup on the edge of the glass desk. MOOD: Cold fury.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 2쪽 (책 180쪽)
+
+⬜ 저장 이름: `19-02.webp`
+
+```text
+2-2. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: Ttalgi orders all of Park Wootae's records for seven years. Alone, Ttalgi mutters: Platinum, pro memorial-goer, three-time model award winner... then slams a fist on the desk: "A perfect disguise. 9,847 points. Top 0.3%." COMPOSITION (vertical): Top: the aide hurrying out the door. Middle: Ttalgi's white fist slamming down on the glass desk with a cartoon impact burst; the coffee cup jumping and sloshing. Bottom: Ttalgi's face, teeth gritted, green eyes narrowed. MOOD: Frustration.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 3쪽 (책 181쪽)
+
+⬜ 저장 이름: `19-03.webp`
+
+```text
+2-3. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: Park Wootae's memorial record appears on the screen - 1,247 memorials, 100% attendance at big cases, a 9.8 rating, top certification. "He's a more perfect memorial-goer than I am," Ttalgi sneers - for a split second remembering the bronze card locked in a drawer. COMPOSITION (vertical): Top: the big screen with Park Wootae's photo (exactly as ref-park-wootae.png) beside glowing medals, stars, a trophy and a full attendance calendar (icons only, no text). Middle: Ttalgi looking up at it with a bitter smirk. Bottom: a faint ghostly inset of a dull bronze card in a locked drawer. MOOD: Envy hidden under contempt.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 4쪽 (책 182쪽)
+
+⬜ 저장 이름: `19-04.webp`
+
+```text
+2-4. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: The aide returns with a thick stack of papers: 2,374 people Park contacted. "So the other agents are among them." Ttalgi switches on the tablet, fingers flying: "We'll find them first. Reverse tracking." COMPOSITION (vertical): Top: the meerkat aide staggering under a towering stack of papers. Middle: Ttalgi taking the papers in one paw while tapping the glowing tablet with the other. Bottom: other meerkat aides gathering around, curious. MOOD: The hunt begins.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 5쪽 (책 183쪽)
+
+⬜ 저장 이름: `19-05.webp`
+
+```text
+2-5. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: Ttalgi shows a huge network diagram: Park at the center, thousands of memorial-goers linked like a spider web - study groups, point-sharing communities, big-case information groups. "We look for those with patterns like his... but with anomalies in the data." COMPOSITION (vertical): Top and middle: the monitor wall filled with a glowing spider-web network of tiny figure icons, Park's small photo glowing red at the center. Bottom: Ttalgi pointing at a cluster with a laser pointer, eyes shining; the aides staring up, mouths open. MOOD: Cold brilliance.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 6쪽 (책 184쪽)
+
+⬜ 저장 이름: `19-06.webp`
+
+```text
+2-6. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: "Anomalies?" - perfect memorials but strange point usage, Platinum but never using benefits, never attending certain events. Ttalgi runs the algorithm: the count drops fast - 2,374... 743... 127... 34. "Thirty-four. A spy is among them." COMPOSITION (vertical): Top: the screen showing a funnel graphic with a crowd of figure icons pouring in and a few dropping out the bottom into a small glowing box (no numbers or text). Middle: Ttalgi smiling a small cold smile. Bottom: the aides leaning in, tense. MOOD: The net tightens.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 7쪽 (책 185쪽)
+
+⬜ 저장 이름: `19-07.webp`
+
+```text
+2-7. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: While reading the list of 34, the aides each sneak a glance to make sure their own names aren't on it. Some are Gold, even Olympics participants. "Naturally. Spies are deep inside." Ttalgi will propose a "loyalty verification system" before the Olympics. COMPOSITION (vertical): Top: Ttalgi sitting back in a sleek chair, tablet on the lap, planning. Bottom (larger): three meerkat aides huddled over a printed list, each nervously running a claw down the page looking for their own name, sweat drops, side-eye glances at each other. MOOD: Comic paranoia.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- meerkat aides (Ttalgi's strategy aides) = small, upright meerkats in neat grey suits and thin black ties, holding tablets and notepads, nervous and obedient. NOT humans
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 8쪽 (책 186쪽)
+
+⬜ 저장 이름: `19-08.webp`
+
+```text
+2-8. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: "Every memorial-goer must pass a loyalty test before the Olympics - hostility to the People's Republic, loyalty to the Republic." The aides hold their breath: "That's... like thought screening." "Exactly. It's wartime." COMPOSITION (vertical): Top: a screen mock-up of a test form with a big checkmark, a heart and a red X icon (no text). Middle: Ttalgi standing, calm and cold. Bottom: the aides frozen, holding their breath, ears flat. MOOD: Chilling logic.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 9쪽 (책 187쪽)
+
+⬜ 저장 이름: `19-09.webp`
+
+```text
+2-9. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: strategy room. SCENE: Ttalgi looks out the window: "Hamji wants to beat spies with purity. I'll root them out with data, systems and verification." On the corner of the desk, the coffee has gone completely cold. COMPOSITION (vertical): Top: Ttalgi at the tall window, back to us, the night city outside. Middle: Ttalgi's reflection in the glass, cold and determined. Bottom: the untouched coffee cup on the desk, no steam, a thin skin on top. MOOD: Lonely resolve.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: the Memorial Strategy Office, Ttalgi's headquarters: a sleek, modern, cold data war room with dark navy walls, a black glossy floor reflecting the screens, a towering curved wall of glowing monitors full of charts and diagrams (abstract shapes only), a long glass table with thin silver laptops and holographic projections above it, a small national flag on a stand in the corner, and a single white chrysanthemum in a slim glass vase; lit by cool electric blue and cyan screen light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 10쪽 (책 188쪽)
+
+⬜ 저장 이름: `19-10.webp`
+
+```text
+2-10. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: secretariat - Hamji's shrine-like office: walls and ceiling covered with framed photos of the President, candles, white chrysanthemums, a rubber-duck plush on the desk. SCENE: Hamji kneels before the President's portrait, praying in a trembling voice that a spy disguised as a Platinum memorial-goer has defiled memorial. A chipmunk aide enters - after the customary three-second bow at the door - to announce an emergency meeting of the Pure Team. COMPOSITION (vertical): Top: walls of framed duck portraits, candles. Middle: Hamji kneeling in prayer, bandaged paws pressed together. Bottom: in the doorway, a chipmunk aide bowing politely before entering. MOOD: Fervent devotion.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: Hamji's office in the Presidential Secretariat, more shrine than office: walls and even the ceiling covered with framed photos of the President and framed calligraphy scrolls of the President's sayings (brush squiggles only), an altar-like cabinet with the biggest portrait, candles and white chrysanthemums, a desk with a yellow rubber-duck plush in the exact center, a tall whiteboard, and a window looking across a courtyard; warm candle-gold light
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 11쪽 (책 189쪽)
+
+⬜ 저장 이름: `19-11.webp`
+
+```text
+2-11. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: the Pure Team meeting room - a modest room with folding chairs, a projector screen and a whiteboard. SCENE: 83 Pure Team members, uneasy. Hamji shows Park Wootae's photo: "He was Platinum. But he was a spy." The room buzzes: "A spy?" "Will we be suspected too?" "Quiet!" COMPOSITION (vertical): Top: the projector screen with Park Wootae's photo (exactly as ref-park-wootae.png). Middle: Hamji at the front, pointing at it, shouting. Bottom: rows of elderly and plain-dressed animal members (old goats, sheep, rabbits, dogs, some with gold duck badges) murmuring anxiously. MOOD: Alarm.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 12쪽 (책 190쪽)
+
+⬜ 저장 이름: `19-12.webp`
+
+```text
+2-12. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: Pure Team meeting room. SCENE: Hamji's voice rises: Park calculated, disguised, acted - false memorial! "But you are different! You signed the pledge! You refused rewards! You memorialize sincerely!" COMPOSITION (vertical): Top: Hamji with both arms raised, cheeks puffed, fur standing up with passion. Middle and bottom: the members slowly lifting their heads, eyes beginning to shine. MOOD: Rousing sermon.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 13쪽 (책 191쪽)
+
+⬜ 저장 이름: `19-13.webp`
+
+```text
+2-13. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: Pure Team meeting room. SCENE: One member raises a paw: Park was Platinum, they're mostly Bronze or Silver. "Memorial power doesn't matter! His 9,847 is false; your low power is real!" Hamji thumps the chest - the bandaged fingers throb. "Memorial is not a number! It is the heart!" COMPOSITION (vertical): Top: an old sheep timidly raising a hoof. Middle: Hamji thumping his chest, wincing slightly as the bandaged fingers throb (a tiny comic throb mark). Bottom: the members watching, half convinced. MOOD: Faith versus doubt.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 14쪽 (책 192쪽)
+
+⬜ 저장 이름: `19-14.webp`
+
+```text
+2-14. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: Pure Team meeting room. SCENE: The members begin to nod: "Right!" "We memorialize sincerely!" Hamji smiles and starts writing the strategy on the whiteboard - once again standing on a swivel chair because he can't reach, two chipmunk aides holding it steady. COMPOSITION (vertical): Top: the whiteboard, Hamji on tiptoe on a wobbly swivel chair, marker in paw. Middle: two chipmunk aides gripping the chair with sweat drops. Bottom: the members cheering with raised fists and paws. MOOD: Comic and earnest.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- chipmunk aides (Hamji's secretariat staff) = small chipmunks with striped backs in grey vests, white shirts and blue ties, holding folders, polite and a little nervous. NOT humans
+
+PLACE: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 15쪽 (책 193쪽)
+
+⬜ 저장 이름: `19-15.webp`
+
+```text
+2-15. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: Pure Team meeting room. SCENE: The whiteboard: the Pure Team's anti-spy strategy - memorialize most purely at the Olympics, no calculated memorial, only sincere tears and sorrow, keep reciting the pledge. "The whole nation will see what true memorial is." COMPOSITION (vertical): Top: the whiteboard covered with four neat bullet rows of handwriting-like squiggles with tiny icons - a heart, a crossed-out calculator, a teardrop, a scroll (no readable text). Middle: Hamji pointing at it proudly. Bottom: the members nodding, some wiping tears. MOOD: Hopeful.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 16쪽 (책 194쪽)
+
+⬜ 저장 이름: `19-16.webp`
+
+```text
+2-16. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: Pure Team meeting room. SCENE: Another member worries: 237 Platinum and Gold against 83. Hamji's face hardens: "Numbers don't matter! If you only worry about numbers and tiers, you're just like Ttalgi - all strategy and calculation!" COMPOSITION (vertical): Top: a nervous young rabbit member asking. Middle: Hamji shouting, face hard, one paw slicing the air. Bottom: the members shrinking back. MOOD: Fervor turning harsh.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+
+PLACE: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 17쪽 (책 195쪽)
+
+⬜ 저장 이름: `19-17.webp`
+
+```text
+2-17. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: Pure Team meeting room. SCENE: The members bow their heads. Hamji takes a breath, lowers his voice and apologizes. Then the phone rings - the hospital. Hamji hesitates, doesn't answer: "Later... after the meeting..." But his paw is trembling. COMPOSITION (vertical): Top: the members with bowed heads. Middle: Hamji looking down at the ringing phone in his bandaged paw (screen shows only a small red hospital-cross icon, no text), hesitating. Bottom: a close-up of the trembling paw pushing the phone back into the pocket. MOOD: Quiet guilt.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+
+PLACE: a modest meeting room of the Pure Team: folding chairs, a projector screen and a whiteboard
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 18쪽 (책 196쪽)
+
+⬜ 저장 이름: `19-18.webp`
+
+```text
+2-18. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: correction hall - a special underground correction hall of the Corrections Bureau: a big dark hall with a raised stage under harsh stage lights, rows of correction props on the stage. SCENE: At the same hour, Director Aeguk-jwasu inspects the special correction hall. A bulldog subordinate reports the program is ready. On the stage: an ornate memorial chair and other correction props. COMPOSITION (vertical): Top: the big dark hall with a lit stage. Middle: on the stage, the ornate chrysanthemum-wreathed armchair and a row of comically exaggerated props under cloth covers - only their odd shapes visible. Bottom: Aeguk-jwasu in his corrections uniform, baton in paw, smiling with satisfaction; a bulldog subordinate saluting beside him. TONE: Props are hidden under covers or drawn as cartoonish shapes - nothing realistic or cruel. MOOD: Menacing preparation.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+
+PLACE: a special underground correction hall of the Corrections Bureau: a big dark hall with a raised stage under harsh stage lights and cartoonish correction props under cloth covers
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 19쪽 (책 197쪽)
+
+⬜ 저장 이름: `19-19.webp`
+
+```text
+2-19. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: correction hall. SCENE: "This isn't enough. Correcting a Platinum spy must be... art." The whole nation will watch at the opening ceremony. Aeguk-jwasu strokes the correction chair like a beloved pet: "Not just punishment - a message." COMPOSITION (vertical): Top: Aeguk-jwasu stroking the back of the ornate chair tenderly, eyes half-closed in bliss. Middle: the bulldog subordinates exchanging uneasy looks. Bottom: long shadows across the stage. MOOD: Creepy tenderness.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+
+PLACE: a special underground correction hall of the Corrections Bureau: a big dark hall with a raised stage under harsh stage lights and cartoonish correction props under cloth covers
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 20쪽 (책 198쪽)
+
+⬜ 저장 이름: `19-20.webp`
+
+```text
+2-20. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: correction hall. SCENE: Aeguk-jwasu names the program: "The Spy Memorial Correction Show: The Traitor's End" - Part 1 exposing the fake memorial, Part 2 the live correction, Part 3 a forced loyalty oath. COMPOSITION (vertical): Top: a show poster mock-up on an easel - a dramatic spotlight on an empty chair and three panel icons: a mask being pulled off, a lightning bolt, a raised hand taking an oath (no text). Middle: Aeguk-jwasu gesturing at it like a showman. Bottom: bulldogs taking notes. MOOD: Showmanship.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+
+PLACE: a special underground correction hall of the Corrections Bureau: a big dark hall with a raised stage under harsh stage lights and cartoonish correction props under cloth covers
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 21쪽 (책 199쪽)
+
+⬜ 저장 이름: `19-21.webp`
+
+```text
+2-21. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: correction hall. SCENE: "And finally - I'll invite Chief Ttalgi and Chief Hamji to interrogate Park themselves. A preview of the Strategy Team versus the Pure Team." Aeguk-jwasu gazes out: "Two weeks. I can't wait." COMPOSITION (vertical): Top: a vision of two spotlights on the stage - one on a small white cat silhouette, one on a small hamster silhouette, facing a chair between them. Middle: Aeguk-jwasu grinning, a manic glint in the eyes. Bottom: the bulldogs applauding stiffly. MOOD: Anticipation.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Hamji (Chief of Presidential Staff (fanatically devoted to the President)) = a plump orange-and-white hamster with big round cheeks and a gentle, soft face, grey suit and blue tie; eyes that shine with a pure, fanatical devotion. NOT a human
+- Ttalgi (Chief of Memorial Strategy (cold, data-driven)) = a chubby, round, fluffy pure-white cat (a plump boy cat, NOT slim, NOT feminine): big round head, big round green eyes, small pink nose, pink-lined ears, long white whiskers, short legs and a round belly; charcoal-grey suit, white shirt, bright red tie; usually holds a tablet. Cute and soft in shape, but the expression is cool, calculating and data-driven. NOT a human
+- Aeguk-jwasu (Director of the Memorial Corrections Bureau (from Part 3)) = a grey wolf in his corrections uniform (aeguk-jwasu-uniform.png): grey camouflage quilted winter jacket with fur collar and cuffs, thick grey scarf, utility belt, dark grey cargo trousers, fur-trimmed brown combat boots, a black baton; extremely polite smile with a manic glint. NOT a human
+
+PLACE: a special underground correction hall of the Corrections Bureau: a big dark hall with a raised stage under harsh stage lights and cartoonish correction props under cloth covers
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 22쪽 (책 200쪽)
+
+⬜ 저장 이름: `19-22.webp`
+
+```text
+2-22. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: interrogation room. SCENE: Park Wootae, still tied to the chair, is asked again for the other agents' names. Calm and smug, he lifts his eyes toward the ceiling: "You'll never find them... because they're already higher than you." COMPOSITION (vertical): A WIDE, HIGH-ANGLE shot looking down from a ceiling corner, like a security camera. Bottom half: the small bare concrete room - Park Wootae (exactly as ref-park-wootae.png) sitting tied to the metal chair, relaxed, head tilted back, eyes rolled UP toward the camera with a sly, knowing smile; the black-panther agent standing across the table with arms folded, seen from above. Top half: a dreamlike shadow-vision rising above the ceiling - a grand marble staircase going up into darkness, with faceless silhouettes of high officials in suits standing at the top (no recognizable characters). LIGHT & COLOR: Cold grey-green light below, the vision above in dim gold and black. MOOD: Calm, eerie, mysterious - a hint, not violence.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 23쪽 (책 201쪽)
+
+⬜ 저장 이름: `19-23.webp`
+
+```text
+2-23. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: interrogation room. SCENE: "At the top of the Memorial Republic... our people are already there..." The panther agent loses his temper, grabs Park's collar across the table: "Names!" Park only bursts out laughing: "Your memorial is fake!" COMPOSITION (vertical): A tight, LOW-ANGLE side close-up, completely different from a wide shot. Left: the black-panther agent's angry face in profile, teeth bared, one paw gripping Park's shirt collar and pulling him half out of the chair. Right: Park Wootae's face close up, laughing wildly with his mouth wide open and eyes squeezed shut, hair flying. Top: the fluorescent tube sparking and flickering out, half the frame plunging into darkness. Bottom: the metal table edge tilted, a paper cup of water knocked over, water splashing. LIGHT & COLOR: Harsh flickering white light and deep black shadows, high contrast. MOOD: Explosive and defiant - cartoon motion lines only, no blood, no injury.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Park Wootae (a spy from the Memorial People's Republic (real name Pu Youtai)) = a human character drawn as a cartoon in the book's style, matching ref-park-wootae.png (made from the author's reference photo)
+
+PLACE: a bare underground interrogation room of the Intelligence Service: cold concrete walls, a single flickering fluorescent tube, a metal table and chair
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 24쪽 (책 202쪽)
+
+⬜ 저장 이름: `19-24.webp`
+
+```text
+2-24. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: president office - the President's grand office: a carved mahogany desk, a tall navy leather chair, tall windows with navy curtains, one national flag on a gold pole, white chrysanthemums; night city outside. SCENE: At the same hour, President Minju-simin reads an urgent intelligence report alone: Park hinted that "our people are already at the top." He closes the report and looks out the window: "At the top... interesting." COMPOSITION (vertical): Top: the tall window with the night city lights and one national flag on a gold pole beside it. Middle: Minju-simin seated IN the leather chair behind the desk, holding a closed report folder (no text), looking out. Bottom: the desk lamp's warm pool of light on the polished desk. MOOD: Calm and calculating.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 25쪽 (책 203쪽)
+
+⬜ 저장 이름: `19-25.webp`
+
+```text
+2-25. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: president office. SCENE: Minju-simin smiles faintly: a spy at the top is not a problem but an opportunity - a pretext for a purge. He presses the intercom: "Call Director Chumo-yeolsa." Chumo-yeolsa enters; the President hands him the report. COMPOSITION (vertical): Top: Minju-simin's wing on the intercom button, a small cold smile on the rubber-duck bill. Middle: Chumo-yeolsa (grey suit, navy dotted tie, tablet under one arm) entering through the tall door. Bottom: the report being handed across the desk. MOOD: A quiet summons.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 26쪽 (책 204쪽)
+
+⬜ 저장 이름: `19-26.webp`
+
+```text
+2-26. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: president office. SCENE: Chumo-yeolsa reads; for once, a tiny change crosses his blank face. "If this is true..." "True or not doesn't matter. What matters is whether people believe it." The plan: a "spy hunt" woven into the Olympics - investigate, interrogate, purge. COMPOSITION (vertical): Top: Chumo-yeolsa seated across the desk, reading, one button eye very slightly wider than usual. Middle: Minju-simin leaning forward, wings folded, calm and cold. Bottom: the desk between them, the national flag behind the President. MOOD: Dark politics.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 27쪽 (책 205쪽)
+
+⬜ 저장 이름: `19-27.webp`
+
+```text
+2-27. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: president office. SCENE: "That's... like a witch hunt." "Exactly. But it works: people will fear spies and depend on us, and we can remove dissenters." Chumo-yeolsa falls silent. "You look uncomfortable. Speak honestly." COMPOSITION (vertical): Top: a faint vision behind the President of animal citizens pointing fingers at each other in suspicion. Middle: Minju-simin nodding calmly. Bottom: Chumo-yeolsa sitting very still, tablet held tight, silent. MOOD: Moral tension.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 28쪽 (책 206쪽)
+
+⬜ 저장 이름: `19-28.webp`
+
+```text
+2-28. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: president office. SCENE: Chumo-yeolsa finally speaks: "When you founded the Republic, you spoke of true memorial. Now memorial is becoming a political tool - even the spy case is used for publicity..." "Is that a problem?" the President asks coldly. Chumo-yeolsa says no more. COMPOSITION (vertical): Top: a soft, faded memory vision of a younger, hopeful Minju-simin at a candlelight vigil among ordinary citizens. Middle: Chumo-yeolsa speaking quietly. Bottom: Minju-simin's cold, unreadable face. MOOD: Loss of ideals.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 29쪽 (책 207쪽)
+
+⬜ 저장 이름: `19-29.webp`
+
+```text
+2-29. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: president office. SCENE: Minju-simin rises: "Ideals and reality are different. Reality made me a realist. To protect the Republic I'll do anything - use spies, hunt witches, even... abandon memorial itself." For the first time, Chumo-yeolsa's button eyes widen. COMPOSITION (vertical): Top: Minju-simin standing at the window, his small figure silhouetted against the huge night city, the flag beside him. Middle: Chumo-yeolsa in the chair behind, button eyes wide open in shock. Bottom: long shadows across the floor. MOOD: A chilling confession.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
+
+No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
+```
+
+### 2장: 추모꾼 사냥 - 딸기의 숙청 작전 30쪽 (책 208쪽)
+
+⬜ 저장 이름: `19-30.webp`
+
+```text
+2-30. 2D watercolor storybook illustration, vertical 2:3.
+
+SCENE: PLACE: president office. SCENE: "You may go. This conversation is secret." Chumo-yeolsa bows deeply and leaves. Alone, Minju-simin looks down on the city, where memorial candles flicker in countless windows: "The Memorial Republic... how much longer can it last..." COMPOSITION (vertical): Top: the vast night city through the tall window, thousands of tiny candle lights flickering in apartment windows. Middle: Minju-simin's small figure standing alone at the window, seen from behind. Bottom: the empty office, the door just closing, a thin line of hallway light fading. LIGHT & COLOR: Deep navy night, warm specks of candlelight. MOOD: Lonely and ominous - the end of the chapter.
+
+CHARACTERS IN THIS PICTURE (anthropomorphic animals, keep exactly as described):
+- Minju-simin (the President) = a bright-yellow rubber-duck-style duck: a HUGE perfectly round head about as big as the whole torso, drawn front-facing or in slight 3/4 view (never side profile), big glossy black dot eyes, a WIDE flat orange bill like a rubber duck, a small tuft of feathers on top, yellow wing-hands with fingers, chubby short body in a navy-blue suit, white shirt, blue tie, small yellow ribbon pin on the left lapel, black shoes; calm but firm eyes. NOT a human
+- Chumo-yeolsa (Director of the Memorial Intelligence Service) = a fluffy brown teddy bear with button eyes and a permanently blank expression, charcoal-grey suit and navy tie, ramrod-straight posture, always holding a tablet. Carries NO envelope, NO folder and NO papers. NOT a human
+
+PLACE: the President's grand office in the Memorial Republic government building: navy-blue and gold palette, a wide carved mahogany desk with the national emblem inlaid in gold on its front panel, behind it a tall high-backed tufted navy leather presidential chair with gold studs, tall arched windows with heavy navy velvet curtains tied with gold tassels, two national flags on gold poles, a green-shaded brass desk lamp, white chrysanthemums in blue-and-white vases, bookshelves with gilded spines, a navy carpet with a gold border, tall double doors, and a huge wall screen on the side wall. The President always sits IN the chair behind the desk (the desk top reaches the duck's chest); the President never stands or sits on the desk
 
 No text, letters, numbers or speech bubbles anywhere. Not 3D, not photorealistic.
 ```
