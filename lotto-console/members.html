@@ -159,7 +159,7 @@ tr:hover td { background: #fafcff; }
     <div class="full"><label>메모<textarea class="f" data-m="memo" rows="2" placeholder="예: 사기 경험 있어 신뢰 문제 / 카드 3개월"></textarea></label></div>
 
     <div class="sends">
-      <div class="row" style="justify-content:space-between"><b style="font-size:14px">번호 발송 기록</b><span class="mut">한 줄에 한 조합, 숫자 6개 (띄어쓰기·쉼표)</span></div>
+      <div class="row" style="justify-content:space-between"><b style="font-size:14px">번호 발송 기록</b><span class="mut">한 줄에 한 조합 · "1>" 같은 줄 번호와 "로또번호", "=====" 줄은 자동으로 무시</span></div>
       <div id="sendList" style="margin-top:8px"></div>
       <div class="send" style="background:#fff">
         <div class="hd">
@@ -167,7 +167,7 @@ tr:hover td { background: #fafcff; }
           <span class="mut">→ <b id="sRound"></b>회 추첨용</span>
           <label class="mut" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="sFree"> 무료번호</label>
         </div>
-        <textarea class="f" id="sSets" rows="3" style="width:100%" placeholder="3 11 17 24 35 41&#10;5, 9, 22, 28, 33, 44"></textarea>
+        <textarea class="f" id="sSets" rows="3" style="width:100%" placeholder="1> 8,16,25,27,33,43&#10;2> 1,14,22,37,41,44&#10;(보낸 문자 그대로 붙여넣기 가능)"></textarea>
         <div class="row" style="margin-top:6px"><button class="btn sm primary" id="sAdd">발송 기록 추가</button><span class="err" id="sErr"></span></div>
       </div>
     </div>
@@ -225,8 +225,10 @@ const dateOfRound = (r) => ymd(ROUND1 + (r - 1) * 7 * 864e5);
 const fmt = (s) => { if (!s) return ''; const [, m, d] = s.split('-'); return `${+m}/${+d}`; };
 
 // ── 번호 파싱 · 등수 ──
+// 줄 앞의 "1>", "2)", "3." 같은 행 번호는 떼고 숫자만 읽음
+const stripRowNo = (line) => line.replace(/^\s*\d+\s*[>)\].:]\s*/, '');
 function parseSet(line) {
-  const n = (line.match(/\d+/g) || []).map(Number);
+  const n = (stripRowNo(line).match(/\d+/g) || []).map(Number);
   if (n.length !== 6) return { err: `숫자가 ${n.length}개예요 (6개 필요): ${line}` };
   if (n.some((x) => x < 1 || x > 45)) return { err: `1~45 범위를 벗어난 숫자: ${line}` };
   if (new Set(n).size !== 6) return { err: `중복 숫자: ${line}` };
@@ -356,7 +358,8 @@ $('#mModal').addEventListener('click', (e) => {
 });
 document.querySelectorAll('[data-m]').forEach((el) => el.addEventListener('input', () => { editing[el.dataset.m] = el.value; }));
 $('#sAdd').onclick = () => {
-  const lines = $('#sSets').value.split('\n').map((x) => x.trim()).filter(Boolean);
+  // 숫자가 없는 줄("로또번호", "=====" 등)은 건너뜀
+  const lines = $('#sSets').value.split('\n').map((x) => x.trim()).filter((x) => /\d/.test(x));
   if (!$('#sDate').value || !okDate($('#sDate').value)) { $('#sErr').textContent = '발송일을 확인해주세요 (연도 4자리)'; return; }
   if (!lines.length) { $('#sErr').textContent = '번호를 한 줄에 6개씩 입력해주세요'; return; }
   const sets = [];
