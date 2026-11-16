@@ -140,6 +140,8 @@ td.memo div { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: v
 .send .hd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 14px; }
 .send .ln { display: flex; align-items: center; gap: 2px; margin: 5px 0; }
 .send .ln .no { width: 22px; font-size: 12px; color: var(--muted); font-weight: 700; }
+.sms { margin-top: 10px; background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 12px 14px; white-space: pre-wrap; font-size: 14px; line-height: 1.6; font-family: inherit; color: #1e293b; user-select: all; }
+.btn.copied { background: var(--green); border-color: var(--green); color: #fff; }
 .err { color: var(--red); font-size: 13.5px; font-weight: 600; min-height: 18px; }
 .empty { color: var(--muted); padding: 40px 20px; text-align: center; font-size: 15px; }
 .empty b { display: block; font-size: 32px; margin-bottom: 6px; }
@@ -316,6 +318,17 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const won = (n) => Number(n || 0).toLocaleString('ko-KR');
 const KEY = 'lottoMembers.v1';
+// 발송 문자 문구 — 여기만 고치면 [문자 복사] 내용이 바뀜
+const SMS = {
+  free: { head: '로또와우 무료번호입니다.', tail: '무료번호는 자동으로 구매하시는 번호와 확률적으로 비슷하오니 참고하시고,\n구매만 부탁드립니다.' },
+  paid: { head: '로또와우 번호입니다.', tail: '' },
+};
+const LINE = '===============';
+function smsText(s) {
+  const t = s.free ? SMS.free : SMS.paid;
+  const nums = s.sets.map((x, i) => `${i + 1}> ${x.join(',')}`).join('\n');
+  return [t.head, '', nums, LINE, t.tail].filter((x, i, a) => !(i === a.length - 1 && !x)).join('\n');
+}
 const STATUS = [
   ['prospect', '가망고객'], ['account', '계좌 안내'], ['paid', '결제 완료'], ['hold', '보류·이탈'],
 ];
@@ -456,7 +469,7 @@ function openMember(id) {
   if (!editing.regDate) editing.regDate = regOf(editing) || today();
   document.querySelectorAll('[data-m]').forEach((el) => { el.value = editing[el.dataset.m] ?? ''; });
   $('#sDate').value = today(); $('#sFree').checked = !(editing.sends || []).length && editing.status !== 'paid'; $('#sSets').value = ''; $('#sErr').textContent = ''; $('#mErr').textContent = '';
-  updRound(); renderEdit();
+  smsOpen.clear(); updRound(); renderEdit();
   $('#mModal').classList.add('open'); snap.m = memberState();
   if (!m) setTimeout(() => $('[data-m=name]').focus(), 0);
 }
@@ -466,8 +479,9 @@ function renderEdit() {
   $('#sendList').innerHTML = sends.length ? sends.map((s) => {
     const d = drawOf(s.round), r = sendResult(s);
     return `<div class="send"><div class="hd"><b>${fmt(s.date)} 발송</b><span class="mut">${s.round}회 추첨 (${fmt(dateOfRound(s.round))})</span>${s.free ? '<span class="tag free">무료번호</span>' : ''}
-      ${rankTxt(r ? r.best : null)} <button type="button" class="btn sm danger" data-delsend="${s.id}" style="margin-left:auto">삭제</button></div>
-      ${s.sets.map((x, i) => `<div class="ln"><span class="no">${String.fromCharCode(65 + i)}</span>${balls(x, d)} <span style="margin-left:6px">${r ? rankTxt(r.ranks[i]) : ''}</span></div>`).join('')}</div>`;
+      ${rankTxt(r ? r.best : null)} <span style="margin-left:auto" class="row"><button type="button" class="btn sm" data-smsview="${s.id}">${smsOpen.has(s.id) ? '문자 접기' : '문자 보기'}</button><button type="button" class="btn sm primary" data-copysend="${s.id}">📋 문자 복사</button><button type="button" class="btn sm danger" data-delsend="${s.id}">삭제</button></span></div>
+      ${s.sets.map((x, i) => `<div class="ln"><span class="no">${i + 1}</span>${balls(x, d)} <span style="margin-left:6px">${r ? rankTxt(r.ranks[i]) : ''}</span></div>`).join('')}
+      ${smsOpen.has(s.id) ? `<div class="sms">${esc(smsText(s))}</div>` : ''}</div>`;
   }).join('') : '<div class="mut" style="margin-bottom:10px">아직 발송 기록이 없어요</div>';
 }
 const updRound = () => { const r = roundOf($('#sDate').value); $('#sRound').textContent = r || '?'; };
@@ -482,6 +496,10 @@ $('#mModal').addEventListener('click', (e) => {
     }
     if (c.dataset.cv === 'status') $('#sFree').checked = editing.status !== 'paid' && !editing.sends.length;
     renderEdit(); return; }
+  const v = e.target.closest('[data-smsview]');
+  if (v) { const id = v.dataset.smsview; smsOpen.has(id) ? smsOpen.delete(id) : smsOpen.add(id); renderEdit(); return; }
+  const cp = e.target.closest('[data-copysend]');
+  if (cp) { const sd = editing.sends.find((x) => x.id === cp.dataset.copysend); if (sd) copyText(smsText(sd), cp); return; }
   const d = e.target.closest('[data-delsend]');
   if (d) { if (confirm('이 발송 기록을 삭제할까요?')) { editing.sends = editing.sends.filter((s) => s.id !== d.dataset.delsend); renderEdit(); } return; }
 });
@@ -493,9 +511,20 @@ $('#sAdd').onclick = () => {
   if (!lines.length) { $('#sErr').textContent = '번호를 한 줄에 6개씩 입력해주세요'; return; }
   const sets = [];
   for (const l of lines) { const p = parseSet(l); if (p.err) { $('#sErr').textContent = p.err; return; } sets.push(p.set); }
-  editing.sends.push({ id: uid(), date: $('#sDate').value, round: roundOf($('#sDate').value), free: $('#sFree').checked, sets });
+  const ns = { id: uid(), date: $('#sDate').value, round: roundOf($('#sDate').value), free: $('#sFree').checked, sets };
+  editing.sends.push(ns); smsOpen.add(ns.id);
   $('#sSets').value = ''; $('#sErr').textContent = ''; $('#sFree').checked = false; renderEdit();
 };
+const smsOpen = new Set(); // 문자 미리보기를 펼친 발송 기록
+async function copyText(t, btn) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(t); ok = true; } catch (_) {
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy'); } catch (_) {} ta.remove();
+  }
+  const old = btn.textContent; btn.textContent = ok ? '✓ 복사됨' : '복사 실패 — 문자 보기에서 직접 복사'; btn.classList.toggle('copied', ok);
+  setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+}
 const okDate = (v) => !v || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v >= '2020-01-01' && v <= '2099-12-31');
 $('#mSave').onclick = () => {
   editing.name = (editing.name || '').trim();
