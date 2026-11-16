@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>고객관리</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f3f5f8; --panel: #fff; --panel2: #f7f9fc; --line: #dbe1e9; --text: #18212e; --muted: #687384;
+  --accent: #1f6feb; --accent-weak: #e7f0ff; --red: #d92d20; --red-weak: #fdeceb;
+  --amber: #a85a00; --amber-weak: #fff4e0; --green: #0c8456; --green-weak: #e6f6ee; --gray-weak: #eef1f5;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text);
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.topbar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; background: #fff; border-bottom: 1px solid var(--line); }
+.topbar h1 { font-size: 16px; margin: 0 auto 0 0; }
+.btn { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 14px; text-decoration: none; color: var(--text); display: inline-block; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+.btn.danger { color: var(--red); border-color: #f4bcb6; }
+.btn.sm { padding: 3px 8px; font-size: 13px; }
+main { max-width: 1280px; margin: 0 auto; padding: 14px 16px 40px; }
+.cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; text-align: left; }
+.stat.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-weak); }
+.stat .k { font-size: 13px; color: var(--muted); }
+.stat .v { font-size: 26px; font-weight: 800; }
+.sec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+.sec h2 { font-size: 15px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sec h2 .mut { font-weight: 400; }
+.mut { color: var(--muted); font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+input.f, select.f, textarea.f { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 14px; }
+input.f:focus, select.f:focus, textarea.f:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
+th { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--panel2); }
+td.wrap { white-space: normal; min-width: 140px; }
+tr:hover td { background: #fafcff; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.s-prospect { background: var(--gray-weak); color: var(--muted); }
+.s-account { background: var(--amber-weak); color: var(--amber); }
+.s-paid { background: var(--green-weak); color: var(--green); }
+.s-hold { background: var(--red-weak); color: var(--red); }
+.rank { font-weight: 800; }
+.r1, .r2, .r3 { color: var(--red); }
+.r4, .r5 { color: var(--amber); }
+.r0 { color: var(--muted); font-weight: 400; }
+.ball { display: inline-block; min-width: 24px; text-align: center; padding: 1px 4px; border-radius: 12px; background: var(--gray-weak); font-size: 12px; margin-right: 2px; }
+.ball.hit { background: var(--accent); color: #fff; }
+.ball.bonus { outline: 2px solid var(--amber); }
+.modal { position: fixed; inset: 0; background: rgba(20,30,45,.45); display: none; align-items: flex-start; justify-content: center; padding: 4vh 12px; z-index: 50; overflow: auto; }
+.modal.open { display: flex; }
+.mbox { width: min(760px, 100%); background: #fff; border-radius: 14px; padding: 18px 20px; }
+.mbox h3 { margin: 0 0 12px; font-size: 18px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.grid2 label, .full label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.full { margin-top: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chips button { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; font-size: 14px; }
+.chips button.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+.sends { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.send { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: var(--panel2); }
+.send .hd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 4px; font-size: 13px; }
+.send .ln { font-size: 13px; margin: 2px 0; }
+.err { color: var(--red); font-size: 13px; min-height: 18px; margin-top: 6px; }
+.empty { color: var(--muted); padding: 20px; text-align: center; }
+@media (max-width: 860px) {
+  .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid2 { grid-template-columns: 1fr; }
+  .stat .v { font-size: 22px; }
+  input.f, select.f, textarea.f { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<!-- 비밀번호 잠금 (로또상담과 같은 9825) -->
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:#f3f5f8;display:flex;align-items:center;justify-content:center;padding:16px">
+  <form id="gateForm" autocomplete="off" style="width:min(340px,100%);background:#fff;border:1px solid #dbe1e9;border-radius:16px;padding:22px">
+    <h2 style="font-size:18px;margin:0 0 14px">고객관리 비밀번호</h2>
+    <input id="gatePw" type="password" inputmode="numeric" maxlength="8" placeholder="••••" style="width:100%;font:inherit;font-size:22px;letter-spacing:6px;text-align:center;padding:12px;border:1px solid #dbe1e9;border-radius:10px">
+    <div id="gateMsg" style="min-height:22px;font-size:14px;color:#d92d20;margin:8px 0"></div>
+    <button type="submit" style="width:100%;font:inherit;font-size:16px;padding:12px;border-radius:10px;border:0;background:#1f6feb;color:#fff;font-weight:700">확인</button>
+  </form>
+</div>
+<script>
+(() => {
+  const HASH = '5542f9c152f58f4788fe5a78247686cd688a5f2a0f71c37271e8d7dcce6fedbf'; // 9825
+  const gate = document.getElementById('gate');
+  let ok = false; try { ok = sessionStorage.getItem('auth_lotto') === '1'; } catch (_) {}
+  if (ok) { gate.remove(); return; }
+  setTimeout(() => document.getElementById('gatePw').focus(), 0);
+  document.getElementById('gateForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(document.getElementById('gatePw').value));
+    const h = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    if (h !== HASH) { document.getElementById('gateMsg').textContent = '비밀번호가 맞지 않아요'; return; }
+    try { sessionStorage.setItem('auth_lotto', '1'); } catch (_) {}
+    gate.remove();
+  });
+})();
+</script>
+
+<header class="topbar">
+  <h1>로또 고객관리</h1>
+  <a class="btn" href="./">← 상담 콘솔</a>
+  <button class="btn primary" id="btnAdd">+ 회원 등록</button>
+  <button class="btn" id="btnDraw">당첨번호 입력</button>
+  <button class="btn" id="btnExport">백업 저장</button>
+  <label class="btn" style="cursor:pointer">백업 불러오기<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
+</header>
+
+<main>
+  <div class="cards" id="cards"></div>
+
+  <div class="sec">
+    <h2>고객 목록 <span class="mut" id="listInfo"></span></h2>
+    <div class="row" style="margin-bottom:10px">
+      <input class="f" id="q" placeholder="이름 · 연락처 · 메모 검색" style="flex:1;min-width:180px">
+      <select class="f" id="fFree"><option value="">무료번호 전체</option><option value="y">무료번호 보냄</option><option value="n">무료번호 안 보냄</option></select>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>이름</th><th>구분</th><th>상태</th><th>연락처</th><th>무료번호</th><th>최근 발송</th><th>최근 당첨 결과</th><th>최고 등수</th><th>결제</th><th class="wrap">메모</th><th></th></tr></thead>
+      <tbody id="list"></tbody>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>회차별 당첨번호 <span class="mut">토요일 추첨 후 입력하면 고객별 등수가 자동 계산돼요</span></h2>
+    <div id="draws"></div>
+  </div>
+
+  <p class="mut">※ 고객 정보는 이 브라우저에만 저장돼요 (서버에 올라가지 않음). 다른 PC·폰에서는 보이지 않으니 [백업 저장]으로 파일을 받아두고, 다른 기기에서 [백업 불러오기]로 옮기세요. 브라우저 기록·사이트 데이터를 지우면 함께 지워져요.</p>
+</main>
+
+<!-- 회원 등록 / 수정 -->
+<div class="modal" id="mModal">
+  <div class="mbox">
+    <h3 id="mTitle">회원 등록</h3>
+    <div class="grid2">
+      <label>이름 *<input class="f" data-m="name" placeholder="홍길동"></label>
+      <label>연락처<input class="f" data-m="phone" placeholder="010-0000-0000" inputmode="tel"></label>
+      <label>연령대<div class="chips" data-chips="age"></div></label>
+      <label>성별<div class="chips" data-chips="sex"></div></label>
+    </div>
+    <div class="full"><label>상태<div class="chips" data-chips="status"></div></label></div>
+    <div class="grid2" style="margin-top:10px">
+      <label>결제 방법<select class="f" data-m="payMethod"><option value="">-</option><option>카드결제</option><option>무통장입금</option></select></label>
+      <label>결제 금액 (원)<input class="f" data-m="payAmount" type="number" min="0" step="1000" placeholder="165000"></label>
+      <label>계좌 안내일<input class="f" data-m="accountDate" type="date"></label>
+      <label>결제일<input class="f" data-m="payDate" type="date"></label>
+    </div>
+    <div class="full"><label>메모<textarea class="f" data-m="memo" rows="2" placeholder="예: 사기 경험 있어 신뢰 문제 / 카드 3개월"></textarea></label></div>
+
+    <div class="sends">
+      <div class="row" style="justify-content:space-between"><b style="font-size:14px">번호 발송 기록</b><span class="mut">한 줄에 한 조합, 숫자 6개 (띄어쓰기·쉼표)</span></div>
+      <div id="sendList" style="margin-top:8px"></div>
+      <div class="send" style="background:#fff">
+        <div class="hd">
+          <input class="f" type="date" id="sDate">
+          <span class="mut">→ <b id="sRound"></b>회 추첨용</span>
+          <label class="mut" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="sFree"> 무료번호</label>
+        </div>
+        <textarea class="f" id="sSets" rows="3" style="width:100%" placeholder="3 11 17 24 35 41&#10;5, 9, 22, 28, 33, 44"></textarea>
+        <div class="row" style="margin-top:6px"><button class="btn sm primary" id="sAdd">발송 기록 추가</button><span class="err" id="sErr"></span></div>
+      </div>
+    </div>
+
+    <div class="err" id="mErr"></div>
+    <div class="row" style="justify-content:space-between;margin-top:10px">
+      <button class="btn danger" id="mDel">회원 삭제</button>
+      <div class="row"><button class="btn" id="mCancel">취소</button><button class="btn primary" id="mSave">저장</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 당첨번호 입력 -->
+<div class="modal" id="dModal">
+  <div class="mbox" style="width:min(520px,100%)">
+    <h3>당첨번호 입력</h3>
+    <div class="grid2">
+      <label>추첨일 (토요일)<input class="f" type="date" id="dDate"></label>
+      <label>회차<input class="f" type="number" id="dRound" min="1"></label>
+    </div>
+    <div class="full"><label>당첨번호 6개<input class="f" id="dNums" placeholder="3 11 17 24 35 41"></label></div>
+    <div class="full"><label>보너스 번호<input class="f" id="dBonus" type="number" min="1" max="45" placeholder="7"></label></div>
+    <div class="err" id="dErr"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" id="dCancel">취소</button><button class="btn primary" id="dSave">저장하고 등수 계산</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const won = (n) => Number(n || 0).toLocaleString('ko-KR');
+const KEY = 'lottoMembers.v1';
+const STATUS = [
+  ['prospect', '가망고객'], ['account', '계좌 안내'], ['paid', '결제 완료'], ['hold', '보류·이탈'],
+];
+const STATUS_NAME = Object.fromEntries(STATUS);
+const AGES = ['20대', '30대', '40대', '50대', '60대', '70대', '80대'];
+
+// ── 저장소 (이 브라우저에만) ──
+let db = { members: [], draws: [] };
+try { db = Object.assign(db, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (_) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (_) { alert('저장 실패: 브라우저 저장공간을 확인해주세요'); } };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+// ── 날짜 · 회차 (1회 = 2002-12-07 토요일, 매주 1회) ──
+const ROUND1 = Date.UTC(2002, 11, 7);
+const toUTC = (s) => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+const ymd = (t) => new Date(t).toISOString().slice(0, 10);
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const nextSat = (s) => { const t = toUTC(s); const wd = new Date(t).getUTCDay(); return t + ((6 - wd + 7) % 7) * 864e5; };
+const roundOf = (s) => s ? Math.floor((nextSat(s) - ROUND1) / (7 * 864e5)) + 1 : '';
+const dateOfRound = (r) => ymd(ROUND1 + (r - 1) * 7 * 864e5);
+const fmt = (s) => { if (!s) return ''; const [, m, d] = s.split('-'); return `${+m}/${+d}`; };
+
+// ── 번호 파싱 · 등수 ──
+function parseSet(line) {
+  const n = (line.match(/\d+/g) || []).map(Number);
+  if (n.length !== 6) return { err: `숫자가 ${n.length}개예요 (6개 필요): ${line}` };
+  if (n.some((x) => x < 1 || x > 45)) return { err: `1~45 범위를 벗어난 숫자: ${line}` };
+  if (new Set(n).size !== 6) return { err: `중복 숫자: ${line}` };
+  return { set: n.sort((a, b) => a - b) };
+}
+function rankOf(set, draw) {
+  const hit = set.filter((x) => draw.nums.includes(x)).length;
+  if (hit === 6) return 1;
+  if (hit === 5) return set.includes(draw.bonus) ? 2 : 3;
+  if (hit === 4) return 4;
+  if (hit === 3) return 5;
+  return 0;
+}
+const drawOf = (round) => db.draws.find((d) => d.round === round);
+// 발송 1건의 결과: 가장 높은 등수 (0 = 낙첨, null = 아직 추첨 결과 없음)
+function sendResult(s) {
+  const d = drawOf(s.round); if (!d) return null;
+  const ranks = s.sets.map((x) => rankOf(x, d));
+  return { best: Math.min(...ranks.map((r) => r || 9)) === 9 ? 0 : Math.min(...ranks.filter(Boolean)), ranks };
+}
+const rankTxt = (r) => r == null ? '<span class="mut">추첨 전</span>' : r === 0 ? '<span class="rank r0">낙첨</span>' : `<span class="rank r${r}">${r}등</span>`;
+const balls = (set, d) => set.map((x) => `<span class="ball ${d && d.nums.includes(x) ? 'hit' : ''} ${d && d.bonus === x ? 'bonus' : ''}">${x}</span>`).join('');
+
+// ── 목록 ──
+let filterStatus = '';
+function memberSummary(m) {
+  const sends = [...(m.sends || [])].sort((a, b) => b.round - a.round);
+  const free = sends.filter((s) => s.free);
+  const last = sends[0];
+  let best = null;
+  sends.forEach((s) => { const r = sendResult(s); if (!r) return; const v = r.best || 9; best = best == null ? v : Math.min(best, v); });
+  if (best === 9) best = 0; // 9 = 낙첨
+  return { free, last, lastRes: last ? sendResult(last) : null, best };
+}
+function render() {
+  // 요약 카드
+  const cnt = (st) => db.members.filter((m) => m.status === st).length;
+  const freeCnt = db.members.filter((m) => (m.sends || []).some((s) => s.free)).length;
+  const winCnt = db.members.filter((m) => { const b = memberSummary(m).best; return b && b <= 3; }).length;
+  const cards = [['', '전체', db.members.length], ...STATUS.map(([k, n]) => [k, n, cnt(k)]), ['win', '3등 이상 당첨', winCnt]];
+  $('#cards').innerHTML = cards.map(([k, n, v]) => `<button class="stat ${filterStatus === k ? 'on' : ''}" data-fs="${k}"><div class="k">${n}</div><div class="v">${v}</div></button>`).join('');
+  // 목록
+  const q = $('#q').value.trim();
+  const ff = $('#fFree').value;
+  const rows = db.members.filter((m) => {
+    const s = memberSummary(m);
+    if (filterStatus === 'win') { if (!(s.best && s.best <= 3)) return false; }
+    else if (filterStatus && m.status !== filterStatus) return false;
+    if (ff === 'y' && !s.free.length) return false;
+    if (ff === 'n' && s.free.length) return false;
+    if (q && ![m.name, m.phone, m.memo].join(' ').includes(q)) return false;
+    return true;
+  }).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+  $('#listInfo').textContent = `${rows.length}명 표시 · 무료번호 받은 고객 ${freeCnt}명`;
+  $('#list').innerHTML = rows.length ? rows.map((m) => {
+    const s = memberSummary(m);
+    const freeTxt = s.free.length ? `보냄 ${s.free.map((x) => fmt(x.date)).join(', ')}` : '<span class="mut">-</span>';
+    const lastTxt = s.last ? `${fmt(s.last.date)} · ${s.last.round}회 ${s.last.sets.length}조합${s.last.free ? ' (무료)' : ''}` : '<span class="mut">-</span>';
+    const pay = m.status === 'paid' ? `${esc(m.payMethod || '')} ${m.payAmount ? won(m.payAmount) + '원' : ''} ${m.payDate ? fmt(m.payDate) : ''}`
+      : m.status === 'account' ? `계좌 안내 ${fmt(m.accountDate)}` : '<span class="mut">-</span>';
+    return `<tr>
+      <td><b>${esc(m.name)}</b></td>
+      <td>${esc([m.age, m.sex].filter(Boolean).join(' ')) || '<span class="mut">-</span>'}</td>
+      <td><span class="badge s-${m.status}">${STATUS_NAME[m.status] || '-'}</span></td>
+      <td>${esc(m.phone) || '<span class="mut">-</span>'}</td>
+      <td>${freeTxt}</td>
+      <td>${lastTxt}</td>
+      <td>${s.last ? rankTxt(s.lastRes ? s.lastRes.best : null) : '<span class="mut">-</span>'}</td>
+      <td>${s.best == null ? '<span class="mut">-</span>' : rankTxt(s.best)}</td>
+      <td>${pay}</td>
+      <td class="wrap">${esc(m.memo)}</td>
+      <td><button class="btn sm" data-edit="${m.id}">수정</button></td></tr>`;
+  }).join('') : `<tr><td colspan="11" class="empty">${db.members.length ? '조건에 맞는 고객이 없어요' : '아직 등록된 회원이 없어요. [+ 회원 등록]을 눌러주세요'}</td></tr>`;
+  renderDraws();
+}
+function renderDraws() {
+  const ds = [...db.draws].sort((a, b) => b.round - a.round);
+  if (!ds.length) { $('#draws').innerHTML = '<div class="mut">아직 입력한 당첨번호가 없어요. 토요일 추첨 후 [당첨번호 입력]을 눌러주세요.</div>'; return; }
+  $('#draws').innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>회차</th><th>추첨일</th><th>당첨번호 + 보너스</th><th>이 회차 발송 고객</th><th>당첨 고객</th><th></th></tr></thead><tbody>${ds.map((d) => {
+    const got = []; let sent = 0;
+    db.members.forEach((m) => (m.sends || []).filter((s) => s.round === d.round).forEach((s) => { sent++; const r = sendResult(s); if (r.best) got.push(`${esc(m.name)} <span class="rank r${r.best}">${r.best}등</span>`); }));
+    return `<tr><td><b>${d.round}회</b></td><td>${fmt(d.date)}</td><td>${d.nums.map((x) => `<span class="ball hit">${x}</span>`).join('')} + <span class="ball bonus">${d.bonus}</span></td>
+      <td>${sent}건</td><td class="wrap">${got.join(', ') || '<span class="mut">없음</span>'}</td><td><button class="btn sm danger" data-deldraw="${d.round}">삭제</button></td></tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+
+// ── 회원 등록 / 수정 ──
+let editing = null; // 편집 중인 회원 사본
+function chips(name, opts) {
+  $(`[data-chips="${name}"]`).innerHTML = opts.map(([v, l]) => `<button type="button" data-cv="${name}" data-v="${v}" class="${editing[name] === v ? 'on' : ''}">${l}</button>`).join('');
+}
+function openMember(id) {
+  const m = id ? db.members.find((x) => x.id === id) : null;
+  editing = m ? JSON.parse(JSON.stringify(m)) : { id: null, name: '', phone: '', age: '', sex: '', status: 'prospect', payMethod: '', payAmount: '', payDate: '', accountDate: '', memo: '', sends: [] };
+  $('#mTitle').textContent = m ? `회원 수정 — ${m.name}` : '회원 등록';
+  $('#mDel').style.visibility = m ? 'visible' : 'hidden';
+  document.querySelectorAll('[data-m]').forEach((el) => { el.value = editing[el.dataset.m] ?? ''; });
+  $('#sDate').value = today(); $('#sFree').checked = !(editing.sends || []).length && editing.status !== 'paid'; $('#sSets').value = ''; $('#sErr').textContent = ''; $('#mErr').textContent = '';
+  updRound(); renderEdit();
+  $('#mModal').classList.add('open');
+  if (!m) setTimeout(() => $('[data-m=name]').focus(), 0);
+}
+function renderEdit() {
+  chips('age', AGES.map((a) => [a, a])); chips('sex', [['남자', '남자'], ['여자', '여자']]); chips('status', STATUS);
+  const sends = [...editing.sends].sort((a, b) => b.round - a.round);
+  $('#sendList').innerHTML = sends.length ? sends.map((s) => {
+    const d = drawOf(s.round), r = sendResult(s);
+    return `<div class="send"><div class="hd"><b>${fmt(s.date)}</b> 발송 · ${s.round}회 추첨 (${fmt(dateOfRound(s.round))}) ${s.free ? '<span class="badge s-account">무료번호</span>' : ''}
+      · 결과 ${rankTxt(r ? r.best : null)} <button type="button" class="btn sm danger" data-delsend="${s.id}" style="margin-left:auto">삭제</button></div>
+      ${s.sets.map((x, i) => `<div class="ln">${balls(x, d)} ${r ? rankTxt(r.ranks[i]) : ''}</div>`).join('')}</div>`;
+  }).join('') : '<div class="mut" style="margin-bottom:8px">아직 발송 기록이 없어요</div>';
+}
+const updRound = () => { const r = roundOf($('#sDate').value); $('#sRound').textContent = r || '?'; };
+$('#sDate').addEventListener('input', updRound);
+$('#mModal').addEventListener('click', (e) => {
+  const c = e.target.closest('[data-cv]');
+  if (c) { editing[c.dataset.cv] = editing[c.dataset.cv] === c.dataset.v && c.dataset.cv !== 'status' ? '' : c.dataset.v;
+    if (c.dataset.cv === 'status' && c.dataset.v === 'account' && !editing.accountDate) { editing.accountDate = today(); $('[data-m=accountDate]').value = editing.accountDate; }
+    if (c.dataset.cv === 'status' && c.dataset.v === 'paid' && !editing.payDate) { editing.payDate = today(); $('[data-m=payDate]').value = editing.payDate; if (!editing.payAmount) { editing.payAmount = 165000; $('[data-m=payAmount]').value = 165000; } }
+    if (c.dataset.cv === 'status') $('#sFree').checked = editing.status !== 'paid' && !editing.sends.length;
+    renderEdit(); return; }
+  const d = e.target.closest('[data-delsend]');
+  if (d) { if (confirm('이 발송 기록을 삭제할까요?')) { editing.sends = editing.sends.filter((s) => s.id !== d.dataset.delsend); renderEdit(); } return; }
+  if (e.target.id === 'mModal') closeAll();
+});
+document.querySelectorAll('[data-m]').forEach((el) => el.addEventListener('input', () => { editing[el.dataset.m] = el.value; }));
+$('#sAdd').onclick = () => {
+  const lines = $('#sSets').value.split('\n').map((x) => x.trim()).filter(Boolean);
+  if (!$('#sDate').value) { $('#sErr').textContent = '발송일을 선택해주세요'; return; }
+  if (!lines.length) { $('#sErr').textContent = '번호를 한 줄에 6개씩 입력해주세요'; return; }
+  const sets = [];
+  for (const l of lines) { const p = parseSet(l); if (p.err) { $('#sErr').textContent = p.err; return; } sets.push(p.set); }
+  editing.sends.push({ id: uid(), date: $('#sDate').value, round: roundOf($('#sDate').value), free: $('#sFree').checked, sets });
+  $('#sSets').value = ''; $('#sErr').textContent = ''; $('#sFree').checked = false; renderEdit();
+};
+$('#mSave').onclick = () => {
+  editing.name = (editing.name || '').trim();
+  if (!editing.name) { $('#mErr').textContent = '이름을 입력해주세요'; return; }
+  if ($('#sSets').value.trim()) { $('#mErr').textContent = '입력한 번호가 아직 추가되지 않았어요 — [발송 기록 추가]를 먼저 눌러주세요'; return; }
+  editing.payAmount = editing.payAmount === '' ? '' : Number(editing.payAmount);
+  editing.updatedAt = new Date().toISOString();
+  if (editing.id) db.members = db.members.map((m) => m.id === editing.id ? editing : m);
+  else { editing.id = uid(); editing.createdAt = editing.updatedAt; db.members.push(editing); }
+  save(); closeAll(); render();
+};
+$('#mDel').onclick = () => {
+  if (!confirm(`${editing.name} 회원을 삭제할까요? 발송 기록도 함께 지워져요.`)) return;
+  db.members = db.members.filter((m) => m.id !== editing.id); save(); closeAll(); render();
+};
+$('#mCancel').onclick = () => closeAll();
+
+// ── 당첨번호 ──
+function openDraw() {
+  const d = new Date(); const sat = new Date(d); sat.setDate(d.getDate() - ((d.getDay() + 1) % 7)); // 가장 최근 토요일
+  const s = `${sat.getFullYear()}-${String(sat.getMonth() + 1).padStart(2, '0')}-${String(sat.getDate()).padStart(2, '0')}`;
+  $('#dDate').value = s; $('#dRound').value = roundOf(s); $('#dNums').value = ''; $('#dBonus').value = ''; $('#dErr').textContent = '';
+  $('#dModal').classList.add('open'); setTimeout(() => $('#dNums').focus(), 0);
+}
+$('#dDate').addEventListener('input', () => { $('#dRound').value = roundOf($('#dDate').value); });
+$('#dSave').onclick = () => {
+  const p = parseSet($('#dNums').value); if (p.err) { $('#dErr').textContent = p.err; return; }
+  const bonus = Number($('#dBonus').value), round = Number($('#dRound').value);
+  if (!(bonus >= 1 && bonus <= 45) || p.set.includes(bonus)) { $('#dErr').textContent = '보너스 번호를 확인해주세요 (1~45, 당첨번호와 중복 불가)'; return; }
+  if (!round) { $('#dErr').textContent = '회차를 입력해주세요'; return; }
+  db.draws = db.draws.filter((d) => d.round !== round);
+  db.draws.push({ round, date: $('#dDate').value || dateOfRound(round), nums: p.set, bonus });
+  save(); closeAll(); render();
+};
+$('#dCancel').onclick = () => closeAll();
+$('#dModal').addEventListener('click', (e) => { if (e.target.id === 'dModal') closeAll(); });
+
+// ── 백업 ──
+$('#btnExport').onclick = () => {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `로또고객_백업_${today()}.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+$('#fileImport').onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!Array.isArray(data.members) || !Array.isArray(data.draws)) throw new Error('형식 오류');
+    if (!confirm(`백업 파일의 회원 ${data.members.length}명, 당첨번호 ${data.draws.length}회차로 지금 데이터를 바꿀까요?`)) return;
+    db = { members: data.members, draws: data.draws }; save(); render();
+  } catch (_) { alert('백업 파일을 읽을 수 없어요'); }
+  e.target.value = '';
+};
+
+// ── 공통 이벤트 ──
+const closeAll = () => document.querySelectorAll('.modal').forEach((m) => m.classList.remove('open'));
+$('#btnAdd').onclick = () => openMember(null);
+$('#btnDraw').onclick = openDraw;
+$('#cards').addEventListener('click', (e) => { const b = e.target.closest('[data-fs]'); if (b) { filterStatus = filterStatus === b.dataset.fs ? '' : b.dataset.fs; render(); } });
+$('#list').addEventListener('click', (e) => { const b = e.target.closest('[data-edit]'); if (b) openMember(b.dataset.edit); });
+$('#draws').addEventListener('click', (e) => { const b = e.target.closest('[data-deldraw]'); if (b && confirm(`${b.dataset.deldraw}회 당첨번호를 삭제할까요?`)) { db.draws = db.draws.filter((d) => d.round !== Number(b.dataset.deldraw)); save(); render(); } });
+$('#q').addEventListener('input', render); $('#fFree').addEventListener('change', render);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
+render();
+})();
+</script>
+</body>
+</html>
