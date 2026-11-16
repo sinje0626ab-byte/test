@@ -8,74 +8,165 @@
 <style>
 :root {
   color-scheme: light;
-  --bg: #f3f5f8; --panel: #fff; --panel2: #f7f9fc; --line: #dbe1e9; --text: #18212e; --muted: #687384;
-  --accent: #1f6feb; --accent-weak: #e7f0ff; --red: #d92d20; --red-weak: #fdeceb;
-  --amber: #a85a00; --amber-weak: #fff4e0; --green: #0c8456; --green-weak: #e6f6ee; --gray-weak: #eef1f5;
+  --bg: #eef2f7; --panel: #fff; --panel2: #f6f8fb; --line: #e2e8f0; --line2: #cbd5e1; --text: #0f172a; --muted: #64748b;
+  --brand: #1e3a8a; --brand2: #2563eb; --accent: #2563eb; --accent-weak: #eaf1ff;
+  --red: #dc2626; --red-weak: #fef2f2; --amber: #b45309; --amber-weak: #fffbeb;
+  --green: #059669; --green-weak: #ecfdf5; --gray: #64748b; --gray-weak: #f1f5f9; --violet: #7c3aed; --violet-weak: #f5f3ff;
+  --shadow: 0 1px 2px rgba(15,23,42,.05), 0 4px 14px rgba(15,23,42,.06);
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--text);
-  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
-.topbar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; background: #fff; border-bottom: 1px solid var(--line); }
-.topbar h1 { font-size: 16px; margin: 0 auto 0 0; }
-.btn { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 14px; text-decoration: none; color: var(--text); display: inline-block; }
+
+/* 상단 */
+.topbar { position: sticky; top: 0; z-index: 10; background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #fff; box-shadow: 0 2px 10px rgba(30,58,138,.25); }
+.topbar .in { max-width: 1320px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 20px; }
+.topbar h1 { font-size: 19px; margin: 0 auto 0 0; letter-spacing: -.3px; display: flex; align-items: center; gap: 10px; }
+.topbar h1 .logo { width: 30px; height: 30px; border-radius: 50%; background: #fbbf24; color: #1e3a8a; display: grid; place-items: center; font-size: 15px; font-weight: 900; }
+.topbar .btn { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.28); color: #fff; }
+.topbar .btn:hover { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.5); }
+.topbar .btn.primary { background: #fbbf24; border-color: #fbbf24; color: #1e293b; }
+.topbar .btn.primary:hover { background: #fcd34d; }
+.btn { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line2); border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--text); transition: background .15s, border-color .15s; }
 .btn:hover { border-color: var(--accent); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
-.btn.danger { color: var(--red); border-color: #f4bcb6; }
-.btn.sm { padding: 3px 8px; font-size: 13px; }
-main { max-width: 1280px; margin: 0 auto; padding: 14px 16px 40px; }
-.cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
-.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; text-align: left; }
-.stat.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-weak); }
-.stat .k { font-size: 13px; color: var(--muted); }
-.stat .v { font-size: 26px; font-weight: 800; }
-.sec { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
-.sec h2 { font-size: 15px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.sec h2 .mut { font-weight: 400; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: #1d4ed8; }
+.btn.danger { color: var(--red); border-color: #fecaca; background: #fff; }
+.btn.danger:hover { background: var(--red-weak); }
+.btn.sm { padding: 5px 10px; font-size: 13px; border-radius: 8px; }
+main { max-width: 1320px; margin: 0 auto; padding: 20px 20px 48px; }
+
+/* 요약 카드 */
+.cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.stat { position: relative; overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px 14px 18px; text-align: left; box-shadow: var(--shadow); transition: transform .12s, box-shadow .12s; }
+.stat::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c, var(--brand2)); }
+.stat:hover { transform: translateY(-2px); }
+.stat .k { font-size: 13px; font-weight: 700; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.stat .k i { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--brand2)); }
+.stat .v { font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-top: 4px; color: var(--c, var(--text)); }
+.stat .v small { font-size: 14px; font-weight: 700; color: var(--muted); margin-left: 2px; }
+.stat.on { border-color: var(--c, var(--brand2)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--brand2)) 22%, transparent), var(--shadow); }
+.stat.on:not([data-fs=""]) .k::after { content: "필터 적용 중"; margin-left: auto; font-size: 11px; color: var(--c); }
+
+/* 섹션 */
+.sec { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.sec-hd { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+.sec h2 { font-size: 18px; margin: 0; letter-spacing: -.3px; }
+.sec .sub { color: var(--muted); font-size: 13px; }
+.count { display: inline-block; background: var(--accent-weak); color: var(--brand2); font-weight: 800; font-size: 13px; padding: 2px 10px; border-radius: 999px; }
 .mut { color: var(--muted); font-size: 13px; }
+.dash { color: #cbd5e1; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-input.f, select.f, textarea.f { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 14px; }
-input.f:focus, select.f:focus, textarea.f:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-.tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
-th { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--panel2); }
-td.wrap { white-space: normal; min-width: 140px; }
-tr:hover td { background: #fafcff; }
-.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-.s-prospect { background: var(--gray-weak); color: var(--muted); }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.search { position: relative; flex: 1; min-width: 200px; }
+.search::before { content: "⌕"; position: absolute; left: 12px; top: 50%; transform: translateY(-52%); font-size: 18px; color: var(--muted); }
+.search input { width: 100%; padding-left: 34px !important; }
+input.f, select.f, textarea.f { background: #fff; border: 1px solid var(--line2); border-radius: 10px; padding: 9px 12px; font-size: 15px; }
+input.f:focus, select.f:focus, textarea.f:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-weak); }
+
+/* 고객 목록 */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th { position: sticky; top: 0; background: var(--panel2); font-size: 12.5px; font-weight: 700; color: var(--muted); text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 13px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr { transition: background .1s; cursor: pointer; }
+tbody tr:hover td { background: #f8fbff; }
+tr.st-prospect td:first-child { box-shadow: inset 4px 0 0 #94a3b8; }
+tr.st-account td:first-child { box-shadow: inset 4px 0 0 #f59e0b; }
+tr.st-paid td:first-child { box-shadow: inset 4px 0 0 #10b981; }
+tr.st-hold td:first-child { box-shadow: inset 4px 0 0 #ef4444; }
+.who .nm { font-size: 16px; font-weight: 800; }
+.who .sub2 { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.two .a { font-weight: 600; }
+.two .b { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+td.memo { white-space: normal; max-width: 260px; min-width: 160px; font-size: 13.5px; color: #334155; }
+td.memo div { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.s-prospect { background: var(--gray-weak); color: var(--gray); }
 .s-account { background: var(--amber-weak); color: var(--amber); }
 .s-paid { background: var(--green-weak); color: var(--green); }
 .s-hold { background: var(--red-weak); color: var(--red); }
-.rank { font-weight: 800; }
-.r1, .r2, .r3 { color: var(--red); }
-.r4, .r5 { color: var(--amber); }
-.r0 { color: var(--muted); font-weight: 400; }
-.ball { display: inline-block; min-width: 24px; text-align: center; padding: 1px 4px; border-radius: 12px; background: var(--gray-weak); font-size: 12px; margin-right: 2px; }
-.ball.hit { background: var(--accent); color: #fff; }
-.ball.bonus { outline: 2px solid var(--amber); }
-.modal { position: fixed; inset: 0; background: rgba(20,30,45,.45); display: none; align-items: flex-start; justify-content: center; padding: 4vh 12px; z-index: 50; overflow: auto; }
+.tag { display: inline-block; padding: 3px 9px; border-radius: 8px; font-size: 12.5px; font-weight: 700; }
+.tag.free { background: var(--violet-weak); color: var(--violet); }
+.rank { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 13px; font-weight: 900; }
+.r1, .r2, .r3 { background: #fee2e2; color: var(--red); }
+.r4, .r5 { background: #fef3c7; color: var(--amber); }
+.r0 { background: var(--gray-weak); color: var(--muted); font-weight: 700; }
+.rpending { color: var(--muted); font-size: 13px; }
+.money { font-weight: 800; }
+
+/* 로또 공 (공식 색상) */
+.ball { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-size: 12.5px; font-weight: 800; margin-right: 3px; background: #e2e8f0; color: #475569; }
+.ball.c1 { background: #fbc400; color: #fff; } .ball.c2 { background: #69c8f2; color: #fff; } .ball.c3 { background: #ff7272; color: #fff; }
+.ball.c4 { background: #aaa; color: #fff; } .ball.c5 { background: #b0d840; color: #fff; }
+.ball.dim { background: #f1f5f9; color: #94a3b8; }
+.ball.hit { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--brand2); }
+.plus { color: var(--muted); font-weight: 800; margin: 0 4px; }
+.draw-card { display: grid; grid-template-columns: 90px 1fr auto; gap: 14px; align-items: center; padding: 14px 4px; border-bottom: 1px solid var(--line); }
+.draw-card:last-child { border-bottom: 0; }
+.draw-card .rd { font-size: 20px; font-weight: 900; color: var(--brand); }
+.draw-card .rd small { display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+.draw-card .who2 { margin-top: 8px; font-size: 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.winner { display: inline-flex; align-items: center; gap: 6px; background: var(--panel2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 4px 3px 10px; font-weight: 700; }
+
+/* 모달 */
+.modal { position: fixed; inset: 0; background: rgba(15,23,42,.55); backdrop-filter: blur(2px); display: none; align-items: flex-start; justify-content: center; padding: 4vh 12px; z-index: 50; overflow: auto; }
 .modal.open { display: flex; }
-.mbox { width: min(760px, 100%); background: #fff; border-radius: 14px; padding: 18px 20px; }
-.mbox h3 { margin: 0 0 12px; font-size: 18px; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
-.grid2 label, .full label, .lbl { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
-.full { margin-top: 10px; }
-.chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.chips button { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; font-size: 14px; }
-.chips button.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
-.sends { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 10px; }
-.send { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: var(--panel2); }
-.send .hd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 4px; font-size: 13px; }
-.send .ln { font-size: 13px; margin: 2px 0; }
-.err { color: var(--red); font-size: 13px; min-height: 18px; margin-top: 6px; }
-.empty { color: var(--muted); padding: 20px; text-align: center; }
-@media (max-width: 860px) {
-  .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .grid2 { grid-template-columns: 1fr; }
-  .stat .v { font-size: 22px; }
+.mbox { width: min(780px, 100%); background: #fff; border-radius: 20px; padding: 0; box-shadow: 0 20px 60px rgba(15,23,42,.3); overflow: hidden; }
+.mbox h3 { margin: 0; font-size: 19px; padding: 18px 22px; background: var(--panel2); border-bottom: 1px solid var(--line); }
+.mbody { padding: 18px 22px; }
+.part { margin-bottom: 18px; }
+.part-t { font-size: 13px; font-weight: 800; color: var(--brand2); letter-spacing: .2px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.part-t::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.mfoot { position: sticky; bottom: 0; display: flex; justify-content: space-between; gap: 8px; padding: 14px 22px; background: #fff; border-top: 1px solid var(--line); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px 16px; }
+.grid2 label, .grid3 label, .full label, .lbl { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; color: #334155; }
+.full { margin-top: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { background: #fff; border: 1px solid var(--line2); border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 600; transition: all .12s; }
+.chips button:hover { border-color: var(--accent); }
+.chips button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+[data-chips="status"] button[data-v="prospect"].on { background: #64748b; border-color: #64748b; }
+[data-chips="status"] button[data-v="account"].on { background: #f59e0b; border-color: #f59e0b; }
+[data-chips="status"] button[data-v="paid"].on { background: #10b981; border-color: #10b981; }
+[data-chips="status"] button[data-v="hold"].on { background: #ef4444; border-color: #ef4444; }
+.send { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; background: var(--panel2); }
+.send.new { background: #fff; border: 2px dashed var(--line2); }
+.send .hd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 14px; }
+.send .ln { display: flex; align-items: center; gap: 2px; margin: 5px 0; }
+.send .ln .no { width: 22px; font-size: 12px; color: var(--muted); font-weight: 700; }
+.err { color: var(--red); font-size: 13.5px; font-weight: 600; min-height: 18px; }
+.empty { color: var(--muted); padding: 40px 20px; text-align: center; font-size: 15px; }
+.empty b { display: block; font-size: 32px; margin-bottom: 6px; }
+.notice { display: flex; gap: 10px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 14px; padding: 12px 16px; font-size: 13.5px; line-height: 1.6; }
+
+@media (max-width: 1100px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .topbar .in { padding: 10px 12px; } .topbar h1 { font-size: 17px; width: 100%; } .topbar .btn { padding: 7px 10px; font-size: 13px; }
+  main { padding: 14px 12px 40px; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } .stat .v { font-size: 26px; }
+  .sec { padding: 14px; border-radius: 14px; }
+  .grid2, .grid3 { grid-template-columns: 1fr; }
   input.f, select.f, textarea.f { font-size: 16px; }
+  /* 목록을 카드형으로 */
+  .tbl-wrap { border: 0; overflow: visible; }
+  #listTbl thead { display: none; }
+  #listTbl, #listTbl tbody, #listTbl tr, #listTbl td { display: block; width: 100%; }
+  #listTbl tr { border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; padding: 10px 12px; background: #fff; }
+  #listTbl td { border: 0; padding: 4px 0; white-space: normal; display: flex; justify-content: space-between; gap: 10px; }
+  #listTbl td::before { content: attr(data-l); color: var(--muted); font-size: 12.5px; font-weight: 700; flex: none; }
+  #listTbl td.who::before, #listTbl td.act::before { content: none; }
+  #listTbl tr td:first-child { box-shadow: none; }
+  #listTbl tr.st-prospect { border-left: 5px solid #94a3b8; } #listTbl tr.st-account { border-left: 5px solid #f59e0b; }
+  #listTbl tr.st-paid { border-left: 5px solid #10b981; } #listTbl tr.st-hold { border-left: 5px solid #ef4444; }
+  td.memo { max-width: none; }
+  .draw-card { grid-template-columns: 1fr auto; } .draw-card .rd { grid-column: 1 / -1; }
+  .ball { width: 25px; height: 25px; font-size: 11.5px; }
 }
 </style>
 </head>
@@ -107,74 +198,80 @@ tr:hover td { background: #fafcff; }
 })();
 </script>
 
-<header class="topbar">
-  <h1>로또 고객관리</h1>
+<header class="topbar"><div class="in">
+  <h1><span class="logo">L</span>로또 고객관리</h1>
   <a class="btn" href="./">← 상담 콘솔</a>
-  <button class="btn primary" id="btnAdd">+ 회원 등록</button>
+  <button class="btn primary" id="btnAdd">＋ 회원 등록</button>
   <button class="btn" id="btnDraw">당첨번호 입력</button>
   <button class="btn" id="btnExport">백업 저장</button>
   <label class="btn" style="cursor:pointer">백업 불러오기<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
-</header>
+</div></header>
 
 <main>
   <div class="cards" id="cards"></div>
 
   <div class="sec">
-    <h2>고객 목록 <span class="mut" id="listInfo"></span></h2>
-    <div class="row" style="margin-bottom:10px">
-      <input class="f" id="q" placeholder="이름 · 연락처 · 메모 검색" style="flex:1;min-width:180px">
+    <div class="sec-hd"><h2>고객 목록</h2><span class="count" id="listCount"></span><span class="sub" id="listInfo"></span></div>
+    <div class="tools">
+      <div class="search"><input class="f" id="q" placeholder="이름 · 연락처 · 메모 검색"></div>
       <select class="f" id="fFree"><option value="">무료번호 전체</option><option value="y">무료번호 보냄</option><option value="n">무료번호 안 보냄</option></select>
     </div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>이름</th><th>등록일</th><th>구분</th><th>상태</th><th>연락처</th><th>무료번호</th><th>최근 발송</th><th>최근 당첨 결과</th><th>최고 등수</th><th>결제</th><th class="wrap">메모</th><th></th></tr></thead>
+    <div class="tbl-wrap"><table id="listTbl">
+      <thead><tr><th>고객</th><th>상태</th><th>등록일</th><th>무료번호</th><th>최근 발송</th><th>당첨 (최근 / 최고)</th><th>결제</th><th>메모</th><th></th></tr></thead>
       <tbody id="list"></tbody>
     </table></div>
   </div>
 
   <div class="sec">
-    <h2>회차별 당첨번호 <span class="mut">토요일 추첨 후 입력하면 고객별 등수가 자동 계산돼요</span></h2>
+    <div class="sec-hd"><h2>회차별 당첨번호</h2><span class="sub">토요일 추첨 후 입력하면 고객별 등수가 자동 계산돼요</span></div>
     <div id="draws"></div>
   </div>
 
-  <p class="mut">※ 고객 정보는 이 브라우저에만 저장돼요 (서버에 올라가지 않음). 다른 PC·폰에서는 보이지 않으니 [백업 저장]으로 파일을 받아두고, 다른 기기에서 [백업 불러오기]로 옮기세요. 브라우저 기록·사이트 데이터를 지우면 함께 지워져요.</p>
+  <p class="notice"><span>💾</span><span>고객 정보는 이 브라우저에만 저장돼요 (서버에 올라가지 않음). 다른 PC·폰에서는 보이지 않으니 [백업 저장]으로 파일을 받아두고, 다른 기기에서 [백업 불러오기]로 옮기세요. 브라우저 기록·사이트 데이터를 지우면 함께 지워져요.</span></p>
 </main>
 
 <!-- 회원 등록 / 수정 -->
 <div class="modal" id="mModal">
   <div class="mbox">
     <h3 id="mTitle">회원 등록</h3>
-    <div class="grid2">
+    <div class="mbody">
+    <div class="part"><div class="part-t">기본 정보</div>
+    <div class="grid3">
       <label>이름 *<input class="f" data-m="name" placeholder="홍길동"></label>
       <label>연락처<input class="f" data-m="phone" placeholder="010-0000-0000" inputmode="tel"></label>
       <label>등록일<input class="f" data-m="regDate" type="date" min="2020-01-01" max="2099-12-31"></label>
-      <div class="lbl">연령대<div class="chips" data-chips="age"></div></div>
-      <div class="lbl">성별<div class="chips" data-chips="sex"></div></div>
     </div>
-    <div class="full"><div class="lbl">상태<div class="chips" data-chips="status"></div></div></div>
-    <div class="grid2" style="margin-top:10px">
+    <div class="full"><div class="lbl">연령대<div class="chips" data-chips="age"></div></div></div>
+    <div class="full"><div class="lbl">성별<div class="chips" data-chips="sex"></div></div></div>
+    </div>
+    <div class="part"><div class="part-t">상태 · 결제</div>
+    <div class="lbl">상태<div class="chips" data-chips="status"></div></div>
+    <div class="grid2" style="margin-top:12px">
       <label>결제 방법<select class="f" data-m="payMethod"><option value="">-</option><option>카드결제</option><option>무통장입금</option></select></label>
       <label>결제 금액 (원)<input class="f" data-m="payAmount" type="number" min="0" step="1000" placeholder="165000"></label>
       <label>계좌 안내일<input class="f" data-m="accountDate" type="date" min="2020-01-01" max="2099-12-31"></label>
       <label>결제일<input class="f" data-m="payDate" type="date" min="2020-01-01" max="2099-12-31"></label>
     </div>
     <div class="full"><label>메모<textarea class="f" data-m="memo" rows="2" placeholder="예: 사기 경험 있어 신뢰 문제 / 카드 3개월"></textarea></label></div>
+    </div>
 
-    <div class="sends">
-      <div class="row" style="justify-content:space-between"><b style="font-size:14px">번호 발송 기록</b><span class="mut">한 줄에 한 조합 · "1>" 같은 줄 번호와 "로또번호", "=====" 줄은 자동으로 무시</span></div>
-      <div id="sendList" style="margin-top:8px"></div>
-      <div class="send" style="background:#fff">
+    <div class="part">
+      <div class="part-t">번호 발송 기록</div>
+      <div class="mut" style="margin-bottom:8px">한 줄에 한 조합 · "1>" 같은 줄 번호와 "로또번호", "=====" 줄은 자동으로 무시</span></div>
+      <div id="sendList"></div>
+      <div class="send new">
         <div class="hd">
           <input class="f" type="date" min="2020-01-01" max="2099-12-31" id="sDate">
           <span class="mut">→ <b id="sRound"></b>회 추첨용</span>
           <label class="mut" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="sFree"> 무료번호</label>
         </div>
         <textarea class="f" id="sSets" rows="3" style="width:100%" placeholder="1> 8,16,25,27,33,43&#10;2> 1,14,22,37,41,44&#10;(보낸 문자 그대로 붙여넣기 가능)"></textarea>
-        <div class="row" style="margin-top:6px"><button class="btn sm primary" id="sAdd">발송 기록 추가</button><span class="err" id="sErr"></span></div>
+        <div class="row" style="margin-top:8px"><button class="btn sm primary" id="sAdd">＋ 발송 기록 추가</button><span class="err" id="sErr"></span></div>
       </div>
     </div>
-
     <div class="err" id="mErr"></div>
-    <div class="row" style="justify-content:space-between;margin-top:10px">
+    </div>
+    <div class="mfoot">
       <button class="btn danger" id="mDel">회원 삭제</button>
       <div class="row"><button class="btn" id="mCancel">취소</button><button class="btn primary" id="mSave">저장</button></div>
     </div>
@@ -185,14 +282,16 @@ tr:hover td { background: #fafcff; }
 <div class="modal" id="dModal">
   <div class="mbox" style="width:min(520px,100%)">
     <h3>당첨번호 입력</h3>
+    <div class="mbody">
     <div class="grid2">
       <label>추첨일 (토요일)<input class="f" type="date" min="2020-01-01" max="2099-12-31" id="dDate"></label>
       <label>회차<input class="f" type="number" id="dRound" min="1"></label>
     </div>
     <div class="full"><label>당첨번호 6개<input class="f" id="dNums" placeholder="3 11 17 24 35 41"></label></div>
     <div class="full"><label>보너스 번호<input class="f" id="dBonus" type="number" min="1" max="45" placeholder="7"></label></div>
-    <div class="err" id="dErr"></div>
-    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" id="dCancel">취소</button><button class="btn primary" id="dSave">저장하고 등수 계산</button></div>
+    <div class="err" id="dErr" style="margin-top:8px"></div>
+    </div>
+    <div class="mfoot" style="justify-content:flex-end"><button class="btn" id="dCancel">취소</button><button class="btn primary" id="dSave">저장하고 등수 계산</button></div>
   </div>
 </div>
 
@@ -254,7 +353,12 @@ function sendResult(s) {
   return { best: Math.min(...ranks.map((r) => r || 9)) === 9 ? 0 : Math.min(...ranks.filter(Boolean)), ranks };
 }
 const rankTxt = (r) => r == null ? '<span class="mut">추첨 전</span>' : r === 0 ? '<span class="rank r0">낙첨</span>' : `<span class="rank r${r}">${r}등</span>`;
-const balls = (set, d) => set.map((x) => `<span class="ball ${d && d.nums.includes(x) ? 'hit' : ''} ${d && d.bonus === x ? 'bonus' : ''}">${x}</span>`).join('');
+const ballC = (x) => 'c' + Math.min(5, Math.ceil(x / 10));
+// 추첨 전이면 공식 색상, 추첨 후면 맞은 번호만 색 + 테두리, 나머지는 흐리게
+const balls = (set, d) => set.map((x) => {
+  const cls = !d ? ballC(x) : d.nums.includes(x) ? ballC(x) + ' hit' : d.bonus === x ? ballC(x) + ' hit' : 'dim';
+  return `<span class="ball ${cls}">${x}</span>`;
+}).join('');
 
 // ── 목록 ──
 let filterStatus = '';
@@ -272,8 +376,9 @@ function render() {
   const cnt = (st) => db.members.filter((m) => m.status === st).length;
   const freeCnt = db.members.filter((m) => (m.sends || []).some((s) => s.free)).length;
   const winCnt = db.members.filter((m) => { const b = memberSummary(m).best; return b && b <= 3; }).length;
-  const cards = [['', '전체', db.members.length], ...STATUS.map(([k, n]) => [k, n, cnt(k)]), ['win', '3등 이상 당첨', winCnt]];
-  $('#cards').innerHTML = cards.map(([k, n, v]) => `<button class="stat ${filterStatus === k ? 'on' : ''}" data-fs="${k}"><div class="k">${n}</div><div class="v">${v}</div></button>`).join('');
+  const CC = { '': '#1e3a8a', prospect: '#64748b', account: '#d97706', paid: '#059669', hold: '#dc2626', win: '#7c3aed' };
+  const cards = [['', '전체 회원', db.members.length], ...STATUS.map(([k, n]) => [k, n, cnt(k)]), ['win', '3등 이상 당첨', winCnt]];
+  $('#cards').innerHTML = cards.map(([k, n, v]) => `<button class="stat ${filterStatus === k ? 'on' : ''}" data-fs="${k}" style="--c:${CC[k]}"><div class="k"><i></i>${n}</div><div class="v">${v}<small>명</small></div></button>`).join('');
   // 목록
   const q = $('#q').value.trim();
   const ff = $('#fFree').value;
@@ -286,38 +391,42 @@ function render() {
     if (q && ![m.name, m.phone, m.memo].join(' ').includes(q)) return false;
     return true;
   }).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
-  $('#listInfo').textContent = `${rows.length}명 표시 · 무료번호 받은 고객 ${freeCnt}명`;
+  $('#listCount').textContent = `${rows.length}명`;
+  $('#listInfo').textContent = `${filterStatus ? '필터 적용 중 · ' : ''}무료번호 받은 고객 ${freeCnt}명`;
+  const D = '<span class="dash">—</span>';
   $('#list').innerHTML = rows.length ? rows.map((m) => {
     const s = memberSummary(m);
-    const freeTxt = s.free.length ? `보냄 ${s.free.map((x) => fmt(x.date)).join(', ')}` : '<span class="mut">-</span>';
-    const lastTxt = s.last ? `${fmt(s.last.date)} · ${s.last.round}회 ${s.last.sets.length}조합${s.last.free ? ' (무료)' : ''}` : '<span class="mut">-</span>';
-    const pay = m.status === 'paid' ? `${esc(m.payMethod || '')} ${m.payAmount ? won(m.payAmount) + '원' : ''} ${m.payDate ? fmt(m.payDate) : ''}`
-      : m.status === 'account' ? `계좌 안내 ${fmt(m.accountDate)}` : '<span class="mut">-</span>';
-    return `<tr>
-      <td><b>${esc(m.name)}</b></td>
-      <td>${regOf(m) ? fmtY(regOf(m)) : '<span class="mut">-</span>'}</td>
-      <td>${esc([m.age, m.sex].filter(Boolean).join(' ')) || '<span class="mut">-</span>'}</td>
-      <td><span class="badge s-${m.status}">${STATUS_NAME[m.status] || '-'}</span></td>
-      <td>${esc(m.phone) || '<span class="mut">-</span>'}</td>
-      <td>${freeTxt}</td>
-      <td>${lastTxt}</td>
-      <td>${s.last ? rankTxt(s.lastRes ? s.lastRes.best : null) : '<span class="mut">-</span>'}</td>
-      <td>${s.best == null ? '<span class="mut">-</span>' : rankTxt(s.best)}</td>
-      <td>${pay}</td>
-      <td class="wrap">${esc(m.memo)}</td>
-      <td><button class="btn sm" data-edit="${m.id}">수정</button></td></tr>`;
-  }).join('') : `<tr><td colspan="12" class="empty">${db.members.length ? '조건에 맞는 고객이 없어요' : '아직 등록된 회원이 없어요. [+ 회원 등록]을 눌러주세요'}</td></tr>`;
+    const prof = [m.age, m.sex].filter(Boolean).join(' ');
+    const freeTxt = s.free.length ? `<span class="tag free">보냄 ${s.free.length}회</span><div class="b">${s.free.map((x) => fmt(x.date)).join(', ')}</div>` : D;
+    const lastTxt = s.last ? `<div class="a">${fmt(s.last.date)} · ${s.last.round}회</div><div class="b">${s.last.sets.length}조합${s.last.free ? ' · 무료' : ''}</div>` : D;
+    const lastR = s.last ? (s.lastRes ? (s.lastRes.best ? `<span class="rank r${s.lastRes.best}">${s.lastRes.best}등</span>` : '<span class="rank r0">낙첨</span>') : '<span class="rpending">추첨 전</span>') : D;
+    const bestR = s.best && !(s.lastRes && s.lastRes.best === s.best) ? `<span class="rank r${s.best}">최고 ${s.best}등</span>` : '';
+    const pay = m.status === 'paid' ? `<div class="a money">${m.payAmount ? won(m.payAmount) + '원' : '결제'}</div><div class="b">${esc(m.payMethod || '')} ${m.payDate ? fmt(m.payDate) : ''}</div>`
+      : m.status === 'account' ? `<div class="a">계좌 안내</div><div class="b">${m.accountDate ? fmt(m.accountDate) : ''}</div>` : D;
+    return `<tr class="st-${m.status}" data-edit="${m.id}">
+      <td class="who" data-l="고객"><div><div class="nm">${esc(m.name)}</div><div class="sub2">${esc(m.phone) || '연락처 없음'}${prof ? ' · ' + esc(prof) : ''}</div></div></td>
+      <td data-l="상태"><span class="badge s-${m.status}">${STATUS_NAME[m.status] || '-'}</span></td>
+      <td data-l="등록일">${regOf(m) ? fmtY(regOf(m)) : D}</td>
+      <td class="two" data-l="무료번호"><div>${freeTxt}</div></td>
+      <td class="two" data-l="최근 발송"><div>${lastTxt}</div></td>
+      <td data-l="당첨"><div class="row" style="gap:6px">${lastR}${bestR}</div></td>
+      <td class="two" data-l="결제"><div>${pay}</div></td>
+      <td class="memo" data-l="메모"><div>${esc(m.memo) || D}</div></td>
+      <td class="act"><button class="btn sm" data-edit="${m.id}">수정</button></td></tr>`;
+  }).join('') : `<tr><td colspan="9" class="empty"><b>${db.members.length ? '🔍' : '📋'}</b>${db.members.length ? '조건에 맞는 고객이 없어요' : '아직 등록된 회원이 없어요. 위의 [＋ 회원 등록]을 눌러주세요'}</td></tr>`;
   renderDraws();
 }
 function renderDraws() {
   const ds = [...db.draws].sort((a, b) => b.round - a.round);
-  if (!ds.length) { $('#draws').innerHTML = '<div class="mut">아직 입력한 당첨번호가 없어요. 토요일 추첨 후 [당첨번호 입력]을 눌러주세요.</div>'; return; }
-  $('#draws').innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>회차</th><th>추첨일</th><th>당첨번호 + 보너스</th><th>이 회차 발송 고객</th><th>당첨 고객</th><th></th></tr></thead><tbody>${ds.map((d) => {
+  if (!ds.length) { $('#draws').innerHTML = '<div class="empty"><b>🎱</b>아직 입력한 당첨번호가 없어요. 토요일 추첨 후 [당첨번호 입력]을 눌러주세요.</div>'; return; }
+  $('#draws').innerHTML = ds.map((d) => {
     const got = []; let sent = 0;
-    db.members.forEach((m) => (m.sends || []).filter((s) => s.round === d.round).forEach((s) => { sent++; const r = sendResult(s); if (r.best) got.push(`${esc(m.name)} <span class="rank r${r.best}">${r.best}등</span>`); }));
-    return `<tr><td><b>${d.round}회</b></td><td>${fmt(d.date)}</td><td>${d.nums.map((x) => `<span class="ball hit">${x}</span>`).join('')} + <span class="ball bonus">${d.bonus}</span></td>
-      <td>${sent}건</td><td class="wrap">${got.join(', ') || '<span class="mut">없음</span>'}</td><td><button class="btn sm danger" data-deldraw="${d.round}">삭제</button></td></tr>`;
-  }).join('')}</tbody></table></div>`;
+    db.members.forEach((m) => (m.sends || []).filter((s) => s.round === d.round).forEach((s) => { sent++; const r = sendResult(s); if (r.best) got.push(`<span class="winner">${esc(m.name)} <span class="rank r${r.best}">${r.best}등</span></span>`); }));
+    return `<div class="draw-card"><div class="rd">${d.round}회<small>${fmtY(d.date)} 추첨</small></div>
+      <div><div>${d.nums.map((x) => `<span class="ball ${ballC(x)}">${x}</span>`).join('')}<span class="plus">+</span><span class="ball ${ballC(d.bonus)}">${d.bonus}</span></div>
+      <div class="who2"><span class="mut">발송 ${sent}건 · 당첨</span>${got.join('') || '<span class="mut">없음</span>'}</div></div>
+      <button class="btn sm danger" data-deldraw="${d.round}">삭제</button></div>`;
+  }).join('');
 }
 
 // ── 회원 등록 / 수정 ──
@@ -342,10 +451,10 @@ function renderEdit() {
   const sends = [...editing.sends].sort((a, b) => b.round - a.round);
   $('#sendList').innerHTML = sends.length ? sends.map((s) => {
     const d = drawOf(s.round), r = sendResult(s);
-    return `<div class="send"><div class="hd"><b>${fmt(s.date)}</b> 발송 · ${s.round}회 추첨 (${fmt(dateOfRound(s.round))}) ${s.free ? '<span class="badge s-account">무료번호</span>' : ''}
-      · 결과 ${rankTxt(r ? r.best : null)} <button type="button" class="btn sm danger" data-delsend="${s.id}" style="margin-left:auto">삭제</button></div>
-      ${s.sets.map((x, i) => `<div class="ln">${balls(x, d)} ${r ? rankTxt(r.ranks[i]) : ''}</div>`).join('')}</div>`;
-  }).join('') : '<div class="mut" style="margin-bottom:8px">아직 발송 기록이 없어요</div>';
+    return `<div class="send"><div class="hd"><b>${fmt(s.date)} 발송</b><span class="mut">${s.round}회 추첨 (${fmt(dateOfRound(s.round))})</span>${s.free ? '<span class="tag free">무료번호</span>' : ''}
+      ${rankTxt(r ? r.best : null)} <button type="button" class="btn sm danger" data-delsend="${s.id}" style="margin-left:auto">삭제</button></div>
+      ${s.sets.map((x, i) => `<div class="ln"><span class="no">${String.fromCharCode(65 + i)}</span>${balls(x, d)} <span style="margin-left:6px">${r ? rankTxt(r.ranks[i]) : ''}</span></div>`).join('')}</div>`;
+  }).join('') : '<div class="mut" style="margin-bottom:10px">아직 발송 기록이 없어요</div>';
 }
 const updRound = () => { const r = roundOf($('#sDate').value); $('#sRound').textContent = r || '?'; };
 $('#sDate').addEventListener('input', updRound);
