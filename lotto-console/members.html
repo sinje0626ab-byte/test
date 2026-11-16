@@ -60,7 +60,7 @@ tr:hover td { background: #fafcff; }
 .mbox { width: min(760px, 100%); background: #fff; border-radius: 14px; padding: 18px 20px; }
 .mbox h3 { margin: 0 0 12px; font-size: 18px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
-.grid2 label, .full label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.grid2 label, .full label, .lbl { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
 .full { margin-top: 10px; }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .chips button { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; font-size: 14px; }
@@ -146,15 +146,15 @@ tr:hover td { background: #fafcff; }
     <div class="grid2">
       <label>이름 *<input class="f" data-m="name" placeholder="홍길동"></label>
       <label>연락처<input class="f" data-m="phone" placeholder="010-0000-0000" inputmode="tel"></label>
-      <label>연령대<div class="chips" data-chips="age"></div></label>
-      <label>성별<div class="chips" data-chips="sex"></div></label>
+      <div class="lbl">연령대<div class="chips" data-chips="age"></div></div>
+      <div class="lbl">성별<div class="chips" data-chips="sex"></div></div>
     </div>
-    <div class="full"><label>상태<div class="chips" data-chips="status"></div></label></div>
+    <div class="full"><div class="lbl">상태<div class="chips" data-chips="status"></div></div></div>
     <div class="grid2" style="margin-top:10px">
       <label>결제 방법<select class="f" data-m="payMethod"><option value="">-</option><option>카드결제</option><option>무통장입금</option></select></label>
       <label>결제 금액 (원)<input class="f" data-m="payAmount" type="number" min="0" step="1000" placeholder="165000"></label>
-      <label>계좌 안내일<input class="f" data-m="accountDate" type="date"></label>
-      <label>결제일<input class="f" data-m="payDate" type="date"></label>
+      <label>계좌 안내일<input class="f" data-m="accountDate" type="date" min="2020-01-01" max="2099-12-31"></label>
+      <label>결제일<input class="f" data-m="payDate" type="date" min="2020-01-01" max="2099-12-31"></label>
     </div>
     <div class="full"><label>메모<textarea class="f" data-m="memo" rows="2" placeholder="예: 사기 경험 있어 신뢰 문제 / 카드 3개월"></textarea></label></div>
 
@@ -163,7 +163,7 @@ tr:hover td { background: #fafcff; }
       <div id="sendList" style="margin-top:8px"></div>
       <div class="send" style="background:#fff">
         <div class="hd">
-          <input class="f" type="date" id="sDate">
+          <input class="f" type="date" min="2020-01-01" max="2099-12-31" id="sDate">
           <span class="mut">→ <b id="sRound"></b>회 추첨용</span>
           <label class="mut" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="sFree"> 무료번호</label>
         </div>
@@ -185,7 +185,7 @@ tr:hover td { background: #fafcff; }
   <div class="mbox" style="width:min(520px,100%)">
     <h3>당첨번호 입력</h3>
     <div class="grid2">
-      <label>추첨일 (토요일)<input class="f" type="date" id="dDate"></label>
+      <label>추첨일 (토요일)<input class="f" type="date" min="2020-01-01" max="2099-12-31" id="dDate"></label>
       <label>회차<input class="f" type="number" id="dRound" min="1"></label>
     </div>
     <div class="full"><label>당첨번호 6개<input class="f" id="dNums" placeholder="3 11 17 24 35 41"></label></div>
@@ -345,7 +345,10 @@ $('#mModal').addEventListener('click', (e) => {
   const c = e.target.closest('[data-cv]');
   if (c) { editing[c.dataset.cv] = editing[c.dataset.cv] === c.dataset.v && c.dataset.cv !== 'status' ? '' : c.dataset.v;
     if (c.dataset.cv === 'status' && c.dataset.v === 'account' && !editing.accountDate) { editing.accountDate = today(); $('[data-m=accountDate]').value = editing.accountDate; }
-    if (c.dataset.cv === 'status' && c.dataset.v === 'paid' && !editing.payDate) { editing.payDate = today(); $('[data-m=payDate]').value = editing.payDate; if (!editing.payAmount) { editing.payAmount = 165000; $('[data-m=payAmount]').value = 165000; } }
+    if (c.dataset.cv === 'status' && c.dataset.v === 'paid') {
+      if (!editing.payDate) { editing.payDate = today(); $('[data-m=payDate]').value = editing.payDate; }
+      if (!editing.payAmount) { editing.payAmount = 165000; $('[data-m=payAmount]').value = 165000; }
+    }
     if (c.dataset.cv === 'status') $('#sFree').checked = editing.status !== 'paid' && !editing.sends.length;
     renderEdit(); return; }
   const d = e.target.closest('[data-delsend]');
@@ -355,16 +358,18 @@ $('#mModal').addEventListener('click', (e) => {
 document.querySelectorAll('[data-m]').forEach((el) => el.addEventListener('input', () => { editing[el.dataset.m] = el.value; }));
 $('#sAdd').onclick = () => {
   const lines = $('#sSets').value.split('\n').map((x) => x.trim()).filter(Boolean);
-  if (!$('#sDate').value) { $('#sErr').textContent = '발송일을 선택해주세요'; return; }
+  if (!$('#sDate').value || !okDate($('#sDate').value)) { $('#sErr').textContent = '발송일을 확인해주세요 (연도 4자리)'; return; }
   if (!lines.length) { $('#sErr').textContent = '번호를 한 줄에 6개씩 입력해주세요'; return; }
   const sets = [];
   for (const l of lines) { const p = parseSet(l); if (p.err) { $('#sErr').textContent = p.err; return; } sets.push(p.set); }
   editing.sends.push({ id: uid(), date: $('#sDate').value, round: roundOf($('#sDate').value), free: $('#sFree').checked, sets });
   $('#sSets').value = ''; $('#sErr').textContent = ''; $('#sFree').checked = false; renderEdit();
 };
+const okDate = (v) => !v || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v >= '2020-01-01' && v <= '2099-12-31');
 $('#mSave').onclick = () => {
   editing.name = (editing.name || '').trim();
   if (!editing.name) { $('#mErr').textContent = '이름을 입력해주세요'; return; }
+  if (!okDate(editing.accountDate) || !okDate(editing.payDate)) { $('#mErr').textContent = '날짜를 확인해주세요 (연도 4자리)'; return; }
   if ($('#sSets').value.trim()) { $('#mErr').textContent = '입력한 번호가 아직 추가되지 않았어요 — [발송 기록 추가]를 먼저 눌러주세요'; return; }
   editing.payAmount = editing.payAmount === '' ? '' : Number(editing.payAmount);
   editing.updatedAt = new Date().toISOString();
@@ -415,6 +420,12 @@ $('#fileImport').onchange = async (e) => {
   e.target.value = '';
 };
 
+// 날짜 칸: 연도가 5자리 이상 입력되면 앞 4자리만 남김 (예: 202622-11-17 → 2026-11-17)
+document.addEventListener('input', (e) => {
+  const t = e.target; if (!(t instanceof HTMLInputElement) || t.type !== 'date' || !t.value) return;
+  const m = t.value.match(/^(\d{4})\d+(-\d{2}-\d{2})$/);
+  if (m) { t.value = m[1] + m[2]; t.dispatchEvent(new Event('input', { bubbles: true })); }
+}, true);
 // ── 공통 이벤트 ──
 const closeAll = () => document.querySelectorAll('.modal').forEach((m) => m.classList.remove('open'));
 $('#btnAdd').onclick = () => openMember(null);
