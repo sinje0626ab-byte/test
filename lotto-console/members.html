@@ -295,6 +295,20 @@ td.memo div { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: v
   </div>
 </div>
 
+<!-- 저장 안 한 내용 확인 -->
+<div class="modal" id="cModal" style="z-index:60;align-items:center">
+  <div class="mbox" style="width:min(380px,100%)">
+    <div class="mbody" style="padding:24px 22px 8px;text-align:center">
+      <div style="font-size:34px;line-height:1">⚠️</div>
+      <div style="font-size:18px;font-weight:800;margin:10px 0 6px">저장하지 않은 내용이 있어요</div>
+      <div class="mut">이대로 닫으면 입력한 내용이 사라져요.</div>
+    </div>
+    <div class="mfoot" style="justify-content:center;border-top:0">
+      <button class="btn" id="cStay">계속 작성</button><button class="btn danger" id="cLeave">저장 안 하고 닫기</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (() => {
 'use strict';
@@ -443,7 +457,7 @@ function openMember(id) {
   document.querySelectorAll('[data-m]').forEach((el) => { el.value = editing[el.dataset.m] ?? ''; });
   $('#sDate').value = today(); $('#sFree').checked = !(editing.sends || []).length && editing.status !== 'paid'; $('#sSets').value = ''; $('#sErr').textContent = ''; $('#mErr').textContent = '';
   updRound(); renderEdit();
-  $('#mModal').classList.add('open');
+  $('#mModal').classList.add('open'); snap.m = memberState();
   if (!m) setTimeout(() => $('[data-m=name]').focus(), 0);
 }
 function renderEdit() {
@@ -507,7 +521,7 @@ function openDraw() {
   const d = new Date(); const sat = new Date(d); sat.setDate(d.getDate() - ((d.getDay() + 1) % 7)); // 가장 최근 토요일
   const s = `${sat.getFullYear()}-${String(sat.getMonth() + 1).padStart(2, '0')}-${String(sat.getDate()).padStart(2, '0')}`;
   $('#dDate').value = s; $('#dRound').value = roundOf(s); $('#dNums').value = ''; $('#dBonus').value = ''; $('#dErr').textContent = '';
-  $('#dModal').classList.add('open'); setTimeout(() => $('#dNums').focus(), 0);
+  $('#dModal').classList.add('open'); snap.d = drawState(); setTimeout(() => $('#dNums').focus(), 0);
 }
 $('#dDate').addEventListener('input', () => { $('#dRound').value = roundOf($('#dDate').value); });
 $('#dSave').onclick = () => {
@@ -546,6 +560,24 @@ document.addEventListener('input', (e) => {
 }, true);
 // ── 공통 이벤트 ──
 const closeAll = () => document.querySelectorAll('.modal').forEach((m) => m.classList.remove('open'));
+// ── Esc로 닫기 (입력한 내용이 있으면 한 번 더 확인) ──
+const snap = { m: '', d: '' };
+function memberState() {
+  const f = {}; document.querySelectorAll('[data-m]').forEach((el) => { f[el.dataset.m] = el.value; });
+  return JSON.stringify([editing, f, $('#sSets').value.trim()]);
+}
+const drawState = () => JSON.stringify(['#dDate', '#dRound', '#dNums', '#dBonus'].map((k) => $(k).value.trim()));
+const isOpen = (id) => $(id).classList.contains('open');
+$('#cStay').onclick = () => $('#cModal').classList.remove('open');
+$('#cLeave').onclick = () => closeAll();
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (isOpen('#cModal')) { e.preventDefault(); $('#cModal').classList.remove('open'); return; }
+  const dirty = isOpen('#mModal') ? memberState() !== snap.m : isOpen('#dModal') ? drawState() !== snap.d : null;
+  if (dirty == null) return;
+  e.preventDefault();
+  if (dirty) { $('#cModal').classList.add('open'); setTimeout(() => $('#cStay').focus(), 0); } else closeAll();
+});
 $('#btnAdd').onclick = () => openMember(null);
 $('#btnDraw').onclick = openDraw;
 $('#cards').addEventListener('click', (e) => { const b = e.target.closest('[data-fs]'); if (b) { filterStatus = filterStatus === b.dataset.fs ? '' : b.dataset.fs; render(); } });
