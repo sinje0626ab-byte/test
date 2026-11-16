@@ -126,7 +126,7 @@ tr:hover td { background: #fafcff; }
       <select class="f" id="fFree"><option value="">무료번호 전체</option><option value="y">무료번호 보냄</option><option value="n">무료번호 안 보냄</option></select>
     </div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>이름</th><th>구분</th><th>상태</th><th>연락처</th><th>무료번호</th><th>최근 발송</th><th>최근 당첨 결과</th><th>최고 등수</th><th>결제</th><th class="wrap">메모</th><th></th></tr></thead>
+      <thead><tr><th>이름</th><th>등록일</th><th>구분</th><th>상태</th><th>연락처</th><th>무료번호</th><th>최근 발송</th><th>최근 당첨 결과</th><th>최고 등수</th><th>결제</th><th class="wrap">메모</th><th></th></tr></thead>
       <tbody id="list"></tbody>
     </table></div>
   </div>
@@ -146,6 +146,7 @@ tr:hover td { background: #fafcff; }
     <div class="grid2">
       <label>이름 *<input class="f" data-m="name" placeholder="홍길동"></label>
       <label>연락처<input class="f" data-m="phone" placeholder="010-0000-0000" inputmode="tel"></label>
+      <label>등록일<input class="f" data-m="regDate" type="date" min="2020-01-01" max="2099-12-31"></label>
       <div class="lbl">연령대<div class="chips" data-chips="age"></div></div>
       <div class="lbl">성별<div class="chips" data-chips="sex"></div></div>
     </div>
@@ -222,6 +223,9 @@ const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(
 const nextSat = (s) => { const t = toUTC(s); const wd = new Date(t).getUTCDay(); return t + ((6 - wd + 7) % 7) * 864e5; };
 const roundOf = (s) => s ? Math.floor((nextSat(s) - ROUND1) / (7 * 864e5)) + 1 : '';
 const dateOfRound = (r) => ymd(ROUND1 + (r - 1) * 7 * 864e5);
+// 등록일: 직접 입력한 값, 없으면(예전 회원) 처음 저장한 날짜
+const regOf = (m) => m.regDate || (m.createdAt ? (() => { const d = new Date(m.createdAt); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })() : '');
+const fmtY = (s) => { const [y, m, d] = s.split('-'); return `${y.slice(2)}.${m}.${d}`; };
 const fmt = (s) => { if (!s) return ''; const [, m, d] = s.split('-'); return `${+m}/${+d}`; };
 
 // ── 번호 파싱 · 등수 ──
@@ -291,6 +295,7 @@ function render() {
       : m.status === 'account' ? `계좌 안내 ${fmt(m.accountDate)}` : '<span class="mut">-</span>';
     return `<tr>
       <td><b>${esc(m.name)}</b></td>
+      <td>${regOf(m) ? fmtY(regOf(m)) : '<span class="mut">-</span>'}</td>
       <td>${esc([m.age, m.sex].filter(Boolean).join(' ')) || '<span class="mut">-</span>'}</td>
       <td><span class="badge s-${m.status}">${STATUS_NAME[m.status] || '-'}</span></td>
       <td>${esc(m.phone) || '<span class="mut">-</span>'}</td>
@@ -301,7 +306,7 @@ function render() {
       <td>${pay}</td>
       <td class="wrap">${esc(m.memo)}</td>
       <td><button class="btn sm" data-edit="${m.id}">수정</button></td></tr>`;
-  }).join('') : `<tr><td colspan="11" class="empty">${db.members.length ? '조건에 맞는 고객이 없어요' : '아직 등록된 회원이 없어요. [+ 회원 등록]을 눌러주세요'}</td></tr>`;
+  }).join('') : `<tr><td colspan="12" class="empty">${db.members.length ? '조건에 맞는 고객이 없어요' : '아직 등록된 회원이 없어요. [+ 회원 등록]을 눌러주세요'}</td></tr>`;
   renderDraws();
 }
 function renderDraws() {
@@ -322,9 +327,10 @@ function chips(name, opts) {
 }
 function openMember(id) {
   const m = id ? db.members.find((x) => x.id === id) : null;
-  editing = m ? JSON.parse(JSON.stringify(m)) : { id: null, name: '', phone: '', age: '', sex: '', status: 'prospect', payMethod: '', payAmount: '', payDate: '', accountDate: '', memo: '', sends: [] };
+  editing = m ? JSON.parse(JSON.stringify(m)) : { id: null, regDate: today(), name: '', phone: '', age: '', sex: '', status: 'prospect', payMethod: '', payAmount: '', payDate: '', accountDate: '', memo: '', sends: [] };
   $('#mTitle').textContent = m ? `회원 수정 — ${m.name}` : '회원 등록';
   $('#mDel').style.visibility = m ? 'visible' : 'hidden';
+  if (!editing.regDate) editing.regDate = regOf(editing) || today();
   document.querySelectorAll('[data-m]').forEach((el) => { el.value = editing[el.dataset.m] ?? ''; });
   $('#sDate').value = today(); $('#sFree').checked = !(editing.sends || []).length && editing.status !== 'paid'; $('#sSets').value = ''; $('#sErr').textContent = ''; $('#mErr').textContent = '';
   updRound(); renderEdit();
@@ -373,6 +379,8 @@ $('#mSave').onclick = () => {
   if (!editing.name) { $('#mErr').textContent = '이름을 입력해주세요'; return; }
   if (!okDate(editing.accountDate) || !okDate(editing.payDate)) { $('#mErr').textContent = '날짜를 확인해주세요 (연도 4자리)'; return; }
   if ($('#sSets').value.trim()) { $('#mErr').textContent = '입력한 번호가 아직 추가되지 않았어요 — [발송 기록 추가]를 먼저 눌러주세요'; return; }
+  if (!editing.regDate) editing.regDate = today();
+  if (!okDate(editing.regDate)) { $('#mErr').textContent = '등록일을 확인해주세요 (연도 4자리)'; return; }
   editing.payAmount = editing.payAmount === '' ? '' : Number(editing.payAmount);
   editing.updatedAt = new Date().toISOString();
   if (editing.id) db.members = db.members.map((m) => m.id === editing.id ? editing : m);
