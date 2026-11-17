@@ -240,7 +240,7 @@ td.memo div { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: v
     <div class="part"><div class="part-t">기본 정보</div>
     <div class="grid3">
       <label>이름 *<input class="f" data-m="name" placeholder="홍길동"></label>
-      <label>연락처<input class="f" data-m="phone" placeholder="010-0000-0000" inputmode="tel"></label>
+      <label>연락처<input class="f" data-m="phone" placeholder="010-0000-0000" inputmode="numeric" type="tel" maxlength="13" autocomplete="off"></label>
       <label>등록일<input class="f" data-m="regDate" type="date" min="2020-01-01" max="2099-12-31"></label>
     </div>
     <div class="full"><div class="lbl">연령대<div class="chips" data-chips="age"></div></div></div>
@@ -415,7 +415,7 @@ function render() {
     else if (filterStatus && m.status !== filterStatus) return false;
     if (ff === 'y' && !s.free.length) return false;
     if (ff === 'n' && s.free.length) return false;
-    if (q && ![m.name, m.phone, m.memo].join(' ').includes(q)) return false;
+    if (q && ![m.name, m.phone, m.memo].join(' ').includes(q) && !(digits(q).length >= 3 && digits(m.phone).includes(digits(q)))) return false;
     return true;
   }).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
   $('#listCount').textContent = `${rows.length}명`;
@@ -431,7 +431,7 @@ function render() {
     const pay = m.status === 'paid' ? `<div class="a money">${m.payAmount ? won(m.payAmount) + '원' : '결제'}</div><div class="b">${esc(m.payMethod || '')} ${m.payDate ? fmt(m.payDate) : ''}</div>`
       : m.status === 'account' ? `<div class="a">계좌 안내</div><div class="b">${m.accountDate ? fmt(m.accountDate) : ''}</div>` : D;
     return `<tr class="st-${m.status}" data-edit="${m.id}">
-      <td class="who" data-l="고객"><div><div class="nm">${esc(m.name)}</div><div class="sub2">${esc(m.phone) || '연락처 없음'}${prof ? ' · ' + esc(prof) : ''}</div></div></td>
+      <td class="who" data-l="고객"><div><div class="nm">${esc(m.name)}</div><div class="sub2">${m.phone ? esc(fmtPhone(m.phone)) : '연락처 없음'}${prof ? ' · ' + esc(prof) : ''}</div></div></td>
       <td data-l="상태"><span class="badge s-${m.status}">${STATUS_NAME[m.status] || '-'}</span></td>
       <td data-l="등록일">${regOf(m) ? fmtY(regOf(m)) : D}</td>
       <td class="two" data-l="무료번호"><div>${freeTxt}</div></td>
@@ -463,10 +463,11 @@ function chips(name, opts) {
 }
 function openMember(id) {
   const m = id ? db.members.find((x) => x.id === id) : null;
-  editing = m ? JSON.parse(JSON.stringify(m)) : { id: null, regDate: today(), name: '', phone: '', age: '', sex: '', status: 'prospect', payMethod: '', payAmount: '', payDate: '', accountDate: '', memo: '', sends: [] };
+  editing = m ? JSON.parse(JSON.stringify(m)) : { id: null, regDate: today(), name: '', phone: '010-', age: '', sex: '', status: 'prospect', payMethod: '', payAmount: '', payDate: '', accountDate: '', memo: '', sends: [] };
   $('#mTitle').textContent = m ? `회원 수정 — ${m.name}` : '회원 등록';
   $('#mDel').style.visibility = m ? 'visible' : 'hidden';
   if (!editing.regDate) editing.regDate = regOf(editing) || today();
+  editing.phone = digits(editing.phone).length > 3 ? fmtPhone(editing.phone) : (m ? '' : '010-');
   document.querySelectorAll('[data-m]').forEach((el) => { el.value = editing[el.dataset.m] ?? ''; });
   $('#sDate').value = today(); $('#sFree').checked = !(editing.sends || []).length && editing.status !== 'paid'; $('#sSets').value = ''; $('#sErr').textContent = ''; $('#mErr').textContent = '';
   smsOpen.clear(); updRound(); renderEdit();
@@ -525,10 +526,31 @@ async function copyText(t, btn) {
   const old = btn.textContent; btn.textContent = ok ? '✓ 복사됨' : '복사 실패 — 문자 보기에서 직접 복사'; btn.classList.toggle('copied', ok);
   setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 1500);
 }
+// 연락처: 숫자만 받아 010-0000-0000 형태로 (10자리면 011-000-0000)
+const digits = (v) => String(v || '').replace(/\D/g, '');
+function fmtPhone(v) {
+  const d = digits(v).slice(0, 11);
+  if (d.length <= 3) return d;
+  if (d.length <= 7) return `${d.slice(0, 3)}-${d.slice(3)}`;
+  if (d.length === 10) return `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`;
+  return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+}
+document.addEventListener('input', (e) => {
+  const el = e.target; if (el.dataset.m !== 'phone') return;
+  const before = digits(el.value.slice(0, el.selectionStart)).length; // 커서 앞 숫자 개수
+  const v = fmtPhone(el.value); if (v === el.value) return;
+  el.value = v;
+  let pos = 0, n = 0; while (pos < v.length && n < before) { if (/\d/.test(v[pos])) n++; pos++; }
+  el.setSelectionRange(pos, pos);
+}, true);
 const okDate = (v) => !v || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v >= '2020-01-01' && v <= '2099-12-31');
 $('#mSave').onclick = () => {
   editing.name = (editing.name || '').trim();
   if (!editing.name) { $('#mErr').textContent = '이름을 입력해주세요'; return; }
+  const pd = digits(editing.phone);
+  if (pd.length <= 3) editing.phone = ''; // 010- 만 있으면 비움
+  else if (pd.length < 10) { $('#mErr').textContent = '연락처 자릿수를 확인해주세요 (예: 010-1234-5678)'; return; }
+  else editing.phone = fmtPhone(pd);
   if (!okDate(editing.accountDate) || !okDate(editing.payDate)) { $('#mErr').textContent = '날짜를 확인해주세요 (연도 4자리)'; return; }
   if ($('#sSets').value.trim()) { $('#mErr').textContent = '입력한 번호가 아직 추가되지 않았어요 — [발송 기록 추가]를 먼저 눌러주세요'; return; }
   if (!editing.regDate) editing.regDate = today();
